@@ -90,6 +90,24 @@ function f233_VacioNoSi($iValor){
 		}
 	return $sValor;
 	}
+function f233_AsisteInduccion($iValor){
+    $sValor='';
+    switch($iValor){
+        case -1:
+            $sValor='';
+            break;
+        case 1:
+            $sValor='Presencial';
+            break;
+        case 2:
+            $sValor='Virtual';
+            break;
+        default:
+            $sValor='No';
+            break;
+        }
+    return $sValor;
+    }
 if ($bEntra){
 	if ($_REQUEST['rdebug']==1){$bDebug=true;}
 	$cSepara=',';
@@ -141,13 +159,16 @@ if ($bEntra){
 	$acara33idzona=array();
 	$acara33idcentro=array();
 	$acara23contacto_forma=array();
+    $acara01idcursocatedra=array();
+    $acara23catedra_avance=array();
+    $acara23catedra_acciones=array();
 	$aSys11=array();
 	$sTitulos1='Datos de la encuesta';
 	for ($l=1;$l<=8;$l++){
 		$sTitulos1=$sTitulos1.$cSepara;
 		}
 	$sTitulos2='Acompañamiento inicial';
-	for ($l=1;$l<=7;$l++){
+	for ($l=1;$l<=25;$l++){
 		$sTitulos2=$sTitulos2.$cSepara;
 		}
 	$sTitulos3='Acompañamiento Intermedio';
@@ -160,7 +181,7 @@ if ($bEntra){
 		}
 	$sTitulos9='Riesgo'.$cSepara.'Consejero';
 	$sBloque1='Periodo encuesta'.$cSepara.'Tipo doc'.$cSepara.'Documento'.$cSepara.'Nombres'.$cSepara.'Zona'.$cSepara.'Centro'.$cSepara.'Escuela'.$cSepara.'Programa';
-	$sBloque2=$cSepara.'Num'.$cSepara.'Fecha'.$cSepara.'Estado'.$cSepara.'Forma de contacto'.$cSepara.'Observaciones'.$cSepara.'Aplaza'.$cSepara.'Se retira';
+	$sBloque2=$cSepara.'Num'.$cSepara.'Fecha'.$cSepara.'Estado'.$cSepara.'Asiste a Induccion'.$cSepara.'Asiste a Inmersion CV'.$cSepara.'Codigo de la Catedra'.$cSepara.'Situacion de Riesgo'.$cSepara.'Acciones Realizadas'.$cSepara.'Resultados'.$cSepara.'Nivel De Riesgo Prueba De Caracterización'.$cSepara.'Acciones De Intervencion Segun Factores'.$cSepara.'Competencias Digitales Basicas'.$cSepara.'Competencias Cuantitativas'.$cSepara.'Competencias Lecto-escritora'.$cSepara.'Competencias Ingles'.$cSepara.'Nivel De Riesgo Competencias Basicas'.$cSepara.'Competencias Digitales Basicas'.$cSepara.'Competencias Cuantitativas'.$cSepara.'Competencias Lecto-escritora'.$cSepara.'Competencias Ingles'.$cSepara.'Riesgo Final'.$cSepara.'Forma de contacto'.$cSepara.'Observaciones'.$cSepara.'Aplaza'.$cSepara.'Se retira';
 	$sBloque3=$cSepara.'Num'.$cSepara.'Fecha'.$cSepara.'Estado'.$cSepara.''.$cSepara;
 	$sBloque4=$cSepara.'Num'.$cSepara.'Fecha'.$cSepara.'Estado'.$cSepara.''.$cSepara;
 	$sBloque9=$cSepara.'Riesgo'.$cSepara.'Consejero';
@@ -191,6 +212,11 @@ WHERE TB.cara01idperiodoacompana='.$_REQUEST['v3'].''.$sWhere.'';
 		$lin_cara23contacto_observa=$cSepara;
 		$lin_cara23aplaza=$cSepara;
 		$lin_cara23seretira=$cSepara;
+		$lin_cara23asisteinduccion=$cSepara;
+		$lin_cara23asisteinmersioncv=$cSepara;
+        $lin_cara01idcursocatedra=$cSepara;
+        $lin_cara23catedra_avance=$cSepara;
+        $lin_cara23catedra_acciones=$cSepara;
 		$iTer=$fila['cara01idtercero'];
 		if (isset($aSys11[$iTer]['doc'])==0){
 			list($aSys11[$iTer]['td'], $aSys11[$iTer]['doc'], $aSys11[$iTer]['razon'], $aSys11[$iTer]['ult_ing'])=f1011_InfoParaPlano($iTer, $objDB);
@@ -269,7 +295,7 @@ WHERE TB.cara01idperiodoacompana='.$_REQUEST['v3'].''.$sWhere.'';
 		$sBloque1=$lin_cara33idperaca.$lin_cara01idtercero.$lin_cara33idzona.$lin_cara33idcentro.$lin_cara01idescuela.$lin_cara01idprograma;
 		$sBloque9=$lin_cara01factorriesgoacomp.$lin_cara01idconsejero;
 		//Bloques 2 a 4 se cargan dinamicamente.
-		$sNada=$cSepara.$cSepara.$cSepara.$cSepara.'';
+		$sNada=$cSepara.$cSepara.$cSepara.$cSepara.$cSepara.$cSepara.$cSepara.$cSepara.$cSepara.$cSepara.$cSepara.$cSepara.$cSepara.$cSepara.$cSepara.$cSepara.$cSepara.$cSepara.$cSepara.$cSepara.$cSepara.$cSepara.$cSepara.$cSepara.$cSepara.$cSepara.$cSepara.$cSepara.$cSepara.$cSepara.$cSepara.$cSepara.'';
 		$iNS1=0;
 		$iNS2=0;
 		$iNS3=0;
@@ -298,11 +324,49 @@ WHERE TB.cara01idperiodoacompana='.$_REQUEST['v3'].''.$sWhere.'';
 				$acara23contacto_forma[$i_cara23contacto_forma]='';
 				}
 			}
+		$i_cara01idcursocatedra=$fila['cara01idcursocatedra'];
+		if (isset($acara01idcursocatedra[$i_cara01idcursocatedra])==0){
+            $sSQL='SELECT unad40id AS id, CONCAT(unad40titulo, " - ", unad40nombre) AS nombre FROM unad40curso WHERE unad40id IN ('.$i_cara01idcursocatedra.') ORDER BY unad40titulo';
+			$tablae=$objDB->ejecutasql($sSQL);
+			if ($objDB->nf($tablae)>0){
+				$filae=$objDB->sf($tablae);
+                $acara01idcursocatedra[$i_cara01idcursocatedra]=str_replace($cSepara, $cComplementa, $filae['nombre']);
+				}else{
+                $acara01idcursocatedra[$i_cara01idcursocatedra]='';
+				}
+			}
+		$i_cara23catedra_avance=$fila23['cara23catedra_avance'];
+		if (isset($acara23catedra_avance[$i_cara23catedra_avance])==0){
+            $sSQL='SELECT cara24titulo FROM cara24avancecatedra WHERE cara24id='.$i_cara23catedra_avance.'';
+			$tablae=$objDB->ejecutasql($sSQL);
+			if ($objDB->nf($tablae)>0){
+				$filae=$objDB->sf($tablae);
+                $acara23catedra_avance[$i_cara23catedra_avance]=str_replace($cSepara, $cComplementa, $filae['cara24titulo']);
+				}else{
+                $acara23catedra_avance[$i_cara23catedra_avance]='';
+				}
+			}
+		$i_cara23catedra_acciones=$fila23['cara23catedra_acciones'];
+		if (isset($acara23catedra_acciones[$i_cara23catedra_acciones])==0){
+            $sSQL='SELECT cara24titulo FROM cara24avancecatedra WHERE cara24id='.$i_cara23catedra_avance.'';
+			$tablae=$objDB->ejecutasql($sSQL);
+			if ($objDB->nf($tablae)>0){
+				$filae=$objDB->sf($tablae);
+                $acara23catedra_acciones[$i_cara23catedra_acciones]=str_replace($cSepara, $cComplementa, $filae['nombre']);
+				}else{
+                $acara23catedra_acciones[$i_cara23catedra_acciones]='';
+				}
+			}
 		$lin_cara23contacto_forma=$cSepara.utf8_decode($acara23contacto_forma[$i_cara23contacto_forma]);
 		$lin_cara23contacto_observa=$cSepara.str_replace($cSepara, $cComplementa, cadena_letrasynumeros(utf8_decode($fila23['cara23contacto_observa']), ' '));
 		$lin_cara23aplaza=$cSepara.f233_VacioNoSi($fila23['cara23aplaza']);
 		$lin_cara23seretira=$cSepara.f233_VacioNoSi($fila23['cara23seretira']);
-				$sLinea=$cSepara.$iNS1.$sLinea.$lin_cara23contacto_forma.$lin_cara23contacto_observa.$lin_cara23aplaza.$lin_cara23seretira;
+		$lin_cara23asisteinduccion=$cSepara.f233_AsisteInduccion($fila23['cara23asisteinduccion']);
+		$lin_cara23asisteinmersioncv=$cSepara.f233_VacioNoSi($fila23['cara23asisteinmersioncv']);
+		$lin_cara01idcursocatedra=$cSepara.utf8_decode($acara01idcursocatedra[$i_cara01idcursocatedra]);
+		$lin_cara23catedra_avance=$cSepara.utf8_decode($acara23catedra_avance[$i_cara23catedra_avance]);
+		$lin_cara23catedra_acciones=$cSepara.utf8_decode($acara23catedra_acciones[$i_cara23catedra_acciones]);
+				$sLinea=$cSepara.$iNS1.$sLinea.$lin_cara23asisteinduccion.$lin_cara23asisteinmersioncv.$lin_cara01idcursocatedra.$lin_cara23catedra_avance.$lin_cara23catedra_acciones.$lin_cara23contacto_forma.$lin_cara23contacto_observa.$lin_cara23aplaza.$lin_cara23seretira;
 				$aNS1[$iNS1]=$sLinea;
 				break;
 				case 2: // Intermedio
