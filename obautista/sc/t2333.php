@@ -7,6 +7,7 @@
 /** Archivo para reportes tipo csv 2333.
 * Aquí se genera un archivo tipo csv con la siguiente estructura (indicar estructura).
 * @author Angel Mauro Avellaneda Barreto - angel.avellaneda@unad.edu.co
+* @author Omar Augusto Bautista Mora - omar.bautista@unad.edu.co
 * @date Wednesday, October 30, 2019
 */
 if (file_exists('./err_control.php')){require './err_control.php';}
@@ -108,6 +109,44 @@ function f233_AsisteInduccion($iValor){
         }
     return $sValor;
     }
+function f233_NivelCompetencia($iValor){
+    $sValor='';
+    switch($iValor){
+        case -1:
+        case 2:
+        case 4:
+            $sValor='';
+            break;
+        case 1:
+            $sValor='Alta';
+            break;
+        case 3:
+            $sValor='Media';
+            break;
+        case 5:
+            $sValor='Baja';
+            break;
+        default:
+            $sValor='Sin definir';
+            break;
+        }
+    return $sValor;
+    }
+function f233_PorDefinirNoSi($iValor){
+	$sValor='';
+	switch($iValor){
+		case '-1':
+		$sValor='Por definir';
+		break;
+		case 0:
+		$sValor='No';
+		break;
+		case 1:
+		$sValor='Si';
+		break;
+		}
+	return $sValor;
+	}
 if ($bEntra){
 	if ($_REQUEST['rdebug']==1){$bDebug=true;}
 	$cSepara=',';
@@ -162,28 +201,31 @@ if ($bEntra){
     $acara01idcursocatedra=array();
     $acara23catedra_avance=array();
     $acara23catedra_acciones=array();
+    $acara23catedra_resultados=array();
+    $acara01factorprincipaldesc=array();
+    $acara01factorprincpermanencia=array();
 	$aSys11=array();
 	$sTitulos1='Datos de la encuesta';
 	for ($l=1;$l<=8;$l++){
 		$sTitulos1=$sTitulos1.$cSepara;
 		}
 	$sTitulos2='Acompañamiento inicial';
-	for ($l=1;$l<=25;$l++){
+	for ($l=1;$l<=30;$l++){
 		$sTitulos2=$sTitulos2.$cSepara;
 		}
 	$sTitulos3='Acompañamiento Intermedio';
-	for ($l=1;$l<=5;$l++){
+	for ($l=1;$l<=26;$l++){
 		$sTitulos3=$sTitulos3.$cSepara;
 		}
 	$sTitulos4='Acompañamiento Final';
-	for ($l=1;$l<=5;$l++){
+	for ($l=1;$l<=14;$l++){
 		$sTitulos4=$sTitulos4.$cSepara;
 		}
 	$sTitulos9='Riesgo'.$cSepara.'Consejero';
 	$sBloque1='Periodo encuesta'.$cSepara.'Tipo doc'.$cSepara.'Documento'.$cSepara.'Nombres'.$cSepara.'Zona'.$cSepara.'Centro'.$cSepara.'Escuela'.$cSepara.'Programa';
-	$sBloque2=$cSepara.'Num'.$cSepara.'Fecha'.$cSepara.'Estado'.$cSepara.'Asiste a Induccion'.$cSepara.'Asiste a Inmersion CV'.$cSepara.'Codigo de la Catedra'.$cSepara.'Situacion de Riesgo'.$cSepara.'Acciones Realizadas'.$cSepara.'Resultados'.$cSepara.'Nivel De Riesgo Prueba De Caracterización'.$cSepara.'Acciones De Intervencion Segun Factores'.$cSepara.'Competencias Digitales Basicas'.$cSepara.'Competencias Cuantitativas'.$cSepara.'Competencias Lecto-escritora'.$cSepara.'Competencias Ingles'.$cSepara.'Nivel De Riesgo Competencias Basicas'.$cSepara.'Competencias Digitales Basicas'.$cSepara.'Competencias Cuantitativas'.$cSepara.'Competencias Lecto-escritora'.$cSepara.'Competencias Ingles'.$cSepara.'Riesgo Final'.$cSepara.'Forma de contacto'.$cSepara.'Observaciones'.$cSepara.'Aplaza'.$cSepara.'Se retira';
-	$sBloque3=$cSepara.'Num'.$cSepara.'Fecha'.$cSepara.'Estado'.$cSepara.''.$cSepara;
-	$sBloque4=$cSepara.'Num'.$cSepara.'Fecha'.$cSepara.'Estado'.$cSepara.''.$cSepara;
+	$sBloque2=$cSepara.'Num'.$cSepara.'Fecha'.$cSepara.'Estado'.$cSepara.'Asiste a Induccion'.$cSepara.'Asiste a Inmersion CV'.$cSepara.'Codigo de la Catedra'.$cSepara.'Situacion de Riesgo'.$cSepara.'Acciones Realizadas'.$cSepara.'Resultados'.$cSepara.'Nivel De Riesgo Prueba De Caracterización'.$cSepara.'Acciones Factor socio-demográfico'.$cSepara.'Acciones Factor psicosocial'.$cSepara.'Acciones Factor académico'.$cSepara.'Acciones Factor socio económico'.$cSepara.'Competencias Digitales Basicas'.$cSepara.'Competencias Cuantitativas'.$cSepara.'Competencias Lecto-escritora'.$cSepara.'Competencias Ingles'.$cSepara.'Nivel De Riesgo Competencias Basicas'.$cSepara.'Competencias Digitales Basicas'.$cSepara.'Competencias Cuantitativas'.$cSepara.'Competencias Lecto-escritora'.$cSepara.'Competencias Ingles'.$cSepara.'Riesgo Final'.$cSepara.'Forma de contacto'.$cSepara.'Observaciones'.$cSepara.'Aplaza'.$cSepara.'Se retira'.$cSepara.'Factor principal de deserción'.$cSepara;
+	$sBloque3=$cSepara.'Num'.$cSepara.'Fecha'.$cSepara.'Estado'.$cSepara.'Riesgos en catedra'.$cSepara.'Acciones realizadas'.$cSepara.'Resultados'.$cSepara.'Seguimiento Alerta Anterior'.$cSepara.'No. De cursos matriculados'.$cSepara.'No. De cursos sin ingresos'.$cSepara.'No. de Cursos parcialmente reprobados'.$cSepara.'% de cursos con riesgo'.$cSepara.'Comunicación con docente'.$cSepara.'Conducto regular'.$cSepara.'Revisión de calificaciones'.$cSepara.'Mensaje felicitación'.$cSepara.'Comunicación con e-monitor'.$cSepara.'Direccionamiento chat VISAE'.$cSepara.'Contacto con consejero del centro'.$cSepara.'Nivel de Riesgo'.$cSepara.'Medio de contacto efectivo'.$cSepara.'Observaciones'.$cSepara.'Aplaza'.$cSepara.'Se retira'.$cSepara.'Factor principal de deserción'.$cSepara.'Factor riesgo acumulado'.$cSepara;
+	$sBloque4=$cSepara.'Num'.$cSepara.'Fecha'.$cSepara.'Estado'.$cSepara.'Aprobacion Catedra Unadista'.$cSepara.'Numero De Cursos Reprobados'.$cSepara.'% De Cursos Reprobados'.$cSepara.'Aplaza'.$cSepara.'Se Retira'.$cSepara.'Permanece'.$cSepara.'Factor Principal De Permanencia'.$cSepara.'Factor Principal De Desercion'.$cSepara.'Medio De Contacto Efectivo'.$cSepara.'Observaciones'.$cSepara;
 	$sBloque9=$cSepara.'Riesgo'.$cSepara.'Consejero';
 	$objplano->AdicionarLinea(utf8_decode($sTitulos1.$sTitulos2.$sTitulos3.$sTitulos4.$sTitulos9));
 	$objplano->AdicionarLinea($sBloque1.$sBloque2.$sBloque3.$sBloque4.$sBloque9);
@@ -217,6 +259,39 @@ WHERE TB.cara01idperiodoacompana='.$_REQUEST['v3'].''.$sWhere.'';
         $lin_cara01idcursocatedra=$cSepara;
         $lin_cara23catedra_avance=$cSepara;
         $lin_cara23catedra_acciones=$cSepara;
+        $lin_cara23catedra_resultados=$cSepara;
+        $lin_cara23aler_criterio=$cSepara;
+        $lin_cara23aler_sociodem=$cSepara;
+        $lin_cara23aler_psico=$cSepara;
+        $lin_cara23aler_academ=$cSepara;
+        $lin_cara23aler_econom=$cSepara;
+        $lin_cara23comp_digital=$cSepara;
+        $lin_cara23comp_cuanti=$cSepara;
+        $lin_cara23comp_lectora=$cSepara;
+        $lin_cara23comp_ingles=$cSepara;
+        $lin_cara23comp_criterio=$cSepara;
+        $lin_cara23nivela_digital=$cSepara;
+        $lin_cara23nivela_cuanti=$cSepara;
+        $lin_cara23nivela_lecto=$cSepara;
+        $lin_cara23nivela_ingles=$cSepara;
+        $lin_cara23factorriesgo=$cSepara;
+        $lin_cara01factorprincipaldesc=$cSepara;
+        $lin_cara23catedra_segprev=$cSepara;
+        $lin_cara23cursos_total=$cSepara;
+        $lin_cara23cursos_siningre=$cSepara;
+        $lin_cara23cursos_menor200=$cSepara;
+        $lin_cara23cursos_porcperdida=$cSepara;
+        $lin_cara23cursos_ac1=$cSepara;
+        $lin_cara23cursos_ac2=$cSepara;
+        $lin_cara23cursos_ac3=$cSepara;
+        $lin_cara23cursos_ac4=$cSepara;
+        $lin_cara23cursos_ac5=$cSepara;
+        $lin_cara23cursos_ac6=$cSepara;
+        $lin_cara23cursos_ac7=$cSepara;
+        $lin_cara23cursos_criterio=$cSepara;
+        $lin_cara23catedra_aprueba=$cSepara;
+        $lin_cara23permanece=$cSepara;
+        $lin_cara01factorprincpermanencia=$cSepara;
 		$iTer=$fila['cara01idtercero'];
 		if (isset($aSys11[$iTer]['doc'])==0){
 			list($aSys11[$iTer]['td'], $aSys11[$iTer]['doc'], $aSys11[$iTer]['razon'], $aSys11[$iTer]['ult_ing'])=f1011_InfoParaPlano($iTer, $objDB);
@@ -295,7 +370,7 @@ WHERE TB.cara01idperiodoacompana='.$_REQUEST['v3'].''.$sWhere.'';
 		$sBloque1=$lin_cara33idperaca.$lin_cara01idtercero.$lin_cara33idzona.$lin_cara33idcentro.$lin_cara01idescuela.$lin_cara01idprograma;
 		$sBloque9=$lin_cara01factorriesgoacomp.$lin_cara01idconsejero;
 		//Bloques 2 a 4 se cargan dinamicamente.
-		$sNada=$cSepara.$cSepara.$cSepara.$cSepara.$cSepara.$cSepara.$cSepara.$cSepara.$cSepara.$cSepara.$cSepara.$cSepara.$cSepara.$cSepara.$cSepara.$cSepara.$cSepara.$cSepara.$cSepara.$cSepara.$cSepara.$cSepara.$cSepara.$cSepara.$cSepara.$cSepara.$cSepara.$cSepara.$cSepara.$cSepara.$cSepara.$cSepara.'';
+		$sNada=$cSepara.$cSepara.$cSepara.$cSepara.'';
 		$iNS1=0;
 		$iNS2=0;
 		$iNS3=0;
@@ -309,10 +384,6 @@ WHERE TB.cara01idperiodoacompana='.$_REQUEST['v3'].''.$sWhere.'';
 			if ($fila23['cara23estado']==7){$sEstado='Completo';}
 			//$cSepara.$fila23['cara23consec'].
 			$sLinea=$cSepara.$fila23['cara23fecha'].$cSepara.$sEstado;
-			switch($fila23['cara23idtipo']){
-				case 1: // Inicial
-				$iNS1++;
-				//Los campos de esa linea.
 		$i_cara23contacto_forma=$fila23['cara23contacto_forma'];
 		if (isset($acara23contacto_forma[$i_cara23contacto_forma])==0){
 			$sSQL='SELECT cara27titulo FROM cara27mediocont WHERE cara27id='.$i_cara23contacto_forma.'';
@@ -322,17 +393,6 @@ WHERE TB.cara01idperiodoacompana='.$_REQUEST['v3'].''.$sWhere.'';
 				$acara23contacto_forma[$i_cara23contacto_forma]=str_replace($cSepara, $cComplementa, $filae['cara27titulo']);
 				}else{
 				$acara23contacto_forma[$i_cara23contacto_forma]='';
-				}
-			}
-		$i_cara01idcursocatedra=$fila['cara01idcursocatedra'];
-		if (isset($acara01idcursocatedra[$i_cara01idcursocatedra])==0){
-            $sSQL='SELECT unad40id AS id, CONCAT(unad40titulo, " - ", unad40nombre) AS nombre FROM unad40curso WHERE unad40id IN ('.$i_cara01idcursocatedra.') ORDER BY unad40titulo';
-			$tablae=$objDB->ejecutasql($sSQL);
-			if ($objDB->nf($tablae)>0){
-				$filae=$objDB->sf($tablae);
-                $acara01idcursocatedra[$i_cara01idcursocatedra]=str_replace($cSepara, $cComplementa, $filae['nombre']);
-				}else{
-                $acara01idcursocatedra[$i_cara01idcursocatedra]='';
 				}
 			}
 		$i_cara23catedra_avance=$fila23['cara23catedra_avance'];
@@ -348,13 +408,50 @@ WHERE TB.cara01idperiodoacompana='.$_REQUEST['v3'].''.$sWhere.'';
 			}
 		$i_cara23catedra_acciones=$fila23['cara23catedra_acciones'];
 		if (isset($acara23catedra_acciones[$i_cara23catedra_acciones])==0){
-            $sSQL='SELECT cara24titulo FROM cara24avancecatedra WHERE cara24id='.$i_cara23catedra_avance.'';
+            $sSQL='SELECT cara25titulo FROM cara25accionescat WHERE cara25id='.$i_cara23catedra_acciones.'';
 			$tablae=$objDB->ejecutasql($sSQL);
 			if ($objDB->nf($tablae)>0){
 				$filae=$objDB->sf($tablae);
-                $acara23catedra_acciones[$i_cara23catedra_acciones]=str_replace($cSepara, $cComplementa, $filae['nombre']);
+                $acara23catedra_acciones[$i_cara23catedra_acciones]=str_replace($cSepara, $cComplementa, $filae['cara25titulo']);
 				}else{
                 $acara23catedra_acciones[$i_cara23catedra_acciones]='';
+				}
+			}
+		$i_cara23catedra_resultados=$fila23['cara23catedra_resultados'];
+		if (isset($acara23catedra_resultados[$i_cara23catedra_resultados])==0){
+            $sSQL='SELECT cara26id AS id, cara26titulo AS nombre FROM cara26resultcat WHERE cara26id='.$i_cara23catedra_resultados.'';
+			$tablae=$objDB->ejecutasql($sSQL);
+			if ($objDB->nf($tablae)>0){
+				$filae=$objDB->sf($tablae);
+                $acara23catedra_resultados[$i_cara23catedra_resultados]=str_replace($cSepara, $cComplementa, $filae['nombre']);
+				}else{
+                $acara23catedra_resultados[$i_cara23catedra_resultados]='';
+				}
+			}
+		$i_cara01factorprincipaldesc=$fila['cara01factorprincipaldesc'];
+		if (isset($acara01factorprincipaldesc[$i_cara01factorprincipaldesc])==0){
+            $sSQL='SELECT cara15id AS id, cara15nombre AS nombre FROM cara15factordeserta WHERE cara15id='.$i_cara01factorprincipaldesc.'';
+			$tablae=$objDB->ejecutasql($sSQL);
+			if ($objDB->nf($tablae)>0){
+				$filae=$objDB->sf($tablae);
+                $acara01factorprincipaldesc[$i_cara01factorprincipaldesc]=str_replace($cSepara, $cComplementa, $filae['nombre']);
+				}else{
+                $acara01factorprincipaldesc[$i_cara01factorprincipaldesc]='';
+				}
+			}
+			switch($fila23['cara23idtipo']){
+				case 1: // Inicial
+				$iNS1++;
+				//Los campos de esa linea.
+		$i_cara01idcursocatedra=$fila['cara01idcursocatedra'];
+		if (isset($acara01idcursocatedra[$i_cara01idcursocatedra])==0){
+            $sSQL='SELECT unad40id AS id, CONCAT(unad40titulo, " - ", unad40nombre) AS nombre FROM unad40curso WHERE unad40id='.$i_cara01idcursocatedra.'';
+			$tablae=$objDB->ejecutasql($sSQL);
+			if ($objDB->nf($tablae)>0){
+				$filae=$objDB->sf($tablae);
+                $acara01idcursocatedra[$i_cara01idcursocatedra]=str_replace($cSepara, $cComplementa, $filae['nombre']);
+				}else{
+                $acara01idcursocatedra[$i_cara01idcursocatedra]='';
 				}
 			}
 		$lin_cara23contacto_forma=$cSepara.utf8_decode($acara23contacto_forma[$i_cara23contacto_forma]);
@@ -366,17 +463,90 @@ WHERE TB.cara01idperiodoacompana='.$_REQUEST['v3'].''.$sWhere.'';
 		$lin_cara01idcursocatedra=$cSepara.utf8_decode($acara01idcursocatedra[$i_cara01idcursocatedra]);
 		$lin_cara23catedra_avance=$cSepara.utf8_decode($acara23catedra_avance[$i_cara23catedra_avance]);
 		$lin_cara23catedra_acciones=$cSepara.utf8_decode($acara23catedra_acciones[$i_cara23catedra_acciones]);
-				$sLinea=$cSepara.$iNS1.$sLinea.$lin_cara23asisteinduccion.$lin_cara23asisteinmersioncv.$lin_cara01idcursocatedra.$lin_cara23catedra_avance.$lin_cara23catedra_acciones.$lin_cara23contacto_forma.$lin_cara23contacto_observa.$lin_cara23aplaza.$lin_cara23seretira;
+		$lin_cara23catedra_resultados=$cSepara.utf8_decode($acara23catedra_resultados[$i_cara23catedra_resultados]);
+		$lin_cara23aler_criterio=$cSepara.f233_NombreRiesgo($fila23['cara23aler_criterio']);
+		$lin_cara23aler_sociodem=$cSepara.str_replace($cSepara, $cComplementa, cadena_letrasynumeros(utf8_decode($fila23['cara23aler_sociodem']), ' '));
+		$lin_cara23aler_psico=$cSepara.str_replace($cSepara, $cComplementa, cadena_letrasynumeros(utf8_decode($fila23['cara23aler_psico']), ' '));
+		$lin_cara23aler_academ=$cSepara.str_replace($cSepara, $cComplementa, cadena_letrasynumeros(utf8_decode($fila23['cara23aler_academ']), ' '));
+		$lin_cara23aler_econom=$cSepara.str_replace($cSepara, $cComplementa, cadena_letrasynumeros(utf8_decode($fila23['cara23aler_econom']), ' '));
+		$lin_cara23comp_digital=$cSepara.f233_NivelCompetencia($fila23['cara23comp_digital']);
+		$lin_cara23comp_cuanti=$cSepara.f233_NivelCompetencia($fila23['cara23comp_cuanti']);
+		$lin_cara23comp_lectora=$cSepara.f233_NivelCompetencia($fila23['cara23comp_lectora']);
+		$lin_cara23comp_ingles=$cSepara.f233_NivelCompetencia($fila23['cara23comp_ingles']);
+		$lin_cara23comp_criterio=$cSepara.f233_NombreRiesgo($fila23['cara23comp_criterio']);
+		$lin_cara23nivela_digital=$cSepara.$fila23['cara23nivela_digital'];
+		$lin_cara23nivela_cuanti=$cSepara.$fila23['cara23nivela_cuanti'];
+		$lin_cara23nivela_lecto=$cSepara.$fila23['cara23nivela_lecto'];
+		$lin_cara23nivela_ingles=$cSepara.$fila23['cara23nivela_ingles'];
+		$lin_cara23factorriesgo=$cSepara.f233_NombreRiesgo($fila23['cara23factorriesgo']);
+		$lin_cara01factorprincipaldesc=$cSepara.utf8_decode($acara01factorprincipaldesc[$i_cara01factorprincipaldesc]);
+				$sLinea=$cSepara.$iNS1.$sLinea.$lin_cara23asisteinduccion.$lin_cara23asisteinmersioncv.$lin_cara01idcursocatedra.
+                    $lin_cara23catedra_avance.$lin_cara23catedra_acciones.$lin_cara23catedra_resultados.$lin_cara23aler_criterio.
+                    $lin_cara23aler_sociodem.$lin_cara23aler_psico.$lin_cara23aler_academ.$lin_cara23aler_econom.$lin_cara23comp_digital.
+                    $lin_cara23comp_cuanti.$lin_cara23comp_lectora.$lin_cara23comp_ingles.$lin_cara23comp_criterio.$lin_cara23nivela_digital.
+                    $lin_cara23nivela_cuanti.$lin_cara23nivela_lecto.$lin_cara23nivela_ingles.$lin_cara23factorriesgo.
+                    $lin_cara23contacto_forma.$lin_cara23contacto_observa.$lin_cara23aplaza.$lin_cara23seretira.$lin_cara01factorprincipaldesc.$cSepara;
 				$aNS1[$iNS1]=$sLinea;
 				break;
 				case 2: // Intermedio
 				$iNS2++;
-				$sLinea=$cSepara.$iNS2.$sLinea.$cSepara.$cSepara;
+				// Los campos de esa linea
+		$lin_cara23catedra_avance=$cSepara.utf8_decode($acara23catedra_avance[$i_cara23catedra_avance]);
+		$lin_cara23catedra_acciones=$cSepara.utf8_decode($acara23catedra_acciones[$i_cara23catedra_acciones]);
+		$lin_cara23catedra_resultados=$cSepara.utf8_decode($acara23catedra_resultados[$i_cara23catedra_resultados]);
+		$lin_cara23catedra_segprev=$cSepara.str_replace($cSepara, $cComplementa, cadena_letrasynumeros(utf8_decode($fila23['cara23catedra_segprev']), ' '));
+		$lin_cara23cursos_total=$cSepara.$fila23['cara23cursos_total'];
+		$lin_cara23cursos_siningre=$cSepara.$fila23['cara23cursos_siningre'];
+		$lin_cara23cursos_menor200=$cSepara.$fila23['cara23cursos_menor200'];
+		$lin_cara23cursos_porcperdida=$cSepara.$fila23['cara23cursos_porcperdida'];
+		$lin_cara23cursos_ac1=$cSepara.f233_VacioNoSi($fila23['cara23cursos_ac1']);
+		$lin_cara23cursos_ac2=$cSepara.f233_VacioNoSi($fila23['cara23cursos_ac2']);
+		$lin_cara23cursos_ac3=$cSepara.f233_VacioNoSi($fila23['cara23cursos_ac3']);
+		$lin_cara23cursos_ac4=$cSepara.f233_VacioNoSi($fila23['cara23cursos_ac4']);
+		$lin_cara23cursos_ac5=$cSepara.f233_VacioNoSi($fila23['cara23cursos_ac5']);
+		$lin_cara23cursos_ac6=$cSepara.f233_VacioNoSi($fila23['cara23cursos_ac6']);
+		$lin_cara23cursos_ac7=$cSepara.f233_VacioNoSi($fila23['cara23cursos_ac7']);
+		$lin_cara23cursos_criterio=$cSepara.f233_NombreRiesgo($fila23['cara23cursos_criterio']);
+		$lin_cara23contacto_forma=$cSepara.utf8_decode($acara23contacto_forma[$i_cara23contacto_forma]);
+		$lin_cara23contacto_observa=$cSepara.str_replace($cSepara, $cComplementa, cadena_letrasynumeros(utf8_decode($fila23['cara23contacto_observa']), ' '));
+		$lin_cara23aplaza=$cSepara.f233_VacioNoSi($fila23['cara23aplaza']);
+		$lin_cara23seretira=$cSepara.f233_VacioNoSi($fila23['cara23seretira']);
+		$lin_cara01factorprincipaldesc=$cSepara.utf8_decode($acara01factorprincipaldesc[$i_cara01factorprincipaldesc]);
+		$lin_cara23factorriesgo=$cSepara.f233_NombreRiesgo($fila23['cara23factorriesgo']);
+				$sLinea=$cSepara.$iNS2.$sLinea.$lin_cara23catedra_avance.$lin_cara23catedra_acciones.$lin_cara23catedra_resultados.$lin_cara23catedra_segprev.
+                    $lin_cara23cursos_total.$lin_cara23cursos_siningre.$lin_cara23cursos_menor200.$lin_cara23cursos_porcperdida.$lin_cara23cursos_ac1.
+                    $lin_cara23cursos_ac2.$lin_cara23cursos_ac3.$lin_cara23cursos_ac4.$lin_cara23cursos_ac5.$lin_cara23cursos_ac6.$lin_cara23cursos_ac7.
+                    $lin_cara23cursos_criterio.$lin_cara23contacto_forma.$lin_cara23contacto_observa.$lin_cara23aplaza.$lin_cara23seretira.
+                    $lin_cara01factorprincipaldesc.$lin_cara23factorriesgo.$cSepara;
 				$aNS2[$iNS2]=$sLinea;
 				break;
 				case 3: // Final
 				$iNS3++;
-				$sLinea=$cSepara.$iNS3.$sLinea.$cSepara.$cSepara;
+				//Los campos de esa linea.
+		$i_cara01factorprincpermanencia=$fila['cara01factorprincpermanencia'];
+		if (isset($acara01factorprincpermanencia[$i_cara01factorprincpermanencia])==0){
+            $sSQL='SELECT cara35id AS id, cara35nombre AS nombre FROM cara35factorpermanece WHERE cara35id='.$i_cara01factorprincpermanencia.'';
+			$tablae=$objDB->ejecutasql($sSQL);
+			if ($objDB->nf($tablae)>0){
+				$filae=$objDB->sf($tablae);
+                $acara01factorprincpermanencia[$i_cara01factorprincpermanencia]=str_replace($cSepara, $cComplementa, $filae['nombre']);
+				}else{
+                $acara01factorprincpermanencia[$i_cara01factorprincpermanencia]='';
+				}
+			}
+		$lin_cara23catedra_aprueba=$cSepara.f233_VacioNoSi($fila23['cara23catedra_aprueba']);
+		$lin_cara23cursos_menor200=$cSepara.$fila23['cara23cursos_menor200'];
+		$lin_cara23cursos_porcperdida=$cSepara.$fila23['cara23cursos_porcperdida'];
+		$lin_cara23aplaza=$cSepara.f233_VacioNoSi($fila23['cara23aplaza']);
+		$lin_cara23seretira=$cSepara.f233_VacioNoSi($fila23['cara23seretira']);
+		$lin_cara23permanece=$cSepara.f233_PorDefinirNoSi($fila23['cara23permanece']);
+		$lin_cara01factorprincpermanencia=$cSepara.utf8_decode($acara01factorprincpermanencia[$i_cara01factorprincpermanencia]);
+		$lin_cara01factorprincipaldesc=$cSepara.utf8_decode($acara01factorprincipaldesc[$i_cara01factorprincipaldesc]);
+		$lin_cara23contacto_forma=$cSepara.utf8_decode($acara23contacto_forma[$i_cara23contacto_forma]);
+		$lin_cara23contacto_observa=$cSepara.str_replace($cSepara, $cComplementa, cadena_letrasynumeros(utf8_decode($fila23['cara23contacto_observa']), ' '));
+				$sLinea=$cSepara.$iNS3.$sLinea.$lin_cara23catedra_aprueba.$lin_cara23cursos_menor200.$lin_cara23cursos_porcperdida.$lin_cara23aplaza.
+                    $lin_cara23seretira.$lin_cara23permanece.$lin_cara01factorprincpermanencia.$lin_cara01factorprincipaldesc.$lin_cara23contacto_forma.
+                    $lin_cara23contacto_observa.$cSepara;
 				$aNS3[$iNS3]=$sLinea;
 				break;
 				}
@@ -388,9 +558,9 @@ WHERE TB.cara01idperiodoacompana='.$_REQUEST['v3'].''.$sWhere.'';
 		for($k=1;$k<=$iFilas;$k++){
 			$sEtiqueta='No registra';
 			if ($k>1){$sEtiqueta='NA';}
-			$sBloque2=$cSepara.$sEtiqueta.$sNada.$cSepara.$cSepara;
-			$sBloque3=$cSepara.$sEtiqueta.$sNada;
-			$sBloque4=$cSepara.$sEtiqueta.$sNada;
+			$sBloque2=$cSepara.$sEtiqueta.$sNada.$cSepara.$cSepara.$cSepara.$cSepara.$cSepara.$cSepara.$cSepara.$cSepara.$cSepara.$cSepara.$cSepara.$cSepara.$cSepara.$cSepara.$cSepara.$cSepara.$cSepara.$cSepara.$cSepara.$cSepara.$cSepara.$cSepara.$cSepara.$cSepara.$cSepara;
+			$sBloque3=$cSepara.$sEtiqueta.$sNada.$cSepara.$cSepara.$cSepara.$cSepara.$cSepara.$cSepara.$cSepara.$cSepara.$cSepara.$cSepara.$cSepara.$cSepara.$cSepara.$cSepara.$cSepara.$cSepara.$cSepara.$cSepara.$cSepara.$cSepara.$cSepara;
+			$sBloque4=$cSepara.$sEtiqueta.$sNada.$cSepara.$cSepara.$cSepara.$cSepara.$cSepara.$cSepara.$cSepara.$cSepara.$cSepara;
 			if ($iNS1>=$k){$sBloque2=$aNS1[$k];}
 			if ($iNS2>=$k){$sBloque3=$aNS2[$k];}
 			if ($iNS3>=$k){$sBloque4=$aNS3[$k];}
