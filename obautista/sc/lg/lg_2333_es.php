@@ -26,4 +26,27 @@ $acara33tipo=array('', '');
 $icara33tipo=0;
 $acara33poblacion=array('', '');
 $icara33poblacion=0;
+
+$ETI['msg_r1zona']='Vive en zona rural';
+$ETI['msg_r1indigena']='Indigena';
+$ETI['msg_r1recluso']='Recluso';
+$ETI['msg_r1discsen']='Discapacidad Sensorial';
+$ETI['msg_r1discfis']='Discapacidad Fisica';
+$ETI['msg_r1disccog']='Discapacidad Cognitiva';
+$ETI['msg_r1desplazado']='Desplazado';
+$ETI['msg_r1acr']='ACR';
+$ETI['msg_r1depende']='Depende economicamente';
+
+$ETI['msg_r3tiemponoest']='Mas de 5 anios sin estudiar';
+$ETI['msg_r3sinequipo']='Sin equipo de acceso a internet';
+$ETI['msg_r3sincomputador']='Sin computadora';
+$ETI['msg_r3energia']='Sin electricidad permanente';
+$ETI['msg_r3internet']='Sin internet permanente';
+$ETI['msg_r3ofimatica']='No maneja paquetes ofimaticos';
+$ETI['msg_r3nocorreo']='No usa correo electronico';
+$ETI['msg_r3otroprog']='';
+
+$ETI['msg_r4desempleado']='Desempleado';
+$ETI['msg_r4menos1smm']='Gana menos de un salario minimo';
+$ETI['msg_r4pocotiempo']='Menos de 4 horas libres a la semana';
 ?>
