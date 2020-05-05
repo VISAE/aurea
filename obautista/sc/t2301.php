@@ -156,21 +156,23 @@ if ($bEntra){
 	$acara01bien_niveldanza=array();
 	$acara01criteriodesc=array();
 	$acara01factorprincipaldesc=array();
+	$acara37discapacidades=array();
 		}
 	$aSys11=array();
 	$sTitulo1='Datos personales';
-	for ($l=1;$l<=38;$l++){
+	for ($l=1;$l<=48;$l++){
 		$sSubTitulo='';
-		if ($l==21){$sSubTitulo='Grupos poblacionales';}
-		if ($l==33){$sSubTitulo='Discapacidades';}
+		if ($l==22){$sSubTitulo='Grupos poblacionales';}
+		if ($l==34){$sSubTitulo='Discapacidades';}
 		$sTitulo1=$sTitulo1.$cSepara.$sSubTitulo;
 		}
 	$sBloque1=''.utf8_decode('Tipo Caracterización').$cSepara.'TD'.$cSepara.'Doc'.$cSepara.'Estudiante'.$cSepara.'Ultimo Acceso Campus'.$cSepara.'Fecha encuesta'.$cSepara.'Edad'.$cSepara
 .'Sexo'.$cSepara.'Pais'.$cSepara.'Departamento'.$cSepara.'Ciudad'.$cSepara.'Direccion'.$cSepara.'Estrato'.$cSepara.'Zona de residencia'.$cSepara
 .'Estado civil'.$cSepara.'Nombre del contacto'.$cSepara.'Parentezco del contacto'.$cSepara
 .'Zona'.$cSepara.'CEAD'.$cSepara.'Escuela'.$cSepara.'Programa'.$cSepara.'Matricula en convenio'.$cSepara.'Raizal'.$cSepara.'Palenquero'.$cSepara
-.'Afrocolombiano'.$cSepara.'Otra comunidad negra'.$cSepara.'ROM'.$cSepara.'Indigena'.$cSepara.'Victima desplazado'.
-$cSepara.'Victima ACR'.$cSepara.'Funcionario INPEC'.$cSepara.'Recluso INPEC'.$cSepara.'Tiempo de condena'.$cSepara.'Centro de reclusión'.$cSepara.'Sensorial'.$cSepara.'Fisica'.$cSepara.'Cognitiva'.$cSepara.'Ajustes razonables'.$cSepara.'';
+.'Afrocolombiano'.$cSepara.'Otra comunidad negra'.$cSepara.'ROM'.$cSepara.'Indigena'.$cSepara.'Victima desplazado'.$cSepara
+.'Victima ACR'.$cSepara.'Funcionario INPEC'.$cSepara.'Recluso INPEC'.$cSepara.'Tiempo de condena'.$cSepara.'Centro de reclusión'.$cSepara.'Sensorial'.$cSepara.'Fisica'.$cSepara.'Cognitiva'.$cSepara.'Ajustes razonables'.$cSepara.'Ajustes razonables Otra Ayuda'.$cSepara
+.'Sensorial'.$cSepara.'Intelectual'.$cSepara.'Física'.$cSepara.'Mental Psicosocial'.$cSepara.'Sistémica'.$cSepara.'Sistémica Otro'.$cSepara.'Múltiple'.$cSepara.'Múltiple Otro'.$cSepara.'Talento Excepcional'.'';
 	$sTitulo2='Datos familiares';
 	for ($l=1;$l<=11;$l++){
 		$sTitulo2=$sTitulo2.$cSepara;
@@ -538,6 +540,15 @@ WHERE TB.cara01idperaca='.$_REQUEST['v3'].''.$sWhere.' AND TB.cara01completa="S"
 		$lin_cara01desertor=$cSepara;
 		$lin_cara01factorprincipaldesc=$cSepara;
 		$lin_cara01psico_puntaje=$cSepara;
+		$lin_cara01discv2sensorial=$cSepara;
+		$lin_cara02discv2intelectura=$cSepara;
+		$lin_cara02discv2fisica=$cSepara;
+		$lin_cara02discv2psico=$cSepara;
+		$lin_cara02discv2sistemica=$cSepara;
+		$lin_cara02discv2sistemicaotro=$cSepara;
+		$lin_cara02discv2multiple=$cSepara;
+		$lin_cara02discv2multipleotro=$cSepara;
+		$lin_cara02talentoexcepcional=$cSepara;
 			}
 		if (!$bPorTipo){
 			//Vamos a tener 7 bloques segun el tipo de caracterizacion.
@@ -604,7 +615,7 @@ WHERE TB.cara01idperaca='.$_REQUEST['v3'].''.$sWhere.' AND TB.cara01completa="S"
 				}
 			$lin_cara01estcivil=$cSepara.utf8_decode($acara01estcivil['"'.$i_cara01estcivil.'"']);
 			$lin_cara01nomcontacto=$cSepara.str_replace($cSepara, $cComplementa, utf8_decode($fila['cara01nomcontacto']));
-			$lin_cara01parentezcocontacto=$cSepara.str_replace($cSepara, $cComplementa, utf8_decode($fila['cara01parentezcocontacto']));
+			$lin_cara01parentezcocontacto=$cSepara.str_replace($cSepara, $cComplementa, cadena_letrasynumeros(utf8_decode($fila['cara01parentezcocontacto'])));
 			//$lin_cara01celcontacto=$cSepara.str_replace($cSepara, $cComplementa, utf8_decode($fila['cara01celcontacto']));
 			//$lin_cara01correocontacto=$cSepara.str_replace($cSepara, $cComplementa, utf8_decode($fila['cara01correocontacto']));
 			$i_cara01idzona=$fila['cara01idzona'];
@@ -698,6 +709,41 @@ WHERE TB.cara01idperaca='.$_REQUEST['v3'].''.$sWhere.' AND TB.cara01completa="S"
 			if (isset($acara01discfisica[$fila['cara01discfisica']])!=0){$lin_cara01discfisica=$cSepara.$acara01discfisica[$fila['cara01discfisica']];}
 			$lin_cara01disccognitiva=$cSepara.$fila['cara01disccognitiva'];
 			if (isset($acara01disccognitiva[$fila['cara01disccognitiva']])!=0){$lin_cara01disccognitiva=$cSepara.$acara01disccognitiva[$fila['cara01disccognitiva']];}
+            if($fila['cara01discversion']==1){
+                $acara01discv2=array($fila['cara01discv2sensorial'],$fila['cara02discv2intelectura'],$fila['cara02discv2fisica'],$fila['cara02discv2psico']);
+                foreach($acara01discv2 as $i_id){
+                    if (isset($acara37discapacidades[$i_id])==0){
+                        $sSQL='SELECT cara37nombre FROM cara37discapacidades WHERE cara37id='.$i_id.'';
+                        $tablae=$objDB->ejecutasql($sSQL);
+                        if ($objDB->nf($tablae)>0){
+                            $filae=$objDB->sf($tablae);
+                            $acara37discapacidades[$i_id]=str_replace($cSepara, $cComplementa, $filae['cara37nombre']);
+                            }else{
+                            $acara37discapacidades[$i_id]='';
+                            }
+                        }
+                    }
+                $lin_cara01discv2sensorial=$cSepara.utf8_decode($acara37discapacidades[$fila['cara01discv2sensorial']]);
+                $lin_cara02discv2intelectura=$cSepara.utf8_decode($acara37discapacidades[$fila['cara02discv2intelectura']]);
+                $lin_cara02discv2fisica=$cSepara.utf8_decode($acara37discapacidades[$fila['cara02discv2fisica']]);
+                $lin_cara02discv2psico=$cSepara.utf8_decode($acara37discapacidades[$fila['cara02discv2psico']]);
+                $lin_cara02discv2sistemica=$cSepara.$fila['cara02discv2sistemica'];
+                $lin_cara02discv2sistemicaotro=$cSepara.str_replace($cSepara, $cComplementa, cadena_letrasynumeros(utf8_decode($fila['cara02discv2sistemicaotro']), ' '));
+                $lin_cara02discv2multiple=$cSepara.$fila['cara02discv2multiple'];
+                $lin_cara02discv2multipleotro=$cSepara.str_replace($cSepara, $cComplementa, cadena_letrasynumeros(utf8_decode($fila['cara02discv2multipleotro']), ' '));
+                $i_cara02talentoexcepcional=$fila['cara02talentoexcepcional'];
+				if (isset($acara02talentoexcepcional[$i_cara02talentoexcepcional])==0){
+					$sSQL='SELECT cara38nombre FROM cara38talentos WHERE cara38id='.$i_cara02talentoexcepcional.'';
+					$tablae=$objDB->ejecutasql($sSQL);
+					if ($objDB->nf($tablae)>0){
+						$filae=$objDB->sf($tablae);
+                        $acara02talentoexcepcional[$i_cara02talentoexcepcional]=str_replace($cSepara, $cComplementa, $filae['cara38nombre']);
+						}else{
+                        $acara02talentoexcepcional[$i_cara02talentoexcepcional]='';
+						}
+					}
+				$lin_cara02talentoexcepcional=$cSepara.utf8_decode($acara02talentoexcepcional[$i_cara02talentoexcepcional]);
+                }
 			$bEntra=true;
 			if ($fila['cara01perayuda']==-1){
 				$bEntra=false;
@@ -1131,7 +1177,7 @@ WHERE TB.cara01idperaca='.$_REQUEST['v3'].''.$sWhere.' AND TB.cara01completa="S"
 .$lin_cara01sexo.$lin_cara01pais.$lin_cara01depto.$lin_cara01ciudad.$lin_cara01direccion.$lin_cara01estrato.$lin_cara01zonares.$lin_cara01estcivil.$lin_cara01nomcontacto.$lin_cara01parentezcocontacto
 .$lin_cara01idzona.$lin_cara01idcead.$lin_cara01idescuela.$lin_cara01idprograma.$lin_cara01matconvenio.$lin_cara01raizal.$lin_cara01palenquero
 .$lin_cara01afrocolombiano.$lin_cara01otracomunnegras.$lin_cara01rom.$lin_cara01indigenas.$lin_cara01victimadesplazado.$lin_cara01victimaacr.$lin_cara01inpecfuncionario.$lin_cara01inpecrecluso.$lin_cara01inpectiempocondena.$lin_cara01centroreclusion.$lin_cara01discsensorial
-.$lin_cara01discfisica.$lin_cara01disccognitiva.$lin_cara01perayuda.$lin_cara01perotraayuda;
+.$lin_cara01discfisica.$lin_cara01disccognitiva.$lin_cara01perayuda.$lin_cara01perotraayuda.$lin_cara01discv2sensorial.$lin_cara02discv2intelectura.$lin_cara02discv2fisica.$lin_cara02discv2psico.$lin_cara02discv2sistemica.$lin_cara02discv2sistemicaotro.$lin_cara02discv2multiple.$lin_cara02discv2multipleotro.$lin_cara02talentoexcepcional;
 		$sBloque2=''.$lin_cara01fam_tipovivienda.$lin_cara01fam_vivecon.$lin_cara01fam_numpersgrupofam.
 $lin_cara01fam_hijos.$lin_cara01fam_personasacargo.$lin_cara01fam_dependeecon.
 $lin_cara01fam_escolaridadpadre.$lin_cara01fam_escolaridadmadre.$lin_cara01fam_numhermanos.
@@ -1166,6 +1212,13 @@ $lin_cara01bien_amb_car.$lin_cara01bien_amb_info;
 .$lin_cara01bien_amb_temas;
 		$sBloque9=''.$lin_cara01niveldigital.$lin_cara01nivellectura.$lin_cara01nivelrazona.$lin_cara01nivelingles
 .$lin_cara01idconsejero.$lin_cara01fechainicio;
+
+
+
+
+
+
+
 		*/
 		$sBloqueConsejero='';
 		if ($bConConsejero){
