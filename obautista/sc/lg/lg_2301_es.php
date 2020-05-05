@@ -522,4 +522,7 @@ $ETI['msg_nivel']='Nivel';
 $ETI['msg_infocontacto']='Ingrese los datos de una persona a la que podamos contactar desde la universidad en caso de que sea necesario:';
 $ETI['msg_grupospobla']='Pertenece a alguno de estos grupos de poblaci&oacute;n:';
 $ETI['msg_discapacidades']='Presenta alguno de los siguiente tipos de discapacidades:';
+
+$acara02discv2sistemica=array('No', 'Si');
+$acara02discv2multiple=array('No', 'Si');
 ?>

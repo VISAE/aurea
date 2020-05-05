@@ -334,4 +334,7 @@ $ERR['cara01nivelrazona']='&Eacute; necess&aacute;rio o dado '.$ETI['cara01nivel
 $ERR['cara01nivelingles']='&Eacute; necess&aacute;rio o dado '.$ETI['cara01nivelingles'];
 $ERR['cara01idconsejero']='&Eacute; necess&aacute;rio o dado '.$ETI['cara01idconsejero'];
 $ERR['cara01fechainicio']='&Eacute; necess&aacute;rio o dado '.$ETI['cara01fechainicio'];
+
+$acara02discv2sistemica=array('No', 'Si');
+$acara02discv2multiple=array('No', 'Si');
 ?>

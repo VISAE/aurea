@@ -172,7 +172,7 @@ if ($bEntra){
 .'Zona'.$cSepara.'CEAD'.$cSepara.'Escuela'.$cSepara.'Programa'.$cSepara.'Matricula en convenio'.$cSepara.'Raizal'.$cSepara.'Palenquero'.$cSepara
 .'Afrocolombiano'.$cSepara.'Otra comunidad negra'.$cSepara.'ROM'.$cSepara.'Indigena'.$cSepara.'Victima desplazado'.$cSepara
 .'Victima ACR'.$cSepara.'Funcionario INPEC'.$cSepara.'Recluso INPEC'.$cSepara.'Tiempo de condena'.$cSepara.'Centro de reclusión'.$cSepara.'Sensorial'.$cSepara.'Fisica'.$cSepara.'Cognitiva'.$cSepara.'Ajustes razonables'.$cSepara.'Ajustes razonables Otra Ayuda'.$cSepara
-.'Sensorial'.$cSepara.'Intelectual'.$cSepara.'Física'.$cSepara.'Mental Psicosocial'.$cSepara.'Sistémica'.$cSepara.'Sistémica Otro'.$cSepara.'Múltiple'.$cSepara.'Múltiple Otro'.$cSepara.'Talento Excepcional'.'';
+.'Sensorial v2'.$cSepara.'Intelectual'.$cSepara.'Física v2'.$cSepara.'Mental Psicosocial'.$cSepara.'Sistémica'.$cSepara.'Sistémica Otro'.$cSepara.'Múltiple'.$cSepara.'Múltiple Otro'.$cSepara.'Talento Excepcional'.'';
 	$sTitulo2='Datos familiares';
 	for ($l=1;$l<=11;$l++){
 		$sTitulo2=$sTitulo2.$cSepara;
@@ -727,9 +727,9 @@ WHERE TB.cara01idperaca='.$_REQUEST['v3'].''.$sWhere.' AND TB.cara01completa="S"
                 $lin_cara02discv2intelectura=$cSepara.utf8_decode($acara37discapacidades[$fila['cara02discv2intelectura']]);
                 $lin_cara02discv2fisica=$cSepara.utf8_decode($acara37discapacidades[$fila['cara02discv2fisica']]);
                 $lin_cara02discv2psico=$cSepara.utf8_decode($acara37discapacidades[$fila['cara02discv2psico']]);
-                $lin_cara02discv2sistemica=$cSepara.$fila['cara02discv2sistemica'];
+                $lin_cara02discv2sistemica=$cSepara.utf8_decode($acara02discv2sistemica[$fila['cara02discv2sistemica']]);
                 $lin_cara02discv2sistemicaotro=$cSepara.str_replace($cSepara, $cComplementa, cadena_letrasynumeros(utf8_decode($fila['cara02discv2sistemicaotro']), ' '));
-                $lin_cara02discv2multiple=$cSepara.$fila['cara02discv2multiple'];
+                $lin_cara02discv2multiple=$cSepara.utf8_decode($acara02discv2multiple[$fila['cara02discv2multiple']]);
                 $lin_cara02discv2multipleotro=$cSepara.str_replace($cSepara, $cComplementa, cadena_letrasynumeros(utf8_decode($fila['cara02discv2multipleotro']), ' '));
                 $i_cara02talentoexcepcional=$fila['cara02talentoexcepcional'];
 				if (isset($acara02talentoexcepcional[$i_cara02talentoexcepcional])==0){

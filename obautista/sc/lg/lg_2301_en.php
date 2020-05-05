@@ -334,4 +334,7 @@ $ERR['cara01nivelrazona']='Is necessary the data '.$ETI['cara01nivelrazona'];
 $ERR['cara01nivelingles']='Is necessary the data '.$ETI['cara01nivelingles'];
 $ERR['cara01idconsejero']='Is necessary the data '.$ETI['cara01idconsejero'];
 $ERR['cara01fechainicio']='Is necessary the data '.$ETI['cara01fechainicio'];
+
+$acara02discv2sistemica=array('No', 'Si');
+$acara02discv2multiple=array('No', 'Si');
 ?>
