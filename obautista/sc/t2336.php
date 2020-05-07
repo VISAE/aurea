@@ -325,16 +325,16 @@ if ($bEntra){
 		}
 	$mensajes_todas=$APP->rutacomun.'lg/lg_todas_'.$_SESSION['unad_idioma'].'.php';
 	if (!file_exists($mensajes_todas)){$mensajes_todas=$APP->rutacomun.'lg/lg_todas_es.php';}
-	$mensajes_2333='lg/lg_2333_'.$_SESSION['unad_idioma'].'.php';
-	if (!file_exists($mensajes_2333)){$mensajes_2333='lg/lg_2333_es.php';}
+	$mensajes_2336='lg/lg_2336_'.$_SESSION['unad_idioma'].'.php';
+	if (!file_exists($mensajes_2336)){$mensajes_2336='lg/lg_2336_es.php';}
 	require $mensajes_todas;
-	require $mensajes_2333;
+	require $mensajes_2336;
 	$objDB=new clsdbadmin($APP->dbhost, $APP->dbuser, $APP->dbpass, $APP->dbname);
 	if ($APP->dbpuerto!=''){$objDB->dbPuerto=$APP->dbpuerto;}
 	$sPath=dirname(__FILE__);
 	$sSeparador=archivos_separador($sPath);
 	$sPath=archivos_rutaservidor($sPath,$sSeparador);
-	$sNombrePlano='t2333.csv';
+	$sNombrePlano='t2336.csv';
 	$sTituloRpt='Consolidado_acompanamentos';
 	$sNombrePlanoFinal=$sTituloRpt.'.csv';
 	$objplano=new clsPlanos($sPath.$sNombrePlano);
