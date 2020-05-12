@@ -375,11 +375,11 @@ if ($bEntra){
 		$sTitulos1=$sTitulos1.$cSepara;
 		}
 	$sTitulos2='Acompañamiento inicial';
-	for ($l=1;$l<=36;$l++){
+	for ($l=1;$l<=37;$l++){
 		$sTitulos2=$sTitulos2.$cSepara;
 		}
 	$sTitulos3='Acompañamiento Intermedio';
-	for ($l=1;$l<=26;$l++){
+	for ($l=1;$l<=27;$l++){
 		$sTitulos3=$sTitulos3.$cSepara;
 		}
 	$sTitulos4='Acompañamiento Final';
@@ -388,8 +388,8 @@ if ($bEntra){
 		}
 	$sTitulos9='Riesgo'.$cSepara.'Consejero';
 	$sBloque1='Periodo encuesta'.$cSepara.'Tipo doc'.$cSepara.'Documento'.$cSepara.'Nombres'.$cSepara.'Zona'.$cSepara.'Centro'.$cSepara.'Escuela'.$cSepara.'Programa';
-	$sBloque2=$cSepara.'Num'.$cSepara.'Fecha'.$cSepara.'Estado'.$cSepara.'Asiste a Induccion'.$cSepara.'Asiste a Inmersion CV'.$cSepara.'Codigo de la Catedra'.$cSepara.'Situacion de Riesgo'.$cSepara.'Acciones Realizadas'.$cSepara.'Resultados'.$cSepara.'Factor socio-demográfico'.$cSepara.'Factor psicosocial'.$cSepara.'Factor académico'.$cSepara.'Factor socio económico'.$cSepara.'Factores externos'.$cSepara.'Factores internos'.$cSepara.'Nivel De Riesgo Prueba De Caracterización'.$cSepara.'Acciones Factor socio-demográfico'.$cSepara.'Acciones Factor psicosocial'.$cSepara.'Acciones Factor académico'.$cSepara.'Acciones Factor socio económico'.$cSepara.'Competencias Digitales Basicas'.$cSepara.'Competencias Cuantitativas'.$cSepara.'Competencias Lecto-escritora'.$cSepara.'Competencias Ingles'.$cSepara.'Nivel De Riesgo Competencias Basicas'.$cSepara.'Participacion En Taller De Competencias Digitales Basicas'.$cSepara.'Participacion En Taller De Competencias Cuantitativas'.$cSepara.'Participacion En Taller De Competencias Lecto-escritora'.$cSepara.'Participacion En Taller De Competencias Ingles'.$cSepara.'Riesgo Acumulado Momento Inicial'.$cSepara.'Forma de contacto'.$cSepara.'Observaciones'.$cSepara.'Aplaza'.$cSepara.'Se retira'.$cSepara.'Factor principal de deserción'.$cSepara;
-	$sBloque3=$cSepara.'Num'.$cSepara.'Fecha'.$cSepara.'Estado'.$cSepara.'Riesgos en catedra'.$cSepara.'Acciones realizadas'.$cSepara.'Resultados'.$cSepara.'Seguimiento Alerta Anterior'.$cSepara.'No. De cursos matriculados'.$cSepara.'No. De cursos sin ingresos'.$cSepara.'No. de Cursos parcialmente reprobados'.$cSepara.'% de cursos con riesgo'.$cSepara.'Comunicación con docente'.$cSepara.'Conducto regular'.$cSepara.'Revisión de calificaciones'.$cSepara.'Mensaje felicitación'.$cSepara.'Comunicación con e-monitor'.$cSepara.'Direccionamiento chat VISAE'.$cSepara.'Contacto con consejero del centro'.$cSepara.'Nivel de Riesgo'.$cSepara.'Medio de contacto efectivo'.$cSepara.'Observaciones'.$cSepara.'Aplaza'.$cSepara.'Se retira'.$cSepara.'Factor principal de deserción'.$cSepara.'Riesgo Acumulado Momento Intermedio'.$cSepara;
+	$sBloque2=$cSepara.'Num'.$cSepara.'Fecha'.$cSepara.'Estado'.$cSepara.'Asiste a Induccion'.$cSepara.'Asiste a Inmersion CV'.$cSepara.'Codigo de la Catedra'.$cSepara.'Situacion de Riesgo'.$cSepara.'Acciones Realizadas'.$cSepara.'Resultados'.$cSepara.'Nivel de Riesgo en Catedra'.$cSepara.'Factor socio-demográfico'.$cSepara.'Factor psicosocial'.$cSepara.'Factor académico'.$cSepara.'Factor socio económico'.$cSepara.'Factores externos'.$cSepara.'Factores internos'.$cSepara.'Nivel De Riesgo Prueba De Caracterización'.$cSepara.'Acciones Factor socio-demográfico'.$cSepara.'Acciones Factor psicosocial'.$cSepara.'Acciones Factor académico'.$cSepara.'Acciones Factor socio económico'.$cSepara.'Competencias Digitales Basicas'.$cSepara.'Competencias Cuantitativas'.$cSepara.'Competencias Lecto-escritora'.$cSepara.'Competencias Ingles'.$cSepara.'Nivel De Riesgo Competencias Basicas'.$cSepara.'Participacion En Taller De Competencias Digitales Basicas'.$cSepara.'Participacion En Taller De Competencias Cuantitativas'.$cSepara.'Participacion En Taller De Competencias Lecto-escritora'.$cSepara.'Participacion En Taller De Competencias Ingles'.$cSepara.'Riesgo Acumulado Momento Inicial'.$cSepara.'Forma de contacto'.$cSepara.'Observaciones'.$cSepara.'Aplaza'.$cSepara.'Se retira'.$cSepara.'Factor principal de deserción'.$cSepara;
+	$sBloque3=$cSepara.'Num'.$cSepara.'Fecha'.$cSepara.'Estado'.$cSepara.'Riesgos en catedra'.$cSepara.'Acciones realizadas'.$cSepara.'Resultados'.$cSepara.'Nivel de Riesgo en Catedra'.$cSepara.'Seguimiento Alerta Anterior'.$cSepara.'No. De cursos matriculados'.$cSepara.'No. De cursos sin ingresos'.$cSepara.'No. de Cursos parcialmente reprobados'.$cSepara.'% de cursos con riesgo'.$cSepara.'Comunicación con docente'.$cSepara.'Conducto regular'.$cSepara.'Revisión de calificaciones'.$cSepara.'Mensaje felicitación'.$cSepara.'Comunicación con e-monitor'.$cSepara.'Direccionamiento chat VISAE'.$cSepara.'Contacto con consejero del centro'.$cSepara.'Nivel de Riesgo'.$cSepara.'Medio de contacto efectivo'.$cSepara.'Observaciones'.$cSepara.'Aplaza'.$cSepara.'Se retira'.$cSepara.'Factor principal de deserción'.$cSepara.'Riesgo Acumulado Momento Intermedio'.$cSepara;
 	$sBloque4=$cSepara.'Num'.$cSepara.'Fecha'.$cSepara.'Estado'.$cSepara.'Aprobacion Catedra Unadista'.$cSepara.'Numero De Cursos Reprobados'.$cSepara.'% De Cursos Reprobados'.$cSepara.'Aplaza'.$cSepara.'Se Retira'.$cSepara.'Permanece'.$cSepara.'Factor Principal De Permanencia'.$cSepara.'Factor Principal De Desercion'.$cSepara.'Medio De Contacto Efectivo'.$cSepara.'Observaciones'.$cSepara;
 	$sBloque9=$cSepara.'Riesgo'.$cSepara.'Consejero';
 	$objplano->AdicionarLinea(utf8_decode($sTitulos1.$sTitulos2.$sTitulos3.$sTitulos4.$sTitulos9));
@@ -425,6 +425,7 @@ WHERE TB.cara01idperiodoacompana='.$_REQUEST['v3'].''.$sWhere.'';
         $lin_cara23catedra_avance=$cSepara;
         $lin_cara23catedra_acciones=$cSepara;
         $lin_cara23catedra_resultados=$cSepara;
+        $lin_cara23catedra_criterio=$cSepara;
         $lin_cara01r1=$cSepara;
         $lin_cara01r2=$cSepara;
         $lin_cara01r3=$cSepara;
@@ -635,6 +636,7 @@ WHERE TB.cara01idperiodoacompana='.$_REQUEST['v3'].''.$sWhere.'';
 		$lin_cara23catedra_avance=$cSepara.utf8_decode($acara23catedra_avance[$i_cara23catedra_avance]);
 		$lin_cara23catedra_acciones=$cSepara.utf8_decode($acara23catedra_acciones[$i_cara23catedra_acciones]);
 		$lin_cara23catedra_resultados=$cSepara.utf8_decode($acara23catedra_resultados[$i_cara23catedra_resultados]);
+		$lin_cara23catedra_criterio=$cSepara.f233_NombreRiesgo($fila23['cara23catedra_criterio']);
 		list($lin_cara01r1,$lin_cara01r2,$lin_cara01r3,$lin_cara01r4)=f233_FactorRiesgo($fila, $ETI, $cSepara);
 		$lin_cara23aler_externo=$cSepara.str_replace($cSepara, $cComplementa, cadena_letrasynumeros(utf8_decode($fila23['cara23aler_externo']), ' '));
 		$lin_cara23aler_interno=$cSepara.str_replace($cSepara, $cComplementa, cadena_letrasynumeros(utf8_decode($fila23['cara23aler_interno']), ' '));
@@ -655,7 +657,7 @@ WHERE TB.cara01idperiodoacompana='.$_REQUEST['v3'].''.$sWhere.'';
 		$lin_cara23factorriesgo=$cSepara.f233_NombreRiesgo($fila23['cara23factorriesgo']);
 		$lin_cara01factorprincipaldesc=$cSepara.utf8_decode($acara01factorprincipaldesc[$i_cara01factorprincipaldesc]);
 				$sLinea=$cSepara.$iNS1.$sLinea.$lin_cara23asisteinduccion.$lin_cara23asisteinmersioncv.$lin_cara01idcursocatedra.
-                    $lin_cara23catedra_avance.$lin_cara23catedra_acciones.$lin_cara23catedra_resultados.$lin_cara01r1.$lin_cara01r2.$lin_cara01r3.
+                    $lin_cara23catedra_avance.$lin_cara23catedra_acciones.$lin_cara23catedra_resultados.$lin_cara23catedra_criterio.$lin_cara01r1.$lin_cara01r2.$lin_cara01r3.
                     $lin_cara01r4.$lin_cara23aler_externo.$lin_cara23aler_interno.$lin_cara23aler_criterio.
                     $lin_cara23aler_sociodem.$lin_cara23aler_psico.$lin_cara23aler_academ.$lin_cara23aler_econom.$lin_cara23comp_digital.
                     $lin_cara23comp_cuanti.$lin_cara23comp_lectora.$lin_cara23comp_ingles.$lin_cara23comp_criterio.$lin_cara23nivela_digital.
@@ -669,6 +671,7 @@ WHERE TB.cara01idperiodoacompana='.$_REQUEST['v3'].''.$sWhere.'';
 		$lin_cara23catedra_avance=$cSepara.utf8_decode($acara23catedra_avance[$i_cara23catedra_avance]);
 		$lin_cara23catedra_acciones=$cSepara.utf8_decode($acara23catedra_acciones[$i_cara23catedra_acciones]);
 		$lin_cara23catedra_resultados=$cSepara.utf8_decode($acara23catedra_resultados[$i_cara23catedra_resultados]);
+		$lin_cara23catedra_criterio=$cSepara.f233_NombreRiesgo($fila23['cara23catedra_criterio']);
 		$lin_cara23catedra_segprev=$cSepara.str_replace($cSepara, $cComplementa, cadena_letrasynumeros(utf8_decode($fila23['cara23catedra_segprev']), ' '));
 		$lin_cara23cursos_total=$cSepara.$fila23['cara23cursos_total'];
 		$lin_cara23cursos_siningre=$cSepara.$fila23['cara23cursos_siningre'];
@@ -688,7 +691,7 @@ WHERE TB.cara01idperiodoacompana='.$_REQUEST['v3'].''.$sWhere.'';
 		$lin_cara23seretira=$cSepara.f233_VacioNoSi($fila23['cara23seretira']);
 		$lin_cara01factorprincipaldesc=$cSepara.utf8_decode($acara01factorprincipaldesc[$i_cara01factorprincipaldesc]);
 		$lin_cara23factorriesgo=$cSepara.f233_NombreRiesgo($fila23['cara23factorriesgo']);
-				$sLinea=$cSepara.$iNS2.$sLinea.$lin_cara23catedra_avance.$lin_cara23catedra_acciones.$lin_cara23catedra_resultados.$lin_cara23catedra_segprev.
+				$sLinea=$cSepara.$iNS2.$sLinea.$lin_cara23catedra_avance.$lin_cara23catedra_acciones.$lin_cara23catedra_resultados.$lin_cara23catedra_criterio.$lin_cara23catedra_segprev.
                     $lin_cara23cursos_total.$lin_cara23cursos_siningre.$lin_cara23cursos_menor200.$lin_cara23cursos_porcperdida.$lin_cara23cursos_ac1.
                     $lin_cara23cursos_ac2.$lin_cara23cursos_ac3.$lin_cara23cursos_ac4.$lin_cara23cursos_ac5.$lin_cara23cursos_ac6.$lin_cara23cursos_ac7.
                     $lin_cara23cursos_criterio.$lin_cara23contacto_forma.$lin_cara23contacto_observa.$lin_cara23aplaza.$lin_cara23seretira.
@@ -733,8 +736,8 @@ WHERE TB.cara01idperiodoacompana='.$_REQUEST['v3'].''.$sWhere.'';
 		for($k=1;$k<=$iFilas;$k++){
 			$sEtiqueta='No registra';
 			if ($k>1){$sEtiqueta='NA';}
-			$sBloque2=$cSepara.$sEtiqueta.$sNada.$cSepara.$cSepara.$cSepara.$cSepara.$cSepara.$cSepara.$cSepara.$cSepara.$cSepara.$cSepara.$cSepara.$cSepara.$cSepara.$cSepara.$cSepara.$cSepara.$cSepara.$cSepara.$cSepara.$cSepara.$cSepara.$cSepara.$cSepara.$cSepara.$cSepara.$cSepara.$cSepara.$cSepara.$cSepara.$cSepara.$cSepara;
-			$sBloque3=$cSepara.$sEtiqueta.$sNada.$cSepara.$cSepara.$cSepara.$cSepara.$cSepara.$cSepara.$cSepara.$cSepara.$cSepara.$cSepara.$cSepara.$cSepara.$cSepara.$cSepara.$cSepara.$cSepara.$cSepara.$cSepara.$cSepara.$cSepara.$cSepara;
+			$sBloque2=$cSepara.$sEtiqueta.$sNada.$cSepara.$cSepara.$cSepara.$cSepara.$cSepara.$cSepara.$cSepara.$cSepara.$cSepara.$cSepara.$cSepara.$cSepara.$cSepara.$cSepara.$cSepara.$cSepara.$cSepara.$cSepara.$cSepara.$cSepara.$cSepara.$cSepara.$cSepara.$cSepara.$cSepara.$cSepara.$cSepara.$cSepara.$cSepara.$cSepara.$cSepara.$cSepara;
+			$sBloque3=$cSepara.$sEtiqueta.$sNada.$cSepara.$cSepara.$cSepara.$cSepara.$cSepara.$cSepara.$cSepara.$cSepara.$cSepara.$cSepara.$cSepara.$cSepara.$cSepara.$cSepara.$cSepara.$cSepara.$cSepara.$cSepara.$cSepara.$cSepara.$cSepara.$cSepara;
 			$sBloque4=$cSepara.$sEtiqueta.$sNada.$cSepara.$cSepara.$cSepara.$cSepara.$cSepara.$cSepara.$cSepara.$cSepara.$cSepara;
 			if ($iNS1>=$k){$sBloque2=$aNS1[$k];}
 			if ($iNS2>=$k){$sBloque3=$aNS2[$k];}
