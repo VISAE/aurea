@@ -182,7 +182,7 @@ if ($bEntra){
 	for ($l=1;$l<=27;$l++){
 		$sSubTitulo='';
 		if ($l==11){$sSubTitulo=utf8_decode('Con cuáles equipos electrónicos cuenta para acceder al campus virtual de la UNAD');}
-		if ($l==22){$sSubTitulo=utf8_decode('La información que consulta, la aprende mejor con');}
+		if ($l==22){$sSubTitulo=utf8_decode('La información que consulta la aprende mejor con');}
 		$sTitulo3=$sTitulo3.$cSepara.$sSubTitulo;
 		}
 	$sBloque3=''.$cSepara.utf8_decode('Tipo de colegio donde terminó su bachillerato'.$cSepara.'La modalidad en la que obtuvo su grado de bachiller es'.$cSepara.'Usted ha realizado otros estudios antes de llegar a la UNAD'
@@ -190,10 +190,10 @@ if ($bEntra){
 .$cSepara.'Usted ha tomado cursos virtuales'.$cSepara.'Cuál es la principal razón para elegir el programa académico en el que se matriculó'.$cSepara.'El programa en el que se matriculó representa su primera opción'.$cSepara.'Por favor indique el programa que le hubiera gustado estudiar.'
 .$cSepara.'Cuál es la principal razón para estudiar en la UNAD'.$cSepara.'Computador de escritorio'.$cSepara.'Computador portátil'
 .$cSepara.'Tableta'.$cSepara.'Teléfono inteligente'.$cSepara.'El lugar donde reside cuenta con servicio de energía eléctrica'
-.$cSepara.'El lugar donde reside cuenta con servicio de Internet'.$cSepara.'Ha usado plataformas virtuales con anterioridad'.$cSepara.'Maneja paquetes ofimáticos como Office (Word, Excel, Powerpoint) o similares'
+.$cSepara.'El lugar donde reside cuenta con servicio de Internet'.$cSepara.'Ha usado plataformas virtuales con anterioridad'.$cSepara.'Maneja paquetes ofimáticos como Office (Word Excel Powerpoint) o similares'
 .$cSepara.'Ha participado en foros virtuales'.$cSepara.'Sabe convertir archivos digitales de un formato a otro'.$cSepara.'Su uso del correo electrónico es'
 .$cSepara.'Texto'.$cSepara.'Vídeo'.$cSepara.'Organizadores gráficos'
-.$cSepara.'Animaciones'.$cSepara.'Cuál es el medio que más utiliza para comunicarse con amigos, conocidos, familiares o docentes a través de internet');
+.$cSepara.'Animaciones'.$cSepara.'Cuál es el medio que más utiliza para comunicarse con amigos. conocidos. familiares o docentes a través de internet');
 	$sTitulo4='Datos laborales';
 	for ($l=1;$l<=12;$l++){
 		$sTitulo4=$sTitulo4.$cSepara;
@@ -220,7 +220,7 @@ $cSepara.'Artes marciales'.$cSepara.'Tenis de mesa'.$cSepara.'Ajedrez'.
 $cSepara.'Juegos autóctonos'.$cSepara.'Está interesado en hacer parte de un grupo representativo en deportes'.$cSepara.'Especifique a cuál grupo deportivo'.$cSepara.'Teatro'.
 $cSepara.'Danza'.$cSepara.'Música'.$cSepara.'Circo'.
 $cSepara.'Artes plásticas'.$cSepara.'Cuentería'.$cSepara.'Está interesado en hacer parte de un grupo representativo en artes y cultura'.$cSepara.'Seleccione en cuál'.
-$cSepara.'Sí usted interpreta un instrumento musical por favor selecciónelo'.$cSepara.'En escala de 1 a 10 su dominio del instrumento musical es'.$cSepara.'Ritmos modernos (Salsa, Bachata)'.
+$cSepara.'Sí usted interpreta un instrumento musical por favor selecciónelo'.$cSepara.'En escala de 1 a 10 su dominio del instrumento musical es'.$cSepara.'Ritmos modernos (Salsa - Bachata)'.
 $cSepara.'Danza clásica'.$cSepara.'Danza contemporánea'.$cSepara.'Danza folklorica colombiana'
 .$cSepara.'Cuenta Ud. con una empresa que de respuesta a una necesidad social en su comunidad'.$cSepara.'Qué necesidad cubre'.$cSepara.'En qué temas de emprendimiento le gustaría recibir capacitación'
 .$cSepara.'Cuáles cree que son las causas más frecuentes del estrés'.$cSepara.'A través de que estrategias le gustaría conocer el autocuidado'.$cSepara.'Qué temas le gustaría abordar en la UNAD para su crecimiento personal'
@@ -230,9 +230,9 @@ $cSepara.'Danza clásica'.$cSepara.'Danza contemporánea'.$cSepara.'Danza folklo
 	for ($l=1;$l<=11;$l++){
 		$sTitulo6=$sTitulo6.$cSepara;
 		}
-	$sBloque6=''.$cSepara.utf8_decode('Le cuesta expresar sus emociones con palabras'.$cSepara.'Cómo reacciona ante un cambio imprevisto aparentemente negativo'.$cSepara.'Cuando está estresado o tienes varias preocupaciones, ¿cómo lo maneja'
-.$cSepara.'Cuando tiene poco tiempo para el desarrollo de sus actividades académicas, laborales y familiares, ¿cómo lo asume?'.$cSepara.'Con respecto a su actitud frente la vida, ¿cómo se describiría?'.$cSepara.'Qué hace cuando presenta alguna dificultad o duda frente a una tarea asignada'
-.$cSepara.'Cuando está afrontando una dificultad personal, laboral, emocional o familiar, ¿cuál es su actitud?'.$cSepara.'En términos generales, ¿está satisfecho con quién es?'.$cSepara.'Cómo actúa frente a una discusión'
+	$sBloque6=''.$cSepara.utf8_decode('Le cuesta expresar sus emociones con palabras'.$cSepara.'Cómo reacciona ante un cambio imprevisto aparentemente negativo'.$cSepara.'Cuando está estresado o tienes varias preocupaciones ¿cómo lo maneja'
+.$cSepara.'Cuando tiene poco tiempo para el desarrollo de sus actividades académicas laborales y familiares ¿cómo lo asume?'.$cSepara.'Con respecto a su actitud frente la vida ¿cómo se describiría?'.$cSepara.'Qué hace cuando presenta alguna dificultad o duda frente a una tarea asignada'
+.$cSepara.'Cuando está afrontando una dificultad personal laboral emocional o familiar ¿cuál es su actitud?'.$cSepara.'En términos generales ¿está satisfecho con quién es?'.$cSepara.'Cómo actúa frente a una discusión'
 .$cSepara.'Cómo reacciona ante las siguientes situaciones sociales'.$cSepara.'Puntaje');
 	$sTitulo7='Competencias';
 	for ($l=1;$l<=7;$l++){
@@ -584,8 +584,30 @@ WHERE TB.cara01idperaca='.$_REQUEST['v3'].''.$sWhere.' AND TB.cara01completa="S"
 			$lin_cara01fechaencuesta=$cSepara.$fila['cara01fechaencuesta'];
 			$lin_cara01agnos=$cSepara.$fila['cara01agnos'];
 			$lin_cara01sexo=$cSepara.$fila['cara01sexo'];
-			$lin_cara01pais=$cSepara.$fila['cara01pais'];
-			$lin_cara01depto=$cSepara.$fila['cara01depto'];
+			$i_cara01pais=$fila['cara01pais'];
+			if (isset($acara01pais['"'.$i_cara01pais.'"'])==0){
+				$sSQL='SELECT unad18nombre FROM unad18pais WHERE unad18codigo="'.$i_cara01pais.'"';
+				$tablae=$objDB->ejecutasql($sSQL);
+				if ($objDB->nf($tablae)>0){
+					$filae=$objDB->sf($tablae);
+					$acara01pais['"'.$i_cara01pais.'"']=str_replace($cSepara, $cComplementa, $filae['unad18nombre']);
+					}else{
+					$acara01pais['"'.$i_cara01pais.'"']='';
+					}
+				}
+			$lin_cara01pais=$cSepara.utf8_decode($acara01pais['"'.$i_cara01pais.'"']);
+			$i_cara01depto=$fila['cara01depto'];
+			if (isset($acara01depto['"'.$i_cara01depto.'"'])==0){
+				$sSQL='SELECT unad19nombre FROM unad19depto WHERE unad19codigo="'.$i_cara01depto.'"';
+				$tablae=$objDB->ejecutasql($sSQL);
+				if ($objDB->nf($tablae)>0){
+					$filae=$objDB->sf($tablae);
+					$acara01depto['"'.$i_cara01depto.'"']=str_replace($cSepara, $cComplementa, $filae['unad19nombre']);
+					}else{
+					$acara01depto['"'.$i_cara01depto.'"']='';
+					}
+				}
+			$lin_cara01depto=$cSepara.utf8_decode($acara01depto['"'.$i_cara01depto.'"']);
 			$i_cara01ciudad=$fila['cara01ciudad'];
 			if (isset($acara01ciudad['"'.$i_cara01ciudad.'"'])==0){
 				$sSQL='SELECT unad20nombre FROM unad20ciudad WHERE unad20codigo="'.$i_cara01ciudad.'"';
@@ -598,7 +620,7 @@ WHERE TB.cara01idperaca='.$_REQUEST['v3'].''.$sWhere.' AND TB.cara01completa="S"
 					}
 				}
 			$lin_cara01ciudad=$cSepara.utf8_decode($acara01ciudad['"'.$i_cara01ciudad.'"']);
-			$lin_cara01direccion=$cSepara.str_replace($cSepara, $cComplementa, utf8_decode($fila['cara01direccion']));
+			$lin_cara01direccion=$cSepara.str_replace($cSepara, $cComplementa, cadena_letrasynumeros(utf8_decode($fila['cara01direccion']), ' '));
 			$lin_cara01estrato=$cSepara.f2301_NomEstrado($fila['cara01estrato']);
 			if ($fila['cara01zonares']=='U'){$lin_cara01zonares=$cSepara.'Urbana';}
 			if ($fila['cara01zonares']=='R'){$lin_cara01zonares=$cSepara.'Rural';}
@@ -614,7 +636,7 @@ WHERE TB.cara01idperaca='.$_REQUEST['v3'].''.$sWhere.' AND TB.cara01completa="S"
 					}
 				}
 			$lin_cara01estcivil=$cSepara.utf8_decode($acara01estcivil['"'.$i_cara01estcivil.'"']);
-			$lin_cara01nomcontacto=$cSepara.str_replace($cSepara, $cComplementa, utf8_decode($fila['cara01nomcontacto']));
+			$lin_cara01nomcontacto=$cSepara.str_replace($cSepara, $cComplementa, cadena_letrasynumeros(utf8_decode($fila['cara01nomcontacto'])));
 			$lin_cara01parentezcocontacto=$cSepara.str_replace($cSepara, $cComplementa, cadena_letrasynumeros(utf8_decode($fila['cara01parentezcocontacto'])));
 			//$lin_cara01celcontacto=$cSepara.str_replace($cSepara, $cComplementa, utf8_decode($fila['cara01celcontacto']));
 			//$lin_cara01correocontacto=$cSepara.str_replace($cSepara, $cComplementa, utf8_decode($fila['cara01correocontacto']));
@@ -878,7 +900,7 @@ WHERE TB.cara01idperaca='.$_REQUEST['v3'].''.$sWhere.' AND TB.cara01completa="S"
 			$lin_cara01campus_aprendeanima=$cSepara.$fila['cara01campus_aprendeanima'];
 			$lin_cara01campus_mediocomunica=$cSepara.'['.$fila['cara01campus_mediocomunica'].']';
 			if (isset($acara01campus_mediocomunica[$fila['cara01campus_mediocomunica']])!=0){
-				$lin_cara01campus_mediocomunica=$cSepara.utf8_decode($acara01campus_mediocomunica[$fila['cara01campus_mediocomunica']]);
+				$lin_cara01campus_mediocomunica=$cSepara.str_replace($cSepara, $cComplementa, cadena_letrasynumeros(utf8_decode($acara01campus_mediocomunica[$fila['cara01campus_mediocomunica']]), ' '));
 				}
 			}
 		if ($aBloque[4]){
@@ -977,7 +999,7 @@ WHERE TB.cara01idperaca='.$_REQUEST['v3'].''.$sWhere.' AND TB.cara01completa="S"
 			$lin_cara01bien_ajedrez=$cSepara.$fila['cara01bien_ajedrez'];
 			$lin_cara01bien_juegosautoc=$cSepara.$fila['cara01bien_juegosautoc'];
 			$lin_cara01bien_interesrepdeporte=$cSepara.$fila['cara01bien_interesrepdeporte'];
-			$lin_cara01bien_deporteint=$cSepara.str_replace($cSepara, $cComplementa, utf8_decode($fila['cara01bien_deporteint']));
+			$lin_cara01bien_deporteint=$cSepara.str_replace($cSepara, $cComplementa, cadena_letrasynumeros(utf8_decode($fila['cara01bien_deporteint']), ' '));
 			$lin_cara01bien_teatro=$cSepara.$fila['cara01bien_teatro'];
 			$lin_cara01bien_danza=$cSepara.$fila['cara01bien_danza'];
 			$lin_cara01bien_musica=$cSepara.$fila['cara01bien_musica'];
@@ -985,7 +1007,7 @@ WHERE TB.cara01idperaca='.$_REQUEST['v3'].''.$sWhere.' AND TB.cara01completa="S"
 			$lin_cara01bien_artplast=$cSepara.$fila['cara01bien_artplast'];
 			$lin_cara01bien_cuenteria=$cSepara.$fila['cara01bien_cuenteria'];
 			$lin_cara01bien_interesreparte=$cSepara.$fila['cara01bien_interesreparte'];
-			$lin_cara01bien_arteint=$cSepara.str_replace($cSepara, $cComplementa, utf8_decode($fila['cara01bien_arteint']));
+			$lin_cara01bien_arteint=$cSepara.str_replace($cSepara, $cComplementa, cadena_letrasynumeros(utf8_decode($fila['cara01bien_arteint']), ' '));
 			if ($fila['cara01bien_interpreta']==-1){
 				$lin_cara01bien_interpreta=$cSepara.'Ninguno';
 				}else{
@@ -1048,43 +1070,43 @@ WHERE TB.cara01idperaca='.$_REQUEST['v3'].''.$sWhere.' AND TB.cara01completa="S"
 			//Psicologia.
 			$lin_cara01psico_costoemocion=$cSepara.'['.$fila['cara01psico_costoemocion'].']';
 			if (isset($aCAEN[$fila['cara01psico_costoemocion']])!=0){
-				$lin_cara01psico_costoemocion=$cSepara.utf8_decode($aCAEN[$fila['cara01psico_costoemocion']]);
+				$lin_cara01psico_costoemocion=$cSepara.str_replace($cSepara, $cComplementa, cadena_letrasynumeros(utf8_decode($aCAEN[$fila['cara01psico_costoemocion']]), ' '));
 				}
 			$lin_cara01psico_reaccionimpre=$cSepara.'['.$fila['cara01psico_reaccionimpre'].']';
 			if (isset($apsico_reaccionimpre[$fila['cara01psico_reaccionimpre']])!=0){
-				$lin_cara01psico_reaccionimpre=$cSepara.utf8_decode($apsico_reaccionimpre[$fila['cara01psico_reaccionimpre']]);
+				$lin_cara01psico_reaccionimpre=$cSepara.str_replace($cSepara, $cComplementa, cadena_letrasynumeros(utf8_decode($apsico_reaccionimpre[$fila['cara01psico_reaccionimpre']]), ' '));
 				}
 			$lin_cara01psico_estres=$cSepara.'['.$fila['cara01psico_estres'].']';
 			if (isset($apsico_estres[$fila['cara01psico_estres']])!=0){
-				$lin_cara01psico_estres=$cSepara.utf8_decode($apsico_estres[$fila['cara01psico_estres']]);
+				$lin_cara01psico_estres=$cSepara.str_replace($cSepara, $cComplementa, cadena_letrasynumeros(utf8_decode($apsico_estres[$fila['cara01psico_estres']]), ' '));
 				}
 			$lin_cara01psico_pocotiempo=$cSepara.'['.$fila['cara01psico_pocotiempo'].']';
 			if (isset($apsico_pocotiempo[$fila['cara01psico_pocotiempo']])!=0){
-				$lin_cara01psico_pocotiempo=$cSepara.utf8_decode($apsico_pocotiempo[$fila['cara01psico_pocotiempo']]);
+				$lin_cara01psico_pocotiempo=$cSepara.str_replace($cSepara, $cComplementa, cadena_letrasynumeros(utf8_decode($apsico_pocotiempo[$fila['cara01psico_pocotiempo']]), ' '));
 				}
 			$lin_cara01psico_actitudvida=$cSepara.'['.$fila['cara01psico_actitudvida'].']';
 			if (isset($apsico_actitudvida[$fila['cara01psico_actitudvida']])!=0){
-				$lin_cara01psico_actitudvida=$cSepara.utf8_decode($apsico_actitudvida[$fila['cara01psico_actitudvida']]);
+				$lin_cara01psico_actitudvida=$cSepara.str_replace($cSepara, $cComplementa, cadena_letrasynumeros(utf8_decode($apsico_actitudvida[$fila['cara01psico_actitudvida']]), ' '));
 				}
 			$lin_cara01psico_duda=$cSepara.'['.$fila['cara01psico_duda'].']';
 			if (isset($apsico_duda[$fila['cara01psico_duda']])!=0){
-				$lin_cara01psico_duda=$cSepara.utf8_decode($apsico_duda[$fila['cara01psico_duda']]);
+				$lin_cara01psico_duda=$cSepara.str_replace($cSepara, $cComplementa, cadena_letrasynumeros(utf8_decode($apsico_duda[$fila['cara01psico_duda']]), ' '));
 				}
 			$lin_cara01psico_problemapers=$cSepara.'['.$fila['cara01psico_problemapers'].']';
 			if (isset($apsico_problemapers[$fila['cara01psico_problemapers']])!=0){
-				$lin_cara01psico_problemapers=$cSepara.utf8_decode($apsico_problemapers[$fila['cara01psico_problemapers']]);
+				$lin_cara01psico_problemapers=$cSepara.str_replace($cSepara, $cComplementa, cadena_letrasynumeros(utf8_decode($apsico_problemapers[$fila['cara01psico_problemapers']]), ' '));
 				}
 			$lin_cara01psico_satisfaccion=$cSepara.'['.$fila['cara01psico_satisfaccion'].']';
 			if (isset($apsico_satisfaccion[$fila['cara01psico_satisfaccion']])!=0){
-				$lin_cara01psico_satisfaccion=$cSepara.utf8_decode($apsico_satisfaccion[$fila['cara01psico_satisfaccion']]);
+				$lin_cara01psico_satisfaccion=$cSepara.str_replace($cSepara, $cComplementa, cadena_letrasynumeros(utf8_decode($apsico_satisfaccion[$fila['cara01psico_satisfaccion']]), ' '));
 				}
 			$lin_cara01psico_discusiones=$cSepara.'['.$fila['cara01psico_discusiones'].']';
 			if (isset($apsico_discusiones[$fila['cara01psico_discusiones']])!=0){
-				$lin_cara01psico_discusiones=$cSepara.utf8_decode($apsico_discusiones[$fila['cara01psico_discusiones']]);
+				$lin_cara01psico_discusiones=$cSepara.str_replace($cSepara, $cComplementa, cadena_letrasynumeros(utf8_decode($apsico_discusiones[$fila['cara01psico_discusiones']]), ' '));
 				}
 			$lin_cara01psico_atencion=$cSepara.'['.$fila['cara01psico_atencion'].']';
 			if (isset($apsico_atencion[$fila['cara01psico_atencion']])!=0){
-				$lin_cara01psico_atencion=$cSepara.utf8_decode($apsico_atencion[$fila['cara01psico_atencion']]);
+				$lin_cara01psico_atencion=$cSepara.str_replace($cSepara, $cComplementa, cadena_letrasynumeros(utf8_decode($apsico_atencion[$fila['cara01psico_atencion']]), ' '));
 				}
 			$lin_cara01psico_puntaje=$cSepara.$fila['cara01psico_puntaje'];
 			}
