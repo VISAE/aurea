@@ -224,4 +224,31 @@ function f2333_HtmlTabla($aParametros){
 		}
 	return $objResponse;
 	}
+function f2333_HTMLComboV2_cara33idprograma($objDB, $objCombos, $valor, $vrcara33idescuela){
+	require './app.php';
+	$mensajes_todas=$APP->rutacomun.'lg/lg_todas_'.$_SESSION['unad_idioma'].'.php';
+	if (!file_exists($mensajes_todas)){$mensajes_todas=$APP->rutacomun.'lg/lg_todas_es.php';}
+	require $mensajes_todas;
+	//@@ Se debe arreglar la condicion..
+	$sCondi='core09idescuela="'.$vrcara33idescuela.'"';
+	if ($sCondi!=''){$sCondi=' WHERE '.$sCondi;}
+	$objCombos->nuevo('cara33idprograma', $valor, true, '{'.$ETI['msg_todos'].'}');
+	$sSQL='SELECT core09id AS id, core09nombre AS nombre FROM core09programa'.$sCondi;
+	$res=$objCombos->html($sSQL, $objDB);
+	return $res;
+	}
+function f2333_Combocara33idprograma($aParametros){
+	$_SESSION['u_ultimominuto']=iminutoavance();
+	if(!is_array($aParametros)){$aParametros=json_decode(str_replace('\"','"',$aParametros),true);}
+	require './app.php';
+	$objDB=new clsdbadmin($APP->dbhost, $APP->dbuser, $APP->dbpass, $APP->dbname);
+	if ($APP->dbpuerto!=''){$objDB->dbPuerto=$APP->dbpuerto;}
+	$objDB->xajax();
+	$objCombos=new clsHtmlCombos('n');
+	$html_cara33idprograma=f2333_HTMLComboV2_cara33idprograma($objDB, $objCombos, '', $aParametros[0]);
+	$objDB->CerrarConexion();
+	$objResponse=new xajaxResponse();
+	$objResponse->assign('div_cara33idprograma', 'innerHTML', $html_cara33idprograma);
+	return $objResponse;
+	}
 ?>

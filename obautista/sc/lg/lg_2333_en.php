@@ -14,6 +14,8 @@ $ETI['lnk_cargar']='Edit';
 $ETI['cara33idperaca']='Peraca';
 $ETI['cara33idzona']='Zona';
 $ETI['cara33idcentro']='Centro';
+$ETI['cara33idescuela']='Escuela';
+$ETI['cara33idprograma']='Programa';
 $ETI['cara33tipo']='Tipo';
 $ETI['cara33poblacion']='Poblacion';
 

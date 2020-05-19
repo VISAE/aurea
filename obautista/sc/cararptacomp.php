@@ -149,6 +149,7 @@ require 'lib2333.php';
 $xajax=new xajax();
 $xajax->configure('javascript URI', $APP->rutacomun.'xajax/');
 $xajax->register(XAJAX_FUNCTION,'f2333_Combocara33idcentro');
+$xajax->register(XAJAX_FUNCTION,'f2333_Combocara33idprograma');
 $xajax->register(XAJAX_FUNCTION,'sesion_abandona_V2');
 $xajax->register(XAJAX_FUNCTION,'sesion_mantenerV4');
 $xajax->register(XAJAX_FUNCTION,'f2333_HtmlTabla');
@@ -172,12 +173,27 @@ if (isset($_REQUEST['boculta2333'])==0){$_REQUEST['boculta2333']=0;}
 if (isset($_REQUEST['cara33idperaca'])==0){$_REQUEST['cara33idperaca']='';}
 if (isset($_REQUEST['cara33idzona'])==0){$_REQUEST['cara33idzona']='';}
 if (isset($_REQUEST['cara33idcentro'])==0){$_REQUEST['cara33idcentro']='';}
+if (isset($_REQUEST['cara33idescuela'])==0){$_REQUEST['cara33idescuela']='';}
+if (isset($_REQUEST['cara33idprograma'])==0){$_REQUEST['cara33idprograma']='';}
 if (isset($_REQUEST['cara33tipo'])==0){$_REQUEST['cara33tipo']='';}
 if (isset($_REQUEST['cara33poblacion'])==0){$_REQUEST['cara33poblacion']='';}
 // Espacio para inicializar otras variables
 if (isset($_REQUEST['csv_separa'])==0){$_REQUEST['csv_separa']=',';}
 if (isset($_REQUEST['bnombre'])==0){$_REQUEST['bnombre']='';}
 //if (isset($_REQUEST['blistar'])==0){$_REQUEST['blistar']='';}
+//limpiar la pantalla
+if ($_REQUEST['paso']==-1){
+	$_REQUEST['cara33idperaca']='';
+	$_REQUEST['cara33idzona']='';
+	$_REQUEST['cara33idcentro']='';
+	$_REQUEST['cara33idescuela']='';
+	$_REQUEST['cara33idprograma']='';
+	$_REQUEST['cara33tipo']='';
+	$_REQUEST['cara33poblacion']='';
+	$_REQUEST['paso']=0;
+	}
+if ($bLimpiaHijos){
+	}
 //AQUI SE DEBEN CARGAR TODOS LOS DATOS QUE LA FORMA NECESITE.
 //DATOS PARA COMPLETAR EL FORMULARIO
 //Permisos adicionales
@@ -198,6 +214,11 @@ $objCombos->sAccion='carga_combo_cara33idcentro();';
 $sSQL='SELECT unad23id AS id, unad23nombre AS nombre FROM unad23zona WHERE unad23conestudiantes="S" ORDER BY unad23nombre';
 $html_cara33idzona=$objCombos->html($sSQL, $objDB);
 $html_cara33idcentro=f2333_HTMLComboV2_cara33idcentro($objDB, $objCombos, $_REQUEST['cara33idcentro'], $_REQUEST['cara33idzona']);
+$objCombos->nuevo('cara33idescuela', $_REQUEST['cara33idescuela'], true, '{'.$ETI['msg_todos'].'}');
+$objCombos->sAccion='carga_combo_cara33idprograma();';
+$sSQL='SELECT core12id AS id, core12nombre AS nombre FROM core12escuela WHERE core12tieneestudiantes="S" ORDER BY core12nombre';
+$html_cara33idescuela=$objCombos->html($sSQL, $objDB);
+$html_cara33idprograma=f2333_HTMLComboV2_cara33idprograma($objDB, $objCombos, $_REQUEST['cara33idprograma'], $_REQUEST['cara33idescuela']);
 $objCombos->nuevo('cara33tipo', $_REQUEST['cara33tipo'], true, '{'.$ETI['msg_todos'].'}');
 //$objCombos->addArreglo($acara33tipo, $icara33tipo);
 $html_cara33tipo=$objCombos->html('', $objDB);
@@ -238,8 +259,10 @@ if (false){
 	$aParametros[103]=$_REQUEST['cara33idperaca'];
 	$aParametros[104]=$_REQUEST['cara33idzona'];
 	$aParametros[105]=$_REQUEST['cara33idcentro'];
-	$aParametros[106]=$_REQUEST['cara33tipo'];
-	$aParametros[107]=$_REQUEST['cara33poblacion'];
+	$aParametros[106]=$_REQUEST['cara33idescuela'];
+	$aParametros[107]=$_REQUEST['cara33idprograma'];
+	$aParametros[108]=$_REQUEST['cara33tipo'];
+	$aParametros[109]=$_REQUEST['cara33poblacion'];
 	list($sTabla2333, $sDebugTabla)=f2333_TablaDetalleV2($aParametros, $objDB, $bDebug);
 	$sDebug=$sDebug.$sDebugTabla;
 	}
@@ -327,8 +350,10 @@ function asignarvariables(){
 	window.document.frmimpp.v3.value=window.document.frmedita.cara33idperaca.value;
 	window.document.frmimpp.v4.value=window.document.frmedita.cara33idzona.value;
 	window.document.frmimpp.v5.value=window.document.frmedita.cara33idcentro.value;
-	window.document.frmimpp.v6.value=window.document.frmedita.cara33tipo.value;
-	window.document.frmimpp.v7.value=window.document.frmedita.cara33poblacion.value;
+	window.document.frmimpp.v6.value=window.document.frmedita.cara33idescuela.value;
+	window.document.frmimpp.v7.value=window.document.frmedita.cara33idprograma.value;
+	window.document.frmimpp.v8.value=window.document.frmedita.cara33tipo.value;
+	window.document.frmimpp.v9.value=window.document.frmedita.cara33poblacion.value;
 	window.document.frmimpp.separa.value=window.document.frmedita.csv_separa.value.trim();
 	}
 function imprimeexcel(){
@@ -367,6 +392,11 @@ function carga_combo_cara33idcentro(){
 	params[0]=window.document.frmedita.cara33idzona.value;
 	xajax_f2333_Combocara33idcentro(params);
 	}
+function carga_combo_cara33idprograma(){
+	var params=new Array();
+	params[0]=window.document.frmedita.cara33idescuela.value;
+	xajax_f2333_Combocara33idprograma(params);
+	}
 function paginarf2333(){
 	var params=new Array();
 	params[99]=window.document.frmedita.debug.value;
@@ -375,8 +405,10 @@ function paginarf2333(){
 	params[103]=window.document.frmedita.cara33idperaca.value;
 	params[104]=window.document.frmedita.cara33idzona.value;
 	params[105]=window.document.frmedita.cara33idcentro.value;
-	params[106]=window.document.frmedita.cara33tipo.value;
-	params[107]=window.document.frmedita.cara33poblacion.value;
+	params[106]=window.document.frmedita.cara33idescuela.value;
+	params[107]=window.document.frmedita.cara33idprograma.value;
+	params[108]=window.document.frmedita.cara33tipo.value;
+	params[109]=window.document.frmedita.cara33poblacion.value;
 	//document.getElementById('div_f2333detalle').innerHTML='<div class="GrupoCamposAyuda"><div class="MarquesinaMedia">Procesando datos, por favor espere.</div></div><input id="paginaf2333" name="paginaf2333" type="hidden" value="'+params[101]+'" /><input id="lppf2333" name="lppf2333" type="hidden" value="'+params[102]+'" />';
 	xajax_f2333_HtmlTabla(params);
 	}
@@ -425,6 +457,8 @@ function cierraDiv96(ref){
 <input id="v5" name="v5" type="hidden" value="" />
 <input id="v6" name="v6" type="hidden" value="" />
 <input id="v7" name="v7" type="hidden" value="" />
+<input id="v8" name="v8" type="hidden" value="" />
+<input id="v9" name="v9" type="hidden" value="" />
 <input id="iformato94" name="iformato94" type="hidden" value="0" />
 <input id="separa" name="separa" type="hidden" value="," />
 <input id="rdebug" name="rdebug" type="hidden" value="<?php echo $_REQUEST['debug']; ?>"/>
@@ -532,6 +566,30 @@ echo $ETI['cara33idcentro'];
 <div id="div_cara33idcentro">
 <?php
 echo $html_cara33idcentro;
+?>
+</div>
+</label>
+<div class="salto1px"></div>
+<label class="Label200">
+<?php
+echo $ETI['cara33idescuela'];
+?>
+</label>
+<label>
+<?php
+echo $html_cara33idescuela;
+?>
+</label>
+<div class="salto1px"></div>
+<label class="Label200">
+<?php
+echo $ETI['cara33idprograma'];
+?>
+</label>
+<label>
+<div id="div_cara33idprograma">
+<?php
+echo $html_cara33idprograma;
 ?>
 </div>
 </label>

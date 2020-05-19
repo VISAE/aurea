@@ -35,6 +35,8 @@ if (isset($_REQUEST['v4'])==0){$_REQUEST['v4']='';}
 if (isset($_REQUEST['v5'])==0){$_REQUEST['v5']='';}
 if (isset($_REQUEST['v6'])==0){$_REQUEST['v6']='';}
 if (isset($_REQUEST['v7'])==0){$_REQUEST['v7']='';}
+if (isset($_REQUEST['v8'])==0){$_REQUEST['v8']='';}
+if (isset($_REQUEST['v9'])==0){$_REQUEST['v9']='';}
 if (isset($_REQUEST['rdebug'])==0){$_REQUEST['rdebug']=0;}
 $idPeraca=numeros_validar($_REQUEST['v3']);
 if ($idPeraca==''){$sError='No ha ingresado un periodo';}
@@ -342,14 +344,60 @@ if ($bEntra){
 	$objplano->AdicionarLinea($sDato);
 	$sDato=utf8_decode('Consolidado de acompañamientos');
 	$objplano->AdicionarLinea($sDato);
-	$sDato='Periodo '.$_REQUEST['v3'];
+	$lin_exte02per_aca=$_REQUEST['v3'];
+	$sSQL='SELECT exte02nombre FROM exte02per_aca WHERE exte02id='.$_REQUEST['v3'].'';
+	if ($bDebug){$objplano->adlinea($sSQL);}
+	$tabla=$objDB->ejecutasql($sSQL);
+	if ($fila=$objDB->sf($tabla)){
+        $lin_exte02per_aca=str_replace($cSepara, $cComplementa, $fila['exte02nombre']);
+	    }
+	$sDato='Periodo '.$lin_exte02per_aca;
 	$objplano->AdicionarLinea($sDato);
 	$sDato='';
 	if ($_REQUEST['v5']!=''){
-		$sDato='Centro: '.$_REQUEST['v5'];
+	    $lin_unad24sede=$_REQUEST['v5'];
+	    $sSQL='SELECT unad24nombre FROM unad24sede WHERE unad24id='.$_REQUEST['v5'].'';
+	    if ($bDebug){$objplano->adlinea($sSQL);}
+	    $tabla=$objDB->ejecutasql($sSQL);
+	    if ($fila=$objDB->sf($tabla)){
+	        $lin_unad24sede=str_replace($cSepara, $cComplementa, $fila['unad24nombre']);
+	        }
+		$sDato='Centro: '.$lin_unad24sede;
 		}else{
 		if ($_REQUEST['v4']!=''){
-			$sDato='Zona: '.$_REQUEST['v4'];
+		    $lin_unad23zona=$_REQUEST['v4'];
+            $sSQL='SELECT unad23nombre FROM unad23zona WHERE unad23id='.$_REQUEST['v4'].'';
+            if ($bDebug){$objplano->adlinea($sSQL);}
+            $tabla=$objDB->ejecutasql($sSQL);
+            if ($fila=$objDB->sf($tabla)){
+                $lin_unad23zona=str_replace($cSepara, $cComplementa, $fila['unad23nombre']);
+                }
+			$sDato='Zona: '.$lin_unad23zona;
+			}
+		}
+	if ($sDato<>''){
+		$objplano->AdicionarLinea($sDato);
+		}
+	$sDato='';
+	if ($_REQUEST['v7']!=''){
+	    $lin_core09programa=$_REQUEST['v7'];
+	    $sSQL='SELECT core09nombre FROM core09programa WHERE core09id='.$_REQUEST['v7'].'';
+	    if ($bDebug){$objplano->adlinea($sSQL);}
+	    $tabla=$objDB->ejecutasql($sSQL);
+	    if ($fila=$objDB->sf($tabla)){
+            $lin_core09programa=str_replace($cSepara, $cComplementa, $fila['core09nombre']);
+	        }
+		$sDato='Programa: '.$lin_core09programa;
+		}else{
+		if ($_REQUEST['v6']!=''){
+		    $lin_core12escuela=$_REQUEST['v6'];
+            $sSQL='SELECT core12nombre FROM core12escuela WHERE core12id='.$_REQUEST['v6'].'';
+            if ($bDebug){$objplano->adlinea($sSQL);}
+            $tabla=$objDB->ejecutasql($sSQL);
+            if ($fila=$objDB->sf($tabla)){
+                $lin_core12escuela=str_replace($cSepara, $cComplementa, $fila['core12nombre']);
+                }
+			$sDato='Escuela: '.$lin_core12escuela;
 			}
 		}
 	if ($sDato<>''){
@@ -400,6 +448,13 @@ if ($bEntra){
 		}else{
 		if ($_REQUEST['v4']!=''){
 			$sWhere=$sWhere.' AND TB.cara01idzona='.$_REQUEST['v4'].' ';
+			}
+		}
+	if ($_REQUEST['v7']!=''){
+		$sWhere=$sWhere.' AND TB.cara01idprograma='.$_REQUEST['v7'].' ';
+		}else{
+		if ($_REQUEST['v6']!=''){
+			$sWhere=$sWhere.' AND TB.cara01idescuela='.$_REQUEST['v6'].' ';
 			}
 		}
 	$sSQL='SELECT TB.* 
