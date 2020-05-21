@@ -4,6 +4,17 @@
 --- angel.avellaneda@unad.edu.co - http://www.unad.edu.co
 --- Modelo Versión 2.22.6d miércoles, 23 de enero de 2019
 */
+/** Archivo caraespeciales.php.
+* Modulo 2349
+* @author Angel Mauro Avellaneda Barreto - angel.avellaneda@unad.edu.co
+* @param debug=1 (Opcional), bandera para indicar si se generan datos de depuración
+* @date Wednesday, January 23, 2019*
+ *
+ * Cambios 21 de mayo de 2020
+ * 1. Adición de combos de Escuela y Programa
+ * Omar Augusto Bautista Mora - UNAD - 2020
+ * omar.bautista@unad.edu.co
+*/
 if (file_exists('./err_control.php')){require './err_control.php';}
 $bDebug=false;
 $sDebug='';
@@ -135,6 +146,7 @@ require 'lib2349.php';
 $xajax=new xajax();
 $xajax->configure('javascript URI', $APP->rutacomun.'xajax/');
 $xajax->register(XAJAX_FUNCTION,'f2349_Combocara49idcentro');
+$xajax->register(XAJAX_FUNCTION,'f2349_Combocara49idprograma');
 $xajax->register(XAJAX_FUNCTION,'sesion_abandona_V2');
 $xajax->register(XAJAX_FUNCTION,'sesion_mantenerV4');
 $xajax->register(XAJAX_FUNCTION,'f2349_HtmlTabla');
@@ -158,6 +170,8 @@ if (isset($_REQUEST['boculta2349'])==0){$_REQUEST['boculta2349']=0;}
 if (isset($_REQUEST['cara49idperaca'])==0){$_REQUEST['cara49idperaca']='';}
 if (isset($_REQUEST['cara49idzona'])==0){$_REQUEST['cara49idzona']='';}
 if (isset($_REQUEST['cara49idcentro'])==0){$_REQUEST['cara49idcentro']='';}
+if (isset($_REQUEST['cara49idescuela'])==0){$_REQUEST['cara49idescuela']='';}
+if (isset($_REQUEST['cara49idprograma'])==0){$_REQUEST['cara49idprograma']='';}
 if (isset($_REQUEST['cara49tipopoblacion'])==0){$_REQUEST['cara49tipopoblacion']='';}
 // Espacio para inicializar otras variables
 if (isset($_REQUEST['csv_separa'])==0){$_REQUEST['csv_separa']=',';}
@@ -206,6 +220,11 @@ $objCombos->nuevo('cara49idzona', $_REQUEST['cara49idzona'], $bConVacio, '{'.$ET
 $objCombos->sAccion='carga_combo_cara49idcentro();';
 $html_cara49idzona=$objCombos->html($sSQL, $objDB);
 $html_cara49idcentro=f2349_HTMLComboV2_cara49idcentro($objDB, $objCombos, $_REQUEST['cara49idcentro'], $_REQUEST['cara49idzona']);
+$objCombos->nuevo('cara49idescuela', $_REQUEST['cara49idescuela'], true, '{'.$ETI['msg_todos'].'}');
+$objCombos->sAccion='carga_combo_cara49idprograma();';
+$sSQL='SELECT core12id AS id, core12nombre AS nombre FROM core12escuela WHERE core12tieneestudiantes="S" ORDER BY core12nombre';
+$html_cara49idescuela=$objCombos->html($sSQL, $objDB);
+$html_cara49idprograma=f2349_HTMLComboV2_cara49idprograma($objDB, $objCombos, $_REQUEST['cara49idprograma'], $_REQUEST['cara49idescuela']);
 $objCombos->nuevo('cara49tipopoblacion', $_REQUEST['cara49tipopoblacion'], false, '{'.$ETI['msg_seleccione'].'}');
 //$objCombos->addArreglo($acara49tipopoblacion, $icara49tipopoblacion);
 $objCombos->addItem(1, 'Donde soy consejero');
@@ -247,14 +266,18 @@ $html_iFormatoImprime='<input id="iformatoimprime" name="iformatoimprime" type="
 	}
 $sTabla2349='';
 if (false){
-//Cargar las tablas de datos
-$aParametros[0]='';//$_REQUEST['p1_2349'];
-$aParametros[101]=$_REQUEST['paginaf2349'];
-$aParametros[102]=$_REQUEST['lppf2349'];
-//$aParametros[103]=$_REQUEST['bnombre'];
-//$aParametros[104]=$_REQUEST['blistar'];
-list($sTabla2349, $sDebugTabla)=f2349_TablaDetalleV2($aParametros, $objDB, $bDebug);
-$sDebug=$sDebug.$sDebugTabla;
+	//Cargar las tablas de datos
+	$aParametros[0]='';//$_REQUEST['p1_2349'];
+	$aParametros[101]=$_REQUEST['paginaf2349'];
+	$aParametros[102]=$_REQUEST['lppf2349'];
+	$aParametros[103]=$_REQUEST['cara49idperaca'];
+	$aParametros[104]=$_REQUEST['cara49idzona'];
+	$aParametros[105]=$_REQUEST['cara49idcentro'];
+	$aParametros[106]=$_REQUEST['cara49idescuela'];
+	$aParametros[107]=$_REQUEST['cara49idprograma'];
+	$aParametros[108]=$_REQUEST['cara49tipopoblacion'];
+	list($sTabla2349, $sDebugTabla)=f2349_TablaDetalleV2($aParametros, $objDB, $bDebug);
+	$sDebug=$sDebug.$sDebugTabla;
 	}
 list($et_menu, $sDebugM)=html_menuV2($APP->idsistema, $objDB, $iPiel, $bDebug, $idTercero);
 $sDebug=$sDebug.$sDebugM;
@@ -339,7 +362,9 @@ function asignarvariables(){
 	window.document.frmimpp.v3.value=window.document.frmedita.cara49idperaca.value;
 	window.document.frmimpp.v4.value=window.document.frmedita.cara49idzona.value;
 	window.document.frmimpp.v5.value=window.document.frmedita.cara49idcentro.value;
-	window.document.frmimpp.v6.value=window.document.frmedita.cara49tipopoblacion.value;
+	window.document.frmimpp.v6.value=window.document.frmedita.cara49idescuela.value;
+	window.document.frmimpp.v7.value=window.document.frmedita.cara49idprograma.value;
+	window.document.frmimpp.v8.value=window.document.frmedita.cara49tipopoblacion.value;
 	window.document.frmimpp.separa.value=window.document.frmedita.csv_separa.value.trim();
 	}
 function imprimeexcel(){
@@ -383,13 +408,22 @@ function carga_combo_cara49idcentro(){
 	params[0]=window.document.frmedita.cara49idzona.value;
 	xajax_f2349_Combocara49idcentro(params);
 	}
+function carga_combo_cara49idprograma(){
+	var params=new Array();
+	params[0]=window.document.frmedita.cara49idescuela.value;
+	xajax_f2349_Combocara49idprograma(params);
+	}
 function paginarf2349(){
 	var params=new Array();
 	params[99]=window.document.frmedita.debug.value;
 	params[101]=window.document.frmedita.paginaf2349.value;
 	params[102]=window.document.frmedita.lppf2349.value;
-	//params[103]=window.document.frmedita.bnombre.value;
-	//params[104]=window.document.frmedita.blistar.value;
+	params[103]=window.document.frmedita.cara49idperaca.value;
+	params[104]=window.document.frmedita.cara49idzona.value;
+	params[105]=window.document.frmedita.cara49idcentro.value;
+	params[106]=window.document.frmedita.cara49idescuela.value;
+	params[107]=window.document.frmedita.cara49idprograma.value;
+	params[108]=window.document.frmedita.cara49tipopoblacion.value;
 	//document.getElementById('div_f2349detalle').innerHTML='<div class="GrupoCamposAyuda"><div class="MarquesinaMedia">Procesando datos, por favor espere.</div></div><input id="paginaf2349" name="paginaf2349" type="hidden" value="'+params[101]+'" /><input id="lppf2349" name="lppf2349" type="hidden" value="'+params[102]+'" />';
 	xajax_f2349_HtmlTabla(params);
 	}
@@ -437,6 +471,8 @@ function cierraDiv96(ref){
 <input id="v4" name="v4" type="hidden" value="" />
 <input id="v5" name="v5" type="hidden" value="" />
 <input id="v6" name="v6" type="hidden" value="" />
+<input id="v7" name="v7" type="hidden" value="" />
+<input id="v8" name="v8" type="hidden" value="" />
 <input id="iformato94" name="iformato94" type="hidden" value="0" />
 <input id="separa" name="separa" type="hidden" value="," />
 <input id="rdebug" name="rdebug" type="hidden" value="<?php echo $_REQUEST['debug']; ?>"/>
@@ -533,6 +569,30 @@ echo $ETI['cara49idcentro'];
 <div id="div_cara49idcentro">
 <?php
 echo $html_cara49idcentro;
+?>
+</div>
+</label>
+<div class="salto1px"></div>
+<label class="Label160">
+<?php
+echo $ETI['cara49idescuela'];
+?>
+</label>
+<label>
+<?php
+echo $html_cara49idescuela;
+?>
+</label>
+<div class="salto1px"></div>
+<label class="Label160">
+<?php
+echo $ETI['cara49idprograma'];
+?>
+</label>
+<label>
+<div id="div_cara49idprograma">
+<?php
+echo $html_cara49idprograma;
 ?>
 </div>
 </label>

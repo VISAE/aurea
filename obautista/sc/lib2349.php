@@ -5,6 +5,17 @@
 --- Modelo Versión 2.22.6d miércoles, 23 de enero de 2019
 --- 2349 cara49necespeciales
 */
+/** Archivo lib2349.php.
+* Libreria 2349
+* @author Angel Mauro Avellaneda Barreto - angel.avellaneda@unad.edu.co
+* @date Wednesday, January 23, 2019
+ *
+ * Cambios 21 de mayo de 2020
+ * 1. Adición de función f2349_HTMLComboV2_cara49idprograma
+ * 2. Adición de función f2349_Combocara49idprograma
+ * Omar Augusto Bautista Mora - UNAD - 2020
+ * omar.bautista@unad.edu.co
+*/
 function f2349_HTMLComboV2_cara49idperaca($objDB, $objCombos, $valor){
 	require './app.php';
 	$mensajes_todas=$APP->rutacomun.'lg/lg_todas_'.$_SESSION['unad_idioma'].'.php';
@@ -568,4 +579,31 @@ ORDER BY TB.cara49idperaca';
 // -----------------------------------
 // ---- Funciones personalizadas  ----
 // -----------------------------------
+function f2349_HTMLComboV2_cara49idprograma($objDB, $objCombos, $valor, $vrcara49idescuela){
+	require './app.php';
+	$mensajes_todas=$APP->rutacomun.'lg/lg_todas_'.$_SESSION['unad_idioma'].'.php';
+	if (!file_exists($mensajes_todas)){$mensajes_todas=$APP->rutacomun.'lg/lg_todas_es.php';}
+	require $mensajes_todas;
+	//@@ Se debe arreglar la condicion..
+	$sCondi='core09idescuela="'.$vrcara49idescuela.'"';
+	if ($sCondi!=''){$sCondi=' WHERE '.$sCondi;}
+	$objCombos->nuevo('cara49idprograma', $valor, true, '{'.$ETI['msg_todos'].'}');
+	$sSQL='SELECT core09id AS id, core09nombre AS nombre FROM core09programa'.$sCondi;
+	$res=$objCombos->html($sSQL, $objDB);
+	return $res;
+	}
+function f2349_Combocara49idprograma($aParametros){
+	$_SESSION['u_ultimominuto']=iminutoavance();
+	if(!is_array($aParametros)){$aParametros=json_decode(str_replace('\"','"',$aParametros),true);}
+	require './app.php';
+	$objDB=new clsdbadmin($APP->dbhost, $APP->dbuser, $APP->dbpass, $APP->dbname);
+	if ($APP->dbpuerto!=''){$objDB->dbPuerto=$APP->dbpuerto;}
+	$objDB->xajax();
+	$objCombos=new clsHtmlCombos('n');
+	$html_cara49idprograma=f2349_HTMLComboV2_cara49idprograma($objDB, $objCombos, '', $aParametros[0]);
+	$objDB->CerrarConexion();
+	$objResponse=new xajaxResponse();
+	$objResponse->assign('div_cara49idprograma', 'innerHTML', $html_cara49idprograma);
+	return $objResponse;
+	}
 ?>

@@ -5,6 +5,17 @@
 --- Modelo Versión 2.21.0 jueves, 21 de junio de 2018
 --- 2350 core50consolidado
 */
+/** Archivo lib2350.php.
+* Libreria 2350 core50consolidado.
+* @author Angel Mauro Avellaneda Barreto - angel.avellaneda@unad.edu.co
+* @date Wednesday, June 21, 2018
+ *
+ * Cambios 21 de mayo de 2020
+ * 1. Adición de función f2350_HTMLComboV2_core50idprograma
+ * 2. Adición de función f2350_Combocore50idprograma
+ * Omar Augusto Bautista Mora - UNAD - 2020
+ * omar.bautista@unad.edu.co
+*/
 function f2350_HTMLComboV2_core50idperaca($objDB, $objCombos, $valor){
 	require './app.php';
 	$mensajes_todas=$APP->rutacomun.'lg/lg_todas_'.$_SESSION['unad_idioma'].'.php';
@@ -238,6 +249,33 @@ function f2350_HtmlTabla($params){
 	if ($bDebug){
 		$objResponse->assign('div_debug', 'innerHTML', $sDebug);
 		}
+	return $objResponse;
+	}
+function f2350_HTMLComboV2_core50idprograma($objDB, $objCombos, $valor, $vrcore50idescuela){
+	require './app.php';
+	$mensajes_todas=$APP->rutacomun.'lg/lg_todas_'.$_SESSION['unad_idioma'].'.php';
+	if (!file_exists($mensajes_todas)){$mensajes_todas=$APP->rutacomun.'lg/lg_todas_es.php';}
+	require $mensajes_todas;
+	//@@ Se debe arreglar la condicion..
+	$sCondi='core09idescuela="'.$vrcore50idescuela.'"';
+	if ($sCondi!=''){$sCondi=' WHERE '.$sCondi;}
+	$objCombos->nuevo('core50idprograma', $valor, true, '{'.$ETI['msg_todos'].'}');
+	$sSQL='SELECT core09id AS id, core09nombre AS nombre FROM core09programa'.$sCondi;
+	$res=$objCombos->html($sSQL, $objDB);
+	return $res;
+	}
+function f2350_Combocore50idprograma($aParametros){
+	$_SESSION['u_ultimominuto']=iminutoavance();
+	if(!is_array($aParametros)){$aParametros=json_decode(str_replace('\"','"',$aParametros),true);}
+	require './app.php';
+	$objDB=new clsdbadmin($APP->dbhost, $APP->dbuser, $APP->dbpass, $APP->dbname);
+	if ($APP->dbpuerto!=''){$objDB->dbPuerto=$APP->dbpuerto;}
+	$objDB->xajax();
+	$objCombos=new clsHtmlCombos('n');
+	$html_core50idprograma=f2350_HTMLComboV2_core50idprograma($objDB, $objCombos, '', $aParametros[0]);
+	$objDB->CerrarConexion();
+	$objResponse=new xajaxResponse();
+	$objResponse->assign('div_core50idprograma', 'innerHTML', $html_core50idprograma);
 	return $objResponse;
 	}
 ?>

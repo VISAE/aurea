@@ -4,6 +4,16 @@
 --- angel.avellaneda@unad.edu.co - http://www.unad.edu.co
 --- Modelo Version 2.22.6d miércoles, 23 de enero de 2019
 */
+/** Archivo para reportes tipo csv 2333.
+* Aquí se genera un archivo tipo csv con la siguiente estructura (indicar estructura).
+* @author Angel Mauro Avellaneda Barreto - angel.avellaneda@unad.edu.co
+* @date Wednesday, October 30, 2019
+*
+* Cambios 21 de mayo de 2020
+* 1. Agrega a consulta caracterización por Escuela y Programa
+* Omar Augusto Bautista Mora - UNAD - 2020
+* omar.bautista@unad.edu.co
+*/
 /*
 error_reporting(E_ALL);
 ini_set("display_errors", 1);
@@ -34,7 +44,9 @@ if (isset($_REQUEST['clave'])==0){$_REQUEST['clave']='';}
 if (isset($_REQUEST['v3'])==0){$_REQUEST['v3']='';}
 if (isset($_REQUEST['v4'])==0){$_REQUEST['v4']='';}
 if (isset($_REQUEST['v5'])==0){$_REQUEST['v5']='';}
-if (isset($_REQUEST['v6'])==0){$_REQUEST['v6']=1;}
+if (isset($_REQUEST['v6'])==0){$_REQUEST['v6']='';}
+if (isset($_REQUEST['v7'])==0){$_REQUEST['v7']='';}
+if (isset($_REQUEST['v8'])==0){$_REQUEST['v8']=1;}
 if (isset($_REQUEST['rdebug'])==0){$_REQUEST['rdebug']=0;}
 if ($iReporte==2349){$bEntra=true;}
 if ($sError!=''){$bEntra=false;}
@@ -81,6 +93,8 @@ if ($bEntra){
 	/* Alistar los arreglos para las tablas hijas */
 	$acara01idzona=array();
 	$acara01idcead=array();
+    $acara01idescuela=array();
+    $acara01idprograma=array();
 	$acara01perayuda=array();
 	$acara01perayuda[0]='Ninguno';
 	$sTitulo1='Datos generales';
@@ -88,11 +102,25 @@ if ($bEntra){
 		$sTitulo1=$sTitulo1.$cSepara;
 		}
 	$sTitulo1=$sTitulo1.'Discapacidades';
-	$sBloque1='Zona'.$cSepara.'Centro'.$cSepara.'Tipo documento'.$cSepara.'Documento'.$cSepara.'Razon social'.$cSepara.'Sensorial'.$cSepara.$cSepara.'Fisica'.$cSepara.$cSepara.'Cognitiva'.$cSepara.$cSepara.'Necesidades especiales'.$cSepara.'Otras necesidades'.$cSepara.'Confirmada';
+	$sBloque1='Zona'.$cSepara.'Centro'.$cSepara.'Escuela'.$cSepara.'Programa'.$cSepara.'Tipo documento'.$cSepara.'Documento'.$cSepara.'Razon social'.$cSepara.'Sensorial'.$cSepara.$cSepara.'Fisica'.$cSepara.$cSepara.'Cognitiva'.$cSepara.$cSepara.'Necesidades especiales'.$cSepara.'Otras necesidades'.$cSepara.'Confirmada';
 	//$objplano->AdicionarLinea($sTitulo1);
 	$objplano->AdicionarLinea($sBloque1);
 	$sWhere='';
-	$sSQL='SELECT TB.cara01idzona, TB.cara01idcead, TB.cara01idtercero, TB.cara01discsensorial, TB.cara01discsensorialotra, TB.cara01discfisica, TB.cara01discfisicaotra, TB.cara01disccognitiva, TB.cara01disccognitivaotra, TB.cara01perayuda, TB.cara01perotraayuda, TB.cara01fechaconfirmadisc 
+	if ($_REQUEST['v5']!=''){
+		$sWhere=$sWhere.' AND TB.cara01idcead='.$_REQUEST['v5'].' ';
+		}else{
+		if ($_REQUEST['v4']!=''){
+			$sWhere=$sWhere.' AND TB.cara01idzona='.$_REQUEST['v4'].' ';
+			}
+		}
+	if ($_REQUEST['v7']!=''){
+		$sWhere=$sWhere.' AND TB.cara01idprograma='.$_REQUEST['v7'].' ';
+		}else{
+		if ($_REQUEST['v6']!=''){
+			$sWhere=$sWhere.' AND TB.cara01idescuela='.$_REQUEST['v6'].' ';
+			}
+		}
+	$sSQL='SELECT TB.cara01idzona, TB.cara01idcead, TB.cara01idescuela, TB.cara01idprograma, TB.cara01idtercero, TB.cara01discsensorial, TB.cara01discsensorialotra, TB.cara01discfisica, TB.cara01discfisicaotra, TB.cara01disccognitiva, TB.cara01disccognitivaotra, TB.cara01perayuda, TB.cara01perotraayuda, TB.cara01fechaconfirmadisc 
 FROM cara01encuesta AS TB 
 WHERE TB.cara01idperaca='.$_REQUEST['v3'].''.$sWhere.' AND TB.cara01completa="S" AND ((TB.cara01discsensorial<>"N") OR (TB.cara01discfisica<>"N") OR (TB.cara01disccognitiva<>"N") OR (TB.cara01perayuda<>0))';
 	if ($bDebug){$objplano->AdicionarLinea($sSQL);}
@@ -101,6 +129,8 @@ WHERE TB.cara01idperaca='.$_REQUEST['v3'].''.$sWhere.' AND TB.cara01completa="S"
 		$lin_cara01idzona='';
 		$lin_cara01idtercero=$cSepara.$cSepara.$cSepara;
 		$lin_cara01idcead=$cSepara;
+		$lin_cara01idescuela=$cSepara;
+		$lin_cara01idprograma=$cSepara;
 		$lin_cara01discsensorial=$cSepara.$cSepara;
 		$lin_cara01discfisica=$cSepara.$cSepara;
 		$lin_cara01disccognitiva=$cSepara.$cSepara;
@@ -132,6 +162,30 @@ WHERE TB.cara01idperaca='.$_REQUEST['v3'].''.$sWhere.' AND TB.cara01completa="S"
 				}
 			}
 		$lin_cara01idcead=$cSepara.utf8_decode($acara49idcentro[$i_cara49idcentro]);
+		$i_cara49idescuela=$fila['cara01idescuela'];
+		if (isset($acara49idescuela[$i_cara49idescuela])==0){
+			$sSQL='SELECT core12nombre FROM core12escuela WHERE core12id='.$i_cara49idescuela.'';
+			$tablae=$objDB->ejecutasql($sSQL);
+			if ($objDB->nf($tablae)>0){
+				$filae=$objDB->sf($tablae);
+				$acara49idescuela[$i_cara49idescuela]=str_replace($cSepara, $cComplementa, $filae['core12nombre']);
+				}else{
+				$acara49idescuela[$i_cara49idescuela]='';
+				}
+			}
+		$lin_cara01idescuela=$cSepara.utf8_decode($acara49idescuela[$i_cara49idescuela]);
+		$i_cara49idprograma=$fila['cara01idprograma'];
+		if (isset($acara49idprograma[$i_cara49idprograma])==0){
+			$sSQL='SELECT core09nombre FROM core09programa WHERE core09id='.$i_cara49idprograma.'';
+			$tablae=$objDB->ejecutasql($sSQL);
+			if ($objDB->nf($tablae)>0){
+				$filae=$objDB->sf($tablae);
+				$acara49idprograma[$i_cara49idprograma]=str_replace($cSepara, $cComplementa, $filae['core09nombre']);
+				}else{
+				$acara49idprograma[$i_cara49idprograma]='';
+				}
+			}
+		$lin_cara01idprograma=$cSepara.utf8_decode($acara49idprograma[$i_cara49idprograma]);
 		if (true){
 			$iTer=$fila['cara01idtercero'];
 			if (isset($aSys11[$iTer]['doc'])==0){
@@ -189,7 +243,7 @@ WHERE TB.cara01idperaca='.$_REQUEST['v3'].''.$sWhere.' AND TB.cara01completa="S"
 		if ($fila['cara01fechaconfirmadisc']!=0){
 			$lin_cara01fechaconfirmadisc=$cSepara.'Si';
 			}
-		$sBloque1=''.$lin_cara01idzona.$lin_cara01idcead.$lin_cara01idtercero.$lin_cara01discsensorial.$lin_cara01discfisica.$lin_cara01disccognitiva.$lin_cara01perayuda.$lin_cara01perotraayuda.$lin_cara01fechaconfirmadisc;
+		$sBloque1=''.$lin_cara01idzona.$lin_cara01idcead.$lin_cara01idescuela.$lin_cara01idprograma.$lin_cara01idtercero.$lin_cara01discsensorial.$lin_cara01discfisica.$lin_cara01disccognitiva.$lin_cara01perayuda.$lin_cara01perotraayuda.$lin_cara01fechaconfirmadisc;
 		$objplano->AdicionarLinea($sBloque1);
 		}
 	$objDB->CerrarConexion();

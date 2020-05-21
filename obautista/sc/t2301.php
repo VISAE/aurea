@@ -3,6 +3,12 @@
 --- © Angel Mauro Avellaneda Barreto - UNAD - 2018 ---
 --- angel.avellaneda@unad.edu.co - http://www.unad.edu.co
 --- Modelo Version 2.21.0 viernes, 22 de junio de 2018
+---
+--- Cambios 18 de mayo de 2020
+--- 1. interpretación cualitativa de los campos de país y ciudad
+--- 2. Ajustes en encabezados
+--- Omar Augusto Bautista Mora - UNAD - 2020
+--- omar.bautista@unad.edu.co
 */
 /*
 error_reporting(E_ALL);
@@ -48,6 +54,8 @@ if (isset($_REQUEST['v5'])==0){$_REQUEST['v5']='';}
 if (isset($_REQUEST['v6'])==0){$_REQUEST['v6']='';}
 if (isset($_REQUEST['v7'])==0){$_REQUEST['v7']=1;}
 if (isset($_REQUEST['v8'])==0){$_REQUEST['v8']='';}
+if (isset($_REQUEST['v9'])==0){$_REQUEST['v9']='';}
+if (isset($_REQUEST['v10'])==0){$_REQUEST['v10']='';}
 if (isset($_REQUEST['rdebug'])==0){$_REQUEST['rdebug']=0;}
 if ($iReporte==2301){$bEntra=true;}
 if ($iReporte==2350){$bEntra=true;}
@@ -344,6 +352,13 @@ $cSepara.'Danza clásica'.$cSepara.'Danza contemporánea'.$cSepara.'Danza folklo
 		}else{
 		$objplano->AdicionarLinea($sTitulo1.$sTitulo2.$sTitulo3.$sTitulo4.$sTitulo5.$sTitulo6.$sTitulo7.$sTituloConsejero);
 		$objplano->AdicionarLinea($sBloque1.$sBloque2.$sBloque3.$sBloque4.$sBloque5.$sBloque6.$sBloque7.$sBloqueConsejero);
+		}
+	if ($_REQUEST['v10']!=''){
+		$sWhere=$sWhere.' AND TB.cara01idprograma='.$_REQUEST['v10'].' ';
+		}else{
+		if ($_REQUEST['v9']!=''){
+			$sWhere=$sWhere.' AND TB.cara01idescuela='.$_REQUEST['v9'].' ';
+			}
 		}
 	$sSQL='SELECT TB.* 
 FROM cara01encuesta AS TB'.$sTablaConvenio.' 

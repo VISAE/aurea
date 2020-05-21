@@ -7,8 +7,12 @@
 /** Archivo para reportes tipo csv 2333.
 * Aquí se genera un archivo tipo csv con la siguiente estructura (indicar estructura).
 * @author Angel Mauro Avellaneda Barreto - angel.avellaneda@unad.edu.co
-* @author Omar Augusto Bautista Mora - omar.bautista@unad.edu.co
 * @date Wednesday, October 30, 2019
+ *
+ * Cambios 20 de mayo de 2020
+ * 1. Agrega a consulta acompañamiento por Escuela y Programa
+ * Omar Augusto Bautista Mora - UNAD - 2020
+ * omar.bautista@unad.edu.co
 */
 if (file_exists('./err_control.php')){require './err_control.php';}
 if (!file_exists('./app.php')){

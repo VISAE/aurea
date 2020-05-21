@@ -4,6 +4,17 @@
 --- angel.avellaneda@unad.edu.co - http://www.unad.edu.co
 --- Modelo Versión 2.21.0 jueves, 21 de junio de 2018
 */
+/** Archivo caraconsolidado.php.
+* Modulo 2350
+* @author Angel Mauro Avellaneda Barreto - angel.avellaneda@unad.edu.co
+* @param debug=1 (Opcional), bandera para indicar si se generan datos de depuración
+* @date Wednesday, June 21, 2018*
+*
+* Cambios 21 de mayo de 2020
+* 1. Adición de combos de Escuela y Programa
+* Omar Augusto Bautista Mora - UNAD - 2020
+* omar.bautista@unad.edu.co
+*/
 if (file_exists('./err_control.php')){require './err_control.php';}
 $bDebug=false;
 $sDebug='';
@@ -143,6 +154,7 @@ require 'lib2350.php';
 $xajax=new xajax();
 $xajax->configure('javascript URI', $APP->rutacomun.'xajax/');
 $xajax->register(XAJAX_FUNCTION,'f2350_Combocore50idcentro');
+$xajax->register(XAJAX_FUNCTION,'f2350_Combocore50idprograma');
 $xajax->register(XAJAX_FUNCTION,'sesion_abandona_V2');
 $xajax->register(XAJAX_FUNCTION,'sesion_mantenerV4');
 $xajax->register(XAJAX_FUNCTION,'f2350_HtmlTabla');
@@ -166,6 +178,8 @@ if (isset($_REQUEST['boculta2350'])==0){$_REQUEST['boculta2350']=0;}
 if (isset($_REQUEST['core50idperaca'])==0){$_REQUEST['core50idperaca']='';}
 if (isset($_REQUEST['core50idzona'])==0){$_REQUEST['core50idzona']='';}
 if (isset($_REQUEST['core50idcentro'])==0){$_REQUEST['core50idcentro']='';}
+if (isset($_REQUEST['core50idescuela'])==0){$_REQUEST['cara50idescuela']='';}
+if (isset($_REQUEST['core50idprograma'])==0){$_REQUEST['cara50idprograma']='';}
 if (isset($_REQUEST['core50idtipo'])==0){$_REQUEST['core50idtipo']='';}
 if (isset($_REQUEST['cara50poblacion'])==0){$_REQUEST['cara50poblacion']=1;}
 // Espacio para inicializar otras variables
@@ -175,6 +189,13 @@ if (isset($_REQUEST['bconvenio'])==0){$_REQUEST['bconvenio']='';}
 //if (isset($_REQUEST['blistar'])==0){$_REQUEST['blistar']='';}
 //limpiar la pantalla
 if ($_REQUEST['paso']==-1){
+	$_REQUEST['core50idperaca']='';
+	$_REQUEST['core50idzona']='';
+	$_REQUEST['core50idcentro']='';
+	$_REQUEST['core50idescuela']='';
+	$_REQUEST['core50idprograma']='';
+	$_REQUEST['core50tipo']='';
+	$_REQUEST['cara50poblacion']='';
 	$_REQUEST['paso']=0;
 	}
 //AQUI SE DEBEN CARGAR TODOS LOS DATOS QUE LA FORMA NECESITE.
@@ -213,6 +234,11 @@ $objCombos->nuevo('core50idzona', $_REQUEST['core50idzona'], $bConVacio, '{'.$ET
 $objCombos->sAccion='carga_combo_core50idcentro();';
 $html_core50idzona=$objCombos->html($sSQL, $objDB);
 $html_core50idcentro=f2350_HTMLComboV2_core50idcentro($objDB, $objCombos, $_REQUEST['core50idcentro'], $_REQUEST['core50idzona']);
+$objCombos->nuevo('core50idescuela', $_REQUEST['core50idescuela'], true, '{'.$ETI['msg_todos'].'}');
+$objCombos->sAccion='carga_combo_core50idprograma();';
+$sSQL='SELECT core12id AS id, core12nombre AS nombre FROM core12escuela WHERE core12tieneestudiantes="S" ORDER BY core12nombre';
+$html_core50idescuela=$objCombos->html($sSQL, $objDB);
+$html_core50idprograma=f2350_HTMLComboV2_core50idprograma($objDB, $objCombos, $_REQUEST['core50idprograma'], $_REQUEST['core50idescuela']);
 $objCombos->nuevo('core50idtipo', $_REQUEST['core50idtipo'], true, '{'.$ETI['msg_todos'].'}');
 $sSQL='SELECT cara11id AS id, cara11nombre AS nombre FROM cara11tipocaract ORDER BY cara11nombre';
 $html_core50idtipo=$objCombos->html($sSQL, $objDB);
@@ -353,6 +379,8 @@ function asignarvariables(){
 	window.document.frmimpp.v6.value=window.document.frmedita.core50idtipo.value;
 	window.document.frmimpp.v7.value=window.document.frmedita.cara50poblacion.value;
 	window.document.frmimpp.v8.value=window.document.frmedita.bconvenio.value;
+    window.document.frmimpp.v9.value=window.document.frmedita.core50idescuela.value;
+    window.document.frmimpp.v10.value=window.document.frmedita.core50idprograma.value;
 	window.document.frmimpp.separa.value=window.document.frmedita.csv_separa.value.trim();
 	}
 function imprimeexcel(){
@@ -395,6 +423,11 @@ function carga_combo_core50idcentro(){
 	var params=new Array();
 	params[0]=window.document.frmedita.core50idzona.value;
 	xajax_f2350_Combocore50idcentro(params);
+	}
+function carga_combo_core50idprograma(){
+	var params=new Array();
+	params[0]=window.document.frmedita.core50idescuela.value;
+	xajax_f2350_Combocore50idprograma(params);
 	}
 function paginarf2350(){
 	var params=new Array();
@@ -452,6 +485,8 @@ function cierraDiv96(ref){
 <input id="v6" name="v6" type="hidden" value="" />
 <input id="v7" name="v7" type="hidden" value="" />
 <input id="v8" name="v8" type="hidden" value="" />
+<input id="v9" name="v9" type="hidden" value="" />
+<input id="v10" name="v10" type="hidden" value="" />
 <input id="iformato94" name="iformato94" type="hidden" value="0" />
 <input id="separa" name="separa" type="hidden" value="," />
 <input id="rdebug" name="rdebug" type="hidden" value="<?php echo $_REQUEST['debug']; ?>"/>
@@ -559,6 +594,30 @@ echo $ETI['core50idcentro'];
 <div id="div_core50idcentro">
 <?php
 echo $html_core50idcentro;
+?>
+</div>
+</label>
+<div class="salto1px"></div>
+<label class="Label200">
+<?php
+echo $ETI['core50idescuela'];
+?>
+</label>
+<label>
+<?php
+echo $html_core50idescuela;
+?>
+</label>
+<div class="salto1px"></div>
+<label class="Label200">
+<?php
+echo $ETI['core50idprograma'];
+?>
+</label>
+<label>
+<div id="div_core50idprograma">
+<?php
+echo $html_core50idprograma;
 ?>
 </div>
 </label>

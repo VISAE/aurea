@@ -9,6 +9,12 @@
 * Libreria 2336 cara33rptconsolacom.
 * @author Angel Mauro Avellaneda Barreto - angel.avellaneda@unad.edu.co
 * @date Wednesday, October 30, 2019
+ *
+ * Cambios 21 de mayo de 2020
+ * 1. Adición de función f2336_HTMLComboV2_cara33idprograma
+ * 2. Adición de función f2336_Combocara33idprograma
+ * Omar Augusto Bautista Mora - UNAD - 2020
+ * omar.bautista@unad.edu.co
 */
 function f2336_HTMLComboV2_cara33idcentro($objDB, $objCombos, $valor, $vrcara33idzona){
 	require './app.php';
@@ -222,6 +228,33 @@ function f2336_HtmlTabla($aParametros){
 	if ($bDebug){
 		$objResponse->assign('div_debug', 'innerHTML', $sDebug);
 		}
+	return $objResponse;
+	}
+function f2336_HTMLComboV2_cara33idprograma($objDB, $objCombos, $valor, $vrcara33idescuela){
+	require './app.php';
+	$mensajes_todas=$APP->rutacomun.'lg/lg_todas_'.$_SESSION['unad_idioma'].'.php';
+	if (!file_exists($mensajes_todas)){$mensajes_todas=$APP->rutacomun.'lg/lg_todas_es.php';}
+	require $mensajes_todas;
+	//@@ Se debe arreglar la condicion..
+	$sCondi='core09idescuela="'.$vrcara33idescuela.'"';
+	if ($sCondi!=''){$sCondi=' WHERE '.$sCondi;}
+	$objCombos->nuevo('cara33idprograma', $valor, true, '{'.$ETI['msg_todos'].'}');
+	$sSQL='SELECT core09id AS id, core09nombre AS nombre FROM core09programa'.$sCondi;
+	$res=$objCombos->html($sSQL, $objDB);
+	return $res;
+	}
+function f2336_Combocara33idprograma($aParametros){
+	$_SESSION['u_ultimominuto']=iminutoavance();
+	if(!is_array($aParametros)){$aParametros=json_decode(str_replace('\"','"',$aParametros),true);}
+	require './app.php';
+	$objDB=new clsdbadmin($APP->dbhost, $APP->dbuser, $APP->dbpass, $APP->dbname);
+	if ($APP->dbpuerto!=''){$objDB->dbPuerto=$APP->dbpuerto;}
+	$objDB->xajax();
+	$objCombos=new clsHtmlCombos('n');
+	$html_cara33idprograma=f2336_HTMLComboV2_cara33idprograma($objDB, $objCombos, '', $aParametros[0]);
+	$objDB->CerrarConexion();
+	$objResponse=new xajaxResponse();
+	$objResponse->assign('div_cara33idprograma', 'innerHTML', $html_cara33idprograma);
 	return $objResponse;
 	}
 ?>

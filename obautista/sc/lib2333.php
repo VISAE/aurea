@@ -9,6 +9,12 @@
 * Libreria 2333 cara33rptconsolacom.
 * @author Angel Mauro Avellaneda Barreto - angel.avellaneda@unad.edu.co
 * @date Wednesday, October 30, 2019
+ *
+ * Cambios 20 de mayo de 2020
+ * 1. Adición de función f2333_HTMLComboV2_cara33idprograma
+ * 2. Adición de función f2333_Combocara33idprograma
+ * Omar Augusto Bautista Mora - UNAD - 2020
+ * omar.bautista@unad.edu.co
 */
 function f2333_HTMLComboV2_cara33idcentro($objDB, $objCombos, $valor, $vrcara33idzona){
 	require './app.php';

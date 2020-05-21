@@ -8,7 +8,12 @@
 * Modulo 2333 cara33rptconsolacom.
 * @author Angel Mauro Avellaneda Barreto - angel.avellaneda@unad.edu.co
 * @param debug=1 (Opcional), bandera para indicar si se generan datos de depuración
-* @date Wednesday, October 30, 2019
+* @date Wednesday, October 30, 2019*
+ *
+ * Cambios 20 de mayo de 2020
+ * 1. Adición de combos de Escuela y Programa
+ * Omar Augusto Bautista Mora - UNAD - 2020
+ * omar.bautista@unad.edu.co
 */
 if (file_exists('./err_control.php')){require './err_control.php';}
 $bDebug=false;
