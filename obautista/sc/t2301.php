@@ -4,8 +4,8 @@
 --- angel.avellaneda@unad.edu.co - http://www.unad.edu.co
 --- Modelo Version 2.21.0 viernes, 22 de junio de 2018
 ---
---- Cambios 18 de mayo de 2020
---- 1. interpretación cualitativa de los campos de país y ciudad
+--- Cambios 22 de mayo de 2020
+--- 1. interpretación cualitativa de los campos de país, ciudad, puntaje factores y pruebas
 --- 2. Ajustes en encabezados
 --- Omar Augusto Bautista Mora - UNAD - 2020
 --- omar.bautista@unad.edu.co
@@ -45,6 +45,77 @@ function f2301_NomEstrado($sId){
 		case 6:$res='Seis';break;
 		}
 	return $res;
+	}
+function f2301_NombrePuntaje($sCompetencia,$iValor){
+	$sValor='';
+	switch($sCompetencia){
+		case 'puntaje':
+		if($iValor>=24 && $iValor<=30){
+			$sValor='Bajo';
+			}else{
+			if($iValor>=17 && $iValor<=23){
+				$sValor='Medio';
+				}else{
+				if($iValor>=10 && $iValor<=16){
+					$sValor='Alto';
+					}else{
+					$sValor='Sin definir';
+					}
+				}
+			}
+		break;
+		case 'lectura':
+		if($iValor>=0 && $iValor<=40){
+			$sValor='Bajo';
+			}else{
+			if($iValor>=50 && $iValor<=90){
+				$sValor='Medio';
+				}else{
+				if($iValor>=100 && $iValor<=150){
+					$sValor='Alto';
+					}else{
+					$sValor='Sin definir';
+					}
+				}
+			}
+		break;
+		case 'digital':
+		case 'ingles':
+		if($iValor>=0 && $iValor<=40){
+			$sValor='Bajo';
+			}else{
+			if($iValor>=50 && $iValor<=80){
+				$sValor='Medio';
+				}else{
+				if($iValor>=90 && $iValor<=120){
+					$sValor='Alto';
+					}else{
+					$sValor='Sin definir';
+					}
+				}
+			}
+		break;
+		case 'razona':
+		case 'biolog':
+		case 'fisica':
+		case 'quimica':
+		if($iValor>=0 && $iValor<=30){
+			$sValor='Bajo';
+			}else{
+			if($iValor>=40 && $iValor<=60){
+				$sValor='Medio';
+				}else{
+				if($iValor>=70 && $iValor<=100){
+					$sValor='Alto';
+					}else{
+					$sValor='Sin definir';
+					}
+				}
+			}
+		break;
+
+		}
+	return $sValor;
 	}
 if (isset($_REQUEST['r'])!=0){$iReporte=numeros_validar($_REQUEST['r']);}
 if (isset($_REQUEST['clave'])==0){$_REQUEST['clave']='';}
@@ -1123,16 +1194,16 @@ WHERE TB.cara01idperaca='.$_REQUEST['v3'].''.$sWhere.' AND TB.cara01completa="S"
 			if (isset($apsico_atencion[$fila['cara01psico_atencion']])!=0){
 				$lin_cara01psico_atencion=$cSepara.str_replace($cSepara, $cComplementa, cadena_letrasynumeros(utf8_decode($apsico_atencion[$fila['cara01psico_atencion']]), ' '));
 				}
-			$lin_cara01psico_puntaje=$cSepara.$fila['cara01psico_puntaje'];
+			$lin_cara01psico_puntaje=$cSepara.f2301_NombrePuntaje('puntaje',$fila['cara01psico_puntaje']);
 			}
 		if ($aBloque[7]){
-			if ($fila['cara01fichadigital']!=-1){$lin_cara01fichadigital=$cSepara.$fila['cara01niveldigital'];}
-			if ($fila['cara01fichalectura']!=-1){$lin_cara01fichalectura=$cSepara.$fila['cara01nivellectura'];}
-			if ($fila['cara01ficharazona']!=-1){$lin_cara01ficharazona=$cSepara.$fila['cara01nivelrazona'];}
-			if ($fila['cara01fichaingles']!=-1){$lin_cara01fichaingles=$cSepara.$fila['cara01nivelingles'];}
-			if ($fila['cara01fichafisica']!=-1){$lin_cara01fichafisica=$cSepara.$fila['cara01nivelfisica'];}
-			if ($fila['cara01fichaquimica']!=-1){$lin_cara01fichaquimica=$cSepara.$fila['cara01nivelquimica'];}
-			if ($fila['cara01fichabiolog']!=-1){$lin_cara01fichabiolog=$cSepara.$fila['cara01nivelbiolog'];}
+			if ($fila['cara01fichadigital']!=-1){$lin_cara01fichadigital=$cSepara.f2301_NombrePuntaje('digital',$fila['cara01niveldigital']);}
+			if ($fila['cara01fichalectura']!=-1){$lin_cara01fichalectura=$cSepara.f2301_NombrePuntaje('lectura',$fila['cara01nivellectura']);}
+			if ($fila['cara01ficharazona']!=-1){$lin_cara01ficharazona=$cSepara.f2301_NombrePuntaje('razona',$fila['cara01nivelrazona']);}
+			if ($fila['cara01fichaingles']!=-1){$lin_cara01fichaingles=$cSepara.f2301_NombrePuntaje('ingles',$fila['cara01nivelingles']);}
+			if ($fila['cara01fichafisica']!=-1){$lin_cara01fichafisica=$cSepara.f2301_NombrePuntaje('fisica',$fila['cara01nivelfisica']);}
+			if ($fila['cara01fichaquimica']!=-1){$lin_cara01fichaquimica=$cSepara.f2301_NombrePuntaje('quimica',$fila['cara01nivelquimica']);}
+			if ($fila['cara01fichabiolog']!=-1){$lin_cara01fichabiolog=$cSepara.f2301_NombrePuntaje('biolog',$fila['cara01nivelbiolog']);}
 			}
 		if ($bConConsejero){
 			if ($fila['cara01idconsejero']==0){
