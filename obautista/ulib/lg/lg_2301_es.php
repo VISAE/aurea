@@ -626,4 +626,6 @@ $ETI['msg_r4pocotiempo']='Menos de 4 horas libres a la semana';
 
 $acara02discv2sistemica=array('No', 'Si');
 $acara02discv2multiple=array('No', 'Si');
+
+$ETI['titulo_resultados']='Resultados de las Pruebas';
 ?>

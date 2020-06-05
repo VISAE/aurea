@@ -1,14 +1,16 @@
 <?php
 /*
---- © Angel Mauro Avellaneda Barreto - UNAD - 2018 ---
+--- © Angel Mauro Avellaneda Barreto - UNAD - 2018 - 2020 ---
 --- angel.avellaneda@unad.edu.co - http://www.unad.edu.co
 --- Modelo Version 2.21.0 viernes, 22 de junio de 2018
 --- Modelo Version 2.22.2 martes, 17 de julio de 2018
+--- Modelo Version 2.25.0 viernes, 3 de abril de 2020
 */
 $ETI['app_nombre']='APP';
 $ETI['grupo_nombre']='Grupo';
 $ETI['titulo']='Encuesta';
 $ETI['titulo_sector2']='Encuesta';
+$ETI['titulo_sector93']='Cambio de periodo';
 $ETI['titulo_2301']='Encuesta';
 $ETI['titulo_2312']='Ajustar encuesta';
 $ETI['sigla_2301']='Encuesta';
@@ -16,6 +18,8 @@ $ETI['bt_ter_buscar']='Buscar tercero';
 $ETI['bt_ter_crear']='Crear tercero';
 $ETI['lnk_cargar']='Editar';
 $ETI['cara01idperaca']='Periodo';
+$ETI['msg_cara01idperaca']='Periodo actual';
+$ETI['msg_cara01idperaca_nuevo']='Nuevo periodo';
 $ETI['cara01idtercero']='Estudiante';
 $ETI['cara01id']='Ref :';
 $ETI['cara01completa']='Estado';
@@ -66,8 +70,8 @@ $ETI['cara01centroreclusion']='Centro de reclusi&oacute;n';
 $ETI['cara01discsensorial']='Sensorial';
 $ETI['cara01discfisica']='Fisica';
 $ETI['cara01disccognitiva']='Cognitiva';
-$ETI['cara01idconfirmadisc']='Confirmadisc';
-$ETI['cara01fechaconfirmadisc']='Fechaconfirmadisc';
+$ETI['cara01idconfirmadisc']='Confirmar datos de discapacidad';
+$ETI['cara01fechaconfirmadisc']='Fecha';
 
 $ETI['cara01fam_tipovivienda']='&iquest;Cu&aacute;l es su tipo de vivienda actual? ';
 $ETI['cara01fam_vivecon']='&iquest;Con qui&eacute;n vive actualmente?';
@@ -115,7 +119,7 @@ $ETI['cara01campus_mediocomunica']='&iquest;Cu&aacute;l es el medio que m&aacute
 
 $ETI['cara01lab_situacion']='&iquest;Cu&aacute;l es su situaci&oacute;n laboral actual?';
 $ETI['cara01lab_sector']='&iquest;A qu&eacute; sector econ&oacute;mico pertenece?';
-$ETI['cara01lab_caracterjuri']='&iquest;Cu&aacute;l es el car&aacute;cter jurídico de la empresa?';
+$ETI['cara01lab_caracterjuri']='&iquest;Cu&aacute;l es el car&aacute;cter jur&iacute;dico de la empresa?';
 $ETI['cara01lab_cargo']='&iquest;Cu&aacute;l es el cargo que ocupa?';
 $ETI['cara01lab_antiguedad']='&iquest;Cu&aacute;l es su antig&uuml;edad en el cargo actual?';
 $ETI['cara01lab_tipocontrato']='&iquest;Qu&eacute; tipo de contrato tiene actualmente?';
@@ -142,7 +146,7 @@ $ETI['cara01bien_teatro']='Teatro';
 $ETI['cara01bien_danza']='Danza';
 $ETI['cara01bien_musica']='M&uacute;sica';
 $ETI['cara01bien_circo']='Circo';
-$ETI['cara01bien_artplast']='Artes plasticas';
+$ETI['cara01bien_artplast']='Artes pl&aacute;sticas';
 $ETI['cara01bien_cuenteria']='Cuenter&iacute;a';
 $ETI['cara01bien_interesreparte']='&iquest;Est&aacute; interesado en hacer parte de un grupo representativo en artes y cultura?';
 $ETI['cara01bien_arteint']='seleccione en cu&aacute;l';
@@ -152,28 +156,29 @@ $ETI['cara01bien_nivelinter']='En escala de 1 a 10 su dominio del instrumento mu
 $ETI['cara01bien_danzatipo']='S&iacute; usted practica danza por favor indique el g&eacute;nero:';
 $ETI['cara01bien_danza_mod']='Ritmos modernos (Salsa, Bachata)';
 $ETI['cara01bien_danza_clas']='Danza cl&aacute;sica';
-$ETI['cara01bien_danza_cont']='Danza contemporanea';
+$ETI['cara01bien_danza_cont']='Danza contempor&aacute;nea';
 $ETI['cara01bien_danza_folk']='Danza folklorica colombiana';
 $ETI['cara01bien_niveldanza']='En escala de 1 a 10 su experiencia en la danza que practica es :';
 
-$ETI['cara01bien_emprendedor']='&iquest;Cuenta usted con un proyecto innovador de emprendimiento?';
-$ETI['cara01bien_nombreemp']='Escriba el nombre de su proyecto: ';
-$ETI['cara01bien_capacempren']='&iquest;Esta interesado en recibir capacitaci&oacute;n en temas de emprendimiento?';
+$ETI['cara01bien_emprendedor']='&iquest;Cuenta Ud. con una empresa que de respuesta a una necesidad social en su comunidad?';
+$ETI['cara01bien_nombreemp']='Qu&eacute; necesidad cubre? ';
+$ETI['cara01bien_capacempren']='&iquest;En qu&eacute; temas de emprendimiento le gustaría recibir capacitaci&oacute;n?';
 $ETI['cara01bien_tipocapacita']='Por favor indique que capacitaci&oacute;n le gustar&iacute;a:';
-$ETI['cara01bien_impvidasalud']='&iquest;Para usted es importante mantener un estilo de vida saludable?';
-$ETI['cara01bien_estraautocuid']='&iquest;Le gustar&iacute;a conocer estrategias de autocuidado?';
-$ETI['cara01bien_pv']='En su proyecto de vida &iquest;Qu&eacute; aspectos le gustar&iacute;a fortalecer?';
-$ETI['cara01bien_pv_personal']='Personal';
+$ETI['cara01bien_impvidasalud']='&iquest;Cu&aacute;les cree que son las causas m&aacute;s frecuentes del estr&eacute;s?';
+$ETI['cara01bien_estraautocuid']='&iquest;A trav&eacute;s de que estrategias le gustar&iacute;a conocer el autocuidado?';
+$ETI['cara01bien_pv']='Proyecto de vida';
+$ETI['cara01bien_pv_personal']='&iquest;Qu&eacute; temas le gustaría abordar en la UNAD para su crecimiento personal?';
 $ETI['cara01bien_pv_familiar']='Familiar';
 $ETI['cara01bien_pv_academ']='Acad&eacute;mico';
 $ETI['cara01bien_pv_labora']='Laboral';
 $ETI['cara01bien_pv_pareja']='Pareja';
-$ETI['cara01bien_amb']='&iquest;Dentro de  sus h&aacute;bitos cotidianos tiene por lo menos una pr&aacute;ctica de respeto hacia el Medio Ambiente?';
-$ETI['cara01bien_ambitem']='Por favor indique cu&aacute;les son esas pr&aacute;cticas.';
-$ETI['cara01bien_amb_agu']='Ahorras de agua en la ducha';
+$ETI['msg_medioambiente']='Medio ambiente';
+$ETI['cara01bien_amb']='&iquest;C&oacute;mo define la educaci&oacute;n ambiental?';
+$ETI['cara01bien_ambitem']='&iquest;Cu&aacute;l de estos h&aacute;bitos cotidianos realiza usted como una pr&aacute;ctica de respeto hacia Medio Ambiente?';
+$ETI['cara01bien_amb_agu']='Ahorras de agua en la ducha y/o al cepillarse';
 $ETI['cara01bien_amb_bom']='Usas bombillas ahorradoras';
 $ETI['cara01bien_amb_car']='Desconectas el cargador del celular cuando no esta en uso';
-$ETI['cara01bien_amb_info']='Le gustar&iacute;a recibir informaci&oacute;n sobre tem&aacute;ticas relacionadas con el cuidado del medio ambiente';
+$ETI['cara01bien_amb_info']='Apagas las luces que no se requieran';
 $ETI['cara01bien_amb_temas']='Relacione las tem&aacute;ticas de inter&eacute;s';
 
 $ETI['cara01psico_costoemocion']='&iquest;Le cuesta expresar sus emociones con palabras?';
@@ -187,7 +192,7 @@ $ETI['cara01psico_satisfaccion']='En t&eacute;rminos generales, &iquest;est&aacu
 $ETI['cara01psico_discusiones']='&iquest;C&oacute;mo act&uacute;a frente a una discusi&oacute;n?';
 $ETI['cara01psico_atencion']='&iquest;C&oacute;mo reacciona ante las siguientes situaciones sociales? (hablar en p&uacute;blico, ser el centro de atenci&oacute;n, pedir ayuda a extra&ntilde;os)';
  
- $ETI['cara01niveldigital']='Nivel';
+$ETI['cara01niveldigital']='Nivel';
 $ETI['cara01nivellectura']='Nivel';
 $ETI['cara01nivelrazona']='Nivel';
 $ETI['cara01nivelingles']='Nivel';
@@ -226,10 +231,28 @@ $ETI['cara01desertor']='Desertor';
 $ETI['cara01factorprincipaldesc']='Factor principal de deserci&oacute;n';
 $ETI['cara01psico_puntaje']='Puntaje Psicosocial';
 
-$ETI['msg_psico_alto']='Es momento de generar cambios en su vida. Lo invitamos a buscar nuevas estrategias de regulación emocional y solución de conflictos  para evitar dificultades en tu proceso académico.';
-$ETI['msg_psico_medio']='Evidencias una adecuada regulación emocional y manejo de conflictos, sin embargo lo invitamos a revisar las estrategias usadas hasta el momento para disminuir posibles dificultades en su proceso académico.';
-$ETI['msg_psico_bajo']='¡Felicitaciones! Evidencia una óptima regulación emocional frente a situaciones novedosas, inciertas y conflictivas. Esto aportará positivamente a su proceso académico.';
+$ETI['cara01numacompanamentos']='N&deg; acompa&ntilde;amientos';
+$ETI['cara01idperiodoacompana']='Periodo acompa&ntilde;amiento';
+$ETI['cara01fechacierreacom']='Cierre acompa&ntilde;amientos';
+$ETI['cara01formaacomp']='Forma acompa&ntilde;amiento';
 
+$ETI['msg_psico_alto']='Es momento de generar cambios en su vida. Lo invitamos a buscar nuevas estrategias de regulaci&oacute;n emocional y soluci&oacute;n de conflictos  para evitar dificultades en tu proceso acad&eacute;mico.';
+$ETI['msg_psico_medio']='Evidencias una adecuada regulaci&oacute;n emocional y manejo de conflictos, sin embargo lo invitamos a revisar las estrategias usadas hasta el momento para disminuir posibles dificultades en su proceso acad&eacute;mico.';
+$ETI['msg_psico_bajo']='¡Felicitaciones! Evidencia una &oacute;ptima regulaci&oacute;n emocional frente a situaciones novedosas, inciertas y conflictivas. Esto aportar&aacute; positivamente a su proceso acad&eacute;mico.';
+$ETI['cara01factorriesgoacomp']='Factorriesgoacomp';
+$ETI['cara01factorprincpermanencia']='Factor principal de permanencia';
+
+
+$ETI['cara01discversion']='Versi&oacute;n de las discapacidades';
+$ETI['cara01discv2sensorial']='Discapacidad Sensorial';
+$ETI['cara02discv2intelectura']='Discapacidad Intelectual';
+$ETI['cara02discv2fisica']='Discapacidad F&iacute;sica o Motora';
+$ETI['cara02discv2psico']='Diversidad o Discapacidad Mental Psicosocial';
+$ETI['cara02discv2sistemica']='Discapacidad Sist&eacute;mica';
+$ETI['cara02discv2sistemicaotro']='Otra';
+$ETI['cara02discv2multiple']='Discapacidad M&uacute;ltiple';
+$ETI['cara02discv2multipleotro']='Otra';
+$ETI['cara02talentoexcepcional']='Talento Excepcional';
 
 $ERR['cara01idperaca']='Necesita el dato Peraca';
 $ERR['cara01idtercero']='Necesita el dato Tercero';
@@ -419,27 +442,47 @@ $ERR['cara01criteriodesc']='Necesita el dato '.$ETI['cara01criteriodesc'];
 $ERR['cara01desertor']='Necesita el dato '.$ETI['cara01desertor'];
 $ERR['cara01factorprincipaldesc']='Necesita el dato '.$ETI['cara01factorprincipaldesc'];
 $ERR['cara01psico_puntaje']='Necesita el dato '.$ETI['cara01psico_puntaje'];
+$ERR['cara01numacompanamentos']='Necesita el dato '.$ETI['cara01numacompanamentos'];
+$ERR['cara01factorriesgoacomp']='Necesita el dato '.$ETI['cara01factorriesgoacomp'];
+$ERR['cara01idcursocatedra']='Necesita el dato '.$ETI['cara01idcursocatedra'];
+$ERR['cara01idgrupocatedra']='Necesita el dato '.$ETI['cara01idgrupocatedra'];
+$ERR['cara01factorprincpermanencia']='Necesita el dato '.$ETI['cara01factorprincpermanencia'];
 
-$ERR['msg_noresueltas']='No se han sido resueltas las preguntas: ';
+$ERR['cara01discversion']='Necesita el dato '.$ETI['cara01discversion'];
+$ERR['cara01discv2sensorial']='Necesita el dato '.$ETI['cara01discv2sensorial'];
+$ERR['cara02discv2intelectura']='Necesita el dato '.$ETI['cara02discv2intelectura'];
+$ERR['cara02discv2fisica']='Necesita el dato '.$ETI['cara02discv2fisica'];
+$ERR['cara02discv2psico']='Necesita el dato '.$ETI['cara02discv2psico'];
+$ERR['cara02discv2sistemica']='Necesita el dato '.$ETI['cara02discv2sistemica'];
+$ERR['cara02discv2sistemicaotro']='Necesita el dato '.$ETI['cara02discv2sistemicaotro'];
+$ERR['cara02discv2multiple']='Necesita el dato '.$ETI['cara02discv2multiple'];
+$ERR['cara02discv2multipleotro']='Necesita el dato '.$ETI['cara02discv2multipleotro'];
+$ERR['cara02talentoexcepcional']='Necesita el dato '.$ETI['cara02talentoexcepcional'];
+
+$ERR['msg_noresueltas']='No se han resueltas las preguntas: ';
 $ETI['lnk_acargo']='A CARGO';
 $ETI['lnk_soyconsejero']='Soy Su Consejero';
 $ETI['msg_contacto']='Datos de contacto';
+$ETI['msg_emprendimiento']='Emprendimiento';
+$ETI['msg_estilodevida']='Estilo de vida saludable';
+$ETI['msg_proyvida']='Proyecto de vida';
+
 
 $aestrato=array('','Uno','Dos','Tres','Cuatro','Cinco','Seis');
 $iestrato=6;
 $afam_tipovivienda=array('','Propia','Familiar','Arrendada');
 $ifam_tipovivienda=3;
-$afam_vivecon=array('', 'Padres', 'Solo/a', 'Esposo/a','Compa&ntilde;eros de trabajo', 'Pareja', 'Familiar', 'Otro');
+$afam_vivecon=array('', 'Padres', 'Solo/a', 'Esposo/a','Compañeros de trabajo', 'Pareja', 'Familiar', 'Otro');
 $ifam_vivecon=7;
 $afam_numpersgrupofam=array('', '1', '2', '3','Mas de tres');
 $ifam_numpersgrupofam=4;
-$afam_hijos=array('', '1', '2', '3','Mas de tres', '', '', '', '', 'Ninguno');
+$afam_hijos=array('', '1', '2', '3','Más de tres', '', '', '', '', 'Ninguno');
 $ifam_hijos=9;
-$afam_personasacargo=array('', '1', '2', '3','M&aacute;s de tres', '', '', '', '', 'Ninguno');
+$afam_personasacargo=array('', '1', '2', '3','Más de tres', '', '', '', '', 'Ninguno');
 $ifam_personasacargo=9;
 $aescolaridad=array('', 'Primaria', 'Secundaria', 'Universitario','Posgradual', '', '', '', '', 'Ninguno');
 $iescolaridad=9;
-$afam_numhermanos=array('', 'Uno', 'Dos', 'Tres','M&aacute;s de tres', '', '', '', '', 'Ninguno');
+$afam_numhermanos=array('', 'Uno', 'Dos', 'Tres','Más de tres', '', '', '', '', 'Ninguno');
 $ifam_numhermanos=9;
 $afam_posicionherm=array('', 'Mayor', 'Intermedio', 'Menor','', '', '', '', '', 'Ninguno');
 $ifam_posicionherm=9;
@@ -453,7 +496,7 @@ $acara01acad_tiemposinest=array('', 'Menos de 1 año', '', 'De 1 a 3 años', '',
 $icara01acad_tiemposinest=6;
 $acara01campus_energia=array('', 'Permanente (sin interrupciones programadas a lo largo de la semana)', 'Intermitente (servicio interrumpido programado al menos dos veces por semana)', 'Escaso (con servicio disponible 1 o 2 días por semana)');
 $icara01campus_energia=3;
-$acara01campus_internetreside=array('', 'Permanente (sin interrupciones)', 'Intermitente (servicio interrumpido)', 'No cuenta con el servicio (con servicio disponible 1 o 2 d&iacute;as por semana)');
+$acara01campus_internetreside=array('', 'Permanente (sin interrupciones)', 'Intermitente (servicio interrumpido)', 'No cuenta con el servicio (con servicio disponible 1 o 2 días por semana)');
 $icara01campus_internetreside=3;
 $acara01campus_usocorreo=array('', 'Permanente', 'Frecuente (lo consulta y emite mensajes por lo menos 1 vez al día)', 'Ocasional (lo consulta y emite mensajes hasta 3 veces por semana)', 'No usa correo electrónico');
 $icara01campus_usocorreo=4;
@@ -489,6 +532,19 @@ $acara01bien_nivelinter=array('', '1', '2', '3', '4', '5', '6', '7', '8', '9', '
 $icara01bien_nivelinter=10;
 $acara01bien_niveldanza=array('', '1', '2', '3', '4', '5', '6', '7', '8', '9', '10');
 $icara01bien_niveldanza=10;
+$acara01bien_capacempren=array('', 'Estrategias de mercadeo', 'Finanzas', 'Servicio al Cliente', 'Creación de empresa', 'Ideas de negocio');
+$icara01bien_capacempren=5;
+$acara01bien_impvidasalud=array('', 'Factores económicos', 'Sobrecarga de trabajo', 'Falta de satisfacción laboral', 'Relaciones personales', 'Falta de interés', 'No decir nunca NO');
+$icara01bien_impvidasalud=6;
+$acara01bien_estraautocuid=array('', 'Meditación', 'Alimentación', 'Desarrollo de un buen estado físico', 'Distracción y buen humor');
+$icara01bien_estraautocuid=4;
+$acara01bien_pv_personal=array('', 'Intimidad y sexualidad', 'Proyecto de vida', 'Adicciones', 'Manejo de emociones', 'Trastornos alimenticios', 'Obsesiones', 'Relaciones interpersonales', 'Duelo');
+$icara01bien_pv_personal=8;
+$acara01bien_amb=array('', 'Problemática actual de calentamiento global', 
+'Proceso formativo que  tiene como objetivo la toma de conciencia frente a la importancia que tiene el medio ambiente.', 
+'Estimulación de los ciudadanos hacia el desarrollo de proyectos de emprendimiento ambiental aptitudes y actitudes que contribuyan al uso racional de los recursos', 
+'Problemática ambiental de manejo de residuos sólidos');
+$icara01bien_amb=4;
 
 $aCAEN=array('','Siempre','Casi siempre','Nunca');
 $iCAEN=3;
@@ -500,7 +556,7 @@ $apsico_pocotiempo=array('', 'Desisto de algunas de las responsabilidades adquir
 $ipsico_pocotiempo=3;
 $apsico_actitudvida=array('', 'Pesimista', 'Indiferente', 'Optimista');
 $ipsico_actitudvida=3;
-$apsico_duda=array('', 'Quedarme encerrado en casa por unos días abandonando mis actividades cotidianas', 'Me frusto, pero intento busca solución', 'Busco ayuda a través de videotutoriales o consultando expertos en el tema');
+$apsico_duda=array('', 'Quedarme encerrado en casa por unos días abandonando mis actividades cotidianas', 'Me frusto, pero intento buscar solución', 'Busco ayuda a través de videotutoriales o consultando expertos en el tema');
 $ipsico_duda=3;
 $apsico_problemapers=array('', 'Quedarme encerrado en casa por unos días abandonando mis actividades cotidianas', 'Sigo mis actividades, pero no logro concentrarme por pensar en la dificultad', 'Busco alternativas de solución sin perder la calma');
 $ipsico_problemapers=3;
@@ -523,6 +579,53 @@ $ETI['msg_infocontacto']='Ingrese los datos de una persona a la que podamos cont
 $ETI['msg_grupospobla']='Pertenece a alguno de estos grupos de poblaci&oacute;n:';
 $ETI['msg_discapacidades']='Presenta alguno de los siguiente tipos de discapacidades:';
 
+$ETI['msg_intro_nuevos']='<h1>Proceso de caracterizaci&oacute;n</h1>
+Recibe un saludo Unadista apreciado estudiante.<br>
+La Vicerrector&iacute;a de Servicios a Aspirantes, Estudiantes y Egresados - VISAE, de la UNAD, es la encargada de velar por los servicios y el bienestar de la comunidad Unadista. Es por ello, que ha dise&ntilde;ado la prueba de caracterizaci&oacute;n dirigida a todos los estudiantes nuevos con el objetivo de conocer a nivel multidimensional los intereses y necesidades que desde lo personal, acad&eacute;mico y laboral se puedan fortalecer.<br>
+<br>
+La prueba de caracterizaci&oacute;n identifica potencialidades y necesidades en aspectos sociodemogr&aacute;ficos, laborales, familiares, acad&eacute;micos y competencias b&aacute;sicas con las que cuenta el estudiante al ingresar a la universidad y que permite a la instituci&oacute;n ofrecer programas y servicios de acompa&ntilde;amiento y apoyo pertinentes a las caracter&iacute;sticas personales, que contribuyan al proceso formativo a trav&eacute;s del Plan de Acci&oacute;n Pedag&oacute;gico Contextualizado.<br>
+<br>
+Por la importancia y alcance de la prueba, est&aacute; es de car&aacute;cter obligatorio.<br>
+<br>
+Tenga en cuenta que para el desarrollo de la prueba debe disponer de aproximadamente 90 minutos.<br>
+<br>
+Agradecemos la disponibilidad de su tiempo en este ejercicio.<br>
+<br>
+&igrave;Bienvenido a la UNAD!<br>';
+$ETI['msg_intro_antiguos']='Estimado estudiante,<br>
+<br>
+La Vicerrector&iacute;a de Servicios a Aspirantes, Estudiantes y Egresados – VISAE,  lo invita a realizar la actualización de los siguientes datos, en pro de poder contribuir a su proceso de formaci&oacute;n de manera pertinente y oportuna. <br>
+<br> 
+Agradecemos la disponibilidad de su tiempo en este ejercicio.<br>
+<br>
+&igrave;Bienvenido a la UNAD!<br>';
+$ariesgo=array('Sin definir', 'Sin riesgo', 'Bajo', 'Alto');
+$iriesgo=3;
+
+$ETI['msg_r1zona']='Vive en zona rural';
+$ETI['msg_r1indigena']='Indigena';
+$ETI['msg_r1recluso']='Recluso';
+$ETI['msg_r1discsen']='Discapacidad Sensorial';
+$ETI['msg_r1discfis']='Discapacidad Fisica';
+$ETI['msg_r1disccog']='Discapacidad Cognitiva';
+$ETI['msg_r1desplazado']='Desplazado';
+$ETI['msg_r1acr']='ACR';
+$ETI['msg_r1depende']='Depende econ&oacute;micamente';
+
+$ETI['msg_r3tiemponoest']='Mas de 5 a&ntilde;os sin estudiar';
+$ETI['msg_r3sinequipo']='Sin equipo de acceso a internet';
+$ETI['msg_r3sincomputador']='Sin computadora';
+$ETI['msg_r3energia']='Sin electricidad permanente';
+$ETI['msg_r3internet']='Sin internet permanente';
+$ETI['msg_r3ofimatica']='No maneja paquetes ofimaticos';
+$ETI['msg_r3nocorreo']='No usa correo electr&oacute;nico';
+
+$ETI['msg_r4desempleado']='Desempleado';
+$ETI['msg_r4menos1smm']='Gana menos de un salario m&iacute;nimo';
+$ETI['msg_r4pocotiempo']='Menos de 4 horas libres a la semana';
+
 $acara02discv2sistemica=array('No', 'Si');
 $acara02discv2multiple=array('No', 'Si');
+
+$ETI['titulo_resultados']='Resultados de las Pruebas';
 ?>

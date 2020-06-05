@@ -908,6 +908,77 @@ function html_2201Tablero($id){
 <input id="cmdTablero'.$id.'" name="cmdTablero'.$id.'" type="button" value="Mis Cursos" class="BotonAzul" onclick="javascript:irtablero()" />
 </label>';
 	}
+function f2301_NombrePuntaje($sCompetencia,$iValor){
+	$sValor='';
+	switch($sCompetencia){
+		case 'puntaje':
+		if($iValor>=24 && $iValor<=30){
+			$sValor='Bajo';
+			}else{
+			if($iValor>=17 && $iValor<=23){
+				$sValor='Medio';
+				}else{
+				if($iValor>=10 && $iValor<=16){
+					$sValor='Alto';
+					}else{
+					$sValor='Sin definir';
+					}
+				}
+			}
+		break;
+		case 'lectura':
+		if($iValor>=0 && $iValor<=40){
+			$sValor='Bajo';
+			}else{
+			if($iValor>=50 && $iValor<=90){
+				$sValor='Medio';
+				}else{
+				if($iValor>=100 && $iValor<=150){
+					$sValor='Alto';
+					}else{
+					$sValor='Sin definir';
+					}
+				}
+			}
+		break;
+		case 'digital':
+		case 'ingles':
+		if($iValor>=0 && $iValor<=40){
+			$sValor='Bajo';
+			}else{
+			if($iValor>=50 && $iValor<=80){
+				$sValor='Medio';
+				}else{
+				if($iValor>=90 && $iValor<=120){
+					$sValor='Alto';
+					}else{
+					$sValor='Sin definir';
+					}
+				}
+			}
+		break;
+		case 'razona':
+		case 'biolog':
+		case 'fisica':
+		case 'quimica':
+		if($iValor>=0 && $iValor<=30){
+			$sValor='Bajo';
+			}else{
+			if($iValor>=40 && $iValor<=60){
+				$sValor='Medio';
+				}else{
+				if($iValor>=70 && $iValor<=100){
+					$sValor='Alto';
+					}else{
+					$sValor='Sin definir';
+					}
+				}
+			}
+		break;
+
+		}
+	return $sValor;
+	}
 if ($bDebug){$sDebug=$sDebug.fecha_microtiempo().' Corriendo el paso '.$_REQUEST['paso'].' antes de guardar<br>';}
 if (($_REQUEST['paso']==10)||($_REQUEST['paso']==12)){
 	$bMueveScroll=true;
@@ -2536,6 +2607,180 @@ if ($bEstudiante){
 			}
 		}
 	}
+?>
+<?php
+if ($bEstudiante){
+	if ($_REQUEST['paso']==2){
+		if ($_REQUEST['cara01completa']=='S'){
+			?>
+<button type="button" class="btn btn-primary" data-toggle="modal" data-target="#resultadosPruebas">
+  Clic Aqu&iacute; Para Ver Sus Resultados
+</button>
+
+<!-- Modal -->
+<div class="modal fade" id="resultadosPruebas" tabindex="-1" role="dialog" aria-labelledby="resultadosPruebasLabel" aria-hidden="true">
+<div class="modal-dialog" role="document">
+<div class="modal-content">
+<div class="modal-header">
+<h5 class="modal-title" id="resultadosPruebasLabel"><?php echo $ETI['titulo_resultados']; ?></h5>
+<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+  <span aria-hidden="true">&times;</span>
+</button>
+</div>
+<div class="modal-body">
+<div class="salto1px"></div>
+<div class="GrupoCampos450">
+<label class="Label220">
+<?php
+echo $ETI['cara01psico_puntaje'];
+?>
+</label>
+<label class="Label60"><div id="div_cara01psico_puntaje">
+<?php
+echo html_oculto('cara01psico_puntaje', f2301_NombrePuntaje('puntaje',$_REQUEST['cara01psico_puntaje']));
+?>
+</div></label>
+<div class="salto1px"></div>
+<div class="GrupoCamposAyuda">
+<?php
+if ($_REQUEST['cara01psico_puntaje']<17){
+  echo $ETI['msg_psico_alto'];
+  }else{
+  if ($_REQUEST['cara01psico_puntaje']<24){
+echo $ETI['msg_psico_medio'];
+}else{
+echo $ETI['msg_psico_bajo'];
+}
+  }
+?>
+<div class="salto1px"></div>
+</div>
+<div class="salto1px"></div>
+<label class="Label220">
+<?php
+echo $ETI['cara01fichadigital'];
+?>
+</label>
+<label class="Label60">
+<?php
+echo $ETI['msg_nivel'];
+?>
+</label>
+<label class="Label60">
+<?php
+echo html_oculto('cara01niveldigital', f2301_NombrePuntaje('digital',$_REQUEST['cara01niveldigital']));
+?>
+</label>
+<div class="salto1px"></div>
+<label class="Label220">
+<?php
+echo $ETI['cara01fichalectura'];
+?>
+</label>
+<label class="Label60">
+<?php
+echo $ETI['msg_nivel'];
+?>
+</label>
+<label class="Label60">
+<?php
+echo html_oculto('cara01nivellectura', f2301_NombrePuntaje('lectura',$_REQUEST['cara01nivellectura']));
+?>
+</label>
+<div class="salto1px"></div>
+<label class="Label220">
+<?php
+echo $ETI['cara01ficharazona'];
+?>
+</label>
+<label class="Label60">
+<?php
+echo $ETI['msg_nivel'];
+?>
+</label>
+<label class="Label60">
+<?php
+echo html_oculto('cara01nivelrazona', f2301_NombrePuntaje('razona',$_REQUEST['cara01nivelrazona']));
+?>
+</label>
+<div class="salto1px"></div>
+<label class="Label220">
+<?php
+echo $ETI['cara01fichaingles'];
+?>
+</label>
+<label class="Label60">
+<?php
+echo $ETI['msg_nivel'];
+?>
+</label>
+<label class="Label60">
+<?php
+echo html_oculto('cara01nivelingles', f2301_NombrePuntaje('ingles',$_REQUEST['cara01nivelingles']));
+?>
+</label>
+<div class="salto1px"></div>
+<label class="Label220">
+<?php
+echo $ETI['cara01fichabiolog'];
+?>
+</label>
+<label class="Label60">
+<?php
+echo $ETI['msg_nivel'];
+?>
+</label>
+<label class="Label60">
+<?php
+echo html_oculto('cara01nivelbiolog', f2301_NombrePuntaje('biolog',$_REQUEST['cara01nivelbiolog']));
+?>
+</label>
+<div class="salto1px"></div>
+<label class="Label220">
+<?php
+echo $ETI['cara01fichafisica'];
+?>
+</label>
+<label class="Label60">
+<?php
+echo $ETI['msg_nivel'];
+?>
+</label>
+<label class="Label60">
+<?php
+echo html_oculto('cara01nivelfisica', f2301_NombrePuntaje('fisica',$_REQUEST['cara01nivelfisica']));
+?>
+</label>
+<div class="salto1px"></div>
+<label class="Label220">
+<?php
+echo $ETI['cara01fichaquimica'];
+?>
+</label>
+<label class="Label60">
+<?php
+echo $ETI['msg_nivel'];
+?>
+</label>
+<label class="Label60">
+<?php
+echo html_oculto('cara01nivelquimica', f2301_NombrePuntaje('quimica',$_REQUEST['cara01nivelquimica']));
+?>
+</label>
+<div class="salto1px"></div>
+</div>
+</div>
+<div class="modal-footer">
+<button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
+</div>
+</div>
+</div>
+</div>
+        <?php }
+		}
+	}
+?>
+<?php
 if ($bGrupo1){
 	$sEstilo='';
 	if ($bEstudiante){
@@ -4724,7 +4969,7 @@ echo $ETI['cara01psico_puntaje'];
 </label>
 <label class="Label130"><div id="div_cara01psico_puntaje">
 <?php
-echo html_oculto('cara01psico_puntaje', $_REQUEST['cara01psico_puntaje']);
+echo html_oculto('cara01psico_puntaje', f2301_NombrePuntaje('puntaje',$_REQUEST['cara01psico_puntaje']));
 ?>
 </div></label>
 <?php
@@ -4936,7 +5181,7 @@ echo $ETI['msg_nivel'];
 </label>
 <label class="Label130">
 <?php
-echo html_oculto('cara01niveldigital', $_REQUEST['cara01niveldigital']);
+echo html_oculto('cara01niveldigital', f2301_NombrePuntaje('digital',$_REQUEST['cara01niveldigital']));
 ?>
 </label>
 <?php
@@ -5024,7 +5269,7 @@ echo $ETI['msg_nivel'];
 </label>
 <label class="Label130">
 <?php
-echo html_oculto('cara01nivellectura', $_REQUEST['cara01nivellectura']);
+echo html_oculto('cara01nivellectura', f2301_NombrePuntaje('lectura',$_REQUEST['cara01nivellectura']));
 ?>
 </label>
 <?php
@@ -5105,7 +5350,7 @@ echo $ETI['msg_nivel'];
 </label>
 <label class="Label130">
 <?php
-echo html_oculto('cara01nivelrazona', $_REQUEST['cara01nivelrazona']);
+echo html_oculto('cara01nivelrazona', f2301_NombrePuntaje('razona',$_REQUEST['cara01nivelrazona']));
 ?>
 </label>
 <?php
@@ -5186,7 +5431,7 @@ echo $ETI['msg_nivel'];
 </label>
 <label class="Label130">
 <?php
-echo html_oculto('cara01nivelingles', $_REQUEST['cara01nivelingles']);
+echo html_oculto('cara01nivelingles', f2301_NombrePuntaje('ingles',$_REQUEST['cara01nivelingles']));
 ?>
 </label>
 <?php
@@ -5267,7 +5512,7 @@ echo $ETI['msg_nivel'];
 </label>
 <label class="Label130">
 <?php
-echo html_oculto('cara01nivelbiolog', $_REQUEST['cara01nivelbiolog']);
+echo html_oculto('cara01nivelbiolog', f2301_NombrePuntaje('biolog',$_REQUEST['cara01nivelbiolog']));
 ?>
 </label>
 <?php
@@ -5348,7 +5593,7 @@ echo $ETI['msg_nivel'];
 </label>
 <label class="Label130">
 <?php
-echo html_oculto('cara01nivelfisica', $_REQUEST['cara01nivelfisica']);
+echo html_oculto('cara01nivelfisica', f2301_NombrePuntaje('fisica',$_REQUEST['cara01nivelfisica']));
 ?>
 </label>
 <?php
@@ -5429,7 +5674,7 @@ echo $ETI['msg_nivel'];
 </label>
 <label class="Label130">
 <?php
-echo html_oculto('cara01nivelquimica', $_REQUEST['cara01nivelquimica']);
+echo html_oculto('cara01nivelquimica', f2301_NombrePuntaje('quimica',$_REQUEST['cara01nivelquimica']));
 ?>
 </label>
 <?php
