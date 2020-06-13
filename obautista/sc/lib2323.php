@@ -1056,8 +1056,50 @@ WHERE cara23idencuesta='.$DATA['cara23idencuesta'].' AND cara23idtipo='.($iTipoS
 		}
 	if ($sError==''){
 		if ($DATA['paso']==10){
-			//No puede habar otra inicial si ya existe una.
-			
+			//No puede haber otra inicial si ya existe una.
+            if($iTipoSeg==1 || $iTipoSeg==3){
+                $sSeguimiento='';
+                if($iTipoSeg==1){
+                    $sSeguimiento=$acara23idtipo[1];
+                    }else{
+                    $sSeguimiento=$acara23idtipo[3];
+                    }
+                $sSQL='SELECT cara23idencuesta FROM cara23acompanamento WHERE cara23idencuesta='.$DATA['cara23idencuesta'].' AND cara23idtipo='.$iTipoSeg.'';
+                $result=$objDB->ejecutasql($sSQL);
+                if ($objDB->nf($result)!=0){
+                    $sError='Existe un seguimiento '.$sSeguimiento;
+                    }else{
+                    if (!seg_revisa_permiso($iCodModulo, 2, $objDB)){$sError=$ERR['2'];}
+                    }
+                }
+			}
+		}
+	if ($sError==''){
+		if ($DATA['paso']==10){
+			//valida cantidad intermedios.
+            if($iTipoSeg==2){
+                $sSQL='SELECT cara23idencuesta FROM cara23acompanamento WHERE cara23idencuesta='.$DATA['cara23idencuesta'].' AND cara23idtipo=2'.'';
+                $result=$objDB->ejecutasql($sSQL);
+                if ($objDB->nf($result)==4){
+                    $sError='M&aacute;ximo cuatro acompa&ntilde;amientos intermedios';
+                    }else{
+                    if (!seg_revisa_permiso($iCodModulo, 2, $objDB)){$sError=$ERR['2'];}
+                    }
+                }
+			}
+		}
+	if ($sError==''){
+		if ($DATA['paso']==10){
+			//No valida para permitir acompañamiento final.
+            if($iTipoSeg==3){
+                $sSQL='SELECT cara23idencuesta FROM cara23acompanamento WHERE cara23idencuesta='.$DATA['cara23idencuesta'].' AND cara23idtipo=2 AND cara23estado=7'.'';
+                $result=$objDB->ejecutasql($sSQL);
+                if ($objDB->nf($result)<2){
+                    $sError='Debe tener m&iacute;nimo dos acompa&ntilde;amientos intermedios';
+                    }else{
+                    if (!seg_revisa_permiso($iCodModulo, 2, $objDB)){$sError=$ERR['2'];}
+                    }
+                }
 			}
 		}
 	if ($sError==''){

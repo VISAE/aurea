@@ -191,7 +191,7 @@ $ETI['cara01psico_problemapers']='Cuando est&aacute; afrontando una dificultad p
 $ETI['cara01psico_satisfaccion']='En t&eacute;rminos generales, &iquest;est&aacute; satisfecho con qui&eacute;n es?';
 $ETI['cara01psico_discusiones']='&iquest;C&oacute;mo act&uacute;a frente a una discusi&oacute;n?';
 $ETI['cara01psico_atencion']='&iquest;C&oacute;mo reacciona ante las siguientes situaciones sociales? (hablar en p&uacute;blico, ser el centro de atenci&oacute;n, pedir ayuda a extra&ntilde;os)';
- 
+
 $ETI['cara01niveldigital']='Nivel';
 $ETI['cara01nivellectura']='Nivel';
 $ETI['cara01nivelrazona']='Nivel';
@@ -229,7 +229,7 @@ $ETI['cara01factordesc']='Total';
 $ETI['cara01criteriodesc']='Criterio de posible deserci&oacute;n';
 $ETI['cara01desertor']='Desertor';
 $ETI['cara01factorprincipaldesc']='Factor principal de deserci&oacute;n';
-$ETI['cara01psico_puntaje']='Puntaje Psicosocial';
+$ETI['cara01psico_puntaje']='Riesgo Psicosocial';
 
 $ETI['cara01numacompanamentos']='N&deg; acompa&ntilde;amientos';
 $ETI['cara01idperiodoacompana']='Periodo acompa&ntilde;amiento';
@@ -540,10 +540,10 @@ $acara01bien_estraautocuid=array('', 'Meditación', 'Alimentación', 'Desarrollo
 $icara01bien_estraautocuid=4;
 $acara01bien_pv_personal=array('', 'Intimidad y sexualidad', 'Proyecto de vida', 'Adicciones', 'Manejo de emociones', 'Trastornos alimenticios', 'Obsesiones', 'Relaciones interpersonales', 'Duelo');
 $icara01bien_pv_personal=8;
-$acara01bien_amb=array('', 'Problemática actual de calentamiento global', 
-'Proceso formativo que  tiene como objetivo la toma de conciencia frente a la importancia que tiene el medio ambiente.', 
-'Estimulación de los ciudadanos hacia el desarrollo de proyectos de emprendimiento ambiental aptitudes y actitudes que contribuyan al uso racional de los recursos', 
-'Problemática ambiental de manejo de residuos sólidos');
+$acara01bien_amb=array('', 'Problemática actual de calentamiento global',
+    'Proceso formativo que  tiene como objetivo la toma de conciencia frente a la importancia que tiene el medio ambiente.',
+    'Estimulación de los ciudadanos hacia el desarrollo de proyectos de emprendimiento ambiental aptitudes y actitudes que contribuyan al uso racional de los recursos',
+    'Problemática ambiental de manejo de residuos sólidos');
 $icara01bien_amb=4;
 
 $aCAEN=array('','Siempre','Casi siempre','Nunca');
@@ -612,6 +612,7 @@ $ETI['msg_r1desplazado']='Desplazado';
 $ETI['msg_r1acr']='ACR';
 $ETI['msg_r1depende']='Depende econ&oacute;micamente';
 
+$ETI['msg_r3otroprog']='Interes en otro programa';
 $ETI['msg_r3tiemponoest']='Mas de 5 a&ntilde;os sin estudiar';
 $ETI['msg_r3sinequipo']='Sin equipo de acceso a internet';
 $ETI['msg_r3sincomputador']='Sin computadora';

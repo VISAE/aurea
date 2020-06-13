@@ -1,6 +1,6 @@
 <?php
 /*
---- © Angel Mauro Avellaneda Barreto - UNAD - 2019 ---
+--- ï¿½ Angel Mauro Avellaneda Barreto - UNAD - 2019 ---
 --- angel.avellaneda@unad.edu.co - http://www.unad.edu.co
 */
 function f2301_InfoEncuesta($idEncuesta, $objDB, $bDebug=false){
@@ -35,6 +35,8 @@ function f2301_InfoEncuesta($idEncuesta, $objDB, $bDebug=false){
 		$aData['cara01factorprincipaldesc']=$fila['cara01factorprincipaldesc'];
 		$aData['cara01idcursocatedra']=$fila['cara01idcursocatedra'];
 		$aData['cara01factorprincpermanencia']=$fila['cara01factorprincpermanencia'];
+		$aData['cara01idzona']=$fila['cara01idzona'];
+		$aData['cara01idcead']=$fila['cara01idcead'];
 		//cara01factorprincpermanencia
 		//Ahora los riesgos que son tipo texto..
 		$r1='';

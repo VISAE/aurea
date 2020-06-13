@@ -228,7 +228,7 @@ $ETI['cara01factordesc']='Total';
 $ETI['cara01criteriodesc']='Criterio de posible deserci&oacute;n';
 $ETI['cara01desertor']='Desertor';
 $ETI['cara01factorprincipaldesc']='Factor principal de deserci&oacute;n';
-$ETI['cara01psico_puntaje']='Puntaje Psicosocial';
+$ETI['cara01psico_puntaje']='Riesgo Psicosocial';
 
 $ETI['cara01numacompanamentos']='N&deg; acompa&ntilde;amientos';
 $ETI['cara01idperiodoacompana']='Periodo acompa&ntilde;amiento';
@@ -611,6 +611,7 @@ $ETI['msg_r1desplazado']='Desplazado';
 $ETI['msg_r1acr']='ACR';
 $ETI['msg_r1depende']='Depende econ&oacute;micamente';
 
+$ETI['msg_r3otroprog']='Interes en otro programa';
 $ETI['msg_r3tiemponoest']='Mas de 5 a&ntilde;os sin estudiar';
 $ETI['msg_r3sinequipo']='Sin equipo de acceso a internet';
 $ETI['msg_r3sincomputador']='Sin computadora';

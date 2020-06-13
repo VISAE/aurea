@@ -208,4 +208,11 @@ $ETI['msg_nocontacto']='No se pudo contactar';
 $ETI['msg_nuevo']='Nuevo';
 $ETI['msg_riesgofin']='Riesgo Final';
 $ETI['msg_zonal']='Revisi&oacute;n del lider zonal';
+
+$ETI['core16idescuela']='Escuela';
+$ETI['core16idprograma']='Programa';
+$ETI['unad11telefono']='Tel&eacute;fono';
+$ETI['unad11correo']='Correo';
+$ETI['cara01ubicamatricula']='Ubicaci&oacute;n y Matr&iacute;cula';
+$ETI['cara01datospersonales']='Datos Personales';
 ?>

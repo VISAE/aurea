@@ -352,6 +352,7 @@ if (isset($_REQUEST['boculta110'])==0){$_REQUEST['boculta110']=0;}
 if (isset($_REQUEST['boculta111'])==0){$_REQUEST['boculta111']=0;}
 if (isset($_REQUEST['boculta112'])==0){$_REQUEST['boculta112']=0;}
 if (isset($_REQUEST['boculta113'])==0){$_REQUEST['boculta113']=0;}
+if (isset($_REQUEST['bocultaResultados'])==0){$_REQUEST['bocultaResultados']=0;}
 // -- Inicializar variables de datos.
 if (isset($_REQUEST['cara01idperaca'])==0){$_REQUEST['cara01idperaca']='';}
 if (isset($_REQUEST['cara01idtercero'])==0){
@@ -2612,24 +2613,34 @@ if ($bEstudiante){
 if ($bEstudiante){
 	if ($_REQUEST['paso']==2){
 		if ($_REQUEST['cara01completa']=='S'){
+            $_REQUEST['bocultaResultados']=0;
 			?>
-<button type="button" class="btn btn-primary" data-toggle="modal" data-target="#resultadosPruebas">
-  Clic Aqu&iacute; Para Ver Sus Resultados
-</button>
-
-<!-- Modal -->
-<div class="modal fade" id="resultadosPruebas" tabindex="-1" role="dialog" aria-labelledby="resultadosPruebasLabel" aria-hidden="true">
-<div class="modal-dialog" role="document">
-<div class="modal-content">
-<div class="modal-header">
-<h5 class="modal-title" id="resultadosPruebasLabel"><?php echo $ETI['titulo_resultados']; ?></h5>
-<button type="button" class="close" data-dismiss="modal" aria-label="Close">
-  <span aria-hidden="true">&times;</span>
-</button>
-</div>
-<div class="modal-body">
+<?php
+// -- Inicia Grupo campos Resultados
+?>
 <div class="salto1px"></div>
-<div class="GrupoCampos450">
+<div class="GrupoCampos">
+<label class="TituloGrupo">
+<?php
+echo $ETI['titulo_resultados'];
+?>
+</label>
+<input id="bocultaResultados" name="bocultaResultados" type="hidden" value="<?php echo $_REQUEST['bocultaResultados']; ?>" />
+<div class="ir_derecha" style="width:62px;">
+<!--
+<label class="Label30">
+<input id="btexcelResultados" name="btexcelResultados" type="button" value="Exportar" class="btMiniExcel" onclick="imprimeResultados();" title="Exportar"/>
+</label>
+-->
+<label class="Label30">
+<input id="btexpandeResultados" name="btexpandeResultados" type="button" value="Expandir" class="btMiniExpandir" onclick="expandepanel('Resultados','block',0);" title="<?php echo $ETI['bt_mostrar']; ?>" style="display:<?php if ($_REQUEST['bocultaResultados']==0){echo 'none'; }else{echo 'block';} ?>;"/>
+</label>
+<label class="Label30">
+<input id="btrecogeResultados" name="btrecogeResultados" type="button" value="Recoger" class="btMiniRecoger" onclick="expandepanel('Resultados','none',1);" title="<?php echo $ETI['bt_ocultar']; ?>" style="display:<?php if ($_REQUEST['bocultaResultados']==0){echo 'block'; }else{echo 'none';} ?>;"/>
+</label>
+</div>
+<div class="salto1px"></div>
+<div id="div_pResultados" style="display:<?php if ($_REQUEST['bocultaResultados']==0){echo 'block'; }else{echo 'none';} ?>;">
 <label class="Label220">
 <?php
 echo $ETI['cara01psico_puntaje'];
@@ -2770,12 +2781,9 @@ echo html_oculto('cara01nivelquimica', f2301_NombrePuntaje('quimica',$_REQUEST['
 <div class="salto1px"></div>
 </div>
 </div>
-<div class="modal-footer">
-<button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
-</div>
-</div>
-</div>
-</div>
+<?php
+// -- Termina Grupo campos Resultados
+?>
         <?php }
 		}
 	}
