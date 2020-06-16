@@ -13,6 +13,12 @@
 * @author Angel Mauro Avellaneda Barreto - angel.avellaneda@unad.edu.co
 * @param debug=1 (Opcional), bandera para indicar si se generan datos de depuración
 * @date viernes, 3 de abril de 2020
+*
+* Cambios 12 de junio de 2020
+* 1. interpretación a valores cualitativos de los niveles y riesgo de cada una de las fichas evaluadas.
+* 2. Visualización de los resultados de la encuesta en el momento en que el estudiante finaliza y da cierre.
+* Omar Augusto Bautista Mora - UNAD - 2020
+* omar.bautista@unad.edu.co
 */
 if (file_exists('./err_control.php')){require './err_control.php';}
 $bDebug=false;

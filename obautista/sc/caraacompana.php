@@ -13,6 +13,12 @@
  * @param debug=1 (Opcional), bandera para indicar si se generan datos de depuración
  * @date Monday, September 9, 2019
  * @date Wednesday, September 18, 2019
+ *
+ * Cambios 12 de junio de 2020
+ * 1. Se oculta el combo de consecutivo y se realiza la limitación de la cantidad de acompañamientos.
+ * 2. Se agrega la información de ubicación, matrícula y datos personales del estudiante.
+ * Omar Augusto Bautista Mora - UNAD - 2020
+ * omar.bautista@unad.edu.co
  */
 if (file_exists('./err_control.php')){require './err_control.php';}
 $bDebug=false;
