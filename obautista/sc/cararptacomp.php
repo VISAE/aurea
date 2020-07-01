@@ -216,7 +216,10 @@ $sSQL=f146_ConsultaCombo(2301, $objDB);
 $html_cara33idperaca=$objCombos->html($sSQL, $objDB);
 $objCombos->nuevo('cara33idzona', $_REQUEST['cara33idzona'], true, '{'.$ETI['msg_todos'].'}');
 $objCombos->sAccion='carga_combo_cara33idcentro();';
-$sSQL='SELECT unad23id AS id, unad23nombre AS nombre FROM unad23zona WHERE unad23conestudiantes="S" ORDER BY unad23nombre';
+$sCondiZona=' WHERE unad23conestudiantes="S"';
+list($sIdZona, $idPrimera, $sDebugZ)=f2300_ZonasTercero($idTercero, $objDB, $bDebug);
+if ($idPrimera!=''){$sCondiZona=' WHERE unad23id IN ('.$sIdZona.') AND unad23conestudiantes="S"';}
+$sSQL='SELECT unad23id AS id, unad23nombre AS nombre FROM unad23zona '.$sCondiZona.' ORDER BY unad23nombre';
 $html_cara33idzona=$objCombos->html($sSQL, $objDB);
 $html_cara33idcentro=f2333_HTMLComboV2_cara33idcentro($objDB, $objCombos, $_REQUEST['cara33idcentro'], $_REQUEST['cara33idzona']);
 $objCombos->nuevo('cara33idescuela', $_REQUEST['cara33idescuela'], true, '{'.$ETI['msg_todos'].'}');
@@ -468,6 +471,7 @@ function cierraDiv96(ref){
 <input id="separa" name="separa" type="hidden" value="," />
 <input id="rdebug" name="rdebug" type="hidden" value="<?php echo $_REQUEST['debug']; ?>"/>
 <input id="clave" name="clave" type="hidden" value="" />
+<input id="idtercero" name="idtercero" type="hidden" value="<?php echo $idTercero; ?>" />
 </form>
 <form id="frmlista" name="frmlista" method="post" action="listados.php" target="_blank">
 <input id="titulos" name="titulos" type="hidden" value="" />

@@ -25,6 +25,7 @@ require $APP->rutacomun.'unad_todas.php';
 require $APP->rutacomun.'libs/clsdbadmin.php';
 require $APP->rutacomun.'unad_librerias.php';
 require $APP->rutacomun.'libs/clsplanos.php';
+require $APP->rutacomun.'libdatos.php';
 if ($_SESSION['unad_id_tercero']==0){
 	die();
 	}
@@ -452,7 +453,11 @@ if ($bEntra){
 		}else{
 		if ($_REQUEST['v4']!=''){
 			$sWhere=$sWhere.' AND TB.cara01idzona='.$_REQUEST['v4'].' ';
-			}
+			}else{
+            $idTercero=$_REQUEST['idtercero'];
+            list($sIdZona, $idPrimera, $sDebugZ)=f2300_ZonasTercero($idTercero, $objDB, $bDebug);
+            if ($idPrimera!=''){$sWhere=$sWhere.' AND TB.cara01idzona IN ('.$sIdZona.') ';}
+            }
 		}
 	if ($_REQUEST['v7']!=''){
 		$sWhere=$sWhere.' AND TB.cara01idprograma='.$_REQUEST['v7'].' ';
