@@ -447,6 +447,9 @@ if ($bEntra){
 	$sBloque9=$cSepara.'Riesgo'.$cSepara.'Consejero';
 	$objplano->AdicionarLinea(utf8_decode($sTitulos1.$sTitulos2.$sTitulos3.$sTitulos4.$sTitulos9));
 	$objplano->AdicionarLinea($sBloque1.$sBloque2.$sBloque3.$sBloque4.$sBloque9);
+    $idTercero=$_REQUEST['idtercero'];
+    list($bEsConsejero, $sIdCentro, $sDebugZ)=f2300_EsConsejero($idTercero, $objDB, $bDebug);
+    list($sIdZona, $idPrimera, $sDebugZ)=f2300_ZonasTercero($idTercero, $objDB, $bDebug);
 	$sWhere='';
 	if ($_REQUEST['v5']!=''){
 		$sWhere=$sWhere.' AND TB.cara01idcead='.$_REQUEST['v5'].' ';
@@ -454,9 +457,9 @@ if ($bEntra){
 		if ($_REQUEST['v4']!=''){
 			$sWhere=$sWhere.' AND TB.cara01idzona='.$_REQUEST['v4'].' ';
 			}else{
-            $idTercero=$_REQUEST['idtercero'];
-            list($sIdZona, $idPrimera, $sDebugZ)=f2300_ZonasTercero($idTercero, $objDB, $bDebug);
-            if ($idPrimera!=''){$sWhere=$sWhere.' AND TB.cara01idzona IN ('.$sIdZona.') ';}
+            if ($_REQUEST['v9']==0) {
+                if ($idPrimera!=''){ $sWhere=$sWhere.' AND TB.cara01idzona IN ('.$sIdZona.') '; }
+                }
             }
 		}
 	if ($_REQUEST['v7']!=''){
@@ -466,6 +469,13 @@ if ($bEntra){
 			$sWhere=$sWhere.' AND TB.cara01idescuela='.$_REQUEST['v6'].' ';
 			}
 		}
+    if ($_REQUEST['v9']==1) {
+        $sWhere = $sWhere . ' AND TB.cara01idconsejero=' . $idTercero . ' ';
+        } else {
+        if ($idPrimera == '' && $bEsConsejero) {
+            $sWhere = $sWhere . ' AND TB.cara01idconsejero=' . $idTercero . ' ';
+            }
+        }
 	$sSQL='SELECT TB.* 
 FROM cara01encuesta AS TB 
 WHERE TB.cara01idperiodoacompana='.$_REQUEST['v3'].''.$sWhere.'';

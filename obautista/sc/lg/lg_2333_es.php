@@ -31,8 +31,8 @@ $ERR['cara33tipo']='Necesita el dato '.$ETI['cara33tipo'];
 $ERR['cara33poblacion']='Necesita el dato '.$ETI['cara33poblacion'];
 $acara33tipo=array('', '');
 $icara33tipo=0;
-$acara33poblacion=array('', '');
-$icara33poblacion=0;
+$acara33poblacion=array('', 'Donde soy consejero');
+$icara33poblacion=1;
 
 $ETI['msg_r1zona']='Vive en zona rural';
 $ETI['msg_r1indigena']='Indigena';

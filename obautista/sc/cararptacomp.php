@@ -231,7 +231,7 @@ $objCombos->nuevo('cara33tipo', $_REQUEST['cara33tipo'], true, '{'.$ETI['msg_tod
 //$objCombos->addArreglo($acara33tipo, $icara33tipo);
 $html_cara33tipo=$objCombos->html('', $objDB);
 $objCombos->nuevo('cara33poblacion', $_REQUEST['cara33poblacion'], true, '{'.$ETI['msg_todos'].'}');
-//$objCombos->addArreglo($acara33poblacion, $icara33poblacion);
+$objCombos->addArreglo($acara33poblacion, $icara33poblacion);
 $html_cara33poblacion=$objCombos->html('', $objDB);
 if ((int)$_REQUEST['paso']==0){
 	}else{
