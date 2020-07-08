@@ -37,6 +37,7 @@ function f2301_InfoEncuesta($idEncuesta, $objDB, $bDebug=false){
 		$aData['cara01factorprincpermanencia']=$fila['cara01factorprincpermanencia'];
 		$aData['cara01idzona']=$fila['cara01idzona'];
 		$aData['cara01idcead']=$fila['cara01idcead'];
+		$aData['cara01idconsejero']=$fila['cara01idconsejero'];
 		//cara01factorprincpermanencia
 		//Ahora los riesgos que son tipo texto..
 		$r1='';

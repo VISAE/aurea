@@ -215,4 +215,5 @@ $ETI['unad11telefono']='Tel&eacute;fono';
 $ETI['unad11correo']='Correo';
 $ETI['cara01ubicamatricula']='Ubicaci&oacute;n y Matr&iacute;cula';
 $ETI['cara01datospersonales']='Datos Personales';
+$ETI['cara01idconsejero']='Consejero';
 ?>

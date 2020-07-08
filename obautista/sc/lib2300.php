@@ -29,13 +29,22 @@ function f2307_HTMLComboV2_cara00idconsejero($objDB, $objCombos, $valor, $vrcara
 	$mensajes_todas=$APP->rutacomun.'lg/lg_todas_'.$_SESSION['unad_idioma'].'.php';
 	if (!file_exists($mensajes_todas)){$mensajes_todas=$APP->rutacomun.'lg/lg_todas_es.php';}
 	require $mensajes_todas;
-	//@@ Se debe arreglar la condicion..
-	$sCondi='cara01idzona="'.$vrcara00zona.'"';
-	if ($sCondi!=''){$sCondi=' WHERE '.$sCondi;}
 	$objCombos->nuevo('cara00idconsejero', $valor, true, '{'.$ETI['msg_seleccione'].'}');
 	//$objCombos->iAncho=450;
 	$objCombos->sAccion='paginarf2307();';
-	$sSQL='SELECT cara13idconsejero AS id, cara13id AS nombre FROM cara13consejeros'.$sCondi;
+	$sCondi='';
+	if ((int)$vrcara00zona!=0){
+		if ($vrcara00zona==-1){
+			$sCondi='TB.cara01idzona=0 AND ';
+			}else{
+			$sCondi='TB.cara01idzona='.$vrcara00zona.' AND ';
+			}
+		}
+	$sSQL='SELECT TB.cara13idconsejero AS id, CONCAT(T11.unad11doc, " ", T11.unad11razonsocial) AS nombre 
+FROM cara13consejeros AS TB, unad11terceros AS T11 
+WHERE '.$sCondi.' TB.cara13idconsejero=T11.unad11id
+GROUP BY TB.cara13idconsejero, CONCAT(T11.unad11doc, " ", T11.unad11razonsocial)
+ORDER BY T11.unad11razonsocial';
 	$res=$objCombos->html($sSQL, $objDB);
 	return $res;
 	}
@@ -46,12 +55,15 @@ function f2307_Combocara00idconsejero($aParametros){
 	$objDB=new clsdbadmin($APP->dbhost, $APP->dbuser, $APP->dbpass, $APP->dbname);
 	if ($APP->dbpuerto!=''){$objDB->dbPuerto=$APP->dbpuerto;}
 	$objDB->xajax();
-	$objCombos=new clsHtmlCombos('n');
+	$bDebug=false;
+	$objCombos=new clsHtmlCombos('');
 	$html_cara00idconsejero=f2307_HTMLComboV2_cara00idconsejero($objDB, $objCombos, '', $aParametros[0]);
+	list($sDetalle, $sDebugTabla)=f2307_TablaDetalleV2($aParametros, $objDB, $bDebug);
 	$objDB->CerrarConexion();
 	$objResponse=new xajaxResponse();
 	$objResponse->assign('div_cara00idconsejero', 'innerHTML', $html_cara00idconsejero);
-	//$objResponse->call('$("#cara00idconsejero").chosen()');
+	$objResponse->assign('div_f2307detalle', 'innerHTML', $sDetalle);
+	$objResponse->call('$("#cara00idconsejero").chosen()');
 	return $objResponse;
 	}
 function f2300_ExisteDato($datos){
@@ -646,12 +658,13 @@ function f2307_TablaDetalleV2($aParametros, $objDB, $bDebug=false){
 	if (isset($aParametros[100])==0){$aParametros[100]=$_SESSION['unad_id_tercero'];}
 	if (isset($aParametros[101])==0){$aParametros[101]=1;}
 	if (isset($aParametros[102])==0){$aParametros[102]=20;}
-	//if (isset($aParametros[103])==0){$aParametros[103]='';}
+	if (isset($aParametros[103])==0){$aParametros[103]='';}
 	//$aParametros[103]=numeros_validar($aParametros[103]);
 	$sDebug='';
 	$idTercero=$aParametros[100];
 	$pagina=$aParametros[101];
 	$lineastabla=$aParametros[102];
+	$idConsejero=numeros_validar($aParametros[103]);
 	$babierta=true;
 	//$sSQL='SELECT Campo FROM Tabla WHERE Id='.$sValorId;
 	//$tabla=$objDB->ejecutasql($sSQL);
@@ -660,12 +673,15 @@ function f2307_TablaDetalleV2($aParametros, $objDB, $bDebug=false){
 		//if ($fila['Campo']!='S'){$babierta=true;}
 		//}
 	$sLeyenda='';
-	if (false){
+	if ((int)$idConsejero==0){$sLeyenda='No ha seleccionado un consejero a consultar';}
+	if ($sLeyenda!=''){
 		$sLeyenda='<div class="salto1px"></div>
 <div class="GrupoCamposAyuda">
-<b>Importante:</b> Mensaje al usuario
+'.$sLeyenda.'
 <div class="salto1px"></div>
 </div>';
+		return array(utf8_encode($sLeyenda.'<input id="paginaf2307" name="paginaf2307" type="hidden" value="'.$pagina.'"/><input id="lppf2307" name="lppf2307" type="hidden" value="'.$lineastabla.'"/>'), $sDebug);
+		die();
 		}
 	$sSQLadd='';
 	$sSQLadd1='';
@@ -688,7 +704,7 @@ function f2307_TablaDetalleV2($aParametros, $objDB, $bDebug=false){
 	$sTitulos='Id, Perfilconsejero';
 	$sSQL='SELECT TB.core16peraca, T2.exte02nombre, COUNT(TB.core16id) AS Total 
 FROM core16actamatricula AS TB, exte02per_aca AS T2 
-WHERE TB.core16idconsejero='.$idTercero.' AND TB.core16peraca=T2.exte02id 
+WHERE TB.core16idconsejero='.$idConsejero.' AND TB.core16peraca=T2.exte02id 
 GROUP BY TB.core16peraca, T2.exte02nombre
 ORDER BY TB.core16peraca DESC';
 	$sSQLlista=str_replace("'","|",$sSQL);
@@ -704,7 +720,12 @@ ORDER BY TB.core16peraca DESC';
 		}else{
 		$registros=$objDB->nf($tabladetalle);
 		if ($registros==0){
-			return array(utf8_encode($sErrConsulta.$sBotones), $sDebug);
+			$sTabla='<table border="0" align="center" cellpadding="0" cellspacing="2" class="tablaapp">
+<tr class="fondoazul">
+<td align="center"><b>'.'No se registra asignaci&oacute;n de estudiantes para acompa&ntilde;amiento'.'</b></td>
+</tr>
+</table>';
+			return array(utf8_encode($sErrConsulta.$sBotones).$sTabla, $sDebug);
 			}
 		if ((($registros-1)/$lineastabla)<($pagina-1)){$pagina=(int)(($registros-1)/$lineastabla)+1;}
 		if ($registros>$lineastabla){

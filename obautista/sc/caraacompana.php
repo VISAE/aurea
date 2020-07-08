@@ -208,6 +208,7 @@ if (isset($_REQUEST['unad11telefono'])==0){$_REQUEST['unad11telefono']='';}
 if (isset($_REQUEST['unad11correo'])==0){$_REQUEST['unad11correo']='';}
 if (isset($_REQUEST['cara01idzona'])==0){$_REQUEST['cara01idzona']=0;}
 if (isset($_REQUEST['cara01idcead'])==0){$_REQUEST['cara01idcead']=0;}
+if (isset($_REQUEST['cara01idconsejero'])==0){$_REQUEST['cara01idconsejero']=0;}
 if (isset($_REQUEST['core16idescuela'])==0){$_REQUEST['core16idescuela']=0;}
 if (isset($_REQUEST['core16idprograma'])==0){$_REQUEST['core16idprograma']=0;}
 if (isset($_REQUEST['cara01tipocaracterizacion'])==0){$_REQUEST['cara01tipocaracterizacion']=0;}
@@ -478,6 +479,7 @@ if((int)$_REQUEST['paso']==0){
         $_REQUEST['cara01agnos']=$fila['cara01agnos'];
         $_REQUEST['cara01idzona']=$fila['cara01idzona'];
         $_REQUEST['cara01idcead']=$fila['cara01idcead'];
+        $_REQUEST['cara01idconsejero']=$fila['cara01idconsejero'];
     }
 }
 if ($bTraerDatosBase){
@@ -491,6 +493,7 @@ if ($bTraerDatosBase){
         $_REQUEST['cara01agnos']=$aData['cara01agnos'];
         $_REQUEST['cara01idzona']=$aData['cara01idzona'];
         $_REQUEST['cara01idcead']=$aData['cara01idcead'];
+        $_REQUEST['cara01idconsejero']=$aData['cara01idconsejero'];
         $_REQUEST['cara01tipocaracterizacion']=$aData['cara01tipocaracterizacion'];
         $_REQUEST['cara01idperiodoacompana']=$aData['cara01idperiodoacompana'];
         $_REQUEST['cara01fechacierreacom']=$aData['cara01fechacierreacom'];
@@ -699,6 +702,7 @@ if ($_REQUEST['paso']==-1){
     $_REQUEST['unad11correo']='';
     $_REQUEST['cara01idzona']=0;
     $_REQUEST['cara01idcead']=0;
+    $_REQUEST['cara01idconsejero']=0;
     $_REQUEST['core16idescuela']=0;
     $_REQUEST['core16idprograma']=0;
     $_REQUEST['cara01tipocaracterizacion']=0;
@@ -1088,12 +1092,14 @@ if ((int)$_REQUEST['paso']==0){
 }
 list($cara01idzona_nombre, $sErrorDet)=tabla_campoxid('unad23zona','unad23nombre','unad23id',$_REQUEST['cara01idzona'],'{'.$ETI['msg_ninguna'].'}', $objDB);
 list($cara01idcead_nombre, $sErrorDet)=tabla_campoxid('unad24sede','unad24nombre','unad24id',$_REQUEST['cara01idcead'],'{'.$ETI['msg_ninguna'].'}', $objDB);
+list($cara01idconsejero_razonsocial, $sErrorDet)=tabla_campoxid('unad11terceros','unad11razonsocial','unad11id',$_REQUEST['cara01idconsejero'],'{'.$ETI['msg_ninguna'].'}', $objDB);
 list($core16idescuela_nombre, $sErrorDet)=tabla_campoxid('core12escuela','core12nombre','core12id',$_REQUEST['core16idescuela'],'{'.$ETI['msg_ninguna'].'}', $objDB);
 list($core16idprograma_nombre, $sErrorDet)=tabla_campoxid('core09programa','core09nombre','core09id',$_REQUEST['core16idprograma'],'{'.$ETI['msg_ninguna'].'}', $objDB);
 $html_cara01idperaca=html_oculto('cara01idperaca', $_REQUEST['cara01idperaca'], $cara01idperaca_nombre);
 $html_cara01tipocaracterizacion=html_oculto('cara01tipocaracterizacion', $_REQUEST['cara01tipocaracterizacion'], $cara01tipocaracterizacion_nombre);
 $html_cara01idzona=html_oculto('cara01idzona', $_REQUEST['cara01idzona'], $cara01idzona_nombre);
 $html_cara01idcead=html_oculto('cara01idcead', $_REQUEST['cara01idcead'], $cara01idcead_nombre);
+$html_cara01idconsejero=html_oculto('cara01idconsejero', $_REQUEST['cara01idconsejero'], $cara01idconsejero_razonsocial);
 $html_core16idescuela=html_oculto('core16idescuela', $_REQUEST['core16idescuela'], $core16idescuela_nombre);
 $html_core16idprograma=html_oculto('core16idprograma', $_REQUEST['core16idprograma'], $core16idprograma_nombre);
 $html_cara01idperiodoacompana=html_oculto('cara01idperiodoacompana', $_REQUEST['cara01idperiodoacompana']);
@@ -1811,6 +1817,17 @@ if ($_REQUEST['paso']!=0){
                                     echo html_oculto('cara23fecha', $_REQUEST['cara23fecha'], formato_FechaLargaDesdeNumero($_REQUEST['cara23fecha']));
                                     ?>
                                 </div>
+                                <div class="salto1px"></div>
+                                <label class="Label130">
+                                    <?php
+                                    echo $ETI['cara01idconsejero'];
+                                    ?>
+                                </label>
+                                <label>
+                                    <?php
+                                    echo $html_cara01idconsejero;
+                                    ?>
+                                </label>
                                 <div class="salto1px"></div>
                             </div>
                             <?php

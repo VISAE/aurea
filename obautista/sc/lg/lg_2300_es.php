@@ -38,4 +38,8 @@ $ETI['msg_per_aca']='Per&iacute;odo';
 
 $ERR['cara00idperfilconsejero']='Necesita el dato '.$ETI['cara00idperfilconsejero'];
 $ERR['cara00idperfillider']='Necesita el dato '.$ETI['cara00idperfillider'];
+
+
+$ETI['cara00zona']='Zona';
+$ETI['cara00idconsejero']='Consejero';
 ?>
