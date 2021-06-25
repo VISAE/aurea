@@ -16,13 +16,13 @@
  * Omar Augusto Bautista Mora - UNAD - 2020
  * omar.bautista@unad.edu.co
 */
-function f2333_HTMLComboV2_cara33idcentro($objDB, $objCombos, $valor, $vrcara33idzona){
+function f2333_HTMLComboV2_cara33idcentro($objDB, $objCombos, $valor, $vrcara33idzona, $sIdCentro){
 	require './app.php';
 	$mensajes_todas=$APP->rutacomun.'lg/lg_todas_'.$_SESSION['unad_idioma'].'.php';
 	if (!file_exists($mensajes_todas)){$mensajes_todas=$APP->rutacomun.'lg/lg_todas_es.php';}
 	require $mensajes_todas;
 	//@@ Se debe arreglar la condicion..
-	$sCondi='unad24idzona="'.$vrcara33idzona.'"';
+	$sCondi='unad24idzona="'.$vrcara33idzona.'" AND unad24id IN ('.$sIdCentro.')';
 	if ($sCondi!=''){$sCondi=' WHERE '.$sCondi;}
 	$objCombos->nuevo('cara33idcentro', $valor, true, '{'.$ETI['msg_todos'].'}');
 	$sSQL='SELECT unad24id AS id, unad24nombre AS nombre FROM unad24sede'.$sCondi;
@@ -37,7 +37,7 @@ function f2333_Combocara33idcentro($aParametros){
 	if ($APP->dbpuerto!=''){$objDB->dbPuerto=$APP->dbpuerto;}
 	$objDB->xajax();
 	$objCombos=new clsHtmlCombos('n');
-	$html_cara33idcentro=f2333_HTMLComboV2_cara33idcentro($objDB, $objCombos, '', $aParametros[0]);
+	$html_cara33idcentro=f2333_HTMLComboV2_cara33idcentro($objDB, $objCombos, '', $aParametros[0], $aParametros[1]);
 	$objDB->CerrarConexion();
 	$objResponse=new xajaxResponse();
 	$objResponse->assign('div_cara33idcentro', 'innerHTML', $html_cara33idcentro);
@@ -230,13 +230,13 @@ function f2333_HtmlTabla($aParametros){
 		}
 	return $objResponse;
 	}
-function f2333_HTMLComboV2_cara33idprograma($objDB, $objCombos, $valor, $vrcara33idescuela){
+function f2333_HTMLComboV2_cara33idprograma($objDB, $objCombos, $valor, $vrcara33idescuela, $sIdPrograma){
 	require './app.php';
 	$mensajes_todas=$APP->rutacomun.'lg/lg_todas_'.$_SESSION['unad_idioma'].'.php';
 	if (!file_exists($mensajes_todas)){$mensajes_todas=$APP->rutacomun.'lg/lg_todas_es.php';}
 	require $mensajes_todas;
 	//@@ Se debe arreglar la condicion..
-	$sCondi='core09idescuela="'.$vrcara33idescuela.'"';
+	$sCondi='core09idescuela="'.$vrcara33idescuela.'" AND core09id IN ('.$sIdPrograma.')';
 	if ($sCondi!=''){$sCondi=' WHERE '.$sCondi;}
 	$objCombos->nuevo('cara33idprograma', $valor, true, '{'.$ETI['msg_todos'].'}');
 	$sSQL='SELECT core09id AS id, core09nombre AS nombre FROM core09programa'.$sCondi;
@@ -251,7 +251,7 @@ function f2333_Combocara33idprograma($aParametros){
 	if ($APP->dbpuerto!=''){$objDB->dbPuerto=$APP->dbpuerto;}
 	$objDB->xajax();
 	$objCombos=new clsHtmlCombos('n');
-	$html_cara33idprograma=f2333_HTMLComboV2_cara33idprograma($objDB, $objCombos, '', $aParametros[0]);
+	$html_cara33idprograma=f2333_HTMLComboV2_cara33idprograma($objDB, $objCombos, '', $aParametros[0], $aParametros[1]);
 	$objDB->CerrarConexion();
 	$objResponse=new xajaxResponse();
 	$objResponse->assign('div_cara33idprograma', 'innerHTML', $html_cara33idprograma);

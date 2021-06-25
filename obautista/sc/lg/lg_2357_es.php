@@ -25,4 +25,17 @@ $ERR['cara57peraca']='Necesita el dato '.$ETI['cara57peraca'];
 
 $ETI['msg_estudiantes']='Estudiantes en RyC ';
 $ETI['lnk_procesamatricula']='Procesar matricula';
+
+$ETI['cara57dashboard']='Tablero de Control';
+$ETI['cara57infgral']='informaci&oacute;n general';
+$ETI['cara57aspsocdem']='Aspectos Sociodemogr&aacute;ficos';
+$ETI['cara57etnias']='Etnias';
+$ETI['cara57disc']='Discapacidades';
+$ETI['cara57aspacad']='Aspectos Acad&eacute;micos';
+$ETI['cara57aspext']='Aspectos Externos';
+$ETI['cara57asplab']='Aspectos Laborales';
+$ETI['cara57aspfam']='Aspectos Familiares';
+$ETI['cara57aspbiu']='Aspectos de Bienestar Integral Universitario';
+$ETI['cara57respsico']='Resultados Prueba Psicosocial';
+$ETI['cara57rescomp']='Resultados Competencias';
 ?>

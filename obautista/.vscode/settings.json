@@ -1,0 +1,39 @@
+{
+	"deploy": {
+        "packages": [
+            {
+                "name": "Version 2.3.4",
+                "description": "Package version 2.3.4",
+                "files": [
+                    "**/*.php",
+                    "/*.json"
+                ],
+                "exclude": [
+                    "tests/**"
+                ],
+                "deployOnSave": true
+            }
+        ],
+		"targets": [
+            {
+                "type": "sftp",
+                "name": "obautista",
+                "description": "obautista folder in softwaretest",
+                "dir": "/var/www/softwaretest/obautista",
+                "host": "172.21.0.80",
+				"port": 22,
+				"user": "omarbautista",
+				"privateKey": "/home/oabm77/PTI/omarbautista.ppk",
+
+                "checkBeforeDeploy": true,
+
+                "mappings": [
+                    {
+                        "source": "/home/oabm77/VISAE/aurea/obautista",
+                        "target": "/var/www/softwaretest/obautista"
+                    }
+                ]
+            }
+		]
+    }
+}

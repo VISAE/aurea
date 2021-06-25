@@ -841,6 +841,17 @@ if (($_REQUEST['paso']==1)||($_REQUEST['paso']==3)){
 			}else{
 			}
 		$bLimpiaHijos=true;
+		if ($_REQUEST['cara01agnos']<=0){
+			$sSQL='SELECT unad11fechanace FROM unad11terceros WHERE unad11id ="'.$_REQUEST['cara01idtercero'].'"';
+			$tabla=$objDB->ejecutasql($sSQL);
+			if ($objDB->nf($tabla)>0){
+				$fila=$objDB->sf($tabla);
+				$cara01agnos=fecha_edad($fila['unad11fechanace']);
+				$_REQUEST['cara01agnos']=$cara01agnos[0];
+				$sSQL='UPDATE cara01encuesta SET cara01agnos="'.$_REQUEST['cara01agnos'].'" WHERE cara01id='.$_REQUEST['cara01id'].'';
+				$tabla=$objDB->ejecutasql($sSQL);
+				}
+			}
 		}else{
 		$_REQUEST['paso']=0;
 		}

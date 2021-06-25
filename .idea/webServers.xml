@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="WebServers">
+    <option name="servers">
+      <webServer id="ed589043-9687-4fc7-96d4-e34bbe92d17b" name="Campus" url="https://softwaretest.unad.edu.co/obautista/">
+        <fileTransfer rootFolder="/var/www/softwaretest" accessType="SFTP" host="172.21.0.80" port="22" sshConfigId="7bc665af-a244-4998-9b64-7496b466055b" sshConfig="omarbautista@172.21.0.80:22 key" keyPair="true">
+          <advancedOptions>
+            <advancedOptions dataProtectionLevel="Private" keepAliveTimeout="20000" passiveMode="true" shareSSLContext="true" />
+          </advancedOptions>
+        </fileTransfer>
+      </webServer>
+    </option>
+  </component>
+</project>

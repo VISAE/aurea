@@ -11,10 +11,10 @@
 */
 $ETI['app_nombre']='APP';
 $ETI['grupo_nombre']='Grupo';
-$ETI['titulo']='Consolidado de acompanamientos';
-$ETI['titulo_sector2']='Consolidado de acompanamientos';
-$ETI['titulo_2333']='Consolidado de acompanamientos';
-$ETI['sigla_2333']='Consolidado de acompanamientos';
+$ETI['titulo']='Consolidado de acompa&ntilde;amientos';
+$ETI['titulo_sector2']='Consolidado de acompa&ntilde;amientos';
+$ETI['titulo_2333']='Consolidado de acompa&ntilde;amientos';
+$ETI['sigla_2333']='Consolidado de acompa&ntilde;amientos';
 $ETI['lnk_cargar']='Editar';
 $ETI['cara33idperaca']='Periodo';
 $ETI['cara33idzona']='Zona';
@@ -31,8 +31,8 @@ $ERR['cara33tipo']='Necesita el dato '.$ETI['cara33tipo'];
 $ERR['cara33poblacion']='Necesita el dato '.$ETI['cara33poblacion'];
 $acara33tipo=array('', '');
 $icara33tipo=0;
-$acara33poblacion=array('', 'Donde soy consejero');
-$icara33poblacion=1;
+$acara33poblacion=array('', 'Donde soy l&iacute;der', 'Donde soy consejero');
+$icara33poblacion=2;
 
 $ETI['msg_r1zona']='Vive en zona rural';
 $ETI['msg_r1indigena']='Indigena';

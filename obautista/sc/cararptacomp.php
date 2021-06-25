@@ -63,6 +63,7 @@ require $APP->rutacomun.'libhtml.php';
 require $APP->rutacomun.'xajax/xajax_core/xajax.inc.php';
 require $APP->rutacomun.'unad_xajax.php';
 require $APP->rutacomun.'libdatos.php';
+require $APP->rutacomun.'libpermisodatos.php';
 if (($bPeticionXAJAX)&&($_SESSION['unad_id_tercero']==0)){
 	// viene por xajax.
 	$xajax=new xajax();
@@ -181,7 +182,7 @@ if (isset($_REQUEST['cara33idcentro'])==0){$_REQUEST['cara33idcentro']='';}
 if (isset($_REQUEST['cara33idescuela'])==0){$_REQUEST['cara33idescuela']='';}
 if (isset($_REQUEST['cara33idprograma'])==0){$_REQUEST['cara33idprograma']='';}
 if (isset($_REQUEST['cara33tipo'])==0){$_REQUEST['cara33tipo']='';}
-if (isset($_REQUEST['cara33poblacion'])==0){$_REQUEST['cara33poblacion']='';}
+if (isset($_REQUEST['cara33poblacion'])==0){$_REQUEST['cara33poblacion']=1;}
 // Espacio para inicializar otras variables
 if (isset($_REQUEST['csv_separa'])==0){$_REQUEST['csv_separa']=',';}
 if (isset($_REQUEST['bnombre'])==0){$_REQUEST['bnombre']='';}
@@ -211,27 +212,46 @@ if ($devuelve){$seg_6=1;}
 //$sDebug=$sDebug.$sDebugP;
 //Crear los controles que requieran llamado a base de datos
 $objCombos=new clsHtmlCombos();
+$objPermisoDatos=new clsUNADPermisosZonaEscuela($iCodModulo,$idTercero);
+list($sDebugR, $sErrorR)=$objPermisoDatos->cargarPermisos($objDB,$bDebug);
+$sDebug = $sDebug . $sDebugR;
 $objCombos->nuevo('cara33idperaca', $_REQUEST['cara33idperaca'], true, '{'.$ETI['msg_seleccione'].'}');
 $sSQL=f146_ConsultaCombo(2301, $objDB);
 $html_cara33idperaca=$objCombos->html($sSQL, $objDB);
 $objCombos->nuevo('cara33idzona', $_REQUEST['cara33idzona'], true, '{'.$ETI['msg_todos'].'}');
 $objCombos->sAccion='carga_combo_cara33idcentro();';
-$sCondiZona=' WHERE unad23conestudiantes="S"';
-list($sIdZona, $idPrimera, $sDebugZ)=f2300_ZonasTercero($idTercero, $objDB, $bDebug);
-if ($idPrimera!=''){$sCondiZona=' WHERE unad23id IN ('.$sIdZona.') AND unad23conestudiantes="S"';}
+$sCondiZona=' WHERE unad23id IN ('.$objPermisoDatos->sIdZona.') AND unad23conestudiantes="S"';
 $sSQL='SELECT unad23id AS id, unad23nombre AS nombre FROM unad23zona '.$sCondiZona.' ORDER BY unad23nombre';
 $html_cara33idzona=$objCombos->html($sSQL, $objDB);
-$html_cara33idcentro=f2333_HTMLComboV2_cara33idcentro($objDB, $objCombos, $_REQUEST['cara33idcentro'], $_REQUEST['cara33idzona']);
+$html_cara33idcentro=f2333_HTMLComboV2_cara33idcentro($objDB, $objCombos, $_REQUEST['cara33idcentro'], $_REQUEST['cara33idzona'], $objPermisoDatos->sIdCentro);
 $objCombos->nuevo('cara33idescuela', $_REQUEST['cara33idescuela'], true, '{'.$ETI['msg_todos'].'}');
 $objCombos->sAccion='carga_combo_cara33idprograma();';
-$sSQL='SELECT core12id AS id, core12nombre AS nombre FROM core12escuela WHERE core12tieneestudiantes="S" ORDER BY core12nombre';
+$sCondiEscuela=' WHERE core12id IN ('.$objPermisoDatos->sIdEscuela.') AND core12tieneestudiantes="S"';
+$sSQL='SELECT core12id AS id, core12nombre AS nombre FROM core12escuela '.$sCondiEscuela.' ORDER BY core12nombre';
 $html_cara33idescuela=$objCombos->html($sSQL, $objDB);
-$html_cara33idprograma=f2333_HTMLComboV2_cara33idprograma($objDB, $objCombos, $_REQUEST['cara33idprograma'], $_REQUEST['cara33idescuela']);
+$html_cara33idprograma=f2333_HTMLComboV2_cara33idprograma($objDB, $objCombos, $_REQUEST['cara33idprograma'], $_REQUEST['cara33idescuela'], $objPermisoDatos->sIdPrograma);
 $objCombos->nuevo('cara33tipo', $_REQUEST['cara33tipo'], true, '{'.$ETI['msg_todos'].'}');
 //$objCombos->addArreglo($acara33tipo, $icara33tipo);
 $html_cara33tipo=$objCombos->html('', $objDB);
-$objCombos->nuevo('cara33poblacion', $_REQUEST['cara33poblacion'], true, '{'.$ETI['msg_todos'].'}');
-$objCombos->addArreglo($acara33poblacion, $icara33poblacion);
+$bConVacio=false;
+$bTieneDatos=false;
+if($objPermisoDatos->bPermisoTodos){
+    $bConVacio=true;
+    $bTieneDatos=true;
+}
+$objCombos->nuevo('cara33poblacion', $_REQUEST['cara33poblacion'], $bConVacio, '{'.$ETI['msg_todos'].'}');
+//$objCombos->addArreglo($acara33poblacion, $icara33poblacion);
+if($objPermisoDatos->bEsConsejero) {
+    $objCombos->addItem(1, 'Donde soy consejero');
+    $bTieneDatos=true;
+    }
+if($objPermisoDatos->bEsLiderZonalConsejeria) {
+    $objCombos->addItem(2, 'Donde soy líder');
+    $bTieneDatos=true;
+    }
+if(!$bTieneDatos) {
+    $objCombos->addItem(-99, 'No tiene acceso a estos datos');
+    }
 $html_cara33poblacion=$objCombos->html('', $objDB);
 if ((int)$_REQUEST['paso']==0){
 	}else{
@@ -398,11 +418,13 @@ function verrpt(){
 function carga_combo_cara33idcentro(){
 	var params=new Array();
 	params[0]=window.document.frmedita.cara33idzona.value;
+	params[1]="<?php echo $objPermisoDatos->sIdCentro; ?>"
 	xajax_f2333_Combocara33idcentro(params);
 	}
 function carga_combo_cara33idprograma(){
 	var params=new Array();
 	params[0]=window.document.frmedita.cara33idescuela.value;
+	params[1]="<?php echo $objPermisoDatos->sIdPrograma; ?>";
 	xajax_f2333_Combocara33idprograma(params);
 	}
 function paginarf2333(){
@@ -740,7 +762,8 @@ if ($sDebug!=''){
 echo html_DivAlarmaV2($sError, $iTipoError);
 	//El script que cambia el sector que se muestra
 ?>
-
+<link rel="stylesheet" href="<?php echo $APP->rutacomun; ?>js/chosen.css" type="text/css"/>
+<script language="javascript" src="<?php echo $APP->rutacomun; ?>js/chosen.jquery.js"></script>
 <script language="javascript">
 <!--
 <?php
@@ -753,6 +776,9 @@ if ($bMueveScroll){
 ';
 	}
 ?>
+$().ready(function(){
+$("#cara33idperaca").chosen();
+});
 -->
 </script>
 <script language="javascript" src="<?php echo $APP->rutacomun; ?>unad_todas.js?ver=8"></script>

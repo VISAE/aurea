@@ -25,7 +25,6 @@ require $APP->rutacomun.'unad_todas.php';
 require $APP->rutacomun.'libs/clsdbadmin.php';
 require $APP->rutacomun.'unad_librerias.php';
 require $APP->rutacomun.'libs/clsplanos.php';
-require $APP->rutacomun.'libdatos.php';
 if ($_SESSION['unad_id_tercero']==0){
 	die();
 	}
@@ -351,7 +350,7 @@ if ($bEntra){
 	$objplano->AdicionarLinea($sDato);
 	$lin_exte02per_aca=$_REQUEST['v3'];
 	$sSQL='SELECT exte02nombre FROM exte02per_aca WHERE exte02id='.$_REQUEST['v3'].'';
-	if ($bDebug){$objplano->adlinea($sSQL);}
+	if ($bDebug){$objplano->AdicionarLinea($sSQL);}
 	$tabla=$objDB->ejecutasql($sSQL);
 	if ($fila=$objDB->sf($tabla)){
         $lin_exte02per_aca=str_replace($cSepara, $cComplementa, $fila['exte02nombre']);
@@ -362,7 +361,7 @@ if ($bEntra){
 	if ($_REQUEST['v5']!=''){
 	    $lin_unad24sede=$_REQUEST['v5'];
 	    $sSQL='SELECT unad24nombre FROM unad24sede WHERE unad24id='.$_REQUEST['v5'].'';
-	    if ($bDebug){$objplano->adlinea($sSQL);}
+	    if ($bDebug){$objplano->AdicionarLinea($sSQL);}
 	    $tabla=$objDB->ejecutasql($sSQL);
 	    if ($fila=$objDB->sf($tabla)){
 	        $lin_unad24sede=str_replace($cSepara, $cComplementa, $fila['unad24nombre']);
@@ -372,7 +371,7 @@ if ($bEntra){
 		if ($_REQUEST['v4']!=''){
 		    $lin_unad23zona=$_REQUEST['v4'];
             $sSQL='SELECT unad23nombre FROM unad23zona WHERE unad23id='.$_REQUEST['v4'].'';
-            if ($bDebug){$objplano->adlinea($sSQL);}
+            if ($bDebug){$objplano->AdicionarLinea($sSQL);}
             $tabla=$objDB->ejecutasql($sSQL);
             if ($fila=$objDB->sf($tabla)){
                 $lin_unad23zona=str_replace($cSepara, $cComplementa, $fila['unad23nombre']);
@@ -387,7 +386,7 @@ if ($bEntra){
 	if ($_REQUEST['v7']!=''){
 	    $lin_core09programa=$_REQUEST['v7'];
 	    $sSQL='SELECT core09nombre FROM core09programa WHERE core09id='.$_REQUEST['v7'].'';
-	    if ($bDebug){$objplano->adlinea($sSQL);}
+	    if ($bDebug){$objplano->AdicionarLinea($sSQL);}
 	    $tabla=$objDB->ejecutasql($sSQL);
 	    if ($fila=$objDB->sf($tabla)){
             $lin_core09programa=str_replace($cSepara, $cComplementa, $fila['core09nombre']);
@@ -397,7 +396,7 @@ if ($bEntra){
 		if ($_REQUEST['v6']!=''){
 		    $lin_core12escuela=$_REQUEST['v6'];
             $sSQL='SELECT core12nombre FROM core12escuela WHERE core12id='.$_REQUEST['v6'].'';
-            if ($bDebug){$objplano->adlinea($sSQL);}
+            if ($bDebug){$objplano->AdicionarLinea($sSQL);}
             $tabla=$objDB->ejecutasql($sSQL);
             if ($fila=$objDB->sf($tabla)){
                 $lin_core12escuela=str_replace($cSepara, $cComplementa, $fila['core12nombre']);
@@ -448,19 +447,13 @@ if ($bEntra){
 	$objplano->AdicionarLinea(utf8_decode($sTitulos1.$sTitulos2.$sTitulos3.$sTitulos4.$sTitulos9));
 	$objplano->AdicionarLinea($sBloque1.$sBloque2.$sBloque3.$sBloque4.$sBloque9);
     $idTercero=$_REQUEST['idtercero'];
-    list($bEsConsejero, $sIdCentro, $sDebugZ)=f2300_EsConsejero($idTercero, $objDB, $bDebug);
-    list($sIdZona, $idPrimera, $sDebugZ)=f2300_ZonasTercero($idTercero, $objDB, $bDebug);
 	$sWhere='';
 	if ($_REQUEST['v5']!=''){
 		$sWhere=$sWhere.' AND TB.cara01idcead='.$_REQUEST['v5'].' ';
 		}else{
 		if ($_REQUEST['v4']!=''){
 			$sWhere=$sWhere.' AND TB.cara01idzona='.$_REQUEST['v4'].' ';
-			}else{
-            if ($_REQUEST['v9']==0) {
-                if ($idPrimera!=''){ $sWhere=$sWhere.' AND TB.cara01idzona IN ('.$sIdZona.') '; }
-                }
-            }
+			}
 		}
 	if ($_REQUEST['v7']!=''){
 		$sWhere=$sWhere.' AND TB.cara01idprograma='.$_REQUEST['v7'].' ';
@@ -469,17 +462,25 @@ if ($bEntra){
 			$sWhere=$sWhere.' AND TB.cara01idescuela='.$_REQUEST['v6'].' ';
 			}
 		}
-    if ($_REQUEST['v9']==1) {
-        $sWhere = $sWhere . ' AND TB.cara01idconsejero=' . $idTercero . ' ';
-        } else {
-        if ($idPrimera == '' && $bEsConsejero) {
+	switch ($_REQUEST['v9']) {
+        case 1:
             $sWhere = $sWhere . ' AND TB.cara01idconsejero=' . $idTercero . ' ';
-            }
+            break;
+        case 2:
+            $sSQL='SELECT cara21idzona FROM cara21lidereszona WHERE cara21idlider='.$idTercero.'';
+            $tabla=$objDB->ejecutasql($sSQL);
+            if ($fila=$objDB->sf($tabla)){
+                $sWhere=$sWhere.' AND TB.cara01idzona='.$fila['cara21idzona'].' ';
+                }
+            break;
+        case -99:
+            $sWhere = $sWhere . ' AND TB.cara01id=-99';
+            break;
         }
 	$sSQL='SELECT TB.* 
 FROM cara01encuesta AS TB 
 WHERE TB.cara01idperiodoacompana='.$_REQUEST['v3'].''.$sWhere.'';
-	if ($bDebug){$objplano->adlinea($sSQL);}
+	if ($bDebug){$objplano->AdicionarLinea($sSQL);}
 	$tabla=$objDB->ejecutasql($sSQL);
 	while ($fila=$objDB->sf($tabla)){
 		$lin_cara01idtercero=$cSepara.$cSepara.$cSepara;

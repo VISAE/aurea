@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="SshConfigs">
+    <configs>
+      <sshConfig connectionConfig="{&quot;serverAliveInterval&quot;:20}" host="172.21.0.80" id="7bc665af-a244-4998-9b64-7496b466055b" keyPath="$USER_HOME$/PTI/omarbautista.ppk" port="22" nameFormat="DESCRIPTIVE" username="omarbautista" />
+    </configs>
+  </component>
+</project>
