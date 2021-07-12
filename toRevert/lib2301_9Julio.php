@@ -7,7 +7,6 @@
 --- 2301 cara01encuesta
 --- Modelo Versión 2.23.6 Tuesday, October 1, 2019
 --- Modelo Versión 2.25.0 viernes, 3 de abril de 2020
---- Modelo Versión 2.25.5 domingo, 16 de agosto de 2020
 */
 function f2301_AjustarTipoEncuesta($cara01id, $objDB, $bDebug=false){
 	$sError='';
@@ -183,8 +182,7 @@ function f2301_IniciarEncuesta($idTercero, $idPeraca, $objDB, $bDebug=false, $bF
 			if ($idPeraca==87){$idPeraca=$idPeracaBase;}
 			$cara01id=tabla_consecutivo('cara01encuesta','cara01id', '', $objDB);
 			//Abril 3 de 2020, se agregan las variables de discapacidad por version.
-			//Agosto 17 de 2020, se agregan las variables de discapacidad por version.
-			$cara01discversion=2;
+			$cara01discversion=1;
 			$sCampos2301='cara01idperaca, cara01idtercero, cara01id, cara01completa, cara01fechainicio, 
 cara01agnos, cara01sexo, cara01pais, cara01depto, cara01ciudad, 
 cara01direccion, cara01estrato, cara01zonares, cara01estcivil, cara01idzona, 
@@ -319,14 +317,11 @@ function f2301_HTMLComboV2_cara01idperaca($objDB, $objCombos, $valor, $idTercero
 		while($fila=$objDB->sf($tabla)){
 			$sIds=$sIds.','.$fila['cara01idperaca'];
 			}
-		//$sCondi='WHERE exte02id IN ('.$sIds.')';
-		$sCondi=$sIds;
+		$sCondi='WHERE exte02id IN ('.$sIds.')';
 		}
 	$objCombos->nuevo('cara01idperaca', $valor, true, '{'.$ETI['msg_seleccione'].'}');
-	//$objCombos->iAncho=450;
 	$objCombos->sAccion='RevisaLlave();';
-	$sSQL=f146_ConsultaCombo($sCondi);
-	$res=$objCombos->html($sSQL, $objDB);
+	$res=$objCombos->html('SELECT exte02id AS id, CONCAT(CASE exte02vigente WHEN "S" THEN "" ELSE "[" END, exte02nombre," {",exte02id,"} ",CASE exte02vigente WHEN "S" THEN "" ELSE " - INACTIVO]" END) AS nombre FROM exte02per_aca '.$sCondi.' ORDER BY exte02vigente DESC, exte02id DESC', $objDB);
 	return $res;
 	}
 function f2301_HTMLComboV2_cara01depto($objDB, $objCombos, $valor, $vrcara01pais){
@@ -338,9 +333,6 @@ function f2301_HTMLComboV2_cara01depto($objDB, $objCombos, $valor, $vrcara01pais
 	$sCondi='unad19codpais="'.$vrcara01pais.'"';
 	if ($sCondi!=''){$sCondi=' WHERE '.$sCondi;}
 	$objCombos->nuevo('cara01depto', $valor, true, '{'.$ETI['msg_seleccione'].'}');
-	if ($vrcara01pais!='057'){
-		$objCombos->addItem('00000', $ETI['msg_otro']);
-		}
 	$objCombos->sAccion='carga_combo_cara01ciudad()';
 	$res=$objCombos->html('SELECT unad19codigo AS id, unad19nombre AS nombre FROM unad19depto'.$sCondi, $objDB);
 	return $res;
@@ -350,17 +342,11 @@ function f2301_HTMLComboV2_cara01ciudad($objDB, $objCombos, $valor, $vrcara01dep
 	$mensajes_todas=$APP->rutacomun.'lg/lg_todas_'.$_SESSION['unad_idioma'].'.php';
 	if (!file_exists($mensajes_todas)){$mensajes_todas=$APP->rutacomun.'lg/lg_todas_es.php';}
 	require $mensajes_todas;
+	//@@ Se debe arreglar la condicion..
+	$sCondi='unad20coddepto="'.$vrcara01depto.'"';
+	if ($sCondi!=''){$sCondi=' WHERE '.$sCondi;}
 	$objCombos->nuevo('cara01ciudad', $valor, true, '{'.$ETI['msg_seleccione'].'}');
-	$sSQL='';
-	if ($vrcara01depto!=''){
-		$sSQL='SELECT unad20codigo AS id, unad20nombre AS nombre FROM unad20ciudad WHERE unad20coddepto="'.$vrcara01depto.'"';
-		if (substr($vrcara01depto, 0, 3)!='057'){
-			if ($vrcara01depto!='00000'){
-				$objCombos->addItem('00000000', $ETI['msg_otra']);
-				}
-			}
-		}
-	$res=$objCombos->html($sSQL, $objDB);
+	$res=$objCombos->html('SELECT unad20codigo AS id, unad20nombre AS nombre FROM unad20ciudad'.$sCondi, $objDB);
 	return $res;
 	}
 function f2301_HTMLComboV2_cara01idzona($objDB, $objCombos, $valor){
@@ -436,31 +422,6 @@ function f2301_Combocara01idcead($aParametros){
 	$objDB->CerrarConexion();
 	$objResponse=new xajaxResponse();
 	$objResponse->assign('div_cara01idcead', 'innerHTML', $html_cara01idcead);
-	return $objResponse;
-	}
-function elimina_archivo_cara01discv2archivoorigen($idPadre, $bDebug=false){
-	$_SESSION['u_ultimominuto']=iminutoavance();
-	require './app.php';
-	$objDB=new clsdbadmin($APP->dbhost, $APP->dbuser, $APP->dbpass, $APP->dbname);
-	if ($APP->dbpuerto!=''){$objDB->dbPuerto=$APP->dbpuerto;}
-	$objDB->xajax();
-	$sError='';
-	$sDebug='';
-	$bPuedeEliminar=true;
-	// Definir las condiciones para que se pueda eliminar y el mensaje de error que se debe presentar
-	if ($bPuedeEliminar){
-		archivo_eliminar('cara01encuesta', 'cara01id', 'cara01discv2soporteorigen', 'cara01discv2archivoorigen', $idPadre, $objDB);
-		}
-	$objDB->CerrarConexion();
-	$objResponse=new xajaxResponse();
-	if ($bPuedeEliminar){
-		$objResponse->call("limpia_cara01discv2archivoorigen");
-		}else{
-		MensajeAlarmaV2('".$sError."', 0);
-		}
-	if ($bDebug){
-		$objResponse->assign('div_debug', 'innerHTML', $sDebug);
-		}
 	return $objResponse;
 	}
 function f2301_ExisteDato($datos){
@@ -620,14 +581,12 @@ function f2301_TablaDetalleV2($aParametros, $objDB, $bDebug=false){
 	$babierta=true;
 	$bEsConsejero=false;
 	$sLeyenda='';
-	if ($sLeyenda!=''){
+	if (false){
 		$sLeyenda='<div class="salto1px"></div>
 <div class="GrupoCamposAyuda">
-'.$sLeyenda.'
+<b>Importante:</b> Mensaje al usuario
 <div class="salto1px"></div>
 </div>';
-		return array($sLeyenda.'<input id="paginaf2301" name="paginaf2301" type="hidden" value="'.$pagina.'"/><input id="lppf2301" name="lppf2301" type="hidden" value="'.$lineastabla.'"/>', $sDebug);
-		die();
 		}
 	$sSQLadd='';
 	$sSQLadd1='';
@@ -668,12 +627,11 @@ function f2301_TablaDetalleV2($aParametros, $objDB, $bDebug=false){
 		$sSQLadd1=$sSQLadd1.'TB.cara01completa<>"S" AND ';
 		break;
 		}
-	$sCondiDiscapacidad='((TB.cara01discversion=0 AND ((TB.cara01discsensorial<>"N") OR (TB.cara01discfisica<>"N") OR (TB.cara01disccognitiva<>"N") OR (TB.cara01perayuda<>0))) OR (TB.cara01discversion=2 AND (TB.cara01discv2tiene=1 OR (TB.cara01perayuda<>0)))) AND ';
 	if ($aParametros[112]==1){
-		$sSQLadd1=$sSQLadd1.$sCondiDiscapacidad.'';
+		$sSQLadd1=$sSQLadd1.'((TB.cara01discsensorial<>"N") OR (TB.cara01discfisica<>"N") OR (TB.cara01disccognitiva<>"N") OR (TB.cara01perayuda<>0)) AND ';
 		}
 	if ($aParametros[112]==2){
-		$sSQLadd1=$sSQLadd1.$sCondiDiscapacidad.'TB.cara01fechaconfirmadisc=0 AND ';
+		$sSQLadd1=$sSQLadd1.'((TB.cara01discsensorial<>"N") OR (TB.cara01discfisica<>"N") OR (TB.cara01disccognitiva<>"N") OR (TB.cara01perayuda<>0)) AND TB.cara01fechaconfirmadisc=0 AND ';
 		}
 	$sTablaConvenio='';
 	if ($aParametros[113]!=''){
@@ -691,8 +649,8 @@ ORDER BY TB.cara01idperaca DESC, T2.unad11doc';
 	$sErrConsulta='<input id="consulta_2301" name="consulta_2301" type="hidden" value="'.$sSQLlista.'"/>
 <input id="titulos_2301" name="titulos_2301" type="hidden" value="'.$sTitulos.'"/>';
 	$tabladetalle=$objDB->ejecutasql($sSQL);
-	if ($bDebug){$sDebug=$sDebug.fecha_microtiempo().' Consulta 2301: '.$sSQL.'<br>';}
 	if ($tabladetalle==false){
+		if ($bDebug){$sDebug=$sDebug.fecha_microtiempo().' Consulta 2301: '.$sSQL.'<br>';}
 		$registros=0;
 		$sErrConsulta=$sErrConsulta.'..<input id="err" name="err" type="hidden" value="'.$sSQL.' '.$objDB->serror.'"/>';
 		//$sLeyenda=$sSQL;
@@ -720,7 +678,7 @@ ORDER BY TB.cara01idperaca DESC, T2.unad11doc';
 			}
 		}
 	$res=$sErrConsulta.$sLeyenda.$res.'<table border="0" align="center" cellpadding="0" cellspacing="2" class="tablaapp">
-<thead class="fondoazul"><tr>
+<tr class="fondoazul">
 <td colspan="2"><b>'.$ETI['cara01idtercero'].'</b></td>
 <td><b>'.$ETI['cara01completa'].'</b></td>
 <td><b>'.$ETI['cara01fechaencuesta'].'</b></td>
@@ -728,7 +686,7 @@ ORDER BY TB.cara01idperaca DESC, T2.unad11doc';
 '.html_paginador('paginaf2301', $registros, $lineastabla, $pagina, 'paginarf2301()').'
 '.html_lpp('lppf2301', $lineastabla, 'paginarf2301()').'
 </td>
-</tr></thead>';
+</tr>';
 	$tlinea=1;
 	$idPeraca=-1;
 	while($filadet=$objDB->sf($tabladetalle)){
@@ -1029,15 +987,6 @@ function f2301_db_CargarPadre($DATA, $objDB, $bDebug=false){
 		$DATA['cara02discv2multiple']=$fila['cara02discv2multiple'];
 		$DATA['cara02discv2multipleotro']=$fila['cara02discv2multipleotro'];
 		$DATA['cara02talentoexcepcional']=$fila['cara02talentoexcepcional'];
-		$DATA['cara01discv2tiene']=$fila['cara01discv2tiene'];
-		$DATA['cara01discv2trastaprende']=$fila['cara01discv2trastaprende'];
-		$DATA['cara01discv2soporteorigen']=$fila['cara01discv2soporteorigen'];
-		$DATA['cara01discv2archivoorigen']=$fila['cara01discv2archivoorigen'];
-		$DATA['cara01discv2trastornos']=$fila['cara01discv2trastornos'];
-		$DATA['cara01discv2contalento']=$fila['cara01discv2contalento'];
-		$DATA['cara01discv2condicionmedica']=$fila['cara01discv2condicionmedica'];
-		$DATA['cara01discv2condmeddet']=$fila['cara01discv2condmeddet'];
-		$DATA['cara01discv2pruebacoeficiente']=$fila['cara01discv2pruebacoeficiente'];
 		$bcargo=true;
 		$DATA['paso']=2;
 		$DATA['boculta2301']=0;
@@ -1249,7 +1198,7 @@ function f2301_db_GuardarV2($DATA, $objDB, $bDebug=false){
 	if (isset($DATA['cara01fichaquimica'])==0){$DATA['cara01fichaquimica']='';}
 	if (isset($DATA['cara01tipocaracterizacion'])==0){$DATA['cara01tipocaracterizacion']='';}
 	*/
-	if (isset($DATA['cara01discversion'])==0){$DATA['cara01discversion']=2;}
+	if (isset($DATA['cara01discversion'])==0){$DATA['cara01discversion']=1;}
 	if (isset($DATA['cara01discv2sensorial'])==0){$DATA['cara01discv2sensorial']='';}
 	if (isset($DATA['cara02discv2intelectura'])==0){$DATA['cara02discv2intelectura']='';}
 	if (isset($DATA['cara02discv2fisica'])==0){$DATA['cara02discv2fisica']='';}
@@ -1259,13 +1208,6 @@ function f2301_db_GuardarV2($DATA, $objDB, $bDebug=false){
 	if (isset($DATA['cara02discv2multiple'])==0){$DATA['cara02discv2multiple']='';}
 	if (isset($DATA['cara02discv2multipleotro'])==0){$DATA['cara02discv2multipleotro']='';}
 	if (isset($DATA['cara02talentoexcepcional'])==0){$DATA['cara02talentoexcepcional']='';}
-	if (isset($DATA['cara01discv2tiene'])==0){$DATA['cara01discv2tiene']=0;}
-	if (isset($DATA['cara01discv2trastaprende'])==0){$DATA['cara01discv2trastaprende']=0;}
-	if (isset($DATA['cara01discv2trastornos'])==0){$DATA['cara01discv2trastornos']=0;}
-	if (isset($DATA['cara01discv2contalento'])==0){$DATA['cara01discv2contalento']=0;}
-	if (isset($DATA['cara01discv2condicionmedica'])==0){$DATA['cara01discv2condicionmedica']=0;}
-	if (isset($DATA['cara01discv2condmeddet'])==0){$DATA['cara01discv2condmeddet']='';}
-	if (isset($DATA['cara01discv2pruebacoeficiente'])==0){$DATA['cara01discv2pruebacoeficiente']='';}
 	$DATA['cara01idperaca']=numeros_validar($DATA['cara01idperaca']);
 	$DATA['cara01fichaper']=numeros_validar($DATA['cara01fichaper']);
 	$DATA['cara01fichafam']=numeros_validar($DATA['cara01fichafam']);
@@ -1425,15 +1367,6 @@ function f2301_db_GuardarV2($DATA, $objDB, $bDebug=false){
 	$DATA['cara02discv2multiple']=numeros_validar($DATA['cara02discv2multiple']);
 	$DATA['cara02discv2multipleotro']=htmlspecialchars(trim($DATA['cara02discv2multipleotro']));
 	$DATA['cara02talentoexcepcional']=numeros_validar($DATA['cara02talentoexcepcional']);
-	$DATA['cara01discv2tiene']=numeros_validar($DATA['cara01discv2tiene']);
-	$DATA['cara01discv2trastaprende']=numeros_validar($DATA['cara01discv2trastaprende']);
-	$DATA['cara01discv2soporteorigen']=numeros_validar($DATA['cara01discv2soporteorigen']);
-	$DATA['cara01discv2archivoorigen']=numeros_validar($DATA['cara01discv2archivoorigen']);
-	$DATA['cara01discv2trastornos']=numeros_validar($DATA['cara01discv2trastornos']);
-	$DATA['cara01discv2contalento']=numeros_validar($DATA['cara01discv2contalento']);
-	$DATA['cara01discv2condicionmedica']=numeros_validar($DATA['cara01discv2condicionmedica']);
-	$DATA['cara01discv2condmeddet']=htmlspecialchars(trim($DATA['cara01discv2condmeddet']));
-	$DATA['cara01discv2pruebacoeficiente']=numeros_validar($DATA['cara01discv2pruebacoeficiente']);
 	// -- Se inicializan las variables que puedan pasar vacias {Especialmente números}.
 	if ($DATA['cara01completa']==''){$DATA['cara01completa']='N';}
 	if ($DATA['cara01fichaper']==''){$DATA['cara01fichaper']=0;}
@@ -1509,19 +1442,13 @@ function f2301_db_GuardarV2($DATA, $objDB, $bDebug=false){
 	//if ($DATA['cara01fichaquimica']==''){$DATA['cara01fichaquimica']=0;}
 	if ($DATA['cara01nivelquimica']==''){$DATA['cara01nivelquimica']=0;}
 	//if ($DATA['cara01tipocaracterizacion']==''){$DATA['cara01tipocaracterizacion']=0;}
-	if ($DATA['cara01discv2sensorial']==''){$DATA['cara01discv2sensorial']=0;}
-	if ($DATA['cara02discv2intelectura']==''){$DATA['cara02discv2intelectura']=0;}
-	if ($DATA['cara02discv2fisica']==''){$DATA['cara02discv2fisica']=0;}
-	if ($DATA['cara02discv2psico']==''){$DATA['cara02discv2psico']=0;}
-	if ($DATA['cara02discv2sistemica']==''){$DATA['cara02discv2sistemica']=0;}
-	if ($DATA['cara02discv2multiple']==''){$DATA['cara02discv2multiple']=0;}
-	if ($DATA['cara02talentoexcepcional']==''){$DATA['cara02talentoexcepcional']=0;}
-	if ($DATA['cara01discv2tiene']==''){$DATA['cara01discv2tiene']=0;}
-	if ($DATA['cara01discv2trastaprende']==''){$DATA['cara01discv2trastaprende']=0;}
-	if ($DATA['cara01discv2trastornos']==''){$DATA['cara01discv2trastornos']=0;}
-	if ($DATA['cara01discv2contalento']==''){$DATA['cara01discv2contalento']=0;}
-	if ($DATA['cara01discv2condicionmedica']==''){$DATA['cara01discv2condicionmedica']=0;}
-	if ($DATA['cara01discv2pruebacoeficiente']==''){$DATA['cara01discv2pruebacoeficiente']=0;}
+	//if ($DATA['cara01discv2sensorial']==''){$DATA['cara01discv2sensorial']=0;}
+	//if ($DATA['cara02discv2intelectura']==''){$DATA['cara02discv2intelectura']=0;}
+	//if ($DATA['cara02discv2fisica']==''){$DATA['cara02discv2fisica']=0;}
+	//if ($DATA['cara02discv2psico']==''){$DATA['cara02discv2psico']=0;}
+	//if ($DATA['cara02discv2sistemica']==''){$DATA['cara02discv2sistemica']=0;}
+	//if ($DATA['cara02discv2multiple']==''){$DATA['cara02discv2multiple']=0;}
+	//if ($DATA['cara02talentoexcepcional']==''){$DATA['cara02talentoexcepcional']=0;}
 	// -- Seccion para validar los posibles causales de error.
 	//Primero hacer un caso de revision de los encabezados.
 	if ($DATA['ficha']==1){$DATA['cara01fichaper']=1;}
@@ -1786,27 +1713,8 @@ function f2301_db_GuardarV2($DATA, $objDB, $bDebug=false){
 			//$sError=$ERR['cara01fechaconfirmadisc'].$sSepara.$sError;
 			}
 		//if ($DATA['cara01idconfirmadisc']==0){$sError=$ERR['cara01idconfirmadisc'].$sSepara.$sError;}
-		$bValida=false;
-		if ($DATA['cara01discversion']==2){$bValida=true;}
-		if ($bValida){
-			if ($DATA['cara01discv2condicionmedica']==''){
-				$sError=$ERR['cara01discv2condicionmedica'].$sSepara.$sError;
-				}else{
-				if ($DATA['cara01discv2condicionmedica']!=0){
-					if ($DATA['cara01discv2condmeddet']==''){$sError=$ERR['cara01discv2condmeddet'].$sSepara.$sError;}
-					}
-				}
-			if ($DATA['cara01discv2condicionmedica']==''){$sError=$ERR['cara01discv2condicionmedica'].$sSepara.$sError;}
-			if ($DATA['cara01discv2contalento']==''){$sError=$ERR['cara01discv2contalento'].$sSepara.$sError;}
-			if ($DATA['cara01discv2trastornos']==''){$sError=$ERR['cara01discv2trastornos'].$sSepara.$sError;}
-			if ($DATA['cara01discv2trastaprende']==''){$sError=$ERR['cara01discv2trastaprende'].$sSepara.$sError;}
-			if ($DATA['cara01discv2tiene']==''){$sError=$ERR['cara01discv2tiene'].$sSepara.$sError;}
+		if ($DATA['cara01discversion']==1){
 			if ($DATA['cara02talentoexcepcional']==''){$sError=$ERR['cara02talentoexcepcional'].$sSepara.$sError;}
-			}
-		$bValida=false;
-		if ($DATA['cara01discversion']==1){$bValida=true;}
-		if ($DATA['cara01discversion']==2){$bValida=true;}
-		if ($bValida){
 			//if ($DATA['cara02discv2multipleotro']==''){$sError=$ERR['cara02discv2multipleotro'].$sSepara.$sError;}
 			if ($DATA['cara02discv2multiple']==''){$sError=$ERR['cara02discv2multiple'].$sSepara.$sError;}
 			//if ($DATA['cara02discv2sistemicaotro']==''){$sError=$ERR['cara02discv2sistemicaotro'].$sSepara.$sError;}
@@ -1947,17 +1855,10 @@ function f2301_db_GuardarV2($DATA, $objDB, $bDebug=false){
 			if ($objDB->nf($result)!=0){
 				$sError=$ERR['existe'];
 				}else{
-				if ($DATA['cara01idtercero']!=$_SESSION['unad_id_tercero']){
-					$sError=$ERR['2'];
-					}
+				if ($DATA['cara01idtercero']!=$_SESSION['unad_id_tercero']){$sError=$ERR['2'];}
 				}
 			}else{
-			if ($DATA['cara01idtercero']!=$_SESSION['unad_id_tercero']){
-				list($devuelve, $sDebugP)=seg_revisa_permisoV3($iCodModulo, 13, $_SESSION['unad_id_tercero'], $objDB, $bDebug);
-				if (!$devuelve){
-					$sError=$ERR['3'];
-					}
-				}
+			if ($DATA['cara01idtercero']!=$_SESSION['unad_id_tercero']){$sError=$ERR['3'];}
 			}
 		}
 	if ($sError==''){
@@ -2035,10 +1936,7 @@ cara01nivelquimica, cara01tipocaracterizacion,
 
 cara01discversion, 
 cara01discv2sensorial, cara02discv2intelectura, cara02discv2fisica, cara02discv2psico, cara02discv2sistemica, 
-cara02discv2sistemicaotro, cara02discv2multiple, cara02discv2multipleotro, cara02talentoexcepcional, 
-cara01discv2tiene, cara01discv2trastaprende, cara01discv2soporteorigen, 
-cara01discv2archivoorigen, cara01discv2trastornos, cara01discv2contalento, cara01discv2condicionmedica, cara01discv2condmeddet, 
-cara01discv2pruebacoeficiente';
+cara02discv2sistemicaotro, cara02discv2multiple, cara02discv2multipleotro, cara02talentoexcepcional';
 			$sValores2301=''.$DATA['cara01idperaca'].', '.$DATA['cara01idtercero'].', '.$DATA['cara01id'].', "'.$DATA['cara01completa'].'", '.$DATA['cara01fichaper'].', 
 '.$DATA['cara01fichafam'].', '.$DATA['cara01fichaaca'].', '.$DATA['cara01fichalab'].', '.$DATA['cara01fichabien'].', '.$DATA['cara01fichapsico'].', 
 '.$DATA['cara01fichadigital'].', '.$DATA['cara01fichalectura'].', '.$DATA['cara01ficharazona'].', '.$DATA['cara01fichaingles'].', "'.$DATA['cara01fechaencuesta'].'", 
@@ -2079,10 +1977,7 @@ cara01discv2pruebacoeficiente';
 
 '.$DATA['cara01discversion'].', 
 '.$DATA['cara01discv2sensorial'].', '.$DATA['cara02discv2intelectura'].', '.$DATA['cara02discv2fisica'].', '.$DATA['cara02discv2psico'].', '.$DATA['cara02discv2sistemica'].', 
-"'.$DATA['cara02discv2sistemicaotro'].'", '.$DATA['cara02discv2multiple'].', "'.$DATA['cara02discv2multipleotro'].'", '.$DATA['cara02talentoexcepcional'].', 
-'.$DATA['cara01discv2tiene'].', '.$DATA['cara01discv2trastaprende'].', '.$DATA['cara01discv2soporteorigen'].', 
-'.$DATA['cara01discv2archivoorigen'].', '.$DATA['cara01discv2trastornos'].', '.$DATA['cara01discv2contalento'].', '.$DATA['cara01discv2condicionmedica'].', "'.$DATA['cara01discv2condmeddet'].'", 
-'.$DATA['cara01discv2pruebacoeficiente'].'';
+"'.$DATA['cara02discv2sistemicaotro'].'", '.$DATA['cara02discv2multiple'].', "'.$DATA['cara02discv2multipleotro'].'", '.$DATA['cara02talentoexcepcional'].'';
 			if ($APP->utf8==1){
 				$sSQL='INSERT INTO cara01encuesta ('.$sCampos2301.') VALUES ('.utf8_encode($sValores2301).');';
 				$sdetalle=$sCampos2301.'['.utf8_encode($sValores2301).']';
@@ -2272,13 +2167,6 @@ cara01discv2pruebacoeficiente';
 			$scampo[173]='cara01discfisicaotra';
 			$scampo[174]='cara01disccognitivaotra';
 			$scampo[175]='cara01perotraayuda';
-			$scampo[176]='cara01discv2tiene';
-			$scampo[177]='cara01discv2trastaprende';
-			$scampo[178]='cara01discv2trastornos';
-			$scampo[179]='cara01discv2contalento';
-			$scampo[180]='cara01discv2condicionmedica';
-			$scampo[181]='cara01discv2condmeddet';
-			$scampo[182]='cara01discv2pruebacoeficiente';
 			//
 			$sdato[1]=$DATA['cara01completa'];
 			$sdato[2]=$DATA['cara01fichaper'];
@@ -2459,14 +2347,7 @@ cara01discv2pruebacoeficiente';
 			$sdato[173]=$DATA['cara01discfisicaotra'];
 			$sdato[174]=$DATA['cara01disccognitivaotra'];
 			$sdato[175]=$DATA['cara01perotraayuda'];
-			$sdato[176]=$DATA['cara01discv2tiene'];
-			$sdato[177]=$DATA['cara01discv2trastaprende'];
-			$sdato[178]=$DATA['cara01discv2trastornos'];
-			$sdato[179]=$DATA['cara01discv2contalento'];
-			$sdato[180]=$DATA['cara01discv2condicionmedica'];
-			$sdato[181]=$DATA['cara01discv2condmeddet'];
-			$sdato[182]=$DATA['cara01discv2pruebacoeficiente'];
-			$numcmod=182;
+			$numcmod=175;
 			$sWhere='cara01id='.$DATA['cara01id'].'';
 			$sSQL='SELECT * FROM cara01encuesta WHERE '.$sWhere;
 			$sdatos='';
@@ -2503,7 +2384,6 @@ cara01discv2pruebacoeficiente';
 				}
 			}
 		if ($bpasa){
-			if ($bDebug){$sDebug=$sDebug.fecha_microtiempo().' Guardar 2301 '.$sSQL.'<br>';}
 			$result=$objDB->ejecutasql($sSQL);
 			if ($result==false){
 				$sError=$ERR['falla_guardar'].' [2301] ..<!-- '.$sSQL.' -->';
@@ -2516,6 +2396,7 @@ cara01discv2pruebacoeficiente';
 					}
 				$bCerrando=false;
 				}else{
+				if ($bDebug){$sDebug=$sDebug.fecha_microtiempo().' Guardar 2301 '.$sSQL.'<br>';}
 				if ($bAudita[$idAccion]){seg_auditar($iCodModulo, $_SESSION['unad_id_tercero'], $idAccion, $DATA['cara01id'], $sdetalle, $objDB);}
 				$DATA['paso']=2;
 				}
@@ -2627,13 +2508,10 @@ function f2301_TablaDetalleBusquedas($aParametros, $objDB){
 	require $mensajes_todas;
 	require $mensajes_2301;
 	if(!is_array($aParametros)){$aParametros=json_decode(str_replace('\"','"',$aParametros),true);}
-	if (isset($aParametros[100])==0){$aParametros[100]=$_SESSION['unad_id_tercero'];}
 	if (isset($aParametros[101])==0){$aParametros[101]=1;}
 	if (isset($aParametros[102])==0){$aParametros[102]=20;}
 	if (isset($aParametros[103])==0){$aParametros[103]='';}
-	if (isset($aParametros[104])==0){$aParametros[104]='';}
 	//$aParametros[103]=numeros_validar($aParametros[103]);
-	$idTercero=$aParametros[100];
 	$pagina=$aParametros[101];
 	$lineastabla=$aParametros[102];
 	$babierta=true;
@@ -3163,16 +3041,12 @@ function f2301_TablaDetalleV2Consejero($aParametros, $objDB, $bDebug=false){
 	$sSQLadd='';
 	$sSQLadd1='';
 	$sLeyenda='';
-	$sBotones='<input id="paginaf2301" name="paginaf2301" type="hidden" value="'.$pagina.'"/>
-	<input id="lppf2301" name="lppf2301" type="hidden" value="'.$lineastabla.'"/>';
-	if ($cara13idconsejero==0){
+	if (false){
 		$sLeyenda='<div class="salto1px"></div>
-		<div class="GrupoCamposAyuda">
-		<b>No se ha definido el consejero</b>
-		<div class="salto1px"></div>
-		</div>'.$sBotones;
-		return array($sLeyenda, $sDebug);
-		die();
+<div class="GrupoCamposAyuda">
+<b>Importante:</b> Mensaje al usuario
+<div class="salto1px"></div>
+</div>';
 		}
 	//if ((int)$aParametros[103]!=-1){$sSQLadd=$sSQLadd.' AND TB.campo='.$aParametros[103];}
 	//if ($aParametros[103]!=''){$sSQLadd=$sSQLadd.' AND TB.campo2 LIKE "%'.$aParametros[103].'%"';}
@@ -3190,30 +3064,24 @@ function f2301_TablaDetalleV2Consejero($aParametros, $objDB, $bDebug=false){
 		}
 	*/
 	$sTitulos='Consejero, Tercero, Id, Completa, Tipocaracterizacion';
-	/*
-	$sSQL='SELECT TB.cara01idconsejero, T2.unad11razonsocial AS C2_nombre, TB.cara01id, TB.cara01completa, T5.cara11nombre, 
-	TB.cara01idtercero, T2.unad11tipodoc AS C2_td, T2.unad11doc AS C2_doc, TB.cara01tipocaracterizacion, TB.cara01idperaca 
-	FROM cara01encuesta AS TB, unad11terceros AS T2, cara11tipocaract AS T5 
-	WHERE '.$sSQLadd1.' TB.cara01idconsejero='.$cara13idconsejero.' AND TB.cara01idperiodoacompana='.$cara13peraca.' AND TB.cara01idtercero=T2.unad11id AND TB.cara01tipocaracterizacion=T5.cara11id '.$sSQLadd.'
-	ORDER BY T2.unad11doc';
-	*/
-	$sSQL='SELECT TB.core16tercero, T2.unad11razonsocial AS C2_nombre, T2.unad11tipodoc AS C2_td, T2.unad11doc AS C2_doc
-	FROM core16actamatricula AS TB, unad11terceros AS T2 
-	WHERE TB.core16peraca='.$cara13peraca.' AND TB.core16idconsejero='.$cara13idconsejero.' AND TB.core16tercero=T2.unad11id';
+	$sSQL='SELECT TB.cara01idconsejero, T2.unad11razonsocial AS C2_nombre, TB.cara01id, TB.cara01completa, T5.cara11nombre, TB.cara01idtercero, T2.unad11tipodoc AS C2_td, T2.unad11doc AS C2_doc, TB.cara01tipocaracterizacion, TB.cara01idperaca 
+FROM cara01encuesta AS TB, unad11terceros AS T2, cara11tipocaract AS T5 
+WHERE '.$sSQLadd1.' TB.cara01idconsejero='.$cara13idconsejero.' AND TB.cara01idperiodoacompana='.$cara13peraca.' AND TB.cara01idtercero=T2.unad11id AND TB.cara01tipocaracterizacion=T5.cara11id '.$sSQLadd.'
+ORDER BY T2.unad11doc';
 	$sSQLlista=str_replace("'","|",$sSQL);
 	$sSQLlista=str_replace('"',"|",$sSQLlista);
 	$sErrConsulta='<input id="consulta_2301" name="consulta_2301" type="hidden" value="'.$sSQLlista.'"/>
-	<input id="titulos_2301" name="titulos_2301" type="hidden" value="'.$sTitulos.'"/>';
-	if ($bDebug){$sDebug=$sDebug.fecha_microtiempo().' Consulta de asignados: '.$sSQL.'<br>';}
+<input id="titulos_2301" name="titulos_2301" type="hidden" value="'.$sTitulos.'"/>';
 	$tabladetalle=$objDB->ejecutasql($sSQL);
 	if ($tabladetalle==false){
+		if ($bDebug){$sDebug=$sDebug.fecha_microtiempo().' Consulta 2301: '.$sSQL.'<br>';}
 		$registros=0;
 		$sErrConsulta=$sErrConsulta.'..<input id="err" name="err" type="hidden" value="'.$sSQL.' '.$objDB->serror.'"/>';
 		//$sLeyenda=$sSQL;
 		}else{
 		$registros=$objDB->nf($tabladetalle);
 		if ($registros==0){
-			//return array(utf8_encode($sErrConsulta.''), $sDebug);
+			return array(utf8_encode($sErrConsulta.'<input id="paginaf2301" name="paginaf2301" type="hidden" value="'.$pagina.'"/><input id="lppf2301" name="lppf2301" type="hidden" value="'.$lineastabla.'"/>'), $sDebug);
 			}
 		if ((($registros-1)/$lineastabla)<($pagina-1)){$pagina=(int)(($registros-1)/$lineastabla)+1;}
 		if ($registros>$lineastabla){
@@ -3223,43 +3091,40 @@ function f2301_TablaDetalleV2Consejero($aParametros, $objDB, $bDebug=false){
 			}
 		}
 	$res=$sErrConsulta.$sLeyenda.'<table border="0" align="center" cellpadding="0" cellspacing="2" class="tablaapp">
-	<tr class="fondoazul">
-	<td colspan="2"><b>'.$ETI['cara01idtercero'].'</b></td>
-	<td><b>'.$ETI['cara01completa'].'</b></td>
-	<td><b>'.$ETI['cara01tipocaracterizacion'].'</b></td>
-	<td align="right">
-	'.html_paginador('paginaf2301', $registros, $lineastabla, $pagina, 'paginarf2301()').'
-	'.html_lpp('lppf2301', $lineastabla, 'paginarf2301()', 500).'
-	</td>
-	</tr>';
+<tr class="fondoazul">
+<td colspan="2"><b>'.$ETI['cara01idtercero'].'</b></td>
+<td><b>'.$ETI['cara01completa'].'</b></td>
+<td><b>'.$ETI['cara01tipocaracterizacion'].'</b></td>
+<td align="right">
+'.html_paginador('paginaf2301', $registros, $lineastabla, $pagina, 'paginarf2301()').'
+'.html_lpp('lppf2301', $lineastabla, 'paginarf2301()', 500).'
+</td>
+</tr>';
 	$tlinea=1;
 	while($filadet=$objDB->sf($tabladetalle)){
 		$sPrefijo='';
 		$sSufijo='';
 		$sClass='';
 		$sLink='';
-		$et_cara01completa='';
-		/*
 		$et_cara01completa=$ETI['msg_abierto'];
 		if ($filadet['cara01completa']=='S'){
 			$sPrefijo='<b>';
 			$sSufijo='</b>';
 			$et_cara01completa=$ETI['msg_cerrado'];
 			}
-		*/
 		if(($tlinea%2)==0){$sClass=' class="resaltetabla"';}
 		$tlinea++;
-		$et_cara01tipocaracterizacion='';
-		//$et_cara01tipocaracterizacion=$sPrefijo.cadena_notildes($filadet['cara11nombre']).$sSufijo;
+		$et_cara01idtercero=$sPrefijo.$filadet['cara01idtercero'].$sSufijo;
+		$et_cara01tipocaracterizacion=$sPrefijo.cadena_notildes($filadet['cara11nombre']).$sSufijo;
 		if ($babierta){
 			//$sLink='<a href="javascript:cargaridf2301('.$filadet['cara01id'].')" class="lnkresalte">'.$ETI['lnk_cargar'].'</a>';
 			}
 		$res=$res.'<tr'.$sClass.'>
-		<td>'.$sPrefijo.$filadet['C2_td'].' '.$filadet['C2_doc'].$sSufijo.'</td>
-		<td>'.$sPrefijo.cadena_notildes($filadet['C2_nombre']).$sSufijo.'</td>
-		<td>'.$sPrefijo.$et_cara01completa.$sSufijo.'</td>
-		<td colspan="2">'.$et_cara01tipocaracterizacion.'</td>
-		</tr>';
+<td>'.$sPrefijo.$filadet['C2_td'].' '.$filadet['C2_doc'].$sSufijo.'</td>
+<td>'.$sPrefijo.cadena_notildes($filadet['C2_nombre']).$sSufijo.'</td>
+<td>'.$sPrefijo.$et_cara01completa.$sSufijo.'</td>
+<td colspan="2">'.$et_cara01tipocaracterizacion.'</td>
+</tr>';
 		}
 	$res=$res.'</table>';
 	$objDB->liberar($tabladetalle);

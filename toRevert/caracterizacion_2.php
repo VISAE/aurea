@@ -224,7 +224,20 @@ if (isset($APP->urltablero)!=0){
 if ($bEstudiante){
 	if ($_REQUEST['paso']==21){
 		$_REQUEST['paso']=1;
-		list($sError, $sDebugE)=f2301_IniciarEncuesta($idTercero, 0, $objDB, $bDebug);
+		$idPeraca=0;
+		$bForzarNueva=false;
+		if (isset($_REQUEST['antiguo'])!=0){
+			$sSQL='SELECT core01peracainicial FROM core01estprograma WHERE core01idtercero='.$idTercero.' ORDER BY core01peracainicial DESC';
+			if ($bDebug){$sDebug=$sDebug.fecha_microtiempo().' Consulta de verificacion '.$sSQL.'<br>';}
+			$tabla=$objDB->ejecutasql($sSQL);
+			if ($objDB->nf($tabla)>0){
+				$fila=$objDB->sf($tabla);
+				$idPeraca=$fila['core01peracainicial'];
+				}
+			$bForzarNueva=true;
+			$_REQUEST['cara01tipocaracterizacion']=3;
+			}
+		list($sError, $sDebugE)=f2301_IniciarEncuesta($idTercero, $idPeraca, $objDB, $bDebug, $bForzarNueva);
 		$sDebug=$sDebug.$sDebugE;
 		}
 	//Verificar que tenga una caracterizacion
@@ -248,6 +261,13 @@ if ($bEstudiante){
 				$bVerIntro=true;
 				}else{
 				$fila=$objDB->sf($tabla);
+				if (isset($_REQUEST['antiguo'])==0){
+					if ($_REQUEST['cara01idperaca']!=$fila['cara01idperaca']){
+						$sMensaje=$ETI['msg_intro_antiguos'];
+						$_REQUEST['antiguo']='';
+						$bVerIntro=true;
+						}
+					}
 				$_REQUEST['cara01idperaca']=$fila['cara01idperaca'];
 				}
 			}else{
@@ -316,6 +336,13 @@ if ($bVerIntro){
 <div id="interna">
 <form id="frmedita" name="frmedita" method="post" action="" autocomplete="off">
 <input id="bNoAutocompletar" name="bNoAutocompletar" type="password" value="" style="display:none;"/>
+<?php
+if (isset($_REQUEST['antiguo'])!=0){
+?>
+<input id="antiguo" name="antiguo" type="hidden" value=""/>
+<?php
+}
+?>
 <input id="paso" name="paso" type="hidden" value="21"/>
 <div class="GrupoCampos">
 <?php

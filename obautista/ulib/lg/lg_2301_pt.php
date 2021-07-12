@@ -5,6 +5,7 @@
 --- Modelo Version 2.22.0 jueves, 28 de junio de 2018
 --- Modelo Version 2.22.2 martes, 17 de julio de 2018
 --- Modelo Version 2.25.0 viernes, 3 de abril de 2020
+--- Modelo Version 2.25.5 domingo, 16 de agosto de 2020
 */
 $ETI['app_nombre']='APP';
 $ETI['grupo_nombre']='Grupo';
@@ -228,7 +229,7 @@ $ETI['cara01factordesc']='Total';
 $ETI['cara01criteriodesc']='Criterio de posible deserci&oacute;n';
 $ETI['cara01desertor']='Desertor';
 $ETI['cara01factorprincipaldesc']='Factor principal de deserci&oacute;n';
-$ETI['cara01psico_puntaje']='Riesgo Psicosocial';
+$ETI['cara01psico_puntaje']='Puntaje Psicosocial';
 
 $ETI['cara01numacompanamentos']='N&deg; acompa&ntilde;amientos';
 $ETI['cara01idperiodoacompana']='Periodo acompa&ntilde;amiento';
@@ -247,13 +248,29 @@ $ETI['cara01discv2sensorial']='Discapacidad Sensorial';
 $ETI['cara02discv2intelectura']='Discapacidad Intelectual';
 $ETI['cara02discv2fisica']='Discapacidad F&iacute;sica o Motora';
 $ETI['cara02discv2psico']='Diversidad o Discapacidad Mental Psicosocial';
+$ETI['cara02discv2psico_v2']='Discapacidad Psicosocial';
 $ETI['cara02discv2sistemica']='Discapacidad Sist&eacute;mica';
 $ETI['cara02discv2sistemicaotro']='Otra';
+$ETI['cara02discv2sistemicaotro_v2']='Cu&aacute;l?';
 $ETI['cara02discv2multiple']='Discapacidad M&uacute;ltiple';
 $ETI['cara02discv2multipleotro']='Otra';
+$ETI['cara02discv2multipleotro_v2']='Cu&aacute;l?';
 $ETI['cara02talentoexcepcional']='Talento Excepcional';
+$ETI['cara01discv2tiene']='Tiene usted alg&uacute;n tipo de discapacidad?';
+$ETI['cara01discv2trastaprende']='Trastorno del aprendizaje';
+$ETI['cara01discv2soporteorigen']='Soporte';
+$ETI['cara01discv2archivoorigen']='Soporte';
+$ETI['cara01discv2trastornos']='Tiene usted alg&uacute;n trastorno espec&iacute;fico en el aprendizaje?';
+$AYU['cara01discv2trastornos']='Presenta dificultades en habilidades b&aacute;sicas como la lectura, escritura y/o las destrezas matem&aacute;ticas que persisten a pesar de los apoyos.<br>Recuerde que en caso que usted responda de manera afirmativa debe contar con un soporte diagn&oacute;stico emitido por profesionales m&eacute;dicos especializados.';
+$ETI['cara01discv2contalento']='Tiene usted un dominio sobresaliente en un campo espec&iacute;fico?';
+$AYU['cara01discv2contalento']='Debe ser reconocido en su comunidad o por la participaci&oacute;n en convocatorias nacionales';
+$ETI['cara01discv2condicionmedica']='Presenta alguna condici&oacute;n m&eacute;dica especifica?';
+$AYU['cara01discv2condicionmedica']='Debe limitarse a una condici&oacute;n m&eacute;dica especifica que eventualmente pueda afectar su proceso de formaci&oacute;n.';
+$ETI['cara01discv2condmeddet']='Indique cu&aacute;l?';
+$ETI['cara01discv2pruebacoeficiente']='Le han pr&aacute;cticado pruebas para definir el coeficiente intelectual?';
+$AYU['cara01discv2pruebacoeficiente']='Si su nivel intelectual ha sido muy superior, adjunte el certificado emitido por el profesional.';
 
-$ERR['cara01idperaca']='Necesita el dato Peraca';
+$ERR['cara01idperaca']='Necesita el dato Periodo';
 $ERR['cara01idtercero']='Necesita el dato Tercero';
 $ERR['cara01id']='Necesita el dato Id';
 $ERR['cara01completa']='Necesita el dato Completa';
@@ -455,8 +472,17 @@ $ERR['cara02discv2psico']='Necesita el dato '.$ETI['cara02discv2psico'];
 $ERR['cara02discv2sistemica']='Necesita el dato '.$ETI['cara02discv2sistemica'];
 $ERR['cara02discv2sistemicaotro']='Necesita el dato '.$ETI['cara02discv2sistemicaotro'];
 $ERR['cara02discv2multiple']='Necesita el dato '.$ETI['cara02discv2multiple'];
-$ERR['cara02discv2multipleotro']='Necesita el dato '.$ETI['cara02discv2multipleotro'];
+$ERR['cara02discv2multipleotro']='Necesita el dato Otra discapacidad m&uacute;ltiple';
 $ERR['cara02talentoexcepcional']='Necesita el dato '.$ETI['cara02talentoexcepcional'];
+$ERR['cara01discv2tiene']='Necesita el dato '.$ETI['cara01discv2tiene'];
+$ERR['cara01discv2trastaprende']='Necesita el dato '.$ETI['cara01discv2trastaprende'];
+$ERR['cara01discv2soporteorigen']='Necesita el dato '.$ETI['cara01discv2soporteorigen'];
+$ERR['cara01discv2archivoorigen']='Necesita el dato '.$ETI['cara01discv2archivoorigen'];
+$ERR['cara01discv2trastornos']='Necesita el dato '.$ETI['cara01discv2trastornos'];
+$ERR['cara01discv2contalento']='Necesita el dato '.$ETI['cara01discv2contalento'];
+$ERR['cara01discv2condicionmedica']='Necesita el dato '.$ETI['cara01discv2condicionmedica'];
+$ERR['cara01discv2condmeddet']='Necesita el dato '.$ETI['cara01discv2condmeddet'];
+$ERR['cara01discv2pruebacoeficiente']='Necesita el dato '.$ETI['cara01discv2pruebacoeficiente'];
 
 $ERR['msg_noresueltas']='No se han resueltas las preguntas: ';
 $ETI['lnk_acargo']='A CARGO';
@@ -573,10 +599,12 @@ $icara01discfisica=9;
 $acara01disccognitiva=array('', 'Leve', 'Moderada', 'Profunda', 'Autismo', 'Asperger', '', '', '', 'Otra');
 $icara01disccognitiva=9;
 
+$ETI['msg_certificaciondisc']='Certificado de discapacidad (PDF)';
 $ETI['msg_nivel']='Nivel';
 $ETI['msg_infocontacto']='Ingrese los datos de una persona a la que podamos contactar desde la universidad en caso de que sea necesario:';
 $ETI['msg_grupospobla']='Pertenece a alguno de estos grupos de poblaci&oacute;n:';
 $ETI['msg_discapacidades']='Presenta alguno de los siguiente tipos de discapacidades:';
+$ETI['msg_discapacidades_v2']='Discapacidades, Trastornos de aprendizaje y Talentos';
 
 $ETI['msg_intro_nuevos']='<h1>Proceso de caracterizaci&oacute;n</h1>
 Recibe un saludo Unadista apreciado estudiante.<br>
@@ -611,9 +639,9 @@ $ETI['msg_r1desplazado']='Desplazado';
 $ETI['msg_r1acr']='ACR';
 $ETI['msg_r1depende']='Depende econ&oacute;micamente';
 
-$ETI['msg_r3otroprog']='Interes en otro programa';
 $ETI['msg_r3tiemponoest']='Mas de 5 a&ntilde;os sin estudiar';
 $ETI['msg_r3sinequipo']='Sin equipo de acceso a internet';
+$ETI['msg_r3otroprog']='Interes en otro programa';
 $ETI['msg_r3sincomputador']='Sin computadora';
 $ETI['msg_r3energia']='Sin electricidad permanente';
 $ETI['msg_r3internet']='Sin internet permanente';
@@ -624,8 +652,21 @@ $ETI['msg_r4desempleado']='Desempleado';
 $ETI['msg_r4menos1smm']='Gana menos de un salario m&iacute;nimo';
 $ETI['msg_r4pocotiempo']='Menos de 4 horas libres a la semana';
 
+$ETI['titulo_resultados']='Resultados';
+
 $acara02discv2sistemica=array('No', 'Si');
 $acara02discv2multiple=array('No', 'Si');
 
-$ETI['titulo_resultados']='Resultados de las Pruebas';
+$acara01discv2tiene=array('', '');
+$icara01discv2tiene=0;
+$acara01discv2trastaprende=array('', '');
+$icara01discv2trastaprende=0;
+$acara01discv2trastornos=array('', '');
+$icara01discv2trastornos=0;
+$acara01discv2contalento=array('', '');
+$icara01discv2contalento=0;
+$acara01discv2condicionmedica=array('', '');
+$icara01discv2condicionmedica=0;
+$acara01discv2pruebacoeficiente=array('NO', '', '', 'SI, Resultados dentro de la media de la poblaci&oacute;n', '', 'SI, Resultados superiores a la media.', '', 'SI, Resultados muy superiores a la media (Debe tener certificado).');
+$icara01discv2pruebacoeficiente=7;
 ?>

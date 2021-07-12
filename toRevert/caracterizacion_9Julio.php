@@ -7,13 +7,13 @@
 --- Modelo Versión 2.22.1 martes, 3 de julio de 2018
 --- Modelo Versión 2.22.2 martes, 17 de julio de 2018
 --- Modelo Versión 2.25.0 viernes, 3 de abril de 2020
---- Modelo Versión 2.25.5 domingo, 16 de agosto de 2020
 */
 /** Archivo caracterizacion.php.
 * Modulo 2301 cara01encuesta.
 * @author Angel Mauro Avellaneda Barreto - angel.avellaneda@unad.edu.co
 * @param debug=1 (Opcional), bandera para indicar si se generan datos de depuración
 * @date viernes, 3 de abril de 2020
+*
 * Cambios 12 de junio de 2020
 * 1. interpretación a valores cualitativos de los niveles y riesgo de cada una de las fichas evaluadas.
 * 2. Visualización de los resultados de la encuesta en el momento en que el estudiante finaliza y da cierre.
@@ -22,7 +22,6 @@
 */
 if (file_exists('./err_control.php')){require './err_control.php';}
 $bDebug=false;
-$bVerIntro=false;
 $sDebug='';
 if (isset($_REQUEST['deb_doc'])!=0){
 	$bDebug=true;
@@ -37,7 +36,6 @@ if ($bDebug){
 	if ($sMili<100){if ($sMili<10){$sMili=':00'.$sMili;}else{$sMili=':0'.$sMili;}}else{$sMili=':'.$sMili;}
 	$sDebug=$sDebug.''.date('H:i:s').$sMili.' Inicia pagina <br>';
 	}
-if (isset($_REQUEST['intro'])!=0){$bVerIntro=true;}
 if (!file_exists('./app.php')){
 	echo '<b>Error N 1 de instalaci&oacute;n</b><br>No se ha establecido un archivo de configuraci&oacute;n, por favor comuniquese con el administrador del sistema.';
 	die();
@@ -66,7 +64,7 @@ if (!$bPeticionXAJAX){$_SESSION['u_ultimominuto']=(date('W')*1440)+(date('H')*60
 require $APP->rutacomun.'unad_todas.php';
 require $APP->rutacomun.'libs/clsdbadmin.php';
 require $APP->rutacomun.'unad_librerias.php';
-require $APP->rutacomun.'libdatos.php';
+//require $APP->rutacomun.'libdatos.php';
 require $APP->rutacomun.'libhtml.php';
 require $APP->rutacomun.'xajax/xajax_core/xajax.inc.php';
 require $APP->rutacomun.'unad_xajax.php';
@@ -99,23 +97,12 @@ $xajax=NULL;
 $objDB=new clsdbadmin($APP->dbhost, $APP->dbuser, $APP->dbpass, $APP->dbname);
 if ($APP->dbpuerto!=''){$objDB->dbPuerto=$APP->dbpuerto;}
 if (isset($APP->piel)==0){$APP->piel=1;}
-$sAnchoExpandeContrae=' style="width:62px;"';
 //$iPiel=$APP->piel;
 $iPiel=1;
-if ($bDebug){
-	$sDebug=$sDebug.''.fecha_microtiempo().' Probando conexi&oacute;n con la base de datos <b>'.$APP->dbname.'</b> en <b>'.$APP->dbhost.'</b><br>';
-	}
-if (!$objDB->Conectar()){
-	$bCerrado=true;
-	if ($bDebug){
-		$sDebug=$sDebug.''.fecha_microtiempo().' Error al intentar conectar con la base de datos <b>'.$objDB->serror.'</b><br>';
-		}
-	}
 $bEstudiante=true;
 if ($APP->idsistema==23){$bEstudiante=false;}
 if (!$bEstudiante){
-	list($bDevuelve, $sDebugP)=seg_revisa_permisoV3($iCodModulo, 1, $_SESSION['unad_id_tercero'], $objDB);
-	if (!$bDevuelve){
+	if (!seg_revisa_permiso($iCodModulo, 1, $objDB)){
 		header('Location:nopermiso.php');
 		die();
 		}
@@ -217,14 +204,26 @@ if ($bPeticionXAJAX){
 	die(); // Esto hace que las llamadas por xajax terminen aquí.
 	}
 $sUrlTablero='tablero.php';
-$sMensaje='';
 if (isset($APP->urltablero)!=0){
 	if (file_exists($APP->urltablero)){$sUrlTablero=$APP->urltablero;}
 	}
 if ($bEstudiante){
 	if ($_REQUEST['paso']==21){
 		$_REQUEST['paso']=1;
-		list($sError, $sDebugE)=f2301_IniciarEncuesta($idTercero, 0, $objDB, $bDebug);
+		$idPeraca=0;
+		$bForzarNueva=false;
+		if (isset($_REQUEST['antiguo'])!=0){
+			$sSQL='SELECT core01peracainicial FROM core01estprograma WHERE core01idtercero='.$idTercero.' ORDER BY core01peracainicial DESC';
+			if ($bDebug){$sDebug=$sDebug.fecha_microtiempo().' Consulta de verificacion '.$sSQL.'<br>';}
+			$tabla=$objDB->ejecutasql($sSQL);
+			if ($objDB->nf($tabla)>0){
+				$fila=$objDB->sf($tabla);
+				$idPeraca=$fila['core01peracainicial'];
+				}
+			$bForzarNueva=true;
+			$_REQUEST['cara01tipocaracterizacion']=3;
+			}
+		list($sError, $sDebugE)=f2301_IniciarEncuesta($idTercero, $idPeraca, $objDB, $bDebug, $bForzarNueva);
 		$sDebug=$sDebug.$sDebugE;
 		}
 	//Verificar que tenga una caracterizacion
@@ -240,14 +239,96 @@ if ($bEstudiante){
 			$sSQL='SELECT cara01id, cara01idperaca FROM cara01encuesta WHERE cara01idtercero='.$idTercero.' ORDER BY cara01idperaca DESC';
 			$tabla=$objDB->ejecutasql($sSQL);
 			if ($objDB->nf($tabla)==0){
+				$et_menu='<li><a href="accesit.php">ACCESIT</a></li><li><a href="'.$sUrlTablero.'">Mis Cursos Virtuales</a></li><li><a href="salir.php">Salir</a></li>';
 				$sMensaje=$ETI['msg_intro_nuevos'];
 				if ($_REQUEST['cara01idperaca']==87){
 					$sMensaje=$ETI['msg_intro_antiguos'];
 					}
 				$objDB->CerrarConexion();
-				$bVerIntro=true;
+				require $APP->rutacomun.'unad_forma_v2.php';
+				forma_cabeceraV3($xajax, $ETI['titulo_2301']);
+				echo $et_menu;
+				forma_mitad();
+?>
+<link rel="stylesheet" href="<?php echo $APP->rutacomun; ?>css/criticalPath.css">
+<link rel="stylesheet" href="<?php echo $APP->rutacomun; ?>css/principal.css">
+<link rel="stylesheet" href="<?php echo $APP->rutacomun; ?>unad_estilos2018.css" type="text/css"/>
+<?php
+?>
+<div id="interna">
+<form id="frmedita" name="frmedita" method="post" action="" autocomplete="off">
+<input id="bNoAutocompletar" name="bNoAutocompletar" type="password" value="" style="display:none;"/>
+<input id="paso" name="paso" type="hidden" value="21"/>
+<div class="GrupoCampos">
+<?php
+echo $sMensaje;
+?>
+<div class="salto1px"></div>
+<label class="Label130">&nbsp;</label>
+<label class="Label130">
+<input id="cmdIniciar" name="cmdIniciar" type="submit" value="Iniciar" class="BotonAzul" />
+</label>
+<div class="salto1px"></div>
+</div>
+</form>
+<?php
+if ($sDebug!=''){
+	$iSegFin=microtime(true);
+	$iSegundos=$iSegFin-$iSegIni;
+	echo '<div class="salto1px"></div><div class="GrupoCampos" id="div_debug">'.$sDebug.fecha_microtiempo().' Tiempo total del proceso: <b>'.$iSegundos.'</b> Segundos'.'<div class="salto1px"></div></div>';
+	}
+?>
+</div>
+<?php
+				forma_piedepagina();
+				die();
 				}else{
 				$fila=$objDB->sf($tabla);
+				if (isset($_REQUEST['antiguo'])==0){
+					if ($_REQUEST['cara01idperaca']!=$fila['cara01idperaca']){
+						$et_menu='<li><a href="accesit.php">ACCESIT</a></li><li><a href="'.$sUrlTablero.'">Mis Cursos Virtuales</a></li><li><a href="salir.php">Salir</a></li>';
+						$sMensaje=$ETI['msg_intro_antiguos'];
+						$objDB->CerrarConexion();
+						require $APP->rutacomun.'unad_forma_v2.php';
+						forma_cabeceraV3($xajax, $ETI['titulo_2301']);
+						echo $et_menu;
+						forma_mitad();
+?>
+<link rel="stylesheet" href="<?php echo $APP->rutacomun; ?>css/criticalPath.css">
+<link rel="stylesheet" href="<?php echo $APP->rutacomun; ?>css/principal.css">
+<link rel="stylesheet" href="<?php echo $APP->rutacomun; ?>unad_estilos2018.css" type="text/css"/>
+<?php
+?>
+<div id="interna">
+<form id="frmedita" name="frmedita" method="post" action="" autocomplete="off">
+<input id="bNoAutocompletar" name="bNoAutocompletar" type="password" value="" style="display:none;"/>
+<input id="antiguo" name="antiguo" type="hidden" value=""/>
+<input id="paso" name="paso" type="hidden" value="21"/>
+<div class="GrupoCampos">
+<?php
+echo $sMensaje;
+?>
+<div class="salto1px"></div>
+<label class="Label130">&nbsp;</label>
+<label class="Label130">
+<input id="cmdIniciar" name="cmdIniciar" type="submit" value="Iniciar" class="BotonAzul" />
+</label>
+<div class="salto1px"></div>
+</div>
+</form>
+<?php
+if ($sDebug!=''){
+	$iSegFin=microtime(true);
+	$iSegundos=$iSegFin-$iSegIni;
+	echo '<div class="salto1px"></div><div class="GrupoCampos" id="div_debug">'.$sDebug.fecha_microtiempo().' Tiempo total del proceso: <b>'.$iSegundos.'</b> Segundos'.'<div class="salto1px"></div></div>';
+	}
+?>
+</div>
+<?php
+						forma_piedepagina();
+						die();
+						}
+					}
 				$_REQUEST['cara01idperaca']=$fila['cara01idperaca'];
 				}
 			}else{
@@ -263,9 +344,11 @@ forma_mitad();
 <link rel="stylesheet" href="<?php echo $APP->rutacomun; ?>css/principal.css">
 <link rel="stylesheet" href="<?php echo $APP->rutacomun; ?>unad_estilos2018.css" type="text/css"/>
 <script language="javascript">
+<!--
 function irtablero(){
 	window.document.frmtablero.submit();
 	}
+-->
 </script>
 <?php
 ?>
@@ -299,47 +382,6 @@ if ($sDebug!=''){
 			}
 		}
 	}else{
-	}
-if ($bVerIntro){
-	$et_menu='<li><a href="accesit.php">ACCESIT</a></li><li><a href="'.$sUrlTablero.'">Mis Cursos Virtuales</a></li><li><a href="salir.php">Salir</a></li>';
-	if ($sMensaje==''){
-		$sMensaje=$ETI['msg_intro_nuevos'];
-		}
-	require $APP->rutacomun.'unad_forma_v2.php';
-	forma_cabeceraV3($xajax, $ETI['titulo_2301']);
-	echo $et_menu;
-	forma_mitad();
-?>
-<link rel="stylesheet" href="<?php echo $APP->rutacomun; ?>css/criticalPath.css">
-<link rel="stylesheet" href="<?php echo $APP->rutacomun; ?>css/principal.css">
-<link rel="stylesheet" href="<?php echo $APP->rutacomun; ?>unad_estilos2018.css" type="text/css"/>
-<div id="interna">
-<form id="frmedita" name="frmedita" method="post" action="" autocomplete="off">
-<input id="bNoAutocompletar" name="bNoAutocompletar" type="password" value="" style="display:none;"/>
-<input id="paso" name="paso" type="hidden" value="21"/>
-<div class="GrupoCampos">
-<?php
-echo $sMensaje;
-?>
-<div class="salto1px"></div>
-<label class="Label130">&nbsp;</label>
-<label class="Label130">
-<input id="cmdIniciar" name="cmdIniciar" type="submit" value="Iniciar" class="BotonAzul" />
-</label>
-<div class="salto1px"></div>
-</div>
-</form>
-<?php
-if ($sDebug!=''){
-	$iSegFin=microtime(true);
-	$iSegundos=$iSegFin-$iSegIni;
-	echo '<div class="salto1px"></div><div class="GrupoCampos" id="div_debug">'.$sDebug.fecha_microtiempo().' Tiempo total del proceso: <b>'.$iSegundos.'</b> Segundos'.'<div class="salto1px"></div></div>';
-	}
-?>
-</div>
-<?php
-	forma_piedepagina();
-	die();
 	}
 $bcargo=false;
 $sError='';
@@ -580,7 +622,7 @@ if (isset($_REQUEST['cara01criteriodesc'])==0){$_REQUEST['cara01criteriodesc']='
 if (isset($_REQUEST['cara01desertor'])==0){$_REQUEST['cara01desertor']='N';}
 if (isset($_REQUEST['cara01factorprincipaldesc'])==0){$_REQUEST['cara01factorprincipaldesc']='';}
 if (isset($_REQUEST['cara01psico_puntaje'])==0){$_REQUEST['cara01psico_puntaje']=0;}
-if (isset($_REQUEST['cara01discversion'])==0){$_REQUEST['cara01discversion']=2;}
+if (isset($_REQUEST['cara01discversion'])==0){$_REQUEST['cara01discversion']=1;}
 if (isset($_REQUEST['cara01discv2sensorial'])==0){$_REQUEST['cara01discv2sensorial']='';}
 if (isset($_REQUEST['cara02discv2intelectura'])==0){$_REQUEST['cara02discv2intelectura']='';}
 if (isset($_REQUEST['cara02discv2fisica'])==0){$_REQUEST['cara02discv2fisica']='';}
@@ -590,15 +632,6 @@ if (isset($_REQUEST['cara02discv2sistemicaotro'])==0){$_REQUEST['cara02discv2sis
 if (isset($_REQUEST['cara02discv2multiple'])==0){$_REQUEST['cara02discv2multiple']='';}
 if (isset($_REQUEST['cara02discv2multipleotro'])==0){$_REQUEST['cara02discv2multipleotro']='';}
 if (isset($_REQUEST['cara02talentoexcepcional'])==0){$_REQUEST['cara02talentoexcepcional']='';}
-if (isset($_REQUEST['cara01discv2tiene'])==0){$_REQUEST['cara01discv2tiene']='';}
-if (isset($_REQUEST['cara01discv2trastaprende'])==0){$_REQUEST['cara01discv2trastaprende']='';}
-if (isset($_REQUEST['cara01discv2soporteorigen'])==0){$_REQUEST['cara01discv2soporteorigen']=0;}
-if (isset($_REQUEST['cara01discv2archivoorigen'])==0){$_REQUEST['cara01discv2archivoorigen']=0;}
-if (isset($_REQUEST['cara01discv2trastornos'])==0){$_REQUEST['cara01discv2trastornos']='';}
-if (isset($_REQUEST['cara01discv2contalento'])==0){$_REQUEST['cara01discv2contalento']='';}
-if (isset($_REQUEST['cara01discv2condicionmedica'])==0){$_REQUEST['cara01discv2condicionmedica']='';}
-if (isset($_REQUEST['cara01discv2condmeddet'])==0){$_REQUEST['cara01discv2condmeddet']='';}
-if (isset($_REQUEST['cara01discv2pruebacoeficiente'])==0){$_REQUEST['cara01discv2pruebacoeficiente']='';}
 if ((int)$_REQUEST['paso']>0){
 	//Preguntas de la prueba
 	}
@@ -838,15 +871,6 @@ if (($_REQUEST['paso']==1)||($_REQUEST['paso']==3)){
 		$_REQUEST['cara02discv2multiple']=$fila['cara02discv2multiple'];
 		$_REQUEST['cara02discv2multipleotro']=$fila['cara02discv2multipleotro'];
 		$_REQUEST['cara02talentoexcepcional']=$fila['cara02talentoexcepcional'];
-		$_REQUEST['cara01discv2tiene']=$fila['cara01discv2tiene'];
-		$_REQUEST['cara01discv2trastaprende']=$fila['cara01discv2trastaprende'];
-		$_REQUEST['cara01discv2soporteorigen']=$fila['cara01discv2soporteorigen'];
-		$_REQUEST['cara01discv2archivoorigen']=$fila['cara01discv2archivoorigen'];
-		$_REQUEST['cara01discv2trastornos']=$fila['cara01discv2trastornos'];
-		$_REQUEST['cara01discv2contalento']=$fila['cara01discv2contalento'];
-		$_REQUEST['cara01discv2condicionmedica']=$fila['cara01discv2condicionmedica'];
-		$_REQUEST['cara01discv2condmeddet']=$fila['cara01discv2condmeddet'];
-		$_REQUEST['cara01discv2pruebacoeficiente']=$fila['cara01discv2pruebacoeficiente'];
 		$bcargo=true;
 		$_REQUEST['paso']=2;
 		$_REQUEST['boculta2301']=0;
@@ -880,12 +904,10 @@ if (($_REQUEST['paso']==1)||($_REQUEST['paso']==3)){
 			$tabla=$objDB->ejecutasql($sSQL);
 			if ($objDB->nf($tabla)>0){
 				$fila=$objDB->sf($tabla);
-				if (fecha_esvalida($fila['unad11fechanace'])){
-					$cara01agnos=fecha_edad($fila['unad11fechanace']);
-					$_REQUEST['cara01agnos']=$cara01agnos[0];
-					$sSQL='UPDATE cara01encuesta SET cara01agnos="'.$_REQUEST['cara01agnos'].'" WHERE cara01id='.$_REQUEST['cara01id'].'';
-					$tabla=$objDB->ejecutasql($sSQL);
-					}
+				$cara01agnos=fecha_edad($fila['unad11fechanace']);
+				$_REQUEST['cara01agnos']=$cara01agnos[0];
+				$sSQL='UPDATE cara01encuesta SET cara01agnos="'.$_REQUEST['cara01agnos'].'" WHERE cara01id='.$_REQUEST['cara01id'].'';
+				$tabla=$objDB->ejecutasql($sSQL);
 				}
 			}
 		}else{
@@ -1293,7 +1315,7 @@ if ($_REQUEST['paso']==-1){
 	$_REQUEST['cara01desertor']='N';
 	$_REQUEST['cara01factorprincipaldesc']=0;
 	$_REQUEST['cara01psico_puntaje']=0;
-	$_REQUEST['cara01discversion']=2;
+	$_REQUEST['cara01discversion']=1;
 	$_REQUEST['cara01discv2sensorial']='';
 	$_REQUEST['cara02discv2intelectura']='';
 	$_REQUEST['cara02discv2fisica']='';
@@ -1303,33 +1325,14 @@ if ($_REQUEST['paso']==-1){
 	$_REQUEST['cara02discv2multiple']='';
 	$_REQUEST['cara02discv2multipleotro']='';
 	$_REQUEST['cara02talentoexcepcional']='';
-	$_REQUEST['cara01discv2tiene']=0;
-	$_REQUEST['cara01discv2trastaprende']=0;
-	$_REQUEST['cara01discv2soporteorigen']=0;
-	$_REQUEST['cara01discv2archivoorigen']=0;
-	$_REQUEST['cara01discv2trastornos']=0;
-	$_REQUEST['cara01discv2contalento']=0;
-	$_REQUEST['cara01discv2condicionmedica']=0;
-	$_REQUEST['cara01discv2condmeddet']='';
-	$_REQUEST['cara01discv2pruebacoeficiente']=0;
 	$_REQUEST['paso']=0;
 	}
 if ($bLimpiaHijos){
 	}
 //AQUI SE DEBEN CARGAR TODOS LOS DATOS QUE LA FORMA NECESITE.
 //DATOS PARA COMPLETAR EL FORMULARIO
-//Permisos adicionales
-$seg_5=0;
-$seg_6=0;
-if (!$bEstudiante){
-//list($bDevuelve, $sDebugP)=seg_revisa_permisoV3($iCodModulo, 6, $idTercero, $objDB);
-//if ($bDevuelve){$seg_6=1;}
-	if (seg_revisa_permiso($iCodModulo, 6, $objDB)){$seg_6=1;}
-	}
-if ($seg_6==1){}
 //Crear los controles que requieran llamado a base de datos
-$objCombos=new clsHtmlCombos();
-$objTercero=new clsHtmlTercero();
+$objCombos=new clsHtmlCombos('n');
 list($cara01idtercero_rs, $_REQUEST['cara01idtercero'], $_REQUEST['cara01idtercero_td'], $_REQUEST['cara01idtercero_doc'])=html_tercero($_REQUEST['cara01idtercero_td'], $_REQUEST['cara01idtercero_doc'], $_REQUEST['cara01idtercero'], 0, $objDB);
 $objCombos->nuevo('cara01sexo', $_REQUEST['cara01sexo'], true, '{'.$ETI['msg_seleccione'].'}');
 $html_cara01sexo=$objCombos->html('SELECT unad22codopcion AS id, unad22nombre AS nombre FROM unad22combos WHERE unad22idmodulo=111 AND unad22consec=1 AND unad22activa="S" ORDER BY unad22orden', $objDB);
@@ -1709,11 +1712,7 @@ $objCombos->addArreglo($apsico_atencion, $ipsico_atencion);
 $html_cara01psico_atencion=$objCombos->html('', $objDB);
 list($cara01idconsejero_rs, $_REQUEST['cara01idconsejero'], $_REQUEST['cara01idconsejero_td'], $_REQUEST['cara01idconsejero_doc'])=html_tercero($_REQUEST['cara01idconsejero_td'], $_REQUEST['cara01idconsejero_doc'], $_REQUEST['cara01idconsejero'], 0, $objDB);
 $objCombos->nuevo('cara01perayuda', $_REQUEST['cara01perayuda'], true, '{'.$ETI['msg_ninguno'].'}', 0);
-$iVersion=1;
-if ($_REQUEST['cara01discversion']==2){$iVersion=2;}
-$sAdd=' cara14version='.$iVersion.' AND cara14activa="S"';
-if ($_REQUEST['cara01completa']=='S'){$sAdd='cara14id='.$_REQUEST['cara01perayuda'].'';}
-$sSQL='SELECT cara14id AS id, cara14nombre AS nombre FROM cara14ayudaajuste WHERE '.$sAdd.' ORDER BY cara14orden, cara14nombre';
+$sSQL='SELECT cara14id AS id, cara14nombre AS nombre FROM cara14ayudaajuste ORDER BY cara14nombre';
 $tabla=$objDB->ejecutasql($sSQL);
 while($fila=$objDB->sf($tabla)){
 	$objCombos->addItem($fila['id'], $fila['nombre']);
@@ -1727,121 +1726,39 @@ $html_cara01criteriodesc=$objCombos->html('', $objDB);
 //$objCombos->nuevo('cara01desertor', $_REQUEST['cara01desertor'], false);
 //$objCombos->sino();
 //$html_cara01desertor=$objCombos->html('', $objDB);
-$cara01idprograma_nombre='&nbsp;';
-if ($_REQUEST['cara01idprograma']>0){
-	list($cara01idprograma_nombre, $sErrorDet)=tabla_campoxid('core09programa','core09nombre','core09id',$_REQUEST['cara01idprograma'],'{'.$ETI['msg_sindato'].'}', $objDB);
-	}
-$html_cara01idprograma=html_oculto('cara01idprograma', $_REQUEST['cara01idprograma'], $cara01idprograma_nombre);
-$cara01idescuela_nombre='&nbsp;';
-if ($_REQUEST['cara01idprograma']>0){
-	list($cara01idescuela_nombre, $sErrorDet)=tabla_campoxid('core12escuela','core12nombre','core12id',$_REQUEST['cara01idescuela'],'{'.$ETI['msg_sindato'].'}', $objDB);
-	}
-$html_cara01idescuela=html_oculto('cara01idescuela', $_REQUEST['cara01idescuela'], $cara01idescuela_nombre);
-$et_cara01desertor=$ETI['no'];
-if ($_REQUEST['cara01desertor']=='S'){$et_cara01desertor=$ETI['si'];}
-$html_cara01desertor=html_oculto('cara01desertor', $_REQUEST['cara01desertor'], $et_cara01desertor);
+$html_cara01desertor=html_oculto('cara01desertor', $_REQUEST['cara01desertor']);
 $objCombos->nuevo('cara01factorprincipaldesc', $_REQUEST['cara01factorprincipaldesc'], true, '{'.$ETI['msg_seleccione'].'}');
 //$objCombos->addArreglo($acara01factorprincipaldesc, $icara01factorprincipaldesc);
 $html_cara01factorprincipaldesc=$objCombos->html('', $objDB);
-$bEntra=false;
-if ($_REQUEST['cara01discversion']==1){$bEntra=true;}
-if ($_REQUEST['cara01discversion']==2){$bEntra=true;}
-if ($bEntra){
-	$sAdd=' AND cara37version='.$_REQUEST['cara01discversion'].' AND cara37activa="S"';
-	if ($bEstudiante){
-		if ($_REQUEST['cara01completa']=='S'){$sAdd=' AND cara37id='.$_REQUEST['cara01discv2sensorial'].'';}
-		}
-	$objCombos->nuevo('cara01discv2sensorial', $_REQUEST['cara01discv2sensorial'], true, '{'.$ETI['msg_ninguna'].'}', 0);
-	$sSQL='SELECT cara37id AS id, cara37nombre AS nombre FROM cara37discapacidades WHERE cara37tipodisc=1'.$sAdd.' ORDER BY cara37orden, cara37nombre';
-	$html_cara01discv2sensorial=$objCombos->html($sSQL, $objDB);
-	if ($bEstudiante){
-		if ($_REQUEST['cara01completa']=='S'){$sAdd=' AND cara37id='.$_REQUEST['cara02discv2intelectura'].'';}
-		}
-	$objCombos->nuevo('cara02discv2intelectura', $_REQUEST['cara02discv2intelectura'], true, '{'.$ETI['msg_ninguna'].'}', 0);
-	$sSQL='SELECT cara37id AS id, cara37nombre AS nombre FROM cara37discapacidades WHERE cara37tipodisc=2'.$sAdd.' ORDER BY cara37orden, cara37nombre';
-	$html_cara02discv2intelectura=$objCombos->html($sSQL, $objDB);
-	if ($bEstudiante){
-		if ($_REQUEST['cara01completa']=='S'){$sAdd=' AND cara37id='.$_REQUEST['cara02discv2fisica'].'';}
-		}
-	$objCombos->nuevo('cara02discv2fisica', $_REQUEST['cara02discv2fisica'], true, '{'.$ETI['msg_ninguna'].'}', 0);
-	$sSQL='SELECT cara37id AS id, cara37nombre AS nombre FROM cara37discapacidades WHERE cara37tipodisc=3'.$sAdd.' ORDER BY cara37orden, cara37nombre';
-	$html_cara02discv2fisica=$objCombos->html($sSQL, $objDB);
-	if ($bEstudiante){
-		if ($_REQUEST['cara01completa']=='S'){$sAdd=' AND cara37id='.$_REQUEST['cara02discv2psico'].'';}
-		}
-	$objCombos->nuevo('cara02discv2psico', $_REQUEST['cara02discv2psico'], true, '{'.$ETI['msg_ninguna'].'}', 0);
-	$sSQL='SELECT cara37id AS id, cara37nombre AS nombre FROM cara37discapacidades WHERE cara37tipodisc=4'.$sAdd.' ORDER BY cara37orden, cara37nombre';
-	$html_cara02discv2psico=$objCombos->html($sSQL, $objDB);
-
-	$sAdd=' AND cara28version='.$_REQUEST['cara01discversion'].' AND cara38activa="S"';
-	if ($bEstudiante){
-		if ($_REQUEST['cara01completa']=='S'){$sAdd=' AND cara38id='.$_REQUEST['cara02talentoexcepcional'].'';}
-		}
-	$objCombos->nuevo('cara02talentoexcepcional', $_REQUEST['cara02talentoexcepcional'], true, '{'.$ETI['msg_ninguno'].'}', 0);
-	$sSQL='SELECT cara38id AS id, cara38nombre AS nombre FROM cara38talentos WHERE cara38id>0'.$sAdd.' ORDER BY cara38orden, cara38nombre';
-	$html_cara02talentoexcepcional=$objCombos->html($sSQL, $objDB);
-	}
 if ($_REQUEST['cara01discversion']==1){
+	$objCombos->nuevo('cara01discv2sensorial', $_REQUEST['cara01discv2sensorial'], true, '{'.$ETI['msg_ninguna'].'}', 0);
+	$sSQL='SELECT cara37id AS id, cara37nombre AS nombre FROM cara37discapacidades WHERE cara37tipodisc=1 ORDER BY cara37orden, cara37nombre';
+	$html_cara01discv2sensorial=$objCombos->html($sSQL, $objDB);
+	$objCombos->nuevo('cara02discv2intelectura', $_REQUEST['cara02discv2intelectura'], true, '{'.$ETI['msg_ninguna'].'}', 0);
+	$sSQL='SELECT cara37id AS id, cara37nombre AS nombre FROM cara37discapacidades WHERE cara37tipodisc=2 ORDER BY cara37orden, cara37nombre';
+	$html_cara02discv2intelectura=$objCombos->html($sSQL, $objDB);
+	$objCombos->nuevo('cara02discv2fisica', $_REQUEST['cara02discv2fisica'], true, '{'.$ETI['msg_ninguna'].'}', 0);
+	$sSQL='SELECT cara37id AS id, cara37nombre AS nombre FROM cara37discapacidades WHERE cara37tipodisc=3 ORDER BY cara37orden, cara37nombre';
+	$html_cara02discv2fisica=$objCombos->html($sSQL, $objDB);
+	$objCombos->nuevo('cara02discv2psico', $_REQUEST['cara02discv2psico'], true, '{'.$ETI['msg_ninguna'].'}', 0);
+	$sSQL='SELECT cara37id AS id, cara37nombre AS nombre FROM cara37discapacidades WHERE cara37tipodisc=4 ORDER BY cara37orden, cara37nombre';
+	$html_cara02discv2psico=$objCombos->html($sSQL, $objDB);
 	$objCombos->nuevo('cara02discv2sistemica', $_REQUEST['cara02discv2sistemica'], true, ''.$ETI['no'].'', 0);
 	$objCombos->addItem(1, $ETI['si']);
 	//$objCombos->addArreglo($acara02discv2sistemica, $icara02discv2sistemica);
 	$html_cara02discv2sistemica=$objCombos->html('', $objDB);
-	}
-$bEntra=false;
-if ($_REQUEST['cara01discversion']==1){$bEntra=true;}
-if ($_REQUEST['cara01discversion']==2){$bEntra=true;}
-if ($bEntra){
 	$objCombos->nuevo('cara02discv2multiple', $_REQUEST['cara02discv2multiple'], true, ''.$ETI['no'].'', 0);
 	$objCombos->addItem(1, $ETI['si']);
-	if ($_REQUEST['cara01discversion']==2){
-		$objCombos->sAccion='ajustar_cara02discv2multiple()';
-		}
 	//$objCombos->addArreglo($acara02discv2multiple, $icara02discv2multiple);
 	$html_cara02discv2multiple=$objCombos->html('', $objDB);
+	$objCombos->nuevo('cara02talentoexcepcional', $_REQUEST['cara02talentoexcepcional'], true, '{'.$ETI['msg_ninguno'].'}', 0);
+	$sSQL='SELECT cara38id AS id, cara38nombre AS nombre FROM cara38talentos WHERE cara38id>0 ORDER BY cara38orden, cara38nombre';
+	$html_cara02talentoexcepcional=$objCombos->html($sSQL, $objDB);
 	}
 	list($cara01idzona_nombre, $sErrorDet)=tabla_campoxid('unad23zona','unad23nombre','unad23id',$_REQUEST['cara01idzona'],'{'.$ETI['msg_sindato'].'}', $objDB);
 	$html_cara01idzona=html_oculto('cara01idzona', $_REQUEST['cara01idzona'], $cara01idzona_nombre);
 	list($cara01tipocaracterizacion_nombre, $sErrorDet)=tabla_campoxid('cara11tipocaract','cara11nombre','cara11id',$_REQUEST['cara01tipocaracterizacion'],'{'.$ETI['msg_sindato'].'}', $objDB);
 	$html_cara01tipocaracterizacion=html_oculto('cara01tipocaracterizacion', $_REQUEST['cara01tipocaracterizacion'], $cara01tipocaracterizacion_nombre);
-$bEntra=false;
-if ($_REQUEST['cara01discversion']==2){$bEntra=true;}
-if ($bEntra){
-	$objCombos->nuevo('cara01discv2tiene', $_REQUEST['cara01discv2tiene'], true, $ETI['no'], 0);
-	$objCombos->sAccion='ajustar_cara01discv2tiene()';
-	$objCombos->addItem(1, $ETI['si']);
-	//$objCombos->addArreglo($acara01discv2tiene, $icara01discv2tiene);
-	$html_cara01discv2tiene=$objCombos->html('', $objDB);
-
-
-	$objCombos->nuevo('cara01discv2trastornos', $_REQUEST['cara01discv2trastornos'], true, $ETI['no'], 0);
-	//$objCombos->addArreglo($acara01discv2trastornos, $icara01discv2trastornos);
-	$objCombos->sAccion='ajustar_cara01discv2trastornos()';
-	$objCombos->addItem(1, $ETI['si']);
-	$html_cara01discv2trastornos=$objCombos->html('', $objDB);
-	$sAdd=' AND cara37version='.$_REQUEST['cara01discversion'].' AND cara37activa="S"';
-	if ($bEstudiante){
-		if ($_REQUEST['cara01completa']=='S'){$sAdd=' AND cara37id='.$_REQUEST['cara01discv2trastornos'].'';}
-		}
-	$objCombos->nuevo('cara01discv2trastaprende', $_REQUEST['cara01discv2trastaprende'], true, '{'.$ETI['msg_ninguno'].'}', 0);
-	//$objCombos->addArreglo($acara01discv2trastaprende, $icara01discv2trastaprende);
-	$sSQL='SELECT cara37id AS id, cara37nombre AS nombre FROM cara37discapacidades WHERE cara37tipodisc=6'.$sAdd.' ORDER BY cara37orden, cara37nombre';
-	$html_cara01discv2trastaprende=$objCombos->html($sSQL, $objDB);
-
-	$objCombos->nuevo('cara01discv2contalento', $_REQUEST['cara01discv2contalento'], true, $ETI['no'], 0);
-	$objCombos->addItem(1, $ETI['si']);
-	//$objCombos->addArreglo($acara01discv2contalento, $icara01discv2contalento);
-	$html_cara01discv2contalento=$objCombos->html('', $objDB);
-	$objCombos->nuevo('cara01discv2condicionmedica', $_REQUEST['cara01discv2condicionmedica'], true, $ETI['no'], 0);
-	$objCombos->sAccion='ajustar_cara01discv2condicionmedica()';
-	$objCombos->addItem(1, $ETI['si']);
-	//$objCombos->addArreglo($acara01discv2condicionmedica, $icara01discv2condicionmedica);
-	$html_cara01discv2condicionmedica=$objCombos->html('', $objDB);
-	$objCombos->nuevo('cara01discv2pruebacoeficiente', $_REQUEST['cara01discv2pruebacoeficiente'], true, $ETI['no'], 0);
-	$objCombos->addArreglo($acara01discv2pruebacoeficiente, $icara01discv2pruebacoeficiente);
-	$html_cara01discv2pruebacoeficiente=$objCombos->html('', $objDB);
-	}else{
-	$html_cara01discv2trastaprende=html_oculto('cara01discv2trastaprende', $_REQUEST['cara01discv2trastaprende']);
-	}
 if ((int)$_REQUEST['paso']==0){
 	$idTerceroFuncion=0;
 	if ($bEstudiante){$idTerceroFuncion=$idTercero;}
@@ -1906,6 +1823,13 @@ ORDER BY exte02vigente DESC, exte02id DESC';
 	$html_bconvenio=$objCombos->html($sSQL, $objDB);
 	//$html_blistar=$objCombos->comboSistema(2301, 1, $objDB, 'paginarf2301()');
 	}
+//Permisos adicionales
+$seg_5=0;
+$seg_6=0;
+if (!$bEstudiante){
+	if (seg_revisa_permiso($iCodModulo, 6, $objDB)){$seg_6=1;}
+	}
+if ($seg_6==1){}
 if (false){
 	$objCombos->nuevo('csv_separa', $_REQUEST['csv_separa'], false);
 	$objCombos->addItem(',', $ETI['msg_coma']);
@@ -1919,8 +1843,7 @@ $iModeloReporte=2301;
 $html_iFormatoImprime='<input id="iformatoimprime" name="iformatoimprime" type="hidden" value="0" />
 ';
 if ($_REQUEST['paso']>0){
-	$bDevuelve=false;
-	//list($bDevuelve, $sDebugP)=seg_revisa_permisoV3($iCodModulo, 5, $idTercero, $objDB);
+	list($bDevuelve, $sDebugP)=seg_revisa_permisoV3($iCodModulo, 5, $idTercero, $objDB);
 	if ($bDevuelve){
 		$seg_5=1;
 		}
@@ -2224,41 +2147,6 @@ function carga_combo_cara01idcead(){
 	document.getElementById('div_cara01idcead').innerHTML='<b>Procesando datos, por favor espere...</b><input id="cara01idcead" name="cara01idcead" type="hidden" value="" />';
 	xajax_f2301_Combocara01idcead(params);
 	}
-function limpia_cara01discv2archivoorigen(){
-	window.document.frmedita.cara01discv2soporteorigen.value=0;
-	window.document.frmedita.cara01discv2archivoorigen.value=0;
-	var da_Discv2archivoorigen=document.getElementById('div_cara01discv2archivoorigen');
-	da_Discv2archivoorigen.innerHTML='&nbsp;';
-	verboton('beliminacara01discv2archivoorigen','none');
-	//paginarf0000();
-	}
-function carga_cara01discv2archivoorigen(){
-	window.document.frmedita.iscroll.value=window.pageYOffset;
-	window.document.frmedita.div96v1.value='';
-	window.document.frmedita.div96v2.value='';
-	window.document.frmedita.div96v3.value='';
-	if (window.document.frmedita.ipiel.value==2) {
-		document.getElementById('div_96titulo').innerHTML=''+window.document.frmedita.titulo_2301.value+' - Cargar archivo';
-		}else{
-		document.getElementById('div_96titulo').innerHTML='<h2>'+window.document.frmedita.titulo_2301.value+' - Cargar archivo</h2>';
-		}
-	document.getElementById('div_96cuerpo').innerHTML='<iframe id="iframe96" src="framearchivo.php?ref=2301&id='+window.document.frmedita.cara01id.value+'" height="400px" width="100%" frameborder="0"></iframe>';
-	expandesector(96);
-	window.scrollTo(0, 150);
-	}
-<?php
-if (!$bEstudiante){
-?>
-function eliminacara01discv2archivoorigen(){
-	var did=window.document.frmedita.cara01id;
-	if (confirm("Esta seguro de eliminar el archivo?")){
-		xajax_elimina_archivo_cara01discv2archivoorigen(did.value);
-		//paginarf0000();
-		}
-	}
-<?php
-	}
-?>
 function paginarf2301(){
 	var params=new Array();
 	params[99]=window.document.frmedita.debug.value;
@@ -2355,15 +2243,6 @@ function AyudaLocal(sCampo){
 	}
 function cierraDiv96(ref){
 	var sRetorna=window.document.frmedita.div96v2.value;
-	if (ref==0){
-		if (sRetorna!=''){
-			window.document.frmedita.cara01discv2soporteorigen.value=window.document.frmedita.div96v1.value;
-			window.document.frmedita.cara01discv2archivoorigen.value=sRetorna;
-			verboton('beliminacara01discv2archivoorigen','block');
-			}
-		archivo_lnk(window.document.frmedita.cara01discv2soporteorigen.value, window.document.frmedita.cara01discv2archivoorigen.value, 'div_cara01discv2archivoorigen');
-		paginarf0();
-		}
 	MensajeAlarmaV2('', 0);
 	retornacontrol();
 	}
@@ -2491,8 +2370,9 @@ function ajustarlaboral(){
 	}
 function ajustar_cara01criteriodesc(){
 	sMuestra1='none';
-	if (window.document.frmedita.cara01perayuda.value==-1){sMuestra1='block';}
-	if (window.document.frmedita.cara01perayuda.value==11){sMuestra1='block';}
+	if (window.document.frmedita.cara01perayuda.value==-1){
+		sMuestra1='block';
+		}
 	document.getElementById('lbl_cara01perotraayuda').style.display=sMuestra1;
 	}
 function ajustar_discsensorial(){
@@ -2541,35 +2421,9 @@ function soyconsejeroidf2301(cara01id){
 	xajax_f2301_MarcarConsejero(params);
 	}
 function confirmadisc(){
-	window.document.frmedita.iscroll.value=window.pageYOffset;
-	MensajeAlarmaV2('Confirmando datos...', 2);
 	expandesector(98);
 	window.document.frmedita.paso.value=23;
 	window.document.frmedita.submit();
-	}
-<?php
-	}
-if ($_REQUEST['cara01discversion']==2){
-?>
-function ajustar_cara01discv2tiene(){
-	sMuestra1='none';
-	if (window.document.frmedita.cara01discv2tiene.value==1){sMuestra1='block';}
-	document.getElementById('div_cara01disc').style.display=sMuestra1;
-	}
-function ajustar_cara02discv2multiple(){
-	sMuestra1='none';
-	if (window.document.frmedita.cara02discv2multiple.value==1){sMuestra1='block';}
-	document.getElementById('lbl_cara02discv2multipleotro').style.display=sMuestra1;
-	}
-function ajustar_cara01discv2trastornos(){
-	sMuestra1='none';
-	if (window.document.frmedita.cara01discv2trastornos.value==1){sMuestra1='block';}
-	document.getElementById('div_cara01discv2trastornos').style.display=sMuestra1;
-	}
-function ajustar_cara01discv2condicionmedica(){
-	sMuestra1='none';
-	if (window.document.frmedita.cara01discv2condicionmedica.value==1){sMuestra1='block';}
-	document.getElementById('lbl_cara01discv2condmeddet').style.display=sMuestra1;
 	}
 <?php
 	}
@@ -2622,9 +2476,8 @@ $sComplemento='';
 <input id="ihoy" name="ihoy" type="hidden" value="<?php echo fecha_DiaMod(); ?>" />
 <input id="shora" name="shora" type="hidden" value="<?php echo fecha_hora(); ?>" />
 <input id="stipodoc" name="stipodoc" type="hidden" value="<?php echo $APP->tipo_doc; ?>" />
-<input id="idusuario" name="idusuario" type="hidden" value="<?php echo $_SESSION['unad_id_tercero']; ?>" />
+<input id="idusuario" name="idusuario" type="hidden" value="<?php echo $idTercero; ?>" />
 <input id="id11" name="id11" type="hidden" value="<?php echo $idTercero; ?>" />
-<input id="ipiel" name="ipiel" type="hidden" value="<?php echo $iPiel; ?>" />
 <input id="seg_5" name="seg_5" type="hidden" value="<?php echo $seg_5; ?>" />
 <input id="seg_6" name="seg_6" type="hidden" value="<?php echo $seg_6; ?>" />
 <div id="div_sector1">
@@ -2730,7 +2583,7 @@ $bconexpande=true;
 if ($bEstudiante){$bconexpande=false;}
 if ($bconexpande){
 ?>
-<div class="ir_derecha"<?php echo $sAnchoExpandeContrae; ?>>
+<div class="ir_derecha" style="width:62px;">
 <label class="Label30">
 <input id="btexpande2301" name="btexpande2301" type="button" value="Mostrar" class="btMiniExpandir" onclick="expandepanel(2301,'block',0);" title="<?php echo $ETI['bt_mostrar']; ?>" style="display:<?php if ($_REQUEST['boculta2301']==0){echo 'none'; }else{echo 'block';} ?>;"/>
 </label>
@@ -2814,8 +2667,6 @@ echo html_oculto('cara01fechaencuesta', $_REQUEST['cara01fechaencuesta'], $et_ca
 <div class="salto1px"></div>
 </div>
 
-</div>
-
 <div class="salto1px"></div>
 <?php
 if ($bEstudiante){
@@ -2865,10 +2716,6 @@ echo $ETI['titulo_resultados'];
 </div>
 <div class="salto1px"></div>
 <div id="div_pResultados" style="display:<?php if ($_REQUEST['bocultaResultados']==0){echo 'block'; }else{echo 'none';} ?>;">
-<input id="cara01psico_puntaje" name="cara01psico_puntaje" type="hidden" value="<?php echo $_REQUEST['cara01psico_puntaje']; ?>" />
-<?php
-if (false){
-?>
 <label class="Label220">
 <?php
 echo $ETI['cara01psico_puntaje'];
@@ -2876,12 +2723,9 @@ echo $ETI['cara01psico_puntaje'];
 </label>
 <label class="Label60"><div id="div_cara01psico_puntaje">
 <?php
-echo html_oculto('cara01psico_puntaje',$_REQUEST['cara01psico_puntaje'], f2301_NombrePuntaje('puntaje',$_REQUEST['cara01psico_puntaje']));
+echo html_oculto('cara01psico_puntaje', f2301_NombrePuntaje('puntaje',$_REQUEST['cara01psico_puntaje']));
 ?>
 </div></label>
-<?php
-	}
-?>
 <div class="salto1px"></div>
 <div class="GrupoCamposAyuda">
 <?php
@@ -2910,7 +2754,7 @@ echo $ETI['msg_nivel'];
 </label>
 <label class="Label60">
 <?php
-echo html_oculto('cara01niveldigital',$_REQUEST['cara01niveldigital'], f2301_NombrePuntaje('digital',$_REQUEST['cara01niveldigital']));
+echo html_oculto('cara01niveldigital', f2301_NombrePuntaje('digital',$_REQUEST['cara01niveldigital']));
 ?>
 </label>
 <div class="salto1px"></div>
@@ -2926,7 +2770,7 @@ echo $ETI['msg_nivel'];
 </label>
 <label class="Label60">
 <?php
-echo html_oculto('cara01nivellectura',$_REQUEST['cara01nivellectura'], f2301_NombrePuntaje('lectura',$_REQUEST['cara01nivellectura']));
+echo html_oculto('cara01nivellectura', f2301_NombrePuntaje('lectura',$_REQUEST['cara01nivellectura']));
 ?>
 </label>
 <div class="salto1px"></div>
@@ -2942,7 +2786,7 @@ echo $ETI['msg_nivel'];
 </label>
 <label class="Label60">
 <?php
-echo html_oculto('cara01nivelrazona',$_REQUEST['cara01nivelrazona'], f2301_NombrePuntaje('razona',$_REQUEST['cara01nivelrazona']));
+echo html_oculto('cara01nivelrazona', f2301_NombrePuntaje('razona',$_REQUEST['cara01nivelrazona']));
 ?>
 </label>
 <div class="salto1px"></div>
@@ -2958,7 +2802,7 @@ echo $ETI['msg_nivel'];
 </label>
 <label class="Label60">
 <?php
-echo html_oculto('cara01nivelingles',$_REQUEST['cara01nivelingles'], f2301_NombrePuntaje('ingles',$_REQUEST['cara01nivelingles']));
+echo html_oculto('cara01nivelingles', f2301_NombrePuntaje('ingles',$_REQUEST['cara01nivelingles']));
 ?>
 </label>
 <div class="salto1px"></div>
@@ -2974,7 +2818,7 @@ echo $ETI['msg_nivel'];
 </label>
 <label class="Label60">
 <?php
-echo html_oculto('cara01nivelbiolog',$_REQUEST['cara01nivelbiolog'], f2301_NombrePuntaje('biolog',$_REQUEST['cara01nivelbiolog']));
+echo html_oculto('cara01nivelbiolog', f2301_NombrePuntaje('biolog',$_REQUEST['cara01nivelbiolog']));
 ?>
 </label>
 <div class="salto1px"></div>
@@ -2990,7 +2834,7 @@ echo $ETI['msg_nivel'];
 </label>
 <label class="Label60">
 <?php
-echo html_oculto('cara01nivelfisica',$_REQUEST['cara01nivelfisica'], f2301_NombrePuntaje('fisica',$_REQUEST['cara01nivelfisica']));
+echo html_oculto('cara01nivelfisica', f2301_NombrePuntaje('fisica',$_REQUEST['cara01nivelfisica']));
 ?>
 </label>
 <div class="salto1px"></div>
@@ -3006,7 +2850,7 @@ echo $ETI['msg_nivel'];
 </label>
 <label class="Label60">
 <?php
-echo html_oculto('cara01nivelquimica',$_REQUEST['cara01nivelquimica'], f2301_NombrePuntaje('quimica',$_REQUEST['cara01nivelquimica']));
+echo html_oculto('cara01nivelquimica', f2301_NombrePuntaje('quimica',$_REQUEST['cara01nivelquimica']));
 ?>
 </label>
 <div class="salto1px"></div>
@@ -3066,11 +2910,7 @@ echo $ETI['cara01agnos'];
 </label>
 <label class="Label60"><div id="div_cara01agnos">
 <?php
-$et_cara01agnos=$_REQUEST['cara01agnos'];
-if ($_REQUEST['cara01agnos']==0){
-	$et_cara01agnos='<span class="rojo">Sin Fecha de Nacimiento</span>';
-	}
-echo html_oculto('cara01agnos', $_REQUEST['cara01agnos'], $et_cara01agnos);
+echo html_oculto('cara01agnos', $_REQUEST['cara01agnos']);
 ?>
 </div></label>
 <label class="Label60">
@@ -3526,36 +3366,11 @@ echo $ETI['cara01correocontacto'];
 
 <div class="salto1px"></div>
 <div class="GrupoCampos">
-<label class="TituloGrupo" style="width:500px">
+<label class="TituloGrupo" style="width:100%">
 <?php
-if ($_REQUEST['cara01discversion']==2){
-	echo $ETI['msg_discapacidades_v2'];
-	}else{
-	echo $ETI['msg_discapacidades'];
-	}
-	
+echo $ETI['msg_discapacidades']
 ?>
 </label>
-<?php
-if ($bEstudiante){
-?>
-<input id="cara01discversion" name="cara01discversion" type="hidden" value="<?php echo $_REQUEST['cara01discversion']; ?>"/>
-<?php
-	}else{
-?>
-<label class="Label250">
-<?php
-echo $ETI['cara01discversion'];
-?>
-</label>
-<label class="Label30">
-<?php
-echo html_oculto('cara01discversion', $_REQUEST['cara01discversion']);
-?>
-</label>
-<?php
-	}
-?>
 <div class="salto1px"></div>
 <?php
 if ($_REQUEST['cara01discversion']!=0){
@@ -3632,43 +3447,22 @@ echo $ETI['msg_especifique'];
 	}
 ?>
 
+<input id="cara01discversion" name="cara01discversion" type="hidden" value="<?php echo $_REQUEST['cara01discversion']; ?>"/>
 <?php
-$bEntra=false;
-if ($_REQUEST['cara01discversion']==2){$bEntra=true;}
-if ($bEntra){
+if ($_REQUEST['cara01discversion']!=1){
 ?>
-<label class="Label500">
-<?php
-echo $ETI['cara01discv2tiene'];
-?>
-</label>
-<label>
-<?php
-echo $html_cara01discv2tiene;
-?>
-</label>
+<input id="cara01discv2sensorial" name="cara01discv2sensorial" type="hidden" value="<?php echo $_REQUEST['cara01discv2sensorial']; ?>"/>
+<input id="cara02discv2intelectura" name="cara02discv2intelectura" type="hidden" value="<?php echo $_REQUEST['cara02discv2intelectura']; ?>"/>
+<input id="cara02discv2fisica" name="cara02discv2fisica" type="hidden" value="<?php echo $_REQUEST['cara02discv2fisica']; ?>"/>
+<input id="cara02discv2psico" name="cara02discv2psico" type="hidden" value="<?php echo $_REQUEST['cara02discv2psico']; ?>"/>
+<input id="cara02discv2sistemica" name="cara02discv2sistemica" type="hidden" value="<?php echo $_REQUEST['cara02discv2sistemica']; ?>"/>
+<input id="cara02discv2sistemicaotro" name="cara02discv2sistemicaotro" type="hidden" value="<?php echo $_REQUEST['cara02discv2sistemicaotro']; ?>"/>
+<input id="cara02discv2multiple" name="cara02discv2multiple" type="hidden" value="<?php echo $_REQUEST['cara02discv2multiple']; ?>"/>
+<input id="cara02discv2multipleotro" name="cara02discv2multipleotro" type="hidden" value="<?php echo $_REQUEST['cara02discv2multipleotro']; ?>"/>
+<input id="cara02talentoexcepcional" name="cara02talentoexcepcional" type="hidden" value="<?php echo $_REQUEST['cara02talentoexcepcional']; ?>"/>
 <?php
 	}else{
 ?>
-<input id="cara01discv2tiene" name="cara01discv2tiene" type="hidden" value="<?php echo $_REQUEST['cara01discv2tiene']; ?>"/>
-<?php
-	}
-?>
-<?php
-$bEntra=false;
-if ($_REQUEST['cara01discversion']==1){$bEntra=true;}
-if ($_REQUEST['cara01discversion']==2){$bEntra=true;}
-if ($bEntra){
-?>
-<div class="salto1px"></div>
-<?php
-$sEstilo='';
-if ($_REQUEST['cara01discversion']==2){
-	$sEstilo=' style="display:none"';
-	if ($_REQUEST['cara01discv2tiene']!=0){$sEstilo='';}
-	}
-?>
-<div id="div_cara01disc"<?php echo $sEstilo; ?>>
 <label class="Label220">
 <?php
 echo $ETI['cara01discv2sensorial'];
@@ -3702,32 +3496,16 @@ echo $html_cara02discv2fisica;
 ?>
 </label>
 <div class="salto1px"></div>
+<label class="Label350">
 <?php
-	if ($_REQUEST['cara01discversion']==1){
-		echo '<label class="Label350">'.$ETI['cara02discv2psico'].'</label>';
-		}else{
-		echo '<label class="Label220">'.$ETI['cara02discv2psico_v2'].'</label>';
-		}
+echo $ETI['cara02discv2psico'];
 ?>
-
+</label>
 <label>
 <?php
 echo $html_cara02discv2psico;
 ?>
 </label>
-<?php
-	}else{
-?>
-<input id="cara01discv2sensorial" name="cara01discv2sensorial" type="hidden" value="<?php echo $_REQUEST['cara01discv2sensorial']; ?>"/>
-<input id="cara02discv2intelectura" name="cara02discv2intelectura" type="hidden" value="<?php echo $_REQUEST['cara02discv2intelectura']; ?>"/>
-<input id="cara02discv2fisica" name="cara02discv2fisica" type="hidden" value="<?php echo $_REQUEST['cara02discv2fisica']; ?>"/>
-<input id="cara02discv2psico" name="cara02discv2psico" type="hidden" value="<?php echo $_REQUEST['cara02discv2psico']; ?>"/>
-<?php
-	}
-$bEntra=false;
-if ($_REQUEST['cara01discversion']==1){$bEntra=true;}
-if ($bEntra){
-?>
 <div class="salto1px"></div>
 <label class="Label220">
 <?php
@@ -3741,23 +3519,11 @@ echo $html_cara02discv2sistemica;
 </label>
 <label class="L">
 <?php
-	$sEtiqueta=$ETI['cara02discv2sistemicaotro'];
-	echo $sEtiqueta;
+echo $ETI['cara02discv2sistemicaotro'];
 ?>
-<input id="cara02discv2sistemicaotro" name="cara02discv2sistemicaotro" type="text" value="<?php echo $_REQUEST['cara02discv2sistemicaotro']; ?>" maxlength="250" class="L" placeholder="<?php echo $ETI['ing_campo'].$sEtiqueta; ?>"/>
+
+<input id="cara02discv2sistemicaotro" name="cara02discv2sistemicaotro" type="text" value="<?php echo $_REQUEST['cara02discv2sistemicaotro']; ?>" maxlength="250" class="L" placeholder="<?php echo $ETI['ing_campo'].$ETI['cara02discv2sistemicaotro']; ?>"/>
 </label>
-<?php
-	}else{
-?>
-<input id="cara02discv2sistemica" name="cara02discv2sistemica" type="hidden" value="<?php echo $_REQUEST['cara02discv2sistemica']; ?>"/>
-<input id="cara02discv2sistemicaotro" name="cara02discv2sistemicaotro" type="hidden" value="<?php echo $_REQUEST['cara02discv2sistemicaotro']; ?>"/>
-<?php
-	}
-$bEntra=false;
-if ($_REQUEST['cara01discversion']==1){$bEntra=true;}
-if ($_REQUEST['cara01discversion']==2){$bEntra=true;}
-if ($bEntra){
-?>
 <div class="salto1px"></div>
 <label class="Label220">
 <?php
@@ -3769,185 +3535,13 @@ echo $ETI['cara02discv2multiple'];
 echo $html_cara02discv2multiple;
 ?>
 </label>
-<?php
-$sEstilo='';
-if ($_REQUEST['cara01discversion']==2){
-	$sEstilo=' style="display:none"';
-	if ($_REQUEST['cara02discv2multiple']==1){$sEstilo='';}
-	}
-?>
-<label id="lbl_cara02discv2multipleotro" class="L" <?php echo $sEstilo; ?>>
-<?php
-	$sEtiqueta=$ETI['cara02discv2multipleotro_v2'];
-	if ($_REQUEST['cara01discversion']==2){$sEtiqueta=$ETI['cara02discv2multipleotro_v2'];}
-	echo $sEtiqueta;
-?>
-<input id="cara02discv2multipleotro" name="cara02discv2multipleotro" type="text" value="<?php echo $_REQUEST['cara02discv2multipleotro']; ?>" maxlength="250" class="L" placeholder="<?php echo $ETI['ing_campo'].$sEtiqueta; ?>"/>
-</label>
-<?php
-	}else{
-?>
-<input id="cara02discv2multiple" name="cara02discv2multiple" type="hidden" value="<?php echo $_REQUEST['cara02discv2multiple']; ?>"/>
-<input id="cara02discv2multipleotro" name="cara02discv2multipleotro" type="hidden" value="<?php echo $_REQUEST['cara02discv2multipleotro']; ?>"/>
-<?php
-	}
-?>
-<div class="salto1px"></div>
 <label class="L">
 <?php
-echo $ETI['cara01perayuda'];
-?>
-</label>
-<label class="Label220">&nbsp;</label>
-<label>
-<?php
-echo $html_cara01perayuda;
-$sEstilo=' style="display:none"';
-if ($_REQUEST['cara01perayuda']==-1){$sEstilo='';}
-if ($_REQUEST['cara01perayuda']==11){$sEstilo='';}
-?>
-</label>
-<label id="lbl_cara01perotraayuda" class="L"<?php echo $sEstilo; ?>>
-<?php
-echo $ETI['cara01perotraayuda'];
+echo $ETI['cara02discv2multipleotro'];
 ?>
 
-<input id="cara01perotraayuda" name="cara01perotraayuda" type="text" value="<?php echo $_REQUEST['cara01perotraayuda']; ?>" maxlength="200" class="L" placeholder="<?php echo $ETI['ing_campo'].$ETI['cara01perotraayuda']; ?>"/>
+<input id="cara02discv2multipleotro" name="cara02discv2multipleotro" type="text" value="<?php echo $_REQUEST['cara02discv2multipleotro']; ?>" maxlength="250" class="L" placeholder="<?php echo $ETI['ing_campo'].$ETI['cara02discv2multipleotro']; ?>"/>
 </label>
-<div class="salto1px"></div>
-<input id="cara01discv2soporteorigen" name="cara01discv2soporteorigen" type="hidden" value="<?php echo $_REQUEST['cara01discv2soporteorigen']; ?>"/>
-<input id="cara01discv2archivoorigen" name="cara01discv2archivoorigen" type="hidden" value="<?php echo $_REQUEST['cara01discv2archivoorigen']; ?>"/>
-<?php
-$sEstilo=' style="display:none"';
-if ($_REQUEST['cara01discversion']==2){$sEstilo='';}
-?>
-<div class="GrupoCampos300"<?php echo $sEstilo; ?>>
-<div class="salto1px"></div>
-<label class="TituloGrupo">
-<?php
-echo $ETI['msg_certificaciondisc']
-?>
-</label>
-<div class="salto1px"></div>
-<div id="div_cara01discv2archivoorigen" class="Campo220">
-<?php
-echo html_lnkarchivo((int)$_REQUEST['cara01discv2soporteorigen'], (int)$_REQUEST['cara01discv2archivoorigen']);
-?>
-</div>
-<label class="Label30">
-<input type="button" id="banexacara01discv2archivoorigen" name="banexacara01discv2archivoorigen" value="Anexar" class="btAnexarS" onclick="carga_cara01discv2archivoorigen()" title="Cargar archivo" style="display:<?php if ((int)$_REQUEST['cara01id']!=0){echo 'block';}else{echo 'none';} ?>;"/>
-</label>
-<label class="Label30">
-<?php
-$sEstilo=' style="display:none"';
-if (!$bEstudiante){$sEstilo='';}
-?>
-<div id="div_boton_cara01discv2archivoorigen"<?php echo $sEstilo; ?>>
-<input type="button" id="beliminacara01discv2archivoorigen" name="beliminacara01discv2archivoorigen" value="Eliminar" class="btBorrarS" onclick="eliminacara01discv2archivoorigen()" title="Eliminar archivo" style="display:<?php if ((int)$_REQUEST['cara01discv2archivoorigen']!=0){echo 'block';}else{echo 'none';} ?>;"/>
-</div>
-</label>
-<div class="salto1px"></div>
-</div>
-<?php
-//Termina el div que muestra las incapacidades. div_cara01disc
-?>
-</div>
-
-<?php
-$bEntra=false;
-if ($_REQUEST['cara01discversion']==2){$bEntra=true;}
-if ($bEntra){
-?>
-<div class="salto1px"></div>
-<hr />
-<div class="salto1px"></div>
-<label class="Label500">
-<?php
-echo $ETI['cara01discv2trastornos'];
-?>
-</label>
-<label class="Label60">
-<?php
-echo $html_cara01discv2trastornos;
-?>
-</label>
-<?php
-	}else{
-?>
-<input id="cara01discv2trastornos" name="cara01discv2trastornos" type="hidden" value="<?php echo $_REQUEST['cara01discv2trastornos']; ?>"/>
-<?php
-	}
-?>
-<div class="salto1px"></div>
-<?php
-$sEstilo=' style="display:none"';
-if ($_REQUEST['cara01discversion']==2){
-	if ($_REQUEST['cara01discv2trastornos']!=0){$sEstilo='';}
-	}
-?>
-<div id="div_cara01discv2trastornos"<?php echo $sEstilo; ?>>
-<label class="Label220">
-<?php
-echo $ETI['cara01discv2trastaprende'];
-?>
-</label>
-<label>
-<?php
-echo $html_cara01discv2trastaprende;
-?>
-</label>
-</div>
-<div class="salto1px"></div>
-
-<?php
-$bEntra=false;
-if ($_REQUEST['cara01discversion']==2){$bEntra=true;}
-if ($bEntra){
-?>
-<div class="salto1px"></div>
-<div class="GrupoCamposAyuda">
-<?php
-echo $AYU['cara01discv2trastornos'];
-?>
-<div class="salto1px"></div>
-</div>
-<div class="salto1px"></div>
-
-<div class="salto1px"></div>
-<hr />
-<div class="salto1px"></div>
-<label class="Label500">
-<?php
-echo $ETI['cara01discv2contalento'];
-?>
-</label>
-<label class="Label60">
-<?php
-echo $html_cara01discv2contalento;
-?>
-</label>
-<?php
-	}else{
-?>
-<input id="cara01discv2contalento" name="cara01discv2contalento" type="hidden" value="<?php echo $_REQUEST['cara01discv2contalento']; ?>"/>
-<?php
-	}
-?>
-
-<div class="salto1px"></div>
-<?php
-$sEstilo=' style="display:none"';
-if ($_REQUEST['cara01discversion']==2){
-	if ($_REQUEST['cara01discv2contalento']!=0){$sEstilo='';}
-	}
-?>
-<div id="div_cara01discv2contalento"<?php echo $sEstilo; ?>>
-<?php
-$bEntra=false;
-if ($_REQUEST['cara01discversion']==1){$bEntra=true;}
-if ($_REQUEST['cara01discversion']==2){$bEntra=true;}
-if ($bEntra){
-?>
 <div class="salto1px"></div>
 <label class="Label220">
 <?php
@@ -3960,97 +3554,33 @@ echo $html_cara02talentoexcepcional;
 ?>
 </label>
 <?php
-	}else{
-?>
-<input id="cara02talentoexcepcional" name="cara02talentoexcepcional" type="hidden" value="<?php echo $_REQUEST['cara02talentoexcepcional']; ?>"/>
-<?php
 	}
 ?>
 <div class="salto1px"></div>
-</div>
-
+<label class="Label450">
 <?php
-$bEntra=false;
-if ($_REQUEST['cara01discversion']==2){$bEntra=true;}
-if ($bEntra){
-?>
-<div class="salto1px"></div>
-<div class="GrupoCamposAyuda">
-<?php
-echo $AYU['cara01discv2contalento'];
-?>
-<div class="salto1px"></div>
-</div>
-<div class="salto1px"></div>
-<hr />
-<div class="salto1px"></div>
-<label class="Label500">
-<?php
-echo $ETI['cara01discv2pruebacoeficiente'];
+echo $ETI['cara01perayuda'];
 ?>
 </label>
 <label>
 <?php
-echo $html_cara01discv2pruebacoeficiente;
-?>
-</label>
-
-<div class="salto1px"></div>
-<label class="Label500">
-<?php
-echo $ETI['cara01discv2condicionmedica'];
-?>
-</label>
-<label class="Label60">
-<?php
-echo $html_cara01discv2condicionmedica;
-?>
-</label>
-<?php
+echo $html_cara01perayuda;
 $sEstilo=' style="display:none"';
-if ($_REQUEST['cara01discv2condicionmedica']!=0){$sEstilo='';}
+if ($_REQUEST['cara01perayuda']==-1){$sEstilo='';}
 ?>
-<label id="lbl_cara01discv2condmeddet" class="L"<?php echo $sEstilo; ?>>
+</label>
+<label id="lbl_cara01perotraayuda" class="L"<?php echo $sEstilo; ?>>
 <?php
-echo $ETI['cara01discv2condmeddet'];
+echo $ETI['cara01perotraayuda'];
 ?>
 
-<input id="cara01discv2condmeddet" name="cara01discv2condmeddet" type="text" value="<?php echo $_REQUEST['cara01discv2condmeddet']; ?>" maxlength="250" class="L" placeholder="<?php echo $ETI['ing_campo'].$ETI['cara01discv2condmeddet']; ?>"/>
+<input id="cara01perotraayuda" name="cara01perotraayuda" type="text" value="<?php echo $_REQUEST['cara01perotraayuda']; ?>" maxlength="200" class="L" placeholder="<?php echo $ETI['ing_campo'].$ETI['cara01perotraayuda']; ?>"/>
 </label>
 <div class="salto1px"></div>
-<div class="GrupoCamposAyuda">
-<?php
-echo $AYU['cara01discv2condicionmedica'];
-?>
-<div class="salto1px"></div>
-</div>
-<div class="salto1px"></div>
-<?php
-	}else{
-?>
-<input id="cara01discv2condicionmedica" name="cara01discv2condicionmedica" type="hidden" value="<?php echo $_REQUEST['cara01discv2condicionmedica']; ?>"/>
-<input id="cara01discv2condmeddet" name="cara01discv2condmeddet" type="hidden" value="<?php echo $_REQUEST['cara01discv2condmeddet']; ?>"/>
-<?php
-	}
-?>
-<div class="salto1px"></div>
 </div>
 <?php
-$bConConfirmarDiscapacidad=false;
-if (!$bEstudiante){
-	$bConConfirmarDiscapacidad=true;
-	/*
-	switch($_REQUEST['cara01discversion']){
-		case 0:
-		break;
-		case 1:
-		break;
-		case 2:
-		break;
-		}
-	*/
-	}
-if (!$bConConfirmarDiscapacidad){
+if ($bEstudiante){
+//if (true){
 ?>
 <input id="cara01idconfirmadisc" name="cara01idconfirmadisc" type="hidden" value="<?php echo $_REQUEST['cara01idconfirmadisc']; ?>"/>
 <input id="cara01idconfirmadisc_td" name="cara01idconfirmadisc_td" type="hidden" value="<?php echo $_REQUEST['cara01idconfirmadisc_td']; ?>"/>
@@ -5522,8 +5052,7 @@ echo $ETI['cara01psico_puntaje'];
 </label>
 <label class="Label130"><div id="div_cara01psico_puntaje">
 <?php
-//echo html_oculto('cara01psico_puntaje', $_REQUEST['cara01psico_puntaje']);
-echo html_oculto('cara01psico_puntaje', $_REQUEST['cara01psico_puntaje'], f2301_NombrePuntaje('puntaje',$_REQUEST['cara01psico_puntaje']));
+echo html_oculto('cara01psico_puntaje', f2301_NombrePuntaje('puntaje',$_REQUEST['cara01psico_puntaje']));
 ?>
 </div></label>
 <?php
@@ -5735,8 +5264,7 @@ echo $ETI['msg_nivel'];
 </label>
 <label class="Label130">
 <?php
-//echo html_oculto('cara01niveldigital', f2301_NombrePuntaje('digital',$_REQUEST['cara01niveldigital']));
-echo html_oculto('cara01niveldigital', $_REQUEST['cara01niveldigital'], f2301_NombrePuntaje('digital',$_REQUEST['cara01niveldigital']));
+echo html_oculto('cara01niveldigital', f2301_NombrePuntaje('digital',$_REQUEST['cara01niveldigital']));
 ?>
 </label>
 <?php
@@ -5824,8 +5352,7 @@ echo $ETI['msg_nivel'];
 </label>
 <label class="Label130">
 <?php
-echo html_oculto('cara01nivellectura', $_REQUEST['cara01nivellectura'], f2301_NombrePuntaje('lectura',$_REQUEST['cara01nivellectura']));
-//echo html_oculto('cara01nivellectura', $_REQUEST['cara01nivellectura']);
+echo html_oculto('cara01nivellectura', f2301_NombrePuntaje('lectura',$_REQUEST['cara01nivellectura']));
 ?>
 </label>
 <?php
@@ -5906,8 +5433,7 @@ echo $ETI['msg_nivel'];
 </label>
 <label class="Label130">
 <?php
-//echo html_oculto('cara01nivelrazona', $_REQUEST['cara01nivelrazona']);
-echo html_oculto('cara01nivelrazona', $_REQUEST['cara01nivelrazona'], f2301_NombrePuntaje('razona',$_REQUEST['cara01nivelrazona']));
+echo html_oculto('cara01nivelrazona', f2301_NombrePuntaje('razona',$_REQUEST['cara01nivelrazona']));
 ?>
 </label>
 <?php
@@ -5988,8 +5514,7 @@ echo $ETI['msg_nivel'];
 </label>
 <label class="Label130">
 <?php
-//echo html_oculto('cara01nivelingles', $_REQUEST['cara01nivelingles']);
-echo html_oculto('cara01nivelingles', $_REQUEST['cara01nivelingles'], f2301_NombrePuntaje('ingles',$_REQUEST['cara01nivelingles']));
+echo html_oculto('cara01nivelingles', f2301_NombrePuntaje('ingles',$_REQUEST['cara01nivelingles']));
 ?>
 </label>
 <?php
@@ -6070,8 +5595,7 @@ echo $ETI['msg_nivel'];
 </label>
 <label class="Label130">
 <?php
-//echo html_oculto('cara01nivelbiolog', $_REQUEST['cara01nivelbiolog']);
-echo html_oculto('cara01nivelbiolog', $_REQUEST['cara01nivelbiolog'], f2301_NombrePuntaje('biolog',$_REQUEST['cara01nivelbiolog']));
+echo html_oculto('cara01nivelbiolog', f2301_NombrePuntaje('biolog',$_REQUEST['cara01nivelbiolog']));
 ?>
 </label>
 <?php
@@ -6152,8 +5676,7 @@ echo $ETI['msg_nivel'];
 </label>
 <label class="Label130">
 <?php
-//echo html_oculto('cara01nivelfisica', $_REQUEST['cara01nivelfisica']);
-echo html_oculto('cara01nivelfisica', $_REQUEST['cara01nivelfisica'], f2301_NombrePuntaje('fisica',$_REQUEST['cara01nivelfisica']));
+echo html_oculto('cara01nivelfisica', f2301_NombrePuntaje('fisica',$_REQUEST['cara01nivelfisica']));
 ?>
 </label>
 <?php
@@ -6234,8 +5757,7 @@ echo $ETI['msg_nivel'];
 </label>
 <label class="Label130">
 <?php
-//echo html_oculto('cara01nivelquimica', $_REQUEST['cara01nivelquimica']);
-echo html_oculto('cara01nivelquimica', $_REQUEST['cara01nivelquimica'], f2301_NombrePuntaje('quimica',$_REQUEST['cara01nivelquimica']));
+echo html_oculto('cara01nivelquimica', f2301_NombrePuntaje('quimica',$_REQUEST['cara01nivelquimica']));
 ?>
 </label>
 <?php
@@ -6308,8 +5830,7 @@ echo html_oculto('cara01idgrupocatedra', $_REQUEST['cara01idgrupocatedra']);
 <div class="salto1px"></div>
 </div>
 
-
-<div class="GrupoCampos520">
+<div class="GrupoCampos450">
 <label class="Label130">
 <?php
 echo $ETI['cara01fechainicio'];
@@ -6331,9 +5852,9 @@ echo html_FechaEnNumero('cara01fechainicio', $_REQUEST['cara01fechainicio']);//$
 echo $ETI['cara01idescuela'];
 ?>
 </label>
-<label class="Label350"><div id="div_cara01idescuela">
+<label class="Label130"><div id="div_cara01idescuela">
 <?php
-echo $html_cara01idescuela;
+echo html_oculto('cara01idescuela', $_REQUEST['cara01idescuela']);
 ?>
 </div></label>
 <div class="salto1px"></div>
@@ -6342,18 +5863,18 @@ echo $html_cara01idescuela;
 echo $ETI['cara01idprograma'];
 ?>
 </label>
-<label class="Label350"><div id="div_cara01idprograma">
+<label class="Label130"><div id="div_cara01idprograma">
 <?php
-echo $html_cara01idprograma;
+echo html_oculto('cara01idprograma', $_REQUEST['cara01idprograma']);
 ?>
 </div></label>
 <div class="salto1px"></div>
-<label class="Label200">
+<label class="Label130">
 <?php
 echo $ETI['cara01tipocaracterizacion'];
 ?>
 </label>
-<label class="Label300">
+<label>
 <?php
 echo $html_cara01tipocaracterizacion;
 ?>
@@ -6757,28 +6278,12 @@ if ($bMueveScroll){
 <script language="javascript" src="<?php echo $APP->rutacomun; ?>js/jquery.autocomplete.js"></script>
 <link rel="stylesheet" href="<?php echo $APP->rutacomun; ?>js/chosen.css" type="text/css"/>
 <script language="javascript" src="<?php echo $APP->rutacomun; ?>js/chosen.jquery.js"></script>
-<?php
-if (!$bEstudiante){
-?>
-<script language="javascript">
-<!--
-$().ready(function(){
-<?php
-if ($_REQUEST['paso']==0){
-?>
-$("#cara01idperaca").chosen();
-<?php
-	}
-?>
-$("#bperaca").chosen();
-});
--->
-</script>
-<?php
-	}
-?>
 <script language="javascript" src="ac_2301.js"></script>
 <script language="javascript" src="<?php echo $APP->rutacomun; ?>unad_todas.js?ver=8"></script>
 <?php
+if (!$bEstudiante){
+?>
+<?php
+	}
 forma_piedepagina();
 ?>

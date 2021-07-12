@@ -11,7 +11,7 @@
                 "exclude": [
                     "tests/**"
                 ],
-                "deployOnSave": true
+                "deployOnSave": false
             }
         ],
 		"targets": [
