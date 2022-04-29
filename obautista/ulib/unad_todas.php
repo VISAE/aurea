@@ -33,12 +33,18 @@ function obtenerNavegador($useragents, $useragent){
 		}
 	return 'Desconocido';
 	}
+function iDefinirPiel($APP, $iMaxima=1){
+	$iPiel=1;
+	if (isset($APP->piel)!=0){$iPiel=$APP->piel;}
+	if ($iPiel>$iMaxima){$iPiel=1;}
+	return $iPiel;
+	}
 function iminutoavance(){
 	return (date('W')*1440)+(date('H')*60)+date('i');
 	}
 if (isset($_SERVER['HTTP_USER_AGENT'])!=0){
 	if (strpos($_SERVER['HTTP_USER_AGENT'], "MSIE" )){
-		session_cache_limiter('public');
+		@session_cache_limiter('public');
 		}
 	}
 @session_start();

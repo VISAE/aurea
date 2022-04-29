@@ -112,7 +112,6 @@ if (!$objDB->Conectar()){
 		}
 	}
 $bEstudiante=true;
-$bAntiguo=false;
 if ($APP->idsistema==23){$bEstudiante=false;}
 if (!$bEstudiante){
 	list($bDevuelve, $sDebugP)=seg_revisa_permisoV3($iCodModulo, 1, $_SESSION['unad_id_tercero'], $objDB);
@@ -225,14 +224,7 @@ if (isset($APP->urltablero)!=0){
 if ($bEstudiante){
 	if ($_REQUEST['paso']==21){
 		$_REQUEST['paso']=1;
-		$idPeraca=0;
-		$bForzarNueva=false;
-		if (isset($_REQUEST['antiguo'])!=0){
-			$idPeraca=$_REQUEST['idPeraca'];
-			$bForzarNueva=$_REQUEST['bForzarNueva'];
-			$bAntiguo=true;
-			}
-		list($sError, $sDebugE)=f2301_IniciarEncuesta($idTercero, $idPeraca, $objDB, $bDebug, $bForzarNueva);
+		list($sError, $sDebugE)=f2301_IniciarEncuesta($idTercero, 0, $objDB, $bDebug);
 		$sDebug=$sDebug.$sDebugE;
 		}
 	//Verificar que tenga una caracterizacion
@@ -245,7 +237,7 @@ if ($bEstudiante){
 			$fila=$objDB->sf($tabla);
 			$_REQUEST['cara01idperaca']=$fila['core01peracainicial'];
 			//Ver si ya tiene una caracterizacion.
-			$sSQL='SELECT cara01id, cara01idperaca, cara01tipocaracterizacion, cara01fechaencuesta FROM cara01encuesta WHERE cara01idtercero='.$idTercero.' ORDER BY cara01idperaca DESC';
+			$sSQL='SELECT cara01id, cara01idperaca FROM cara01encuesta WHERE cara01idtercero='.$idTercero.' ORDER BY cara01idperaca DESC';
 			$tabla=$objDB->ejecutasql($sSQL);
 			if ($objDB->nf($tabla)==0){
 				$sMensaje=$ETI['msg_intro_nuevos'];
@@ -256,25 +248,6 @@ if ($bEstudiante){
 				$bVerIntro=true;
 				}else{
 				$fila=$objDB->sf($tabla);
-				if (isset($_REQUEST['antiguo'])==0){
-					$sSQL='SELECT core16peraca FROM core16actamatricula WHERE core16tercero='.$idTercero.' ORDER BY core16id DESC';
-					if ($bDebug){$sDebug=$sDebug.fecha_microtiempo().' Consulta de verificacion '.$sSQL.'<br>';}
-					$tabla=$objDB->ejecutasql($sSQL);					
-					if ($objDB->nf($tabla)>0){
-						$fila1=$objDB->sf($tabla);
-						$idPeraca=$fila1['core16peraca'];						
-						}
-					// list($iDia, $iMes, $iAgno)=fecha_DividirNumero($fila['cara01fechaencuesta'], true);
-					// $iAgnoActual=fecha_agno();
-					// if($iAgno!=$iAgnoActual){ // cambiar para periodicidad anual
-					if ($idPeraca!=$fila['cara01idperaca']){
-						$sMensaje=$ETI['msg_intro_antiguos'];
-						$_REQUEST['antiguo']='';
-						$bForzarNueva=true;
-						$bVerIntro=true;
-						}
-					if ($fila['cara01tipocaracterizacion']==3){$bAntiguo=true;}
-					}
 				$_REQUEST['cara01idperaca']=$fila['cara01idperaca'];
 				}
 			}else{
@@ -324,14 +297,6 @@ if ($sDebug!=''){
 			forma_piedepagina();
 			die();
 			}
-		}else{
-			$sSQL='SELECT core16peraca FROM core16actamatricula WHERE core16tercero='.$idTercero.' ORDER BY core16id DESC';
-			if ($bDebug){$sDebug=$sDebug.fecha_microtiempo().' Consulta de verificacion '.$sSQL.'<br>';}
-			$tabla=$objDB->ejecutasql($sSQL);
-			if($objDB->nf($tabla)>1){
-				$_REQUEST['antiguo']='';
-				$bAntiguo=true;
-				}
 		}
 	}else{
 	}
@@ -351,15 +316,6 @@ if ($bVerIntro){
 <div id="interna">
 <form id="frmedita" name="frmedita" method="post" action="" autocomplete="off">
 <input id="bNoAutocompletar" name="bNoAutocompletar" type="password" value="" style="display:none;"/>
-<?php
-if (isset($_REQUEST['antiguo'])!=0){
-?>
-<input id="antiguo" name="antiguo" type="hidden" value=""/>
-<input id="idPeraca" name="idPeraca" type="hidden" value="<?php echo $idPeraca; ?>"/>
-<input id="bForzarNueva" name="bForzarNueva" type="hidden" value="<?php echo $bForzarNueva; ?>"/>
-<?php
-}
-?>
 <input id="paso" name="paso" type="hidden" value="21"/>
 <div class="GrupoCampos">
 <?php
@@ -643,131 +599,17 @@ if (isset($_REQUEST['cara01discv2contalento'])==0){$_REQUEST['cara01discv2contal
 if (isset($_REQUEST['cara01discv2condicionmedica'])==0){$_REQUEST['cara01discv2condicionmedica']='';}
 if (isset($_REQUEST['cara01discv2condmeddet'])==0){$_REQUEST['cara01discv2condmeddet']='';}
 if (isset($_REQUEST['cara01discv2pruebacoeficiente'])==0){$_REQUEST['cara01discv2pruebacoeficiente']='';}
-if (isset($_REQUEST['cara01sexoversion'])==0){$_REQUEST['cara01sexoversion']=1;}
-if (isset($_REQUEST['cara01sexov1identidadgen'])==0){$_REQUEST['cara01sexov1identidadgen']='';}
-if (isset($_REQUEST['cara01sexov1orientasexo'])==0){$_REQUEST['cara01sexov1orientasexo']='';}
-if (isset($_REQUEST['cara01saber11version'])==0){$_REQUEST['cara01saber11version']=1;}
-if (isset($_REQUEST['cara01saber11v1agno'])==0){$_REQUEST['cara01saber11v1agno']='';}
-if (isset($_REQUEST['cara01saber11v1numreg'])==0){$_REQUEST['cara01saber11v1numreg']='';}
-if (isset($_REQUEST['cara01saber11v1puntglobal'])==0){$_REQUEST['cara01saber11v1puntglobal']=0;}
-if (isset($_REQUEST['cara01saber11v1puntleccritica'])==0){$_REQUEST['cara01saber11v1puntleccritica']=0;}
-if (isset($_REQUEST['cara01saber11v1puntmatematicas'])==0){$_REQUEST['cara01saber11v1puntmatematicas']=0;}
-if (isset($_REQUEST['cara01saber11v1puntsociales'])==0){$_REQUEST['cara01saber11v1puntsociales']=0;}
-if (isset($_REQUEST['cara01saber11v1puntciencias'])==0){$_REQUEST['cara01saber11v1puntciencias']=0;}
-if (isset($_REQUEST['cara01saber11v1puntingles'])==0){$_REQUEST['cara01saber11v1puntingles']=0;}
-if (isset($_REQUEST['cara01bienversion'])==0){$_REQUEST['cara01bienversion']=2;}
-if (isset($_REQUEST['cara01bienv2altoren'])==0){$_REQUEST['cara01bienv2altoren']='';}
-if (isset($_REQUEST['cara01bienv2atletismo'])==0){$_REQUEST['cara01bienv2atletismo']='';}
-if (isset($_REQUEST['cara01bienv2baloncesto'])==0){$_REQUEST['cara01bienv2baloncesto']='';}
-if (isset($_REQUEST['cara01bienv2futbol'])==0){$_REQUEST['cara01bienv2futbol']='';}
-if (isset($_REQUEST['cara01bienv2gimnasia'])==0){$_REQUEST['cara01bienv2gimnasia']='';}
-if (isset($_REQUEST['cara01bienv2natacion'])==0){$_REQUEST['cara01bienv2natacion']='';}
-if (isset($_REQUEST['cara01bienv2voleibol'])==0){$_REQUEST['cara01bienv2voleibol']='';}
-if (isset($_REQUEST['cara01bienv2tenis'])==0){$_REQUEST['cara01bienv2tenis']='';}
-if (isset($_REQUEST['cara01bienv2paralimpico'])==0){$_REQUEST['cara01bienv2paralimpico']='';}
-if (isset($_REQUEST['cara01bienv2otrodeporte'])==0){$_REQUEST['cara01bienv2otrodeporte']='';}
-if (isset($_REQUEST['cara01bienv2otrodeportedetalle'])==0){$_REQUEST['cara01bienv2otrodeportedetalle']='';}
-if (isset($_REQUEST['cara01bienv2activdanza'])==0){$_REQUEST['cara01bienv2activdanza']='';}
-if (isset($_REQUEST['cara01bienv2activmusica'])==0){$_REQUEST['cara01bienv2activmusica']='';}
-if (isset($_REQUEST['cara01bienv2activteatro'])==0){$_REQUEST['cara01bienv2activteatro']='';}
-if (isset($_REQUEST['cara01bienv2activartes'])==0){$_REQUEST['cara01bienv2activartes']='';}
-if (isset($_REQUEST['cara01bienv2activliteratura'])==0){$_REQUEST['cara01bienv2activliteratura']='';}
-if (isset($_REQUEST['cara01bienv2activculturalotra'])==0){$_REQUEST['cara01bienv2activculturalotra']='';}
-if (isset($_REQUEST['cara01bienv2activculturalotradetalle'])==0){$_REQUEST['cara01bienv2activculturalotradetalle']='';}
-if (isset($_REQUEST['cara01bienv2evenfestfolc'])==0){$_REQUEST['cara01bienv2evenfestfolc']='';}
-if (isset($_REQUEST['cara01bienv2evenexpoarte'])==0){$_REQUEST['cara01bienv2evenexpoarte']='';}
-if (isset($_REQUEST['cara01bienv2evenhistarte'])==0){$_REQUEST['cara01bienv2evenhistarte']='';}
-if (isset($_REQUEST['cara01bienv2evengalfoto'])==0){$_REQUEST['cara01bienv2evengalfoto']='';}
-if (isset($_REQUEST['cara01bienv2evenliteratura'])==0){$_REQUEST['cara01bienv2evenliteratura']='';}
-if (isset($_REQUEST['cara01bienv2eventeatro'])==0){$_REQUEST['cara01bienv2eventeatro']='';}
-if (isset($_REQUEST['cara01bienv2evencine'])==0){$_REQUEST['cara01bienv2evencine']='';}
-if (isset($_REQUEST['cara01bienv2evenculturalotro'])==0){$_REQUEST['cara01bienv2evenculturalotro']='';}
-if (isset($_REQUEST['cara01bienv2evenculturalotrodetalle'])==0){$_REQUEST['cara01bienv2evenculturalotrodetalle']='';}
-if (isset($_REQUEST['cara01bienv2emprendimiento'])==0){$_REQUEST['cara01bienv2emprendimiento']='';}
-if (isset($_REQUEST['cara01bienv2empresa'])==0){$_REQUEST['cara01bienv2empresa']='';}
-if (isset($_REQUEST['cara01bienv2emprenrecursos'])==0){$_REQUEST['cara01bienv2emprenrecursos']='';}
-if (isset($_REQUEST['cara01bienv2emprenconocim'])==0){$_REQUEST['cara01bienv2emprenconocim']='';}
-if (isset($_REQUEST['cara01bienv2emprenplan'])==0){$_REQUEST['cara01bienv2emprenplan']='';}
-if (isset($_REQUEST['cara01bienv2emprenejecutar'])==0){$_REQUEST['cara01bienv2emprenejecutar']='';}
-if (isset($_REQUEST['cara01bienv2emprenfortconocim'])==0){$_REQUEST['cara01bienv2emprenfortconocim']='';}
-if (isset($_REQUEST['cara01bienv2emprenidentproblema'])==0){$_REQUEST['cara01bienv2emprenidentproblema']='';}
-if (isset($_REQUEST['cara01bienv2emprenotro'])==0){$_REQUEST['cara01bienv2emprenotro']='';}
-if (isset($_REQUEST['cara01bienv2emprenotrodetalle'])==0){$_REQUEST['cara01bienv2emprenotrodetalle']='';}
-if (isset($_REQUEST['cara01bienv2emprenmarketing'])==0){$_REQUEST['cara01bienv2emprenmarketing']='';}
-if (isset($_REQUEST['cara01bienv2emprenplannegocios'])==0){$_REQUEST['cara01bienv2emprenplannegocios']='';}
-if (isset($_REQUEST['cara01bienv2emprenideas'])==0){$_REQUEST['cara01bienv2emprenideas']='';}
-if (isset($_REQUEST['cara01bienv2emprencreacion'])==0){$_REQUEST['cara01bienv2emprencreacion']='';}
-if (isset($_REQUEST['cara01bienv2saludfacteconom'])==0){$_REQUEST['cara01bienv2saludfacteconom']='';}
-if (isset($_REQUEST['cara01bienv2saludpreocupacion'])==0){$_REQUEST['cara01bienv2saludpreocupacion']='';}
-if (isset($_REQUEST['cara01bienv2saludconsumosust'])==0){$_REQUEST['cara01bienv2saludconsumosust']='';}
-if (isset($_REQUEST['cara01bienv2saludinsomnio'])==0){$_REQUEST['cara01bienv2saludinsomnio']='';}
-if (isset($_REQUEST['cara01bienv2saludclimalab'])==0){$_REQUEST['cara01bienv2saludclimalab']='';}
-if (isset($_REQUEST['cara01bienv2saludalimenta'])==0){$_REQUEST['cara01bienv2saludalimenta']='';}
-if (isset($_REQUEST['cara01bienv2saludemocion'])==0){$_REQUEST['cara01bienv2saludemocion']='';}
-if (isset($_REQUEST['cara01bienv2saludestado'])==0){$_REQUEST['cara01bienv2saludestado']='';}
-if (isset($_REQUEST['cara01bienv2saludmedita'])==0){$_REQUEST['cara01bienv2saludmedita']='';}
-if (isset($_REQUEST['cara01bienv2crecimedusexual'])==0){$_REQUEST['cara01bienv2crecimedusexual']='';}
-if (isset($_REQUEST['cara01bienv2crecimcultciudad'])==0){$_REQUEST['cara01bienv2crecimcultciudad']='';}
-if (isset($_REQUEST['cara01bienv2crecimrelpareja'])==0){$_REQUEST['cara01bienv2crecimrelpareja']='';}
-if (isset($_REQUEST['cara01bienv2crecimrelinterp'])==0){$_REQUEST['cara01bienv2crecimrelinterp']='';}
-if (isset($_REQUEST['cara01bienv2crecimdinamicafam'])==0){$_REQUEST['cara01bienv2crecimdinamicafam']='';}
-if (isset($_REQUEST['cara01bienv2crecimautoestima'])==0){$_REQUEST['cara01bienv2crecimautoestima']='';}
-if (isset($_REQUEST['cara01bienv2creciminclusion'])==0){$_REQUEST['cara01bienv2creciminclusion']='';}
-if (isset($_REQUEST['cara01bienv2creciminteliemoc'])==0){$_REQUEST['cara01bienv2creciminteliemoc']='';}
-if (isset($_REQUEST['cara01bienv2crecimcultural'])==0){$_REQUEST['cara01bienv2crecimcultural']='';}
-if (isset($_REQUEST['cara01bienv2crecimartistico'])==0){$_REQUEST['cara01bienv2crecimartistico']='';}
-if (isset($_REQUEST['cara01bienv2crecimdeporte'])==0){$_REQUEST['cara01bienv2crecimdeporte']='';}
-if (isset($_REQUEST['cara01bienv2crecimambiente'])==0){$_REQUEST['cara01bienv2crecimambiente']='';}
-if (isset($_REQUEST['cara01bienv2crecimhabsocio'])==0){$_REQUEST['cara01bienv2crecimhabsocio']='';}
-if (isset($_REQUEST['cara01bienv2ambienbasura'])==0){$_REQUEST['cara01bienv2ambienbasura']='';}
-if (isset($_REQUEST['cara01bienv2ambienreutiliza'])==0){$_REQUEST['cara01bienv2ambienreutiliza']='';}
-if (isset($_REQUEST['cara01bienv2ambienluces'])==0){$_REQUEST['cara01bienv2ambienluces']='';}
-if (isset($_REQUEST['cara01bienv2ambienfrutaverd'])==0){$_REQUEST['cara01bienv2ambienfrutaverd']='';}
-if (isset($_REQUEST['cara01bienv2ambienenchufa'])==0){$_REQUEST['cara01bienv2ambienenchufa']='';}
-if (isset($_REQUEST['cara01bienv2ambiengrifo'])==0){$_REQUEST['cara01bienv2ambiengrifo']='';}
-if (isset($_REQUEST['cara01bienv2ambienbicicleta'])==0){$_REQUEST['cara01bienv2ambienbicicleta']='';}
-if (isset($_REQUEST['cara01bienv2ambientranspub'])==0){$_REQUEST['cara01bienv2ambientranspub']='';}
-if (isset($_REQUEST['cara01bienv2ambienducha'])==0){$_REQUEST['cara01bienv2ambienducha']='';}
-if (isset($_REQUEST['cara01bienv2ambiencaminata'])==0){$_REQUEST['cara01bienv2ambiencaminata']='';}
-if (isset($_REQUEST['cara01bienv2ambiensiembra'])==0){$_REQUEST['cara01bienv2ambiensiembra']='';}
-if (isset($_REQUEST['cara01bienv2ambienconferencia'])==0){$_REQUEST['cara01bienv2ambienconferencia']='';}
-if (isset($_REQUEST['cara01bienv2ambienrecicla'])==0){$_REQUEST['cara01bienv2ambienrecicla']='';}
-if (isset($_REQUEST['cara01bienv2ambienotraactiv'])==0){$_REQUEST['cara01bienv2ambienotraactiv']='';}
-if (isset($_REQUEST['cara01bienv2ambienotraactivdetalle'])==0){$_REQUEST['cara01bienv2ambienotraactivdetalle']='';}
-if (isset($_REQUEST['cara01bienv2ambienreforest'])==0){$_REQUEST['cara01bienv2ambienreforest']='';}
-if (isset($_REQUEST['cara01bienv2ambienmovilidad'])==0){$_REQUEST['cara01bienv2ambienmovilidad']='';}
-if (isset($_REQUEST['cara01bienv2ambienclimatico'])==0){$_REQUEST['cara01bienv2ambienclimatico']='';}
-if (isset($_REQUEST['cara01bienv2ambienecofemin'])==0){$_REQUEST['cara01bienv2ambienecofemin']='';}
-if (isset($_REQUEST['cara01bienv2ambienbiodiver'])==0){$_REQUEST['cara01bienv2ambienbiodiver']='';}
-if (isset($_REQUEST['cara01bienv2ambienecologia'])==0){$_REQUEST['cara01bienv2ambienecologia']='';}
-if (isset($_REQUEST['cara01bienv2ambieneconomia'])==0){$_REQUEST['cara01bienv2ambieneconomia']='';}
-if (isset($_REQUEST['cara01bienv2ambienrecnatura'])==0){$_REQUEST['cara01bienv2ambienrecnatura']='';}
-if (isset($_REQUEST['cara01bienv2ambienreciclaje'])==0){$_REQUEST['cara01bienv2ambienreciclaje']='';}
-if (isset($_REQUEST['cara01bienv2ambienmascota'])==0){$_REQUEST['cara01bienv2ambienmascota']='';}
-if (isset($_REQUEST['cara01bienv2ambiencartohum'])==0){$_REQUEST['cara01bienv2ambiencartohum']='';}
-if (isset($_REQUEST['cara01bienv2ambienespiritu'])==0){$_REQUEST['cara01bienv2ambienespiritu']='';}
-if (isset($_REQUEST['cara01bienv2ambiencarga'])==0){$_REQUEST['cara01bienv2ambiencarga']='';}
-if (isset($_REQUEST['cara01bienv2ambienotroenfoq'])==0){$_REQUEST['cara01bienv2ambienotroenfoq']='';}
-if (isset($_REQUEST['cara01bienv2ambienotroenfoqdetalle'])==0){$_REQUEST['cara01bienv2ambienotroenfoqdetalle']='';}
-if (isset($_REQUEST['cara01fam_madrecabeza'])==0){$_REQUEST['cara01fam_madrecabeza']='';}
-if (isset($_REQUEST['cara01acadhatenidorecesos'])==0){$_REQUEST['cara01acadhatenidorecesos']='';}
-if (isset($_REQUEST['cara01acadrazonreceso'])==0){$_REQUEST['cara01acadrazonreceso']=0;}
-if (isset($_REQUEST['cara01acadrazonrecesodetalle'])==0){$_REQUEST['cara01acadrazonrecesodetalle']='';}
-if (isset($_REQUEST['cara01campus_usocorreounad'])==0){$_REQUEST['cara01campus_usocorreounad']=0;}
-if (isset($_REQUEST['cara01campus_usocorreounadno'])==0){$_REQUEST['cara01campus_usocorreounadno']=0;}
-if (isset($_REQUEST['cara01campus_usocorreounadnodetalle'])==0){$_REQUEST['cara01campus_usocorreounadnodetalle']='';}
-if (isset($_REQUEST['cara01campus_medioactivunad'])==0){$_REQUEST['cara01campus_medioactivunad']=0;}
-if (isset($_REQUEST['cara01campus_medioactivunaddetalle'])==0){$_REQUEST['cara01campus_medioactivunaddetalle']='';}
 if ((int)$_REQUEST['paso']>0){
 	//Preguntas de la prueba
 	}
 // Espacio para inicializar otras variables
+$bTraerEntorno=false;
 if (isset($_REQUEST['csv_separa'])==0){$_REQUEST['csv_separa']=',';}
 if (isset($_REQUEST['ficha'])==0){$_REQUEST['ficha']=1;}
 if (!$bEstudiante){
 	if (isset($_REQUEST['bdoc'])==0){$_REQUEST['bdoc']='';}
 	if (isset($_REQUEST['bnombre'])==0){$_REQUEST['bnombre']='';}
-	if (isset($_REQUEST['bperaca'])==0){$_REQUEST['bperaca']='';}
+	if (isset($_REQUEST['bperiodo'])==0){$_REQUEST['bperiodo']='';$bTraerEntorno=true;}
 	if (isset($_REQUEST['blistar'])==0){$_REQUEST['blistar']=1;}
 	if (isset($_REQUEST['bescuela'])==0){$_REQUEST['bescuela']='';}
 	if (isset($_REQUEST['bprograma'])==0){$_REQUEST['bprograma']='';}
@@ -776,6 +618,18 @@ if (!$bEstudiante){
 	if (isset($_REQUEST['btipocara'])==0){$_REQUEST['btipocara']='';}
 	if (isset($_REQUEST['bpoblacion'])==0){$_REQUEST['bpoblacion']='';}
 	if (isset($_REQUEST['bconvenio'])==0){$_REQUEST['bconvenio']='';}
+	}
+if ($bTraerEntorno){
+	$sSQL='SELECT * FROM unad95entorno WHERE unad95id='.$idTercero.'';
+	$tabla=$objDB->ejecutasql($sSQL);
+	if ($objDB->nf($tabla)>0){
+		$fila=$objDB->sf($tabla);
+		if ($fila['unad95periodo']!=0){$_REQUEST['bperiodo']=$fila['unad95periodo'];}
+		if ($fila['unad95escuela']!=0){$_REQUEST['bescuela']=$fila['unad95escuela'];}
+		if ($fila['unad95programa']!=0){$_REQUEST['bprograma']=$fila['unad95programa'];}
+		if ($fila['unad95zona']!=0){$_REQUEST['bzona']=$fila['unad95zona'];}
+		if ($fila['unad95centro']!=0){$_REQUEST['bcead']=$fila['unad95centro'];}
+		}
 	}
 if ($bDebug){$sDebug=$sDebug.fecha_microtiempo().' Corriendo el paso '.$_REQUEST['paso'].' antes de entrar a leer instrucciones.<br>';}
 //Si Modifica o Elimina Cargar los campos
@@ -1006,121 +860,6 @@ if (($_REQUEST['paso']==1)||($_REQUEST['paso']==3)){
 		$_REQUEST['cara01discv2condicionmedica']=$fila['cara01discv2condicionmedica'];
 		$_REQUEST['cara01discv2condmeddet']=$fila['cara01discv2condmeddet'];
 		$_REQUEST['cara01discv2pruebacoeficiente']=$fila['cara01discv2pruebacoeficiente'];
-		$_REQUEST['cara01sexoversion']=$fila['cara01sexoversion'];
-		$_REQUEST['cara01sexov1identidadgen']=$fila['cara01sexov1identidadgen'];
-		$_REQUEST['cara01sexov1orientasexo']=$fila['cara01sexov1orientasexo'];		
-		$_REQUEST['cara01saber11version']=$fila['cara01saber11version'];
-		$_REQUEST['cara01saber11v1agno']=$fila['cara01saber11v1agno'];
-		$_REQUEST['cara01saber11v1numreg']=$fila['cara01saber11v1numreg'];
-		$_REQUEST['cara01saber11v1puntglobal']=$fila['cara01saber11v1puntglobal'];
-		$_REQUEST['cara01saber11v1puntleccritica']=$fila['cara01saber11v1puntleccritica'];
-		$_REQUEST['cara01saber11v1puntmatematicas']=$fila['cara01saber11v1puntmatematicas'];
-		$_REQUEST['cara01saber11v1puntsociales']=$fila['cara01saber11v1puntsociales'];
-		$_REQUEST['cara01saber11v1puntciencias']=$fila['cara01saber11v1puntciencias'];
-		$_REQUEST['cara01saber11v1puntingles']=$fila['cara01saber11v1puntingles'];		
-		$_REQUEST['cara01bienversion']=$fila['cara01bienversion'];
-		$_REQUEST['cara01bienv2altoren']=$fila['cara01bienv2altoren'];
-		$_REQUEST['cara01bienv2atletismo']=$fila['cara01bienv2atletismo'];
-		$_REQUEST['cara01bienv2baloncesto']=$fila['cara01bienv2baloncesto'];
-		$_REQUEST['cara01bienv2futbol']=$fila['cara01bienv2futbol'];
-		$_REQUEST['cara01bienv2gimnasia']=$fila['cara01bienv2gimnasia'];
-		$_REQUEST['cara01bienv2natacion']=$fila['cara01bienv2natacion'];
-		$_REQUEST['cara01bienv2voleibol']=$fila['cara01bienv2voleibol'];
-		$_REQUEST['cara01bienv2tenis']=$fila['cara01bienv2tenis'];
-		$_REQUEST['cara01bienv2paralimpico']=$fila['cara01bienv2paralimpico'];
-		$_REQUEST['cara01bienv2otrodeporte']=$fila['cara01bienv2otrodeporte'];
-		$_REQUEST['cara01bienv2otrodeportedetalle']=$fila['cara01bienv2otrodeportedetalle'];
-		$_REQUEST['cara01bienv2activdanza']=$fila['cara01bienv2activdanza'];
-		$_REQUEST['cara01bienv2activmusica']=$fila['cara01bienv2activmusica'];
-		$_REQUEST['cara01bienv2activteatro']=$fila['cara01bienv2activteatro'];
-		$_REQUEST['cara01bienv2activartes']=$fila['cara01bienv2activartes'];
-		$_REQUEST['cara01bienv2activliteratura']=$fila['cara01bienv2activliteratura'];
-		$_REQUEST['cara01bienv2activculturalotra']=$fila['cara01bienv2activculturalotra'];
-		$_REQUEST['cara01bienv2activculturalotradetalle']=$fila['cara01bienv2activculturalotradetalle'];
-		$_REQUEST['cara01bienv2evenfestfolc']=$fila['cara01bienv2evenfestfolc'];
-		$_REQUEST['cara01bienv2evenexpoarte']=$fila['cara01bienv2evenexpoarte'];
-		$_REQUEST['cara01bienv2evenhistarte']=$fila['cara01bienv2evenhistarte'];
-		$_REQUEST['cara01bienv2evengalfoto']=$fila['cara01bienv2evengalfoto'];
-		$_REQUEST['cara01bienv2evenliteratura']=$fila['cara01bienv2evenliteratura'];
-		$_REQUEST['cara01bienv2eventeatro']=$fila['cara01bienv2eventeatro'];
-		$_REQUEST['cara01bienv2evencine']=$fila['cara01bienv2evencine'];
-		$_REQUEST['cara01bienv2evenculturalotro']=$fila['cara01bienv2evenculturalotro'];
-		$_REQUEST['cara01bienv2evenculturalotrodetalle']=$fila['cara01bienv2evenculturalotrodetalle'];
-		$_REQUEST['cara01bienv2emprendimiento']=$fila['cara01bienv2emprendimiento'];
-		$_REQUEST['cara01bienv2empresa']=$fila['cara01bienv2empresa'];
-		$_REQUEST['cara01bienv2emprenrecursos']=$fila['cara01bienv2emprenrecursos'];
-		$_REQUEST['cara01bienv2emprenconocim']=$fila['cara01bienv2emprenconocim'];
-		$_REQUEST['cara01bienv2emprenplan']=$fila['cara01bienv2emprenplan'];
-		$_REQUEST['cara01bienv2emprenejecutar']=$fila['cara01bienv2emprenejecutar'];
-		$_REQUEST['cara01bienv2emprenfortconocim']=$fila['cara01bienv2emprenfortconocim'];
-		$_REQUEST['cara01bienv2emprenidentproblema']=$fila['cara01bienv2emprenidentproblema'];
-		$_REQUEST['cara01bienv2emprenotro']=$fila['cara01bienv2emprenotro'];
-		$_REQUEST['cara01bienv2emprenotrodetalle']=$fila['cara01bienv2emprenotrodetalle'];
-		$_REQUEST['cara01bienv2emprenmarketing']=$fila['cara01bienv2emprenmarketing'];
-		$_REQUEST['cara01bienv2emprenplannegocios']=$fila['cara01bienv2emprenplannegocios'];
-		$_REQUEST['cara01bienv2emprenideas']=$fila['cara01bienv2emprenideas'];
-		$_REQUEST['cara01bienv2emprencreacion']=$fila['cara01bienv2emprencreacion'];
-		$_REQUEST['cara01bienv2saludfacteconom']=$fila['cara01bienv2saludfacteconom'];
-		$_REQUEST['cara01bienv2saludpreocupacion']=$fila['cara01bienv2saludpreocupacion'];
-		$_REQUEST['cara01bienv2saludconsumosust']=$fila['cara01bienv2saludconsumosust'];
-		$_REQUEST['cara01bienv2saludinsomnio']=$fila['cara01bienv2saludinsomnio'];
-		$_REQUEST['cara01bienv2saludclimalab']=$fila['cara01bienv2saludclimalab'];
-		$_REQUEST['cara01bienv2saludalimenta']=$fila['cara01bienv2saludalimenta'];
-		$_REQUEST['cara01bienv2saludemocion']=$fila['cara01bienv2saludemocion'];
-		$_REQUEST['cara01bienv2saludestado']=$fila['cara01bienv2saludestado'];
-		$_REQUEST['cara01bienv2saludmedita']=$fila['cara01bienv2saludmedita'];
-		$_REQUEST['cara01bienv2crecimedusexual']=$fila['cara01bienv2crecimedusexual'];
-		$_REQUEST['cara01bienv2crecimcultciudad']=$fila['cara01bienv2crecimcultciudad'];
-		$_REQUEST['cara01bienv2crecimrelpareja']=$fila['cara01bienv2crecimrelpareja'];
-		$_REQUEST['cara01bienv2crecimrelinterp']=$fila['cara01bienv2crecimrelinterp'];
-		$_REQUEST['cara01bienv2crecimdinamicafam']=$fila['cara01bienv2crecimdinamicafam'];
-		$_REQUEST['cara01bienv2crecimautoestima']=$fila['cara01bienv2crecimautoestima'];
-		$_REQUEST['cara01bienv2creciminclusion']=$fila['cara01bienv2creciminclusion'];
-		$_REQUEST['cara01bienv2creciminteliemoc']=$fila['cara01bienv2creciminteliemoc'];
-		$_REQUEST['cara01bienv2crecimcultural']=$fila['cara01bienv2crecimcultural'];
-		$_REQUEST['cara01bienv2crecimartistico']=$fila['cara01bienv2crecimartistico'];
-		$_REQUEST['cara01bienv2crecimdeporte']=$fila['cara01bienv2crecimdeporte'];
-		$_REQUEST['cara01bienv2crecimambiente']=$fila['cara01bienv2crecimambiente'];
-		$_REQUEST['cara01bienv2crecimhabsocio']=$fila['cara01bienv2crecimhabsocio'];
-		$_REQUEST['cara01bienv2ambienbasura']=$fila['cara01bienv2ambienbasura'];
-		$_REQUEST['cara01bienv2ambienreutiliza']=$fila['cara01bienv2ambienreutiliza'];
-		$_REQUEST['cara01bienv2ambienluces']=$fila['cara01bienv2ambienluces'];
-		$_REQUEST['cara01bienv2ambienfrutaverd']=$fila['cara01bienv2ambienfrutaverd'];
-		$_REQUEST['cara01bienv2ambienenchufa']=$fila['cara01bienv2ambienenchufa'];
-		$_REQUEST['cara01bienv2ambiengrifo']=$fila['cara01bienv2ambiengrifo'];
-		$_REQUEST['cara01bienv2ambienbicicleta']=$fila['cara01bienv2ambienbicicleta'];
-		$_REQUEST['cara01bienv2ambientranspub']=$fila['cara01bienv2ambientranspub'];
-		$_REQUEST['cara01bienv2ambienducha']=$fila['cara01bienv2ambienducha'];
-		$_REQUEST['cara01bienv2ambiencaminata']=$fila['cara01bienv2ambiencaminata'];
-		$_REQUEST['cara01bienv2ambiensiembra']=$fila['cara01bienv2ambiensiembra'];
-		$_REQUEST['cara01bienv2ambienconferencia']=$fila['cara01bienv2ambienconferencia'];
-		$_REQUEST['cara01bienv2ambienrecicla']=$fila['cara01bienv2ambienrecicla'];
-		$_REQUEST['cara01bienv2ambienotraactiv']=$fila['cara01bienv2ambienotraactiv'];
-		$_REQUEST['cara01bienv2ambienotraactivdetalle']=$fila['cara01bienv2ambienotraactivdetalle'];
-		$_REQUEST['cara01bienv2ambienreforest']=$fila['cara01bienv2ambienreforest'];
-		$_REQUEST['cara01bienv2ambienmovilidad']=$fila['cara01bienv2ambienmovilidad'];
-		$_REQUEST['cara01bienv2ambienclimatico']=$fila['cara01bienv2ambienclimatico'];
-		$_REQUEST['cara01bienv2ambienecofemin']=$fila['cara01bienv2ambienecofemin'];
-		$_REQUEST['cara01bienv2ambienbiodiver']=$fila['cara01bienv2ambienbiodiver'];
-		$_REQUEST['cara01bienv2ambienecologia']=$fila['cara01bienv2ambienecologia'];
-		$_REQUEST['cara01bienv2ambieneconomia']=$fila['cara01bienv2ambieneconomia'];
-		$_REQUEST['cara01bienv2ambienrecnatura']=$fila['cara01bienv2ambienrecnatura'];
-		$_REQUEST['cara01bienv2ambienreciclaje']=$fila['cara01bienv2ambienreciclaje'];
-		$_REQUEST['cara01bienv2ambienmascota']=$fila['cara01bienv2ambienmascota'];
-		$_REQUEST['cara01bienv2ambiencartohum']=$fila['cara01bienv2ambiencartohum'];
-		$_REQUEST['cara01bienv2ambienespiritu']=$fila['cara01bienv2ambienespiritu'];
-		$_REQUEST['cara01bienv2ambiencarga']=$fila['cara01bienv2ambiencarga'];
-		$_REQUEST['cara01bienv2ambienotroenfoq']=$fila['cara01bienv2ambienotroenfoq'];
-		$_REQUEST['cara01bienv2ambienotroenfoqdetalle']=$fila['cara01bienv2ambienotroenfoqdetalle'];
-		$_REQUEST['cara01fam_madrecabeza']=$fila['cara01fam_madrecabeza'];
-		$_REQUEST['cara01acadhatenidorecesos']=$fila['cara01acadhatenidorecesos'];
-		$_REQUEST['cara01acadrazonreceso']=$fila['cara01acadrazonreceso'];
-		$_REQUEST['cara01acadrazonrecesodetalle']=$fila['cara01acadrazonrecesodetalle'];
-		$_REQUEST['cara01campus_usocorreounad']=$fila['cara01campus_usocorreounad'];
-		$_REQUEST['cara01campus_usocorreounadno']=$fila['cara01campus_usocorreounadno'];
-		$_REQUEST['cara01campus_usocorreounadnodetalle']=$fila['cara01campus_usocorreounadnodetalle'];
-		$_REQUEST['cara01campus_medioactivunad']=$fila['cara01campus_medioactivunad'];
-		$_REQUEST['cara01campus_medioactivunaddetalle']=$fila['cara01campus_medioactivunaddetalle'];
 		$bcargo=true;
 		$_REQUEST['paso']=2;
 		$_REQUEST['boculta2301']=0;
@@ -1145,13 +884,6 @@ if (($_REQUEST['paso']==1)||($_REQUEST['paso']==3)){
 			if ($_REQUEST['cara01perayuda']!=0){$bDiscapacitado=true;}
 			if ($_REQUEST['cara01fechaconfirmadisc']==0){
 				if ($bDiscapacitado){$_REQUEST['boculta101']=0;}
-				}
-			$sSQL='SELECT core01peracainicial FROM core01estprograma WHERE core01idtercero='.$_REQUEST["cara01idtercero"].' AND core01peracainicial='.$_REQUEST["cara01idperaca"].' ORDER BY core01peracainicial DESC';
-			if ($bDebug){$sDebug=$sDebug.fecha_microtiempo().' Consulta de verificacion '.$sSQL.'<br>';}
-			$tabla=$objDB->ejecutasql($sSQL);
-			if($objDB->nf($tabla)==0){
-				$_REQUEST['antiguo']='';
-				$bAntiguo=true;
 				}
 			}else{
 			}
@@ -1227,21 +959,21 @@ function SiguienteFicha($DATA){
 	}
 function html_2201ContinuarCerrar($id){
 	return '<div class="salto1px"></div>
-<label class="Label300">&nbsp;</label>
-<label class="Label130">
-<input id="cmdContinuar'.$id.'" name="cmdContinuar'.$id.'" type="button" value="Continuar" class="BotonAzul" onclick="javascript:enviaguardar()" />
-</label>
-<label class="Label60">&nbsp;</label>
-<label class="Label130">
-<input id="cmdCerrar'.$id.'" name="cmdCerrar'.$id.'" type="button" value="Terminar" class="BotonAzul" onclick="javascript:enviacerrar()" />
-</label>';
+	<label class="Label300">&nbsp;</label>
+	<label class="Label130">
+	<input id="cmdContinuar'.$id.'" name="cmdContinuar'.$id.'" type="button" value="Continuar" class="BotonAzul" onclick="javascript:enviaguardar()" />
+	</label>
+	<label class="Label60">&nbsp;</label>
+	<label class="Label130">
+	<input id="cmdCerrar'.$id.'" name="cmdCerrar'.$id.'" type="button" value="Terminar" class="BotonAzul" onclick="javascript:enviacerrar()" />
+	</label>';
 	}
 function html_2201Tablero($id){
 	return '<div class="salto1px"></div>
-<label class="Label300">&nbsp;</label>
-<label class="Label130">
-<input id="cmdTablero'.$id.'" name="cmdTablero'.$id.'" type="button" value="Mis Cursos" class="BotonAzul" onclick="javascript:irtablero()" />
-</label>';
+	<label class="Label300">&nbsp;</label>
+	<label class="Label130">
+	<input id="cmdTablero'.$id.'" name="cmdTablero'.$id.'" type="button" value="Mis Cursos" class="BotonAzul" onclick="javascript:irtablero()" />
+	</label>';
 	}
 function f2301_NombrePuntaje($sCompetencia,$iValor){
 	$sValor='';
@@ -1367,6 +1099,26 @@ if ($_REQUEST['paso']==23){
 	$sDebug=$sDebug.$sDebugGuardar;
 	if ($sError==''){
 		$sError='Se ha ejecutado la confirmacion de los datos de discapacidad';
+		$iTipoError=1;
+		}
+	}
+//Verificar los datos de la matricula .. Febrero 24 de 2022
+if ($_REQUEST['paso']==31){
+	$_REQUEST['paso']=-1;
+	$bMueveScroll=true;
+	if ($_REQUEST['bperiodo']==''){
+		$sError='No se ha definido el periodo a verificar';
+		}
+	if ($sError==''){
+		require 'lib2301consejero.php';
+		list($iProcesados, $sError, $sDebugV)=f2301_VerificarMatricula($_REQUEST['bperiodo'], $objDB, $bDebug);
+		$sDebug=$sDebug.$sDebugV;
+		}
+	if ($sError==''){
+		$sError='Se ha Verificado los datos de matricula';
+		if ($iProcesados>0){
+			$sError=$sError.', Encuestas ajustadas: '.formato_numero($iProcesados).'';
+			}
 		$iTipoError=1;
 		}
 	}
@@ -1593,121 +1345,6 @@ if ($_REQUEST['paso']==-1){
 	$_REQUEST['cara01discv2condicionmedica']=0;
 	$_REQUEST['cara01discv2condmeddet']='';
 	$_REQUEST['cara01discv2pruebacoeficiente']=0;
-	$_REQUEST['cara01sexoversion']=1;
-	$_REQUEST['cara01sexov1identidadgen']='';
-	$_REQUEST['cara01sexov1orientasexo']='';	
-	$_REQUEST['cara01saber11version']=1;
-	$_REQUEST['cara01saber11v1agno']=0;
-	$_REQUEST['cara01saber11v1numreg']='';
-	$_REQUEST['cara01saber11v1puntglobal']=0;
-	$_REQUEST['cara01saber11v1puntleccritica']=0;
-	$_REQUEST['cara01saber11v1puntmatematicas']=0;
-	$_REQUEST['cara01saber11v1puntsociales']=0;
-	$_REQUEST['cara01saber11v1puntciencias']=0;
-	$_REQUEST['cara01saber11v1puntingles']=0;	
-	$_REQUEST['cara01bienversion']=2;
-	$_REQUEST['cara01bienv2altoren']='';
-	$_REQUEST['cara01bienv2atletismo']='';
-	$_REQUEST['cara01bienv2baloncesto']='';
-	$_REQUEST['cara01bienv2futbol']='';
-	$_REQUEST['cara01bienv2gimnasia']='';
-	$_REQUEST['cara01bienv2natacion']='';
-	$_REQUEST['cara01bienv2voleibol']='';
-	$_REQUEST['cara01bienv2tenis']='';
-	$_REQUEST['cara01bienv2paralimpico']='';
-	$_REQUEST['cara01bienv2otrodeporte']='';
-	$_REQUEST['cara01bienv2otrodeportedetalle']='';
-	$_REQUEST['cara01bienv2activdanza']='';
-	$_REQUEST['cara01bienv2activmusica']='';
-	$_REQUEST['cara01bienv2activteatro']='';
-	$_REQUEST['cara01bienv2activartes']='';
-	$_REQUEST['cara01bienv2activliteratura']='';
-	$_REQUEST['cara01bienv2activculturalotra']='';
-	$_REQUEST['cara01bienv2activculturalotradetalle']='';
-	$_REQUEST['cara01bienv2evenfestfolc']='';
-	$_REQUEST['cara01bienv2evenexpoarte']='';
-	$_REQUEST['cara01bienv2evenhistarte']='';
-	$_REQUEST['cara01bienv2evengalfoto']='';
-	$_REQUEST['cara01bienv2evenliteratura']='';
-	$_REQUEST['cara01bienv2eventeatro']='';
-	$_REQUEST['cara01bienv2evencine']='';
-	$_REQUEST['cara01bienv2evenculturalotro']='';
-	$_REQUEST['cara01bienv2evenculturalotrodetalle']='';
-	$_REQUEST['cara01bienv2emprendimiento']='';
-	$_REQUEST['cara01bienv2empresa']='';
-	$_REQUEST['cara01bienv2emprenrecursos']='';
-	$_REQUEST['cara01bienv2emprenconocim']='';
-	$_REQUEST['cara01bienv2emprenplan']='';
-	$_REQUEST['cara01bienv2emprenejecutar']='';
-	$_REQUEST['cara01bienv2emprenfortconocim']='';
-	$_REQUEST['cara01bienv2emprenidentproblema']='';
-	$_REQUEST['cara01bienv2emprenotro']='';
-	$_REQUEST['cara01bienv2emprenotrodetalle']='';
-	$_REQUEST['cara01bienv2emprenmarketing']='';
-	$_REQUEST['cara01bienv2emprenplannegocios']='';
-	$_REQUEST['cara01bienv2emprenideas']='';
-	$_REQUEST['cara01bienv2emprencreacion']='';
-	$_REQUEST['cara01bienv2saludfacteconom']='';
-	$_REQUEST['cara01bienv2saludpreocupacion']='';
-	$_REQUEST['cara01bienv2saludconsumosust']='';
-	$_REQUEST['cara01bienv2saludinsomnio']='';
-	$_REQUEST['cara01bienv2saludclimalab']='';
-	$_REQUEST['cara01bienv2saludalimenta']='';
-	$_REQUEST['cara01bienv2saludemocion']='';
-	$_REQUEST['cara01bienv2saludestado']='';
-	$_REQUEST['cara01bienv2saludmedita']='';
-	$_REQUEST['cara01bienv2crecimedusexual']='';
-	$_REQUEST['cara01bienv2crecimcultciudad']='';
-	$_REQUEST['cara01bienv2crecimrelpareja']='';
-	$_REQUEST['cara01bienv2crecimrelinterp']='';
-	$_REQUEST['cara01bienv2crecimdinamicafam']='';
-	$_REQUEST['cara01bienv2crecimautoestima']='';
-	$_REQUEST['cara01bienv2creciminclusion']='';
-	$_REQUEST['cara01bienv2creciminteliemoc']='';
-	$_REQUEST['cara01bienv2crecimcultural']='';
-	$_REQUEST['cara01bienv2crecimartistico']='';
-	$_REQUEST['cara01bienv2crecimdeporte']='';
-	$_REQUEST['cara01bienv2crecimambiente']='';
-	$_REQUEST['cara01bienv2crecimhabsocio']='';
-	$_REQUEST['cara01bienv2ambienbasura']='';
-	$_REQUEST['cara01bienv2ambienreutiliza']='';
-	$_REQUEST['cara01bienv2ambienluces']='';
-	$_REQUEST['cara01bienv2ambienfrutaverd']='';
-	$_REQUEST['cara01bienv2ambienenchufa']='';
-	$_REQUEST['cara01bienv2ambiengrifo']='';
-	$_REQUEST['cara01bienv2ambienbicicleta']='';
-	$_REQUEST['cara01bienv2ambientranspub']='';
-	$_REQUEST['cara01bienv2ambienducha']='';
-	$_REQUEST['cara01bienv2ambiencaminata']='';
-	$_REQUEST['cara01bienv2ambiensiembra']='';
-	$_REQUEST['cara01bienv2ambienconferencia']='';
-	$_REQUEST['cara01bienv2ambienrecicla']='';
-	$_REQUEST['cara01bienv2ambienotraactiv']='';
-	$_REQUEST['cara01bienv2ambienotraactivdetalle']='';
-	$_REQUEST['cara01bienv2ambienreforest']='';
-	$_REQUEST['cara01bienv2ambienmovilidad']='';
-	$_REQUEST['cara01bienv2ambienclimatico']='';
-	$_REQUEST['cara01bienv2ambienecofemin']='';
-	$_REQUEST['cara01bienv2ambienbiodiver']='';
-	$_REQUEST['cara01bienv2ambienecologia']='';
-	$_REQUEST['cara01bienv2ambieneconomia']='';
-	$_REQUEST['cara01bienv2ambienrecnatura']='';
-	$_REQUEST['cara01bienv2ambienreciclaje']='';
-	$_REQUEST['cara01bienv2ambienmascota']='';
-	$_REQUEST['cara01bienv2ambiencartohum']='';
-	$_REQUEST['cara01bienv2ambienespiritu']='';
-	$_REQUEST['cara01bienv2ambiencarga']='';
-	$_REQUEST['cara01bienv2ambienotroenfoq']='';
-	$_REQUEST['cara01bienv2ambienotroenfoqdetalle']='';
-	$_REQUEST['cara01fam_madrecabeza']='';
-	$_REQUEST['cara01acadhatenidorecesos']='';
-	$_REQUEST['cara01acadrazonreceso']=0;
-	$_REQUEST['cara01acadrazonrecesodetalle']='';
-	$_REQUEST['cara01campus_usocorreounad']=0;
-	$_REQUEST['cara01campus_usocorreounadno']=0;
-	$_REQUEST['cara01campus_usocorreounadnodetalle']='';
-	$_REQUEST['cara01campus_medioactivunad']=0;
-	$_REQUEST['cara01campus_medioactivunaddetalle']='';
 	$_REQUEST['paso']=0;
 	}
 if ($bLimpiaHijos){
@@ -1718,9 +1355,8 @@ if ($bLimpiaHijos){
 $seg_5=0;
 $seg_6=0;
 if (!$bEstudiante){
-//list($bDevuelve, $sDebugP)=seg_revisa_permisoV3($iCodModulo, 6, $idTercero, $objDB);
-//if ($bDevuelve){$seg_6=1;}
-	if (seg_revisa_permiso($iCodModulo, 6, $objDB)){$seg_6=1;}
+	list($bDevuelve, $sDebugP)=seg_revisa_permisoV3($iCodModulo, 6, $idTercero, $objDB);
+	if ($bDevuelve){$seg_6=1;}
 	}
 if ($seg_6==1){}
 //Crear los controles que requieran llamado a base de datos
@@ -1728,18 +1364,7 @@ $objCombos=new clsHtmlCombos();
 $objTercero=new clsHtmlTercero();
 list($cara01idtercero_rs, $_REQUEST['cara01idtercero'], $_REQUEST['cara01idtercero_td'], $_REQUEST['cara01idtercero_doc'])=html_tercero($_REQUEST['cara01idtercero_td'], $_REQUEST['cara01idtercero_doc'], $_REQUEST['cara01idtercero'], 0, $objDB);
 $objCombos->nuevo('cara01sexo', $_REQUEST['cara01sexo'], true, '{'.$ETI['msg_seleccione'].'}');
-$objCombos->addItem('M','Hombre');
-$objCombos->addItem('F','Mujer');
-$objCombos->addItem('I','Intersexual');
-$objCombos->sAccion='ajustar_fam_hijos()';
-$html_cara01sexo=$objCombos->html('',$objDB);
-//$html_cara01sexo=$objCombos->html('SELECT unad22codopcion AS id, unad22nombre AS nombre FROM unad22combos WHERE unad22idmodulo=111 AND unad22consec=1 AND unad22activa="S" ORDER BY unad22orden', $objDB);
-$objCombos->nuevo('cara01sexov1identidadgen', $_REQUEST['cara01sexov1identidadgen'], true, '{'.$ETI['msg_seleccione'].'}', 0);
-$objCombos->addArreglo($acara01sexov1identidadgen, $icara01sexov1identidadgen);
-$html_cara01sexov1identidadgen=$objCombos->html('', $objDB);
-$objCombos->nuevo('cara01sexov1orientasexo', $_REQUEST['cara01sexov1orientasexo'], true, '{'.$ETI['msg_seleccione'].'}', 0);
-$objCombos->addArreglo($acara01sexov1orientasexo, $icara01sexov1orientasexo);
-$html_cara01sexov1orientasexo=$objCombos->html('', $objDB);
+$html_cara01sexo=$objCombos->html('SELECT unad22codopcion AS id, unad22nombre AS nombre FROM unad22combos WHERE unad22idmodulo=111 AND unad22consec=1 AND unad22activa="S" ORDER BY unad22orden', $objDB);
 $objCombos->nuevo('cara01pais', $_REQUEST['cara01pais'], true, '{'.$ETI['msg_seleccione'].'}');
 $objCombos->sAccion='carga_combo_cara01depto();';
 $html_cara01pais=$objCombos->html('SELECT unad18codigo AS id, unad18nombre AS nombre FROM unad18pais ORDER BY unad18nombre', $objDB);
@@ -1802,10 +1427,6 @@ $objCombos->addItem(6, 'Mas de cinco a&ntilde;os');
 $html_cara01inpectiempocondena=$objCombos->html('', $objDB);
 $objCombos->nuevo('cara01centroreclusion', $_REQUEST['cara01centroreclusion'], true, '{'.$ETI['msg_ninguno'].'}', 0);
 $html_cara01centroreclusion=$objCombos->html('SELECT cara03id AS id, cara03nombre AS nombre FROM cara03centroreclusion ORDER BY cara03nombre', $objDB);
-$objCombos->nuevo('cara01saber11v1agno', $_REQUEST['cara01saber11v1agno'], true, $ETI['msg_seleccione'], 0);
-$objCombos->numeros(1980, fecha_agno(), 1);
-$objCombos->sAccion='ajustar_saber11v1()';
-$html_cara01saber11v1agno=$objCombos->html('', $objDB);
 if ($_REQUEST['cara01discversion']==0){
 	$objCombos->nuevo('cara01discsensorial', $_REQUEST['cara01discsensorial'], true, $ETI['no'], 'N');
 	$objCombos->addArreglo($acara01discsensorial, $icara01discsensorial);
@@ -1832,11 +1453,7 @@ $objCombos->addArreglo($afam_numpersgrupofam, $ifam_numpersgrupofam);
 $html_cara01fam_numpersgrupofam=$objCombos->html('', $objDB);
 $objCombos->nuevo('cara01fam_hijos', $_REQUEST['cara01fam_hijos'], true, '{'.$ETI['msg_seleccione'].'}');
 $objCombos->addArreglo($afam_hijos, $ifam_hijos);
-$objCombos->sAccion='ajustar_fam_hijos()';
 $html_cara01fam_hijos=$objCombos->html('', $objDB);
-$objCombos->nuevo('cara01fam_madrecabeza', $_REQUEST['cara01fam_madrecabeza'], true, '');
-$objCombos->sino();
-$html_cara01fam_madrecabeza=$objCombos->html('', $objDB);
 $objCombos->nuevo('cara01fam_personasacargo', $_REQUEST['cara01fam_personasacargo'], true, '{'.$ETI['msg_seleccione'].'}');
 $objCombos->addArreglo($afam_personasacargo, $ifam_personasacargo);
 $html_cara01fam_personasacargo=$objCombos->html('', $objDB);
@@ -1887,14 +1504,6 @@ $objCombos->sAccion='ajustarprimeraopc()';
 $html_cara01acad_primeraopc=$objCombos->html('', $objDB);
 $objCombos->nuevo('cara01acad_razonunad', $_REQUEST['cara01acad_razonunad'], true, '{'.$ETI['msg_seleccione'].'}');
 $html_cara01acad_razonunad=$objCombos->html('SELECT cara05id AS id, cara05nombre AS nombre FROM cara05razonunad ORDER BY cara05orden, cara05nombre', $objDB);
-$objCombos->nuevo('cara01acadhatenidorecesos', $_REQUEST['cara01acadhatenidorecesos'], true, '');
-$objCombos->sino();
-$objCombos->sAccion='ajustar_acadhatenidorecesos()';
-$html_cara01acadhatenidorecesos=$objCombos->html('', $objDB);
-$objCombos->nuevo('cara01acadrazonreceso', $_REQUEST['cara01acadrazonreceso'], true, '{'.$ETI['msg_seleccione'].'}', 0);
-$objCombos->addArreglo($acara01acadrazonreceso, $icara01acadrazonreceso);
-$objCombos->sAccion='ajustar_acadrazonreceso()';
-$html_cara01acadrazonreceso=$objCombos->html('', $objDB);
 $objCombos->nuevo('cara01campus_compescrito', $_REQUEST['cara01campus_compescrito'], true, '');
 $objCombos->sino();
 $html_cara01campus_compescrito=$objCombos->html('', $objDB);
@@ -1928,14 +1537,6 @@ $html_cara01campus_conversiones=$objCombos->html('', $objDB);
 $objCombos->nuevo('cara01campus_usocorreo', $_REQUEST['cara01campus_usocorreo'], true, '{'.$ETI['msg_seleccione'].'}');
 $objCombos->addArreglo($acara01campus_usocorreo, $icara01campus_usocorreo);
 $html_cara01campus_usocorreo=$objCombos->html('', $objDB);
-$objCombos->nuevo('cara01campus_usocorreounad', $_REQUEST['cara01campus_usocorreounad'], true, '{'.$ETI['msg_seleccione'].'}', 0);
-$objCombos->addArreglo($acara01campus_usocorreounad, $icara01campus_usocorreounad);
-$objCombos->sAccion='ajustar_campus_usocorreounad()';
-$html_cara01campus_usocorreounad=$objCombos->html('', $objDB);
-$objCombos->nuevo('cara01campus_usocorreounadno', $_REQUEST['cara01campus_usocorreounadno'], true, '{'.$ETI['msg_seleccione'].'}', 0);
-$objCombos->addArreglo($acara01campus_usocorreounadno, $icara01campus_usocorreounadno);
-$objCombos->sAccion='ajustar_campus_usocorreounadno()';
-$html_cara01campus_usocorreounadno=$objCombos->html('', $objDB);
 $objCombos->nuevo('cara01campus_aprendtexto', $_REQUEST['cara01campus_aprendtexto'], true, '');
 $objCombos->sino();
 $html_cara01campus_aprendtexto=$objCombos->html('', $objDB);
@@ -1951,10 +1552,6 @@ $html_cara01campus_aprendeanima=$objCombos->html('', $objDB);
 $objCombos->nuevo('cara01campus_mediocomunica', $_REQUEST['cara01campus_mediocomunica'], true, '{'.$ETI['msg_seleccione'].'}');
 $objCombos->addArreglo($acara01campus_mediocomunica, $icara01campus_mediocomunica);
 $html_cara01campus_mediocomunica=$objCombos->html('', $objDB);
-$objCombos->nuevo('cara01campus_medioactivunad', $_REQUEST['cara01campus_medioactivunad'], true, '{'.$ETI['msg_seleccione'].'}', 0);
-$objCombos->addArreglo($acara01campus_medioactivunad, $icara01campus_medioactivunad);
-$objCombos->sAccion='ajustar_campus_medioactivunad()';
-$html_cara01campus_medioactivunad=$objCombos->html('', $objDB);
 $objCombos->nuevo('cara01lab_situacion', $_REQUEST['cara01lab_situacion'], true, '{'.$ETI['msg_seleccione'].'}');
 $objCombos->addArreglo($acara01lab_situacion, $icara01lab_situacion);
 $objCombos->sAccion='ajustarlaboral()';
@@ -1992,399 +1589,126 @@ $html_cara01lab_debebusctrab=$objCombos->html('', $objDB);
 $objCombos->nuevo('cara01lab_origendinero', $_REQUEST['cara01lab_origendinero'], true, '{'.$ETI['msg_seleccione'].'}');
 $objCombos->addArreglo($acara01lab_origendinero, $icara01lab_origendinero);
 $html_cara01lab_origendinero=$objCombos->html('', $objDB);
-if ($_REQUEST['cara01bienversion']==0){
-	$objCombos->nuevo('cara01bien_baloncesto', $_REQUEST['cara01bien_baloncesto'], true, '');
-	$objCombos->sino();
-	$html_cara01bien_baloncesto=$objCombos->html('', $objDB);
-	$objCombos->nuevo('cara01bien_voleibol', $_REQUEST['cara01bien_voleibol'], true, '');
-	$objCombos->sino();
-	$html_cara01bien_voleibol=$objCombos->html('', $objDB);
-	$objCombos->nuevo('cara01bien_futbolsala', $_REQUEST['cara01bien_futbolsala'], true, '');
-	$objCombos->sino();
-	$html_cara01bien_futbolsala=$objCombos->html('', $objDB);
-	$objCombos->nuevo('cara01bien_artesmarc', $_REQUEST['cara01bien_artesmarc'], true, '');
-	$objCombos->sino();
-	$html_cara01bien_artesmarc=$objCombos->html('', $objDB);
-	$objCombos->nuevo('cara01bien_tenisdemesa', $_REQUEST['cara01bien_tenisdemesa'], true, '');
-	$objCombos->sino();
-	$html_cara01bien_tenisdemesa=$objCombos->html('', $objDB);
-	$objCombos->nuevo('cara01bien_ajedrez', $_REQUEST['cara01bien_ajedrez'], true, '');
-	$objCombos->sino();
-	$html_cara01bien_ajedrez=$objCombos->html('', $objDB);
-	$objCombos->nuevo('cara01bien_juegosautoc', $_REQUEST['cara01bien_juegosautoc'], true, '');
-	$objCombos->sino();
-	$html_cara01bien_juegosautoc=$objCombos->html('', $objDB);
-	$objCombos->nuevo('cara01bien_interesrepdeporte', $_REQUEST['cara01bien_interesrepdeporte'], true, '');
-	$objCombos->sino();
-	$objCombos->sAccion='ajustarinteresrepdeporte();';
-	$html_cara01bien_interesrepdeporte=$objCombos->html('', $objDB);
-	$objCombos->nuevo('cara01bien_teatro', $_REQUEST['cara01bien_teatro'], true, '');
-	$objCombos->sino();
-	$html_cara01bien_teatro=$objCombos->html('', $objDB);
-	$objCombos->nuevo('cara01bien_danza', $_REQUEST['cara01bien_danza'], true, '');
-	$objCombos->sino();
-	$html_cara01bien_danza=$objCombos->html('', $objDB);
-	$objCombos->nuevo('cara01bien_musica', $_REQUEST['cara01bien_musica'], true, '');
-	$objCombos->sino();
-	$html_cara01bien_musica=$objCombos->html('', $objDB);
-	$objCombos->nuevo('cara01bien_circo', $_REQUEST['cara01bien_circo'], true, '');
-	$objCombos->sino();
-	$html_cara01bien_circo=$objCombos->html('', $objDB);
-	$objCombos->nuevo('cara01bien_artplast', $_REQUEST['cara01bien_artplast'], true, '');
-	$objCombos->sino();
-	$html_cara01bien_artplast=$objCombos->html('', $objDB);
-	$objCombos->nuevo('cara01bien_cuenteria', $_REQUEST['cara01bien_cuenteria'], true, '');
-	$objCombos->sino();
-	$html_cara01bien_cuenteria=$objCombos->html('', $objDB);
-	$objCombos->nuevo('cara01bien_interesreparte', $_REQUEST['cara01bien_interesreparte'], true, '');
-	$objCombos->sino();
-	$objCombos->sAccion='ajustarinteresreparte()';
-	$html_cara01bien_interesreparte=$objCombos->html('', $objDB);
-	$objCombos->nuevo('cara01bien_interpreta', $_REQUEST['cara01bien_interpreta'], true, '{'.$ETI['msg_seleccione'].'}');
-	$objCombos->addArreglo($acara01bien_interpreta, $icara01bien_interpreta);
-	$objCombos->addItem('-1', 'Ninguno de estos');
-	$objCombos->sAccion='ajustarnivelinterpreta()';
-	$html_cara01bien_interpreta=$objCombos->html('', $objDB);
-	$objCombos->nuevo('cara01bien_nivelinter', $_REQUEST['cara01bien_nivelinter'], true, '{'.$ETI['msg_seleccione'].'}');
-	$objCombos->addArreglo($acara01bien_nivelinter, $icara01bien_nivelinter);
-	$html_cara01bien_nivelinter=$objCombos->html('', $objDB);
-	$objCombos->nuevo('cara01bien_danza_mod', $_REQUEST['cara01bien_danza_mod'], true, '');
-	$objCombos->sino();
-	$objCombos->sAccion='ajustardanza()';
-	$html_cara01bien_danza_mod=$objCombos->html('', $objDB);
-	$objCombos->nuevo('cara01bien_danza_clas', $_REQUEST['cara01bien_danza_clas'], true, '');
-	$objCombos->sino();
-	$objCombos->sAccion='ajustardanza()';
-	$html_cara01bien_danza_clas=$objCombos->html('', $objDB);
-	$objCombos->nuevo('cara01bien_danza_cont', $_REQUEST['cara01bien_danza_cont'], true, '');
-	$objCombos->sino();
-	$objCombos->sAccion='ajustardanza()';
-	$html_cara01bien_danza_cont=$objCombos->html('', $objDB);
-	$objCombos->nuevo('cara01bien_danza_folk', $_REQUEST['cara01bien_danza_folk'], true, '');
-	$objCombos->sino();
-	$objCombos->sAccion='ajustardanza()';
-	$html_cara01bien_danza_folk=$objCombos->html('', $objDB);
-	$objCombos->nuevo('cara01bien_niveldanza', $_REQUEST['cara01bien_niveldanza'], true, '{'.$ETI['msg_seleccione'].'}');
-	$objCombos->addArreglo($acara01bien_niveldanza, $icara01bien_niveldanza);
-	$html_cara01bien_niveldanza=$objCombos->html('', $objDB);
-	$objCombos->nuevo('cara01bien_emprendedor', $_REQUEST['cara01bien_emprendedor'], true, '');
-	$objCombos->sino();
-	$objCombos->sAccion='ajustarnombreemp()';
-	$html_cara01bien_emprendedor=$objCombos->html('', $objDB);
-	$objCombos->nuevo('cara01bien_capacempren', $_REQUEST['cara01bien_capacempren'], true, '{'.$ETI['msg_ninguna'].'}', 0);
-	//$objCombos->sino();
-	//$objCombos->sAccion='ajustartipocapacita()';
-	$objCombos->addArreglo($acara01bien_capacempren, $icara01bien_capacempren);
-	$html_cara01bien_capacempren=$objCombos->html('', $objDB);
-	$objCombos->nuevo('cara01bien_impvidasalud', $_REQUEST['cara01bien_impvidasalud'], true, '');
-	$objCombos->addArreglo($acara01bien_impvidasalud, $icara01bien_impvidasalud);
-	$html_cara01bien_impvidasalud=$objCombos->html('', $objDB);
-	$objCombos->nuevo('cara01bien_estraautocuid', $_REQUEST['cara01bien_estraautocuid'], true, '');
-	$objCombos->addArreglo($acara01bien_estraautocuid, $icara01bien_estraautocuid);
-	$html_cara01bien_estraautocuid=$objCombos->html('', $objDB);
-	$objCombos->nuevo('cara01bien_pv_personal', $_REQUEST['cara01bien_pv_personal'], true, '');
-	$objCombos->addArreglo($acara01bien_pv_personal, $icara01bien_pv_personal);
-	$html_cara01bien_pv_personal=$objCombos->html('', $objDB);
-	$objCombos->nuevo('cara01bien_pv_familiar', $_REQUEST['cara01bien_pv_familiar'], true, '');
-	$objCombos->sino();
-	$html_cara01bien_pv_familiar=$objCombos->html('', $objDB);
-	$objCombos->nuevo('cara01bien_pv_academ', $_REQUEST['cara01bien_pv_academ'], true, '');
-	$objCombos->sino();
-	$html_cara01bien_pv_academ=$objCombos->html('', $objDB);
-	$objCombos->nuevo('cara01bien_pv_labora', $_REQUEST['cara01bien_pv_labora'], true, '');
-	$objCombos->sino();
-	$html_cara01bien_pv_labora=$objCombos->html('', $objDB);
-	$objCombos->nuevo('cara01bien_pv_pareja', $_REQUEST['cara01bien_pv_pareja'], true, '');
-	$objCombos->sino();
-	$html_cara01bien_pv_pareja=$objCombos->html('', $objDB);
-	$objCombos->nuevo('cara01bien_amb', $_REQUEST['cara01bien_amb'], true, '');
-	$objCombos->addArreglo($acara01bien_amb, $icara01bien_amb);
-	$html_cara01bien_amb=$objCombos->html('', $objDB);
-	$objCombos->nuevo('cara01bien_amb_agu', $_REQUEST['cara01bien_amb_agu'], true, '');
-	$objCombos->sino();
-	$html_cara01bien_amb_agu=$objCombos->html('', $objDB);
-	$objCombos->nuevo('cara01bien_amb_bom', $_REQUEST['cara01bien_amb_bom'], true, '');
-	$objCombos->sino();
-	$html_cara01bien_amb_bom=$objCombos->html('', $objDB);
-	$objCombos->nuevo('cara01bien_amb_car', $_REQUEST['cara01bien_amb_car'], true, '');
-	$objCombos->sino();
-	$html_cara01bien_amb_car=$objCombos->html('', $objDB);
-	$objCombos->nuevo('cara01bien_amb_info', $_REQUEST['cara01bien_amb_info'], true, '');
-	$objCombos->sino();
-	//$objCombos->sAccion='ajustaramb_temas()';
-	$html_cara01bien_amb_info=$objCombos->html('', $objDB);
-	}
-$bEntra=false;
-if ($_REQUEST['cara01bienversion']==2){$bEntra=true;}
-if ($bEntra){
-	$objCombos->nuevo('cara01bienv2altoren', $_REQUEST['cara01bienv2altoren'], true, '');
-	$objCombos->sino();
-	$html_cara01bienv2altoren=$objCombos->html('', $objDB);
-	$objCombos->nuevo('cara01bienv2atletismo', $_REQUEST['cara01bienv2atletismo'], true, '');
-	$objCombos->sino();
-	$html_cara01bienv2atletismo=$objCombos->html('', $objDB);
-	$objCombos->nuevo('cara01bienv2baloncesto', $_REQUEST['cara01bienv2baloncesto'], true, '');
-	$objCombos->sino();
-	$html_cara01bienv2baloncesto=$objCombos->html('', $objDB);
-	$objCombos->nuevo('cara01bienv2futbol', $_REQUEST['cara01bienv2futbol'], true, '');
-	$objCombos->sino();
-	$html_cara01bienv2futbol=$objCombos->html('', $objDB);
-	$objCombos->nuevo('cara01bienv2gimnasia', $_REQUEST['cara01bienv2gimnasia'], true, '');
-	$objCombos->sino();
-	$html_cara01bienv2gimnasia=$objCombos->html('', $objDB);
-	$objCombos->nuevo('cara01bienv2natacion', $_REQUEST['cara01bienv2natacion'], true, '');
-	$objCombos->sino();
-	$html_cara01bienv2natacion=$objCombos->html('', $objDB);
-	$objCombos->nuevo('cara01bienv2voleibol', $_REQUEST['cara01bienv2voleibol'], true, '');
-	$objCombos->sino();
-	$html_cara01bienv2voleibol=$objCombos->html('', $objDB);
-	$objCombos->nuevo('cara01bienv2tenis', $_REQUEST['cara01bienv2tenis'], true, '');
-	$objCombos->sino();
-	$html_cara01bienv2tenis=$objCombos->html('', $objDB);
-	$objCombos->nuevo('cara01bienv2paralimpico', $_REQUEST['cara01bienv2paralimpico'], true, '');
-	$objCombos->sino();
-	$html_cara01bienv2paralimpico=$objCombos->html('', $objDB);
-	$objCombos->nuevo('cara01bienv2otrodeporte', $_REQUEST['cara01bienv2otrodeporte'], true, '');
-	$objCombos->sino();
-	$objCombos->sAccion='ajustarbienv2otrodeporte()';
-	$html_cara01bienv2otrodeporte=$objCombos->html('', $objDB);
-	$objCombos->nuevo('cara01bienv2activdanza', $_REQUEST['cara01bienv2activdanza'], true, '');
-	$objCombos->sino();
-	$html_cara01bienv2activdanza=$objCombos->html('', $objDB);
-	$objCombos->nuevo('cara01bienv2activmusica', $_REQUEST['cara01bienv2activmusica'], true, '');
-	$objCombos->sino();
-	$html_cara01bienv2activmusica=$objCombos->html('', $objDB);
-	$objCombos->nuevo('cara01bienv2activteatro', $_REQUEST['cara01bienv2activteatro'], true, '');
-	$objCombos->sino();
-	$html_cara01bienv2activteatro=$objCombos->html('', $objDB);
-	$objCombos->nuevo('cara01bienv2activartes', $_REQUEST['cara01bienv2activartes'], true, '');
-	$objCombos->sino();
-	$html_cara01bienv2activartes=$objCombos->html('', $objDB);
-	$objCombos->nuevo('cara01bienv2activliteratura', $_REQUEST['cara01bienv2activliteratura'], true, '');
-	$objCombos->sino();
-	$html_cara01bienv2activliteratura=$objCombos->html('', $objDB);
-	$objCombos->nuevo('cara01bienv2activculturalotra', $_REQUEST['cara01bienv2activculturalotra'], true, '');
-	$objCombos->sino();
-	$objCombos->sAccion='ajustarcara01bienv2activculturalotra()';
-	$html_cara01bienv2activculturalotra=$objCombos->html('', $objDB);
-	$objCombos->nuevo('cara01bienv2evenfestfolc', $_REQUEST['cara01bienv2evenfestfolc'], true, '');
-	$objCombos->sino();
-	$html_cara01bienv2evenfestfolc=$objCombos->html('', $objDB);
-	$objCombos->nuevo('cara01bienv2evenexpoarte', $_REQUEST['cara01bienv2evenexpoarte'], true, '');
-	$objCombos->sino();
-	$html_cara01bienv2evenexpoarte=$objCombos->html('', $objDB);
-	$objCombos->nuevo('cara01bienv2evenhistarte', $_REQUEST['cara01bienv2evenhistarte'], true, '');
-	$objCombos->sino();
-	$html_cara01bienv2evenhistarte=$objCombos->html('', $objDB);
-	$objCombos->nuevo('cara01bienv2evengalfoto', $_REQUEST['cara01bienv2evengalfoto'], true, '');
-	$objCombos->sino();
-	$html_cara01bienv2evengalfoto=$objCombos->html('', $objDB);
-	$objCombos->nuevo('cara01bienv2evenliteratura', $_REQUEST['cara01bienv2evenliteratura'], true, '');
-	$objCombos->sino();
-	$html_cara01bienv2evenliteratura=$objCombos->html('', $objDB);
-	$objCombos->nuevo('cara01bienv2eventeatro', $_REQUEST['cara01bienv2eventeatro'], true, '');
-	$objCombos->sino();
-	$html_cara01bienv2eventeatro=$objCombos->html('', $objDB);
-	$objCombos->nuevo('cara01bienv2evencine', $_REQUEST['cara01bienv2evencine'], true, '');
-	$objCombos->sino();
-	$html_cara01bienv2evencine=$objCombos->html('', $objDB);
-	$objCombos->nuevo('cara01bienv2evenculturalotro', $_REQUEST['cara01bienv2evenculturalotro'], true, '');
-	$objCombos->sino();
-	$objCombos->sAccion='ajustarcara01bienv2evenculturalotro()';
-	$html_cara01bienv2evenculturalotro=$objCombos->html('', $objDB);
-	$objCombos->nuevo('cara01bienv2emprendimiento', $_REQUEST['cara01bienv2emprendimiento'], true, '');
-	$objCombos->sino();
-	$html_cara01bienv2emprendimiento=$objCombos->html('', $objDB);
-	$objCombos->nuevo('cara01bienv2empresa', $_REQUEST['cara01bienv2empresa'], true, '');
-	$objCombos->sino();
-	$html_cara01bienv2empresa=$objCombos->html('', $objDB);
-	$objCombos->nuevo('cara01bienv2emprenrecursos', $_REQUEST['cara01bienv2emprenrecursos'], true, '');
-	$objCombos->sino();
-	$html_cara01bienv2emprenrecursos=$objCombos->html('', $objDB);
-	$objCombos->nuevo('cara01bienv2emprenconocim', $_REQUEST['cara01bienv2emprenconocim'], true, '');
-	$objCombos->sino();
-	$html_cara01bienv2emprenconocim=$objCombos->html('', $objDB);
-	$objCombos->nuevo('cara01bienv2emprenplan', $_REQUEST['cara01bienv2emprenplan'], true, '');
-	$objCombos->sino();
-	$html_cara01bienv2emprenplan=$objCombos->html('', $objDB);
-	$objCombos->nuevo('cara01bienv2emprenejecutar', $_REQUEST['cara01bienv2emprenejecutar'], true, '');
-	$objCombos->sino();
-	$html_cara01bienv2emprenejecutar=$objCombos->html('', $objDB);
-	$objCombos->nuevo('cara01bienv2emprenfortconocim', $_REQUEST['cara01bienv2emprenfortconocim'], true, '');
-	$objCombos->sino();
-	$html_cara01bienv2emprenfortconocim=$objCombos->html('', $objDB);
-	$objCombos->nuevo('cara01bienv2emprenidentproblema', $_REQUEST['cara01bienv2emprenidentproblema'], true, '');
-	$objCombos->sino();
-	$html_cara01bienv2emprenidentproblema=$objCombos->html('', $objDB);
-	$objCombos->nuevo('cara01bienv2emprenotro', $_REQUEST['cara01bienv2emprenotro'], true, '');
-	$objCombos->sino();
-	$objCombos->sAccion='ajustarcara01bienv2emprenotro()';
-	$html_cara01bienv2emprenotro=$objCombos->html('', $objDB);
-	$objCombos->nuevo('cara01bienv2emprenmarketing', $_REQUEST['cara01bienv2emprenmarketing'], true, '');
-	$objCombos->sino();
-	$html_cara01bienv2emprenmarketing=$objCombos->html('', $objDB);
-	$objCombos->nuevo('cara01bienv2emprenplannegocios', $_REQUEST['cara01bienv2emprenplannegocios'], true, '');
-	$objCombos->sino();
-	$html_cara01bienv2emprenplannegocios=$objCombos->html('', $objDB);
-	$objCombos->nuevo('cara01bienv2emprenideas', $_REQUEST['cara01bienv2emprenideas'], true, '');
-	$objCombos->sino();
-	$html_cara01bienv2emprenideas=$objCombos->html('', $objDB);
-	$objCombos->nuevo('cara01bienv2emprencreacion', $_REQUEST['cara01bienv2emprencreacion'], true, '');
-	$objCombos->sino();
-	$html_cara01bienv2emprencreacion=$objCombos->html('', $objDB);
-	$objCombos->nuevo('cara01bienv2saludfacteconom', $_REQUEST['cara01bienv2saludfacteconom'], true, '');
-	$objCombos->sino();
-	$html_cara01bienv2saludfacteconom=$objCombos->html('', $objDB);
-	$objCombos->nuevo('cara01bienv2saludpreocupacion', $_REQUEST['cara01bienv2saludpreocupacion'], true, '');
-	$objCombos->sino();
-	$html_cara01bienv2saludpreocupacion=$objCombos->html('', $objDB);
-	$objCombos->nuevo('cara01bienv2saludconsumosust', $_REQUEST['cara01bienv2saludconsumosust'], true, '');
-	$objCombos->sino();
-	$html_cara01bienv2saludconsumosust=$objCombos->html('', $objDB);
-	$objCombos->nuevo('cara01bienv2saludinsomnio', $_REQUEST['cara01bienv2saludinsomnio'], true, '');
-	$objCombos->sino();
-	$html_cara01bienv2saludinsomnio=$objCombos->html('', $objDB);
-	$objCombos->nuevo('cara01bienv2saludclimalab', $_REQUEST['cara01bienv2saludclimalab'], true, '');
-	$objCombos->sino();
-	$html_cara01bienv2saludclimalab=$objCombos->html('', $objDB);
-	$objCombos->nuevo('cara01bienv2saludalimenta', $_REQUEST['cara01bienv2saludalimenta'], true, '');
-	$objCombos->sino();
-	$html_cara01bienv2saludalimenta=$objCombos->html('', $objDB);
-	$objCombos->nuevo('cara01bienv2saludemocion', $_REQUEST['cara01bienv2saludemocion'], true, '');
-	$objCombos->sino();
-	$html_cara01bienv2saludemocion=$objCombos->html('', $objDB);
-	$objCombos->nuevo('cara01bienv2saludestado', $_REQUEST['cara01bienv2saludestado'], true, '');
-	$objCombos->sino();
-	$html_cara01bienv2saludestado=$objCombos->html('', $objDB);
-	$objCombos->nuevo('cara01bienv2saludmedita', $_REQUEST['cara01bienv2saludmedita'], true, '');
-	$objCombos->sino();
-	$html_cara01bienv2saludmedita=$objCombos->html('', $objDB);
-	$objCombos->nuevo('cara01bienv2crecimedusexual', $_REQUEST['cara01bienv2crecimedusexual'], true, '');
-	$objCombos->sino();
-	$html_cara01bienv2crecimedusexual=$objCombos->html('', $objDB);
-	$objCombos->nuevo('cara01bienv2crecimcultciudad', $_REQUEST['cara01bienv2crecimcultciudad'], true, '');
-	$objCombos->sino();
-	$html_cara01bienv2crecimcultciudad=$objCombos->html('', $objDB);
-	$objCombos->nuevo('cara01bienv2crecimrelpareja', $_REQUEST['cara01bienv2crecimrelpareja'], true, '');
-	$objCombos->sino();
-	$html_cara01bienv2crecimrelpareja=$objCombos->html('', $objDB);
-	$objCombos->nuevo('cara01bienv2crecimrelinterp', $_REQUEST['cara01bienv2crecimrelinterp'], true, '');
-	$objCombos->sino();
-	$html_cara01bienv2crecimrelinterp=$objCombos->html('', $objDB);
-	$objCombos->nuevo('cara01bienv2crecimdinamicafam', $_REQUEST['cara01bienv2crecimdinamicafam'], true, '');
-	$objCombos->sino();
-	$html_cara01bienv2crecimdinamicafam=$objCombos->html('', $objDB);
-	$objCombos->nuevo('cara01bienv2crecimautoestima', $_REQUEST['cara01bienv2crecimautoestima'], true, '');
-	$objCombos->sino();
-	$html_cara01bienv2crecimautoestima=$objCombos->html('', $objDB);
-	$objCombos->nuevo('cara01bienv2creciminclusion', $_REQUEST['cara01bienv2creciminclusion'], true, '');
-	$objCombos->sino();
-	$html_cara01bienv2creciminclusion=$objCombos->html('', $objDB);
-	$objCombos->nuevo('cara01bienv2creciminteliemoc', $_REQUEST['cara01bienv2creciminteliemoc'], true, '');
-	$objCombos->sino();
-	$html_cara01bienv2creciminteliemoc=$objCombos->html('', $objDB);
-	$objCombos->nuevo('cara01bienv2crecimcultural', $_REQUEST['cara01bienv2crecimcultural'], true, '');
-	$objCombos->sino();
-	$html_cara01bienv2crecimcultural=$objCombos->html('', $objDB);
-	$objCombos->nuevo('cara01bienv2crecimartistico', $_REQUEST['cara01bienv2crecimartistico'], true, '');
-	$objCombos->sino();
-	$html_cara01bienv2crecimartistico=$objCombos->html('', $objDB);
-	$objCombos->nuevo('cara01bienv2crecimdeporte', $_REQUEST['cara01bienv2crecimdeporte'], true, '');
-	$objCombos->sino();
-	$html_cara01bienv2crecimdeporte=$objCombos->html('', $objDB);
-	$objCombos->nuevo('cara01bienv2crecimambiente', $_REQUEST['cara01bienv2crecimambiente'], true, '');
-	$objCombos->sino();
-	$html_cara01bienv2crecimambiente=$objCombos->html('', $objDB);
-	$objCombos->nuevo('cara01bienv2crecimhabsocio', $_REQUEST['cara01bienv2crecimhabsocio'], true, '');
-	$objCombos->sino();
-	$html_cara01bienv2crecimhabsocio=$objCombos->html('', $objDB);
-	$objCombos->nuevo('cara01bienv2ambienbasura', $_REQUEST['cara01bienv2ambienbasura'], true, '');
-	$objCombos->sino();
-	$html_cara01bienv2ambienbasura=$objCombos->html('', $objDB);
-	$objCombos->nuevo('cara01bienv2ambienreutiliza', $_REQUEST['cara01bienv2ambienreutiliza'], true, '');
-	$objCombos->sino();
-	$html_cara01bienv2ambienreutiliza=$objCombos->html('', $objDB);
-	$objCombos->nuevo('cara01bienv2ambienluces', $_REQUEST['cara01bienv2ambienluces'], true, '');
-	$objCombos->sino();
-	$html_cara01bienv2ambienluces=$objCombos->html('', $objDB);
-	$objCombos->nuevo('cara01bienv2ambienfrutaverd', $_REQUEST['cara01bienv2ambienfrutaverd'], true, '');
-	$objCombos->sino();
-	$html_cara01bienv2ambienfrutaverd=$objCombos->html('', $objDB);
-	$objCombos->nuevo('cara01bienv2ambienenchufa', $_REQUEST['cara01bienv2ambienenchufa'], true, '');
-	$objCombos->sino();
-	$html_cara01bienv2ambienenchufa=$objCombos->html('', $objDB);
-	$objCombos->nuevo('cara01bienv2ambiengrifo', $_REQUEST['cara01bienv2ambiengrifo'], true, '');
-	$objCombos->sino();
-	$html_cara01bienv2ambiengrifo=$objCombos->html('', $objDB);
-	$objCombos->nuevo('cara01bienv2ambienbicicleta', $_REQUEST['cara01bienv2ambienbicicleta'], true, '');
-	$objCombos->sino();
-	$html_cara01bienv2ambienbicicleta=$objCombos->html('', $objDB);
-	$objCombos->nuevo('cara01bienv2ambientranspub', $_REQUEST['cara01bienv2ambientranspub'], true, '');
-	$objCombos->sino();
-	$html_cara01bienv2ambientranspub=$objCombos->html('', $objDB);
-	$objCombos->nuevo('cara01bienv2ambienducha', $_REQUEST['cara01bienv2ambienducha'], true, '');
-	$objCombos->sino();
-	$html_cara01bienv2ambienducha=$objCombos->html('', $objDB);
-	$objCombos->nuevo('cara01bienv2ambiencaminata', $_REQUEST['cara01bienv2ambiencaminata'], true, '');
-	$objCombos->sino();
-	$html_cara01bienv2ambiencaminata=$objCombos->html('', $objDB);
-	$objCombos->nuevo('cara01bienv2ambiensiembra', $_REQUEST['cara01bienv2ambiensiembra'], true, '');
-	$objCombos->sino();
-	$html_cara01bienv2ambiensiembra=$objCombos->html('', $objDB);
-	$objCombos->nuevo('cara01bienv2ambienconferencia', $_REQUEST['cara01bienv2ambienconferencia'], true, '');
-	$objCombos->sino();
-	$html_cara01bienv2ambienconferencia=$objCombos->html('', $objDB);
-	$objCombos->nuevo('cara01bienv2ambienrecicla', $_REQUEST['cara01bienv2ambienrecicla'], true, '');
-	$objCombos->sino();
-	$html_cara01bienv2ambienrecicla=$objCombos->html('', $objDB);
-	$objCombos->nuevo('cara01bienv2ambienotraactiv', $_REQUEST['cara01bienv2ambienotraactiv'], true, '');
-	$objCombos->sino();
-	$objCombos->sAccion='ajustarcara01bienv2ambienotraactiv()';
-	$html_cara01bienv2ambienotraactiv=$objCombos->html('', $objDB);
-	$objCombos->nuevo('cara01bienv2ambienreforest', $_REQUEST['cara01bienv2ambienreforest'], true, '');
-	$objCombos->sino();
-	$html_cara01bienv2ambienreforest=$objCombos->html('', $objDB);
-	$objCombos->nuevo('cara01bienv2ambienmovilidad', $_REQUEST['cara01bienv2ambienmovilidad'], true, '');
-	$objCombos->sino();
-	$html_cara01bienv2ambienmovilidad=$objCombos->html('', $objDB);
-	$objCombos->nuevo('cara01bienv2ambienclimatico', $_REQUEST['cara01bienv2ambienclimatico'], true, '');
-	$objCombos->sino();
-	$html_cara01bienv2ambienclimatico=$objCombos->html('', $objDB);
-	$objCombos->nuevo('cara01bienv2ambienecofemin', $_REQUEST['cara01bienv2ambienecofemin'], true, '');
-	$objCombos->sino();
-	$html_cara01bienv2ambienecofemin=$objCombos->html('', $objDB);
-	$objCombos->nuevo('cara01bienv2ambienbiodiver', $_REQUEST['cara01bienv2ambienbiodiver'], true, '');
-	$objCombos->sino();
-	$html_cara01bienv2ambienbiodiver=$objCombos->html('', $objDB);
-	$objCombos->nuevo('cara01bienv2ambienecologia', $_REQUEST['cara01bienv2ambienecologia'], true, '');
-	$objCombos->sino();
-	$html_cara01bienv2ambienecologia=$objCombos->html('', $objDB);
-	$objCombos->nuevo('cara01bienv2ambieneconomia', $_REQUEST['cara01bienv2ambieneconomia'], true, '');
-	$objCombos->sino();
-	$html_cara01bienv2ambieneconomia=$objCombos->html('', $objDB);
-	$objCombos->nuevo('cara01bienv2ambienrecnatura', $_REQUEST['cara01bienv2ambienrecnatura'], true, '');
-	$objCombos->sino();
-	$html_cara01bienv2ambienrecnatura=$objCombos->html('', $objDB);
-	$objCombos->nuevo('cara01bienv2ambienreciclaje', $_REQUEST['cara01bienv2ambienreciclaje'], true, '');
-	$objCombos->sino();
-	$html_cara01bienv2ambienreciclaje=$objCombos->html('', $objDB);
-	$objCombos->nuevo('cara01bienv2ambienmascota', $_REQUEST['cara01bienv2ambienmascota'], true, '');
-	$objCombos->sino();
-	$html_cara01bienv2ambienmascota=$objCombos->html('', $objDB);
-	$objCombos->nuevo('cara01bienv2ambiencartohum', $_REQUEST['cara01bienv2ambiencartohum'], true, '');
-	$objCombos->sino();
-	$html_cara01bienv2ambiencartohum=$objCombos->html('', $objDB);
-	$objCombos->nuevo('cara01bienv2ambienespiritu', $_REQUEST['cara01bienv2ambienespiritu'], true, '');
-	$objCombos->sino();
-	$html_cara01bienv2ambienespiritu=$objCombos->html('', $objDB);
-	$objCombos->nuevo('cara01bienv2ambiencarga', $_REQUEST['cara01bienv2ambiencarga'], true, '');
-	$objCombos->sino();
-	$html_cara01bienv2ambiencarga=$objCombos->html('', $objDB);
-	$objCombos->nuevo('cara01bienv2ambienotroenfoq', $_REQUEST['cara01bienv2ambienotroenfoq'], true, '');
-	$objCombos->sino();
-	$objCombos->sAccion='ajustarcara01bienv2ambienotroenfoq()';
-	$html_cara01bienv2ambienotroenfoq=$objCombos->html('', $objDB);
-	}
+$objCombos->nuevo('cara01bien_baloncesto', $_REQUEST['cara01bien_baloncesto'], true, '');
+$objCombos->sino();
+$html_cara01bien_baloncesto=$objCombos->html('', $objDB);
+$objCombos->nuevo('cara01bien_voleibol', $_REQUEST['cara01bien_voleibol'], true, '');
+$objCombos->sino();
+$html_cara01bien_voleibol=$objCombos->html('', $objDB);
+$objCombos->nuevo('cara01bien_futbolsala', $_REQUEST['cara01bien_futbolsala'], true, '');
+$objCombos->sino();
+$html_cara01bien_futbolsala=$objCombos->html('', $objDB);
+$objCombos->nuevo('cara01bien_artesmarc', $_REQUEST['cara01bien_artesmarc'], true, '');
+$objCombos->sino();
+$html_cara01bien_artesmarc=$objCombos->html('', $objDB);
+$objCombos->nuevo('cara01bien_tenisdemesa', $_REQUEST['cara01bien_tenisdemesa'], true, '');
+$objCombos->sino();
+$html_cara01bien_tenisdemesa=$objCombos->html('', $objDB);
+$objCombos->nuevo('cara01bien_ajedrez', $_REQUEST['cara01bien_ajedrez'], true, '');
+$objCombos->sino();
+$html_cara01bien_ajedrez=$objCombos->html('', $objDB);
+$objCombos->nuevo('cara01bien_juegosautoc', $_REQUEST['cara01bien_juegosautoc'], true, '');
+$objCombos->sino();
+$html_cara01bien_juegosautoc=$objCombos->html('', $objDB);
+$objCombos->nuevo('cara01bien_interesrepdeporte', $_REQUEST['cara01bien_interesrepdeporte'], true, '');
+$objCombos->sino();
+$objCombos->sAccion='ajustarinteresrepdeporte();';
+$html_cara01bien_interesrepdeporte=$objCombos->html('', $objDB);
+$objCombos->nuevo('cara01bien_teatro', $_REQUEST['cara01bien_teatro'], true, '');
+$objCombos->sino();
+$html_cara01bien_teatro=$objCombos->html('', $objDB);
+$objCombos->nuevo('cara01bien_danza', $_REQUEST['cara01bien_danza'], true, '');
+$objCombos->sino();
+$html_cara01bien_danza=$objCombos->html('', $objDB);
+$objCombos->nuevo('cara01bien_musica', $_REQUEST['cara01bien_musica'], true, '');
+$objCombos->sino();
+$html_cara01bien_musica=$objCombos->html('', $objDB);
+$objCombos->nuevo('cara01bien_circo', $_REQUEST['cara01bien_circo'], true, '');
+$objCombos->sino();
+$html_cara01bien_circo=$objCombos->html('', $objDB);
+$objCombos->nuevo('cara01bien_artplast', $_REQUEST['cara01bien_artplast'], true, '');
+$objCombos->sino();
+$html_cara01bien_artplast=$objCombos->html('', $objDB);
+$objCombos->nuevo('cara01bien_cuenteria', $_REQUEST['cara01bien_cuenteria'], true, '');
+$objCombos->sino();
+$html_cara01bien_cuenteria=$objCombos->html('', $objDB);
+$objCombos->nuevo('cara01bien_interesreparte', $_REQUEST['cara01bien_interesreparte'], true, '');
+$objCombos->sino();
+$objCombos->sAccion='ajustarinteresreparte()';
+$html_cara01bien_interesreparte=$objCombos->html('', $objDB);
+$objCombos->nuevo('cara01bien_interpreta', $_REQUEST['cara01bien_interpreta'], true, '{'.$ETI['msg_seleccione'].'}');
+$objCombos->addArreglo($acara01bien_interpreta, $icara01bien_interpreta);
+$objCombos->addItem('-1', 'Ninguno de estos');
+$objCombos->sAccion='ajustarnivelinterpreta()';
+$html_cara01bien_interpreta=$objCombos->html('', $objDB);
+$objCombos->nuevo('cara01bien_nivelinter', $_REQUEST['cara01bien_nivelinter'], true, '{'.$ETI['msg_seleccione'].'}');
+$objCombos->addArreglo($acara01bien_nivelinter, $icara01bien_nivelinter);
+$html_cara01bien_nivelinter=$objCombos->html('', $objDB);
+$objCombos->nuevo('cara01bien_danza_mod', $_REQUEST['cara01bien_danza_mod'], true, '');
+$objCombos->sino();
+$objCombos->sAccion='ajustardanza()';
+$html_cara01bien_danza_mod=$objCombos->html('', $objDB);
+$objCombos->nuevo('cara01bien_danza_clas', $_REQUEST['cara01bien_danza_clas'], true, '');
+$objCombos->sino();
+$objCombos->sAccion='ajustardanza()';
+$html_cara01bien_danza_clas=$objCombos->html('', $objDB);
+$objCombos->nuevo('cara01bien_danza_cont', $_REQUEST['cara01bien_danza_cont'], true, '');
+$objCombos->sino();
+$objCombos->sAccion='ajustardanza()';
+$html_cara01bien_danza_cont=$objCombos->html('', $objDB);
+$objCombos->nuevo('cara01bien_danza_folk', $_REQUEST['cara01bien_danza_folk'], true, '');
+$objCombos->sino();
+$objCombos->sAccion='ajustardanza()';
+$html_cara01bien_danza_folk=$objCombos->html('', $objDB);
+$objCombos->nuevo('cara01bien_niveldanza', $_REQUEST['cara01bien_niveldanza'], true, '{'.$ETI['msg_seleccione'].'}');
+$objCombos->addArreglo($acara01bien_niveldanza, $icara01bien_niveldanza);
+$html_cara01bien_niveldanza=$objCombos->html('', $objDB);
+$objCombos->nuevo('cara01bien_emprendedor', $_REQUEST['cara01bien_emprendedor'], true, '');
+$objCombos->sino();
+$objCombos->sAccion='ajustarnombreemp()';
+$html_cara01bien_emprendedor=$objCombos->html('', $objDB);
+$objCombos->nuevo('cara01bien_capacempren', $_REQUEST['cara01bien_capacempren'], true, '{'.$ETI['msg_ninguna'].'}', 0);
+//$objCombos->sino();
+//$objCombos->sAccion='ajustartipocapacita()';
+$objCombos->addArreglo($acara01bien_capacempren, $icara01bien_capacempren);
+$html_cara01bien_capacempren=$objCombos->html('', $objDB);
+$objCombos->nuevo('cara01bien_impvidasalud', $_REQUEST['cara01bien_impvidasalud'], true, '');
+$objCombos->addArreglo($acara01bien_impvidasalud, $icara01bien_impvidasalud);
+$html_cara01bien_impvidasalud=$objCombos->html('', $objDB);
+$objCombos->nuevo('cara01bien_estraautocuid', $_REQUEST['cara01bien_estraautocuid'], true, '');
+$objCombos->addArreglo($acara01bien_estraautocuid, $icara01bien_estraautocuid);
+$html_cara01bien_estraautocuid=$objCombos->html('', $objDB);
+$objCombos->nuevo('cara01bien_pv_personal', $_REQUEST['cara01bien_pv_personal'], true, '');
+$objCombos->addArreglo($acara01bien_pv_personal, $icara01bien_pv_personal);
+$html_cara01bien_pv_personal=$objCombos->html('', $objDB);
+$objCombos->nuevo('cara01bien_pv_familiar', $_REQUEST['cara01bien_pv_familiar'], true, '');
+$objCombos->sino();
+$html_cara01bien_pv_familiar=$objCombos->html('', $objDB);
+$objCombos->nuevo('cara01bien_pv_academ', $_REQUEST['cara01bien_pv_academ'], true, '');
+$objCombos->sino();
+$html_cara01bien_pv_academ=$objCombos->html('', $objDB);
+$objCombos->nuevo('cara01bien_pv_labora', $_REQUEST['cara01bien_pv_labora'], true, '');
+$objCombos->sino();
+$html_cara01bien_pv_labora=$objCombos->html('', $objDB);
+$objCombos->nuevo('cara01bien_pv_pareja', $_REQUEST['cara01bien_pv_pareja'], true, '');
+$objCombos->sino();
+$html_cara01bien_pv_pareja=$objCombos->html('', $objDB);
+$objCombos->nuevo('cara01bien_amb', $_REQUEST['cara01bien_amb'], true, '');
+$objCombos->addArreglo($acara01bien_amb, $icara01bien_amb);
+$html_cara01bien_amb=$objCombos->html('', $objDB);
+$objCombos->nuevo('cara01bien_amb_agu', $_REQUEST['cara01bien_amb_agu'], true, '');
+$objCombos->sino();
+$html_cara01bien_amb_agu=$objCombos->html('', $objDB);
+$objCombos->nuevo('cara01bien_amb_bom', $_REQUEST['cara01bien_amb_bom'], true, '');
+$objCombos->sino();
+$html_cara01bien_amb_bom=$objCombos->html('', $objDB);
+$objCombos->nuevo('cara01bien_amb_car', $_REQUEST['cara01bien_amb_car'], true, '');
+$objCombos->sino();
+$html_cara01bien_amb_car=$objCombos->html('', $objDB);
+$objCombos->nuevo('cara01bien_amb_info', $_REQUEST['cara01bien_amb_info'], true, '');
+$objCombos->sino();
+//$objCombos->sAccion='ajustaramb_temas()';
+$html_cara01bien_amb_info=$objCombos->html('', $objDB);
 $objCombos->nuevo('cara01psico_costoemocion', $_REQUEST['cara01psico_costoemocion'], true, '{'.$ETI['msg_seleccione'].'}');
 $objCombos->addArreglo($aCAEN, $iCAEN);
 $html_cara01psico_costoemocion=$objCombos->html('', $objDB);
@@ -2575,8 +1899,11 @@ if (!$bEstudiante){
 	$objCombos->addItem(1, 'Donde soy consejero');
 	$objCombos->addItem(11, 'Encuestas terminadas');
 	$objCombos->addItem(12, 'Encuestas incompletas');
+	$objCombos->addItem(13, 'Estudiantes Nuevos');
+	$objCombos->addItem(14, 'Estudiantes Antiguos');
+	$objCombos->addItem(15, 'Estudiantes Reingreso');
 	$html_blistar=$objCombos->html('', $objDB);
-	$objCombos->nuevo('bperaca', $_REQUEST['bperaca'], true, '{'.$ETI['msg_todos'].'}');
+	$objCombos->nuevo('bperiodo', $_REQUEST['bperiodo'], true, '{'.$ETI['msg_todos'].'}');
 	$objCombos->sAccion='paginarf2301()';
 	$sIds='-99';
 	$sSQL='SELECT cara01idperaca FROM cara01encuesta GROUP BY cara01idperaca';
@@ -2584,12 +1911,16 @@ if (!$bEstudiante){
 	while($fila=$objDB->sf($tabla)){
 		$sIds=$sIds.','.$fila['cara01idperaca'];
 		}
+	/*
 	$sSQL='SELECT exte02id AS id, CONCAT(CASE exte02vigente WHEN "S" THEN "" ELSE "[" END, exte02nombre," {",exte02id,"} ",CASE exte02vigente WHEN "S" THEN "" ELSE " - INACTIVO]" END) AS nombre 
-FROM exte02per_aca 
-WHERE exte02id IN ('.$sIds.') 
-ORDER BY exte02vigente DESC, exte02id DESC';
-	$html_bperaca=$objCombos->html($sSQL, $objDB);
+	FROM exte02per_aca 
+	WHERE exte02id IN ('.$sIds.') 
+	ORDER BY exte02vigente DESC, exte02id DESC';
+	*/
+	$sSQL=f146_ConsultaCombo('exte02id IN ('.$sIds.')', $objDB);
+	$html_bperiodo=$objCombos->html($sSQL, $objDB);
 	$objCombos->nuevo('bescuela', $_REQUEST['bescuela'], true, '{'.$ETI['msg_todas'].'}');
+	$objCombos->addItem('0', '{'.$ETI['msg_ninguna'].'}');
 	$objCombos->sAccion='carga_combo_bprograma()';
 	$sSQL='SELECT core12id AS id, core12nombre AS nombre FROM core12escuela WHERE core12tieneestudiantes="S" ORDER BY core12nombre';
 	$html_bescuela=$objCombos->html($sSQL, $objDB);
@@ -2641,7 +1972,7 @@ if (!$bEstudiante){
 	$aParametros[102]=$_REQUEST['lppf2301'];
 	$aParametros[103]=$_REQUEST['bdoc'];
 	$aParametros[104]=$_REQUEST['bnombre'];
-	$aParametros[105]=$_REQUEST['bperaca'];
+	$aParametros[105]=$_REQUEST['bperiodo'];
 	$aParametros[106]=$_REQUEST['blistar'];
 	$aParametros[107]=$_REQUEST['bescuela'];
 	$aParametros[108]=$_REQUEST['bprograma'];
@@ -2732,10 +2063,11 @@ if (false){
 <link rel="stylesheet" href="<?php echo $APP->rutacomun; ?>css/criticalPath.css" type="text/css"/>
 <link rel="stylesheet" href="<?php echo $APP->rutacomun; ?>css/principal.css" type="text/css"/>
 <link rel="stylesheet" href="<?php echo $APP->rutacomun; ?>unad_estilos2018.css" type="text/css"/>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.0.1/css/font-awesome.min.css">
+<link rel="stylesheet" href="<?php echo $APP->rutacomun; ?>css/botones_resultado.css">
 <?php
 ?>
 <script language="javascript">
-<!--
 function limpiapagina(){
 	expandesector(98);
 	window.document.frmedita.paso.value=-1;
@@ -2975,7 +2307,7 @@ function paginarf2301(){
 	params[102]=window.document.frmedita.lppf2301.value;
 	params[103]=window.document.frmedita.bdoc.value;
 	params[104]=window.document.frmedita.bnombre.value;
-	params[105]=window.document.frmedita.bperaca.value;
+	params[105]=window.document.frmedita.bperiodo.value;
 	params[106]=window.document.frmedita.blistar.value;
 	params[107]=window.document.frmedita.bescuela.value;
 	params[108]=window.document.frmedita.bprograma.value;
@@ -3055,9 +2387,9 @@ function AyudaLocal(sCampo){
 	if (typeof divAyuda==='undefined'){
 		}else{
 		verboton('cmdAyuda_'+sCampo, 'none');
-		//var sMensaje='Lo que quiera decir.';
+		var sMensaje='Lo que quiera decir.';
 		//if (sCampo=='sNombreCampo'){sMensaje='Mensaje para otro campo.';}
-		//divAyuda.innerHTML=sMensaje;
+		divAyuda.innerHTML=sMensaje;
 		divAyuda.style.display='block';
 		}
 	}
@@ -3115,11 +2447,6 @@ function verrecluso(){
 	sMuestra='none';
 	if (window.document.frmedita.cara01inpecrecluso.value=='S'){sMuestra='block';}
 	document.getElementById('div_recluso').style.display=sMuestra;
-	}
-function ajustar_saber11v1(){
-	sMuestra='none';
-	if (window.document.frmedita.cara01saber11v1agno.value>=2016){sMuestra='block';}
-	document.getElementById('div_saber11v1').style.display=sMuestra;
 	}
 function ajustarinteresrepdeporte(){
 	sMuestra='none';
@@ -3229,90 +2556,6 @@ function ajustar_disccognitiva(){
 		}
 	document.getElementById('lbl_cara01disccognitivaotra').style.display=sMuestra1;
 	}
-function ajustarbienv2otrodeporte(){
-	sMuestra1='none';
-	if (window.document.frmedita.cara01bienv2otrodeporte.value=='S'){
-		sMuestra1='block';
-		}
-	document.getElementById('label_cara01bienv2otrodeporte').style.display=sMuestra1;
-	}
-function ajustarcara01bienv2activculturalotra(){
-	sMuestra1='none';
-	if (window.document.frmedita.cara01bienv2activculturalotra.value=='S'){
-		sMuestra1='block';
-		}
-	document.getElementById('label_cara01bienv2activculturalotra').style.display=sMuestra1;
-	}
-function ajustarcara01bienv2evenculturalotro(){
-	sMuestra1='none';
-	if (window.document.frmedita.cara01bienv2evenculturalotro.value=='S'){
-		sMuestra1='block';
-		}
-	document.getElementById('label_cara01bienv2evenculturalotro').style.display=sMuestra1;
-	}
-function ajustarcara01bienv2emprenotro(){
-	sMuestra1='none';
-	if (window.document.frmedita.cara01bienv2emprenotro.value=='S'){
-		sMuestra1='block';
-		}
-	document.getElementById('label_cara01bienv2emprenotro').style.display=sMuestra1;
-	}
-function ajustarcara01bienv2ambienotraactiv(){
-	sMuestra1='none';
-	if (window.document.frmedita.cara01bienv2ambienotraactiv.value=='S'){
-		sMuestra1='block';
-		}
-	document.getElementById('label_cara01bienv2ambienotraactiv').style.display=sMuestra1;
-	}
-function ajustarcara01bienv2ambienotroenfoq(){
-	sMuestra1='none';
-	if (window.document.frmedita.cara01bienv2ambienotroenfoq.value=='S'){
-		sMuestra1='block';
-		}
-	document.getElementById('label_cara01bienv2ambienotroenfoq').style.display=sMuestra1;
-	}
-function ajustar_fam_hijos(){
-	sMuestra1='none';
-	if (window.document.frmedita.cara01sexo.value=='F' && window.document.frmedita.cara01fam_hijos.value>=1 && window.document.frmedita.cara01fam_hijos.value<=4){
-		sMuestra1='block';
-		}
-	document.getElementById('div_cara01fam_madrecabeza').style.display=sMuestra1;
-	}
-function ajustar_acadhatenidorecesos(){
-	sMuestra1='none';
-	if (window.document.frmedita.cara01acadhatenidorecesos.value=='S'){
-		sMuestra1='block';
-		}
-	document.getElementById('div_cara01acadrazonreceso').style.display=sMuestra1;
-	}
-function ajustar_acadrazonreceso(){
-	sMuestra1='none';
-	if (window.document.frmedita.cara01acadrazonreceso.value==10){
-		sMuestra1='block';
-		}
-	document.getElementById('lbl_cara01acadrazonrecesodetalle').style.display=sMuestra1;
-	}
-function ajustar_campus_usocorreounad(){
-	sMuestra1='none';
-	if (window.document.frmedita.cara01campus_usocorreounad.value==4){
-		sMuestra1='block';
-		}
-	document.getElementById('div_cara01campus_usocorreounadno').style.display=sMuestra1;
-	}
-function ajustar_campus_usocorreounadno(){
-	sMuestra1='none';
-	if (window.document.frmedita.cara01campus_usocorreounadno.value==5){
-		sMuestra1='block';
-		}
-	document.getElementById('lbl_cara01campus_usocorreounadnodetalle').style.display=sMuestra1;
-	}
-function ajustar_campus_medioactivunad(){
-	sMuestra1='none';
-	if (window.document.frmedita.cara01campus_medioactivunad.value==6){
-		sMuestra1='block';
-		}
-	document.getElementById('lbl_cara01campus_medioactivunaddetalle').style.display=sMuestra1;
-	}
 <?php
 if (!$bEstudiante){
 ?>
@@ -3344,6 +2587,19 @@ function confirmadisc(){
 	window.document.frmedita.paso.value=23;
 	window.document.frmedita.submit();
 	}
+function vermatricula(){
+	var sError='';
+	if (window.document.frmedita.bperiodo.value==''){
+		sError='Por favor seleccione un periodo para revisar los datos de matricula.';
+		}
+	if (sError==''){
+		window.document.frmedita.iscroll.value=window.pageYOffset;
+		MensajeAlarmaV2('<?php echo $ETI['msg_ejecutando']; ?>...', 2);
+		expandesector(98);
+		window.document.frmedita.paso.value=31;
+		window.document.frmedita.submit();
+		}
+	}
 <?php
 	}
 if ($_REQUEST['cara01discversion']==2){
@@ -3371,7 +2627,6 @@ function ajustar_cara01discv2condicionmedica(){
 <?php
 	}
 ?>
-// -->
 </script>
 <script type="text/x-mathjax-config">
   MathJax.Hub.Config({
@@ -3619,17 +2874,28 @@ if ($bEstudiante){
 	$aTitulo=array('', 'cara01fichaper', 'cara01fichafam', 'cara01fichaaca', 'cara01fichalab', 'cara01fichabien', 'cara01fichapsico', 'cara01fichadigital', 'cara01fichalectura', 'cara01ficharazona', 'cara01fichaingles', 'cara01fichabiolog', 'cara01fichafisica', 'cara01fichaquimica');
 	//$sPendiente='<span class="border border-danger">Pendiente</span>';
 	//$sHecho='<b>[HECHO]</b>';
-	$sPendiente='<img src="'.$APP->rutacomun.'imagenes/mal_mini.png"/>';
-	$sHecho='<img src="'.$APP->rutacomun.'imagenes/bien_mini.png"/>';
+	//$sPendiente='<img src="'.$APP->rutacomun.'imagenes/mal_mini.png"/>';
+	//$sHecho='<img src="'.$APP->rutacomun.'imagenes/bien_mini.png"/>';
+	$sPendiente='Pendiente';
+	$sHecho='Completo';
+	echo '<div class="tabuladores">';
 	$aEstado=array('',$sPendiente,$sPendiente,$sPendiente,$sPendiente,$sPendiente,$sPendiente,$sPendiente,$sPendiente,$sPendiente,$sPendiente,$sPendiente,$sPendiente,$sPendiente);
 	for ($k=1;$k<=13;$k++){
 		if ($_REQUEST[$aTitulo[$k]]>=0){
-			if ($_REQUEST[$aTitulo[$k]]==1){$aEstado[$k]=$sHecho;}
-			echo '<label><label class="Label220">'.$ETI[$aTitulo[$k]].'</label><a href="javascript:verficha('.$k.');">'.$aEstado[$k].'</a></label>';
+			//if ($_REQUEST[$aTitulo[$k]]==1){$aEstado[$k]=$sHecho;}
+			//echo '<label><label class="Label220">'.$ETI[$aTitulo[$k]].'</label><a href="javascript:verficha('.$k.');">'.$aEstado[$k].'</a></label>';
+			//febrero 17 de 2022 - Se cambian los botones.
+			if ($_REQUEST[$aTitulo[$k]]==1){
+				echo html_BotonVerde('', $ETI[$aTitulo[$k]], 'javascript:verficha('.$k.');', $ETI[$aTitulo[$k]].', '.$aEstado[$k]);
+				}else{
+				echo html_BotonRojo('', $ETI[$aTitulo[$k]], 'javascript:verficha('.$k.');', $ETI[$aTitulo[$k]].', '.$aEstado[$k]);
+				}
 			}
 		}
+	echo '</div>';
 	}
 ?>
+<div class="salto1px"></div>
 <?php
 if ($bEstudiante){
 	if ($_REQUEST['paso']==2){
@@ -3870,7 +3136,6 @@ if ($_REQUEST['cara01agnos']==0){
 echo html_oculto('cara01agnos', $_REQUEST['cara01agnos'], $et_cara01agnos);
 ?>
 </div></label>
-<div class="salto1px"></div>
 <label class="Label60">
 <?php
 echo $ETI['cara01sexo'];
@@ -3881,68 +3146,7 @@ echo $ETI['cara01sexo'];
 echo $html_cara01sexo;
 ?>
 </label>
-<?php
-if (true){
-	//Ejemplo de boton de ayuda
-	echo html_BotonAyuda('cara01sexo','Información acerca del sexo');
-	//echo html_DivAyudaLocal('botonayudasexoiden');
-	}
-?>
 <div class="salto1px"></div>
-<div id='div_ayuda_cara01sexo' class='GrupoCamposAyuda' style='display:none;'>
-<?php
-echo $ETI['ayuda_cara01sexo'];
-?>
-</div>
-<div class="salto1px"></div>
-<label class="Label">
-<?php
-echo $ETI['cara01sexov1identidadgen'];
-?>
-</label>
-<label class="Label160">
-<?php
-echo $html_cara01sexov1identidadgen;
-?>
-</label>
-<?php
-if (true){
-	//Ejemplo de boton de ayuda
-	echo html_BotonAyuda('cara01sexov1identidadgen','Información acerca de identidad de género');
-	//echo html_DivAyudaLocal('botonayudasexoiden');
-	}
-?>
-<div class="salto1px"></div>
-<div id='div_ayuda_cara01sexov1identidadgen' class='GrupoCamposAyuda' style='display:none;'>
-<?php
-echo $ETI['ayuda_cara01sexov1identidadgen'];
-?>
-</div>
-<div class="salto1px"></div>
-<label class="Label">
-<?php
-echo $ETI['cara01sexov1orientasexo'];
-?>
-</label>
-<label class="Label200">
-<?php
-echo $html_cara01sexov1orientasexo;
-?>
-</label>
-<?php
-if (true){
-	//Ejemplo de boton de ayuda
-	echo html_BotonAyuda('cara01sexov1orientasexo','Información acerca de orientación del sexo');
-	//echo html_DivAyudaLocal('botonayudasexoiden');
-	}
-?>
-<div class="salto1px"></div>
-<div id='div_ayuda_cara01sexov1orientasexo' class='GrupoCamposAyuda' style='display:none;'>
-<?php
-echo $ETI['ayuda_cara01sexov1orientasexo'];
-?>
-</div>
-<div class="salto5px"></div>
 <label class="Label130">
 <?php
 echo $ETI['cara01estcivil'];
@@ -4106,6 +3310,8 @@ echo $html_cara01zonares;
 </label>
 <div class="salto1px"></div>
 </div>
+
+<div class="salto1px"></div>
 
 <div class="GrupoCampos450">
 <label class="Label90">
@@ -4380,95 +3586,7 @@ echo $ETI['cara01correocontacto'];
 
 <div class="salto1px"></div>
 </div>
-<div class="salto1px"></div>
-<div class="GrupoCampos">
-<label class="TituloGrupo" style="width:500px">
-<?php
-echo $ETI['titulo_cara01saber11v1agno'];
-?>
-</label>
-<div class="salto1px"></div>
-<label class="Label350">
-<?php
-echo $ETI['cara01saber11v1agno'];
-?>
-</label>
-<label class="Label130">
-<?php
-echo $html_cara01saber11v1agno;
-$sMuestra='';
-if ($_REQUEST['cara01saber11v1agno']<2016){
-	$sMuestra=' style="display:none"';
-	}
-?>
-</label>
-<div id="div_saber11v1"<?php echo $sMuestra; ?>>
-<div class="salto1px"></div>
-<label class="Label350">
-<?php
-$sEtiqueta=$ETI['cara01saber11v1numreg'];
-echo $sEtiqueta;
-?>
-</label>
-<label class="Label250">
-<input id="cara01saber11v1numreg" name="cara01saber11v1numreg" type="text" value="<?php echo $_REQUEST['cara01saber11v1numreg']; ?>" maxlength="50" placeholder="<?php echo $ETI['ing_campo'].$sEtiqueta; ?>"/>
-</label>
-<div class="salto1px"></div>
-<label class="Label160">
-<b>
-<?php
-echo $ETI['cara01saber11v1puntglobal'];
-?>
-</b>
-</label>
-<label class="Label90">
-<input id="cara01saber11v1puntglobal" name="cara01saber11v1puntglobal" type="number" min=0 max=500 value="<?php echo $_REQUEST['cara01saber11v1puntglobal']; ?>"/>
-</label>
 
-<label class="Label160">
-<?php
-echo $ETI['cara01saber11v1puntmatematicas'];
-?>
-</label>
-<label class="Label90">
-<input id="cara01saber11v1puntmatematicas" name="cara01saber11v1puntmatematicas" type="number" min=0 max=500 value="<?php echo $_REQUEST['cara01saber11v1puntmatematicas']; ?>"/>
-</label>
-<label class="Label190">
-<?php
-echo $ETI['cara01saber11v1puntciencias'];
-?>
-</label>
-<label class="Label90">
-<input id="cara01saber11v1puntciencias" name="cara01saber11v1puntciencias" type="number" min=0 max=500 value="<?php echo $_REQUEST['cara01saber11v1puntciencias']; ?>"/>
-</label>
-<div class="salto1px"></div>
-<label class="Label160">
-<?php
-echo $ETI['cara01saber11v1puntleccritica'];
-?>
-</label>
-<label class="Label90">
-<input id="cara01saber11v1puntleccritica" name="cara01saber11v1puntleccritica" type="number" min=0 max=500 value="<?php echo $_REQUEST['cara01saber11v1puntleccritica']; ?>"/>
-</label>
-<label class="Label160">
-<?php
-echo $ETI['cara01saber11v1puntingles'];
-?>
-</label>
-<label class="Label90">
-<input id="cara01saber11v1puntingles" name="cara01saber11v1puntingles" type="number" min=0 max=500 value="<?php echo $_REQUEST['cara01saber11v1puntingles']; ?>"/>
-</label>
-<label class="Label190">
-<?php
-echo $ETI['cara01saber11v1puntsociales'];
-?>
-</label>
-<label class="Label90">
-<input id="cara01saber11v1puntsociales" name="cara01saber11v1puntsociales" type="number" min=0 max=500 value="<?php echo $_REQUEST['cara01saber11v1puntsociales']; ?>"/>
-</label>
-</div>
-<div class="salto1px"></div>
-</div>
 <div class="salto1px"></div>
 <div class="GrupoCampos">
 <label class="TituloGrupo" style="width:500px">
@@ -5147,25 +4265,8 @@ echo $ETI['cara01fam_hijos'];
 <label>
 <?php
 echo $html_cara01fam_hijos;
-$sMuestra=' style="display:none"';
-if ($_REQUEST['cara01sexo']=='F' && $_REQUEST['cara01fam_hijos']>=1 && $_REQUEST['cara01fam_hijos']<=4){
-	$sMuestra='';
-	}
 ?>
 </label>
-<div class="salto1px"></div>
-<div id="div_cara01fam_madrecabeza"<?php echo $sMuestra; ?>>
-<label class="Label450">
-<?php
-echo $ETI['cara01fam_madrecabeza'];
-?>
-</label>
-<label class="Label90">
-<?php
-echo $html_cara01fam_madrecabeza;
-?>
-</label>
-</div>
 <div class="salto1px"></div>
 <label class="Label450">
 <?php
@@ -5298,9 +4399,7 @@ echo html_oculto('cara01fichaaca', $_REQUEST['cara01fichaaca'], $sMuestra);
 </div></label>
 <div class="salto1px"></div>
 <div id="div_p103" style="display:<?php if ($_REQUEST['boculta103']==0){echo 'block'; }else{echo 'none';} ?>;">
-<?php
-if($bAntiguo==false) {
-?>
+
 <label class="Label450">
 <?php
 echo $ETI['cara01acad_tipocolegio'];
@@ -5323,9 +4422,6 @@ echo $html_cara01acad_modalidadbach;
 ?>
 </label>
 <div class="salto1px"></div>
-<?php
-}
-?>
 <label class="Label450">
 <?php
 echo $ETI['cara01acad_estudioprev'];
@@ -5348,9 +4444,6 @@ echo $html_cara01acad_ultnivelest;
 ?>
 </label>
 <div class="salto1px"></div>
-<?php
-if($bAntiguo==false) {
-?>
 <label class="Label450">
 <?php
 echo $ETI['cara01acad_tiemposinest'];
@@ -5362,9 +4455,6 @@ echo $html_cara01acad_tiemposinest;
 ?>
 </label>
 <div class="salto1px"></div>
-<?php
-}
-?>
 <label class="Label450">
 <?php
 echo $ETI['cara01acad_obtubodiploma'];
@@ -5376,9 +4466,6 @@ echo $html_cara01acad_obtubodiploma;
 ?>
 </label>
 <div class="salto1px"></div>
-<?php
-if($bAntiguo==false) {
-?>
 <label class="Label450">
 <?php
 echo $ETI['cara01acad_hatomadovirtual'];
@@ -5390,9 +4477,6 @@ echo $html_cara01acad_hatomadovirtual;
 ?>
 </label>
 <div class="salto1px"></div>
-<?php
-}
-?>
 <label class="Label450">
 <?php
 echo $ETI['cara01acad_razonestudio'];
@@ -5437,50 +4521,6 @@ echo $html_cara01acad_razonunad;
 ?>
 </label>
 <div class="salto1px"></div>
-<?php
-if($bAntiguo==true) {
-?>
-<label class="Label450">
-<?php
-echo $ETI['cara01acadhatenidorecesos'];
-?>
-</label>
-<label class="Label90">
-<?php
-echo $html_cara01acadhatenidorecesos;
-$sMuestra=' style="display:none"';
-if ($_REQUEST['cara01acadhatenidorecesos']=='S'){
-	$sMuestra='';
-	}
-?>
-</label>
-<div class="salto1px"></div>
-<div id="div_cara01acadrazonreceso"<?php echo $sMuestra; ?>>
-<label class="Label450">
-<?php
-echo $ETI['cara01acadrazonreceso'];
-?>
-</label>
-<label>
-<?php
-echo $html_cara01acadrazonreceso;
-$sMuestra=' style="display:none"';
-if ($_REQUEST['cara01acadrazonreceso']=='S'){
-	$sMuestra='';
-	}
-?>
-</label>
-<label id="lbl_cara01acadrazonrecesodetalle" class="L"<?php echo $sMuestra; ?>>
-<?php
-echo $ETI['cara01acadrazonrecesodetalle'];
-?>
-<input id="cara01acadrazonrecesodetalle" name="cara01acadrazonrecesodetalle" type="text" value="<?php echo $_REQUEST['cara01acadrazonrecesodetalle']; ?>" maxlength="200" class="L" placeholder="<?php echo $ETI['ing_campo'].$ETI['cara01acadrazonrecesodetalle']; ?>"/>
-</label>
-</div>
-<div class="salto1px"></div>
-<?php
-}
-?>
 <?php
 echo '<b>'.$ETI['cara01campus'].'</b>';
 ?>
@@ -5550,9 +4590,6 @@ echo $html_cara01campus_internetreside;
 ?>
 </label>
 <div class="salto1px"></div>
-<?php
-if($bAntiguo==false) {
-?>
 <label class="Label450">
 <?php
 echo $ETI['cara01campus_expvirtual'];
@@ -5564,9 +4601,6 @@ echo $html_cara01campus_expvirtual;
 ?>
 </label>
 <div class="salto1px"></div>
-<?php
-}
-?>
 <label class="Label450">
 <?php
 echo $ETI['cara01campus_ofimatica'];
@@ -5578,9 +4612,6 @@ echo $html_cara01campus_ofimatica;
 ?>
 </label>
 <div class="salto1px"></div>
-<?php
-if($bAntiguo==false) {
-?>
 <label class="Label450">
 <?php
 echo $ETI['cara01campus_foros'];
@@ -5592,9 +4623,6 @@ echo $html_cara01campus_foros;
 ?>
 </label>
 <div class="salto1px"></div>
-<?php
-}
-?>
 <label class="Label450">
 <?php
 echo $ETI['cara01campus_conversiones'];
@@ -5606,9 +4634,6 @@ echo $html_cara01campus_conversiones;
 ?>
 </label>
 <div class="salto1px"></div>
-<?php
-if($bAntiguo==false) {
-?>
 <label class="Label450">
 <?php
 echo $ETI['cara01campus_usocorreo'];
@@ -5620,50 +4645,6 @@ echo $html_cara01campus_usocorreo;
 ?>
 </label>
 <div class="salto1px"></div>
-<?php
-} else {
-?>
-<label class="Label450">
-<?php
-echo $ETI['cara01campus_usocorreounad'];
-?>
-</label>
-<label class="Label90">
-<?php
-echo $html_cara01campus_usocorreounad;
-$sMuestra=' style="display:none"';
-if ($_REQUEST['cara01campus_usocorreounad']==4){
-	$sMuestra='';
-	}
-?>
-</label>
-<div class="salto1px"></div>
-<div id="div_cara01campus_usocorreounadno"<?php echo $sMuestra; ?>>
-<label class="Label450">
-<?php
-echo $ETI['cara01campus_usocorreounadno'];
-?>
-</label>
-<label>
-<?php
-echo $html_cara01campus_usocorreounadno;
-$sMuestra=' style="display:none"';
-if ($_REQUEST['cara01campus_usocorreounadno']==5){
-	$sMuestra='';
-	}
-?>
-</label>
-<label id="lbl_cara01campus_usocorreounadnodetalle" class="L"<?php echo $sMuestra; ?>>
-<?php
-echo $ETI['cara01campus_usocorreounadnodetalle'];
-?>
-<input id="cara01campus_usocorreounadnodetalle" name="cara01campus_usocorreounadnodetalle" type="text" value="<?php echo $_REQUEST['cara01campus_usocorreounadnodetalle']; ?>" maxlength="200" class="L" placeholder="<?php echo $ETI['ing_campo'].$ETI['cara01campus_usocorreounadnodetalle']; ?>"/>
-</label>
-</div>
-<div class="salto1px"></div>
-<?php
-}
-?>
 <?php
 echo '<b>'.$ETI['cara01campus_aprend'].'</b>';
 ?>
@@ -5719,33 +4700,6 @@ echo $ETI['cara01campus_mediocomunica'];
 echo $html_cara01campus_mediocomunica;
 ?>
 </label>
-<?php
-if($bAntiguo==true) {
-?>
-<div class="salto1px"></div>
-<label class="Label450">
-<?php
-echo $ETI['cara01campus_medioactivunad'];
-?>
-</label>
-<label>
-<?php
-echo $html_cara01campus_medioactivunad;
-$sMuestra=' style="display:none"';
-if ($_REQUEST['cara01campus_medioactivunad']==6){
-	$sMuestra='';
-	}
-?>
-</label>
-<label id="lbl_cara01campus_medioactivunaddetalle" class="L"<?php echo $sMuestra; ?>>
-<?php
-echo $ETI['cara01campus_medioactivunaddetalle'];
-?>
-<input id="cara01campus_medioactivunaddetalle" name="cara01campus_medioactivunaddetalle" type="text" value="<?php echo $_REQUEST['cara01campus_medioactivunaddetalle']; ?>" maxlength="200" class="L" placeholder="<?php echo $ETI['ing_campo'].$ETI['cara01campus_medioactivunaddetalle']; ?>"/>
-</label>
-<?php
-}
-?>
 <?php
 if ($bEstudiante){
 	if ($_REQUEST['paso']==2){
@@ -5962,11 +4916,7 @@ echo $html_cara01lab_debebusctrab;
 <div id="div_lab6"<?php echo $sMuestra6; ?>>
 <label class="Label450">
 <?php
-if($bAntiguo==false) {
-	echo $ETI['cara01lab_origendinero'];
-	} else {
-	echo $ETI['cara01lab_origendineroantiguo'];
-	}
+echo $ETI['cara01lab_origendinero'];
 ?>
 </label>
 <label>
@@ -6030,11 +4980,7 @@ echo html_oculto('cara01fichabien', $_REQUEST['cara01fichabien'], $sMuestra);
 </div></label>
 <div class="salto1px"></div>
 <div id="div_p105" style="display:<?php if ($_REQUEST['boculta105']==0){echo 'block'; }else{echo 'none';} ?>;">
-<?php
-$bEntra=false;
-if ($_REQUEST['cara01bienversion']==0){$bEntra=true;}
-if ($bEntra){
-?>
+
 <div class="GrupoCampos">
 <label class="TituloGrupo" style="width:100%">
 <?php
@@ -6572,1116 +5518,7 @@ echo $ETI['cara01bien_amb_temas'];
 
 <div class="salto1px"></div>
 </div>
-<?php
-}
-?>
-<?php
-$bEntra=false;
-if ($_REQUEST['cara01bienversion']==2){$bEntra=true;}
-if ($bEntra){
-?>
-<div class="GrupoCampos">
-<label class="TituloGrupo" style="width:100%">
-<?php
-echo $ETI['titulo_cara01biendeporte'];
-?>
-</label>
-<div class="salto1px"></div>
-<label class="Label600">
-<?php
-echo $ETI['cara01bienv2altoren'];
-?>
-</label>
-<label class="Label60">
-<?php
-echo $html_cara01bienv2altoren;
-?>
-</label>
-<div class="salto1px"></div>
-<label class="TituloGrupo" style="width:100%">
-<?php
-echo $ETI['cara01bienv2depitem'];
-?>
-</label>
-<div class="salto1px"></div>
-<label class="Label130">
-<?php
-echo $ETI['cara01bienv2atletismo'];
-?>
-</label>
-<label class="Label60">
-<?php
-echo $html_cara01bienv2atletismo;
-?>
-</label>
-<label class="Label130">
-<?php
-echo $ETI['cara01bienv2baloncesto'];
-?>
-</label>
-<label class="Label60">
-<?php
-echo $html_cara01bienv2baloncesto;
-?>
-</label>
-<label class="Label130">
-<?php
-echo $ETI['cara01bienv2futbol'];
-?>
-</label>
-<label class="Label60">
-<?php
-echo $html_cara01bienv2futbol;
-?>
-</label>
-<label class="Label130">
-<?php
-echo $ETI['cara01bienv2gimnasia'];
-?>
-</label>
-<label class="Label60">
-<?php
-echo $html_cara01bienv2gimnasia;
-?>
-</label>
-<div class="salto1px"></div>
-<label class="Label130">
-<?php
-echo $ETI['cara01bienv2natacion'];
-?>
-</label>
-<label class="Label60">
-<?php
-echo $html_cara01bienv2natacion;
-?>
-</label>
-<label class="Label130">
-<?php
-echo $ETI['cara01bienv2voleibol'];
-?>
-</label>
-<label class="Label60">
-<?php
-echo $html_cara01bienv2voleibol;
-?>
-</label>
-<label class="Label130">
-<?php
-echo $ETI['cara01bienv2tenis'];
-?>
-</label>
-<label class="Label60">
-<?php
-echo $html_cara01bienv2tenis;
-?>
-</label>
-<label class="Label130">
-<?php
-echo $ETI['cara01bienv2paralimpico'];
-?>
-</label>
-<label class="Label60">
-<?php
-echo $html_cara01bienv2paralimpico;
-?>
-</label>
-<div class="salto1px"></div>
-<label class="Label130">
-<?php
-echo $ETI['cara01bienv2otrodeporte'];
-?>
-</label>
-<label class="Label60">
-<?php
-echo $html_cara01bienv2otrodeporte;
-$sMuestra=' style="display:none"';
-if ($_REQUEST['cara01bienv2otrodeporte']=='S'){
-	$sMuestra='';
-	}
-?>
-</label>
-<label id="label_cara01bienv2otrodeporte" class="L"<?php echo $sMuestra; ?>>
-<?php
-echo $ETI['cara01bienv2otrodeportedetalle'];
-?>
-<input id="cara01bienv2otrodeportedetalle" name="cara01bienv2otrodeportedetalle" type="text" value="<?php echo $_REQUEST['cara01bienv2otrodeportedetalle']; ?>" maxlength="200" class="L" placeholder="<?php echo $ETI['ing_campo'].$ETI['cara01bienv2otrodeportedetalle']; ?>"/>
-</label>
-<div class="salto1px"></div>
-</div><!--Cierre grupo campos bienestar deportes-->
-<div class="GrupoCampos">
-<label class="TituloGrupo" style="width:100%">
-<?php
-echo $ETI['titulo_cara01biencultura'];
-?>
-</label>
-<div class="salto1px"></div>
-<label class="TituloGrupo" style="width:100%">
-<?php
-echo $ETI['cara01bienv2culturaactivitem'];
-?>
-</label>
-<div class="salto1px"></div>
-<label class="Label600">
-<?php
-echo $ETI['cara01bienv2activartes'];
-?>
-</label>
-<label class="Label60">
-<?php
-echo $html_cara01bienv2activartes;
-?>
-</label>
-<div class="salto1px"></div>
-<label class="Label600">
-<?php
-echo $ETI['cara01bienv2activliteratura'];
-?>
-</label>
-<label class="Label60">
-<?php
-echo $html_cara01bienv2activliteratura;
-?>
-</label>
-<div class="salto1px"></div>
-<label class="Label130">
-<?php
-echo $ETI['cara01bienv2activdanza'];
-?>
-</label>
-<label class="Label60">
-<?php
-echo $html_cara01bienv2activdanza;
-?>
-</label>
-<label class="Label130">
-<?php
-echo $ETI['cara01bienv2activmusica'];
-?>
-</label>
-<label class="Label60">
-<?php
-echo $html_cara01bienv2activmusica;
-?>
-</label>
-<label class="Label130">
-<?php
-echo $ETI['cara01bienv2activteatro'];
-?>
-</label>
-<label class="Label60">
-<?php
-echo $html_cara01bienv2activteatro;
-?>
-</label>
-<label class="Label130">
-<?php
-echo $ETI['cara01bienv2activculturalotra'];
-?>
-</label>
-<label class="Label60">
-<?php
-echo $html_cara01bienv2activculturalotra;
-$sMuestra=' style="display:none"';
-if ($_REQUEST['cara01bienv2activculturalotra']=='S'){
-	$sMuestra='';
-	}
-?>
-</label>
-<label id="label_cara01bienv2activculturalotra" class="L"<?php echo $sMuestra; ?>>
-<?php
-echo $ETI['cara01bienv2activculturalotradetalle'];
-?>
-<input id="cara01bienv2activculturalotradetalle" name="cara01bienv2activculturalotradetalle" type="text" value="<?php echo $_REQUEST['cara01bienv2activculturalotradetalle']; ?>" maxlength="200" class="L" placeholder="<?php echo $ETI['ing_campo'].$ETI['cara01bienv2activculturalotradetalle']; ?>"/>
-</label>
-<div class="salto1px"></div>
-<label class="TituloGrupo" style="width:100%">
-<?php
-echo $ETI['cara01bienv2culturaeventitem'];
-?>
-</label>
-<div class="salto1px"></div>
-<label class="Label130">
-<?php
-echo $ETI['cara01bienv2evenliteratura'];
-?>
-</label>
-<label class="Label60">
-<?php
-echo $html_cara01bienv2evenliteratura;
-?>
-</label>
-<label class="Label130">
-<?php
-echo $ETI['cara01bienv2eventeatro'];
-?>
-</label>
-<label class="Label60">
-<?php
-echo $html_cara01bienv2eventeatro;
-?>
-</label>
-<label class="Label130">
-<?php
-echo $ETI['cara01bienv2evencine'];
-?>
-</label>
-<label class="Label60">
-<?php
-echo $html_cara01bienv2evencine;
-?>
-</label>
-<label class="Label130">
-<?php
-echo $ETI['cara01bienv2evenhistarte'];
-?>
-</label>
-<label class="Label60">
-<?php
-echo $html_cara01bienv2evenhistarte;
-?>
-</label>
-<div class="salto1px"></div>
-<label class="Label130">
-<?php
-echo $ETI['cara01bienv2evenfestfolc'];
-?>
-</label>
-<label class="Label60">
-<?php
-echo $html_cara01bienv2evenfestfolc;
-?>
-</label>
-<label class="Label130">
-<?php
-echo $ETI['cara01bienv2evenexpoarte'];
-?>
-</label>
-<label class="Label60">
-<?php
-echo $html_cara01bienv2evenexpoarte;
-?>
-</label>
-<label class="Label130">
-<?php
-echo $ETI['cara01bienv2evengalfoto'];
-?>
-</label>
-<label class="Label60">
-<?php
-echo $html_cara01bienv2evengalfoto;
-?>
-</label>
-<label class="Label130">
-<?php
-echo $ETI['cara01bienv2evenculturalotro'];
-?>
-</label>
-<label class="Label60">
-<?php
-echo $html_cara01bienv2evenculturalotro;
-$sMuestra=' style="display:none"';
-if ($_REQUEST['cara01bienv2evenculturalotro']=='S'){
-	$sMuestra='';
-	}
-?>
-</label>
-<label id="label_cara01bienv2evenculturalotro" class="L"<?php echo $sMuestra; ?>>
-<?php
-echo $ETI['cara01bienv2evenculturalotrodetalle'];
-?>
-<input id="cara01bienv2evenculturalotrodetalle" name="cara01bienv2evenculturalotrodetalle" type="text" value="<?php echo $_REQUEST['cara01bienv2evenculturalotrodetalle']; ?>" maxlength="200" class="L" placeholder="<?php echo $ETI['ing_campo'].$ETI['cara01bienv2evenculturalotrodetalle']; ?>"/>
-</label>
-<div class="salto1px"></div>
-</div><!--Cierre grupo campos arte y cultura-->
-<div class="GrupoCampos">
-<label class="TituloGrupo" style="width:100%">
-<?php
-echo $ETI['msg_emprendimiento'];
-?>
-</label>
-<div class="salto1px"></div>
-<label class="TituloGrupo" style="width:100%">
-<?php
-echo $ETI['cara01bienv2emprensituaitem'];
-?>
-</label>
-<div class="salto1px"></div>
-<label class="Label190">
-<?php
-echo $ETI['cara01bienv2emprendimiento'];
-?>
-</label>
-<label class="Label60">
-<?php
-echo $html_cara01bienv2emprendimiento;
-?>
-</label>
-<div class="salto1px"></div>
-<label class="Label190">
-<?php
-echo $ETI['cara01bienv2empresa'];
-?>
-</label>
-<label class="Label60">
-<?php
-echo $html_cara01bienv2empresa;
-?>
-</label>
-<div class="salto1px"></div>
-<label class="TituloGrupo" style="width:100%">
-<?php
-echo $ETI['cara01bienv2emprenestadoitem'];
-?>
-</label>
-<div class="salto1px"></div>
-<label class="Label600">
-<?php
-echo $ETI['cara01bienv2emprenrecursos'];
-?>
-</label>
-<label class="Label60">
-<?php
-echo $html_cara01bienv2emprenrecursos;
-?>
-</label>
-<div class="salto1px"></div>
-<label class="Label600">
-<?php
-echo $ETI['cara01bienv2emprenconocim'];
-?>
-</label>
-<label class="Label60">
-<?php
-echo $html_cara01bienv2emprenconocim;
-?>
-</label>
-<div class="salto1px"></div>
-<label class="Label600">
-<?php
-echo $ETI['cara01bienv2emprenplan'];
-?>
-</label>
-<label class="Label60">
-<?php
-echo $html_cara01bienv2emprenplan;
-?>
-</label>
-<div class="salto1px"></div>
-<label class="Label600">
-<?php
-echo $ETI['cara01bienv2emprenejecutar'];
-?>
-</label>
-<label class="Label60">
-<?php
-echo $html_cara01bienv2emprenejecutar;
-?>
-</label>
-<div class="salto1px"></div>
-<label class="Label600">
-<?php
-echo $ETI['cara01bienv2emprenfortconocim'];
-?>
-</label>
-<label class="Label60">
-<?php
-echo $html_cara01bienv2emprenfortconocim;
-?>
-</label>
-<div class="salto1px"></div>
-<label class="Label600">
-<?php
-echo $ETI['cara01bienv2emprenidentproblema'];
-?>
-</label>
-<label class="Label60">
-<?php
-echo $html_cara01bienv2emprenidentproblema;
-?>
-</label>
-<div class="salto1px"></div>
-<label class="Label90">
-<?php
-echo $ETI['cara01bienv2emprenotro'];
-?>
-</label>
-<label class="Label60">
-<?php
-echo $html_cara01bienv2emprenotro;
-$sMuestra=' style="display:none"';
-if ($_REQUEST['cara01bienv2emprenotro']=='S'){
-	$sMuestra='';
-	}
-?>
-</label>
-<label id="label_cara01bienv2emprenotro" class="L"<?php echo $sMuestra; ?>>
-<?php
-echo $ETI['cara01bienv2emprenotrodetalle'];
-?>
-<input id="cara01bienv2emprenotrodetalle" name="cara01bienv2emprenotrodetalle" type="text" value="<?php echo $_REQUEST['cara01bienv2emprenotrodetalle']; ?>" maxlength="200" class="L" placeholder="<?php echo $ETI['ing_campo'].$ETI['cara01bienv2emprenotrodetalle']; ?>"/>
-</label>
-<div class="salto1px"></div>
-<label class="TituloGrupo" style="width:100%">
-<?php
-echo $ETI['cara01bienv2emprentemasitem'];
-?>
-</label>
-<div class="salto1px"></div>
-<label class="Label190">
-<?php
-echo $ETI['cara01bienv2emprenmarketing'];
-?>
-</label>
-<label class="Label60">
-<?php
-echo $html_cara01bienv2emprenmarketing;
-?>
-</label>
-<label class="Label190">
-<?php
-echo $ETI['cara01bienv2emprenplannegocios'];
-?>
-</label>
-<label class="Label60">
-<?php
-echo $html_cara01bienv2emprenplannegocios;
-?>
-</label>
-<div class="salto1px"></div>
-<label class="Label190">
-<?php
-echo $ETI['cara01bienv2emprenideas'];
-?>
-</label>
-<label class="Label60">
-<?php
-echo $html_cara01bienv2emprenideas;
-?>
-</label>
-<label class="Label190">
-<?php
-echo $ETI['cara01bienv2emprencreacion'];
-?>
-</label>
-<label class="Label60">
-<?php
-echo $html_cara01bienv2emprencreacion;
-?>
-</label>
-<div class="salto1px"></div>
-</div><!--Cierre grupo campos bienestar emprendimiento-->
-<div class="GrupoCampos">
-<label class="TituloGrupo" style="width:100%">
-<?php
-echo $ETI['msg_estilodevida'];
-?>
-</label>
-<div class="salto1px"></div>
-<label class="TituloGrupo" style="width:100%">
-<?php
-echo $ETI['cara01bienv2saludestresitem'];
-?>
-</label>
-<div class="salto1px"></div>
-<label class="Label130">
-<?php
-echo $ETI['cara01bienv2saludfacteconom'];
-?>
-</label>
-<label class="Label60">
-<?php
-echo $html_cara01bienv2saludfacteconom;
-?>
-</label>
-<label class="Label130">
-<?php
-echo $ETI['cara01bienv2saludpreocupacion'];
-?>
-</label>
-<label class="Label60">
-<?php
-echo $html_cara01bienv2saludpreocupacion;
-?>
-</label>
-<label class="Label190">
-<?php
-echo $ETI['cara01bienv2saludconsumosust'];
-?>
-</label>
-<label class="Label60">
-<?php
-echo $html_cara01bienv2saludconsumosust;
-?>
-</label>
-<div class="salto1px"></div>
-<label class="Label130">
-<?php
-echo $ETI['cara01bienv2saludinsomnio'];
-?>
-</label>
-<label class="Label60">
-<?php
-echo $html_cara01bienv2saludinsomnio;
-?>
-</label>
-<label class="Label130">
-<?php
-echo $ETI['cara01bienv2saludclimalab'];
-?>
-</label>
-<label class="Label60">
-<?php
-echo $html_cara01bienv2saludclimalab;
-?>
-</label>
-<div class="salto1px"></div>
-<label class="TituloGrupo" style="width:100%">
-<?php
-echo $ETI['cara01bienv2saludautocuiditem'];
-?>
-</label>
-<div class="salto1px"></div>
-<label class="Label130">
-<?php
-echo $ETI['cara01bienv2saludalimenta'];
-?>
-</label>
-<label class="Label60">
-<?php
-echo $html_cara01bienv2saludalimenta;
-?>
-</label>
-<label class="Label190">
-<?php
-echo $ETI['cara01bienv2saludemocion'];
-?>
-</label>
-<label class="Label60">
-<?php
-echo $html_cara01bienv2saludemocion;
-?>
-</label>
-<div class="salto1px"></div>
-<label class="Label130">
-<?php
-echo $ETI['cara01bienv2saludmedita'];
-?>
-</label>
-<label class="Label60">
-<?php
-echo $html_cara01bienv2saludmedita;
-?>
-</label>
-<label class="Label190">
-<?php
-echo $ETI['cara01bienv2saludestado'];
-?>
-</label>
-<label class="Label60">
-<?php
-echo $html_cara01bienv2saludestado;
-?>
-</label>
-<div class="salto1px"></div>
-</div><!--Cierre grupo campos bienestar salud-->
-<div class="GrupoCampos">
-<label class="TituloGrupo" style="width:100%">
-<?php
-echo $ETI['titulo_cara01biencrecim'];
-?>
-</label>
-<div class="salto1px"></div>
-<label class="TituloGrupo" style="width:100%">
-<?php
-echo $ETI['cara01bienv2crecimtemaitem'];
-?>
-</label>
-<div class="salto1px"></div>
-<label class="Label160">
-<?php
-echo $ETI['cara01bienv2crecimedusexual'];
-?>
-</label>
-<label class="Label60">
-<?php
-echo $html_cara01bienv2crecimedusexual;
-?>
-</label>
-<label class="Label350">
-<?php
-echo $ETI['cara01bienv2creciminclusion'];
-?>
-</label>
-<label class="Label60">
-<?php
-echo $html_cara01bienv2creciminclusion;
-?>
-</label>
-<div class="salto1px"></div>
-<label class="Label160">
-<?php
-echo $ETI['cara01bienv2crecimcultciudad'];
-?>
-</label>
-<label class="Label60">
-<?php
-echo $html_cara01bienv2crecimcultciudad;
-?>
-</label>
-<label class="Label350">
-<?php
-echo $ETI['cara01bienv2crecimrelinterp'];
-?>
-</label>
-<label class="Label60">
-<?php
-echo $html_cara01bienv2crecimrelinterp;
-?>
-</label>
-<div class="salto1px"></div>
-<label class="Label160">
-<?php
-echo $ETI['cara01bienv2crecimrelpareja'];
-?>
-</label>
-<label class="Label60">
-<?php
-echo $html_cara01bienv2crecimrelpareja;
-?>
-</label>
-<label class="Label350">
-<?php
-echo $ETI['cara01bienv2creciminteliemoc'];
-?>
-</label>
-<label class="Label60">
-<?php
-echo $html_cara01bienv2creciminteliemoc;
-?>
-</label>
-<div class="salto1px"></div>
-<label class="Label160">
-<?php
-echo $ETI['cara01bienv2crecimautoestima'];
-?>
-</label>
-<label class="Label60">
-<?php
-echo $html_cara01bienv2crecimautoestima;
-?>
-</label>
-<label class="Label350">
-<?php
-echo $ETI['cara01bienv2crecimdinamicafam'];
-?>
-</label>
-<label class="Label60">
-<?php
-echo $html_cara01bienv2crecimdinamicafam;
-?>
-</label>
-<div class="salto1px"></div>
-<label class="TituloGrupo" style="width:100%">
-<?php
-echo $ETI['cara01bienv2crecimgrupoitem'];
-?>
-</label>
-<div class="salto1px"></div>
-<label class="Label160">
-<?php
-echo $ETI['cara01bienv2crecimcultural'];
-?>
-</label>
-<label class="Label60">
-<?php
-echo $html_cara01bienv2crecimcultural;
-?>
-</label>
-<label class="Label160">
-<?php
-echo $ETI['cara01bienv2crecimartistico'];
-?>
-</label>
-<label class="Label60">
-<?php
-echo $html_cara01bienv2crecimartistico;
-?>
-</label>
-<label class="Label160">
-<?php
-echo $ETI['cara01bienv2crecimdeporte'];
-?>
-</label>
-<label class="Label60">
-<?php
-echo $html_cara01bienv2crecimdeporte;
-?>
-</label>
-<div class="salto1px"></div>
-<label class="Label160">
-<?php
-echo $ETI['cara01bienv2crecimambiente'];
-?>
-</label>
-<label class="Label60">
-<?php
-echo $html_cara01bienv2crecimambiente;
-?>
-</label>
-<label class="Label350">
-<?php
-echo $ETI['cara01bienv2crecimhabsocio'];
-?>
-</label>
-<label class="Label60">
-<?php
-echo $html_cara01bienv2crecimhabsocio;
-?>
-</label>
-<div class="salto1px"></div>
-</div><!--Cierre grupo campos bienestar crecimiento personal-->
-<div class="GrupoCampos">
-<label class="TituloGrupo" style="width:100%">
-<?php
-echo $ETI['msg_medioambiente'];
-?>
-</label>
-<div class="salto1px"></div>
-<label class="TituloGrupo" style="width:100%">
-<?php
-echo $ETI['cara01bienv2ambienaccionitem'];
-?>
-</label>
-<div class="salto1px"></div>
-<label class="Label190">
-<?php
-echo $ETI['cara01bienv2ambienbasura'];
-?>
-</label>
-<label class="Label60">
-<?php
-echo $html_cara01bienv2ambienbasura;
-?>
-</label>
-<label class="Label190">
-<?php
-echo $ETI['cara01bienv2ambienreutiliza'];
-?>
-</label>
-<label class="Label60">
-<?php
-echo $html_cara01bienv2ambienreutiliza;
-?>
-</label>
-<div class="salto1px"></div>
-<label class="Label190">
-<?php
-echo $ETI['cara01bienv2ambienluces'];
-?>
-</label>
-<label class="Label60">
-<?php
-echo $html_cara01bienv2ambienluces;
-?>
-</label>
-<label class="Label190">
-<?php
-echo $ETI['cara01bienv2ambienenchufa'];
-?>
-</label>
-<label class="Label60">
-<?php
-echo $html_cara01bienv2ambienenchufa;
-?>
-</label>
-<div class="salto1px"></div>
-<label class="Label190">
-<?php
-echo $ETI['cara01bienv2ambienducha'];
-?>
-</label>
-<label class="Label60">
-<?php
-echo $html_cara01bienv2ambienducha;
-?>
-</label>
-<label class="Label190">
-<?php
-echo $ETI['cara01bienv2ambiengrifo'];
-?>
-</label>
-<label class="Label60">
-<?php
-echo $html_cara01bienv2ambiengrifo;
-?>
-</label>
-<div class="salto1px"></div>
-<label class="Label190">
-<?php
-echo $ETI['cara01bienv2ambienbicicleta'];
-?>
-</label>
-<label class="Label60">
-<?php
-echo $html_cara01bienv2ambienbicicleta;
-?>
-</label>
-<label class="Label190">
-<?php
-echo $ETI['cara01bienv2ambientranspub'];
-?>
-</label>
-<label class="Label60">
-<?php
-echo $html_cara01bienv2ambientranspub;
-?>
-</label>
-<div class="salto1px"></div>
-<label class="Label190">
-<?php
-echo $ETI['cara01bienv2ambienfrutaverd'];
-?>
-</label>
-<label class="Label60">
-<?php
-echo $html_cara01bienv2ambienfrutaverd;
-?>
-</label>
-<div class="salto1px"></div>
-<label class="TituloGrupo" style="width:100%">
-<?php
-echo $ETI['cara01bienv2ambienactivitem'];
-?>
-</label>
-<div class="salto1px"></div>
-<label class="Label190">
-<?php
-echo $ETI['cara01bienv2ambiencaminata'];
-?>
-</label>
-<label class="Label60">
-<?php
-echo $html_cara01bienv2ambiencaminata;
-?>
-</label>
-<label class="Label190">
-<?php
-echo $ETI['cara01bienv2ambiensiembra'];
-?>
-</label>
-<label class="Label60">
-<?php
-echo $html_cara01bienv2ambiensiembra;
-?>
-</label>
-<div class="salto1px"></div>
-<label class="Label190">
-<?php
-echo $ETI['cara01bienv2ambienrecicla'];
-?>
-</label>
-<label class="Label60">
-<?php
-echo $html_cara01bienv2ambienrecicla;
-?>
-</label>
-<label class="Label190">
-<?php
-echo $ETI['cara01bienv2ambienconferencia'];
-?>
-</label>
-<label class="Label60">
-<?php
-echo $html_cara01bienv2ambienconferencia;
-?>
-</label>
-<div class="salto1px"></div>
-<label class="Label160">
-<?php
-echo $ETI['cara01bienv2ambienotraactiv'];
-?>
-</label>
-<label class="Label60">
-<?php
-echo $html_cara01bienv2ambienotraactiv;
-$sMuestra=' style="display:none"';
-if ($_REQUEST['cara01bienv2ambienotraactiv']=='S'){
-	$sMuestra='';
-	}
-?>
-</label>
-<label id="label_cara01bienv2ambienotraactiv" class="L"<?php echo $sMuestra; ?>>
-<?php
-echo $ETI['cara01bienv2ambienotraactivdetalle'];
-?>
-<input id="cara01bienv2ambienotraactivdetalle" name="cara01bienv2ambienotraactivdetalle" type="text" value="<?php echo $_REQUEST['cara01bienv2ambienotraactivdetalle']; ?>" maxlength="200" class="L" placeholder="<?php echo $ETI['ing_campo'].$ETI['cara01bienv2ambienotraactivdetalle']; ?>"/>
-</label>
-<div class="salto1px"></div>
-<label class="TituloGrupo" style="width:100%">
-<?php
-echo $ETI['cara01bienv2ambienenfoqueitem'];
-?>
-</label>
-<div class="salto1px"></div>
-<label class="Label130">
-<?php
-echo $ETI['cara01bienv2ambienreforest'];
-?>
-</label>
-<label class="Label60">
-<?php
-echo $html_cara01bienv2ambienreforest;
-?>
-</label>
-<label class="Label160">
-<?php
-echo $ETI['cara01bienv2ambienclimatico'];
-?>
-</label>
-<label class="Label60">
-<?php
-echo $html_cara01bienv2ambienclimatico;
-?>
-</label>
-<label class="Label190">
-<?php
-echo $ETI['cara01bienv2ambienmovilidad'];
-?>
-</label>
-<label class="Label60">
-<?php
-echo $html_cara01bienv2ambienmovilidad;
-?>
-</label>
-<div class="salto1px"></div>
-<label class="Label130">
-<?php
-echo $ETI['cara01bienv2ambienecofemin'];
-?>
-</label>
-<label class="Label60">
-<?php
-echo $html_cara01bienv2ambienecofemin;
-?>
-</label>
-<label class="Label160">
-<?php
-echo $ETI['cara01bienv2ambieneconomia'];
-?>
-</label>
-<label class="Label60">
-<?php
-echo $html_cara01bienv2ambieneconomia;
-?>
-</label>
-<label class="Label190">
-<?php
-echo $ETI['cara01bienv2ambienmascota'];
-?>
-</label>
-<label class="Label60">
-<?php
-echo $html_cara01bienv2ambienmascota;
-?>
-</label>
-<div class="salto1px"></div>
-<label class="Label130">
-<?php
-echo $ETI['cara01bienv2ambienbiodiver'];
-?>
-</label>
-<label class="Label60">
-<?php
-echo $html_cara01bienv2ambienbiodiver;
-?>
-</label>
-<label class="Label160">
-<?php
-echo $ETI['cara01bienv2ambienecologia'];
-?>
-</label>
-<label class="Label60">
-<?php
-echo $html_cara01bienv2ambienecologia;
-?>
-</label>
-<label class="Label190">
-<?php
-echo $ETI['cara01bienv2ambiencarga'];
-?>
-</label>
-<label class="Label60">
-<?php
-echo $html_cara01bienv2ambiencarga;
-?>
-</label>
-<div class="salto1px"></div>
-<label class="Label130">
-<?php
-echo $ETI['cara01bienv2ambienreciclaje'];
-?>
-</label>
-<label class="Label60">
-<?php
-echo $html_cara01bienv2ambienreciclaje;
-?>
-</label>
-<label class="Label160">
-<?php
-echo $ETI['cara01bienv2ambienrecnatura'];
-?>
-</label>
-<label class="Label60">
-<?php
-echo $html_cara01bienv2ambienrecnatura;
-?>
-</label>
-<label class="Label190">
-<?php
-echo $ETI['cara01bienv2ambienespiritu'];
-?>
-</label>
-<label class="Label60">
-<?php
-echo $html_cara01bienv2ambienespiritu;
-?>
-</label>
-<div class="salto1px"></div>
-<label class="Label130">
-<?php
-echo $ETI['cara01bienv2ambiencartohum'];
-?>
-</label>
-<label class="Label60">
-<?php
-echo $html_cara01bienv2ambiencartohum;
-?>
-</label>
-<label class="Label160">
-<?php
-echo $ETI['cara01bienv2ambienotroenfoq'];
-?>
-</label>
-<label class="Label60">
-<?php
-echo $html_cara01bienv2ambienotroenfoq;
-$sMuestra=' style="display:none"';
-if ($_REQUEST['cara01bienv2ambienotroenfoq']=='S'){
-	$sMuestra='';
-	}
-?>
-</label>
-<label id="label_cara01bienv2ambienotroenfoq" class="L"<?php echo $sMuestra; ?>>
-<?php
-echo $ETI['cara01bienv2ambienotroenfoqdetalle'];
-?>
-<input id="cara01bienv2ambienotroenfoqdetalle" name="cara01bienv2ambienotroenfoqdetalle" type="text" value="<?php echo $_REQUEST['cara01bienv2ambienotroenfoqdetalle']; ?>" maxlength="200" class="L" placeholder="<?php echo $ETI['ing_campo'].$ETI['cara01bienv2ambienotroenfoqdetalle']; ?>"/>
-</label>
-<div class="salto1px"></div>
-</div><!--Cierre grupo campos bienestar medio ambiente-->
-<?php
-}
-?>
+
 <?php
 if ($bEstudiante){
 	if ($_REQUEST['paso']==2){
@@ -8758,7 +6595,7 @@ Periodo
 </label>
 <label class="Label130">
 <?php
-echo $html_bperaca;
+echo $html_bperiodo;
 ?>
 </label>
 <div class="salto1px"></div>
@@ -8810,12 +6647,15 @@ echo $html_bpoblacion;
 <label class="Label90">
 CEAD
 </label>
-<label class="Label130">
+<label class="Label300">
 <div id="div_bcead">
 <?php
 echo $html_bcead;
 ?>
 </div>
+</label>
+<label class="Label30">
+<input id="bRevMatricula" name="bRevMatricula" type="button" value="Verificar datos de matricula" class="btMiniActualizar" onclick="vermatricula()" title="Verificar datos de matricula"/>
 </label>
 <div class="salto1px"></div>
 <label class="Label90">
@@ -8987,7 +6827,6 @@ if ($bMueveScroll){
 if (!$bEstudiante){
 ?>
 <script language="javascript">
-<!--
 $().ready(function(){
 <?php
 if ($_REQUEST['paso']==0){
@@ -8996,9 +6835,8 @@ $("#cara01idperaca").chosen();
 <?php
 	}
 ?>
-$("#bperaca").chosen();
+$("#bperiodo").chosen();
 });
--->
 </script>
 <?php
 	}
