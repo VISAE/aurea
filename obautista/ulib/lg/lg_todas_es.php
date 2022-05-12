@@ -124,4 +124,5 @@ $ETI['ing_campoa']='Ingrese la ';
 $ETI['ing_contrasena']='Ingrese su contrase&ntilde;a';
 $ETI['titulo_login']='Retomar la sesi&oacute;n';
 $ETI['titulo_sector94']='Formato para el reporte';
+$ETI['msg_ejecutando']='msg_ejecutando'; // OJO QUITAR
 ?>
