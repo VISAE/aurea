@@ -90,13 +90,10 @@ $mensajes_todas=$APP->rutacomun.'lg/lg_todas_'.$_SESSION['unad_idioma'].'.php';
 if (!file_exists($mensajes_todas)){$mensajes_todas=$APP->rutacomun.'lg/lg_todas_es.php';}
 $mensajes_2301=$APP->rutacomun.'lg/lg_2301_'.$_SESSION['unad_idioma'].'.php';
 if (!file_exists($mensajes_2301)){$mensajes_2301=$APP->rutacomun.'lg/lg_2301_es.php';}
-$mensajes_2344=$APP->rutacomun.'lg/lg_2344_'.$_SESSION['unad_idioma'].'.php';
-if (!file_exists($mensajes_2344)){$mensajes_2344=$APP->rutacomun.'lg/lg_2344_es.php';}
 $mensajes_2310='lg/lg_2310_'.$_SESSION['unad_idioma'].'.php';
 if (!file_exists($mensajes_2310)){$mensajes_2310='lg/lg_2310_es.php';}
 require $mensajes_todas;
 require $mensajes_2301;
-require $mensajes_2344;
 require $mensajes_2310;
 $xajax=NULL;
 $objDB=new clsdbadmin($APP->dbhost, $APP->dbuser, $APP->dbpass, $APP->dbname);
@@ -714,7 +711,6 @@ if ((int)$_REQUEST['paso']>0){
 	}
 // Espacio para inicializar otras variables
 $bTraerEntorno=false;
-$bActualizarEdad=false;
 if (isset($_REQUEST['csv_separa'])==0){$_REQUEST['csv_separa']=',';}
 if (isset($_REQUEST['ficha'])==0){$_REQUEST['ficha']=1;}
 if (!$bEstudiante){
@@ -1689,7 +1685,6 @@ if ($bLimpiaHijos){
 //AQUI SE DEBEN CARGAR TODOS LOS DATOS QUE LA FORMA NECESITE.
 //DATOS PARA COMPLETAR EL FORMULARIO
 $bAntiguo=false;
-if ($_REQUEST['cara01tipocaracterizacion']==3){$bAntiguo=true;}
 //Permisos adicionales
 $seg_5=0;
 $seg_6=0;
@@ -3033,9 +3028,9 @@ function AyudaLocal(sCampo){
 	if (typeof divAyuda==='undefined'){
 		}else{
 		verboton('cmdAyuda_'+sCampo, 'none');
-		// var sMensaje='Lo que quiera decir.';
+		var sMensaje='Lo que quiera decir.';
 		//if (sCampo=='sNombreCampo'){sMensaje='Mensaje para otro campo.';}
-		// divAyuda.innerHTML=sMensaje;
+		divAyuda.innerHTML=sMensaje;
 		divAyuda.style.display='block';
 		}
 	}
@@ -3612,14 +3607,14 @@ if ($bEstudiante){
 	$aEstado=array('',$sPendiente,$sPendiente,$sPendiente,$sPendiente,$sPendiente,$sPendiente,$sPendiente,$sPendiente,$sPendiente,$sPendiente,$sPendiente,$sPendiente,$sPendiente);
 	for ($k=1;$k<=13;$k++){
 		if ($_REQUEST[$aTitulo[$k]]>=0){
-			if ($_REQUEST[$aTitulo[$k]]==1){$aEstado[$k]=$sHecho;}	// Ojo Comentar
-			echo '<label><label class="Label220">'.$ETI[$aTitulo[$k]].'</label><a href="javascript:verficha('.$k.');">'.$aEstado[$k].'</a></label>';	// Ojo Comentar
+			//if ($_REQUEST[$aTitulo[$k]]==1){$aEstado[$k]=$sHecho;}
+			//echo '<label><label class="Label220">'.$ETI[$aTitulo[$k]].'</label><a href="javascript:verficha('.$k.');">'.$aEstado[$k].'</a></label>';
 			//febrero 17 de 2022 - Se cambian los botones.
-			/*if ($_REQUEST[$aTitulo[$k]]==1){
+			if ($_REQUEST[$aTitulo[$k]]==1){
 				echo html_BotonVerde('', $ETI[$aTitulo[$k]], 'javascript:verficha('.$k.');', $ETI[$aTitulo[$k]].', '.$aEstado[$k]);
 				}else{
 				echo html_BotonRojo('', $ETI[$aTitulo[$k]], 'javascript:verficha('.$k.');', $ETI[$aTitulo[$k]].', '.$aEstado[$k]);
-				}*/	// Ojo descomentar
+				}
 			}
 		}
 	echo '</div>';
@@ -5295,7 +5290,7 @@ echo $html_cara01acad_obtubodiploma;
 </label>
 <div class="salto1px"></div>
 <?php
-if(!$bAntiguo) {
+if($bAntiguo==false) {
 ?>
 <label class="Label450">
 <?php
@@ -5309,11 +5304,7 @@ echo $html_cara01acad_hatomadovirtual;
 </label>
 <div class="salto1px"></div>
 <?php
-	}else{
-?>
-<input id="cara01acad_hatomadovirtual" name="cara01acad_hatomadovirtual" type="hidden" value="<?php echo $_REQUEST['cara01acad_hatomadovirtual']; ?>"/>
-<?php
-	}
+}
 ?>
 <label class="Label450">
 <?php
@@ -5360,7 +5351,7 @@ echo $html_cara01acad_razonunad;
 </label>
 <div class="salto1px"></div>
 <?php
-if(!$bAntiguo) {
+if($bAntiguo==true) {
 ?>
 <label class="Label450">
 <?php
@@ -5401,13 +5392,7 @@ echo $ETI['cara44acadrazonrecesodetalle'];
 </div>
 <div class="salto1px"></div>
 <?php
-	}else{
-?>
-<input id="cara44acadhatenidorecesos" name="cara44acadhatenidorecesos" type="hidden" value="<?php echo $_REQUEST['cara44acadhatenidorecesos']; ?>"/>
-<input id="cara44acadrazonreceso" name="cara44acadrazonreceso" type="hidden" value="<?php echo $_REQUEST['cara44acadrazonreceso']; ?>"/>
-<input id="cara44acadrazonrecesodetalle" name="cara44acadrazonrecesodetalle" type="hidden" value="<?php echo $_REQUEST['cara44acadrazonrecesodetalle']; ?>"/>
-<?php
-	}
+}
 ?>
 <?php
 echo '<b>'.$ETI['cara01campus'].'</b>';
@@ -5479,7 +5464,7 @@ echo $html_cara01campus_internetreside;
 </label>
 <div class="salto1px"></div>
 <?php
-if(!$bAntiguo) {
+if($bAntiguo==false) {
 ?>
 <label class="Label450">
 <?php
@@ -5493,11 +5478,7 @@ echo $html_cara01campus_expvirtual;
 </label>
 <div class="salto1px"></div>
 <?php
-	}else{
-?>
-<input id="cara01campus_expvirtual" name="cara01campus_expvirtual" type="hidden" value="<?php echo $_REQUEST['cara01campus_expvirtual']; ?>"/>
-<?php
-	}
+}
 ?>
 <label class="Label450">
 <?php
@@ -5511,7 +5492,7 @@ echo $html_cara01campus_ofimatica;
 </label>
 <div class="salto1px"></div>
 <?php
-if(!$bAntiguo) {
+if($bAntiguo==false) {
 ?>
 <label class="Label450">
 <?php
@@ -5525,11 +5506,7 @@ echo $html_cara01campus_foros;
 </label>
 <div class="salto1px"></div>
 <?php
-	}else{
-?>
-<input id="cara01campus_foros" name="cara01campus_foros" type="hidden" value="<?php echo $_REQUEST['cara01campus_foros']; ?>"/>
-<?php
-	}
+}
 ?>
 <label class="Label450">
 <?php
@@ -5543,7 +5520,7 @@ echo $html_cara01campus_conversiones;
 </label>
 <div class="salto1px"></div>
 <?php
-if(!$bAntiguo) {
+if($bAntiguo==false) {
 ?>
 <label class="Label450">
 <?php
@@ -5556,13 +5533,9 @@ echo $html_cara01campus_usocorreo;
 ?>
 </label>
 <div class="salto1px"></div>
-<input id="cara44campus_usocorreounad" name="cara44campus_usocorreounad" type="hidden" value="<?php echo $_REQUEST['cara44campus_usocorreounad']; ?>"/>
-<input id="cara44campus_usocorreounadno" name="cara44campus_usocorreounadno" type="hidden" value="<?php echo $_REQUEST['cara44campus_usocorreounadno']; ?>"/>
-<input id="cara44campus_usocorreounadnodetalle" name="cara44campus_usocorreounadnodetalle" type="hidden" value="<?php echo $_REQUEST['cara44campus_usocorreounadnodetalle']; ?>"/>
 <?php
-	}else{
+} else {
 ?>
-<input id="cara01campus_usocorreo" name="cara01campus_usocorreo" type="hidden" value="<?php echo $_REQUEST['cara01campus_usocorreo']; ?>"/>
 <label class="Label450">
 <?php
 echo $ETI['cara44campus_usocorreounad'];
@@ -5602,7 +5575,7 @@ echo $ETI['cara44campus_usocorreounadnodetalle'];
 </div>
 <div class="salto1px"></div>
 <?php
-	}
+}
 ?>
 <?php
 echo '<b>'.$ETI['cara01campus_aprend'].'</b>';
@@ -5660,7 +5633,7 @@ echo $html_cara01campus_mediocomunica;
 ?>
 </label>
 <?php
-if($bAntiguo) {
+if($bAntiguo==true) {
 ?>
 <div class="salto1px"></div>
 <label class="Label450">
@@ -5684,12 +5657,7 @@ echo $ETI['cara44campus_medioactivunaddetalle'];
 <input id="cara44campus_medioactivunaddetalle" name="cara44campus_medioactivunaddetalle" type="text" value="<?php echo $_REQUEST['cara44campus_medioactivunaddetalle']; ?>" maxlength="200" class="L" placeholder="<?php echo $ETI['ing_campo'].$ETI['cara44campus_medioactivunaddetalle']; ?>"/>
 </label>
 <?php
-	}else{
-?>
-<input id="cara44campus_medioactivunad" name="cara44campus_medioactivunad" type="hidden" value="<?php echo $_REQUEST['cara44campus_medioactivunad']; ?>"/>
-<input id="cara44campus_medioactivunaddetalle" name="cara44campus_medioactivunaddetalle" type="hidden" value="<?php echo $_REQUEST['cara44campus_medioactivunaddetalle']; ?>"/>
-<?php
-	}
+}
 ?>
 <?php
 if ($bEstudiante){
@@ -5907,7 +5875,7 @@ echo $html_cara01lab_debebusctrab;
 <div id="div_lab6"<?php echo $sMuestra6; ?>>
 <label class="Label450">
 <?php
-if(!$bAntiguo) {
+if($bAntiguo==false) {
 	echo $ETI['cara01lab_origendinero'];
 	} else {
 	echo $ETI['cara44lab_origendineroantiguo'];
@@ -6520,47 +6488,6 @@ echo $ETI['cara01bien_amb_temas'];
 <?php
 }else{
 ?>
-<input id="cara01bien_baloncesto" name="cara01bien_baloncesto" type="hidden" value="<?php echo $_REQUEST['cara01bien_baloncesto']; ?>"/>
-<input id="cara01bien_voleibol" name="cara01bien_voleibol" type="hidden" value="<?php echo $_REQUEST['cara01bien_voleibol']; ?>"/>
-<input id="cara01bien_futbolsala" name="cara01bien_futbolsala" type="hidden" value="<?php echo $_REQUEST['cara01bien_futbolsala']; ?>"/>
-<input id="cara01bien_artesmarc" name="cara01bien_artesmarc" type="hidden" value="<?php echo $_REQUEST['cara01bien_artesmarc']; ?>"/>
-<input id="cara01bien_tenisdemesa" name="cara01bien_tenisdemesa" type="hidden" value="<?php echo $_REQUEST['cara01bien_tenisdemesa']; ?>"/>
-<input id="cara01bien_ajedrez" name="cara01bien_ajedrez" type="hidden" value="<?php echo $_REQUEST['cara01bien_ajedrez']; ?>"/>
-<input id="cara01bien_juegosautoc" name="cara01bien_juegosautoc" type="hidden" value="<?php echo $_REQUEST['cara01bien_juegosautoc']; ?>"/>
-<input id="cara01bien_interesrepdeporte" name="cara01bien_interesrepdeporte" type="hidden" value="<?php echo $_REQUEST['cara01bien_interesrepdeporte']; ?>"/>
-<input id="cara01bien_deporteint" name="cara01bien_deporteint" type="hidden" value="<?php echo $_REQUEST['cara01bien_deporteint']; ?>"/>
-<input id="cara01bien_teatro" name="cara01bien_teatro" type="hidden" value="<?php echo $_REQUEST['cara01bien_teatro']; ?>"/>
-<input id="cara01bien_danza" name="cara01bien_danza" type="hidden" value="<?php echo $_REQUEST['cara01bien_danza']; ?>"/>
-<input id="cara01bien_musica" name="cara01bien_musica" type="hidden" value="<?php echo $_REQUEST['cara01bien_musica']; ?>"/>
-<input id="cara01bien_circo" name="cara01bien_circo" type="hidden" value="<?php echo $_REQUEST['cara01bien_circo']; ?>"/>
-<input id="cara01bien_artplast" name="cara01bien_artplast" type="hidden" value="<?php echo $_REQUEST['cara01bien_artplast']; ?>"/>
-<input id="cara01bien_cuenteria" name="cara01bien_cuenteria" type="hidden" value="<?php echo $_REQUEST['cara01bien_cuenteria']; ?>"/>
-<input id="cara01bien_interesreparte" name="cara01bien_interesreparte" type="hidden" value="<?php echo $_REQUEST['cara01bien_interesreparte']; ?>"/>
-<input id="cara01bien_arteint" name="cara01bien_arteint" type="hidden" value="<?php echo $_REQUEST['cara01bien_arteint']; ?>"/>
-<input id="cara01bien_interpreta" name="cara01bien_interpreta" type="hidden" value="<?php echo $_REQUEST['cara01bien_interpreta']; ?>"/>
-<input id="cara01bien_nivelinter" name="cara01bien_nivelinter" type="hidden" value="<?php echo $_REQUEST['cara01bien_nivelinter']; ?>"/>
-<input id="cara01bien_danza_mod" name="cara01bien_danza_mod" type="hidden" value="<?php echo $_REQUEST['cara01bien_danza_mod']; ?>"/>
-<input id="cara01bien_danza_clas" name="cara01bien_danza_clas" type="hidden" value="<?php echo $_REQUEST['cara01bien_danza_clas']; ?>"/>
-<input id="cara01bien_danza_cont" name="cara01bien_danza_cont" type="hidden" value="<?php echo $_REQUEST['cara01bien_danza_cont']; ?>"/>
-<input id="cara01bien_danza_folk" name="cara01bien_danza_folk" type="hidden" value="<?php echo $_REQUEST['cara01bien_danza_folk']; ?>"/>
-<input id="cara01bien_niveldanza" name="cara01bien_niveldanza" type="hidden" value="<?php echo $_REQUEST['cara01bien_niveldanza']; ?>"/>
-<input id="cara01bien_emprendedor" name="cara01bien_emprendedor" type="hidden" value="<?php echo $_REQUEST['cara01bien_emprendedor']; ?>"/>
-<input id="cara01bien_nombreemp" name="cara01bien_nombreemp" type="hidden" value="<?php echo $_REQUEST['cara01bien_nombreemp']; ?>"/>
-<input id="cara01bien_capacempren" name="cara01bien_capacempren" type="hidden" value="<?php echo $_REQUEST['cara01bien_capacempren']; ?>"/>
-<input id="cara01bien_tipocapacita" name="cara01bien_tipocapacita" type="hidden" value="<?php echo $_REQUEST['cara01bien_tipocapacita']; ?>"/>
-<input id="cara01bien_impvidasalud" name="cara01bien_impvidasalud" type="hidden" value="<?php echo $_REQUEST['cara01bien_impvidasalud']; ?>"/>
-<input id="cara01bien_estraautocuid" name="cara01bien_estraautocuid" type="hidden" value="<?php echo $_REQUEST['cara01bien_estraautocuid']; ?>"/>
-<input id="cara01bien_pv_personal" name="cara01bien_pv_personal" type="hidden" value="<?php echo $_REQUEST['cara01bien_pv_personal']; ?>"/>
-<input id="cara01bien_pv_familiar" name="cara01bien_pv_familiar" type="hidden" value="<?php echo $_REQUEST['cara01bien_pv_familiar']; ?>"/>
-<input id="cara01bien_pv_academ" name="cara01bien_pv_academ" type="hidden" value="<?php echo $_REQUEST['cara01bien_pv_academ']; ?>"/>
-<input id="cara01bien_pv_labora" name="cara01bien_pv_labora" type="hidden" value="<?php echo $_REQUEST['cara01bien_pv_labora']; ?>"/>
-<input id="cara01bien_pv_pareja" name="cara01bien_pv_pareja" type="hidden" value="<?php echo $_REQUEST['cara01bien_pv_pareja']; ?>"/>
-<input id="cara01bien_amb" name="cara01bien_amb" type="hidden" value="<?php echo $_REQUEST['cara01bien_amb']; ?>"/>
-<input id="cara01bien_amb_agu" name="cara01bien_amb_agu" type="hidden" value="<?php echo $_REQUEST['cara01bien_amb_agu']; ?>"/>
-<input id="cara01bien_amb_bom" name="cara01bien_amb_bom" type="hidden" value="<?php echo $_REQUEST['cara01bien_amb_bom']; ?>"/>
-<input id="cara01bien_amb_car" name="cara01bien_amb_car" type="hidden" value="<?php echo $_REQUEST['cara01bien_amb_car']; ?>"/>
-<input id="cara01bien_amb_info" name="cara01bien_amb_info" type="hidden" value="<?php echo $_REQUEST['cara01bien_amb_info']; ?>"/>
-<input id="cara01bien_amb_temas" name="cara01bien_amb_temas" type="hidden" value="<?php echo $_REQUEST['cara01bien_amb_temas']; ?>"/>
 <?php
 }
 ?>
@@ -6696,10 +6623,7 @@ echo $ETI['cara44bienv2otrodeportedetalle'];
 <input id="cara44bienv2otrodeportedetalle" name="cara44bienv2otrodeportedetalle" type="text" value="<?php echo $_REQUEST['cara44bienv2otrodeportedetalle']; ?>" maxlength="200" class="L" placeholder="<?php echo $ETI['ing_campo'].$ETI['cara44bienv2otrodeportedetalle']; ?>"/>
 </label>
 <div class="salto1px"></div>
-</div>
-<?php
- // Cierre grupo campos bienestar deportes
-?>
+</div><!--Cierre grupo campos bienestar deportes-->
 <div class="GrupoCampos">
 <label class="TituloGrupo" style="width:100%">
 <?php
@@ -6884,10 +6808,7 @@ echo $ETI['cara44bienv2evenculturalotrodetalle'];
 <input id="cara44bienv2evenculturalotrodetalle" name="cara44bienv2evenculturalotrodetalle" type="text" value="<?php echo $_REQUEST['cara44bienv2evenculturalotrodetalle']; ?>" maxlength="200" class="L" placeholder="<?php echo $ETI['ing_campo'].$ETI['cara44bienv2evenculturalotrodetalle']; ?>"/>
 </label>
 <div class="salto1px"></div>
-</div>
-<?php
- // Cierre grupo campos arte y cultura
-?>
+</div><!--Cierre grupo campos arte y cultura-->
 <div class="GrupoCampos">
 <label class="TituloGrupo" style="width:100%">
 <?php
@@ -7064,10 +6985,7 @@ echo $html_cara44bienv2emprencreacion;
 ?>
 </label>
 <div class="salto1px"></div>
-</div>
-<?php
- // Cierre grupo campos bienestar emprendimiento
-?>
+</div><!--Cierre grupo campos bienestar emprendimiento-->
 <div class="GrupoCampos">
 <label class="TituloGrupo" style="width:100%">
 <?php
@@ -7181,10 +7099,7 @@ echo $html_cara44bienv2saludestado;
 ?>
 </label>
 <div class="salto1px"></div>
-</div>
-<?php
- // Cierre grupo campos bienestar salud
-?>
+</div><!--Cierre grupo campos bienestar salud-->
 <div class="GrupoCampos">
 <label class="TituloGrupo" style="width:100%">
 <?php
@@ -7682,106 +7597,10 @@ echo $ETI['cara44bienv2ambienotroenfoqdetalle'];
 <input id="cara44bienv2ambienotroenfoqdetalle" name="cara44bienv2ambienotroenfoqdetalle" type="text" value="<?php echo $_REQUEST['cara44bienv2ambienotroenfoqdetalle']; ?>" maxlength="200" class="L" placeholder="<?php echo $ETI['ing_campo'].$ETI['cara44bienv2ambienotroenfoqdetalle']; ?>"/>
 </label>
 <div class="salto1px"></div>
-</div>
-<?php
- // Cierre grupo campos bienestar medio ambiente
-?>
+</div><!--Cierre grupo campos bienestar medio ambiente-->
 <?php
 }else{
 ?>
-<input id="cara44bienv2altoren" name="cara44bienv2altoren" type="hidden" value="<?php echo $_REQUEST['cara44bienv2altoren']; ?>"/>
-<input id="cara44bienv2atletismo" name="cara44bienv2atletismo" type="hidden" value="<?php echo $_REQUEST['cara44bienv2atletismo']; ?>"/>
-<input id="cara44bienv2baloncesto" name="cara44bienv2baloncesto" type="hidden" value="<?php echo $_REQUEST['cara44bienv2baloncesto']; ?>"/>
-<input id="cara44bienv2futbol" name="cara44bienv2futbol" type="hidden" value="<?php echo $_REQUEST['cara44bienv2futbol']; ?>"/>
-<input id="cara44bienv2gimnasia" name="cara44bienv2gimnasia" type="hidden" value="<?php echo $_REQUEST['cara44bienv2gimnasia']; ?>"/>
-<input id="cara44bienv2natacion" name="cara44bienv2natacion" type="hidden" value="<?php echo $_REQUEST['cara44bienv2natacion']; ?>"/>
-<input id="cara44bienv2voleibol" name="cara44bienv2voleibol" type="hidden" value="<?php echo $_REQUEST['cara44bienv2voleibol']; ?>"/>
-<input id="cara44bienv2tenis" name="cara44bienv2tenis" type="hidden" value="<?php echo $_REQUEST['cara44bienv2tenis']; ?>"/>
-<input id="cara44bienv2paralimpico" name="cara44bienv2paralimpico" type="hidden" value="<?php echo $_REQUEST['cara44bienv2paralimpico']; ?>"/>
-<input id="cara44bienv2otrodeporte" name="cara44bienv2otrodeporte" type="hidden" value="<?php echo $_REQUEST['cara44bienv2otrodeporte']; ?>"/>
-<input id="cara44bienv2otrodeportedetalle" name="cara44bienv2otrodeportedetalle" type="hidden" value="<?php echo $_REQUEST['cara44bienv2otrodeportedetalle']; ?>"/>
-<input id="cara44bienv2activdanza" name="cara44bienv2activdanza" type="hidden" value="<?php echo $_REQUEST['cara44bienv2activdanza']; ?>"/>
-<input id="cara44bienv2activmusica" name="cara44bienv2activmusica" type="hidden" value="<?php echo $_REQUEST['cara44bienv2activmusica']; ?>"/>
-<input id="cara44bienv2activteatro" name="cara44bienv2activteatro" type="hidden" value="<?php echo $_REQUEST['cara44bienv2activteatro']; ?>"/>
-<input id="cara44bienv2activartes" name="cara44bienv2activartes" type="hidden" value="<?php echo $_REQUEST['cara44bienv2activartes']; ?>"/>
-<input id="cara44bienv2activliteratura" name="cara44bienv2activliteratura" type="hidden" value="<?php echo $_REQUEST['cara44bienv2activliteratura']; ?>"/>
-<input id="cara44bienv2activculturalotra" name="cara44bienv2activculturalotra" type="hidden" value="<?php echo $_REQUEST['cara44bienv2activculturalotra']; ?>"/>
-<input id="cara44bienv2activculturalotradetalle" name="cara44bienv2activculturalotradetalle" type="hidden" value="<?php echo $_REQUEST['cara44bienv2activculturalotradetalle']; ?>"/>
-<input id="cara44bienv2evenfestfolc" name="cara44bienv2evenfestfolc" type="hidden" value="<?php echo $_REQUEST['cara44bienv2evenfestfolc']; ?>"/>
-<input id="cara44bienv2evenexpoarte" name="cara44bienv2evenexpoarte" type="hidden" value="<?php echo $_REQUEST['cara44bienv2evenexpoarte']; ?>"/>
-<input id="cara44bienv2evenhistarte" name="cara44bienv2evenhistarte" type="hidden" value="<?php echo $_REQUEST['cara44bienv2evenhistarte']; ?>"/>
-<input id="cara44bienv2evengalfoto" name="cara44bienv2evengalfoto" type="hidden" value="<?php echo $_REQUEST['cara44bienv2evengalfoto']; ?>"/>
-<input id="cara44bienv2evenliteratura" name="cara44bienv2evenliteratura" type="hidden" value="<?php echo $_REQUEST['cara44bienv2evenliteratura']; ?>"/>
-<input id="cara44bienv2eventeatro" name="cara44bienv2eventeatro" type="hidden" value="<?php echo $_REQUEST['cara44bienv2eventeatro']; ?>"/>
-<input id="cara44bienv2evencine" name="cara44bienv2evencine" type="hidden" value="<?php echo $_REQUEST['cara44bienv2evencine']; ?>"/>
-<input id="cara44bienv2evenculturalotro" name="cara44bienv2evenculturalotro" type="hidden" value="<?php echo $_REQUEST['cara44bienv2evenculturalotro']; ?>"/>
-<input id="cara44bienv2evenculturalotrodetalle" name="cara44bienv2evenculturalotrodetalle" type="hidden" value="<?php echo $_REQUEST['cara44bienv2evenculturalotrodetalle']; ?>"/>
-<input id="cara44bienv2emprendimiento" name="cara44bienv2emprendimiento" type="hidden" value="<?php echo $_REQUEST['cara44bienv2emprendimiento']; ?>"/>
-<input id="cara44bienv2empresa" name="cara44bienv2empresa" type="hidden" value="<?php echo $_REQUEST['cara44bienv2empresa']; ?>"/>
-<input id="cara44bienv2emprenrecursos" name="cara44bienv2emprenrecursos" type="hidden" value="<?php echo $_REQUEST['cara44bienv2emprenrecursos']; ?>"/>
-<input id="cara44bienv2emprenconocim" name="cara44bienv2emprenconocim" type="hidden" value="<?php echo $_REQUEST['cara44bienv2emprenconocim']; ?>"/>
-<input id="cara44bienv2emprenplan" name="cara44bienv2emprenplan" type="hidden" value="<?php echo $_REQUEST['cara44bienv2emprenplan']; ?>"/>
-<input id="cara44bienv2emprenejecutar" name="cara44bienv2emprenejecutar" type="hidden" value="<?php echo $_REQUEST['cara44bienv2emprenejecutar']; ?>"/>
-<input id="cara44bienv2emprenfortconocim" name="cara44bienv2emprenfortconocim" type="hidden" value="<?php echo $_REQUEST['cara44bienv2emprenfortconocim']; ?>"/>
-<input id="cara44bienv2emprenidentproblema" name="cara44bienv2emprenidentproblema" type="hidden" value="<?php echo $_REQUEST['cara44bienv2emprenidentproblema']; ?>"/>
-<input id="cara44bienv2emprenotro" name="cara44bienv2emprenotro" type="hidden" value="<?php echo $_REQUEST['cara44bienv2emprenotro']; ?>"/>
-<input id="cara44bienv2emprenotrodetalle" name="cara44bienv2emprenotrodetalle" type="hidden" value="<?php echo $_REQUEST['cara44bienv2emprenotrodetalle']; ?>"/>
-<input id="cara44bienv2emprenmarketing" name="cara44bienv2emprenmarketing" type="hidden" value="<?php echo $_REQUEST['cara44bienv2emprenmarketing']; ?>"/>
-<input id="cara44bienv2emprenplannegocios" name="cara44bienv2emprenplannegocios" type="hidden" value="<?php echo $_REQUEST['cara44bienv2emprenplannegocios']; ?>"/>
-<input id="cara44bienv2emprenideas" name="cara44bienv2emprenideas" type="hidden" value="<?php echo $_REQUEST['cara44bienv2emprenideas']; ?>"/>
-<input id="cara44bienv2emprencreacion" name="cara44bienv2emprencreacion" type="hidden" value="<?php echo $_REQUEST['cara44bienv2emprencreacion']; ?>"/>
-<input id="cara44bienv2saludfacteconom" name="cara44bienv2saludfacteconom" type="hidden" value="<?php echo $_REQUEST['cara44bienv2saludfacteconom']; ?>"/>
-<input id="cara44bienv2saludpreocupacion" name="cara44bienv2saludpreocupacion" type="hidden" value="<?php echo $_REQUEST['cara44bienv2saludpreocupacion']; ?>"/>
-<input id="cara44bienv2saludconsumosust" name="cara44bienv2saludconsumosust" type="hidden" value="<?php echo $_REQUEST['cara44bienv2saludconsumosust']; ?>"/>
-<input id="cara44bienv2saludinsomnio" name="cara44bienv2saludinsomnio" type="hidden" value="<?php echo $_REQUEST['cara44bienv2saludinsomnio']; ?>"/>
-<input id="cara44bienv2saludclimalab" name="cara44bienv2saludclimalab" type="hidden" value="<?php echo $_REQUEST['cara44bienv2saludclimalab']; ?>"/>
-<input id="cara44bienv2saludalimenta" name="cara44bienv2saludalimenta" type="hidden" value="<?php echo $_REQUEST['cara44bienv2saludalimenta']; ?>"/>
-<input id="cara44bienv2saludemocion" name="cara44bienv2saludemocion" type="hidden" value="<?php echo $_REQUEST['cara44bienv2saludemocion']; ?>"/>
-<input id="cara44bienv2saludestado" name="cara44bienv2saludestado" type="hidden" value="<?php echo $_REQUEST['cara44bienv2saludestado']; ?>"/>
-<input id="cara44bienv2saludmedita" name="cara44bienv2saludmedita" type="hidden" value="<?php echo $_REQUEST['cara44bienv2saludmedita']; ?>"/>
-<input id="cara44bienv2crecimedusexual" name="cara44bienv2crecimedusexual" type="hidden" value="<?php echo $_REQUEST['cara44bienv2crecimedusexual']; ?>"/>
-<input id="cara44bienv2crecimcultciudad" name="cara44bienv2crecimcultciudad" type="hidden" value="<?php echo $_REQUEST['cara44bienv2crecimcultciudad']; ?>"/>
-<input id="cara44bienv2crecimrelpareja" name="cara44bienv2crecimrelpareja" type="hidden" value="<?php echo $_REQUEST['cara44bienv2crecimrelpareja']; ?>"/>
-<input id="cara44bienv2crecimrelinterp" name="cara44bienv2crecimrelinterp" type="hidden" value="<?php echo $_REQUEST['cara44bienv2crecimrelinterp']; ?>"/>
-<input id="cara44bienv2crecimdinamicafam" name="cara44bienv2crecimdinamicafam" type="hidden" value="<?php echo $_REQUEST['cara44bienv2crecimdinamicafam']; ?>"/>
-<input id="cara44bienv2crecimautoestima" name="cara44bienv2crecimautoestima" type="hidden" value="<?php echo $_REQUEST['cara44bienv2crecimautoestima']; ?>"/>
-<input id="cara44bienv2creciminclusion" name="cara44bienv2creciminclusion" type="hidden" value="<?php echo $_REQUEST['cara44bienv2creciminclusion']; ?>"/>
-<input id="cara44bienv2creciminteliemoc" name="cara44bienv2creciminteliemoc" type="hidden" value="<?php echo $_REQUEST['cara44bienv2creciminteliemoc']; ?>"/>
-<input id="cara44bienv2crecimcultural" name="cara44bienv2crecimcultural" type="hidden" value="<?php echo $_REQUEST['cara44bienv2crecimcultural']; ?>"/>
-<input id="cara44bienv2crecimartistico" name="cara44bienv2crecimartistico" type="hidden" value="<?php echo $_REQUEST['cara44bienv2crecimartistico']; ?>"/>
-<input id="cara44bienv2crecimdeporte" name="cara44bienv2crecimdeporte" type="hidden" value="<?php echo $_REQUEST['cara44bienv2crecimdeporte']; ?>"/>
-<input id="cara44bienv2crecimambiente" name="cara44bienv2crecimambiente" type="hidden" value="<?php echo $_REQUEST['cara44bienv2crecimambiente']; ?>"/>
-<input id="cara44bienv2crecimhabsocio" name="cara44bienv2crecimhabsocio" type="hidden" value="<?php echo $_REQUEST['cara44bienv2crecimhabsocio']; ?>"/>
-<input id="cara44bienv2ambienbasura" name="cara44bienv2ambienbasura" type="hidden" value="<?php echo $_REQUEST['cara44bienv2ambienbasura']; ?>"/>
-<input id="cara44bienv2ambienreutiliza" name="cara44bienv2ambienreutiliza" type="hidden" value="<?php echo $_REQUEST['cara44bienv2ambienreutiliza']; ?>"/>
-<input id="cara44bienv2ambienluces" name="cara44bienv2ambienluces" type="hidden" value="<?php echo $_REQUEST['cara44bienv2ambienluces']; ?>"/>
-<input id="cara44bienv2ambienfrutaverd" name="cara44bienv2ambienfrutaverd" type="hidden" value="<?php echo $_REQUEST['cara44bienv2ambienfrutaverd']; ?>"/>
-<input id="cara44bienv2ambienenchufa" name="cara44bienv2ambienenchufa" type="hidden" value="<?php echo $_REQUEST['cara44bienv2ambienenchufa']; ?>"/>
-<input id="cara44bienv2ambiengrifo" name="cara44bienv2ambiengrifo" type="hidden" value="<?php echo $_REQUEST['cara44bienv2ambiengrifo']; ?>"/>
-<input id="cara44bienv2ambienbicicleta" name="cara44bienv2ambienbicicleta" type="hidden" value="<?php echo $_REQUEST['cara44bienv2ambienbicicleta']; ?>"/>
-<input id="cara44bienv2ambientranspub" name="cara44bienv2ambientranspub" type="hidden" value="<?php echo $_REQUEST['cara44bienv2ambientranspub']; ?>"/>
-<input id="cara44bienv2ambienducha" name="cara44bienv2ambienducha" type="hidden" value="<?php echo $_REQUEST['cara44bienv2ambienducha']; ?>"/>
-<input id="cara44bienv2ambiencaminata" name="cara44bienv2ambiencaminata" type="hidden" value="<?php echo $_REQUEST['cara44bienv2ambiencaminata']; ?>"/>
-<input id="cara44bienv2ambiensiembra" name="cara44bienv2ambiensiembra" type="hidden" value="<?php echo $_REQUEST['cara44bienv2ambiensiembra']; ?>"/>
-<input id="cara44bienv2ambienconferencia" name="cara44bienv2ambienconferencia" type="hidden" value="<?php echo $_REQUEST['cara44bienv2ambienconferencia']; ?>"/>
-<input id="cara44bienv2ambienrecicla" name="cara44bienv2ambienrecicla" type="hidden" value="<?php echo $_REQUEST['cara44bienv2ambienrecicla']; ?>"/>
-<input id="cara44bienv2ambienotraactiv" name="cara44bienv2ambienotraactiv" type="hidden" value="<?php echo $_REQUEST['cara44bienv2ambienotraactiv']; ?>"/>
-<input id="cara44bienv2ambienotraactivdetalle" name="cara44bienv2ambienotraactivdetalle" type="hidden" value="<?php echo $_REQUEST['cara44bienv2ambienotraactivdetalle']; ?>"/>
-<input id="cara44bienv2ambienreforest" name="cara44bienv2ambienreforest" type="hidden" value="<?php echo $_REQUEST['cara44bienv2ambienreforest']; ?>"/>
-<input id="cara44bienv2ambienmovilidad" name="cara44bienv2ambienmovilidad" type="hidden" value="<?php echo $_REQUEST['cara44bienv2ambienmovilidad']; ?>"/>
-<input id="cara44bienv2ambienclimatico" name="cara44bienv2ambienclimatico" type="hidden" value="<?php echo $_REQUEST['cara44bienv2ambienclimatico']; ?>"/>
-<input id="cara44bienv2ambienecofemin" name="cara44bienv2ambienecofemin" type="hidden" value="<?php echo $_REQUEST['cara44bienv2ambienecofemin']; ?>"/>
-<input id="cara44bienv2ambienbiodiver" name="cara44bienv2ambienbiodiver" type="hidden" value="<?php echo $_REQUEST['cara44bienv2ambienbiodiver']; ?>"/>
-<input id="cara44bienv2ambienecologia" name="cara44bienv2ambienecologia" type="hidden" value="<?php echo $_REQUEST['cara44bienv2ambienecologia']; ?>"/>
-<input id="cara44bienv2ambieneconomia" name="cara44bienv2ambieneconomia" type="hidden" value="<?php echo $_REQUEST['cara44bienv2ambieneconomia']; ?>"/>
-<input id="cara44bienv2ambienrecnatura" name="cara44bienv2ambienrecnatura" type="hidden" value="<?php echo $_REQUEST['cara44bienv2ambienrecnatura']; ?>"/>
-<input id="cara44bienv2ambienreciclaje" name="cara44bienv2ambienreciclaje" type="hidden" value="<?php echo $_REQUEST['cara44bienv2ambienreciclaje']; ?>"/>
-<input id="cara44bienv2ambienmascota" name="cara44bienv2ambienmascota" type="hidden" value="<?php echo $_REQUEST['cara44bienv2ambienmascota']; ?>"/>
-<input id="cara44bienv2ambiencartohum" name="cara44bienv2ambiencartohum" type="hidden" value="<?php echo $_REQUEST['cara44bienv2ambiencartohum']; ?>"/>
-<input id="cara44bienv2ambienespiritu" name="cara44bienv2ambienespiritu" type="hidden" value="<?php echo $_REQUEST['cara44bienv2ambienespiritu']; ?>"/>
-<input id="cara44bienv2ambiencarga" name="cara44bienv2ambiencarga" type="hidden" value="<?php echo $_REQUEST['cara44bienv2ambiencarga']; ?>"/>
-<input id="cara44bienv2ambienotroenfoq" name="cara44bienv2ambienotroenfoq" type="hidden" value="<?php echo $_REQUEST['cara44bienv2ambienotroenfoq']; ?>"/>
-<input id="cara44bienv2ambienotroenfoqdetalle" name="cara44bienv2ambienotroenfoqdetalle" type="hidden" value="<?php echo $_REQUEST['cara44bienv2ambienotroenfoqdetalle']; ?>"/>
 <?php
 }
 ?>

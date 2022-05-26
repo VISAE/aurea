@@ -3612,14 +3612,14 @@ if ($bEstudiante){
 	$aEstado=array('',$sPendiente,$sPendiente,$sPendiente,$sPendiente,$sPendiente,$sPendiente,$sPendiente,$sPendiente,$sPendiente,$sPendiente,$sPendiente,$sPendiente,$sPendiente);
 	for ($k=1;$k<=13;$k++){
 		if ($_REQUEST[$aTitulo[$k]]>=0){
-			if ($_REQUEST[$aTitulo[$k]]==1){$aEstado[$k]=$sHecho;}	// Ojo Comentar
-			echo '<label><label class="Label220">'.$ETI[$aTitulo[$k]].'</label><a href="javascript:verficha('.$k.');">'.$aEstado[$k].'</a></label>';	// Ojo Comentar
+			//if ($_REQUEST[$aTitulo[$k]]==1){$aEstado[$k]=$sHecho;}
+			//echo '<label><label class="Label220">'.$ETI[$aTitulo[$k]].'</label><a href="javascript:verficha('.$k.');">'.$aEstado[$k].'</a></label>';
 			//febrero 17 de 2022 - Se cambian los botones.
-			/*if ($_REQUEST[$aTitulo[$k]]==1){
+			if ($_REQUEST[$aTitulo[$k]]==1){
 				echo html_BotonVerde('', $ETI[$aTitulo[$k]], 'javascript:verficha('.$k.');', $ETI[$aTitulo[$k]].', '.$aEstado[$k]);
 				}else{
 				echo html_BotonRojo('', $ETI[$aTitulo[$k]], 'javascript:verficha('.$k.');', $ETI[$aTitulo[$k]].', '.$aEstado[$k]);
-				}*/	// Ojo descomentar
+				}
 			}
 		}
 	echo '</div>';

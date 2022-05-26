@@ -68,8 +68,7 @@ function f2301_IniciarEncuesta($idTercero, $idPeriodo, $objDB, $bDebug=false, $b
 	$sError='';
 	$sDebug='';
 	$sCondi='';
-	// $idEntidad=Traer_Entidad();	// Ojo descomentar
-	$idEntidad=0;	// Ojo eliminar
+	$idEntidad=Traer_Entidad();
 	$sDirBase=__DIR__.'/';
 	require $sDirBase.'app.php';
 	if ($idPeriodo!=0){
@@ -78,7 +77,7 @@ function f2301_IniciarEncuesta($idTercero, $idPeriodo, $objDB, $bDebug=false, $b
 			$sCondi=' AND cara01idperaca='.$idPeriodo.'';
 			}
 		}
-	$idPeriodoBaseAntiguos=1141;
+	$idPeriodoBaseAntiguos=1142;
 	$idPeriodoBase=474;
 	if ($idEntidad!=0){
 		$idPeriodoBase=0;
@@ -93,7 +92,8 @@ function f2301_IniciarEncuesta($idTercero, $idPeriodo, $objDB, $bDebug=false, $b
 	if ($objDB->nf($tabla)==0){
 		$bInsertarEncuesta=true;
 		}else{
-
+		/*
+		// @@@
 		// Febrero 24 Se deja inhabilitado hasta que se monte la nueva versión de la caracterización. 
 		//(No olvidar retirar la restriccion a 1143)
 		//Si lleva mas de un año se debe repetir la encuesta pero con el tipo antiguos.
@@ -101,7 +101,7 @@ function f2301_IniciarEncuesta($idTercero, $idPeriodo, $objDB, $bDebug=false, $b
 		$fila=$objDB->sf($tabla);
 		$iFechaUltimaCaracterizacion=$fila['cara01fechaencuesta'];
 		//Ahora tenemos que ver si la fecha de ultima matricula es mayor a un año.
-		$sSQL='SELECT core16fecharecibido, core16peraca FROM core16actamatricula WHERE core16tercero='.$idTercero.' AND core16peraca>'.$idPeriodoBaseAntiguos.'';
+		$sSQL='SELECT core16fecharecibido FROM core16actamatricula WHERE core16tercero='.$idTercero.' AND core16peraca>'.$idPeriodoBaseAntiguos.'';
 		if ($bDebug){$sDebug=$sDebug.fecha_microtiempo().' <b>Caracterizaci&oacute;n</b> Verificando ultima matricula: '.$sSQL.'<br>';}
 		$tabla=$objDB->ejecutasql($sSQL);
 		if ($objDB->nf($tabla)>0){
@@ -111,10 +111,9 @@ function f2301_IniciarEncuesta($idTercero, $idPeriodo, $objDB, $bDebug=false, $b
 				if ($bDebug){$sDebug=$sDebug.fecha_microtiempo().' Se inicia encuenta de antiguo, dias desde la caracterizacion: '.$iDiasSeparacion.'<br>';}
 				$bInsertarEncuesta=true;
 				$cara01tipocaracterizacion=3;
-				$idPeriodo=$fila['core16peraca'];
 				}
 			}
-
+		*/
 		}
 	if ($bInsertarEncuesta){
 		//hacer el insert... Si el periodo viene en 0 hay que buscarlo.
@@ -129,7 +128,7 @@ function f2301_IniciarEncuesta($idTercero, $idPeriodo, $objDB, $bDebug=false, $b
 				}
 			}
 		//Esta condicion se debe retirar cuando se active la prueba version 2022
-		// if ($bPeriodo==1143){$bInsertarEncuesta=false;}	// Ojo descomentar
+		if ($bPeriodo==1143){$bInsertarEncuesta=false;}
 		}
 	if ($bInsertarEncuesta){
 		$cara01fechainicio=fecha_DiaMod();
@@ -173,7 +172,7 @@ function f2301_IniciarEncuesta($idTercero, $idPeriodo, $objDB, $bDebug=false, $b
 			$cara01idprograma=0;
 			$cara01idescuela=0;
 			$cara01idconsejero=0;
-			
+			/*
 			//Cargamos los datos del plan de estudios.
 			$sSQL='SELECT core01idzona, core011idcead, core01idprograma, core01idescuela FROM core01estprograma WHERE core01idtercero='.$idTercero.' AND core01peracainicial='.$idPeriodo.'';
 			if ($bDebug){$sDebug=$sDebug.fecha_microtiempo().' Se traen los datos de la matricula: '.$sSQL.'<br>';}
@@ -202,7 +201,7 @@ function f2301_IniciarEncuesta($idTercero, $idPeriodo, $objDB, $bDebug=false, $b
 						}
 					}
 				}
-			
+			*/
 			if ($cara01tipocaracterizacion==0){
 				$sSQL='SELECT core09idtipocaracterizacion FROM core09programa WHERE core09id='.$cara01idprograma.'';
 				if ($bDebug){$sDebug=$sDebug.fecha_microtiempo().' Se traen los datos del programa: '.$sSQL.'<br>';}
@@ -1265,11 +1264,8 @@ function f2301_db_GuardarV2($DATA, $objDB, $bDebug=false){
 	if (!file_exists($mensajes_todas)){$mensajes_todas=$APP->rutacomun.'lg/lg_todas_es.php';}
 	$mensajes_2301=$APP->rutacomun.'lg/lg_2301_'.$_SESSION['unad_idioma'].'.php';
 	if (!file_exists($mensajes_2301)){$mensajes_2301=$APP->rutacomun.'lg/lg_2301_es.php';}
-	$mensajes_2344=$APP->rutacomun.'lg/lg_2344_'.$_SESSION['unad_idioma'].'.php';
-	if (!file_exists($mensajes_2344)){$mensajes_2344=$APP->rutacomun.'lg/lg_2344_es.php';}
 	require $mensajes_todas;
 	require $mensajes_2301;
-	require $mensajes_2344;
 	$sError='';
 	$iTipoError=0;
 	$sDebug='';
@@ -1949,7 +1945,6 @@ function f2301_db_GuardarV2($DATA, $objDB, $bDebug=false){
 	$aFicha=array('', 'cara01fichaper', 'cara01fichafam', 'cara01fichaaca', 'cara01fichalab', 'cara01fichabien', 'cara01fichapsico', 'cara01fichadigital', 'cara01fichalectura', 'cara01ficharazona', 'cara01fichaingles', 'cara01fichabiolog', 'cara01fichafisica', 'cara01fichaquimica');
 	//Fin de revisar los casos de revision de encabezados
 	$bAntiguo=false;
-	if ($DATA['cara01tipocaracterizacion']==3){$bAntiguo=true;}
 	$sSepara=', ';
 	if ($DATA['ficha']==13){
 		list($sPreguntas, $DATA['cara01nivelquimica'])=f2301_VerificarPreguntas($DATA['cara01id'], 7, $objDB);
@@ -2005,180 +2000,179 @@ function f2301_db_GuardarV2($DATA, $objDB, $bDebug=false){
 			}
 		}
 	if ($DATA['ficha']==5){
-		if ($DATA['cara44bienversion']<2){
-			if ($DATA['cara01bien_amb_info']=='S'){
-				//if ($DATA['cara01bien_amb_temas']==''){$sError=$ERR['cara01bien_amb_temas'].$sSepara.$sError;}
-				}
-			if ($DATA['cara01bien_amb_info']==''){$sError=$ERR['cara01bien_amb_info'].$sSepara.$sError;}
-			if ($DATA['cara01bien_amb_car']==''){$sError=$ERR['cara01bien_amb_car'].$sSepara.$sError;}
-			if ($DATA['cara01bien_amb_bom']==''){$sError=$ERR['cara01bien_amb_bom'].$sSepara.$sError;}
-			if ($DATA['cara01bien_amb_agu']==''){$sError=$ERR['cara01bien_amb_agu'].$sSepara.$sError;}
-			if ($DATA['cara01bien_amb']==''){$sError=$ERR['cara01bien_amb'].$sSepara.$sError;}
-			//if ($DATA['cara01bien_pv_pareja']==''){$sError=$ERR['cara01bien_pv_pareja'].$sSepara.$sError;}
-			//if ($DATA['cara01bien_pv_labora']==''){$sError=$ERR['cara01bien_pv_labora'].$sSepara.$sError;}
-			//if ($DATA['cara01bien_pv_academ']==''){$sError=$ERR['cara01bien_pv_academ'].$sSepara.$sError;}
-			//if ($DATA['cara01bien_pv_familiar']==''){$sError=$ERR['cara01bien_pv_familiar'].$sSepara.$sError;}
-			if ($DATA['cara01bien_pv_personal']==''){$sError=$ERR['cara01bien_pv_personal'].$sSepara.$sError;}
-			if ($DATA['cara01bien_estraautocuid']==''){$sError=$ERR['cara01bien_estraautocuid'].$sSepara.$sError;}
-			if ($DATA['cara01bien_impvidasalud']==''){$sError=$ERR['cara01bien_impvidasalud'].$sSepara.$sError;}
-			if ($DATA['cara01bien_capacempren']=='S'){
-				if ($DATA['cara01bien_tipocapacita']==''){$sError=$ERR['cara01bien_tipocapacita'].$sSepara.$sError;}
-				}
-			if ($DATA['cara01bien_capacempren']==''){$sError=$ERR['cara01bien_capacempren'].$sSepara.$sError;}
-			if ($DATA['cara01bien_emprendedor']=='S'){
-				if ($DATA['cara01bien_nombreemp']==''){$sError=$ERR['cara01bien_nombreemp'].$sSepara.$sError;}
-				}
-			if ($DATA['cara01bien_emprendedor']==''){$sError=$ERR['cara01bien_emprendedor'].$sSepara.$sError;}
-			$bEntra=false;
-			if ($DATA['cara01bien_danza_folk']=='S'){$bEntra=true;}
-			if ($DATA['cara01bien_danza_cont']=='S'){$bEntra=true;}
-			if ($DATA['cara01bien_danza_clas']=='S'){$bEntra=true;}
-			if ($DATA['cara01bien_danza_mod']=='S'){$bEntra=true;}
-			if ($bEntra){
-				if ($DATA['cara01bien_niveldanza']==''){$sError=$ERR['cara01bien_niveldanza'].$sSepara.$sError;}
-				}
-			if ($DATA['cara01bien_danza_folk']==''){$sError=$ERR['cara01bien_danza_folk'].$sSepara.$sError;}
-			if ($DATA['cara01bien_danza_cont']==''){$sError=$ERR['cara01bien_danza_cont'].$sSepara.$sError;}
-			if ($DATA['cara01bien_danza_clas']==''){$sError=$ERR['cara01bien_danza_clas'].$sSepara.$sError;}
-			if ($DATA['cara01bien_danza_mod']==''){$sError=$ERR['cara01bien_danza_mod'].$sSepara.$sError;}
-			$bEntra=false;
-			if ($DATA['cara01bien_interpreta']!=''){
-				if ($DATA['cara01bien_interpreta']!=-1){
-					$bEntra=true;
-					}
-				}
-			if ($bEntra){
-				if ($DATA['cara01bien_nivelinter']==''){$sError=$ERR['cara01bien_nivelinter'].$sSepara.$sError;}
-				}
-			if ($DATA['cara01bien_interpreta']==''){$sError=$ERR['cara01bien_interpreta'].$sSepara.$sError;}
-			if ($DATA['cara01bien_interesreparte']=='S'){
-				if ($DATA['cara01bien_arteint']==''){$sError=$ERR['cara01bien_arteint'].$sSepara.$sError;}
-				}
-			if ($DATA['cara01bien_interesreparte']==''){$sError=$ERR['cara01bien_interesreparte'].$sSepara.$sError;}
-			if ($DATA['cara01bien_cuenteria']==''){$sError=$ERR['cara01bien_cuenteria'].$sSepara.$sError;}
-			if ($DATA['cara01bien_artplast']==''){$sError=$ERR['cara01bien_artplast'].$sSepara.$sError;}
-			if ($DATA['cara01bien_circo']==''){$sError=$ERR['cara01bien_circo'].$sSepara.$sError;}
-			if ($DATA['cara01bien_musica']==''){$sError=$ERR['cara01bien_musica'].$sSepara.$sError;}
-			if ($DATA['cara01bien_danza']==''){$sError=$ERR['cara01bien_danza'].$sSepara.$sError;}
-			if ($DATA['cara01bien_teatro']==''){$sError=$ERR['cara01bien_teatro'].$sSepara.$sError;}
-			if ($DATA['cara01bien_interesrepdeporte']=='S'){
-				if ($DATA['cara01bien_deporteint']==''){$sError=$ERR['cara01bien_deporteint'].$sSepara.$sError;}
-				}
-			if ($DATA['cara01bien_interesrepdeporte']==''){$sError=$ERR['cara01bien_interesrepdeporte'].$sSepara.$sError;}
-			if ($DATA['cara01bien_juegosautoc']==''){$sError=$ERR['cara01bien_juegosautoc'].$sSepara.$sError;}
-			if ($DATA['cara01bien_ajedrez']==''){$sError=$ERR['cara01bien_ajedrez'].$sSepara.$sError;}
-			if ($DATA['cara01bien_tenisdemesa']==''){$sError=$ERR['cara01bien_tenisdemesa'].$sSepara.$sError;}
-			if ($DATA['cara01bien_artesmarc']==''){$sError=$ERR['cara01bien_artesmarc'].$sSepara.$sError;}
-			if ($DATA['cara01bien_futbolsala']==''){$sError=$ERR['cara01bien_futbolsala'].$sSepara.$sError;}
-			if ($DATA['cara01bien_voleibol']==''){$sError=$ERR['cara01bien_voleibol'].$sSepara.$sError;}
-			if ($DATA['cara01bien_baloncesto']==''){$sError=$ERR['cara01bien_baloncesto'].$sSepara.$sError;}
-			}else{
-			if ($DATA['cara44bienv2altoren']==''){$sError=$ERR['cara44bienv2altoren'].$sSepara.$sError;}
-			if ($DATA['cara44bienv2atletismo']==''){$sError=$ERR['cara44bienv2atletismo'].$sSepara.$sError;}
-			if ($DATA['cara44bienv2baloncesto']==''){$sError=$ERR['cara44bienv2baloncesto'].$sSepara.$sError;}
-			if ($DATA['cara44bienv2futbol']==''){$sError=$ERR['cara44bienv2futbol'].$sSepara.$sError;}
-			if ($DATA['cara44bienv2gimnasia']==''){$sError=$ERR['cara44bienv2gimnasia'].$sSepara.$sError;}
-			if ($DATA['cara44bienv2natacion']==''){$sError=$ERR['cara44bienv2natacion'].$sSepara.$sError;}
-			if ($DATA['cara44bienv2voleibol']==''){$sError=$ERR['cara44bienv2voleibol'].$sSepara.$sError;}
-			if ($DATA['cara44bienv2tenis']==''){$sError=$ERR['cara44bienv2tenis'].$sSepara.$sError;}
-			if ($DATA['cara44bienv2paralimpico']==''){$sError=$ERR['cara44bienv2paralimpico'].$sSepara.$sError;}
-			if ($DATA['cara44bienv2otrodeporte']==''){$sError=$ERR['cara44bienv2otrodeporte'].$sSepara.$sError;}
-			if ($DATA['cara44bienv2otrodeporte']=='S'){
-				if ($DATA['cara44bienv2otrodeportedetalle']==''){$sError=$ERR['cara44bienv2otrodeportedetalle'].$sSepara.$sError;}
-				}
-			if ($DATA['cara44bienv2activdanza']==''){$sError=$ERR['cara44bienv2activdanza'].$sSepara.$sError;}
-			if ($DATA['cara44bienv2activmusica']==''){$sError=$ERR['cara44bienv2activmusica'].$sSepara.$sError;}
-			if ($DATA['cara44bienv2activteatro']==''){$sError=$ERR['cara44bienv2activteatro'].$sSepara.$sError;}
-			if ($DATA['cara44bienv2activartes']==''){$sError=$ERR['cara44bienv2activartes'].$sSepara.$sError;}
-			if ($DATA['cara44bienv2activliteratura']==''){$sError=$ERR['cara44bienv2activliteratura'].$sSepara.$sError;}
-			if ($DATA['cara44bienv2activculturalotra']==''){$sError=$ERR['cara44bienv2activculturalotra'].$sSepara.$sError;}
-			if ($DATA['cara44bienv2activculturalotra']=='S'){
-				if ($DATA['cara44bienv2activculturalotradetalle']==''){$sError=$ERR['cara44bienv2activculturalotradetalle'].$sSepara.$sError;}
-				}
-			if ($DATA['cara44bienv2evenfestfolc']==''){$sError=$ERR['cara44bienv2evenfestfolc'].$sSepara.$sError;}
-			if ($DATA['cara44bienv2evenexpoarte']==''){$sError=$ERR['cara44bienv2evenexpoarte'].$sSepara.$sError;}
-			if ($DATA['cara44bienv2evenhistarte']==''){$sError=$ERR['cara44bienv2evenhistarte'].$sSepara.$sError;}
-			if ($DATA['cara44bienv2evengalfoto']==''){$sError=$ERR['cara44bienv2evengalfoto'].$sSepara.$sError;}
-			if ($DATA['cara44bienv2evenliteratura']==''){$sError=$ERR['cara44bienv2evenliteratura'].$sSepara.$sError;}
-			if ($DATA['cara44bienv2eventeatro']==''){$sError=$ERR['cara44bienv2eventeatro'].$sSepara.$sError;}
-			if ($DATA['cara44bienv2evencine']==''){$sError=$ERR['cara44bienv2evencine'].$sSepara.$sError;}
-			if ($DATA['cara44bienv2evenculturalotro']==''){$sError=$ERR['cara44bienv2evenculturalotro'].$sSepara.$sError;}
-			if ($DATA['cara44bienv2evenculturalotro']=='S'){
-				if ($DATA['cara44bienv2evenculturalotrodetalle']==''){$sError=$ERR['cara44bienv2evenculturalotrodetalle'].$sSepara.$sError;}
-				}
-			if ($DATA['cara44bienv2emprendimiento']==''){$sError=$ERR['cara44bienv2emprendimiento'].$sSepara.$sError;}
-			if ($DATA['cara44bienv2empresa']==''){$sError=$ERR['cara44bienv2empresa'].$sSepara.$sError;}
-			if ($DATA['cara44bienv2emprenrecursos']==''){$sError=$ERR['cara44bienv2emprenrecursos'].$sSepara.$sError;}
-			if ($DATA['cara44bienv2emprenconocim']==''){$sError=$ERR['cara44bienv2emprenconocim'].$sSepara.$sError;}
-			if ($DATA['cara44bienv2emprenplan']==''){$sError=$ERR['cara44bienv2emprenplan'].$sSepara.$sError;}
-			if ($DATA['cara44bienv2emprenejecutar']==''){$sError=$ERR['cara44bienv2emprenejecutar'].$sSepara.$sError;}
-			if ($DATA['cara44bienv2emprenfortconocim']==''){$sError=$ERR['cara44bienv2emprenfortconocim'].$sSepara.$sError;}
-			if ($DATA['cara44bienv2emprenidentproblema']==''){$sError=$ERR['cara44bienv2emprenidentproblema'].$sSepara.$sError;}
-			if ($DATA['cara44bienv2emprenotro']==''){$sError=$ERR['cara44bienv2emprenotro'].$sSepara.$sError;}
-			if ($DATA['cara44bienv2emprenotro']=='S'){
-				if ($DATA['cara44bienv2emprenotrodetalle']==''){$sError=$ERR['cara44bienv2emprenotrodetalle'].$sSepara.$sError;}
-				}
-			if ($DATA['cara44bienv2emprenmarketing']==''){$sError=$ERR['cara44bienv2emprenmarketing'].$sSepara.$sError;}
-			if ($DATA['cara44bienv2emprenplannegocios']==''){$sError=$ERR['cara44bienv2emprenplannegocios'].$sSepara.$sError;}
-			if ($DATA['cara44bienv2emprenideas']==''){$sError=$ERR['cara44bienv2emprenideas'].$sSepara.$sError;}
-			if ($DATA['cara44bienv2emprencreacion']==''){$sError=$ERR['cara44bienv2emprencreacion'].$sSepara.$sError;}
-			if ($DATA['cara44bienv2saludfacteconom']==''){$sError=$ERR['cara44bienv2saludfacteconom'].$sSepara.$sError;}
-			if ($DATA['cara44bienv2saludpreocupacion']==''){$sError=$ERR['cara44bienv2saludpreocupacion'].$sSepara.$sError;}
-			if ($DATA['cara44bienv2saludconsumosust']==''){$sError=$ERR['cara44bienv2saludconsumosust'].$sSepara.$sError;}
-			if ($DATA['cara44bienv2saludinsomnio']==''){$sError=$ERR['cara44bienv2saludinsomnio'].$sSepara.$sError;}
-			if ($DATA['cara44bienv2saludclimalab']==''){$sError=$ERR['cara44bienv2saludclimalab'].$sSepara.$sError;}
-			if ($DATA['cara44bienv2saludalimenta']==''){$sError=$ERR['cara44bienv2saludalimenta'].$sSepara.$sError;}
-			if ($DATA['cara44bienv2saludemocion']==''){$sError=$ERR['cara44bienv2saludemocion'].$sSepara.$sError;}
-			if ($DATA['cara44bienv2saludestado']==''){$sError=$ERR['cara44bienv2saludestado'].$sSepara.$sError;}
-			if ($DATA['cara44bienv2saludmedita']==''){$sError=$ERR['cara44bienv2saludmedita'].$sSepara.$sError;}
-			if ($DATA['cara44bienv2crecimedusexual']==''){$sError=$ERR['cara44bienv2crecimedusexual'].$sSepara.$sError;}
-			if ($DATA['cara44bienv2crecimcultciudad']==''){$sError=$ERR['cara44bienv2crecimcultciudad'].$sSepara.$sError;}
-			if ($DATA['cara44bienv2crecimrelpareja']==''){$sError=$ERR['cara44bienv2crecimrelpareja'].$sSepara.$sError;}
-			if ($DATA['cara44bienv2crecimrelinterp']==''){$sError=$ERR['cara44bienv2crecimrelinterp'].$sSepara.$sError;}
-			if ($DATA['cara44bienv2crecimdinamicafam']==''){$sError=$ERR['cara44bienv2crecimdinamicafam'].$sSepara.$sError;}
-			if ($DATA['cara44bienv2crecimautoestima']==''){$sError=$ERR['cara44bienv2crecimautoestima'].$sSepara.$sError;}
-			if ($DATA['cara44bienv2creciminclusion']==''){$sError=$ERR['cara44bienv2creciminclusion'].$sSepara.$sError;}
-			if ($DATA['cara44bienv2creciminteliemoc']==''){$sError=$ERR['cara44bienv2creciminteliemoc'].$sSepara.$sError;}
-			if ($DATA['cara44bienv2crecimcultural']==''){$sError=$ERR['cara44bienv2crecimcultural'].$sSepara.$sError;}
-			if ($DATA['cara44bienv2crecimartistico']==''){$sError=$ERR['cara44bienv2crecimartistico'].$sSepara.$sError;}
-			if ($DATA['cara44bienv2crecimdeporte']==''){$sError=$ERR['cara44bienv2crecimdeporte'].$sSepara.$sError;}
-			if ($DATA['cara44bienv2crecimambiente']==''){$sError=$ERR['cara44bienv2crecimambiente'].$sSepara.$sError;}
-			if ($DATA['cara44bienv2crecimhabsocio']==''){$sError=$ERR['cara44bienv2crecimhabsocio'].$sSepara.$sError;}
-			if ($DATA['cara44bienv2ambienbasura']==''){$sError=$ERR['cara44bienv2ambienbasura'].$sSepara.$sError;}
-			if ($DATA['cara44bienv2ambienreutiliza']==''){$sError=$ERR['cara44bienv2ambienreutiliza'].$sSepara.$sError;}
-			if ($DATA['cara44bienv2ambienluces']==''){$sError=$ERR['cara44bienv2ambienluces'].$sSepara.$sError;}
-			if ($DATA['cara44bienv2ambienfrutaverd']==''){$sError=$ERR['cara44bienv2ambienfrutaverd'].$sSepara.$sError;}
-			if ($DATA['cara44bienv2ambienenchufa']==''){$sError=$ERR['cara44bienv2ambienenchufa'].$sSepara.$sError;}
-			if ($DATA['cara44bienv2ambiengrifo']==''){$sError=$ERR['cara44bienv2ambiengrifo'].$sSepara.$sError;}
-			if ($DATA['cara44bienv2ambienbicicleta']==''){$sError=$ERR['cara44bienv2ambienbicicleta'].$sSepara.$sError;}
-			if ($DATA['cara44bienv2ambientranspub']==''){$sError=$ERR['cara44bienv2ambientranspub'].$sSepara.$sError;}
-			if ($DATA['cara44bienv2ambienducha']==''){$sError=$ERR['cara44bienv2ambienducha'].$sSepara.$sError;}
-			if ($DATA['cara44bienv2ambiencaminata']==''){$sError=$ERR['cara44bienv2ambiencaminata'].$sSepara.$sError;}
-			if ($DATA['cara44bienv2ambiensiembra']==''){$sError=$ERR['cara44bienv2ambiensiembra'].$sSepara.$sError;}
-			if ($DATA['cara44bienv2ambienconferencia']==''){$sError=$ERR['cara44bienv2ambienconferencia'].$sSepara.$sError;}
-			if ($DATA['cara44bienv2ambienrecicla']==''){$sError=$ERR['cara44bienv2ambienrecicla'].$sSepara.$sError;}
-			if ($DATA['cara44bienv2ambienotraactiv']==''){$sError=$ERR['cara44bienv2ambienotraactiv'].$sSepara.$sError;}
-			if ($DATA['cara44bienv2ambienotraactiv']=='S'){
-				if ($DATA['cara44bienv2ambienotraactivdetalle']==''){$sError=$ERR['cara44bienv2ambienotraactivdetalle'].$sSepara.$sError;}
-				}
-			if ($DATA['cara44bienv2ambienreforest']==''){$sError=$ERR['cara44bienv2ambienreforest'].$sSepara.$sError;}
-			if ($DATA['cara44bienv2ambienmovilidad']==''){$sError=$ERR['cara44bienv2ambienmovilidad'].$sSepara.$sError;}
-			if ($DATA['cara44bienv2ambienclimatico']==''){$sError=$ERR['cara44bienv2ambienclimatico'].$sSepara.$sError;}
-			if ($DATA['cara44bienv2ambienecofemin']==''){$sError=$ERR['cara44bienv2ambienecofemin'].$sSepara.$sError;}
-			if ($DATA['cara44bienv2ambienbiodiver']==''){$sError=$ERR['cara44bienv2ambienbiodiver'].$sSepara.$sError;}
-			if ($DATA['cara44bienv2ambienecologia']==''){$sError=$ERR['cara44bienv2ambienecologia'].$sSepara.$sError;}
-			if ($DATA['cara44bienv2ambieneconomia']==''){$sError=$ERR['cara44bienv2ambieneconomia'].$sSepara.$sError;}
-			if ($DATA['cara44bienv2ambienrecnatura']==''){$sError=$ERR['cara44bienv2ambienrecnatura'].$sSepara.$sError;}
-			if ($DATA['cara44bienv2ambienreciclaje']==''){$sError=$ERR['cara44bienv2ambienreciclaje'].$sSepara.$sError;}
-			if ($DATA['cara44bienv2ambienmascota']==''){$sError=$ERR['cara44bienv2ambienmascota'].$sSepara.$sError;}
-			if ($DATA['cara44bienv2ambiencartohum']==''){$sError=$ERR['cara44bienv2ambiencartohum'].$sSepara.$sError;}
-			if ($DATA['cara44bienv2ambienespiritu']==''){$sError=$ERR['cara44bienv2ambienespiritu'].$sSepara.$sError;}
-			if ($DATA['cara44bienv2ambiencarga']==''){$sError=$ERR['cara44bienv2ambiencarga'].$sSepara.$sError;}
-			if ($DATA['cara44bienv2ambienotroenfoq']==''){$sError=$ERR['cara44bienv2ambienotroenfoq'].$sSepara.$sError;}
-			if ($DATA['cara44bienv2ambienotroenfoq']=='S'){
-				if ($DATA['cara44bienv2ambienotroenfoqdetalle']==''){$sError=$ERR['cara44bienv2ambienotroenfoqdetalle'].$sSepara.$sError;}
+		if ($DATA['cara01bien_amb_info']=='S'){
+			//if ($DATA['cara01bien_amb_temas']==''){$sError=$ERR['cara01bien_amb_temas'].$sSepara.$sError;}
+			}
+		if ($DATA['cara01bien_amb_info']==''){$sError=$ERR['cara01bien_amb_info'].$sSepara.$sError;}
+		if ($DATA['cara01bien_amb_car']==''){$sError=$ERR['cara01bien_amb_car'].$sSepara.$sError;}
+		if ($DATA['cara01bien_amb_bom']==''){$sError=$ERR['cara01bien_amb_bom'].$sSepara.$sError;}
+		if ($DATA['cara01bien_amb_agu']==''){$sError=$ERR['cara01bien_amb_agu'].$sSepara.$sError;}
+		if ($DATA['cara01bien_amb']==''){$sError=$ERR['cara01bien_amb'].$sSepara.$sError;}
+		//if ($DATA['cara01bien_pv_pareja']==''){$sError=$ERR['cara01bien_pv_pareja'].$sSepara.$sError;}
+		//if ($DATA['cara01bien_pv_labora']==''){$sError=$ERR['cara01bien_pv_labora'].$sSepara.$sError;}
+		//if ($DATA['cara01bien_pv_academ']==''){$sError=$ERR['cara01bien_pv_academ'].$sSepara.$sError;}
+		//if ($DATA['cara01bien_pv_familiar']==''){$sError=$ERR['cara01bien_pv_familiar'].$sSepara.$sError;}
+		if ($DATA['cara01bien_pv_personal']==''){$sError=$ERR['cara01bien_pv_personal'].$sSepara.$sError;}
+		if ($DATA['cara01bien_estraautocuid']==''){$sError=$ERR['cara01bien_estraautocuid'].$sSepara.$sError;}
+		if ($DATA['cara01bien_impvidasalud']==''){$sError=$ERR['cara01bien_impvidasalud'].$sSepara.$sError;}
+		if ($DATA['cara01bien_capacempren']=='S'){
+			if ($DATA['cara01bien_tipocapacita']==''){$sError=$ERR['cara01bien_tipocapacita'].$sSepara.$sError;}
+			}
+		if ($DATA['cara01bien_capacempren']==''){$sError=$ERR['cara01bien_capacempren'].$sSepara.$sError;}
+		if ($DATA['cara01bien_emprendedor']=='S'){
+			if ($DATA['cara01bien_nombreemp']==''){$sError=$ERR['cara01bien_nombreemp'].$sSepara.$sError;}
+			}
+		if ($DATA['cara01bien_emprendedor']==''){$sError=$ERR['cara01bien_emprendedor'].$sSepara.$sError;}
+		$bEntra=false;
+		if ($DATA['cara01bien_danza_folk']=='S'){$bEntra=true;}
+		if ($DATA['cara01bien_danza_cont']=='S'){$bEntra=true;}
+		if ($DATA['cara01bien_danza_clas']=='S'){$bEntra=true;}
+		if ($DATA['cara01bien_danza_mod']=='S'){$bEntra=true;}
+		if ($bEntra){
+			if ($DATA['cara01bien_niveldanza']==''){$sError=$ERR['cara01bien_niveldanza'].$sSepara.$sError;}
+			}
+		if ($DATA['cara01bien_danza_folk']==''){$sError=$ERR['cara01bien_danza_folk'].$sSepara.$sError;}
+		if ($DATA['cara01bien_danza_cont']==''){$sError=$ERR['cara01bien_danza_cont'].$sSepara.$sError;}
+		if ($DATA['cara01bien_danza_clas']==''){$sError=$ERR['cara01bien_danza_clas'].$sSepara.$sError;}
+		if ($DATA['cara01bien_danza_mod']==''){$sError=$ERR['cara01bien_danza_mod'].$sSepara.$sError;}
+		$bEntra=false;
+		if ($DATA['cara01bien_interpreta']!=''){
+			if ($DATA['cara01bien_interpreta']!=-1){
+				$bEntra=true;
 				}
 			}
+		if ($bEntra){
+			if ($DATA['cara01bien_nivelinter']==''){$sError=$ERR['cara01bien_nivelinter'].$sSepara.$sError;}
+			}
+		if ($DATA['cara01bien_interpreta']==''){$sError=$ERR['cara01bien_interpreta'].$sSepara.$sError;}
+		if ($DATA['cara01bien_interesreparte']=='S'){
+			if ($DATA['cara01bien_arteint']==''){$sError=$ERR['cara01bien_arteint'].$sSepara.$sError;}
+			}
+		if ($DATA['cara01bien_interesreparte']==''){$sError=$ERR['cara01bien_interesreparte'].$sSepara.$sError;}
+		if ($DATA['cara01bien_cuenteria']==''){$sError=$ERR['cara01bien_cuenteria'].$sSepara.$sError;}
+		if ($DATA['cara01bien_artplast']==''){$sError=$ERR['cara01bien_artplast'].$sSepara.$sError;}
+		if ($DATA['cara01bien_circo']==''){$sError=$ERR['cara01bien_circo'].$sSepara.$sError;}
+		if ($DATA['cara01bien_musica']==''){$sError=$ERR['cara01bien_musica'].$sSepara.$sError;}
+		if ($DATA['cara01bien_danza']==''){$sError=$ERR['cara01bien_danza'].$sSepara.$sError;}
+		if ($DATA['cara01bien_teatro']==''){$sError=$ERR['cara01bien_teatro'].$sSepara.$sError;}
+		if ($DATA['cara01bien_interesrepdeporte']=='S'){
+			if ($DATA['cara01bien_deporteint']==''){$sError=$ERR['cara01bien_deporteint'].$sSepara.$sError;}
+			}
+		if ($DATA['cara01bien_interesrepdeporte']==''){$sError=$ERR['cara01bien_interesrepdeporte'].$sSepara.$sError;}
+		if ($DATA['cara01bien_juegosautoc']==''){$sError=$ERR['cara01bien_juegosautoc'].$sSepara.$sError;}
+		if ($DATA['cara01bien_ajedrez']==''){$sError=$ERR['cara01bien_ajedrez'].$sSepara.$sError;}
+		if ($DATA['cara01bien_tenisdemesa']==''){$sError=$ERR['cara01bien_tenisdemesa'].$sSepara.$sError;}
+		if ($DATA['cara01bien_artesmarc']==''){$sError=$ERR['cara01bien_artesmarc'].$sSepara.$sError;}
+		if ($DATA['cara01bien_futbolsala']==''){$sError=$ERR['cara01bien_futbolsala'].$sSepara.$sError;}
+		if ($DATA['cara01bien_voleibol']==''){$sError=$ERR['cara01bien_voleibol'].$sSepara.$sError;}
+		if ($DATA['cara01bien_baloncesto']==''){$sError=$ERR['cara01bien_baloncesto'].$sSepara.$sError;}
+
+//@@@@ - Se debe cosiderar que las validaciones va de acuerdo con la version
+		if ($DATA['cara44bienv2altoren']==''){$sError=$ERR['cara44bienv2altoren'].$sSepara.$sError;}
+		if ($DATA['cara44bienv2atletismo']==''){$sError=$ERR['cara44bienv2atletismo'].$sSepara.$sError;}
+		if ($DATA['cara44bienv2baloncesto']==''){$sError=$ERR['cara44bienv2baloncesto'].$sSepara.$sError;}
+		if ($DATA['cara44bienv2futbol']==''){$sError=$ERR['cara44bienv2futbol'].$sSepara.$sError;}
+		if ($DATA['cara44bienv2gimnasia']==''){$sError=$ERR['cara44bienv2gimnasia'].$sSepara.$sError;}
+		if ($DATA['cara44bienv2natacion']==''){$sError=$ERR['cara44bienv2natacion'].$sSepara.$sError;}
+		if ($DATA['cara44bienv2voleibol']==''){$sError=$ERR['cara44bienv2voleibol'].$sSepara.$sError;}
+		if ($DATA['cara44bienv2tenis']==''){$sError=$ERR['cara44bienv2tenis'].$sSepara.$sError;}
+		if ($DATA['cara44bienv2paralimpico']==''){$sError=$ERR['cara44bienv2paralimpico'].$sSepara.$sError;}
+		if ($DATA['cara44bienv2otrodeporte']==''){$sError=$ERR['cara44bienv2otrodeporte'].$sSepara.$sError;}
+		if ($DATA['cara44bienv2otrodeporte']=='S'){
+			if ($DATA['cara44bienv2otrodeportedetalle']==''){$sError=$ERR['cara44bienv2otrodeportedetalle'].$sSepara.$sError;}
+			}
+		if ($DATA['cara44bienv2activdanza']==''){$sError=$ERR['cara44bienv2activdanza'].$sSepara.$sError;}
+		if ($DATA['cara44bienv2activmusica']==''){$sError=$ERR['cara44bienv2activmusica'].$sSepara.$sError;}
+		if ($DATA['cara44bienv2activteatro']==''){$sError=$ERR['cara44bienv2activteatro'].$sSepara.$sError;}
+		if ($DATA['cara44bienv2activartes']==''){$sError=$ERR['cara44bienv2activartes'].$sSepara.$sError;}
+		if ($DATA['cara44bienv2activliteratura']==''){$sError=$ERR['cara44bienv2activliteratura'].$sSepara.$sError;}
+		if ($DATA['cara44bienv2activculturalotra']==''){$sError=$ERR['cara44bienv2activculturalotra'].$sSepara.$sError;}
+		if ($DATA['cara44bienv2activculturalotra']=='S'){
+			if ($DATA['cara44bienv2activculturalotradetalle']==''){$sError=$ERR['cara44bienv2activculturalotradetalle'].$sSepara.$sError;}
+			}
+		if ($DATA['cara44bienv2evenfestfolc']==''){$sError=$ERR['cara44bienv2evenfestfolc'].$sSepara.$sError;}
+		if ($DATA['cara44bienv2evenexpoarte']==''){$sError=$ERR['cara44bienv2evenexpoarte'].$sSepara.$sError;}
+		if ($DATA['cara44bienv2evenhistarte']==''){$sError=$ERR['cara44bienv2evenhistarte'].$sSepara.$sError;}
+		if ($DATA['cara44bienv2evengalfoto']==''){$sError=$ERR['cara44bienv2evengalfoto'].$sSepara.$sError;}
+		if ($DATA['cara44bienv2evenliteratura']==''){$sError=$ERR['cara44bienv2evenliteratura'].$sSepara.$sError;}
+		if ($DATA['cara44bienv2eventeatro']==''){$sError=$ERR['cara44bienv2eventeatro'].$sSepara.$sError;}
+		if ($DATA['cara44bienv2evencine']==''){$sError=$ERR['cara44bienv2evencine'].$sSepara.$sError;}
+		if ($DATA['cara44bienv2evenculturalotro']==''){$sError=$ERR['cara44bienv2evenculturalotro'].$sSepara.$sError;}
+		if ($DATA['cara44bienv2evenculturalotro']=='S'){
+			if ($DATA['cara44bienv2evenculturalotrodetalle']==''){$sError=$ERR['cara44bienv2evenculturalotrodetalle'].$sSepara.$sError;}
+			}
+		if ($DATA['cara44bienv2emprendimiento']==''){$sError=$ERR['cara44bienv2emprendimiento'].$sSepara.$sError;}
+		if ($DATA['cara44bienv2empresa']==''){$sError=$ERR['cara44bienv2empresa'].$sSepara.$sError;}
+		if ($DATA['cara44bienv2emprenrecursos']==''){$sError=$ERR['cara44bienv2emprenrecursos'].$sSepara.$sError;}
+		if ($DATA['cara44bienv2emprenconocim']==''){$sError=$ERR['cara44bienv2emprenconocim'].$sSepara.$sError;}
+		if ($DATA['cara44bienv2emprenplan']==''){$sError=$ERR['cara44bienv2emprenplan'].$sSepara.$sError;}
+		if ($DATA['cara44bienv2emprenejecutar']==''){$sError=$ERR['cara44bienv2emprenejecutar'].$sSepara.$sError;}
+		if ($DATA['cara44bienv2emprenfortconocim']==''){$sError=$ERR['cara44bienv2emprenfortconocim'].$sSepara.$sError;}
+		if ($DATA['cara44bienv2emprenidentproblema']==''){$sError=$ERR['cara44bienv2emprenidentproblema'].$sSepara.$sError;}
+		if ($DATA['cara44bienv2emprenotro']==''){$sError=$ERR['cara44bienv2emprenotro'].$sSepara.$sError;}
+		if ($DATA['cara44bienv2emprenotro']=='S'){
+			if ($DATA['cara44bienv2emprenotrodetalle']==''){$sError=$ERR['cara44bienv2emprenotrodetalle'].$sSepara.$sError;}
+			}
+		if ($DATA['cara44bienv2emprenmarketing']==''){$sError=$ERR['cara44bienv2emprenmarketing'].$sSepara.$sError;}
+		if ($DATA['cara44bienv2emprenplannegocios']==''){$sError=$ERR['cara44bienv2emprenplannegocios'].$sSepara.$sError;}
+		if ($DATA['cara44bienv2emprenideas']==''){$sError=$ERR['cara44bienv2emprenideas'].$sSepara.$sError;}
+		if ($DATA['cara44bienv2emprencreacion']==''){$sError=$ERR['cara44bienv2emprencreacion'].$sSepara.$sError;}
+		if ($DATA['cara44bienv2saludfacteconom']==''){$sError=$ERR['cara44bienv2saludfacteconom'].$sSepara.$sError;}
+		if ($DATA['cara44bienv2saludpreocupacion']==''){$sError=$ERR['cara44bienv2saludpreocupacion'].$sSepara.$sError;}
+		if ($DATA['cara44bienv2saludconsumosust']==''){$sError=$ERR['cara44bienv2saludconsumosust'].$sSepara.$sError;}
+		if ($DATA['cara44bienv2saludinsomnio']==''){$sError=$ERR['cara44bienv2saludinsomnio'].$sSepara.$sError;}
+		if ($DATA['cara44bienv2saludclimalab']==''){$sError=$ERR['cara44bienv2saludclimalab'].$sSepara.$sError;}
+		if ($DATA['cara44bienv2saludalimenta']==''){$sError=$ERR['cara44bienv2saludalimenta'].$sSepara.$sError;}
+		if ($DATA['cara44bienv2saludemocion']==''){$sError=$ERR['cara44bienv2saludemocion'].$sSepara.$sError;}
+		if ($DATA['cara44bienv2saludestado']==''){$sError=$ERR['cara44bienv2saludestado'].$sSepara.$sError;}
+		if ($DATA['cara44bienv2saludmedita']==''){$sError=$ERR['cara44bienv2saludmedita'].$sSepara.$sError;}
+		if ($DATA['cara44bienv2crecimedusexual']==''){$sError=$ERR['cara44bienv2crecimedusexual'].$sSepara.$sError;}
+		if ($DATA['cara44bienv2crecimcultciudad']==''){$sError=$ERR['cara44bienv2crecimcultciudad'].$sSepara.$sError;}
+		if ($DATA['cara44bienv2crecimrelpareja']==''){$sError=$ERR['cara44bienv2crecimrelpareja'].$sSepara.$sError;}
+		if ($DATA['cara44bienv2crecimrelinterp']==''){$sError=$ERR['cara44bienv2crecimrelinterp'].$sSepara.$sError;}
+		if ($DATA['cara44bienv2crecimdinamicafam']==''){$sError=$ERR['cara44bienv2crecimdinamicafam'].$sSepara.$sError;}
+		if ($DATA['cara44bienv2crecimautoestima']==''){$sError=$ERR['cara44bienv2crecimautoestima'].$sSepara.$sError;}
+		if ($DATA['cara44bienv2creciminclusion']==''){$sError=$ERR['cara44bienv2creciminclusion'].$sSepara.$sError;}
+		if ($DATA['cara44bienv2creciminteliemoc']==''){$sError=$ERR['cara44bienv2creciminteliemoc'].$sSepara.$sError;}
+		if ($DATA['cara44bienv2crecimcultural']==''){$sError=$ERR['cara44bienv2crecimcultural'].$sSepara.$sError;}
+		if ($DATA['cara44bienv2crecimartistico']==''){$sError=$ERR['cara44bienv2crecimartistico'].$sSepara.$sError;}
+		if ($DATA['cara44bienv2crecimdeporte']==''){$sError=$ERR['cara44bienv2crecimdeporte'].$sSepara.$sError;}
+		if ($DATA['cara44bienv2crecimambiente']==''){$sError=$ERR['cara44bienv2crecimambiente'].$sSepara.$sError;}
+		if ($DATA['cara44bienv2crecimhabsocio']==''){$sError=$ERR['cara44bienv2crecimhabsocio'].$sSepara.$sError;}
+		if ($DATA['cara44bienv2ambienbasura']==''){$sError=$ERR['cara44bienv2ambienbasura'].$sSepara.$sError;}
+		if ($DATA['cara44bienv2ambienreutiliza']==''){$sError=$ERR['cara44bienv2ambienreutiliza'].$sSepara.$sError;}
+		if ($DATA['cara44bienv2ambienluces']==''){$sError=$ERR['cara44bienv2ambienluces'].$sSepara.$sError;}
+		if ($DATA['cara44bienv2ambienfrutaverd']==''){$sError=$ERR['cara44bienv2ambienfrutaverd'].$sSepara.$sError;}
+		if ($DATA['cara44bienv2ambienenchufa']==''){$sError=$ERR['cara44bienv2ambienenchufa'].$sSepara.$sError;}
+		if ($DATA['cara44bienv2ambiengrifo']==''){$sError=$ERR['cara44bienv2ambiengrifo'].$sSepara.$sError;}
+		if ($DATA['cara44bienv2ambienbicicleta']==''){$sError=$ERR['cara44bienv2ambienbicicleta'].$sSepara.$sError;}
+		if ($DATA['cara44bienv2ambientranspub']==''){$sError=$ERR['cara44bienv2ambientranspub'].$sSepara.$sError;}
+		if ($DATA['cara44bienv2ambienducha']==''){$sError=$ERR['cara44bienv2ambienducha'].$sSepara.$sError;}
+		if ($DATA['cara44bienv2ambiencaminata']==''){$sError=$ERR['cara44bienv2ambiencaminata'].$sSepara.$sError;}
+		if ($DATA['cara44bienv2ambiensiembra']==''){$sError=$ERR['cara44bienv2ambiensiembra'].$sSepara.$sError;}
+		if ($DATA['cara44bienv2ambienconferencia']==''){$sError=$ERR['cara44bienv2ambienconferencia'].$sSepara.$sError;}
+		if ($DATA['cara44bienv2ambienrecicla']==''){$sError=$ERR['cara44bienv2ambienrecicla'].$sSepara.$sError;}
+		if ($DATA['cara44bienv2ambienotraactiv']==''){$sError=$ERR['cara44bienv2ambienotraactiv'].$sSepara.$sError;}
+		if ($DATA['cara44bienv2ambienotraactiv']=='S'){
+			if ($DATA['cara44bienv2ambienotraactivdetalle']==''){$sError=$ERR['cara44bienv2ambienotraactivdetalle'].$sSepara.$sError;}
+			}
+		if ($DATA['cara44bienv2ambienreforest']==''){$sError=$ERR['cara44bienv2ambienreforest'].$sSepara.$sError;}
+		if ($DATA['cara44bienv2ambienmovilidad']==''){$sError=$ERR['cara44bienv2ambienmovilidad'].$sSepara.$sError;}
+		if ($DATA['cara44bienv2ambienclimatico']==''){$sError=$ERR['cara44bienv2ambienclimatico'].$sSepara.$sError;}
+		if ($DATA['cara44bienv2ambienecofemin']==''){$sError=$ERR['cara44bienv2ambienecofemin'].$sSepara.$sError;}
+		if ($DATA['cara44bienv2ambienbiodiver']==''){$sError=$ERR['cara44bienv2ambienbiodiver'].$sSepara.$sError;}
+		if ($DATA['cara44bienv2ambienecologia']==''){$sError=$ERR['cara44bienv2ambienecologia'].$sSepara.$sError;}
+		if ($DATA['cara44bienv2ambieneconomia']==''){$sError=$ERR['cara44bienv2ambieneconomia'].$sSepara.$sError;}
+		if ($DATA['cara44bienv2ambienrecnatura']==''){$sError=$ERR['cara44bienv2ambienrecnatura'].$sSepara.$sError;}
+		if ($DATA['cara44bienv2ambienreciclaje']==''){$sError=$ERR['cara44bienv2ambienreciclaje'].$sSepara.$sError;}
+		if ($DATA['cara44bienv2ambienmascota']==''){$sError=$ERR['cara44bienv2ambienmascota'].$sSepara.$sError;}
+		if ($DATA['cara44bienv2ambiencartohum']==''){$sError=$ERR['cara44bienv2ambiencartohum'].$sSepara.$sError;}
+		if ($DATA['cara44bienv2ambienespiritu']==''){$sError=$ERR['cara44bienv2ambienespiritu'].$sSepara.$sError;}
+		if ($DATA['cara44bienv2ambiencarga']==''){$sError=$ERR['cara44bienv2ambiencarga'].$sSepara.$sError;}
+		if ($DATA['cara44bienv2ambienotroenfoq']==''){$sError=$ERR['cara44bienv2ambienotroenfoq'].$sSepara.$sError;}
+		if ($DATA['cara44bienv2ambienotroenfoq']=='S'){
+			if ($DATA['cara44bienv2ambienotroenfoqdetalle']==''){$sError=$ERR['cara44bienv2ambienotroenfoqdetalle'].$sSepara.$sError;}
+			}		
 		if ($sError!=''){$DATA['cara01fichabien']=0;}
 		}
 	if ($DATA['ficha']==4){
@@ -2312,11 +2306,7 @@ function f2301_db_GuardarV2($DATA, $objDB, $bDebug=false){
 		if ($DATA['cara01fam_dependeecon']==''){$sError=$ERR['cara01fam_dependeecon'].$sSepara.$sError;}
 		if ($DATA['cara01fam_personasacargo']==''){$sError=$ERR['cara01fam_personasacargo'].$sSepara.$sError;}
 		if ($DATA['cara01fam_hijos']==''){$sError=$ERR['cara01fam_hijos'].$sSepara.$sError;}
-		$bTieneHijos=false;
-		$bFemenino=false;
-		if ($DATA['cara01fam_hijos']>=1 && $DATA['cara01fam_hijos']<=4){$bTieneHijos=true;}
-		if ($DATA['cara01sexo']=='F'){$bFemenino=true;}
-		if ($bTieneHijos && $bFemenino){
+		if ($DATA['cara01fam_hijos']>=1 && $DATA['cara01fam_hijos']<=4 && $DATA['cara01sexo']=='F'){
 			if ($DATA['cara44fam_madrecabeza']==''){$sError=$ERR['cara44fam_madrecabeza'].$sSepara.$sError;}
 			}
 		if ($DATA['cara01fam_numpersgrupofam']==''){$sError=$ERR['cara01fam_numpersgrupofam'].$sSepara.$sError;}
@@ -2510,7 +2500,7 @@ function f2301_db_GuardarV2($DATA, $objDB, $bDebug=false){
 			if ($DATA['cara01idtercero']!=$_SESSION['unad_id_tercero']){
 				list($devuelve, $sDebugP)=seg_revisa_permisoV3($iCodModulo, 13, $_SESSION['unad_id_tercero'], $objDB, $bDebug);
 				if (!$devuelve){
-					// $sError=$ERR['3']; //OJO DESCOMENTAR
+					$sError=$ERR['3'];
 					}
 				}
 			}
@@ -2520,7 +2510,7 @@ function f2301_db_GuardarV2($DATA, $objDB, $bDebug=false){
 			//Preparar el Id, Si no lo hay se quita la comprobación.
 			$DATA['cara01id']=tabla_consecutivo('cara01encuesta','cara01id', '', $objDB);
 			if ($DATA['cara01id']==-1){$sError=$objDB->serror;}
-			$DATA['cara44id']=$DATA['cara01id'];
+			$DATA['cara44id']=$DATA['cara01id']
 			}
 		}
 	if ($sError==''){
@@ -2875,6 +2865,114 @@ cara44acadhatenidorecesos, cara44acadrazonreceso, cara44acadrazonrecesodetalle, 
 			$scampo[180]='cara01discv2condicionmedica';
 			$scampo[181]='cara01discv2condmeddet';
 			$scampo[182]='cara01discv2pruebacoeficiente';
+			//Nuevas preguntas caracterización nuevos y antiguos
+			$scampo[183]='cara44campesinado';
+			$scampo[184]='cara44sexoversion';
+			$scampo[185]='cara44sexov1identidadgen';
+			$scampo[186]='cara44sexov1orientasexo';
+			$scampo[187]='cara44bienversion';
+			$scampo[188]='cara44bienv2altoren';
+			$scampo[189]='cara44bienv2atletismo';
+			$scampo[190]='cara44bienv2baloncesto';
+			$scampo[191]='cara44bienv2futbol';
+			$scampo[192]='cara44bienv2gimnasia';
+			$scampo[193]='cara44bienv2natacion';
+			$scampo[194]='cara44bienv2voleibol';
+			$scampo[195]='cara44bienv2tenis';
+			$scampo[196]='cara44bienv2paralimpico';
+			$scampo[197]='cara44bienv2otrodeporte';
+			$scampo[198]='cara44bienv2otrodeportedetalle';
+			$scampo[199]='cara44bienv2activdanza';
+			$scampo[200]='cara44bienv2activmusica';
+			$scampo[201]='cara44bienv2activteatro';
+			$scampo[202]='cara44bienv2activartes';
+			$scampo[203]='cara44bienv2activliteratura';
+			$scampo[204]='cara44bienv2activculturalotra';
+			$scampo[205]='cara44bienv2activculturalotradetalle';
+			$scampo[206]='cara44bienv2evenfestfolc';
+			$scampo[207]='cara44bienv2evenexpoarte';
+			$scampo[208]='cara44bienv2evenhistarte';
+			$scampo[209]='cara44bienv2evengalfoto';
+			$scampo[210]='cara44bienv2evenliteratura';
+			$scampo[211]='cara44bienv2eventeatro';
+			$scampo[212]='cara44bienv2evencine';
+			$scampo[213]='cara44bienv2evenculturalotro';
+			$scampo[214]='cara44bienv2evenculturalotrodetalle';
+			$scampo[215]='cara44bienv2emprendimiento';
+			$scampo[216]='cara44bienv2empresa';
+			$scampo[217]='cara44bienv2emprenrecursos';
+			$scampo[218]='cara44bienv2emprenconocim';
+			$scampo[219]='cara44bienv2emprenplan';
+			$scampo[220]='cara44bienv2emprenejecutar';
+			$scampo[221]='cara44bienv2emprenfortconocim';
+			$scampo[222]='cara44bienv2emprenidentproblema';
+			$scampo[223]='cara44bienv2emprenotro';
+			$scampo[224]='cara44bienv2emprenotrodetalle';
+			$scampo[225]='cara44bienv2emprenmarketing';
+			$scampo[226]='cara44bienv2emprenplannegocios';
+			$scampo[227]='cara44bienv2emprenideas';
+			$scampo[228]='cara44bienv2emprencreacion';
+			$scampo[229]='cara44bienv2saludfacteconom';
+			$scampo[230]='cara44bienv2saludpreocupacion';
+			$scampo[231]='cara44bienv2saludconsumosust';
+			$scampo[232]='cara44bienv2saludinsomnio';
+			$scampo[233]='cara44bienv2saludclimalab';
+			$scampo[234]='cara44bienv2saludalimenta';
+			$scampo[235]='cara44bienv2saludemocion';
+			$scampo[236]='cara44bienv2saludestado';
+			$scampo[237]='cara44bienv2saludmedita';
+			$scampo[238]='cara44bienv2crecimedusexual';
+			$scampo[239]='cara44bienv2crecimcultciudad';
+			$scampo[240]='cara44bienv2crecimrelpareja';
+			$scampo[241]='cara44bienv2crecimrelinterp';
+			$scampo[242]='cara44bienv2crecimdinamicafam';
+			$scampo[243]='cara44bienv2crecimautoestima';
+			$scampo[244]='cara44bienv2creciminclusion';
+			$scampo[245]='cara44bienv2creciminteliemoc';
+			$scampo[246]='cara44bienv2crecimcultural';
+			$scampo[247]='cara44bienv2crecimartistico';
+			$scampo[248]='cara44bienv2crecimdeporte';
+			$scampo[249]='cara44bienv2crecimambiente';
+			$scampo[250]='cara44bienv2crecimhabsocio';
+			$scampo[251]='cara44bienv2ambienbasura';
+			$scampo[252]='cara44bienv2ambienreutiliza';
+			$scampo[253]='cara44bienv2ambienluces';
+			$scampo[254]='cara44bienv2ambienfrutaverd';
+			$scampo[255]='cara44bienv2ambienenchufa';
+			$scampo[256]='cara44bienv2ambiengrifo';
+			$scampo[257]='cara44bienv2ambienbicicleta';
+			$scampo[258]='cara44bienv2ambientranspub';
+			$scampo[259]='cara44bienv2ambienducha';
+			$scampo[260]='cara44bienv2ambiencaminata';
+			$scampo[261]='cara44bienv2ambiensiembra';
+			$scampo[262]='cara44bienv2ambienconferencia';
+			$scampo[263]='cara44bienv2ambienrecicla';
+			$scampo[264]='cara44bienv2ambienotraactiv';
+			$scampo[265]='cara44bienv2ambienotraactivdetalle';
+			$scampo[266]='cara44bienv2ambienreforest';
+			$scampo[267]='cara44bienv2ambienmovilidad';
+			$scampo[268]='cara44bienv2ambienclimatico';
+			$scampo[269]='cara44bienv2ambienecofemin';
+			$scampo[270]='cara44bienv2ambienbiodiver';
+			$scampo[271]='cara44bienv2ambienecologia';
+			$scampo[272]='cara44bienv2ambieneconomia';
+			$scampo[273]='cara44bienv2ambienrecnatura';
+			$scampo[274]='cara44bienv2ambienreciclaje';
+			$scampo[275]='cara44bienv2ambienmascota';
+			$scampo[276]='cara44bienv2ambiencartohum';
+			$scampo[277]='cara44bienv2ambienespiritu';
+			$scampo[278]='cara44bienv2ambiencarga';
+			$scampo[279]='cara44bienv2ambienotroenfoq';
+			$scampo[280]='cara44bienv2ambienotroenfoqdetalle';
+			$scampo[281]='cara44fam_madrecabeza';
+			$scampo[282]='cara44acadhatenidorecesos';
+			$scampo[283]='cara44acadrazonreceso';
+			$scampo[284]='cara44acadrazonrecesodetalle';
+			$scampo[285]='cara44campus_usocorreounad';
+			$scampo[286]='cara44campus_usocorreounadno';
+			$scampo[287]='cara44campus_usocorreounadnodetalle';
+			$scampo[288]='cara44campus_medioactivunad';
+			$scampo[289]='cara44campus_medioactivunaddetalle';			
 			//
 			$sdato[1]=$DATA['cara01completa'];
 			$sdato[2]=$DATA['cara01fichaper'];
@@ -3062,6 +3160,114 @@ cara44acadhatenidorecesos, cara44acadrazonreceso, cara44acadrazonrecesodetalle, 
 			$sdato[180]=$DATA['cara01discv2condicionmedica'];
 			$sdato[181]=$DATA['cara01discv2condmeddet'];
 			$sdato[182]=$DATA['cara01discv2pruebacoeficiente'];
+			//Nuevas preguntas caracterización nuevos y antiguos
+			$sdato[183]=$DATA['cara44campesinado'];
+			$sdato[184]=$DATA['cara44sexoversion'];
+			$sdato[185]=$DATA['cara44sexov1identidadgen'];
+			$sdato[186]=$DATA['cara44sexov1orientasexo'];
+			$sdato[187]=$DATA['cara44bienversion'];
+			$sdato[188]=$DATA['cara44bienv2altoren'];
+			$sdato[189]=$DATA['cara44bienv2atletismo'];
+			$sdato[190]=$DATA['cara44bienv2baloncesto'];
+			$sdato[191]=$DATA['cara44bienv2futbol'];
+			$sdato[192]=$DATA['cara44bienv2gimnasia'];
+			$sdato[193]=$DATA['cara44bienv2natacion'];
+			$sdato[194]=$DATA['cara44bienv2voleibol'];
+			$sdato[195]=$DATA['cara44bienv2tenis'];
+			$sdato[196]=$DATA['cara44bienv2paralimpico'];
+			$sdato[197]=$DATA['cara44bienv2otrodeporte'];
+			$sdato[198]=$DATA['cara44bienv2otrodeportedetalle'];
+			$sdato[199]=$DATA['cara44bienv2activdanza'];
+			$sdato[200]=$DATA['cara44bienv2activmusica'];
+			$sdato[201]=$DATA['cara44bienv2activteatro'];
+			$sdato[202]=$DATA['cara44bienv2activartes'];
+			$sdato[203]=$DATA['cara44bienv2activliteratura'];
+			$sdato[204]=$DATA['cara44bienv2activculturalotra'];
+			$sdato[205]=$DATA['cara44bienv2activculturalotradetalle'];
+			$sdato[206]=$DATA['cara44bienv2evenfestfolc'];
+			$sdato[207]=$DATA['cara44bienv2evenexpoarte'];
+			$sdato[208]=$DATA['cara44bienv2evenhistarte'];
+			$sdato[209]=$DATA['cara44bienv2evengalfoto'];
+			$sdato[210]=$DATA['cara44bienv2evenliteratura'];
+			$sdato[211]=$DATA['cara44bienv2eventeatro'];
+			$sdato[212]=$DATA['cara44bienv2evencine'];
+			$sdato[213]=$DATA['cara44bienv2evenculturalotro'];
+			$sdato[214]=$DATA['cara44bienv2evenculturalotrodetalle'];
+			$sdato[215]=$DATA['cara44bienv2emprendimiento'];
+			$sdato[216]=$DATA['cara44bienv2empresa'];
+			$sdato[217]=$DATA['cara44bienv2emprenrecursos'];
+			$sdato[218]=$DATA['cara44bienv2emprenconocim'];
+			$sdato[219]=$DATA['cara44bienv2emprenplan'];
+			$sdato[220]=$DATA['cara44bienv2emprenejecutar'];
+			$sdato[221]=$DATA['cara44bienv2emprenfortconocim'];
+			$sdato[222]=$DATA['cara44bienv2emprenidentproblema'];
+			$sdato[223]=$DATA['cara44bienv2emprenotro'];
+			$sdato[224]=$DATA['cara44bienv2emprenotrodetalle'];
+			$sdato[225]=$DATA['cara44bienv2emprenmarketing'];
+			$sdato[226]=$DATA['cara44bienv2emprenplannegocios'];
+			$sdato[227]=$DATA['cara44bienv2emprenideas'];
+			$sdato[228]=$DATA['cara44bienv2emprencreacion'];
+			$sdato[229]=$DATA['cara44bienv2saludfacteconom'];
+			$sdato[230]=$DATA['cara44bienv2saludpreocupacion'];
+			$sdato[231]=$DATA['cara44bienv2saludconsumosust'];
+			$sdato[232]=$DATA['cara44bienv2saludinsomnio'];
+			$sdato[233]=$DATA['cara44bienv2saludclimalab'];
+			$sdato[234]=$DATA['cara44bienv2saludalimenta'];
+			$sdato[235]=$DATA['cara44bienv2saludemocion'];
+			$sdato[236]=$DATA['cara44bienv2saludestado'];
+			$sdato[237]=$DATA['cara44bienv2saludmedita'];
+			$sdato[238]=$DATA['cara44bienv2crecimedusexual'];
+			$sdato[239]=$DATA['cara44bienv2crecimcultciudad'];
+			$sdato[240]=$DATA['cara44bienv2crecimrelpareja'];
+			$sdato[241]=$DATA['cara44bienv2crecimrelinterp'];
+			$sdato[242]=$DATA['cara44bienv2crecimdinamicafam'];
+			$sdato[243]=$DATA['cara44bienv2crecimautoestima'];
+			$sdato[244]=$DATA['cara44bienv2creciminclusion'];
+			$sdato[245]=$DATA['cara44bienv2creciminteliemoc'];
+			$sdato[246]=$DATA['cara44bienv2crecimcultural'];
+			$sdato[247]=$DATA['cara44bienv2crecimartistico'];
+			$sdato[248]=$DATA['cara44bienv2crecimdeporte'];
+			$sdato[249]=$DATA['cara44bienv2crecimambiente'];
+			$sdato[250]=$DATA['cara44bienv2crecimhabsocio'];
+			$sdato[251]=$DATA['cara44bienv2ambienbasura'];
+			$sdato[252]=$DATA['cara44bienv2ambienreutiliza'];
+			$sdato[253]=$DATA['cara44bienv2ambienluces'];
+			$sdato[254]=$DATA['cara44bienv2ambienfrutaverd'];
+			$sdato[255]=$DATA['cara44bienv2ambienenchufa'];
+			$sdato[256]=$DATA['cara44bienv2ambiengrifo'];
+			$sdato[257]=$DATA['cara44bienv2ambienbicicleta'];
+			$sdato[258]=$DATA['cara44bienv2ambientranspub'];
+			$sdato[259]=$DATA['cara44bienv2ambienducha'];
+			$sdato[260]=$DATA['cara44bienv2ambiencaminata'];
+			$sdato[261]=$DATA['cara44bienv2ambiensiembra'];
+			$sdato[262]=$DATA['cara44bienv2ambienconferencia'];
+			$sdato[263]=$DATA['cara44bienv2ambienrecicla'];
+			$sdato[264]=$DATA['cara44bienv2ambienotraactiv'];
+			$sdato[265]=$DATA['cara44bienv2ambienotraactivdetalle'];
+			$sdato[266]=$DATA['cara44bienv2ambienreforest'];
+			$sdato[267]=$DATA['cara44bienv2ambienmovilidad'];
+			$sdato[268]=$DATA['cara44bienv2ambienclimatico'];
+			$sdato[269]=$DATA['cara44bienv2ambienecofemin'];
+			$sdato[270]=$DATA['cara44bienv2ambienbiodiver'];
+			$sdato[271]=$DATA['cara44bienv2ambienecologia'];
+			$sdato[272]=$DATA['cara44bienv2ambieneconomia'];
+			$sdato[273]=$DATA['cara44bienv2ambienrecnatura'];
+			$sdato[274]=$DATA['cara44bienv2ambienreciclaje'];
+			$sdato[275]=$DATA['cara44bienv2ambienmascota'];
+			$sdato[276]=$DATA['cara44bienv2ambiencartohum'];
+			$sdato[277]=$DATA['cara44bienv2ambienespiritu'];
+			$sdato[278]=$DATA['cara44bienv2ambiencarga'];
+			$sdato[279]=$DATA['cara44bienv2ambienotroenfoq'];
+			$sdato[280]=$DATA['cara44bienv2ambienotroenfoqdetalle'];
+			$sdato[281]=$DATA['cara44fam_madrecabeza'];
+			$sdato[282]=$DATA['cara44acadhatenidorecesos'];
+			$sdato[283]=$DATA['cara44acadrazonreceso'];
+			$sdato[284]=$DATA['cara44acadrazonrecesodetalle'];
+			$sdato[285]=$DATA['cara44campus_usocorreounad'];
+			$sdato[286]=$DATA['cara44campus_usocorreounadno'];
+			$sdato[287]=$DATA['cara44campus_usocorreounadnodetalle'];
+			$sdato[288]=$DATA['cara44campus_medioactivunad'];
+			$sdato[289]=$DATA['cara44campus_medioactivunaddetalle'];			
 			$numcmod=182;
 			$sWhere='cara01id='.$DATA['cara01id'].'';
 			$sSQL='SELECT * FROM cara01encuesta WHERE '.$sWhere;
@@ -3098,252 +3304,18 @@ cara44acadhatenidorecesos, cara44acadrazonreceso, cara44acadrazonrecesodetalle, 
 				$idAccion=3;
 				}
 
-			// Inicio valida si existen nuevos campos caracterización
-			$sSQL44='SELECT 1 FROM cara44encuesta WHERE cara44idcara='.$DATA['cara01id'].'';
-			$tabla=$objDB->ejecutasql($sSQL44);
-			if ($objDB->nf($tabla)==0){
-				$cara44id=tabla_consecutivo('cara44encuesta','cara44id', '', $objDB);
-				$cara44sexoversion=0;
-				$cara44bienversion=1;
-				$sCampos2344='cara44id, cara44idcara, cara44sexoversion, cara44bienversion';
-				$sValores2344=''.$cara44id.', '.$DATA['cara01id'].', '.$cara44sexoversion.', '.$cara44bienversion.'';
-				if ($APP->utf8==1){
-					$sSQL='INSERT INTO cara44encuesta ('.$sCampos2344.') VALUES ('.utf8_encode($sValores2344).');';
-					$sdetalle=$sCampos2344.'['.utf8_encode($sValores2344).']';
-					}else{
-					$sSQL='INSERT INTO cara44encuesta ('.$sCampos2344.') VALUES ('.$sValores2344.');';
-					$sdetalle=$sCampos2344.'['.$sValores2344.']';
-					}
-				$tabla=$objDB->ejecutasql($sSQL44);
-				}
-			// Fin valida si existen nuevos campos caracterización
-			//Nuevas preguntas caracterización nuevos y antiguos
-			$scampo[1]='cara44campesinado';
-			$scampo[2]='cara44sexoversion';
-			$scampo[3]='cara44sexov1identidadgen';
-			$scampo[4]='cara44sexov1orientasexo';
-			$scampo[5]='cara44bienversion';
-			$scampo[6]='cara44bienv2altoren';
-			$scampo[7]='cara44bienv2atletismo';
-			$scampo[8]='cara44bienv2baloncesto';
-			$scampo[9]='cara44bienv2futbol';
-			$scampo[10]='cara44bienv2gimnasia';
-			$scampo[11]='cara44bienv2natacion';
-			$scampo[12]='cara44bienv2voleibol';
-			$scampo[13]='cara44bienv2tenis';
-			$scampo[14]='cara44bienv2paralimpico';
-			$scampo[15]='cara44bienv2otrodeporte';
-			$scampo[16]='cara44bienv2otrodeportedetalle';
-			$scampo[17]='cara44bienv2activdanza';
-			$scampo[18]='cara44bienv2activmusica';
-			$scampo[19]='cara44bienv2activteatro';
-			$scampo[20]='cara44bienv2activartes';
-			$scampo[21]='cara44bienv2activliteratura';
-			$scampo[22]='cara44bienv2activculturalotra';
-			$scampo[23]='cara44bienv2activculturalotradetalle';
-			$scampo[24]='cara44bienv2evenfestfolc';
-			$scampo[25]='cara44bienv2evenexpoarte';
-			$scampo[26]='cara44bienv2evenhistarte';
-			$scampo[27]='cara44bienv2evengalfoto';
-			$scampo[28]='cara44bienv2evenliteratura';
-			$scampo[29]='cara44bienv2eventeatro';
-			$scampo[30]='cara44bienv2evencine';
-			$scampo[31]='cara44bienv2evenculturalotro';
-			$scampo[32]='cara44bienv2evenculturalotrodetalle';
-			$scampo[33]='cara44bienv2emprendimiento';
-			$scampo[34]='cara44bienv2empresa';
-			$scampo[35]='cara44bienv2emprenrecursos';
-			$scampo[36]='cara44bienv2emprenconocim';
-			$scampo[37]='cara44bienv2emprenplan';
-			$scampo[38]='cara44bienv2emprenejecutar';
-			$scampo[39]='cara44bienv2emprenfortconocim';
-			$scampo[40]='cara44bienv2emprenidentproblema';
-			$scampo[41]='cara44bienv2emprenotro';
-			$scampo[42]='cara44bienv2emprenotrodetalle';
-			$scampo[43]='cara44bienv2emprenmarketing';
-			$scampo[44]='cara44bienv2emprenplannegocios';
-			$scampo[45]='cara44bienv2emprenideas';
-			$scampo[46]='cara44bienv2emprencreacion';
-			$scampo[47]='cara44bienv2saludfacteconom';
-			$scampo[48]='cara44bienv2saludpreocupacion';
-			$scampo[49]='cara44bienv2saludconsumosust';
-			$scampo[50]='cara44bienv2saludinsomnio';
-			$scampo[51]='cara44bienv2saludclimalab';
-			$scampo[52]='cara44bienv2saludalimenta';
-			$scampo[53]='cara44bienv2saludemocion';
-			$scampo[54]='cara44bienv2saludestado';
-			$scampo[55]='cara44bienv2saludmedita';
-			$scampo[56]='cara44bienv2crecimedusexual';
-			$scampo[57]='cara44bienv2crecimcultciudad';
-			$scampo[58]='cara44bienv2crecimrelpareja';
-			$scampo[59]='cara44bienv2crecimrelinterp';
-			$scampo[60]='cara44bienv2crecimdinamicafam';
-			$scampo[61]='cara44bienv2crecimautoestima';
-			$scampo[62]='cara44bienv2creciminclusion';
-			$scampo[63]='cara44bienv2creciminteliemoc';
-			$scampo[64]='cara44bienv2crecimcultural';
-			$scampo[65]='cara44bienv2crecimartistico';
-			$scampo[66]='cara44bienv2crecimdeporte';
-			$scampo[67]='cara44bienv2crecimambiente';
-			$scampo[68]='cara44bienv2crecimhabsocio';
-			$scampo[69]='cara44bienv2ambienbasura';
-			$scampo[70]='cara44bienv2ambienreutiliza';
-			$scampo[71]='cara44bienv2ambienluces';
-			$scampo[72]='cara44bienv2ambienfrutaverd';
-			$scampo[73]='cara44bienv2ambienenchufa';
-			$scampo[74]='cara44bienv2ambiengrifo';
-			$scampo[75]='cara44bienv2ambienbicicleta';
-			$scampo[76]='cara44bienv2ambientranspub';
-			$scampo[77]='cara44bienv2ambienducha';
-			$scampo[78]='cara44bienv2ambiencaminata';
-			$scampo[79]='cara44bienv2ambiensiembra';
-			$scampo[80]='cara44bienv2ambienconferencia';
-			$scampo[81]='cara44bienv2ambienrecicla';
-			$scampo[82]='cara44bienv2ambienotraactiv';
-			$scampo[83]='cara44bienv2ambienotraactivdetalle';
-			$scampo[84]='cara44bienv2ambienreforest';
-			$scampo[85]='cara44bienv2ambienmovilidad';
-			$scampo[86]='cara44bienv2ambienclimatico';
-			$scampo[87]='cara44bienv2ambienecofemin';
-			$scampo[88]='cara44bienv2ambienbiodiver';
-			$scampo[89]='cara44bienv2ambienecologia';
-			$scampo[90]='cara44bienv2ambieneconomia';
-			$scampo[91]='cara44bienv2ambienrecnatura';
-			$scampo[92]='cara44bienv2ambienreciclaje';
-			$scampo[93]='cara44bienv2ambienmascota';
-			$scampo[94]='cara44bienv2ambiencartohum';
-			$scampo[95]='cara44bienv2ambienespiritu';
-			$scampo[96]='cara44bienv2ambiencarga';
-			$scampo[97]='cara44bienv2ambienotroenfoq';
-			$scampo[98]='cara44bienv2ambienotroenfoqdetalle';
-			$scampo[99]='cara44fam_madrecabeza';
-			$scampo[100]='cara44acadhatenidorecesos';
-			$scampo[101]='cara44acadrazonreceso';
-			$scampo[102]='cara44acadrazonrecesodetalle';
-			$scampo[103]='cara44campus_usocorreounad';
-			$scampo[104]='cara44campus_usocorreounadno';
-			$scampo[105]='cara44campus_usocorreounadnodetalle';
-			$scampo[106]='cara44campus_medioactivunad';
-			$scampo[107]='cara44campus_medioactivunaddetalle';			
-			//
-			$sdato[1]=$DATA['cara44campesinado'];
-			$sdato[2]=$DATA['cara44sexoversion'];
-			$sdato[3]=$DATA['cara44sexov1identidadgen'];
-			$sdato[4]=$DATA['cara44sexov1orientasexo'];
-			$sdato[5]=$DATA['cara44bienversion'];
-			$sdato[6]=$DATA['cara44bienv2altoren'];
-			$sdato[7]=$DATA['cara44bienv2atletismo'];
-			$sdato[8]=$DATA['cara44bienv2baloncesto'];
-			$sdato[9]=$DATA['cara44bienv2futbol'];
-			$sdato[10]=$DATA['cara44bienv2gimnasia'];
-			$sdato[11]=$DATA['cara44bienv2natacion'];
-			$sdato[12]=$DATA['cara44bienv2voleibol'];
-			$sdato[13]=$DATA['cara44bienv2tenis'];
-			$sdato[14]=$DATA['cara44bienv2paralimpico'];
-			$sdato[15]=$DATA['cara44bienv2otrodeporte'];
-			$sdato[16]=$DATA['cara44bienv2otrodeportedetalle'];
-			$sdato[17]=$DATA['cara44bienv2activdanza'];
-			$sdato[18]=$DATA['cara44bienv2activmusica'];
-			$sdato[19]=$DATA['cara44bienv2activteatro'];
-			$sdato[20]=$DATA['cara44bienv2activartes'];
-			$sdato[21]=$DATA['cara44bienv2activliteratura'];
-			$sdato[22]=$DATA['cara44bienv2activculturalotra'];
-			$sdato[23]=$DATA['cara44bienv2activculturalotradetalle'];
-			$sdato[24]=$DATA['cara44bienv2evenfestfolc'];
-			$sdato[25]=$DATA['cara44bienv2evenexpoarte'];
-			$sdato[26]=$DATA['cara44bienv2evenhistarte'];
-			$sdato[27]=$DATA['cara44bienv2evengalfoto'];
-			$sdato[28]=$DATA['cara44bienv2evenliteratura'];
-			$sdato[29]=$DATA['cara44bienv2eventeatro'];
-			$sdato[30]=$DATA['cara44bienv2evencine'];
-			$sdato[31]=$DATA['cara44bienv2evenculturalotro'];
-			$sdato[32]=$DATA['cara44bienv2evenculturalotrodetalle'];
-			$sdato[33]=$DATA['cara44bienv2emprendimiento'];
-			$sdato[34]=$DATA['cara44bienv2empresa'];
-			$sdato[35]=$DATA['cara44bienv2emprenrecursos'];
-			$sdato[36]=$DATA['cara44bienv2emprenconocim'];
-			$sdato[37]=$DATA['cara44bienv2emprenplan'];
-			$sdato[38]=$DATA['cara44bienv2emprenejecutar'];
-			$sdato[39]=$DATA['cara44bienv2emprenfortconocim'];
-			$sdato[40]=$DATA['cara44bienv2emprenidentproblema'];
-			$sdato[41]=$DATA['cara44bienv2emprenotro'];
-			$sdato[42]=$DATA['cara44bienv2emprenotrodetalle'];
-			$sdato[43]=$DATA['cara44bienv2emprenmarketing'];
-			$sdato[44]=$DATA['cara44bienv2emprenplannegocios'];
-			$sdato[45]=$DATA['cara44bienv2emprenideas'];
-			$sdato[46]=$DATA['cara44bienv2emprencreacion'];
-			$sdato[47]=$DATA['cara44bienv2saludfacteconom'];
-			$sdato[48]=$DATA['cara44bienv2saludpreocupacion'];
-			$sdato[49]=$DATA['cara44bienv2saludconsumosust'];
-			$sdato[50]=$DATA['cara44bienv2saludinsomnio'];
-			$sdato[51]=$DATA['cara44bienv2saludclimalab'];
-			$sdato[52]=$DATA['cara44bienv2saludalimenta'];
-			$sdato[53]=$DATA['cara44bienv2saludemocion'];
-			$sdato[54]=$DATA['cara44bienv2saludestado'];
-			$sdato[55]=$DATA['cara44bienv2saludmedita'];
-			$sdato[56]=$DATA['cara44bienv2crecimedusexual'];
-			$sdato[57]=$DATA['cara44bienv2crecimcultciudad'];
-			$sdato[58]=$DATA['cara44bienv2crecimrelpareja'];
-			$sdato[59]=$DATA['cara44bienv2crecimrelinterp'];
-			$sdato[60]=$DATA['cara44bienv2crecimdinamicafam'];
-			$sdato[61]=$DATA['cara44bienv2crecimautoestima'];
-			$sdato[62]=$DATA['cara44bienv2creciminclusion'];
-			$sdato[63]=$DATA['cara44bienv2creciminteliemoc'];
-			$sdato[64]=$DATA['cara44bienv2crecimcultural'];
-			$sdato[65]=$DATA['cara44bienv2crecimartistico'];
-			$sdato[66]=$DATA['cara44bienv2crecimdeporte'];
-			$sdato[67]=$DATA['cara44bienv2crecimambiente'];
-			$sdato[68]=$DATA['cara44bienv2crecimhabsocio'];
-			$sdato[69]=$DATA['cara44bienv2ambienbasura'];
-			$sdato[70]=$DATA['cara44bienv2ambienreutiliza'];
-			$sdato[71]=$DATA['cara44bienv2ambienluces'];
-			$sdato[72]=$DATA['cara44bienv2ambienfrutaverd'];
-			$sdato[73]=$DATA['cara44bienv2ambienenchufa'];
-			$sdato[74]=$DATA['cara44bienv2ambiengrifo'];
-			$sdato[75]=$DATA['cara44bienv2ambienbicicleta'];
-			$sdato[76]=$DATA['cara44bienv2ambientranspub'];
-			$sdato[77]=$DATA['cara44bienv2ambienducha'];
-			$sdato[78]=$DATA['cara44bienv2ambiencaminata'];
-			$sdato[79]=$DATA['cara44bienv2ambiensiembra'];
-			$sdato[80]=$DATA['cara44bienv2ambienconferencia'];
-			$sdato[81]=$DATA['cara44bienv2ambienrecicla'];
-			$sdato[82]=$DATA['cara44bienv2ambienotraactiv'];
-			$sdato[83]=$DATA['cara44bienv2ambienotraactivdetalle'];
-			$sdato[84]=$DATA['cara44bienv2ambienreforest'];
-			$sdato[85]=$DATA['cara44bienv2ambienmovilidad'];
-			$sdato[86]=$DATA['cara44bienv2ambienclimatico'];
-			$sdato[87]=$DATA['cara44bienv2ambienecofemin'];
-			$sdato[88]=$DATA['cara44bienv2ambienbiodiver'];
-			$sdato[89]=$DATA['cara44bienv2ambienecologia'];
-			$sdato[90]=$DATA['cara44bienv2ambieneconomia'];
-			$sdato[91]=$DATA['cara44bienv2ambienrecnatura'];
-			$sdato[92]=$DATA['cara44bienv2ambienreciclaje'];
-			$sdato[93]=$DATA['cara44bienv2ambienmascota'];
-			$sdato[94]=$DATA['cara44bienv2ambiencartohum'];
-			$sdato[95]=$DATA['cara44bienv2ambienespiritu'];
-			$sdato[96]=$DATA['cara44bienv2ambiencarga'];
-			$sdato[97]=$DATA['cara44bienv2ambienotroenfoq'];
-			$sdato[98]=$DATA['cara44bienv2ambienotroenfoqdetalle'];
-			$sdato[99]=$DATA['cara44fam_madrecabeza'];
-			$sdato[100]=$DATA['cara44acadhatenidorecesos'];
-			$sdato[101]=$DATA['cara44acadrazonreceso'];
-			$sdato[102]=$DATA['cara44acadrazonrecesodetalle'];
-			$sdato[103]=$DATA['cara44campus_usocorreounad'];
-			$sdato[104]=$DATA['cara44campus_usocorreounadno'];
-			$sdato[105]=$DATA['cara44campus_usocorreounadnodetalle'];
-			$sdato[106]=$DATA['cara44campus_medioactivunad'];
-			$sdato[107]=$DATA['cara44campus_medioactivunaddetalle'];
-			$numcmod44=107;
+	// @@@@ repetir el guardado pero con la tabla 44
+			$numcmod44=289;
 			$sWhere='cara44id='.$DATA['cara01id'].'';
-			$sSQL44='SELECT * FROM cara44encuesta WHERE '.$sWhere;
+			$sSQL='SELECT * FROM cara44encuesta WHERE '.$sWhere;
 			$sdatos='';
 			$bPrimera=true;
-			$bpasa44=false;
-			$result=$objDB->ejecutasql($sSQL44);
+		$bPasa=false;
+			$result=$objDB->ejecutasql($sSQL);
 			if ($objDB->nf($result)>0){
 				$filabase=$objDB->sf($result);
 				if ($bDebug&&$bPrimera){
-					for ($k=1;$k<=$numcmod44;$k++){
+					for ($k=1;$k<=$numcmod;$k++){
 						if (isset($filabase[$scampo[$k]])==0){
 							$sDebug=$sDebug.fecha_microtiempo().' FALLA CODIGO: Falta el campo '.$k.' '.$scampo[$k].'<br>';
 							}
@@ -3351,21 +3323,21 @@ cara44acadhatenidorecesos, cara44acadrazonreceso, cara44acadrazonrecesodetalle, 
 					$bPrimera=false;
 					}
 				$bsepara=false;
-				for ($k=1;$k<=$numcmod44;$k++){
+				for ($k=1;$k<=$numcmod;$k++){
 					if ($filabase[$scampo[$k]]!=$sdato[$k]){
 						if ($sdatos!=''){$sdatos=$sdatos.', ';}
 						$sdatos=$sdatos.$scampo[$k].'="'.$sdato[$k].'"';
-						$bpasa44=true;
+						$bpasa=true;
 						}
 					}
 				}
-			if ($bpasa44){
+			if ($bpasa){
 				if ($APP->utf8==1){
 					$sdetalle=utf8_encode($sdatos).'['.$sWhere.']';
-					$sSQL44='UPDATE cara44encuesta SET '.utf8_encode($sdatos).' WHERE '.$sWhere.';';
+					$sSQL='UPDATE cara01encuesta SET '.utf8_encode($sdatos).' WHERE '.$sWhere.';';
 					}else{
 					$sdetalle=$sdatos.'['.$sWhere.']';
-					$sSQL44='UPDATE cara44encuesta SET '.$sdatos.' WHERE '.$sWhere.';';
+					$sSQL='UPDATE cara01encuesta SET '.$sdatos.' WHERE '.$sWhere.';';
 					}
 				$idAccion=3;
 				}
@@ -3375,26 +3347,6 @@ cara44acadhatenidorecesos, cara44acadrazonreceso, cara44acadrazonrecesodetalle, 
 			$result=$objDB->ejecutasql($sSQL);
 			if ($result==false){
 				$sError=$ERR['falla_guardar'].' [2301] ..<!-- '.$sSQL.' -->';
-				if ($idAccion==2){
-					$DATA['cara01id']='';
-					$bQuitarCodigo=true;
-					$DATA['paso']=0;
-					}else{
-					$DATA['paso']=2;
-					}
-				$bCerrando=false;
-				}else{
-				if ($bAudita[$idAccion]){seg_auditar($iCodModulo, $_SESSION['unad_id_tercero'], $idAccion, $DATA['cara01id'], $sdetalle, $objDB);}
-				$DATA['paso']=2;
-				}
-			}else{
-			$DATA['paso']=2;
-			}
-		if ($bpasa44){
-			if ($bDebug){$sDebug=$sDebug.fecha_microtiempo().' Guardar 2344 '.$sSQL44.'<br>';}
-			$result=$objDB->ejecutasql($sSQL44);
-			if ($result==false){
-				$sError=$ERR['falla_guardar'].' [2344] ..<!-- '.$sSQL44.' -->';
 				if ($idAccion==2){
 					$DATA['cara01id']='';
 					$bQuitarCodigo=true;

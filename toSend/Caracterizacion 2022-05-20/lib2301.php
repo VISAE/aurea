@@ -68,8 +68,7 @@ function f2301_IniciarEncuesta($idTercero, $idPeriodo, $objDB, $bDebug=false, $b
 	$sError='';
 	$sDebug='';
 	$sCondi='';
-	// $idEntidad=Traer_Entidad();	// Ojo descomentar
-	$idEntidad=0;	// Ojo eliminar
+	$idEntidad=Traer_Entidad();
 	$sDirBase=__DIR__.'/';
 	require $sDirBase.'app.php';
 	if ($idPeriodo!=0){
@@ -78,7 +77,7 @@ function f2301_IniciarEncuesta($idTercero, $idPeriodo, $objDB, $bDebug=false, $b
 			$sCondi=' AND cara01idperaca='.$idPeriodo.'';
 			}
 		}
-	$idPeriodoBaseAntiguos=1141;
+	$idPeriodoBaseAntiguos=1142;
 	$idPeriodoBase=474;
 	if ($idEntidad!=0){
 		$idPeriodoBase=0;
@@ -129,7 +128,7 @@ function f2301_IniciarEncuesta($idTercero, $idPeriodo, $objDB, $bDebug=false, $b
 				}
 			}
 		//Esta condicion se debe retirar cuando se active la prueba version 2022
-		// if ($bPeriodo==1143){$bInsertarEncuesta=false;}	// Ojo descomentar
+		if ($bPeriodo==1143){$bInsertarEncuesta=false;}	// Ojo descomentar
 		}
 	if ($bInsertarEncuesta){
 		$cara01fechainicio=fecha_DiaMod();
@@ -2510,7 +2509,7 @@ function f2301_db_GuardarV2($DATA, $objDB, $bDebug=false){
 			if ($DATA['cara01idtercero']!=$_SESSION['unad_id_tercero']){
 				list($devuelve, $sDebugP)=seg_revisa_permisoV3($iCodModulo, 13, $_SESSION['unad_id_tercero'], $objDB, $bDebug);
 				if (!$devuelve){
-					// $sError=$ERR['3']; //OJO DESCOMENTAR
+					$sError=$ERR['3'];
 					}
 				}
 			}
