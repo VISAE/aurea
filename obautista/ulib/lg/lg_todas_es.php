@@ -125,4 +125,7 @@ $ETI['ing_contrasena']='Ingrese su contrase&ntilde;a';
 $ETI['titulo_login']='Retomar la sesi&oacute;n';
 $ETI['titulo_sector94']='Formato para el reporte';
 $ETI['msg_ejecutando']='msg_ejecutando'; // OJO QUITAR
+$ETI['msg_confirmaeliminar']='msg_confirmaeliminar'; // OJO QUITAR
+$ETI['msg_confirmaabrir']='msg_confirmaabrir'; // OJO QUITAR
+$ETI['msg_confirmamodconsec']='msg_confirmamodconsec'; // OJO QUITAR
 ?>

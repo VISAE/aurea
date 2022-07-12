@@ -144,8 +144,7 @@ if (!$objDB->Conectar()) {
 	}
 }
 if (!$bCerrado) {
-	$bDevuelve = true;
-	// list($bDevuelve, $sDebugP) = seg_revisa_permisoV3($iCodModulo, 1, $_SESSION['unad_id_tercero'], $objDB);
+	list($bDevuelve, $sDebugP) = seg_revisa_permisoV3($iCodModulo, 1, $_SESSION['unad_id_tercero'], $objDB);
 	if (!$bDevuelve) {
 		$bCerrado = true;
 		$sMsgCierre = '<div class="MarquesinaGrande">No cuenta con permiso para acceder a este modulo [' . $iCodModulo . '].</div>';
@@ -180,7 +179,7 @@ if (!$bPeticionXAJAX) {
 $idTercero = $_SESSION['unad_id_tercero'];
 $bOtroUsuario = false;
 $seg_1707 = 0;
-$bDevuelve = true;
+$bDevuelve = false;
 //list($bDevuelve, $sDebugP) = seg_revisa_permisoV3($iCodModulo, 1707, $_SESSION['unad_id_tercero'], $objDB, $bDebug);
 //$sDebug = $sDebug . $sDebugP;
 if ($bDevuelve) {
@@ -254,30 +253,6 @@ $bMueveScroll = false;
 $iSector = 1;
 $iHoy = fecha_DiaMod();
 // -- Se inicializan las variables, primero las que controlan la visualización de la página.
-$unae40tipodoc='';
-$unae40doc='';
-$unae40_fechadoc='';
-$unae40_nombre1='';
-$unae40_nombre2='';
-$unae40_apellido1='';
-$unae40_apellido2='';
-$unae40_sexo='';
-$unae40_fechanac='';
-$sSQLcondi = 'unad11id="' . $_SESSION['unad_id_tercero'] . '"' . '';
-$sSQL = 'SELECT unad11tipodoc, unad11doc, unad11fechadoc, unad11nombre1, unad11nombre2, unad11apellido1, unad11apellido2, unad11genero, unad11fechanace FROM unad11terceros WHERE ' . $sSQLcondi;
-$tabla = $objDB->ejecutasql($sSQL);
-if ($objDB->nf($tabla) > 0) {
-	$fila = $objDB->sf($tabla);
-	$unae40tipodoc=$fila['unad11tipodoc'];
-	$unae40doc=$fila['unad11doc'];
-	$unae40_fechadoc=$fila['unad11fechadoc'];
-	$unae40_nombre1=$fila['unad11nombre1'];
-	$unae40_nombre2=$fila['unad11nombre2'];
-	$unae40_apellido1=$fila['unad11apellido1'];
-	$unae40_apellido2=$fila['unad11apellido2'];
-	$unae40_sexo=$fila['unad11genero'];
-	$unae40_fechanac=$fila['unad11fechanace'];
-}
 if (isset($_REQUEST['iscroll']) == 0) {
 	$_REQUEST['iscroll'] = 0;
 }
@@ -339,32 +314,32 @@ if (isset($_REQUEST['unae40or_fechadoc']) == 0) {
 	//$_REQUEST['unae40or_fechadoc'] = fecha_hoy();
 }
 if (isset($_REQUEST['unae40tipodocdestino']) == 0) {
-	$_REQUEST['unae40tipodocdestino'] = $unae40tipodoc;
+	$_REQUEST['unae40tipodocdestino'] = '';
 }
 if (isset($_REQUEST['unae40docdestino']) == 0) {
-	$_REQUEST['unae40docdestino'] = $unae40doc;
+	$_REQUEST['unae40docdestino'] = '';
 }
 if (isset($_REQUEST['unae40des_nombre1']) == 0) {
-	$_REQUEST['unae40des_nombre1'] = $unae40_nombre1;
+	$_REQUEST['unae40des_nombre1'] = '';
 }
 if (isset($_REQUEST['unae40des_nombre2']) == 0) {
-	$_REQUEST['unae40des_nombre2'] = $unae40_nombre2;
+	$_REQUEST['unae40des_nombre2'] = '';
 }
 if (isset($_REQUEST['unae40des_apellido1']) == 0) {
-	$_REQUEST['unae40des_apellido1'] = $unae40_apellido1;
+	$_REQUEST['unae40des_apellido1'] = '';
 }
 if (isset($_REQUEST['unae40des_apellido2']) == 0) {
-	$_REQUEST['unae40des_apellido2'] = $unae40_apellido2;
+	$_REQUEST['unae40des_apellido2'] = '';
 }
 if (isset($_REQUEST['unae40des_sexo']) == 0) {
-	$_REQUEST['unae40des_sexo'] = $unae40_sexo;
+	$_REQUEST['unae40des_sexo'] = '';
 }
 if (isset($_REQUEST['unae40des_fechanac']) == 0) {
-	$_REQUEST['unae40des_fechanac'] = $unae40_fechanac;
+	$_REQUEST['unae40des_fechanac'] = '';
 	//$_REQUEST['unae40des_fechanac'] = fecha_hoy();
 }
 if (isset($_REQUEST['unae40des_fechadoc']) == 0) {
-	$_REQUEST['unae40des_fechadoc'] = $unae40_fechadoc;
+	$_REQUEST['unae40des_fechadoc'] = '';
 	//$_REQUEST['unae40des_fechadoc'] = fecha_hoy();
 }
 if (isset($_REQUEST['unae40idsolicita']) == 0) {
@@ -499,15 +474,14 @@ if (($_REQUEST['paso'] == 1) || ($_REQUEST['paso'] == 3)) {
 $bCerrando = false;
 if ($_REQUEST['paso'] == 16) {
 	$_REQUEST['paso'] = 12;
-	$_REQUEST['unae40estado'] = 3;
+	$_REQUEST['unae40estado'] = 7;
 	$bCerrando = true;
 }
 //Abrir
 if ($_REQUEST['paso'] == 17) {
 	$_REQUEST['paso'] = 2;
 	//Es posible que deba definir el codigo de permiso para abrir.
-	$bDevuelve = true;
-	// list($bDevuelve, $sDebugP) = seg_revisa_permisoV3($iCodModulo, 17, $idTercero, $objDB);
+	list($bDevuelve, $sDebugP) = seg_revisa_permisoV3($iCodModulo, 17, $idTercero, $objDB);
 	if (!$bDevuelve) {
 		$sError = $ERR['3'];
 	}
@@ -554,8 +528,7 @@ if ($_REQUEST['paso'] == 93) {
 		$sError = $ERR['unae40consec'];
 	}
 	if ($sError == '') {
-		$bDevuelve = true;
-		// list($bDevuelve, $sDebugP) = seg_revisa_permisoV3($iCodModulo, 8, $idTercero, $objDB);
+		list($bDevuelve, $sDebugP) = seg_revisa_permisoV3($iCodModulo, 8, $idTercero, $objDB);
 		if (!$bDevuelve) {
 			$sError = $ERR['8'];
 		}
@@ -610,23 +583,23 @@ if ($_REQUEST['paso'] == -1) {
 	$_REQUEST['unae40or_sexo'] = '';
 	$_REQUEST['unae40or_fechanac'] = fecha_hoy();
 	$_REQUEST['unae40or_fechadoc'] = fecha_hoy();
-	$_REQUEST['unae40tipodocdestino'] = $unae40tipodoc;
-	$_REQUEST['unae40docdestino'] = $unae40doc;
-	$_REQUEST['unae40des_nombre1'] = $unae40_nombre1;
-	$_REQUEST['unae40des_nombre2'] = $unae40_nombre2;
-	$_REQUEST['unae40des_apellido1'] = $unae40_apellido1;
-	$_REQUEST['unae40des_apellido2'] = $unae40_apellido2;
-	$_REQUEST['unae40des_sexo'] = $unae40_sexo;
-	$_REQUEST['unae40des_fechanac'] = $unae40_fechanac;
+	$_REQUEST['unae40tipodocdestino'] = '';
+	$_REQUEST['unae40docdestino'] = '';
+	$_REQUEST['unae40des_nombre1'] = '';
+	$_REQUEST['unae40des_nombre2'] = '';
+	$_REQUEST['unae40des_apellido1'] = '';
+	$_REQUEST['unae40des_apellido2'] = '';
+	$_REQUEST['unae40des_sexo'] = '';
+	$_REQUEST['unae40des_fechanac'] = '';
 	//$_REQUEST['unae40des_fechanac'] = fecha_hoy();
-	$_REQUEST['unae40des_fechadoc'] = $unae40_fechadoc;
+	$_REQUEST['unae40des_fechadoc'] = '';
 	//$_REQUEST['unae40des_fechadoc'] = fecha_hoy();
 	$_REQUEST['unae40idsolicita'] = $idTercero;
 	$_REQUEST['unae40idsolicita_td'] = $APP->tipo_doc;
 	$_REQUEST['unae40idsolicita_doc'] = '';
-	$_REQUEST['unae40fechasol'] = '';
-	$_REQUEST['unae40horasol'] = '';
-	$_REQUEST['unae40minsol'] = '';
+	$_REQUEST['unae40fechasol'] = fecha_hoy();
+	$_REQUEST['unae40horasol'] = fecha_hora();
+	$_REQUEST['unae40minsol'] = fecha_minuto();
 	$_REQUEST['unae40idorigen'] = 0;
 	$_REQUEST['unae40idarchivo'] = 0;
 	$_REQUEST['unae40estado'] = 0;
@@ -634,9 +607,9 @@ if ($_REQUEST['paso'] == -1) {
 	$_REQUEST['unae40idaprueba'] = $idTercero;
 	$_REQUEST['unae40idaprueba_td'] = $APP->tipo_doc;
 	$_REQUEST['unae40idaprueba_doc'] = '';
-	$_REQUEST['unae40fechaapr'] = '';
-	$_REQUEST['unae40horaaprueba'] = '';
-	$_REQUEST['unae40minaprueba'] = '';
+	$_REQUEST['unae40fechaapr'] = fecha_hoy();
+	$_REQUEST['unae40horaaprueba'] = fecha_hora();
+	$_REQUEST['unae40minaprueba'] = fecha_minuto();
 	$_REQUEST['unae40tiempod'] = '';
 	$_REQUEST['unae40tiempoh'] = '';
 	$_REQUEST['paso'] = 0;
@@ -645,8 +618,9 @@ if ($bLimpiaHijos) {
 }
 //AQUI SE DEBEN CARGAR TODOS LOS DATOS QUE LA FORMA NECESITE.
 //DATOS PARA COMPLETAR EL FORMULARIO
-$iAgnoIni = 1950;
-$iAgnoFin = fecha_agno();
+$iAgnoIni = 2000;
+$iAgno = fecha_agno();
+$iAgnoFin = $iAgno + 5;
 $sNombreUsuario = '';
 if ($seg_1707 == 1){
 	$sSQL = 'SELECT unad11razonsocial FROM unad11terceros WHERE unad11id=' . $idTercero . '';
@@ -680,7 +654,8 @@ $objCombos->nuevo('unae40tipodocdestino', $_REQUEST['unae40tipodocdestino'], tru
 //$objCombos->addArreglo($aunae40tipodocdestino, $iunae40tipodocdestino);
 $html_unae40tipodocdestino = $objCombos->html('', $objDB);
 $objCombos->nuevo('unae40des_sexo', $_REQUEST['unae40des_sexo'], false);
-$html_unae40des_sexo = $objCombos->html('SELECT unad22codopcion AS id, unad22nombre AS nombre FROM unad22combos WHERE unad22idmodulo=111 AND unad22consec=1 AND unad22activa="S" ORDER BY unad22orden', $objDB);
+$objCombos->sino($ETI['si'], $ETI['no']); //, $sValorSi='S', $sValorNo='N'
+$html_unae40des_sexo = $objCombos->html('', $objDB);
 list($unae40idsolicita_rs, $_REQUEST['unae40idsolicita'], $_REQUEST['unae40idsolicita_td'], $_REQUEST['unae40idsolicita_doc']) = html_tercero($_REQUEST['unae40idsolicita_td'], $_REQUEST['unae40idsolicita_doc'], $_REQUEST['unae40idsolicita'], 0, $objDB);
 list($unae40idaprueba_rs, $_REQUEST['unae40idaprueba'], $_REQUEST['unae40idaprueba_td'], $_REQUEST['unae40idaprueba_doc']) = html_tercero($_REQUEST['unae40idaprueba_td'], $_REQUEST['unae40idaprueba_doc'], $_REQUEST['unae40idaprueba'], 0, $objDB);
 if ((int)$_REQUEST['paso'] == 0) {
@@ -691,8 +666,7 @@ $bPuedeAbrir = false;
 if ($_REQUEST['paso'] != 0) {
 	if ($_REQUEST['unae40estado'] == 7) {
 		//Definir las condiciones que permitirán abrir el registro.
-		$bDevuelve = true;
-		// list($bDevuelve, $sDebugP) = seg_revisa_permisoV3($iCodModulo, 17, $idTercero, $objDB);
+		list($bDevuelve, $sDebugP) = seg_revisa_permisoV3($iCodModulo, 17, $idTercero, $objDB);
 		if ($bDevuelve) {
 			$bPuedeAbrir = true;
 		}
@@ -830,7 +804,7 @@ if (false) {
 			if (codigo == 1) {
 				sEst = 'block';
 			}
-			// document.getElementById('cmdGuardarf').style.display = sEst;
+			document.getElementById('cmdGuardarf').style.display = sEst;
 			}
 	}
 
@@ -1211,6 +1185,31 @@ if ($bHayImprimir) {
 }
 ?>
 <input id="cmdLimpiar" name="cmdLimpiar" type="button" class="btUpLimpiar" onclick="limpiapagina();" title="<?php echo $ETI['bt_limpiar']; ?>" value="<?php echo $ETI['bt_limpiar']; ?>" />
+<?php
+if ($_REQUEST['unae40estado'] == 0) {
+?>
+<input id="cmdGuardar" name="cmdGuardar" type="button" class="btUpGuardar" onclick="enviaguardar();" title="<?php echo $ETI['bt_guardar']; ?>" value="<?php echo $ETI['bt_guardar']; ?>" />
+<?php
+	if ($_REQUEST['paso']>0) {
+?>
+<input id="cmdCerrar" name="cmdCerrar" type="button" class="btSupCerrar" onClick="enviacerrar();" title="Cerrar" value="Cerrar" />
+<?php
+	}
+} else {
+	if ($_REQUEST['paso']>0) {
+		if ($bPuedeAbrir) {
+?>
+<input id="cmdAbrir" name="cmdAbrir" type="button" class="btSupAbrir" onclick="enviaabrir();" title="Abrir" value="Abrir" />
+<?php
+		}
+	}
+}
+if (false) {
+?>
+<input id="cmdAnular" name="cmdAnular" type="button" class="btSupAnular" onclick="expandesector(2);" title="<?php echo $ETI['bt_anular']; ?>" value="<?php echo $ETI['bt_anular']; ?>" />
+<?php
+}
+?>
 </div>
 <div class="titulosI">
 <?php
@@ -1221,8 +1220,7 @@ echo '<h2>' . $ETI['titulo_240'] . '</h2>';
 <div class="areaform">
 <div class="areatrabajo">
 <?php
-if (false) {
-// if ($seg_1707 == 1){
+if ($seg_1707 == 1){
 ?>
 <div class="GrupoCamposAyuda">
 <label class="Label90">
@@ -1259,7 +1257,7 @@ echo $sNombreUsuario;
 ?>
 <?php
 //Div para ocultar
-$bConExpande = false;
+$bConExpande = true;
 if ($bConExpande) {
 ?>
 <div class="ir_derecha"<?php echo $sAnchoExpandeContrae; ?>>
@@ -1286,9 +1284,6 @@ if ($_REQUEST['boculta240'] != 0) {
 }
 //Mostrar formulario para editar
 ?>
-<?php
-if (false) {
-?>
 <div class="salto1px"></div>
 <div class="GrupoCampos450">
 <label class="TituloGrupo">
@@ -1308,48 +1303,6 @@ echo html_DivTerceroV2('unae40idtercero', $_REQUEST['unae40idtercero_td'], $_REQ
 <div id="div_unae40idtercero" class="L"><?php echo $unae40idtercero_rs; ?></div>
 <div class="salto1px"></div>
 </div>
-<?php
-} else {
-?>
-<input id="unae40idtercero" name="unae40idtercero" type="hidden" value="<?php echo $_REQUEST['unae40idtercero']; ?>" />
-<?php
-}
-?>
-<?php
-if (false) {
-?>
-<label class="Label130">
-<?php
-echo $ETI['unae40fechasol'];
-?>
-</label>
-<label class="Label220">
-<div id="div_unae40fechasol">
-<?php
-echo html_oculto('unae40fechasol', $_REQUEST['unae40fechasol'], formato_FechaLargaDesdeNumero($_REQUEST['unae40fechasol'])); //formato_FechaLargaDesdeNumero
-?>
-</div>
-</label>
-<label class="Label130">
-<?php
-echo $ETI['unae40horasol'];
-?>
-</label>
-<div class="campo_HoraMin" id="div_unae40horasol">
-<?php
-echo html_HoraMin('unae40horasol', $_REQUEST['unae40horasol'], 'unae40minsol', $_REQUEST['unae40minsol'], true);
-?>
-</div>
-<div class="salto1px"></div>
-<?php
-} else {
-?>
-<input id="unae40fechasol" name="unae40fechasol" type="hidden" value="<?php echo $_REQUEST['unae40fechasol']; ?>" />
-<input id="unae40horasol" name="unae40horasol" type="hidden" value="<?php echo $_REQUEST['unae40horasol']; ?>" />
-<input id="unae40minsol" name="unae40minsol" type="hidden" value="<?php echo $_REQUEST['unae40minsol']; ?>" />
-<?php
-}
-?>
 <label class="Label130">
 <?php
 echo $ETI['unae40consec'];
@@ -1357,7 +1310,7 @@ echo $ETI['unae40consec'];
 </label>
 <label class="Label130">
 <?php
-if (false) {
+if ($_REQUEST['paso'] != 2) {
 ?>
 <input id="unae40consec" name="unae40consec" type="text" value="<?php echo $_REQUEST['unae40consec']; ?>" onchange="RevisaLlave()" class="cuatro" />
 <?php
@@ -1385,48 +1338,214 @@ echo $ETI['unae40id'];
 	echo html_oculto('unae40id', $_REQUEST['unae40id'], formato_numero($_REQUEST['unae40id']));
 ?>
 </label>
-<label class="Label60">
-<?php
-echo $ETI['unae40estado'];
-?>
-</label>
-<label class="Label90">
-<?php
-$et_unae40estado = $aunae40estado[$_REQUEST['unae40estado']];
-if ($_REQUEST['unae40estado'] == 7) {
-	// $et_unae40estado = $ETI['msg_cerrado'];
-}
-echo html_oculto('unae40estado', $_REQUEST['unae40estado'], $et_unae40estado);
-?>
-</label>
-<?php
-if (false) {
-?>
 <label class="Label130">
 <?php
 echo $ETI['unae40tipodocorigen'];
 ?>
 </label>
-<label><div id="div_unae40tipodocorigen">
+<label>
+<div id="div_unae40tipodocorigen">
 <?php
 echo html_oculto('unae40tipodocorigen', $_REQUEST['unae40tipodocorigen']);
 ?>
-</div></label>
+</div>
+</label>
 <label class="Label130">
 <?php
 echo $ETI['unae40docorigen'];
 ?>
 </label>
-<label><div id="div_unae40docorigen">
+<label>
+<div id="div_unae40docorigen">
 <?php
 echo html_oculto('unae40docorigen', $_REQUEST['unae40docorigen']);
 ?>
-</div></label>
+</div>
+</label>
+<label class="Label130">
 <?php
-} else {
+echo $ETI['unae40or_nombre1'];
 ?>
-<input id="unae40tipodocorigen" name="unae40tipodocorigen" type="hidden" value="<?php echo $_REQUEST['unae40tipodocorigen']; ?>" />
-<input id="unae40docorigen" name="unae40docorigen" type="hidden" value="<?php echo $_REQUEST['unae40docorigen']; ?>" />
+</label>
+<label>
+<div id="div_unae40or_nombre1">
+<?php
+echo html_oculto('unae40or_nombre1', $_REQUEST['unae40or_nombre1']);
+?>
+</div>
+</label>
+<label class="Label130">
+<?php
+echo $ETI['unae40or_nombre2'];
+?>
+</label>
+<label>
+<div id="div_unae40or_nombre2">
+<?php
+echo html_oculto('unae40or_nombre2', $_REQUEST['unae40or_nombre2']);
+?>
+</div>
+</label>
+<label class="Label130">
+<?php
+echo $ETI['unae40or_apellido1'];
+?>
+</label>
+<label>
+<div id="div_unae40or_apellido1">
+<?php
+echo html_oculto('unae40or_apellido1', $_REQUEST['unae40or_apellido1']);
+?>
+</div>
+</label>
+<label class="Label130">
+<?php
+echo $ETI['unae40or_apellido2'];
+?>
+</label>
+<label>
+<div id="div_unae40or_apellido2">
+<?php
+echo html_oculto('unae40or_apellido2', $_REQUEST['unae40or_apellido2']);
+?>
+</div>
+</label>
+<label class="Label130">
+<?php
+echo $ETI['unae40or_sexo'];
+?>
+</label>
+<label class="Label130">
+<div id="div_unae40or_sexo">
+<?php
+echo $html_unae40or_sexo;
+?>
+</div>
+</label>
+<label class="Label130">
+<?php
+echo $ETI['unae40or_fechanac'];
+?>
+</label>
+<label class="Label220">
+<div id="div_unae40or_fechanac">
+<?php
+echo html_oculto('unae40or_fechanac', $_REQUEST['unae40or_fechanac']); //, formato_fechalarga($_REQUEST['unae40or_fechanac']));
+?>
+</div>
+</label>
+<label class="Label130">
+<?php
+echo $ETI['unae40or_fechadoc'];
+?>
+</label>
+<label class="Label220">
+<div id="div_unae40or_fechadoc">
+<?php
+echo html_oculto('unae40or_fechadoc', $_REQUEST['unae40or_fechadoc']); //, formato_fechalarga($_REQUEST['unae40or_fechadoc']));
+?>
+</div>
+</label>
+<label class="Label130">
+<?php
+echo $ETI['unae40tipodocdestino'];
+?>
+</label>
+<label>
+<?php
+echo $html_unae40tipodocdestino;
+?>
+</label>
+<label class="Label130">
+<?php
+echo $ETI['unae40docdestino'];
+?>
+</label>
+<label>
+
+<input id="unae40docdestino" name="unae40docdestino" type="text" value="<?php echo $_REQUEST['unae40docdestino']; ?>" maxlength="20" placeholder="<?php echo $ETI['ing_campo'] . $ETI['unae40docdestino']; ?>" />
+</label>
+<label class="Label130">
+<?php
+echo $ETI['unae40des_nombre1'];
+?>
+</label>
+<label>
+
+<input id="unae40des_nombre1" name="unae40des_nombre1" type="text" value="<?php echo $_REQUEST['unae40des_nombre1']; ?>" maxlength="50" placeholder="<?php echo $ETI['ing_campo'] . $ETI['unae40des_nombre1']; ?>" />
+</label>
+<label class="Label130">
+<?php
+echo $ETI['unae40des_nombre2'];
+?>
+</label>
+<label>
+
+<input id="unae40des_nombre2" name="unae40des_nombre2" type="text" value="<?php echo $_REQUEST['unae40des_nombre2']; ?>" maxlength="50" placeholder="<?php echo $ETI['ing_campo'] . $ETI['unae40des_nombre2']; ?>" />
+</label>
+<label class="Label130">
+<?php
+echo $ETI['unae40des_apellido1'];
+?>
+</label>
+<label>
+
+<input id="unae40des_apellido1" name="unae40des_apellido1" type="text" value="<?php echo $_REQUEST['unae40des_apellido1']; ?>" maxlength="50" placeholder="<?php echo $ETI['ing_campo'] . $ETI['unae40des_apellido1']; ?>" />
+</label>
+<label class="Label130">
+<?php
+echo $ETI['unae40des_apellido2'];
+?>
+</label>
+<label>
+
+<input id="unae40des_apellido2" name="unae40des_apellido2" type="text" value="<?php echo $_REQUEST['unae40des_apellido2']; ?>" maxlength="50" placeholder="<?php echo $ETI['ing_campo'] . $ETI['unae40des_apellido2']; ?>" />
+</label>
+<label class="Label130">
+<?php
+echo $ETI['unae40des_sexo'];
+?>
+</label>
+<label class="Label130">
+<?php
+echo $html_unae40des_sexo;
+?>
+</label>
+<label class="Label130">
+<?php
+echo $ETI['unae40des_fechanac'];
+?>
+</label>
+<div class="Campo220">
+<?php
+echo html_fecha('unae40des_fechanac', $_REQUEST['unae40des_fechanac']); //, false, '', $iAgnoIni, $iAgnoFin); //$bvacio, $accion
+?>
+</div>
+<?php
+if (false) {
+?>
+<label class="Label30">
+<input id="bunae40des_fechanac_hoy" name="bunae40des_fechanac_hoy" type="button" value="Hoy" class="btMiniHoy" onclick="fecha_asignar('unae40des_fechanac', '<?php echo fecha_hoy(); ?>')" title="<?php echo $ETI['bt_hoy']; ?>" />
+</label>
+<?php
+}
+?>
+<label class="Label130">
+<?php
+echo $ETI['unae40des_fechadoc'];
+?>
+</label>
+<div class="Campo220">
+<?php
+echo html_fecha('unae40des_fechadoc', $_REQUEST['unae40des_fechadoc']); //, false, '', $iAgnoIni, $iAgnoFin); //$bvacio, $accion
+?>
+</div>
+<?php
+if (false) {
+?>
+<label class="Label30">
+<input id="bunae40des_fechadoc_hoy" name="bunae40des_fechadoc_hoy" type="button" value="Hoy" class="btMiniHoy" onclick="fecha_asignar('unae40des_fechadoc', '<?php echo fecha_hoy(); ?>')" title="<?php echo $ETI['bt_hoy']; ?>" />
+</label>
 <?php
 }
 ?>
@@ -1449,128 +1568,31 @@ echo html_DivTerceroV2('unae40idsolicita', $_REQUEST['unae40idsolicita_td'], $_R
 <div id="div_unae40idsolicita" class="L"><?php echo $unae40idsolicita_rs; ?></div>
 <div class="salto1px"></div>
 </div>
-<div class="salto1px"></div>
-<div class="GrupoCampos">
-<label class="TituloGrupo">
+<label class="Label130">
 <?php
-echo $ETI['unae40destino'];
-?>
-</label>
-<div class="salto1px"></div>
-<label class="Label160">
-<?php
-echo $ETI['unae40tipodocdestino'];
-?>
-</label>
-<label class="Label90">
-<?php
-echo html_tipodocV2('unae40tipodocdestino',$_REQUEST['unae40tipodocdestino']);
-?>
-</label>
-<div class="salto1px"></div>
-<label class="Label160">
-<?php
-echo $ETI['unae40docdestino'];
-?>
-</label>
-<label class="Label250">
-<input id="unae40docdestino" name="unae40docdestino" type="text" value="<?php echo $_REQUEST['unae40docdestino']; ?>" maxlength="20" placeholder="<?php echo $ETI['ing_campo'] . $ETI['unae40docdestino']; ?>" />
-</label>
-<label class="Label160">
-<?php
-echo $ETI['unae40des_fechadoc'];
-?>
-</label>
-<div class="Campo220">
-<?php
-echo html_fecha('unae40des_fechadoc', $_REQUEST['unae40des_fechadoc'], false, '', $iAgnoIni, $iAgnoFin); //$bvacio, $accion
-?>
-</div>
-<?php
-if (false) {
-?>
-<label class="Label30">
-<input id="bunae40des_fechadoc_hoy" name="bunae40des_fechadoc_hoy" type="button" value="Hoy" class="btMiniHoy" onclick="fecha_asignar('unae40des_fechadoc', '<?php echo fecha_hoy(); ?>')" title="<?php echo $ETI['bt_hoy']; ?>" />
-</label>
-<?php
-}
-?>
-<div class="salto1px"></div>
-<label class="Label160">
-<?php
-echo $ETI['unae40des_nombre1'];
-?>
-</label>
-<label class="Label250">
-<input id="unae40des_nombre1" name="unae40des_nombre1" type="text" value="<?php echo $_REQUEST['unae40des_nombre1']; ?>" maxlength="50" placeholder="<?php echo $ETI['ing_campo'] . $ETI['unae40des_nombre1']; ?>" />
-</label>
-<label class="Label160">
-<?php
-echo $ETI['unae40des_nombre2'];
+echo $ETI['unae40fechasol'];
 ?>
 </label>
 <label class="Label220">
-<input id="unae40des_nombre2" name="unae40des_nombre2" type="text" value="<?php echo $_REQUEST['unae40des_nombre2']; ?>" maxlength="50" placeholder="<?php echo $ETI['ing_campo'] . $ETI['unae40des_nombre2']; ?>" />
-</label>
-<div class="salto1px"></div>
-<label class="Label160">
+<div id="div_unae40fechasol">
 <?php
-echo $ETI['unae40des_apellido1'];
-?>
-</label>
-<label class="Label250">
-<input id="unae40des_apellido1" name="unae40des_apellido1" type="text" value="<?php echo $_REQUEST['unae40des_apellido1']; ?>" maxlength="50" placeholder="<?php echo $ETI['ing_campo'] . $ETI['unae40des_apellido1']; ?>" />
-</label>
-<label class="Label160">
-<?php
-echo $ETI['unae40des_apellido2'];
-?>
-</label>
-<label class="Label220">
-<input id="unae40des_apellido2" name="unae40des_apellido2" type="text" value="<?php echo $_REQUEST['unae40des_apellido2']; ?>" maxlength="50" placeholder="<?php echo $ETI['ing_campo'] . $ETI['unae40des_apellido2']; ?>" />
-</label>
-<div class="salto1px"></div>
-<label class="Label160">
-<?php
-echo $ETI['unae40des_sexo'];
-?>
-</label>
-<label class="Label250">
-<?php
-echo $html_unae40des_sexo;
-?>
-</label>
-<label class="Label160">
-<?php
-echo $ETI['unae40des_fechanac'];
-?>
-</label>
-<div class="Campo220">
-<?php
-echo html_fecha('unae40des_fechanac', $_REQUEST['unae40des_fechanac'], false, '', $iAgnoIni, $iAgnoFin); //$bvacio, $accion
+echo html_oculto('unae40fechasol', $_REQUEST['unae40fechasol']); //, formato_fechalarga($_REQUEST['unae40fechasol']));
 ?>
 </div>
-<?php
-if (false) {
-?>
-<label class="Label30">
-<input id="bunae40des_fechanac_hoy" name="bunae40des_fechanac_hoy" type="button" value="Hoy" class="btMiniHoy" onclick="fecha_asignar('unae40des_fechanac', '<?php echo fecha_hoy(); ?>')" title="<?php echo $ETI['bt_hoy']; ?>" />
 </label>
+<label class="Label130">
 <?php
-}
+echo $ETI['unae40horasol'];
 ?>
-<div class="salto1px"></div>
+</label>
+<div class="campo_HoraMin" id="div_unae40horasol">
+<?php
+echo html_HoraMin('unae40horasol', $_REQUEST['unae40horasol'], 'unae40minsol', $_REQUEST['unae40minsol'], true);
+?>
 </div>
-<div class="salto1px"></div>
 <input id="unae40idorigen" name="unae40idorigen" type="hidden" value="<?php echo $_REQUEST['unae40idorigen']; ?>" />
 <input id="unae40idarchivo" name="unae40idarchivo" type="hidden" value="<?php echo $_REQUEST['unae40idarchivo']; ?>" />
 <div class="GrupoCampos300">
-<div class="salto1px"></div>
-<label class="TituloGrupo">
-<?php
-echo $ETI['unae40archivo']
-?>
-</label>
 <div class="salto1px"></div>
 <div id="div_unae40idarchivo" class="Campo300">
 <?php
@@ -1578,45 +1600,38 @@ echo html_lnkarchivo((int)$_REQUEST['unae40idorigen'], (int)$_REQUEST['unae40ida
 ?>
 </div>
 <?php
-$sEstiloAnexa = ' style="display:block;"';
+$sEstiloAnexa = '';
 $sEstiloElimina = ' style="display:none;"';
-$sEstiloAyudaArchivo = ' style="display:none;"';
 if ((int)$_REQUEST['unae40id'] == 0) {
 	$sEstiloAnexa = ' style="display:none;"';
-} else if ($_REQUEST['unae40estado'] == 0 && (int)$_REQUEST['unae40idarchivo'] == 0) {
-	$sEstiloAyudaArchivo = ' style="display:block;"';
 }
 if ((int)$_REQUEST['unae40idarchivo'] != 0) {
 	$sEstiloElimina = ' style="inline-block;"';
 }
-if ($_REQUEST['unae40estado'] == 0) {
 ?>
-<label class="Label90">
+<label class="Label30">
 <input id="banexaunae40idarchivo" name="banexaunae40idarchivo" type="button" value="Anexar" class="btAnexarS" onclick="carga_unae40idarchivo()" title="Cargar archivo"<?php echo $sEstiloAnexa; ?>/>
 </label>
-<label class="Label90">
+<label class="Label30">
 <input id="beliminaunae40idarchivo" name="beliminaunae40idarchivo" type="button" value="Eliminar" class="btBorrarS" onclick="eliminaunae40idarchivo()" title="Eliminar archivo"<?php echo $sEstiloElimina; ?>/>
 </label>
 <div class="salto1px"></div>
-<div id='div_ayuda_unae40idarchivo' class='GrupoCamposAyuda'<?php echo $sEstiloAyudaArchivo; ?>>
-<?php
-echo $ETI['ayuda_unae40idarchivo'];
-?>
 </div>
+<label class="Label90">
 <?php
+$et_unae40estado = $ETI['msg_abierto'];
+if ($_REQUEST['unae40estado'] == 7) {
+	$et_unae40estado = $ETI['msg_cerrado'];
 }
+echo html_oculto('unae40estado', $_REQUEST['unae40estado'], $et_unae40estado);
 ?>
-<div class="salto1px"></div>
-</div>
+</label>
 <label class="txtAreaS">
 <?php
 echo $ETI['unae40detalle'];
 ?>
 <textarea id="unae40detalle" name="unae40detalle" placeholder="<?php echo $ETI['ing_campo'] . $ETI['unae40detalle']; ?>"><?php echo $_REQUEST['unae40detalle']; ?></textarea>
 </label>
-<?php
-if (false) {
-?>
 <div class="salto1px"></div>
 <div class="GrupoCampos450">
 <label class="TituloGrupo">
@@ -1644,7 +1659,7 @@ echo $ETI['unae40fechaapr'];
 <label class="Label220">
 <div id="div_unae40fechaapr">
 <?php
-echo html_oculto('unae40fechaapr', $_REQUEST['unae40fechaapr'], fecha_desdenumero($_REQUEST['unae40fechaapr'])); //formato_FechaLargaDesdeNumero
+echo html_oculto('unae40fechaapr', $_REQUEST['unae40fechaapr']); //, formato_fechalarga($_REQUEST['unae40fechaapr']));
 ?>
 </div>
 </label>
@@ -1658,38 +1673,8 @@ echo $ETI['unae40horaaprueba'];
 echo html_HoraMin('unae40horaaprueba', $_REQUEST['unae40horaaprueba'], 'unae40minaprueba', $_REQUEST['unae40minaprueba'], true);
 ?>
 </div>
-<?php
-} else {
-?>
-<input id="unae40idaprueba" name="unae40idaprueba" type="hidden" value="<?php echo $_REQUEST['unae40idaprueba']; ?>" />
-<input id="unae40fechaapr" name="unae40fechaapr" type="hidden" value="<?php echo $_REQUEST['unae40fechaapr']; ?>" />
-<input id="unae40horaaprueba" name="unae40horaaprueba" type="hidden" value="<?php echo $_REQUEST['unae40horaaprueba']; ?>" />
-<?php
-}
-?>
 <input id="unae40tiempod" name="unae40tiempod" type="hidden" value="<?php echo $_REQUEST['unae40tiempod']; ?>" />
 <input id="unae40tiempoh" name="unae40tiempoh" type="hidden" value="<?php echo $_REQUEST['unae40tiempoh']; ?>" />
-<div class="salto5px"></div>
-<?php
-if ($_REQUEST['unae40estado'] == 0) {
-?>
-<label class="Label300">&nbsp;</label>
-<label class="Label130">
-<input id="cmdGuardar" name="cmdGuardar" type="button" value="Guardar" class="BotonAzul" onclick="javascript:enviaguardar()" />
-</label>
-<?php
-}
-?>
-<?php
-if ($_REQUEST['unae40estado'] == 0 && $_REQUEST['paso'] == 2) {
-?>
-<label class="Label60">&nbsp;</label>
-<label class="Label160">
-<input id="cmdEnviar" name="cmdEnviar" type="button" value="Radicar" class="BotonAzul160" onclick="javascript:enviacerrar()" />
-</label>
-<?php
-}
-?>
 <?php
 if (false) {
 	//Ejemplo de boton de ayuda
@@ -1711,7 +1696,7 @@ if ($bConExpande) {
 <div class="areaform">
 <div class="areatitulo">
 <?php
-echo '<h3>' . $ETI['bloquehistorial'] . '</h3>';
+echo '<h3>' . $ETI['bloque1'] . '</h3>';
 ?>
 </div>
 <div class="areatrabajo">
@@ -1906,9 +1891,6 @@ if ($sDebug != '') {
 <?php
 // Termina el bloque div_interna
 ?>
-<?php
-if (false) {
-?>
 </div>
 <div class="flotante">
 <?php
@@ -1919,9 +1901,6 @@ if ($_REQUEST['unae40estado'] == 0) {
 }
 ?>
 </div>
-<?php
-}
-?>
 <?php
 echo html_DivAlarmaV2($sError, $iTipoError);
 //El script que cambia el sector que se muestra

@@ -336,12 +336,37 @@ function f240_TablaDetalleV2($aParametros, $objDB, $bDebug = false)
 	$res = $res . '<div class="table-responsive">
 	<table border="0" align="center" cellpadding="0" cellspacing="2" class="tablaapp">
 	<thead class="fondoazul"><tr>
-	<td><b>' . $ETI['unae40fechasol'] . '</b></td>
-	<td><b>' . $ETI['unae40horasol'] . '</b></td>
+	<td colspan="2"><b>' . $ETI['unae40idtercero'] . '</b></td>
 	<td><b>' . $ETI['unae40consec'] . '</b></td>
-	<td><b>' . $ETI['unae40estado'] . '</b></td>
+	<td><b>' . $ETI['unae40tipodocorigen'] . '</b></td>
+	<td><b>' . $ETI['unae40docorigen'] . '</b></td>
+	<td><b>' . $ETI['unae40or_nombre1'] . '</b></td>
+	<td><b>' . $ETI['unae40or_nombre2'] . '</b></td>
+	<td><b>' . $ETI['unae40or_apellido1'] . '</b></td>
+	<td><b>' . $ETI['unae40or_apellido2'] . '</b></td>
+	<td><b>' . $ETI['unae40or_sexo'] . '</b></td>
+	<td><b>' . $ETI['unae40or_fechanac'] . '</b></td>
+	<td><b>' . $ETI['unae40or_fechadoc'] . '</b></td>
 	<td><b>' . $ETI['unae40tipodocdestino'] . '</b></td>
 	<td><b>' . $ETI['unae40docdestino'] . '</b></td>
+	<td><b>' . $ETI['unae40des_nombre1'] . '</b></td>
+	<td><b>' . $ETI['unae40des_nombre2'] . '</b></td>
+	<td><b>' . $ETI['unae40des_apellido1'] . '</b></td>
+	<td><b>' . $ETI['unae40des_apellido2'] . '</b></td>
+	<td><b>' . $ETI['unae40des_sexo'] . '</b></td>
+	<td><b>' . $ETI['unae40des_fechanac'] . '</b></td>
+	<td><b>' . $ETI['unae40des_fechadoc'] . '</b></td>
+	<td colspan="2"><b>' . $ETI['unae40idsolicita'] . '</b></td>
+	<td><b>' . $ETI['unae40fechasol'] . '</b></td>
+	<td><b>' . $ETI['unae40horasol'] . '</b></td>
+	<td><b>' . $ETI['unae40idarchivo'] . '</b></td>
+	<td><b>' . $ETI['unae40estado'] . '</b></td>
+	<td><b>' . $ETI['unae40detalle'] . '</b></td>
+	<td colspan="2"><b>' . $ETI['unae40idaprueba'] . '</b></td>
+	<td><b>' . $ETI['unae40fechaapr'] . '</b></td>
+	<td><b>' . $ETI['unae40horaaprueba'] . '</b></td>
+	<td><b>' . $ETI['unae40tiempod'] . '</b></td>
+	<td><b>' . $ETI['unae40tiempoh'] . '</b></td>
 	<td align="right">
 	' . html_paginador('paginaf240', $registros, $lineastabla, $pagina, 'paginarf240()') . '
 	' . html_lpp('lppf240', $lineastabla, 'paginarf240()') . '
@@ -400,8 +425,8 @@ function f240_TablaDetalleV2($aParametros, $objDB, $bDebug = false)
 			$et_unae40idsolicita_nombre = $sPrefijo . cadena_notildes($filadet['C22_nombre']) . $sSufijo;
 		}
 		$et_unae40fechasol = '';
-		if ($filadet['unae40fechasol'] != 0) {
-			$et_unae40fechasol = fecha_desdenumero($filadet['unae40fechasol']);
+		if ($filadet['unae40fechasol'] != '00/00/0000') {
+			$et_unae40fechasol = $filadet['unae40fechasol'];
 		}
 		$et_unae40horasol = html_TablaHoraMin($filadet['unae40horasol'], $filadet['unae40minsol']);
 		$et_unae40idarchivo = '';
@@ -409,7 +434,10 @@ function f240_TablaDetalleV2($aParametros, $objDB, $bDebug = false)
 			//$et_unae40idarchivo = '<img src="verarchivo.php?cont=' . $filadet['unae40idorigen'] . '&id=' . $filadet['unae40idarchivo'] . '&maxx=150"/>';
 			$et_unae40idarchivo = html_lnkarchivo((int)$filadet['unae40idorigen'], (int)$filadet['unae40idarchivo']);
 		}
-		$et_unae40estado = $aunae40estado[$filadet['unae40estado']];
+		$et_unae40estado = $ETI['msg_abierto'];
+		if ($filadet['unae40estado'] == 7) {
+			$et_unae40estado = $ETI['msg_cerrado'];
+		}
 		$et_unae40idaprueba_doc = '';
 		$et_unae40idaprueba_nombre = '';
 		if ($filadet['unae40idaprueba'] != 0) {
@@ -417,20 +445,48 @@ function f240_TablaDetalleV2($aParametros, $objDB, $bDebug = false)
 			$et_unae40idaprueba_nombre = $sPrefijo . cadena_notildes($filadet['C30_nombre']) . $sSufijo;
 		}
 		$et_unae40fechaapr = '';
-		if ($filadet['unae40fechaapr'] != 0) {
-			$et_unae40fechaapr = fecha_desdenumero($filadet['unae40fechaapr']);
+		if ($filadet['unae40fechaapr'] != '00/00/0000') {
+			$et_unae40fechaapr = $filadet['unae40fechaapr'];
 		}
 		$et_unae40horaaprueba = html_TablaHoraMin($filadet['unae40horaaprueba'], $filadet['unae40minaprueba']);
 		if ($bAbierta) {
 			$sLink = '<a href="javascript:cargaridf240(' . $filadet['unae40id'] . ')" class="lnkresalte">' . $ETI['lnk_cargar'] . '</a>';
 		}
 		$res = $res . '<tr' . $sClass . '>
+		<td>' . $et_unae40idtercero_doc . '</td>
+		<td>' . $et_unae40idtercero_nombre . '</td>
+		<td>' . $sPrefijo . $filadet['unae40consec'] . $sSufijo . '</td>
+		<td>' . $sPrefijo . cadena_notildes($filadet['unae40tipodocorigen']) . $sSufijo . '</td>
+		<td>' . $sPrefijo . cadena_notildes($filadet['unae40docorigen']) . $sSufijo . '</td>
+		<td>' . $sPrefijo . cadena_notildes($filadet['unae40or_nombre1']) . $sSufijo . '</td>
+		<td>' . $sPrefijo . cadena_notildes($filadet['unae40or_nombre2']) . $sSufijo . '</td>
+		<td>' . $sPrefijo . cadena_notildes($filadet['unae40or_apellido1']) . $sSufijo . '</td>
+		<td>' . $sPrefijo . cadena_notildes($filadet['unae40or_apellido2']) . $sSufijo . '</td>
+		<td>' . $sPrefijo . $et_unae40or_sexo . $sSufijo . '</td>
+		<td>' . $sPrefijo . $et_unae40or_fechanac . $sSufijo . '</td>
+		<td>' . $sPrefijo . $et_unae40or_fechadoc . $sSufijo . '</td>
+		<td>' . $sPrefijo . cadena_notildes($filadet['unae40tipodocdestino']) . $sSufijo . '</td>
+		<td>' . $sPrefijo . cadena_notildes($filadet['unae40docdestino']) . $sSufijo . '</td>
+		<td>' . $sPrefijo . cadena_notildes($filadet['unae40des_nombre1']) . $sSufijo . '</td>
+		<td>' . $sPrefijo . cadena_notildes($filadet['unae40des_nombre2']) . $sSufijo . '</td>
+		<td>' . $sPrefijo . cadena_notildes($filadet['unae40des_apellido1']) . $sSufijo . '</td>
+		<td>' . $sPrefijo . cadena_notildes($filadet['unae40des_apellido2']) . $sSufijo . '</td>
+		<td>' . $sPrefijo . $et_unae40des_sexo . $sSufijo . '</td>
+		<td>' . $sPrefijo . $et_unae40des_fechanac . $sSufijo . '</td>
+		<td>' . $sPrefijo . $et_unae40des_fechadoc . $sSufijo . '</td>
+		<td>' . $et_unae40idsolicita_doc . '</td>
+		<td>' . $et_unae40idsolicita_nombre . '</td>
 		<td>' . $sPrefijo . $et_unae40fechasol . $sSufijo . '</td>
 		<td>' . $sPrefijo . $et_unae40horasol . $sSufijo . '</td>
-		<td>' . $sPrefijo.$filadet['unae40consec'] . $sSufijo . '</td>
+		<td>' . $et_unae40idarchivo . '</td>
 		<td>' . $sPrefijo . $et_unae40estado . $sSufijo . '</td>
-		<td>' . $sPrefijo.cadena_notildes($filadet['unae40tipodocdestino']).$sSufijo . '</td>
-		<td>' . $sPrefijo.cadena_notildes($filadet['unae40docdestino']).$sSufijo . '</td>
+		<td>' . $sPrefijo . $filadet['unae40detalle'] . $sSufijo . '</td>
+		<td>' . $et_unae40idaprueba_doc . '</td>
+		<td>' . $et_unae40idaprueba_nombre . '</td>
+		<td>' . $sPrefijo . $et_unae40fechaapr . $sSufijo . '</td>
+		<td>' . $sPrefijo . $et_unae40horaaprueba . $sSufijo . '</td>
+		<td>' . $sPrefijo . $filadet['unae40tiempod'] . $sSufijo . '</td>
+		<td>' . $sPrefijo . $filadet['unae40tiempoh'] . $sSufijo . '</td>
 		<td>' . $sLink . '</td>
 		</tr>';
 	}
@@ -601,17 +657,11 @@ function f240_db_GuardarV2($DATA, $objDB, $bDebug = false, $idTercero = 0)
 	if (isset($DATA['unae40des_fechadoc']) == 0) {
 		$DATA['unae40des_fechadoc'] = '';
 	}
-	if (isset($DATA['unae40fechasol']) == 0) {
-		$DATA['unae40fechasol'] = '';
-	}
 	if (isset($DATA['unae40estado']) == 0) {
 		$DATA['unae40estado'] = '';
 	}
 	if (isset($DATA['unae40detalle']) == 0) {
 		$DATA['unae40detalle'] = '';
-	}
-	if (isset($DATA['unae40fechaapr']) == 0) {
-		$DATA['unae40fechaapr'] = '';
 	}
 	*/
 	$DATA['unae40consec'] = numeros_validar($DATA['unae40consec']);
@@ -648,9 +698,6 @@ function f240_db_GuardarV2($DATA, $objDB, $bDebug = false, $idTercero = 0)
 	if ($DATA['unae40estado'] == '') {
 		$DATA['unae40estado'] = 0;
 	}
-	if ($DATA['unae40fechaapr'] == '') {
-		$DATA['unae40fechaapr'] = 0;
-	}
 		/*
 	if ($DATA['unae40horaaprueba'] == '') {
 		$DATA['unae40horaaprueba'] = 0;
@@ -661,17 +708,22 @@ function f240_db_GuardarV2($DATA, $objDB, $bDebug = false, $idTercero = 0)
 	*/
 	// -- Seccion para validar los posibles causales de error.
 	$sSepara = ', ';
-	$iBorrador = 0;
-	$iRadicado = 0;
 	switch ($DATA['unae40estado']) {
-		case 0:
-		case 3:
-		if ($DATA['unae40fechasol'] == '') {
-			$DATA['unae40fechasol'] = fecha_DiaMod();
-			$DATA['unae40horasol'] = fecha_hora();
-			$DATA['unae40minsol'] = fecha_minuto();
+		case 7:
+		//if (!fecha_esvalida($DATA['unae40fechaapr'])) {
+			//$DATA['unae40fechaapr'] = '00/00/0000';
+			//$sError = $ERR['unae40fechaapr'] . $sSepara . $sError;
+			//}
+		if ($DATA['unae40idaprueba'] == 0) {
+			$sError = $ERR['unae40idaprueba'] . $sSepara . $sError;
+		}
+		//if ($DATA['unae40detalle'] == '') {
+			//$sError = $ERR['unae40detalle'] . $sSepara . $sError;
+		//}
+		//if (!fecha_esvalida($DATA['unae40fechasol'])) {
+			//$DATA['unae40fechasol'] = '00/00/0000';
 			//$sError = $ERR['unae40fechasol'] . $sSepara . $sError;
-			}
+			//}
 		if ($DATA['unae40idsolicita'] == 0) {
 			$sError = $ERR['unae40idsolicita'] . $sSepara . $sError;
 		}
@@ -686,8 +738,14 @@ function f240_db_GuardarV2($DATA, $objDB, $bDebug = false, $idTercero = 0)
 		if ($DATA['unae40des_sexo'] == '') {
 			$sError = $ERR['unae40des_sexo'] . $sSepara . $sError;
 		}
+		if ($DATA['unae40des_apellido2'] == '') {
+			$sError = $ERR['unae40des_apellido2'] . $sSepara . $sError;
+		}
 		if ($DATA['unae40des_apellido1'] == '') {
 			$sError = $ERR['unae40des_apellido1'] . $sSepara . $sError;
+		}
+		if ($DATA['unae40des_nombre2'] == '') {
+			$sError = $ERR['unae40des_nombre2'] . $sSepara . $sError;
 		}
 		if ($DATA['unae40des_nombre1'] == '') {
 			$sError = $ERR['unae40des_nombre1'] . $sSepara . $sError;
@@ -706,60 +764,21 @@ function f240_db_GuardarV2($DATA, $objDB, $bDebug = false, $idTercero = 0)
 			//$DATA['unae40or_fechanac'] = '00/00/0000';
 			//$sError = $ERR['unae40or_fechanac'] . $sSepara . $sError;
 			//}
-		if ($DATA['paso'] == 10) {
-			$sSQL = 'SELECT SUM(CASE WHEN unae40estado=0 THEN 1 ELSE 0 END) AS borrador, 
-			SUM(CASE WHEN unae40estado=3 THEN 1 ELSE 0 END) AS radicado
-			FROM unae40historialcambdoc WHERE unae40idsolicita=' . $DATA['unae40idsolicita'] . '';
-			$result = $objDB->ejecutasql($sSQL);
-			if ($objDB->nf($result) != 0) {
-				$fila = $objDB->sf($result);
-				if($fila['borrador']>0) {
-					$sError = $ERR['unae40solabierta'];
-				} else if ($fila['radicado']>0) {
-					$sError = $ERR['unae40radexistente'];
-				}
-			}
-		}
 		//Fin de las valiaciones NO LLAVE.
 		if ($sError != '') {
 			$DATA['unae40estado'] = 0;
 		}
 		$sErrorCerrando = $sError;
-		// $sError = '';
+		$sError = '';
 		break;
-	}
-	if ($sError == '') {
-		$sSQLcondi = 'unae40tipodocdestino="' . $DATA['unae40tipodocdestino'] . '" AND unae40docdestino="' . $DATA['unae40docdestino'] . '" AND unae40des_fechadoc="' . $DATA['unae40des_fechadoc'] . 
-		'" AND unae40des_nombre1="' . $DATA['unae40des_nombre1'] . '" AND unae40des_nombre2="' . $DATA['unae40des_nombre2'] . '" AND unae40des_apellido1="' . $DATA['unae40des_apellido1'] . 
-		'" AND unae40des_apellido2="' . $DATA['unae40des_apellido2'] . '" AND unae40des_sexo="' . $DATA['unae40des_sexo'] . '" AND unae40des_fechanac="' . $DATA['unae40des_fechanac'] . 
-		'" AND unae40idsolicita=' . $DATA['unae40idsolicita'] . '';
-		$sSQL = 'SELECT 1 FROM unae40historialcambdoc WHERE ' . $sSQLcondi . '';
-		if ($bDebug) {
-			$sDebug = $sDebug . fecha_microtiempo() . ' Solicitud existente ' . $sSQL . '<br>';
-		}
-		$result = $objDB->ejecutasql($sSQL);
-		if ($objDB->nf($result) != 0) {
-			if ($DATA['unae40estado'] == 0) {
-				$sError = $ERR['unae40solexistente'];
-			}
-		} else {
-			$bDevuelve = true;
-			// list($bDevuelve, $sDebugP) = seg_revisa_permisoV3($iCodModulo, 2, $idTercero, $objDB);
-			if (!$bDevuelve) {
-				$sError = $ERR['2'];
-			}
-		}
 	}
 	//Valiaciones de campos obligatorios en todo guardar.
 	if ($DATA['unae40idtercero'] == 0) {
 		$sError = $ERR['unae40idtercero'];
 	}
 	// -- Tiene un cerrado.
-	if ($DATA['unae40estado'] == 3) {
+	if ($DATA['unae40estado'] == 7) {
 		//Validaciones previas a cerrar
-		if ($DATA['unae40idarchivo'] == 0) {
-			$sErrorCerrando = $ERR['unae40idarchivo'] . ' ' . $sErrorCerrando;
-		}
 		//Aprobó las Validaciones al cerrar
 		if ($sError.$sErrorCerrando != '') {
 			$DATA['unae40estado'] = 0;
@@ -768,9 +787,6 @@ function f240_db_GuardarV2($DATA, $objDB, $bDebug = false, $idTercero = 0)
 		} else {
 			$bCerrando = true;
 			//Acciones del cierre
-			$DATA['unae40fechasol'] = fecha_DiaMod();
-			$DATA['unae40horasol'] = fecha_hora();
-			$DATA['unae40minsol'] = fecha_minuto();
 		}
 	}
 	// -- Fin del cerrado.
@@ -820,8 +836,7 @@ function f240_db_GuardarV2($DATA, $objDB, $bDebug = false, $idTercero = 0)
 				$bQuitarCodigo = true;
 				$sCampoCodigo = 'unae40consec';
 			} else {
-				$bDevuelve = true;
-				// list($bDevuelve, $sDebugP) = seg_revisa_permisoV3($iCodModulo, 8, $idTercero, $objDB);
+				list($bDevuelve, $sDebugP) = seg_revisa_permisoV3($iCodModulo, 8, $idTercero, $objDB);
 				if (!$bDevuelve) {
 					$sError = $ERR['8'];
 					$DATA['unae40consec'] = '';
@@ -833,16 +848,14 @@ function f240_db_GuardarV2($DATA, $objDB, $bDebug = false, $idTercero = 0)
 				if ($objDB->nf($result) != 0) {
 					$sError = $ERR['existe'];
 				} else {
-					$bDevuelve = true;
-					// list($bDevuelve, $sDebugP) = seg_revisa_permisoV3($iCodModulo, 2, $idTercero, $objDB);
+					list($bDevuelve, $sDebugP) = seg_revisa_permisoV3($iCodModulo, 2, $idTercero, $objDB);
 					if (!$bDevuelve) {
 						$sError = $ERR['2'];
 					}
 				}
 			}
 		} else {
-			$bDevuelve = true;
-			// list($bDevuelve, $sDebugP) = seg_revisa_permisoV3($iCodModulo, 3, $idTercero, $objDB);
+			list($bDevuelve, $sDebugP) = seg_revisa_permisoV3($iCodModulo, 3, $idTercero, $objDB);
 			if (!$bDevuelve) {
 				$sError = $ERR['3'];
 			}
@@ -856,44 +869,23 @@ function f240_db_GuardarV2($DATA, $objDB, $bDebug = false, $idTercero = 0)
 				$sError = $objDB->serror;
 			}
 			//Datos adicionales al iniciar un registro.
-			$unae40tipodoc='';
-			$unae40doc='';
-			$unae40_fechadoc='';
-			$unae40_nombre1='';
-			$unae40_nombre2='';
-			$unae40_apellido1='';
-			$unae40_apellido2='';
-			$unae40_sexo='';
-			$unae40_fechanac='';
-			$sSQLcondi = 'unad11id="' . $_SESSION['unad_id_tercero'] . '"' . '';
-			$sSQL = 'SELECT unad11tipodoc, unad11doc, unad11fechadoc, unad11nombre1, unad11nombre2, unad11apellido1, unad11apellido2, unad11genero, unad11fechanace FROM unad11terceros WHERE ' . $sSQLcondi;
-			$tabla = $objDB->ejecutasql($sSQL);
-			if ($objDB->nf($tabla) > 0) {
-				$fila = $objDB->sf($tabla);
-				$unae40tipodoc=$fila['unad11tipodoc'];
-				$unae40doc=$fila['unad11doc'];
-				$unae40_fechadoc=$fila['unad11fechadoc'];
-				$unae40_nombre1=$fila['unad11nombre1'];
-				$unae40_nombre2=$fila['unad11nombre2'];
-				$unae40_apellido1=$fila['unad11apellido1'];
-				$unae40_apellido2=$fila['unad11apellido2'];
-				$unae40_sexo=$fila['unad11genero'];
-				$unae40_fechanac=$fila['unad11fechanace'];
-			}
-			$DATA['unae40tipodocorigen'] = $unae40tipodoc;
-			$DATA['unae40docorigen'] = $unae40doc;
-			$DATA['unae40or_nombre1'] = $unae40_nombre1;
-			$DATA['unae40or_nombre2'] = $unae40_nombre2;
-			$DATA['unae40or_apellido1'] = $unae40_apellido1;
-			$DATA['unae40or_apellido2'] = $unae40_apellido2;
-			$DATA['unae40or_sexo'] = $unae40_sexo;
-			$DATA['unae40or_fechanac'] = $unae40_fechanac; //fecha_hoy();
-			$DATA['unae40or_fechadoc'] = $unae40_fechadoc; //fecha_hoy();
-			$DATA['unae40idsolicita'] = $_SESSION['unad_id_tercero'];
-			$DATA['unae40idorigen'] = $DATA['unae40idsolicita'];
+			$DATA['unae40tipodocorigen'] = '';
+			$DATA['unae40docorigen'] = '';
+			$DATA['unae40or_nombre1'] = '';
+			$DATA['unae40or_nombre2'] = '';
+			$DATA['unae40or_apellido1'] = '';
+			$DATA['unae40or_apellido2'] = '';
+			$DATA['unae40or_fechanac'] = '00/00/0000'; //fecha_hoy();
+			$DATA['unae40or_fechadoc'] = '00/00/0000'; //fecha_hoy();
+			//$DATA['unae40idsolicita'] = 0; //$_SESSION['u_idtercero'];
+			$DATA['unae40fechasol'] = '00/00/0000'; //fecha_hoy();
+			$DATA['unae40horasol'] = 0;
+			$DATA['unae40minsol'] = 0;
+			$DATA['unae40idorigen'] = 0;
 			$DATA['unae40idarchivo'] = 0;
 			$DATA['unae40estado'] = 0;
 			//$DATA['unae40idaprueba'] = 0; //$_SESSION['u_idtercero'];
+			$DATA['unae40fechaapr'] = '00/00/0000'; //fecha_hoy();
 			$DATA['unae40horaaprueba'] = 0;
 			$DATA['unae40minaprueba'] = 0;
 			$DATA['unae40tiempod'] = 0;
@@ -914,9 +906,9 @@ function f240_db_GuardarV2($DATA, $objDB, $bDebug = false, $idTercero = 0)
 			unae40fechaapr, unae40horaaprueba, unae40minaprueba, unae40tiempod, unae40tiempoh';
 			$sValores240 = '' . $DATA['unae40idtercero'] . ', ' . $DATA['unae40consec'] . ', ' . $DATA['unae40id'] . ', "' . $DATA['unae40tipodocorigen'] . '", "' . $DATA['unae40docorigen'] . '", 
 			"' . $DATA['unae40or_nombre1'] . '", "' . $DATA['unae40or_nombre2'] . '", "' . $DATA['unae40or_apellido1'] . '", "' . $DATA['unae40or_apellido2'] . '", "' . $DATA['unae40or_sexo'] . '", 
-			"' . $DATA['unae40or_fechanac'] . '", "' . $DATA['unae40or_fechadoc'] . '", "' . $DATA['unae40tipodocdestino'] . '", "' . $DATA['unae40docdestino'] . '", "' . $DATA['unae40des_nombre1'] . '", 
-			"' . $DATA['unae40des_nombre2'] . '", "' . $DATA['unae40des_apellido1'] . '", "' . $DATA['unae40des_apellido2'] . '", "' . $DATA['unae40des_sexo'] . '", "' . $DATA['unae40des_fechanac'] . '", 
-			"' . $DATA['unae40des_fechadoc'] . '", ' . $DATA['unae40idsolicita'] . ', ' . $DATA['unae40fechasol'] . ', ' . $DATA['unae40horasol'] . ', ' . $DATA['unae40minsol'] . ',
+			' . $DATA['unae40or_fechanac'] . ', ' . $DATA['unae40or_fechadoc'] . ', "' . $DATA['unae40tipodocdestino'] . '", "' . $DATA['unae40docdestino'] . '", "' . $DATA['unae40des_nombre1'] . '", 
+			"' . $DATA['unae40des_nombre2'] . '", "' . $DATA['unae40des_apellido1'] . '", "' . $DATA['unae40des_apellido2'] . '", "' . $DATA['unae40des_sexo'] . '", ' . $DATA['unae40des_fechanac'] . ', 
+			' . $DATA['unae40des_fechadoc'] . ', ' . $DATA['unae40idsolicita'] . ', ' . $DATA['unae40fechasol'] . ', ' . $DATA['unae40horasol'] . ', ' . $DATA['unae40minsol'] . ', 
 			' . $DATA['unae40idorigen'] . ', ' . $DATA['unae40idarchivo'] . ', ' . $DATA['unae40estado'] . ', "' . $unae40detalle . '", ' . $DATA['unae40idaprueba'] . ', 
 			' . $DATA['unae40fechaapr'] . ', ' . $DATA['unae40horaaprueba'] . ', ' . $DATA['unae40minaprueba'] . ', ' . $DATA['unae40tiempod'] . ', ' . $DATA['unae40tiempoh'] . '';
 			if ($APP->utf8 == 1) {
@@ -940,10 +932,6 @@ function f240_db_GuardarV2($DATA, $objDB, $bDebug = false, $idTercero = 0)
 			$scampo[9] = 'unae40des_fechadoc';
 			$scampo[10] = 'unae40estado';
 			$scampo[11] = 'unae40detalle';
-			$scampo[12] = 'unae40fechasol';
-			$scampo[13] = 'unae40horasol';
-			$scampo[14] = 'unae40minsol';
-			$scampo[15] = 'unae40fechaapr';
 			$sdato[1] = $DATA['unae40tipodocdestino'];
 			$sdato[2] = $DATA['unae40docdestino'];
 			$sdato[3] = $DATA['unae40des_nombre1'];
@@ -955,11 +943,7 @@ function f240_db_GuardarV2($DATA, $objDB, $bDebug = false, $idTercero = 0)
 			$sdato[9] = $DATA['unae40des_fechadoc'];
 			$sdato[10] = $DATA['unae40estado'];
 			$sdato[11] = $unae40detalle;
-			$sdato[12] = $DATA['unae40fechasol'];
-			$sdato[13] = $DATA['unae40horasol'];
-			$sdato[14] = $DATA['unae40minsol'];
-			$sdato[15] = $DATA['unae40fechaapr'];
-			$numcmod=15;
+			$numcmod=11;
 			$sWhere = 'unae40id=' . $DATA['unae40id'] . '';
 			$sSQL = 'SELECT * FROM unae40historialcambdoc WHERE ' . $sWhere;
 			$sdatos = '';
@@ -1079,8 +1063,7 @@ function f240_db_Eliminar($unae40id, $objDB, $bDebug = false)
 		if (isset($idTercero) == 0) {
 			$idTercero = $_SESSION['unad_id_tercero'];
 		}
-		$bDevuelve = true;
-		// list($bDevuelve, $sDebugP) = seg_revisa_permisoV3($iCodModulo, 4, $idTercero, $objDB);
+		list($bDevuelve, $sDebugP) = seg_revisa_permisoV3($iCodModulo, 4, $idTercero, $objDB);
 		if (!$bDevuelve) {
 			$sError = $ERR['4'];
 		}
@@ -1273,8 +1256,22 @@ function f240_TablaDetalleBusquedas($aParametros, $objDB)
 	<td><b>' . $ETI['unae40consec'] . '</b></td>
 	<td><b>' . $ETI['unae40tipodocorigen'] . '</b></td>
 	<td><b>' . $ETI['unae40docorigen'] . '</b></td>
+	<td><b>' . $ETI['unae40or_nombre1'] . '</b></td>
+	<td><b>' . $ETI['unae40or_nombre2'] . '</b></td>
+	<td><b>' . $ETI['unae40or_apellido1'] . '</b></td>
+	<td><b>' . $ETI['unae40or_apellido2'] . '</b></td>
+	<td><b>' . $ETI['unae40or_sexo'] . '</b></td>
+	<td><b>' . $ETI['unae40or_fechanac'] . '</b></td>
+	<td><b>' . $ETI['unae40or_fechadoc'] . '</b></td>
 	<td><b>' . $ETI['unae40tipodocdestino'] . '</b></td>
 	<td><b>' . $ETI['unae40docdestino'] . '</b></td>
+	<td><b>' . $ETI['unae40des_nombre1'] . '</b></td>
+	<td><b>' . $ETI['unae40des_nombre2'] . '</b></td>
+	<td><b>' . $ETI['unae40des_apellido1'] . '</b></td>
+	<td><b>' . $ETI['unae40des_apellido2'] . '</b></td>
+	<td><b>' . $ETI['unae40des_sexo'] . '</b></td>
+	<td><b>' . $ETI['unae40des_fechanac'] . '</b></td>
+	<td><b>' . $ETI['unae40des_fechadoc'] . '</b></td>
 	<td colspan="2"><b>' . $ETI['unae40idsolicita'] . '</b></td>
 	<td><b>' . $ETI['unae40fechasol'] . '</b></td>
 	<td><b>' . $ETI['unae40horasol'] . '</b></td>
@@ -1296,9 +1293,25 @@ function f240_TablaDetalleBusquedas($aParametros, $objDB)
 		$sPrefijo = '<a href="javascript:Devuelve(\'' . $filadet['unae40id'] . '\');">';
 		$sSufijo = '</a>';
 		$tlinea++;
+		$et_unae40or_fechanac = '';
+		if ($filadet['unae40or_fechanac'] != '00/00/0000') {
+			$et_unae40or_fechanac = $filadet['unae40or_fechanac'];
+		}
+		$et_unae40or_fechadoc = '';
+		if ($filadet['unae40or_fechadoc'] != '00/00/0000') {
+			$et_unae40or_fechadoc = $filadet['unae40or_fechadoc'];
+		}
+		$et_unae40des_fechanac = '';
+		if ($filadet['unae40des_fechanac'] != '00/00/0000') {
+			$et_unae40des_fechanac = $filadet['unae40des_fechanac'];
+		}
+		$et_unae40des_fechadoc = '';
+		if ($filadet['unae40des_fechadoc'] != '00/00/0000') {
+			$et_unae40des_fechadoc = $filadet['unae40des_fechadoc'];
+		}
 		$et_unae40fechasol = '';
-		if ($filadet['unae40fechasol'] != 0) {
-			$et_unae40fechasol = fecha_desdenumero($filadet['unae40fechasol']);
+		if ($filadet['unae40fechasol'] != '00/00/0000') {
+			$et_unae40fechasol = $filadet['unae40fechasol'];
 		}
 		$et_unae40horasol = html_TablaHoraMin($filadet['unae40horasol'], $filadet['unae40minsol']);
 		$et_unae40idarchivo = '';
@@ -1311,8 +1324,8 @@ function f240_TablaDetalleBusquedas($aParametros, $objDB)
 			$et_unae40estado = $ETI['msg_cerrado'];
 		}
 		$et_unae40fechaapr = '';
-		if ($filadet['unae40fechaapr'] != 0) {
-			$et_unae40fechaapr = fecha_desdenumero($filadet['unae40fechaapr']);
+		if ($filadet['unae40fechaapr'] != '00/00/0000') {
+			$et_unae40fechaapr = $filadet['unae40fechaapr'];
 		}
 		$et_unae40horaaprueba = html_TablaHoraMin($filadet['unae40horaaprueba'], $filadet['unae40minaprueba']);
 		$res = $res . '<tr onmouseover="cambia_color_over(this);" onmouseout="cambia_color_out(this);">
@@ -1321,10 +1334,24 @@ function f240_TablaDetalleBusquedas($aParametros, $objDB)
 		<td>' . $sPrefijo . $filadet['unae40consec'] . $sSufijo . '</td>
 		<td>' . $sPrefijo . cadena_notildes($filadet['unae40tipodocorigen']) . $sSufijo . '</td>
 		<td>' . $sPrefijo . cadena_notildes($filadet['unae40docorigen']) . $sSufijo . '</td>
+		<td>' . $sPrefijo . cadena_notildes($filadet['unae40or_nombre1']) . $sSufijo . '</td>
+		<td>' . $sPrefijo . cadena_notildes($filadet['unae40or_nombre2']) . $sSufijo . '</td>
+		<td>' . $sPrefijo . cadena_notildes($filadet['unae40or_apellido1']) . $sSufijo . '</td>
+		<td>' . $sPrefijo . cadena_notildes($filadet['unae40or_apellido2']) . $sSufijo . '</td>
+		<td>' . $sPrefijo . $filadet['unae40or_sexo'] . $sSufijo . '</td>
+		<td>' . $sPrefijo . $et_unae40or_fechanac . $sSufijo . '</td>
+		<td>' . $sPrefijo . $et_unae40or_fechadoc . $sSufijo . '</td>
 		<td>' . $sPrefijo . $filadet['unae40tipodocdestino'] . $sSufijo . '</td>
 		<td>' . $sPrefijo . cadena_notildes($filadet['unae40docdestino']) . $sSufijo . '</td>
-		<td>' . $sPrefijo.$filadet['C8_td'] . ' ' . $filadet['C8_doc'] . $sSufijo . '</td>
-		<td>' . $sPrefijo.cadena_notildes($filadet['C8_nombre']) . $sSufijo . '</td>
+		<td>' . $sPrefijo . cadena_notildes($filadet['unae40des_nombre1']) . $sSufijo . '</td>
+		<td>' . $sPrefijo . cadena_notildes($filadet['unae40des_nombre2']) . $sSufijo . '</td>
+		<td>' . $sPrefijo . cadena_notildes($filadet['unae40des_apellido1']) . $sSufijo . '</td>
+		<td>' . $sPrefijo . cadena_notildes($filadet['unae40des_apellido2']) . $sSufijo . '</td>
+		<td>' . $sPrefijo . $filadet['unae40des_sexo'] . $sSufijo . '</td>
+		<td>' . $sPrefijo . $et_unae40des_fechanac . $sSufijo . '</td>
+		<td>' . $sPrefijo . $et_unae40des_fechadoc . $sSufijo . '</td>
+		<td>' . $sPrefijo . $filadet['C22_td'] . ' ' . $filadet['C22_doc'] . $sSufijo . '</td>
+		<td>' . $sPrefijo . cadena_notildes($filadet['C22_nombre']) . $sSufijo . '</td>
 		<td>' . $sPrefijo . $et_unae40fechasol . $sSufijo . '</td>
 		<td>' . $sPrefijo . $et_unae40horasol . $sSufijo . '</td>
 		<td>' . $et_unae40idarchivo . '</td>
