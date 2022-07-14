@@ -3,6 +3,7 @@
 --- © Angel Mauro Avellaneda Barreto - UNAD - 2018 ---
 --- angel.avellaneda@unad.edu.co - http://www.unad.edu.co
 --- Modelo Versión 2.21.0 jueves, 21 de junio de 2018
+--- Modelo Versión 2.28.1 jueves, 28 de abril de 2022
 --- 2350 core50consolidado
 */
 /** Archivo lib2350.php.
@@ -21,7 +22,7 @@ function f2350_HTMLComboV2_core50idperaca($objDB, $objCombos, $valor){
 	$mensajes_todas=$APP->rutacomun.'lg/lg_todas_'.$_SESSION['unad_idioma'].'.php';
 	if (!file_exists($mensajes_todas)){$mensajes_todas=$APP->rutacomun.'lg/lg_todas_es.php';}
 	require $mensajes_todas;
-	$objCombos->nuevo('core50idperaca', $valor, true, '{'.$ETI['msg_seleccione'].'}');
+	$objCombos->nuevo('core50idperaca', $valor, true, '{'.$ETI['msg_todos'].'}');
 	$objCombos->sAccion='RevisaLlave();';
 	//Solo los peracas donde haya encuestas.
 	$sIds='-99';
@@ -30,7 +31,8 @@ function f2350_HTMLComboV2_core50idperaca($objDB, $objCombos, $valor){
 	while($fila=$objDB->sf($tabla)){
 		$sIds=$sIds.','.$fila['cara01idperaca'];
 		}
-	$sSQL='SELECT exte02id AS id, CONCAT(CASE exte02vigente WHEN "S" THEN "" ELSE "[" END, exte02nombre," {",exte02id,"} ",CASE exte02vigente WHEN "S" THEN "" ELSE " - INACTIVO]" END) AS nombre FROM exte02per_aca WHERE exte02id IN ('.$sIds.') ORDER BY exte02vigente DESC, exte02id DESC';
+	//$sSQL='SELECT exte02id AS id, CONCAT(CASE exte02vigente WHEN "S" THEN "" ELSE "[" END, exte02nombre," {",exte02id,"} ",CASE exte02vigente WHEN "S" THEN "" ELSE " - INACTIVO]" END) AS nombre FROM exte02per_aca WHERE exte02id IN ('.$sIds.') ORDER BY exte02vigente DESC, exte02id DESC';
+	$sSQL=f146_ConsultaCombo('exte02id IN ('.$sIds.')');
 	$res=$objCombos->html($sSQL, $objDB);
 	return $res;
 	}
@@ -63,7 +65,7 @@ function f2350_Combocore50idcentro($params){
 	$objDB=new clsdbadmin($APP->dbhost, $APP->dbuser, $APP->dbpass, $APP->dbname);
 	if ($APP->dbpuerto!=''){$objDB->dbPuerto=$APP->dbpuerto;}
 	$objDB->xajax();
-	$objCombos=new clsHtmlCombos('n');
+	$objCombos=new clsHtmlCombos();
 	$html_core50idcentro=f2350_HTMLComboV2_core50idcentro($objDB, $objCombos, '', $params[0]);
 	$objDB->CerrarConexion();
 	$objResponse=new xajaxResponse();
@@ -207,7 +209,7 @@ ORDER BY TB.core50idperaca';
 	while($filadet=$objDB->sf($tabladetalle)){
 		$sPrefijo='';
 		$sSufijo='';
-		$sClass='';
+		$sClass=' class="resaltetabla"';
 		$sLink='';
 		if (false){
 			$sPrefijo='<b>';
@@ -229,19 +231,19 @@ ORDER BY TB.core50idperaca';
 	$objDB->liberar($tabladetalle);
 	return array(utf8_encode($res), $sDebug);
 	}
-function f2350_HtmlTabla($params){
+function f2350_HtmlTabla($aParametros){
 	$_SESSION['u_ultimominuto']=iminutoavance();
 	$sError='';
 	$bDebug=false;
 	$sDebug='';
-	$opts=$params;
+	$opts=$aParametros;
 	if(!is_array($opts)){$opts=json_decode(str_replace('\"','"',$opts),true);}
 	if (isset($opts[99])!=0){if ($opts[99]==1){$bDebug=true;}}
 	require './app.php';
 	$objDB=new clsdbadmin($APP->dbhost, $APP->dbuser, $APP->dbpass, $APP->dbname);
 	if ($APP->dbpuerto!=''){$objDB->dbPuerto=$APP->dbpuerto;}
 	$objDB->xajax();
-	list($sDetalle, $sDebugTabla)=f2350_TablaDetalleV2($params, $objDB, $bDebug);
+	list($sDetalle, $sDebugTabla)=f2350_TablaDetalleV2($aParametros, $objDB, $bDebug);
 	$sDebug=$sDebug.$sDebugTabla;
 	$objDB->CerrarConexion();
 	$objResponse=new xajaxResponse();

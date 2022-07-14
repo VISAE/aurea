@@ -3,6 +3,7 @@
 --- © Angel Mauro Avellaneda Barreto - UNAD - 2018 ---
 --- angel.avellaneda@unad.edu.co - http://www.unad.edu.co
 --- Modelo Version 2.21.0 viernes, 22 de junio de 2018
+--- Modelo Version 2.28.1 sábado, 23 de abril de 2022
 ---
 --- Cambios 22 de mayo de 2020
 --- 1. interpretación cualitativa de los campos de país, ciudad, puntaje factores y pruebas
@@ -19,7 +20,6 @@ if (!file_exists('./app.php')){
 	echo '<b>Error N 1 de instalaci&oacute;n</b><br>No se ha establecido un archivo de configuraci&oacute;n, por favor comuniquese con el administrador del sistema.';
 	die();
 	}
-require '../config.php';
 mb_internal_encoding('UTF-8');
 require './app.php';
 require $APP->rutacomun.'unad_todas.php';
@@ -27,13 +27,12 @@ require $APP->rutacomun.'libs/clsdbadmin.php';
 require $APP->rutacomun.'unad_librerias.php';
 require $APP->rutacomun.'libs/clsplanos.php';
 if ($_SESSION['unad_id_tercero']==0){
+	header('Location:./nopermiso.php');
 	die();
 	}
 $_SESSION['u_ultimominuto']=iminutoavance();
 $sError='';
 $iReporte=0;
-$bEntra=false;
-$bDebug=false;
 function f2301_NomEstrado($sId){
 	$res='[Sin dato]';
 	switch($sId){
@@ -52,48 +51,48 @@ function f2301_NombrePuntaje($sCompetencia,$iValor){
 		case 'puntaje':
 		if($iValor>=24 && $iValor<=30){
 			$sValor='Bajo';
-			}else{
+		}else{
 			if($iValor>=17 && $iValor<=23){
 				$sValor='Medio';
-				}else{
+			}else{
 				if($iValor>=10 && $iValor<=16){
 					$sValor='Alto';
-					}else{
+				}else{
 					$sValor='Sin definir';
-					}
 				}
 			}
+		}
 		break;
 		case 'lectura':
 		if($iValor>=0 && $iValor<=40){
 			$sValor='Bajo';
-			}else{
+		}else{
 			if($iValor>=50 && $iValor<=90){
 				$sValor='Medio';
-				}else{
+			}else{
 				if($iValor>=100 && $iValor<=150){
 					$sValor='Alto';
-					}else{
+				}else{
 					$sValor='Sin definir';
-					}
 				}
 			}
+		}
 		break;
 		case 'digital':
 		case 'ingles':
 		if($iValor>=0 && $iValor<=40){
 			$sValor='Bajo';
-			}else{
+		}else{
 			if($iValor>=50 && $iValor<=80){
 				$sValor='Medio';
-				}else{
+			}else{
 				if($iValor>=90 && $iValor<=120){
 					$sValor='Alto';
-					}else{
+				}else{
 					$sValor='Sin definir';
-					}
 				}
 			}
+		}
 		break;
 		case 'razona':
 		case 'biolog':
@@ -101,36 +100,21 @@ function f2301_NombrePuntaje($sCompetencia,$iValor){
 		case 'quimica':
 		if($iValor>=0 && $iValor<=30){
 			$sValor='Bajo';
-			}else{
+		}else{
 			if($iValor>=40 && $iValor<=60){
 				$sValor='Medio';
-				}else{
+			}else{
 				if($iValor>=70 && $iValor<=100){
 					$sValor='Alto';
 					}else{
 					$sValor='Sin definir';
-					}
 				}
 			}
-		break;
-
 		}
-	return $sValor;
+		break;
 	}
-if (isset($_REQUEST['r'])!=0){$iReporte=numeros_validar($_REQUEST['r']);}
-if (isset($_REQUEST['clave'])==0){$_REQUEST['clave']='';}
-if (isset($_REQUEST['v3'])==0){$_REQUEST['v3']='';}
-if (isset($_REQUEST['v4'])==0){$_REQUEST['v4']='';}
-if (isset($_REQUEST['v5'])==0){$_REQUEST['v5']='';}
-if (isset($_REQUEST['v6'])==0){$_REQUEST['v6']='';}
-if (isset($_REQUEST['v7'])==0){$_REQUEST['v7']=1;}
-if (isset($_REQUEST['v8'])==0){$_REQUEST['v8']='';}
-if (isset($_REQUEST['v9'])==0){$_REQUEST['v9']='';}
-if (isset($_REQUEST['v10'])==0){$_REQUEST['v10']='';}
-if (isset($_REQUEST['rdebug'])==0){$_REQUEST['rdebug']=0;}
-if ($iReporte==2301){$bEntra=true;}
-if ($iReporte==2350){$bEntra=true;}
-if ($sError!=''){$bEntra=false;}
+	return $sValor;
+}
 function f1011_InfoParaPlano($iTer, $objDB){
 	$sTD='';
 	$sDoc='';
@@ -144,12 +128,30 @@ function f1011_InfoParaPlano($iTer, $objDB){
 		$sDoc=$fila11['unad11doc'];
 		$sRazonSocial=$fila11['unad11razonsocial'];
 		$iUltimoAcceso=$fila11['unad11fechaultingreso'];
-		}
-	return array($sTD, $sDoc, $sRazonSocial, $iUltimoAcceso);
 	}
+	return array($sTD, $sDoc, $sRazonSocial, $iUltimoAcceso);
+}
+if (isset($_REQUEST['r'])!=0){$iReporte=numeros_validar($_REQUEST['r']);}
+if (isset($_REQUEST['clave'])==0){$_REQUEST['clave']='';}
+if (isset($_REQUEST['v3'])==0){$_REQUEST['v3']='';}
+if (isset($_REQUEST['v4'])==0){$_REQUEST['v4']='';}
+if (isset($_REQUEST['v5'])==0){$_REQUEST['v5']='';}
+if (isset($_REQUEST['v6'])==0){$_REQUEST['v6']='';}
+if (isset($_REQUEST['v7'])==0){$_REQUEST['v7']=1;}
+if (isset($_REQUEST['v8'])==0){$_REQUEST['v8']='';}
+if (isset($_REQUEST['v9'])==0){$_REQUEST['v9']='';}
+if (isset($_REQUEST['v10'])==0){$_REQUEST['v10']='';}
+if (isset($_REQUEST['v11'])==0){$_REQUEST['v11']='';}
+if (isset($_REQUEST['v12'])==0){$_REQUEST['v12']='';}
+if (isset($_REQUEST['v13'])==0){$_REQUEST['v13']='';}
+if (isset($_REQUEST['rdebug'])==0){$_REQUEST['rdebug']=0;}
+$bEntra=true;
+$bDebug=false;
+if ($sError!=''){$bEntra=false;}
 if ($bEntra){
 	$idTercero=$_SESSION['unad_id_tercero'];
 	$iCodModulo=2350;
+	$sDebug='';
 	if ($_REQUEST['rdebug']==1){$bDebug=true;}
 	$cSepara=',';
 	$cEvita=';';
@@ -168,174 +170,41 @@ if ($bEntra){
 	require $mensajes_2301;
 	$objDB=new clsdbadmin($APP->dbhost, $APP->dbuser, $APP->dbpass, $APP->dbname);
 	if ($APP->dbpuerto!=''){$objDB->dbPuerto=$APP->dbpuerto;}
+	$cara50idperiodo=$_REQUEST['v3'];
+	$cara50idzona=$_REQUEST['v4'];
+	$cara50idcentro=$_REQUEST['v5'];
+	$core50idescuela=$_REQUEST['v9'];
+	$core50idprograma=$_REQUEST['v10'];
+	$core50tipo=$_REQUEST['v6'];
+	$cara50poblacion=$_REQUEST['v7'];
+	$cara50periodoacomp=$_REQUEST['v11'];
+	$cara50convenio=$_REQUEST['v8'];
+	$cara50periodomatricula=$_REQUEST['v12'];
+	$cara50tipomatricula=$_REQUEST['v13'];
+	$sCondi='';
 	$sPath=dirname(__FILE__);
 	$sSeparador=archivos_separador($sPath);
 	$sPath=archivos_rutaservidor($sPath,$sSeparador);
 	$sNombrePlano='t2301.csv';
 	$sTituloRpt='consolidado_caracterizacion';
-	$sNombrePlanoFinal=$sTituloRpt.'.csv';
 	$objplano=new clsPlanos($sPath.$sNombrePlano);
 	$sDato='UNIVERSIDAD NACIONAL ABIERTA Y A DISTANCIA - UNAD';
 	$objplano->AdicionarLinea($sDato);
-	$sNomPeraca='{'.$_REQUEST['v3'].'}';
-	$sSQL='SELECT exte02nombre FROM exte02per_aca WHERE exte02id='.$_REQUEST['v3'].'';
-	$tabla=$objDB->ejecutasql($sSQL);
-	if ($objDB->nf($tabla)>0){
-		$fila=$objDB->sf($tabla);
-		$sNomPeraca=$fila['exte02nombre'];
-		}
-	$bConConsejero=true;
-	$sDato=utf8_decode('Consolidado de caracterización '.$sNomPeraca);
-	$objplano->AdicionarLinea($sDato);
-	/* Alistar los arreglos para las tablas hijas */
-	$acara01idperaca=array();
-	$acara01estrato=array();
-	$acara01idzona=array();
-	$acara01idcead=array();
-	$acara01indigenas=array();
-	$acara01indigenas[0]='Ninguno';
-	$acara01centroreclusion=array();
-	$acara01acad_razonestudio=array();
-	$acara01acad_razonunad=array();
-	$acara01tipocaracterizacion=array();
-	$acara01perayuda=array();
-	$acara01perayuda[0]='Ninguno';
-	if (false){
-	$acara01inpectiempocondena=array();
-	$acara01fam_tipovivienda=array();
-	$acara01fam_vivecon=array();
-	$acara01fam_numpersgrupofam=array();
-	$acara01fam_hijos=array();
-	$acara01fam_personasacargo=array();
-	$acara01fam_escolaridadpadre=array();
-	$acara01fam_escolaridadmadre=array();
-	$acara01fam_numhermanos=array();
-	$acara01fam_posicionherm=array();
-	$acara01acad_tipocolegio=array();
-	$acara01acad_modalidadbach=array();
-	$acara01acad_ultnivelest=array();
-	$acara01acad_tiemposinest=array();
-	$acara01campus_energia=array();
-	$acara01campus_internetreside=array();
-	$acara01campus_usocorreo=array();
-	$acara01campus_mediocomunica=array();
-	$acara01lab_situacion=array();
-	$acara01lab_sector=array();
-	$acara01lab_caracterjuri=array();
-	$acara01lab_cargo=array();
-	$acara01lab_antiguedad=array();
-	$acara01lab_tipocontrato=array();
-	$acara01lab_rangoingreso=array();
-	$acara01lab_tiempoacadem=array();
-	$acara01lab_tipoempresa=array();
-	$acara01lab_tiempoindepen=array();
-	$acara01lab_origendinero=array();
-	$acara01bien_interpreta=array();
-	$acara01bien_nivelinter=array();
-	$acara01bien_niveldanza=array();
-	$acara01criteriodesc=array();
-	$acara01factorprincipaldesc=array();
-	$acara37discapacidades=array();
-		}
-	$aSys11=array();
-	$sTitulo1='Datos personales';
-	for ($l=1;$l<=48;$l++){
-		$sSubTitulo='';
-		if ($l==22){$sSubTitulo='Grupos poblacionales';}
-		if ($l==34){$sSubTitulo='Discapacidades';}
-		$sTitulo1=$sTitulo1.$cSepara.$sSubTitulo;
-		}
-	$sBloque1=''.utf8_decode('Tipo Caracterización').$cSepara.'TD'.$cSepara.'Doc'.$cSepara.'Estudiante'.$cSepara.'Ultimo Acceso Campus'.$cSepara.'Fecha encuesta'.$cSepara.'Edad'.$cSepara
-.'Sexo'.$cSepara.'Pais'.$cSepara.'Departamento'.$cSepara.'Ciudad'.$cSepara.'Direccion'.$cSepara.'Estrato'.$cSepara.'Zona de residencia'.$cSepara
-.'Estado civil'.$cSepara.'Nombre del contacto'.$cSepara.'Parentezco del contacto'.$cSepara
-.'Zona'.$cSepara.'CEAD'.$cSepara.'Escuela'.$cSepara.'Programa'.$cSepara.'Matricula en convenio'.$cSepara.'Raizal'.$cSepara.'Palenquero'.$cSepara
-.'Afrocolombiano'.$cSepara.'Otra comunidad negra'.$cSepara.'ROM'.$cSepara.'Indigena'.$cSepara.'Victima desplazado'.$cSepara
-.'Victima ACR'.$cSepara.'Funcionario INPEC'.$cSepara.'Recluso INPEC'.$cSepara.'Tiempo de condena'.$cSepara.'Centro de reclusión'.$cSepara.'Sensorial'.$cSepara.'Fisica'.$cSepara.'Cognitiva'.$cSepara.'Ajustes razonables'.$cSepara.'Ajustes razonables Otra Ayuda'.$cSepara
-.'Sensorial v2'.$cSepara.'Intelectual'.$cSepara.'Física v2'.$cSepara.'Mental Psicosocial'.$cSepara.'Sistémica'.$cSepara.'Sistémica Otro'.$cSepara.'Múltiple'.$cSepara.'Múltiple Otro'.$cSepara.'Talento Excepcional'.'';
-	$sTitulo2='Datos familiares';
-	for ($l=1;$l<=11;$l++){
-		$sTitulo2=$sTitulo2.$cSepara;
-		}
-	$sBloque2=''.$cSepara.utf8_decode('Cuál es su tipo de vivienda actual'.$cSepara.'Con quién vive actualmente'.$cSepara.'Cuántas personas conforman su grupo familiar incluyéndolo a usted'.$cSepara.'Cuántos hijos tiene'.$cSepara.'Cuántas personas tiene a su cargo'.$cSepara.'Usted depende económicamente de alguien'.$cSepara.'Cuál es el máximo nivel de escolaridad de su padre'.$cSepara.'Cuál es el máximo nivel de escolaridad de su madre'.$cSepara.'Cuántos hermanos tiene'.$cSepara.'Cuál es la posición entre sus hermanos'.$cSepara.'Usted tiene familiares estudiando actualmente o que hayan estudiado en la UNAD');
-	$sTitulo3=utf8_decode('Datos académicos');
-	for ($l=1;$l<=27;$l++){
-		$sSubTitulo='';
-		if ($l==11){$sSubTitulo=utf8_decode('Con cuáles equipos electrónicos cuenta para acceder al campus virtual de la UNAD');}
-		if ($l==22){$sSubTitulo=utf8_decode('La información que consulta la aprende mejor con');}
-		$sTitulo3=$sTitulo3.$cSepara.$sSubTitulo;
-		}
-	$sBloque3=''.$cSepara.utf8_decode('Tipo de colegio donde terminó su bachillerato'.$cSepara.'La modalidad en la que obtuvo su grado de bachiller es'.$cSepara.'Usted ha realizado otros estudios antes de llegar a la UNAD'
-.$cSepara.'Cuál fue el último nivel de estudios cursado'.$cSepara.'Cuánto tiempo lleva sin estudiar'.$cSepara.'Obtuvo certificación o diploma de estos estudios'
-.$cSepara.'Usted ha tomado cursos virtuales'.$cSepara.'Cuál es la principal razón para elegir el programa académico en el que se matriculó'.$cSepara.'El programa en el que se matriculó representa su primera opción'.$cSepara.'Por favor indique el programa que le hubiera gustado estudiar.'
-.$cSepara.'Cuál es la principal razón para estudiar en la UNAD'.$cSepara.'Computador de escritorio'.$cSepara.'Computador portátil'
-.$cSepara.'Tableta'.$cSepara.'Teléfono inteligente'.$cSepara.'El lugar donde reside cuenta con servicio de energía eléctrica'
-.$cSepara.'El lugar donde reside cuenta con servicio de Internet'.$cSepara.'Ha usado plataformas virtuales con anterioridad'.$cSepara.'Maneja paquetes ofimáticos como Office (Word Excel Powerpoint) o similares'
-.$cSepara.'Ha participado en foros virtuales'.$cSepara.'Sabe convertir archivos digitales de un formato a otro'.$cSepara.'Su uso del correo electrónico es'
-.$cSepara.'Texto'.$cSepara.'Vídeo'.$cSepara.'Organizadores gráficos'
-.$cSepara.'Animaciones'.$cSepara.'Cuál es el medio que más utiliza para comunicarse con amigos. conocidos. familiares o docentes a través de internet');
-	$sTitulo4='Datos laborales';
-	for ($l=1;$l<=12;$l++){
-		$sTitulo4=$sTitulo4.$cSepara;
-		}
-	$sBloque4=''.$cSepara.utf8_decode('Cuál es su situación laboral actual'.$cSepara.'A qué sector económico pertenece'.$cSepara.'Cuál es el carácter jurídico de la empresa'
-.$cSepara.'Cuál es el cargo que ocupa'.$cSepara.'Cuál es su antigüedad en el cargo actual'.$cSepara.'Qué tipo de contrato tiene actualmente'
-.$cSepara.'Cuánto suman sus ingresos mensuales'.$cSepara.'Con qué tiempo cuenta para desarrollar las actividades académicas'.$cSepara.'Qué tipo de empresa es'
-.$cSepara.'Hace cuánto tiempo constituyó su empresa'.$cSepara.'Debe buscar trabajo para continuar sus estudios en la UNAD'.$cSepara.'De dónde provienen los recursos económicos con los que usted estudiará en la UNAD');
-	$sTitulo5='Bienestar';
-	for ($l=1;$l<=34;$l++){
-		$sSubTitulo='';
-		if ($l==1){$sSubTitulo=utf8_decode('Usted practica regularmente alguna de las siguientes actividades deportivas o recreativas');}
-		if ($l==9){$sSubTitulo=utf8_decode('Usted practica regularmente alguna de las siguientes actividades artísticas o culturales');}
-		if ($l==19){$sSubTitulo=utf8_decode('Sí usted practica danza por favor indique el género');}
-		if ($l==23){$sSubTitulo=utf8_decode('Emprendimiento');}
-		if ($l==26){$sSubTitulo=utf8_decode('Estilo de vida saludable');}
-		if ($l==28){$sSubTitulo=utf8_decode('Proyecto de vida');}
-		if ($l==29){$sSubTitulo=utf8_decode('Medio ambiente');}
-		if ($l==30){$sSubTitulo=utf8_decode('Cuál de estos hábitos cotidianos realiza usted como una práctica de respeto hacia Medio Ambiente');}
-		$sTitulo5=$sTitulo5.$cSepara.$sSubTitulo;
-		}
-	$sBloque5=''.$cSepara.utf8_decode('Baloncesto'.$cSepara.'Voleibol'.$cSepara.'Futbol sala'.
-$cSepara.'Artes marciales'.$cSepara.'Tenis de mesa'.$cSepara.'Ajedrez'.
-$cSepara.'Juegos autóctonos'.$cSepara.'Está interesado en hacer parte de un grupo representativo en deportes'.$cSepara.'Especifique a cuál grupo deportivo'.$cSepara.'Teatro'.
-$cSepara.'Danza'.$cSepara.'Música'.$cSepara.'Circo'.
-$cSepara.'Artes plásticas'.$cSepara.'Cuentería'.$cSepara.'Está interesado en hacer parte de un grupo representativo en artes y cultura'.$cSepara.'Seleccione en cuál'.
-$cSepara.'Sí usted interpreta un instrumento musical por favor selecciónelo'.$cSepara.'En escala de 1 a 10 su dominio del instrumento musical es'.$cSepara.'Ritmos modernos (Salsa - Bachata)'.
-$cSepara.'Danza clásica'.$cSepara.'Danza contemporánea'.$cSepara.'Danza folklorica colombiana'
-.$cSepara.'Cuenta Ud. con una empresa que de respuesta a una necesidad social en su comunidad'.$cSepara.'Qué necesidad cubre'.$cSepara.'En qué temas de emprendimiento le gustaría recibir capacitación'
-.$cSepara.'Cuáles cree que son las causas más frecuentes del estrés'.$cSepara.'A través de que estrategias le gustaría conocer el autocuidado'.$cSepara.'Qué temas le gustaría abordar en la UNAD para su crecimiento personal'
-.$cSepara.'Cómo define la educación ambiental'.$cSepara.'Ahorras de agua en la ducha y/o al cepillarse'.$cSepara.'Usas bombillas ahorradoras'
-.$cSepara.'Desconectas el cargador del celular cuando no esta en uso'.$cSepara.'Apagas las luces que no se requieran');
-	$sTitulo6='Psicosocial';
-	for ($l=1;$l<=11;$l++){
-		$sTitulo6=$sTitulo6.$cSepara;
-		}
-	$sBloque6=''.$cSepara.utf8_decode('Le cuesta expresar sus emociones con palabras'.$cSepara.'Cómo reacciona ante un cambio imprevisto aparentemente negativo'.$cSepara.'Cuando está estresado o tienes varias preocupaciones ¿cómo lo maneja'
-.$cSepara.'Cuando tiene poco tiempo para el desarrollo de sus actividades académicas laborales y familiares ¿cómo lo asume?'.$cSepara.'Con respecto a su actitud frente la vida ¿cómo se describiría?'.$cSepara.'Qué hace cuando presenta alguna dificultad o duda frente a una tarea asignada'
-.$cSepara.'Cuando está afrontando una dificultad personal laboral emocional o familiar ¿cuál es su actitud?'.$cSepara.'En términos generales ¿está satisfecho con quién es?'.$cSepara.'Cómo actúa frente a una discusión'
-.$cSepara.'Cómo reacciona ante las siguientes situaciones sociales'.$cSepara.'Puntaje');
-	$sTitulo7='Competencias';
-	for ($l=1;$l<=7;$l++){
-		$sTitulo7=$sTitulo7.$cSepara;
-		}
-	$sBloque7=''.$cSepara.'Competencias digitales'.$cSepara.utf8_decode('Lectura crítica'.$cSepara.'Razonamiento cuantitativo'.$cSepara.'Inglés'.$cSepara.'Biología'.$cSepara.'Física'.$cSepara.'Química');
-			//cara01fichadigital='.$cara01fichadigital.', cara01fichalectura='.$cara01fichalectura.', cara01ficharazona='.$cara01ficharazona.', cara01fichaingles='.$cara01fichaingles.', cara01fichabiolog='.$cara01fichabiolog.', cara01fichafisica='.$cara01fichafisica.', cara01fichaquimica='.$cara01fichaquimica.'
-	/*
-	$sTitulo8='Titulo 8';
-	for ($l=1;$l<=20;$l++){
-		$sTitulo8=$sTitulo8.$cSepara;
-		}
-	$sBloque8=''.$cSepara.'Bien_pv_personal'.$cSepara.'Bien_pv_familiar'.$cSepara.'Bien_pv_academ'.$cSepara.'Bien_pv_labora'.$cSepara.'Bien_pv_pareja'.$cSepara
-.'Bien_amb'.$cSepara.'Bien_amb_agu'.$cSepara.'Bien_amb_bom'.$cSepara.'Bien_amb_car'.$cSepara.'Bien_amb_info'.$cSepara
-.'Bien_amb_temas'.$cSepara.'Psico_costoemocion'.$cSepara.'Psico_reaccionimpre'.$cSepara.'Psico_estres'.$cSepara.'Psico_pocotiempo'.$cSepara
-.'Psico_actitudvida'.$cSepara.'Psico_duda'.$cSepara.'Psico_problemapers'.$cSepara.'Psico_satisfaccion'.$cSepara.'Psico_discusiones';
-	$sTitulo9='Titulo 9';
-	for ($l=1;$l<=9;$l++){
-		$sTitulo9=$sTitulo9.$cSepara;
-		}
-	$sBloque9=''.$cSepara.'Psico_atencion'.$cSepara.'Niveldigital'.$cSepara.'Nivellectura'.$cSepara.'Nivelrazona'.$cSepara.'Nivelingles'.$cSepara
-.'TD'.$cSepara.'Doc'.$cSepara.'Consejero'.$cSepara.'Fechainicio';
-	*/
 	$sWhere='';
+	$sSQLadd='';
+	$sSQLadd1='';
+	if ($cara50idperiodo!=''){
+		$sTituloRpt=$sTituloRpt.'P'.$cara50idperiodo.'';
+		$sNomPeraca='{'.$cara50idperiodo.'}';
+		$sSQL='SELECT exte02nombre FROM exte02per_aca WHERE exte02id='.$cara50idperiodo.'';
+		$tabla=$objDB->ejecutasql($sSQL);
+		if ($objDB->nf($tabla)>0){
+			$fila=$objDB->sf($tabla);
+			$sNomPeraca=$fila['exte02nombre'];
+			}
+		$sDato=utf8_decode('Consolidado de caracterización periodo: '.$sNomPeraca);
+		$objplano->AdicionarLinea($sDato);
+		}
 	if ($_REQUEST['v7']=='9'){
 		//Es un total, tenemos que limitar la zona...
 		$bEntra=false;
@@ -349,27 +218,28 @@ $cSepara.'Danza clásica'.$cSepara.'Danza contemporánea'.$cSepara.'Danza folklo
 				if ($objDB->nf($tabla)>0){
 					//No problema es un zonal y esta consultando su zona.
 					}else{
-					$sWhere=$sWhere.' AND TB.cara01idconsejero='.$_SESSION['unad_id_tercero'].' ';
+					$sWhere=$sWhere.'TB.cara01idconsejero='.$_SESSION['unad_id_tercero'].' AND ';
 					}
 				}else{
 				//Puede ver lo suyo....
-				$sWhere=$sWhere.' AND TB.cara01idconsejero='.$_SESSION['unad_id_tercero'].' ';
+				$sWhere=$sWhere.'TB.cara01idconsejero='.$_SESSION['unad_id_tercero'].' AND ';
 				}
 			}
 		}else{
-		$sWhere=$sWhere.' AND TB.cara01idconsejero='.$_SESSION['unad_id_tercero'].' ';
+		$sWhere=$sWhere.'TB.cara01idconsejero='.$_SESSION['unad_id_tercero'].' AND ';
 		$bConConsejero=true;
 		}
+	$bConConsejero=true;
 	if ($_REQUEST['v5']!=''){
-		$sWhere=$sWhere.' AND TB.cara01idcead='.$_REQUEST['v5'].' ';
+		$sWhere=$sWhere.'TB.cara01idcead='.$_REQUEST['v5'].' AND ';
 		}else{
 		if ($_REQUEST['v4']!=''){
-			$sWhere=$sWhere.' AND TB.cara01idzona='.$_REQUEST['v4'].' ';
+			$sWhere=$sWhere.'TB.cara01idzona='.$_REQUEST['v4'].' AND ';
 			}
 		}
 	$bPorTipo=false;
 	if ($_REQUEST['v6']!=''){
-		$sWhere=$sWhere.' AND TB.cara01tipocaracterizacion='.$_REQUEST['v6'].' ';
+		$sWhere=$sWhere.'TB.cara01tipocaracterizacion='.$_REQUEST['v6'].' AND ';
 		$bPorTipo=true;
 		//Definimos de una vez el tipo de bloques.
 		for ($k=2;$k<8;$k++){
@@ -398,8 +268,195 @@ $cSepara.'Danza clásica'.$cSepara.'Danza contemporánea'.$cSepara.'Danza folklo
 	$sTablaConvenio='';
 	if ($_REQUEST['v8']!=''){
 		$sTablaConvenio=', core51convenioest AS T51';
-		$sWhere=$sWhere.' AND TB.cara01idtercero=T51.core51idtercero AND T51.core51idconvenio='.$_REQUEST['v8'].' AND T51.core51activo="S"';
+		$sWhere=$sWhere.'TB.cara01idtercero=T51.core51idtercero AND T51.core51idconvenio='.$_REQUEST['v8'].' AND T51.core51activo="S" AND ';
 		}
+	if ($cara50periodoacomp!=''){
+		$sTituloRpt=$sTituloRpt.'ACOMP'.$cara50periodoacomp.'';
+		$sNomPeraca='{'.$cara50periodoacomp.'}';
+		$sSQL='SELECT exte02nombre FROM exte02per_aca WHERE exte02id='.$cara50periodoacomp.'';
+		$tabla=$objDB->ejecutasql($sSQL);
+		if ($objDB->nf($tabla)>0){
+			$fila=$objDB->sf($tabla);
+			$sNomPeraca=$fila['exte02nombre'];
+			}
+		$sDato=utf8_decode('Periodo de acompañamiento: '.$sNomPeraca);
+		$objplano->AdicionarLinea($sDato);
+		}
+	//28 - Abril - 2022 - Se agregaron las variables.
+	if ($cara50periodomatricula!=''){
+		$sTituloRpt=$sTituloRpt.'MAT'.$cara50periodomatricula.'';
+		$sNomPeraca='{'.$cara50periodomatricula.'}';
+		$sSQL='SELECT exte02nombre FROM exte02per_aca WHERE exte02id='.$cara50periodomatricula.'';
+		$tabla=$objDB->ejecutasql($sSQL);
+		if ($objDB->nf($tabla)>0){
+			$fila=$objDB->sf($tabla);
+			$sNomPeraca=$fila['exte02nombre'];
+			}
+		$sAddTitulo='';
+		$sCondi16='';
+		$bTotalMatricula=false;
+		switch($cara50tipomatricula){
+			case '':
+			break;
+			case '0':
+			$sAddTitulo=' antiguos';
+			$sCondi16=' AND core16nuevo=0';
+			$sTituloRpt=$sTituloRpt.'ANT';
+			break;
+			case 1:
+			$sAddTitulo=' nuevos';
+			$sCondi16=' AND core16nuevo=1';
+			$sTituloRpt=$sTituloRpt.'NUEVO';
+			$bTotalMatricula=true;
+			break;
+			case 2:
+			$sAddTitulo=' de reintegro';
+			$sCondi16=' AND core16nuevo=2';
+			$sTituloRpt=$sTituloRpt.'REIN';
+			break;
+			}
+		$sDato=utf8_decode('Estudiantes'.$sAddTitulo.' matriculados en el periodo: '.$sNomPeraca);
+		$objplano->AdicionarLinea($sDato);
+		//
+		$sIds='-99';
+		$sSQL='SELECT core16tercero FROM core16actamatricula WHERE core16peraca='.$cara50periodomatricula.$sCondi16.'';
+		$tabla=$objDB->ejecutasql($sSQL);
+		while ($fila=$objDB->sf($tabla)){
+			$sIds=$sIds.','.$fila['core16tercero'];
+			}
+		if ($bTotalMatricula){
+			$sSQLadd1=$sSQLadd1.'TB.cara01idtercero IN ('.$sIds.') AND ';
+			}else{
+			//Aqui la cosa cambia, porque tenemos que traer solo la ultima encuesta...
+			$sIds01='-99';
+			$sSQL='SELECT cara01id, cara01idtercero 
+			FROM cara01encuesta 
+			WHERE cara01idperaca<='.$cara50periodomatricula.' AND cara01idtercero IN ('.$sIds.') AND cara01completa="S"
+			ORDER BY cara01idtercero, cara01idperaca';
+			$tabla=$objDB->ejecutasql($sSQL);
+			$idTercero=-99;
+			while ($fila=$objDB->sf($tabla)){
+				if ($idTercero!=$fila['cara01idtercero']){
+					$sIds01=$sIds01.','.$fila['cara01id'];
+					$idTercero=$fila['cara01idtercero'];
+					}
+				}
+			$sSQLadd1=$sSQLadd1.'TB.cara01id IN ('.$sIds01.') AND ';
+			}
+		}
+	if ($_REQUEST['v10']!=''){
+		$sWhere=$sWhere.'TB.cara01idprograma='.$_REQUEST['v10'].' AND ';
+		}else{
+		if ($_REQUEST['v9']!=''){
+			$sWhere=$sWhere.'TB.cara01idescuela='.$_REQUEST['v9'].' AND ';
+			}
+		}
+	if ($cara50idperiodo!=''){
+		if ($cara50periodoacomp!=''){
+			$sWhere=$sWhere.'TB.cara01idperaca='.$cara50idperiodo.' AND TB.cara01idperiodoacompana='.$cara50periodoacomp.' AND ';
+		}else{
+			$sWhere=''.$sWhere.'TB.cara01idperaca='.$cara50idperiodo.' AND ';
+		}
+	}else{
+		if ($cara50periodoacomp!=''){
+			$sWhere=''.$sWhere.'TB.cara01idperiodoacompana='.$cara50periodoacomp.' AND ';
+		}
+	}
+	$sNombrePlanoFinal=$sTituloRpt.'.csv';
+	/* Alistar los arreglos para las tablas hijas */
+	$acara01idperaca=array();
+	$acara01estrato=array();
+	$acara01idzona=array();
+	$acara01idcead=array();
+	$acara01indigenas=array();
+	$acara01indigenas[0]='Ninguno';
+	$acara01centroreclusion=array();
+	$acara01acad_razonestudio=array();
+	$acara01acad_razonunad=array();
+	$acara01tipocaracterizacion=array();
+	$acara01perayuda=array();
+	$acara01perayuda[0]='Ninguno';
+	$aSys11=array();
+	$sTitulo1='Datos personales';
+	for ($l=1;$l<=48;$l++){
+		$sSubTitulo='';
+		if ($l==22){$sSubTitulo='Grupos poblacionales';}
+		if ($l==34){$sSubTitulo='Discapacidades';}
+		$sTitulo1=$sTitulo1.$cSepara.$sSubTitulo;
+		}
+	$sBloque1=''.utf8_decode('Tipo Caracterización').$cSepara.'TD'.$cSepara.'Doc'.$cSepara.'Estudiante'.$cSepara.'Ultimo Acceso Campus'.$cSepara.'Fecha encuesta'.$cSepara.'Edad'.$cSepara
+	.'Sexo'.$cSepara.'Pais'.$cSepara.'Departamento'.$cSepara.'Ciudad'.$cSepara.'Direccion'.$cSepara.'Estrato'.$cSepara.'Zona de residencia'.$cSepara
+	.'Estado civil'.$cSepara.'Nombre del contacto'.$cSepara.'Parentezco del contacto'.$cSepara
+	.'Zona'.$cSepara.'CEAD'.$cSepara.'Escuela'.$cSepara.'Programa'.$cSepara.'Matricula en convenio'.$cSepara.'Raizal'.$cSepara.'Palenquero'.$cSepara
+	.'Afrocolombiano'.$cSepara.'Otra comunidad negra'.$cSepara.'ROM'.$cSepara.'Indigena'.$cSepara.'Victima desplazado'.$cSepara
+	.'Victima ACR'.$cSepara.'Funcionario INPEC'.$cSepara.'Recluso INPEC'.$cSepara.'Tiempo de condena'.$cSepara.'Centro de reclusión'.$cSepara.'Sensorial'.$cSepara.'Fisica'.$cSepara.'Cognitiva'.$cSepara.'Ajustes razonables'.$cSepara.'Ajustes razonables Otra Ayuda'.$cSepara
+	.'Sensorial v2'.$cSepara.'Intelectual'.$cSepara.'Física v2'.$cSepara.'Mental Psicosocial'.$cSepara.'Sistémica'.$cSepara.'Sistémica Otro'.$cSepara.'Múltiple'.$cSepara.'Múltiple Otro'.$cSepara.'Talento Excepcional'.'';
+	$sTitulo2='Datos familiares';
+	for ($l=1;$l<=11;$l++){
+		$sTitulo2=$sTitulo2.$cSepara;
+		}
+	$sBloque2=''.$cSepara.utf8_decode('Cuál es su tipo de vivienda actual'.$cSepara.'Con quién vive actualmente'.$cSepara.'Cuántas personas conforman su grupo familiar incluyéndolo a usted'.$cSepara.'Cuántos hijos tiene'.$cSepara.'Cuántas personas tiene a su cargo'.$cSepara.'Usted depende económicamente de alguien'.$cSepara.'Cuál es el máximo nivel de escolaridad de su padre'.$cSepara.'Cuál es el máximo nivel de escolaridad de su madre'.$cSepara.'Cuántos hermanos tiene'.$cSepara.'Cuál es la posición entre sus hermanos'.$cSepara.'Usted tiene familiares estudiando actualmente o que hayan estudiado en la UNAD');
+	$sTitulo3=utf8_decode('Datos académicos');
+	for ($l=1;$l<=27;$l++){
+		$sSubTitulo='';
+		if ($l==11){$sSubTitulo=utf8_decode('Con cuáles equipos electrónicos cuenta para acceder al campus virtual de la UNAD');}
+		if ($l==22){$sSubTitulo=utf8_decode('La información que consulta la aprende mejor con');}
+		$sTitulo3=$sTitulo3.$cSepara.$sSubTitulo;
+		}
+	$sBloque3=''.$cSepara.utf8_decode('Tipo de colegio donde terminó su bachillerato'.$cSepara.'La modalidad en la que obtuvo su grado de bachiller es'.$cSepara.'Usted ha realizado otros estudios antes de llegar a la UNAD'
+	.$cSepara.'Cuál fue el último nivel de estudios cursado'.$cSepara.'Cuánto tiempo lleva sin estudiar'.$cSepara.'Obtuvo certificación o diploma de estos estudios'
+	.$cSepara.'Usted ha tomado cursos virtuales'.$cSepara.'Cuál es la principal razón para elegir el programa académico en el que se matriculó'.$cSepara.'El programa en el que se matriculó representa su primera opción'.$cSepara.'Por favor indique el programa que le hubiera gustado estudiar.'
+	.$cSepara.'Cuál es la principal razón para estudiar en la UNAD'.$cSepara.'Computador de escritorio'.$cSepara.'Computador portátil'
+	.$cSepara.'Tableta'.$cSepara.'Teléfono inteligente'.$cSepara.'El lugar donde reside cuenta con servicio de energía eléctrica'
+	.$cSepara.'El lugar donde reside cuenta con servicio de Internet'.$cSepara.'Ha usado plataformas virtuales con anterioridad'.$cSepara.'Maneja paquetes ofimáticos como Office (Word Excel Powerpoint) o similares'
+	.$cSepara.'Ha participado en foros virtuales'.$cSepara.'Sabe convertir archivos digitales de un formato a otro'.$cSepara.'Su uso del correo electrónico es'
+	.$cSepara.'Texto'.$cSepara.'Vídeo'.$cSepara.'Organizadores gráficos'
+	.$cSepara.'Animaciones'.$cSepara.'Cuál es el medio que más utiliza para comunicarse con amigos. conocidos. familiares o docentes a través de internet');
+	$sTitulo4='Datos laborales';
+	for ($l=1;$l<=12;$l++){
+		$sTitulo4=$sTitulo4.$cSepara;
+		}
+	$sBloque4=''.$cSepara.utf8_decode('Cuál es su situación laboral actual'.$cSepara.'A qué sector económico pertenece'.$cSepara.'Cuál es el carácter jurídico de la empresa'
+	.$cSepara.'Cuál es el cargo que ocupa'.$cSepara.'Cuál es su antigüedad en el cargo actual'.$cSepara.'Qué tipo de contrato tiene actualmente'
+	.$cSepara.'Cuánto suman sus ingresos mensuales'.$cSepara.'Con qué tiempo cuenta para desarrollar las actividades académicas'.$cSepara.'Qué tipo de empresa es'
+	.$cSepara.'Hace cuánto tiempo constituyó su empresa'.$cSepara.'Debe buscar trabajo para continuar sus estudios en la UNAD'.$cSepara.'De dónde provienen los recursos económicos con los que usted estudiará en la UNAD');
+	$sTitulo5='Bienestar';
+	for ($l=1;$l<=34;$l++){
+		$sSubTitulo='';
+		if ($l==1){$sSubTitulo=utf8_decode('Usted practica regularmente alguna de las siguientes actividades deportivas o recreativas');}
+		if ($l==9){$sSubTitulo=utf8_decode('Usted practica regularmente alguna de las siguientes actividades artísticas o culturales');}
+		if ($l==19){$sSubTitulo=utf8_decode('Sí usted practica danza por favor indique el género');}
+		if ($l==23){$sSubTitulo=utf8_decode('Emprendimiento');}
+		if ($l==26){$sSubTitulo=utf8_decode('Estilo de vida saludable');}
+		if ($l==28){$sSubTitulo=utf8_decode('Proyecto de vida');}
+		if ($l==29){$sSubTitulo=utf8_decode('Medio ambiente');}
+		if ($l==30){$sSubTitulo=utf8_decode('Cuál de estos hábitos cotidianos realiza usted como una práctica de respeto hacia Medio Ambiente');}
+		$sTitulo5=$sTitulo5.$cSepara.$sSubTitulo;
+		}
+	$sBloque5=''.$cSepara.utf8_decode('Baloncesto'.$cSepara.'Voleibol'.$cSepara.'Futbol sala'.
+	$cSepara.'Artes marciales'.$cSepara.'Tenis de mesa'.$cSepara.'Ajedrez'.
+	$cSepara.'Juegos autóctonos'.$cSepara.'Está interesado en hacer parte de un grupo representativo en deportes'.$cSepara.'Especifique a cuál grupo deportivo'.$cSepara.'Teatro'.
+	$cSepara.'Danza'.$cSepara.'Música'.$cSepara.'Circo'.
+	$cSepara.'Artes plásticas'.$cSepara.'Cuentería'.$cSepara.'Está interesado en hacer parte de un grupo representativo en artes y cultura'.$cSepara.'Seleccione en cuál'.
+	$cSepara.'Sí usted interpreta un instrumento musical por favor selecciónelo'.$cSepara.'En escala de 1 a 10 su dominio del instrumento musical es'.$cSepara.'Ritmos modernos (Salsa - Bachata)'.
+	$cSepara.'Danza clásica'.$cSepara.'Danza contemporánea'.$cSepara.'Danza folklorica colombiana'
+	.$cSepara.'Cuenta Ud. con una empresa que de respuesta a una necesidad social en su comunidad'.$cSepara.'Qué necesidad cubre'.$cSepara.'En qué temas de emprendimiento le gustaría recibir capacitación'
+	.$cSepara.'Cuáles cree que son las causas más frecuentes del estrés'.$cSepara.'A través de que estrategias le gustaría conocer el autocuidado'.$cSepara.'Qué temas le gustaría abordar en la UNAD para su crecimiento personal'
+	.$cSepara.'Cómo define la educación ambiental'.$cSepara.'Ahorras de agua en la ducha y/o al cepillarse'.$cSepara.'Usas bombillas ahorradoras'
+	.$cSepara.'Desconectas el cargador del celular cuando no esta en uso'.$cSepara.'Apagas las luces que no se requieran');
+	$sTitulo6='Psicosocial';
+	for ($l=1;$l<=11;$l++){
+		$sTitulo6=$sTitulo6.$cSepara;
+		}
+	$sBloque6=''.$cSepara.utf8_decode('Le cuesta expresar sus emociones con palabras'.$cSepara.'Cómo reacciona ante un cambio imprevisto aparentemente negativo'.$cSepara.'Cuando está estresado o tienes varias preocupaciones ¿cómo lo maneja'
+	.$cSepara.'Cuando tiene poco tiempo para el desarrollo de sus actividades académicas laborales y familiares ¿cómo lo asume?'.$cSepara.'Con respecto a su actitud frente la vida ¿cómo se describiría?'.$cSepara.'Qué hace cuando presenta alguna dificultad o duda frente a una tarea asignada'
+	.$cSepara.'Cuando está afrontando una dificultad personal laboral emocional o familiar ¿cuál es su actitud?'.$cSepara.'En términos generales ¿está satisfecho con quién es?'.$cSepara.'Cómo actúa frente a una discusión'
+	.$cSepara.'Cómo reacciona ante las siguientes situaciones sociales'.$cSepara.'Puntaje');
+	$sTitulo7='Competencias';
+	for ($l=1;$l<=7;$l++){
+		$sTitulo7=$sTitulo7.$cSepara;
+		}
+	$sBloque7=''.$cSepara.'Competencias digitales'.$cSepara.utf8_decode('Lectura crítica'.$cSepara.'Razonamiento cuantitativo'.$cSepara.'Inglés'.$cSepara.'Biología'.$cSepara.'Física'.$cSepara.'Química');
 		
 	$sDato='';
 	$objplano->AdicionarLinea($sDato);
@@ -424,17 +481,12 @@ $cSepara.'Danza clásica'.$cSepara.'Danza contemporánea'.$cSepara.'Danza folklo
 		$objplano->AdicionarLinea($sTitulo1.$sTitulo2.$sTitulo3.$sTitulo4.$sTitulo5.$sTitulo6.$sTitulo7.$sTituloConsejero);
 		$objplano->AdicionarLinea($sBloque1.$sBloque2.$sBloque3.$sBloque4.$sBloque5.$sBloque6.$sBloque7.$sBloqueConsejero);
 		}
-	if ($_REQUEST['v10']!=''){
-		$sWhere=$sWhere.' AND TB.cara01idprograma='.$_REQUEST['v10'].' ';
-		}else{
-		if ($_REQUEST['v9']!=''){
-			$sWhere=$sWhere.' AND TB.cara01idescuela='.$_REQUEST['v9'].' ';
-			}
-		}
 	$sSQL='SELECT TB.* 
-FROM cara01encuesta AS TB'.$sTablaConvenio.' 
-WHERE TB.cara01idperaca='.$_REQUEST['v3'].''.$sWhere.' AND TB.cara01completa="S"';
-	//$objplano->adlinea($sSQL);
+	FROM cara01encuesta AS TB'.$sTablaConvenio.' 
+	WHERE '.$sSQLadd1.$sWhere.' TB.cara01completa="S"';
+	if ($bDebug){
+		//$objplano->AdicionarLinea($sSQL);
+	}
 	$tabla=$objDB->ejecutasql($sSQL);
 	while ($fila=$objDB->sf($tabla)){
 		if (true){
@@ -1282,52 +1334,33 @@ WHERE TB.cara01idperaca='.$_REQUEST['v3'].''.$sWhere.' AND TB.cara01completa="S"
 		//'Tipo Caracterización'.$cSepara.'TD'.$cSepara.'Doc'.$cSepara.'Estudiante'.$cSepara.'Fecha encuesta'.$cSepara.'Edad'.$cSepara.'Sexo'.$cSepara.'Pais'.$cSepara.'Departamento'
 			//.$cSepara.'Direccion'.$cSepara.'Estrato'.$cSepara.'Zona'.$cSepara.'Estado civil'.$cSepara.'Nombre del contacto'.$cSepara.'Parentezco del contacto'.$cSepara.'Celular del contacto'.$cSepara.'Correo del contacto'.$cSepara.'Zona'.$cSepara.'CEAD'.$cSepara.'Matricula en convenio'.$cSepara.'Raizal'.$cSepara.'Palenquero'.$cSepara.'Afrocolombiano'.$cSepara.'Otra comunidad negra'.$cSepara.'ROM'.$cSepara.'Indigena'.$cSepara.'Victima desplazado'
 		$sBloque1=''.$lin_cara01tipocaracterizacion.$lin_cara01idtercero.$lin_unad11fechaultingreso.$lin_cara01fechaencuesta.$lin_cara01agnos
-.$lin_cara01sexo.$lin_cara01pais.$lin_cara01depto.$lin_cara01ciudad.$lin_cara01direccion.$lin_cara01estrato.$lin_cara01zonares.$lin_cara01estcivil.$lin_cara01nomcontacto.$lin_cara01parentezcocontacto
-.$lin_cara01idzona.$lin_cara01idcead.$lin_cara01idescuela.$lin_cara01idprograma.$lin_cara01matconvenio.$lin_cara01raizal.$lin_cara01palenquero
-.$lin_cara01afrocolombiano.$lin_cara01otracomunnegras.$lin_cara01rom.$lin_cara01indigenas.$lin_cara01victimadesplazado.$lin_cara01victimaacr.$lin_cara01inpecfuncionario.$lin_cara01inpecrecluso.$lin_cara01inpectiempocondena.$lin_cara01centroreclusion.$lin_cara01discsensorial
-.$lin_cara01discfisica.$lin_cara01disccognitiva.$lin_cara01perayuda.$lin_cara01perotraayuda.$lin_cara01discv2sensorial.$lin_cara02discv2intelectura.$lin_cara02discv2fisica.$lin_cara02discv2psico.$lin_cara02discv2sistemica.$lin_cara02discv2sistemicaotro.$lin_cara02discv2multiple.$lin_cara02discv2multipleotro.$lin_cara02talentoexcepcional;
+		.$lin_cara01sexo.$lin_cara01pais.$lin_cara01depto.$lin_cara01ciudad.$lin_cara01direccion.$lin_cara01estrato.$lin_cara01zonares.$lin_cara01estcivil.$lin_cara01nomcontacto.$lin_cara01parentezcocontacto
+		.$lin_cara01idzona.$lin_cara01idcead.$lin_cara01idescuela.$lin_cara01idprograma.$lin_cara01matconvenio.$lin_cara01raizal.$lin_cara01palenquero
+		.$lin_cara01afrocolombiano.$lin_cara01otracomunnegras.$lin_cara01rom.$lin_cara01indigenas.$lin_cara01victimadesplazado.$lin_cara01victimaacr.$lin_cara01inpecfuncionario.$lin_cara01inpecrecluso.$lin_cara01inpectiempocondena.$lin_cara01centroreclusion.$lin_cara01discsensorial
+		.$lin_cara01discfisica.$lin_cara01disccognitiva.$lin_cara01perayuda.$lin_cara01perotraayuda.$lin_cara01discv2sensorial.$lin_cara02discv2intelectura.$lin_cara02discv2fisica.$lin_cara02discv2psico.$lin_cara02discv2sistemica.$lin_cara02discv2sistemicaotro.$lin_cara02discv2multiple.$lin_cara02discv2multipleotro.$lin_cara02talentoexcepcional;
 		$sBloque2=''.$lin_cara01fam_tipovivienda.$lin_cara01fam_vivecon.$lin_cara01fam_numpersgrupofam.
-$lin_cara01fam_hijos.$lin_cara01fam_personasacargo.$lin_cara01fam_dependeecon.
-$lin_cara01fam_escolaridadpadre.$lin_cara01fam_escolaridadmadre.$lin_cara01fam_numhermanos.
-$lin_cara01fam_posicionherm.$lin_cara01fam_familiaunad;
+		$lin_cara01fam_hijos.$lin_cara01fam_personasacargo.$lin_cara01fam_dependeecon.
+		$lin_cara01fam_escolaridadpadre.$lin_cara01fam_escolaridadmadre.$lin_cara01fam_numhermanos.
+		$lin_cara01fam_posicionherm.$lin_cara01fam_familiaunad;
 		$sBloque3=''.$lin_cara01acad_tipocolegio.$lin_cara01acad_modalidadbach.$lin_cara01acad_estudioprev.
-$lin_cara01acad_ultnivelest.$lin_cara01acad_tiemposinest.$lin_cara01acad_obtubodiploma
-.$lin_cara01acad_hatomadovirtual.$lin_cara01acad_razonestudio.$lin_cara01acad_primeraopc.
-$lin_cara01acad_programagusto.$lin_cara01acad_razonunad.$lin_cara01campus_compescrito.$lin_cara01campus_portatil.$lin_cara01campus_tableta.$lin_cara01campus_telefono.$lin_cara01campus_energia.$lin_cara01campus_internetreside.$lin_cara01campus_expvirtual.$lin_cara01campus_ofimatica.$lin_cara01campus_foros.$lin_cara01campus_conversiones.$lin_cara01campus_usocorreo.$lin_cara01campus_aprendtexto.$lin_cara01campus_aprendvideo.$lin_cara01campus_aprendmapas.$lin_cara01campus_aprendeanima.$lin_cara01campus_mediocomunica;
+		$lin_cara01acad_ultnivelest.$lin_cara01acad_tiemposinest.$lin_cara01acad_obtubodiploma
+		.$lin_cara01acad_hatomadovirtual.$lin_cara01acad_razonestudio.$lin_cara01acad_primeraopc.
+		$lin_cara01acad_programagusto.$lin_cara01acad_razonunad.$lin_cara01campus_compescrito.$lin_cara01campus_portatil.$lin_cara01campus_tableta.$lin_cara01campus_telefono.$lin_cara01campus_energia.$lin_cara01campus_internetreside.$lin_cara01campus_expvirtual.$lin_cara01campus_ofimatica.$lin_cara01campus_foros.$lin_cara01campus_conversiones.$lin_cara01campus_usocorreo.$lin_cara01campus_aprendtexto.$lin_cara01campus_aprendvideo.$lin_cara01campus_aprendmapas.$lin_cara01campus_aprendeanima.$lin_cara01campus_mediocomunica;
 		$sBloque4=''.$lin_cara01lab_situacion.$lin_cara01lab_sector.$lin_cara01lab_caracterjuri.$lin_cara01lab_cargo.$lin_cara01lab_antiguedad.$lin_cara01lab_tipocontrato.$lin_cara01lab_rangoingreso.$lin_cara01lab_tiempoacadem.$lin_cara01lab_tipoempresa.$lin_cara01lab_tiempoindepen.$lin_cara01lab_debebusctrab.$lin_cara01lab_origendinero;
-		/*
-.$cSepara.'Cómo define la educación ambiental'.$cSepara.'Ahorras de agua en la ducha y/o al cepillarse'.$cSepara.'Usas bombillas ahorradoras'
-.$cSepara.'Desconectas el cargador del celular cuando no esta en uso'.$cSepara.'Apagas las luces que no se requieran'
-		*/
 		$sBloque5=''.$lin_cara01bien_baloncesto.$lin_cara01bien_voleibol.$lin_cara01bien_futbolsala.
-$lin_cara01bien_artesmarc.$lin_cara01bien_tenisdemesa.$lin_cara01bien_ajedrez.
-$lin_cara01bien_juegosautoc.$lin_cara01bien_interesrepdeporte.$lin_cara01bien_deporteint.$lin_cara01bien_teatro.
-$lin_cara01bien_danza.$lin_cara01bien_musica.$lin_cara01bien_circo.
-$lin_cara01bien_artplast.$lin_cara01bien_cuenteria.$lin_cara01bien_interesreparte.$lin_cara01bien_arteint.
-$lin_cara01bien_interpreta.$lin_cara01bien_nivelinter.$lin_cara01bien_danza_mod.
-$lin_cara01bien_danza_clas.$lin_cara01bien_danza_cont.$lin_cara01bien_danza_folk.
-$lin_cara01bien_emprendedor.$lin_cara01bien_nombreemp.$lin_cara01bien_capacempren.
-$lin_cara01bien_impvidasalud.$lin_cara01bien_estraautocuid.$lin_cara01bien_pv_personal.
-$lin_cara01bien_amb.$lin_cara01bien_amb_agu.$lin_cara01bien_amb_bom.
-$lin_cara01bien_amb_car.$lin_cara01bien_amb_info;
+		$lin_cara01bien_artesmarc.$lin_cara01bien_tenisdemesa.$lin_cara01bien_ajedrez.
+		$lin_cara01bien_juegosautoc.$lin_cara01bien_interesrepdeporte.$lin_cara01bien_deporteint.$lin_cara01bien_teatro.
+		$lin_cara01bien_danza.$lin_cara01bien_musica.$lin_cara01bien_circo.
+		$lin_cara01bien_artplast.$lin_cara01bien_cuenteria.$lin_cara01bien_interesreparte.$lin_cara01bien_arteint.
+		$lin_cara01bien_interpreta.$lin_cara01bien_nivelinter.$lin_cara01bien_danza_mod.
+		$lin_cara01bien_danza_clas.$lin_cara01bien_danza_cont.$lin_cara01bien_danza_folk.
+		$lin_cara01bien_emprendedor.$lin_cara01bien_nombreemp.$lin_cara01bien_capacempren.
+		$lin_cara01bien_impvidasalud.$lin_cara01bien_estraautocuid.$lin_cara01bien_pv_personal.
+		$lin_cara01bien_amb.$lin_cara01bien_amb_agu.$lin_cara01bien_amb_bom.
+		$lin_cara01bien_amb_car.$lin_cara01bien_amb_info;
 		$sBloque6=$lin_cara01psico_costoemocion.$lin_cara01psico_reaccionimpre.$lin_cara01psico_estres.$lin_cara01psico_pocotiempo
-.$lin_cara01psico_actitudvida.$lin_cara01psico_duda.$lin_cara01psico_problemapers.$lin_cara01psico_satisfaccion.$lin_cara01psico_discusiones.$lin_cara01psico_atencion.$lin_cara01psico_puntaje;
+		.$lin_cara01psico_actitudvida.$lin_cara01psico_duda.$lin_cara01psico_problemapers.$lin_cara01psico_satisfaccion.$lin_cara01psico_discusiones.$lin_cara01psico_atencion.$lin_cara01psico_puntaje;
 		$sBloque7=$lin_cara01fichadigital.$lin_cara01fichalectura.$lin_cara01ficharazona.$lin_cara01fichaingles.$lin_cara01fichafisica.$lin_cara01fichaquimica.$lin_cara01fichabiolog;
-		/*
-		$sBloque7=''.$lin_cara01bien_niveldanza
-.$lin_cara01bien_tipocapacita;
-		$sBloque8=''.$lin_cara01bien_pv_familiar.$lin_cara01bien_pv_academ.$lin_cara01bien_pv_labora.$lin_cara01bien_pv_pareja
-.$lin_cara01bien_amb_temas;
-		$sBloque9=''.$lin_cara01niveldigital.$lin_cara01nivellectura.$lin_cara01nivelrazona.$lin_cara01nivelingles
-.$lin_cara01idconsejero.$lin_cara01fechainicio;
-
-
-
-
-
-
-
-		*/
 		$sBloqueConsejero='';
 		if ($bConConsejero){
 			$sBloqueConsejero=$lin_cara01idconsejero;
@@ -1352,5 +1385,7 @@ $lin_cara01bien_amb_car.$lin_cara01bien_amb_info;
 	header('Content-Length: '.filesize($sPath.$sNombrePlano));
 	header('Content-Disposition: attachment; filename='.basename($sNombrePlanoFinal));
 	readfile($sPath.$sNombrePlano);
+	}else{
+	echo $sError;
 	}
 ?>

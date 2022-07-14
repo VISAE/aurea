@@ -1,8 +1,10 @@
 <?php
 /*
---- © Angel Mauro Avellaneda Barreto - UNAD - 2018 ---
+--- © Angel Mauro Avellaneda Barreto - UNAD - 2018 - 2020 ---
 --- angel.avellaneda@unad.edu.co - http://www.unad.edu.co
 --- Modelo Versión 2.21.0 jueves, 21 de junio de 2018
+--- Modelo Versión 2.25.6 miércoles, 9 de septiembre de 2020
+--- Modelo Versión 2.28.1 jueves, 28 de abril de 2022
 */
 /** Archivo caraconsolidado.php.
 * Modulo 2350
@@ -59,10 +61,10 @@ if (!$bPeticionXAJAX){$_SESSION['u_ultimominuto']=(date('W')*1440)+(date('H')*60
 require $APP->rutacomun.'unad_todas.php';
 require $APP->rutacomun.'libs/clsdbadmin.php';
 require $APP->rutacomun.'unad_librerias.php';
+require $APP->rutacomun.'libdatos.php';
 require $APP->rutacomun.'libhtml.php';
 require $APP->rutacomun.'xajax/xajax_core/xajax.inc.php';
 require $APP->rutacomun.'unad_xajax.php';
-require $APP->rutacomun.'libdatos.php';
 if (($bPeticionXAJAX)&&($_SESSION['unad_id_tercero']==0)){
 	// viene por xajax.
 	$xajax=new xajax();
@@ -88,9 +90,8 @@ require $mensajes_2350;
 $xajax=NULL;
 $objDB=new clsdbadmin($APP->dbhost, $APP->dbuser, $APP->dbpass, $APP->dbname);
 if ($APP->dbpuerto!=''){$objDB->dbPuerto=$APP->dbpuerto;}
-if (isset($APP->piel)==0){$APP->piel=1;}
-$iPiel=$APP->piel;
-$iPiel=1; //Piel 2018.
+$iPiel=iDefinirPiel($APP, 1);
+$sAnchoExpandeContrae=' style="width:62px;"';
 if ($bDebug){
 	$sDebug=$sDebug.''.fecha_microtiempo().' Probando conexi&oacute;n con la base de datos <b>'.$APP->dbname.'</b> en <b>'.$APP->dbhost.'</b><br>';
 	}
@@ -100,7 +101,8 @@ if (!$objDB->Conectar()){
 		$sDebug=$sDebug.''.fecha_microtiempo().' Error al intentar conectar con la base de datos <b>'.$objDB->serror.'</b><br>';
 		}
 	}
-if (!seg_revisa_permiso($iCodModulo, 1, $objDB)){
+list($bDevuelve, $sDebugP)=seg_revisa_permisoV3($iCodModulo, 1, $_SESSION['unad_id_tercero'], $objDB);
+if (!$bDevuelve){
 	header('Location:nopermiso.php');
 	die();
 	}
@@ -114,7 +116,9 @@ if (!$bPeticionXAJAX){
 $idTercero=$_SESSION['unad_id_tercero'];
 $bOtroUsuario=false;
 if (isset($_REQUEST['deb_doc'])!=0){
-	if (seg_revisa_permiso($iCodModulo, 1707, $objDB)){
+	list($bDevuelve, $sDebugP)=seg_revisa_permisoV3($iCodModulo, 1707, $_SESSION['unad_id_tercero'], $objDB, $bDebug);
+	//$sDebug=$sDebug.$sDebugP;
+	if ($bDevuelve){
 		$sSQL='SELECT unad11id, unad11razonsocial FROM unad11terceros WHERE unad11doc="'.$_REQUEST['deb_doc'].'"';
 		$tabla=$objDB->ejecutasql($sSQL);
 		if ($objDB->nf($tabla)>0){
@@ -127,7 +131,7 @@ if (isset($_REQUEST['deb_doc'])!=0){
 			$_REQUEST['deb_doc']='';
 			}
 		}else{
-		if ($bDebug){$sDebug=$sDebug.fecha_microtiempo().' No cuenta con permiso de ingreso como otro usuario Modulo '.$iCodModulo.' Permiso.<br>';}
+		if ($bDebug){$sDebug=$sDebug.fecha_microtiempo().' No cuenta con permiso de ingreso como otro usuario [Modulo '.$iCodModulo.' Permiso 1707].<br>';}
 		$_REQUEST['deb_doc']='';
 		}
 	$bDebug=false;
@@ -149,7 +153,7 @@ if (isset($_REQUEST['paso'])==0){
 	$_REQUEST['paso']=-1;
 	if ($audita[1]){seg_auditaingreso($iCodModulo, $_SESSION['unad_id_tercero'], $objDB);}
 	}
-// -- 2350 core50consolidado
+// -- 2350 cara50consolidado
 require 'lib2350.php';
 $xajax=new xajax();
 $xajax->configure('javascript URI', $APP->rutacomun.'xajax/');
@@ -169,6 +173,7 @@ $iTipoError=0;
 $bLimpiaHijos=false;
 $bMueveScroll=false;
 $iSector=1;
+$iHoy=fecha_DiaMod();
 // -- Se inicializan las variables, primero las que controlan la visualización de la página.
 if (isset($_REQUEST['iscroll'])==0){$_REQUEST['iscroll']=0;}
 if (isset($_REQUEST['paginaf2350'])==0){$_REQUEST['paginaf2350']=1;}
@@ -182,10 +187,13 @@ if (isset($_REQUEST['core50idescuela'])==0){$_REQUEST['cara50idescuela']='';}
 if (isset($_REQUEST['core50idprograma'])==0){$_REQUEST['cara50idprograma']='';}
 if (isset($_REQUEST['core50idtipo'])==0){$_REQUEST['core50idtipo']='';}
 if (isset($_REQUEST['cara50poblacion'])==0){$_REQUEST['cara50poblacion']=1;}
+if (isset($_REQUEST['cara50periodoacomp'])==0){$_REQUEST['cara50periodoacomp']='';}
+if (isset($_REQUEST['cara50convenio'])==0){$_REQUEST['cara50convenio']='';}
+if (isset($_REQUEST['cara50periodomatricula'])==0){$_REQUEST['cara50periodomatricula']='';}
+if (isset($_REQUEST['cara50tipomatricula'])==0){$_REQUEST['cara50tipomatricula']='';}
 // Espacio para inicializar otras variables
-if (isset($_REQUEST['csv_separa'])==0){$_REQUEST['csv_separa']=',';}
-if (isset($_REQUEST['bnombre'])==0){$_REQUEST['bnombre']='';}
-if (isset($_REQUEST['bconvenio'])==0){$_REQUEST['bconvenio']='';}
+if (isset($_REQUEST['csv_separa'])==0){$_REQUEST['csv_separa']=';';}
+//if (isset($_REQUEST['bnombre'])==0){$_REQUEST['bnombre']='';}
 //if (isset($_REQUEST['blistar'])==0){$_REQUEST['blistar']='';}
 //limpiar la pantalla
 if ($_REQUEST['paso']==-1){
@@ -196,6 +204,10 @@ if ($_REQUEST['paso']==-1){
 	$_REQUEST['core50idprograma']='';
 	$_REQUEST['core50tipo']='';
 	$_REQUEST['cara50poblacion']='';
+	$_REQUEST['cara50periodoacomp']='';
+	$_REQUEST['cara50convenio']='';
+	$_REQUEST['cara50periodomatricula']='';
+	$_REQUEST['cara50tipomatricula']=0;
 	$_REQUEST['paso']=0;
 	}
 //AQUI SE DEBEN CARGAR TODOS LOS DATOS QUE LA FORMA NECESITE.
@@ -205,6 +217,7 @@ if ($_REQUEST['paso']==-1){
 $seg_5=0;
 $seg_6=0;
 if (seg_revisa_permiso($iCodModulo, 6, $objDB)){$seg_6=1;}
+if ($seg_6==1){}
 $seg_12=0;
 $seg_1710=0;
 if (seg_revisa_permiso($iCodModulo, 12, $objDB)){$seg_12=1;}
@@ -212,6 +225,18 @@ if (seg_revisa_permiso($iCodModulo, 1710, $objDB)){$seg_1710=1;}
 
 $objCombos=new clsHtmlCombos();
 $html_core50idperaca=f2350_HTMLComboV2_core50idperaca($objDB, $objCombos, $_REQUEST['core50idperaca']);
+
+$objCombos->nuevo('cara50periodoacomp', $_REQUEST['cara50periodoacomp'], true, '{'.$ETI['msg_todos'].'}');
+//Solo los peracas donde haya encuestas.
+$sIds='-99';
+$sSQL='SELECT cara01idperiodoacompana FROM cara01encuesta GROUP BY cara01idperiodoacompana';
+$tabla=$objDB->ejecutasql($sSQL);
+while($fila=$objDB->sf($tabla)){
+	$sIds=$sIds.','.$fila['cara01idperiodoacompana'];
+	}
+$sSQL=f146_ConsultaCombo('exte02id IN ('.$sIds.')');
+$html_cara50periodoacomp=$objCombos->html($sSQL, $objDB);
+
 $bParteZona=true;
 //Administrar zonas.
 if ($seg_1710==1){$bParteZona=false;}
@@ -251,10 +276,17 @@ if ($bGeneral){
 	$objCombos->addItem(9, 'Todos');
 	}
 $html_cara50poblacion=$objCombos->html('', $objDB);
-$objCombos->nuevo('bconvenio', $_REQUEST['bconvenio'], true, '{'.$ETI['msg_todos'].'}');
+$objCombos->nuevo('cara50convenio', $_REQUEST['cara50convenio'], true, '{'.$ETI['msg_todos'].'}');
 $objCombos->sAccion='paginarf2216()';
 $sSQL='SELECT core50id AS id, core50nombre AS nombre FROM core50convenios ORDER BY core50estado DESC, core50nombre';
-$html_bconvenio=$objCombos->html($sSQL, $objDB);
+$html_cara50convenio=$objCombos->html($sSQL, $objDB);
+$objCombos->nuevo('cara50periodomatricula', $_REQUEST['cara50periodomatricula'], true, '{'.$ETI['msg_todos'].'}');
+$sSQL='SELECT exte02id AS id, exte02nombre AS nombre FROM exte02per_aca ORDER BY exte02nombre';
+$html_cara50periodomatricula=$objCombos->html($sSQL, $objDB);
+$objCombos->nuevo('cara50tipomatricula', $_REQUEST['cara50tipomatricula'], true, '{'.$ETI['msg_todos'].'}', '');
+$objCombos->addItem('0', $acara50tipomatricula[0]);
+$objCombos->addArreglo($acara50tipomatricula, $icara50tipomatricula);
+$html_cara50tipomatricula=$objCombos->html('', $objDB);
 //Alistar datos adicionales
 $id_rpt=0;
 //$id_rpt=reportes_id(_Identificador_Tipo_Reporte_, $objDB);
@@ -264,7 +296,6 @@ $objCombos->sAccion='paginarf2350()';
 $html_blistar=$objCombos->html('', $objDB);
 //$html_blistar=$objCombos->comboSistema(2350, 1, $objDB, 'paginarf2350()');
 */
-if ($seg_6==1){}
 if (true){
 	$objCombos->nuevo('csv_separa', $_REQUEST['csv_separa'], false);
 	$objCombos->addItem(',', $ETI['msg_coma']);
@@ -277,19 +308,31 @@ $iNumFormatosImprime=0;
 $iModeloReporte=2350;
 $html_iFormatoImprime='<input id="iformatoimprime" name="iformatoimprime" type="hidden" value="0" />
 ';
-if (seg_revisa_permiso($iCodModulo, 5, $objDB)){
+$bDevuelve=false;
+//list($bDevuelve, $sDebugP)=seg_revisa_permisoV3($iCodModulo, 5, $idTercero, $objDB);
+if ($bDevuelve){
 	$seg_5=1;
 	}
 $sTabla2350='';
 if (false){
-	//Cargar las tablas de datos
-	$params[0]='';//$_REQUEST['p1_2350'];
-	$params[101]=$_REQUEST['paginaf2350'];
-	$params[102]=$_REQUEST['lppf2350'];
-	//$params[103]=$_REQUEST['bnombre'];
-	//$params[104]=$_REQUEST['blistar'];
-	list($sTabla2350, $sDebugTabla)=f2350_TablaDetalleV2($params, $objDB, $bDebug);
-	$sDebug=$sDebug.$sDebugTabla;
+//Cargar las tablas de datos
+$aParametros[0]='';//$_REQUEST['p1_2350'];
+$aParametros[100]=$idTercero;
+$aParametros[101]=$_REQUEST['paginaf2350'];
+$aParametros[102]=$_REQUEST['lppf2350'];
+$aParametros[103]=$_REQUEST['cara50idperaca'];
+$aParametros[104]=$_REQUEST['cara50idzona'];
+$aParametros[105]=$_REQUEST['cara50idcentro'];
+$aParametros[106]=$_REQUEST['core50idescuela'];
+$aParametros[107]=$_REQUEST['core50idprograma'];
+$aParametros[108]=$_REQUEST['core50tipo'];
+$aParametros[109]=$_REQUEST['cara50poblacion'];
+$aParametros[110]=$_REQUEST['cara50periodoacomp'];
+$aParametros[111]=$_REQUEST['cara50convenio'];
+$aParametros[112]=$_REQUEST['cara50periodomatricula'];
+$aParametros[113]=$_REQUEST['cara50tipomatricula'];
+list($sTabla2350, $sDebugTabla)=f2350_TablaDetalleV2($aParametros, $objDB, $bDebug);
+$sDebug=$sDebug.$sDebugTabla;
 	}
 $bDebugMenu=false;
 list($et_menu, $sDebugM)=html_menuV2($APP->idsistema, $objDB, $iPiel, $bDebugMenu, $idTercero);
@@ -318,7 +361,6 @@ if (false){
 <?php
 ?>
 <script language="javascript">
-<!--
 function limpiapagina(){
 	expandesector(98);
 	window.document.frmedita.paso.value=-1;
@@ -368,7 +410,7 @@ function imprimelista(){
 		window.document.frmlista.nombrearchivo.value='Consolidado';
 		window.document.frmlista.submit();
 		}else{
-		window.alert("<?php echo $ERR['6']; ?>");
+		ModalMensaje("<?php echo $ERR['6']; ?>");
 		}
 	}
 function asignarvariables(){
@@ -376,28 +418,32 @@ function asignarvariables(){
 	window.document.frmimpp.v3.value=window.document.frmedita.core50idperaca.value;
 	window.document.frmimpp.v4.value=window.document.frmedita.core50idzona.value;
 	window.document.frmimpp.v5.value=window.document.frmedita.core50idcentro.value;
+	window.document.frmimpp.v9.value=window.document.frmedita.core50idescuela.value;
+	window.document.frmimpp.v10.value=window.document.frmedita.core50idprograma.value;
 	window.document.frmimpp.v6.value=window.document.frmedita.core50idtipo.value;
 	window.document.frmimpp.v7.value=window.document.frmedita.cara50poblacion.value;
-	window.document.frmimpp.v8.value=window.document.frmedita.bconvenio.value;
-    window.document.frmimpp.v9.value=window.document.frmedita.core50idescuela.value;
-    window.document.frmimpp.v10.value=window.document.frmedita.core50idprograma.value;
+	window.document.frmimpp.v11.value=window.document.frmedita.cara50periodoacomp.value;
+	window.document.frmimpp.v8.value=window.document.frmedita.cara50convenio.value;
+	window.document.frmimpp.v12.value=window.document.frmedita.cara50periodomatricula.value;
+	window.document.frmimpp.v13.value=window.document.frmedita.cara50tipomatricula.value;
 	window.document.frmimpp.separa.value=window.document.frmedita.csv_separa.value.trim();
 	}
 function imprimeexcel(){
-	var bPasa=true;
+	var sError='';
 	if (window.document.frmedita.core50idperaca.value==''){
-		MensajeAlarmaV2('Debe seleccionar un periodo para poder consultar', 0);
-		window.alert('Debe seleccionar un periodo para poder consultar');
-		bPasa=false;
+		if (window.document.frmedita.cara50periodoacomp.value==''){
+			if (window.document.frmedita.cara50periodomatricula.value==''){
+				sError='Debe seleccionar un periodo para poder consultar';
+				}
+			}
 		}
-	if (window.document.frmedita.seg_6.value!=1){
-		bPasa=false;
-		window.alert("<?php echo $ERR['6']; ?>");
-		}
-	if (bPasa){
+	if (window.document.frmedita.seg_6.value!=1){sError='<?php echo $ERR['6']; ?>';}
+	if (sError==''){
 		asignarvariables();
 		window.document.frmimpp.action='t2301.php';
 		window.document.frmimpp.submit();
+		}else{
+		ModalMensaje(sError);
 		}
 	}
 function imprimep(){
@@ -413,7 +459,7 @@ if ($iNumFormatosImprime>0){
 	}
 ?>
 		}else{
-		window.alert("<?php echo $ERR['5']; ?>");
+		ModalMensaje("<?php echo $ERR['5']; ?>");
 		}
 	}
 function verrpt(){
@@ -432,10 +478,20 @@ function carga_combo_core50idprograma(){
 function paginarf2350(){
 	var params=new Array();
 	params[99]=window.document.frmedita.debug.value;
+	params[100]=<?php echo $idTercero; ?>;
 	params[101]=window.document.frmedita.paginaf2350.value;
 	params[102]=window.document.frmedita.lppf2350.value;
-	//params[103]=window.document.frmedita.bnombre.value;
-	//params[104]=window.document.frmedita.blistar.value;
+	params[103]=window.document.frmedita.cara50idperaca.value;
+	params[104]=window.document.frmedita.cara50idzona.value;
+	params[105]=window.document.frmedita.cara50idcentro.value;
+	params[106]=window.document.frmedita.core50idescuela.value;
+	params[107]=window.document.frmedita.core50idprograma.value;
+	params[108]=window.document.frmedita.core50tipo.value;
+	params[109]=window.document.frmedita.cara50poblacion.value;
+	params[110]=window.document.frmedita.cara50periodoacomp.value;
+	params[111]=window.document.frmedita.cara50convenio.value;
+	params[112]=window.document.frmedita.cara50periodomatricula.value;
+	params[113]=window.document.frmedita.cara50tipomatricula.value;
 	//document.getElementById('div_f2350detalle').innerHTML='<div class="GrupoCamposAyuda"><div class="MarquesinaMedia">Procesando datos, por favor espere.</div></div><input id="paginaf2350" name="paginaf2350" type="hidden" value="'+params[101]+'" /><input id="lppf2350" name="lppf2350" type="hidden" value="'+params[102]+'" />';
 	xajax_f2350_HtmlTabla(params);
 	}
@@ -475,7 +531,6 @@ function cierraDiv96(ref){
 	MensajeAlarmaV2('', 0);
 	retornacontrol();
 	}
-// -->
 </script>
 <form id="frmimpp" name="frmimpp" method="post" action="p2350.php" target="_blank">
 <input id="r" name="r" type="hidden" value="2350" />
@@ -487,6 +542,9 @@ function cierraDiv96(ref){
 <input id="v8" name="v8" type="hidden" value="" />
 <input id="v9" name="v9" type="hidden" value="" />
 <input id="v10" name="v10" type="hidden" value="" />
+<input id="v11" name="v11" type="hidden" value="" />
+<input id="v12" name="v12" type="hidden" value="" />
+<input id="v13" name="v13" type="hidden" value="" />
 <input id="iformato94" name="iformato94" type="hidden" value="0" />
 <input id="separa" name="separa" type="hidden" value="," />
 <input id="rdebug" name="rdebug" type="hidden" value="<?php echo $_REQUEST['debug']; ?>"/>
@@ -502,10 +560,12 @@ function cierraDiv96(ref){
 <input id="bNoAutocompletar" name="bNoAutocompletar" type="password" value="" style="display:none;"/>
 <input id="paso" name="paso" type="hidden" value="<?php echo $_REQUEST['paso']; ?>" />
 <input id="shoy" name="shoy" type="hidden" value="<?php echo fecha_hoy(); ?>" />
-<input id="ihoy" name="ihoy" type="hidden" value="<?php echo fecha_DiaMod(); ?>" />
+<input id="ihoy" name="ihoy" type="hidden" value="<?php echo $iHoy; ?>" />
 <input id="shora" name="shora" type="hidden" value="<?php echo fecha_hora(); ?>" />
 <input id="stipodoc" name="stipodoc" type="hidden" value="<?php echo $APP->tipo_doc; ?>" />
 <input id="idusuario" name="idusuario" type="hidden" value="<?php echo $_SESSION['unad_id_tercero']; ?>" />
+<input id="id11" name="id11" type="hidden" value="<?php echo $idTercero; ?>" />
+<input id="ipiel" name="ipiel" type="hidden" value="<?php echo $iPiel; ?>" />
 <input id="seg_5" name="seg_5" type="hidden" value="<?php echo $seg_5; ?>" />
 <input id="seg_6" name="seg_6" type="hidden" value="<?php echo $seg_6; ?>" />
 <div id="div_sector1">
@@ -571,6 +631,17 @@ echo $ETI['core50idperaca'];
 <label>
 <?php
 echo $html_core50idperaca;
+?>
+</label>
+<div class="salto1px"></div>
+<label class="Label200">
+<?php
+echo $ETI['msg_periodoacomp'];
+?>
+</label>
+<label>
+<?php
+echo $html_cara50periodoacomp;
 ?>
 </label>
 <div class="salto1px"></div>
@@ -649,7 +720,29 @@ Convenio
 </label>
 <label class="Label500">
 <?php
-echo $html_bconvenio;
+echo $html_cara50convenio;
+?>
+</label>
+<div class="salto1px"></div>
+<label class="Label200">
+<?php
+echo $ETI['cara50periodomatricula'];
+?>
+</label>
+<label>
+<?php
+echo $html_cara50periodomatricula;
+?>
+</label>
+<div class="salto1px"></div>
+<label class="Label200">
+<?php
+echo $ETI['cara50tipomatricula'];
+?>
+</label>
+<label>
+<?php
+echo $html_cara50tipomatricula;
 ?>
 </label>
 <?php
@@ -772,7 +865,6 @@ echo html_DivAlarmaV2($sError, $iTipoError);
 ?>
 
 <script language="javascript">
-<!--
 <?php
 if ($iSector!=1){
 	echo 'setTimeout(function(){expandesector('.$iSector.');}, 10);
@@ -783,7 +875,16 @@ if ($bMueveScroll){
 ';
 	}
 ?>
--->
+</script>
+<script language="javascript" src="<?php echo $APP->rutacomun; ?>js/chosen.jquery.js"></script>
+<link rel="stylesheet" href="<?php echo $APP->rutacomun; ?>js/chosen.css" type="text/css"/>
+<script language="javascript">
+$().ready(function(){
+$("#core50idperaca").chosen();
+$("#cara50periodoacomp").chosen();
+$("#cara50convenio").chosen();
+$("#cara50periodomatricula").chosen();
+});
 </script>
 <script language="javascript" src="<?php echo $APP->rutacomun; ?>unad_todas.js?ver=8"></script>
 <?php
