@@ -86,8 +86,7 @@ if ($bEntra){
 	$sNombrePlano='t2349.csv';
 	$sCondiParte1='(TB.cara01discversion=0 AND ((TB.cara01discsensorial<>"N") OR (TB.cara01discfisica<>"N") OR (TB.cara01disccognitiva<>"N") OR (TB.cara01perayuda<>0)))';
 	$sCondiParte2='(TB.cara01discversion=2 AND (TB.cara01discv2tiene=1 OR (TB.cara01perayuda<>0)))';
-	// $sCondiDiscapacidad=' AND ('.$sCondiParte1.' OR '.$sCondiParte2.')';
-	$sCondiDiscapacidad=' AND '.$sCondiParte2.'';
+	$sCondiDiscapacidad=' AND ('.$sCondiParte1.' OR '.$sCondiParte2.')';
 	$sWhere='';
 	$sCondi01='';
 	$sDetalleReporte='';
@@ -227,7 +226,7 @@ if ($bEntra){
 	while ($fila=$objDB->sf($tabla)){
 		$sIds01=$sIds01.','.$fila['cara01id'];
 		}
-	$bConVersion1=false;
+	$bConVersion1=true;
 	$bConVersion2=true;
 	if ($bConVersion1&&$bConVersion2){
 		}else{
@@ -274,11 +273,10 @@ if ($bEntra){
 		$sBloque2=$cSepara.'Sensorial'.$cSepara.$cSepara.'Física'.$cSepara.$cSepara.'Cognitiva'.$cSepara.$cSepara.'Necesidades especiales'.$cSepara.'Otras necesidades';
 		}
 	if ($bConVersion2){
-		$sBloque3=$cSepara.'Necesidades especiales'.$cSepara.'Otras necesidades'.$cSepara.
-		'Sensorial'.$cSepara.'Intelectual'.$cSepara.'Física o motora'.$cSepara.'Psicosocial'.$cSepara.'Sistémica'.$cSepara.'Sistémica Otro'.$cSepara.'Múltiple'.$cSepara.'Múltiple Otro'.$cSepara.
-		'Certificado'.$cSepara.'Tiene trastorno en el aprendizaje'.$cSepara.'Trastorno específico en el aprendizaje'.$cSepara.
-		'Dominio sobresaliente en un campo específico'.$cSepara.'Pruebas para definir el coeficiente intelectual'.$cSepara.
-		'Presenta alguna condición médica especifica'.$cSepara.'Cuál condición médica especifica';
+		$sBloque3=$cSepara.'Sensorial'.$cSepara.'Intelectual'.$cSepara.'Física o motora'.$cSepara.'Psicosocial'.$cSepara.'Múltiple'.$cSepara.$cSepara.
+		'Ajustes Razonables o apoyos requiere'.$cSepara.$cSepara.'Certificado'.$cSepara.'Trastorno específico en el aprendizaje'.$cSepara.$cSepara.
+		'Dominio sobresaliente en un campo específico'.$cSepara.$cSepara.'Pruebas para definir el coeficiente intelectual'.$cSepara.
+		'Presenta alguna condición médica especifica';
 		}
 	$sBloque4=$cSepara.'Periodo Encuesta';
 	$objplano->AdicionarLinea(utf8_decode($sBloque1.$sBloque2.$sBloque3.$sBloque4));
@@ -400,29 +398,29 @@ if ($bEntra){
 				$lin_cara01disccognitiva=$cSepara.$fila['cara01disccognitiva'];
 				if (isset($acara01disccognitiva[$fila['cara01disccognitiva']])!=0){$lin_cara01disccognitiva=$cSepara.$acara01disccognitiva[$fila['cara01disccognitiva']];}
 				$lin_cara01disccognitiva=$lin_cara01disccognitiva.$cSepara.utf8_decode($fila['cara01disccognitivaotra']);
-				}			
-			//Fin de la version 1
-			}
-		$bEntra=true;
-		if ($fila['cara01perayuda']==0){$bEntra=false;}
-		if ($fila['cara01perayuda']==-1){
-			$bEntra=false;
-			$lin_cara01perayuda=$cSepara.'Otra';
-			$lin_cara01perotraayuda=$cSepara.str_replace($cSepara, $cComplementa, utf8_decode($fila['cara01perotraayuda']));
-			}
-		if ($bEntra){
-			$i_cara01perayuda=$fila['cara01perayuda'];
-			if (isset($acara01perayuda[$i_cara01perayuda])==0){
-				$sSQL='SELECT cara14nombre FROM cara14ayudaajuste WHERE cara14id='.$i_cara01perayuda.'';
-				$tablae=$objDB->ejecutasql($sSQL);
-				if ($objDB->nf($tablae)>0){
-					$filae=$objDB->sf($tablae);
-					$acara01perayuda[$i_cara01perayuda]=str_replace($cSepara, $cComplementa, $filae['cara14nombre']);
-					}else{
-					$acara01perayuda[$i_cara01perayuda]='';
-					}
 				}
-			$lin_cara01perayuda=$cSepara.utf8_decode($acara01perayuda[$i_cara01perayuda]);
+			$bEntra=true;
+			if ($fila['cara01perayuda']==0){$bEntra=false;}
+			if ($fila['cara01perayuda']==-1){
+				$bEntra=false;
+				$lin_cara01perayuda=$cSepara.'Otra';
+				$lin_cara01perotraayuda=$cSepara.str_replace($cSepara, $cComplementa, utf8_decode($fila['cara01perotraayuda']));
+				}
+			if ($bEntra){
+				$i_cara01perayuda=$fila['cara01perayuda'];
+				if (isset($acara01perayuda[$i_cara01perayuda])==0){
+					$sSQL='SELECT cara14nombre FROM cara14ayudaajuste WHERE cara14id='.$i_cara01perayuda.'';
+					$tablae=$objDB->ejecutasql($sSQL);
+					if ($objDB->nf($tablae)>0){
+						$filae=$objDB->sf($tablae);
+						$acara01perayuda[$i_cara01perayuda]=str_replace($cSepara, $cComplementa, $filae['cara14nombre']);
+						}else{
+						$acara01perayuda[$i_cara01perayuda]='';
+						}
+					}
+				$lin_cara01perayuda=$cSepara.utf8_decode($acara01perayuda[$i_cara01perayuda]);
+				}
+			//Fin de la version 1
 			}
 		if ($bConVersion2){
 			$i_cara01discv2sensorial=$fila['cara01discv2sensorial'];
@@ -550,7 +548,7 @@ if ($bEntra){
 			$sBloque2=$lin_cara01discsensorial.$lin_cara01discfisica.$lin_cara01disccognitiva.$lin_cara01perayuda.$lin_cara01perotraayuda;
 			}
 		if ($bConVersion2){
-			$sBloque3=$lin_cara01perayuda.$lin_cara01perotraayuda.$lin_cara01discv2sensorial.$lin_cara02discv2intelectura.$lin_cara02discv2fisica.$lin_cara02discv2psico.$lin_cara02discv2sistemica
+			$sBloque3=$lin_cara01discv2sensorial.$lin_cara02discv2intelectura.$lin_cara02discv2fisica.$lin_cara02discv2psico.$lin_cara02discv2sistemica
 			.$lin_cara02discv2sistemicaotro.$lin_cara02discv2multiple.$lin_cara02discv2multipleotro.$lin_cara01discv2archivoorigen
 			.$lin_cara01discv2trastornos.$lin_cara01discv2trastaprende.$lin_cara01discv2contalento.$lin_cara01discv2pruebacoeficiente.$lin_cara01discv2condicionmedica.$lin_cara01discv2condmeddet;
 			//.$lin_cara02talentoexcepcional;
