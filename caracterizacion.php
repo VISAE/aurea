@@ -265,9 +265,8 @@ $xajax->processRequest();
 if ($bPeticionXAJAX) {
 	die(); // Esto hace que las llamadas por xajax terminen aquí.
 }
-$sUrlTablero = 'miscursos.php';
+$sUrlTablero = 'tablero.php';
 $sMensaje = '';
-$sHTMLHistorial = '';
 if (isset($APP->urltablero) != 0) {
 	if (file_exists($APP->urltablero)) {
 		$sUrlTablero = $APP->urltablero;
@@ -291,13 +290,9 @@ if ($bEstudiante) {
 			$fila = $objDB->sf($tabla);
 			$_REQUEST['cara01idperaca'] = $fila['core01peracainicial'];
 			//Ver si ya tiene una caracterizacion.
-			$sSQL = 'SELECT TB.cara01id, TB.cara01idperaca, TB.cara01completa, T2.exte02titulo 
-			FROM cara01encuesta AS TB, exte02per_aca AS T2 
-			WHERE TB.cara01idtercero=' . $idTercero . ' AND TB.cara01idperaca=T2.exte02id
-			ORDER BY TB.cara01completa, TB.cara01idperaca DESC';
+			$sSQL = 'SELECT cara01id, cara01idperaca FROM cara01encuesta WHERE cara01idtercero=' . $idTercero . ' ORDER BY cara01idperaca DESC';
 			$tabla = $objDB->ejecutasql($sSQL);
-			$iNumFilas = $objDB->nf($tabla);
-			if ($iNumFilas == 0) {
+			if ($objDB->nf($tabla) == 0) {
 				$sMensaje = $ETI['msg_intro_nuevos'];
 				if ($_REQUEST['cara01idperaca'] == 87) {
 					$sMensaje = $ETI['msg_intro_antiguos'];
@@ -317,7 +312,7 @@ if ($bEstudiante) {
 			forma_cabeceraV3($xajax, $ETI['titulo_2301']);
 			echo $et_menu;
 			forma_mitad();
-			?>
+?>
 			<link rel="stylesheet" href="<?php echo $APP->rutacomun; ?>css/criticalPath.css">
 			<link rel="stylesheet" href="<?php echo $APP->rutacomun; ?>css/principal.css">
 			<link rel="stylesheet" href="<?php echo $APP->rutacomun; ?>unad_estilos2018.css" type="text/css" />
@@ -1528,33 +1523,6 @@ if ($bEstudiante) {
 	if ($_REQUEST['paso'] == -1) {
 		$_REQUEST['paso'] = 3;
 	}
-	//2022 - 08 - 19 - Le armamos el historial
-	$sSQL = 'SELECT TB.cara01id, TB.cara01idperaca, TB.cara01completa, T2.exte02titulo 
-	FROM cara01encuesta AS TB, exte02per_aca AS T2 
-	WHERE TB.cara01idtercero=' . $idTercero . ' AND TB.cara01idperaca=T2.exte02id
-	ORDER BY TB.cara01completa, TB.cara01idperaca DESC';
-	$tabla = $objDB->ejecutasql($sSQL);
-	$iNumFilas = $objDB->nf($tabla);
-	if ($iNumFilas > 1) {
-		$sHTMLHistorial = '<div class="GrupoCamposAyuda">
-		<b>Periodos en los que debe diligenciar encuesta de caracterizaci&oacute;n:</b>
-		' . html_salto() . '
-		<div class="tabuladores">';
-		$bMarcaInicial = false;
-		while ($fila = $objDB->sf($tabla)) {
-			$sNomPeriodo = cadena_notildes($fila['exte02titulo']);
-			$k = $fila['cara01idperaca'];
-			if ($k != $_REQUEST['cara01idperaca']) {}
-			if (true){
-				if ($fila['cara01completa'] == 'S') {
-					$sHTMLHistorial = $sHTMLHistorial . html_BotonVerde('p_' . $k, $sNomPeriodo, 'javascript:cargaridf2301(' . $fila['cara01id'] . ');', $sNomPeriodo);
-				} else {
-					$sHTMLHistorial = $sHTMLHistorial . html_BotonRojo('p_' . $k, $sNomPeriodo, 'javascript:cargaridf2301(' . $fila['cara01id'] . ');', $sNomPeriodo);
-				}
-			}
-		}
-		$sHTMLHistorial = $sHTMLHistorial . html_salto().'</div></div>';
-	}
 }
 //Si Modifica o Elimina Cargar los campos
 if (($_REQUEST['paso'] == 1) || ($_REQUEST['paso'] == 3)) {
@@ -1967,7 +1935,7 @@ if (($_REQUEST['paso'] == 1) || ($_REQUEST['paso'] == 3)) {
 }
 //Actualizar la edad en la encuesta
 if ($bActualizarEdad) {
-	$sSQL = 'SELECT unad11fechanace FROM unad11terceros WHERE unad11id =' . $_REQUEST['cara01idtercero'] . '';
+	$sSQL = 'SELECT unad11fechanace FROM unad11terceros WHERE unad11id ="' . $_REQUEST['cara01idtercero'] . '"';
 	$tabla = $objDB->ejecutasql($sSQL);
 	if ($objDB->nf($tabla) > 0) {
 		$fila = $objDB->sf($tabla);
@@ -3545,10 +3513,7 @@ if ($_REQUEST['paso'] > 0) {
 		$seg_5 = 1;
 	}
 }
-if ($bEstudiante) {
-	//2022 - 08 - 19 : Ver si tiene mas de una encuesta cargada y que pueda cambiar entre ellas
-
-} else {
+if (!$bEstudiante) {
 	//Cargar las tablas de datos
 	$aParametros[0] = ''; //$_REQUEST['p1_2301'];
 	$aParametros[100] = $idTercero;
@@ -4575,7 +4540,6 @@ $bGrupo10 = true;
 $bGrupo11 = true;
 $bGrupo12 = true;
 $bGrupo13 = true;
-echo $sHTMLHistorial;
 //Div para ocultar
 $bconexpande = true;
 if ($bEstudiante) {
@@ -4586,17 +4550,17 @@ if ($bconexpande) {
 <div class="ir_derecha" <?php echo $sAnchoExpandeContrae; ?>>
 <label class="Label30">
 <input id="btexpande2301" name="btexpande2301" type="button" value="Mostrar" class="btMiniExpandir" onclick="expandepanel(2301,'block',0);" title="<?php echo $ETI['bt_mostrar']; ?>" style="display:<?php if ($_REQUEST['boculta2301'] == 0) {
-echo 'none';
-} else {
-echo 'block';
-} ?>;" />
+								echo 'none';
+							} else {
+								echo 'block';
+							} ?>;" />
 </label>
 <label class="Label30">
 <input id="btrecoge2301" name="btrecoge2301" type="button" value="Ocultar" class="btMiniRecoger" onclick="expandepanel(2301,'none',1);" title="<?php echo $ETI['bt_ocultar']; ?>" style="display:<?php if ($_REQUEST['boculta2301'] == 0) {
-echo 'block';
-} else {
-echo 'none';
-} ?>;" />
+							echo 'block';
+						} else {
+							echo 'none';
+						} ?>;" />
 </label>
 </div>
 <div id="div_p2301" style="display:<?php if ($_REQUEST['boculta2301'] == 0) {
@@ -4631,11 +4595,11 @@ echo $ETI['cara01idtercero'];
 <?php
 $bOculto = true;
 if ($bEstudiante) {
-	$bOculto = true;
+$bOculto = true;
 } else {
-	if ($_REQUEST['paso'] != 2) {
-		$bOculto = false;
-	}
+if ($_REQUEST['paso'] != 2) {
+$bOculto = false;
+}
 }
 echo html_DivTerceroV2('cara01idtercero', $_REQUEST['cara01idtercero_td'], $_REQUEST['cara01idtercero_doc'], $bOculto, 1, $ETI['ing_doc']);
 ?>
@@ -4699,7 +4663,7 @@ if ($bEstudiante) {
 			}
 		}
 	}
-	echo '</div>';
+echo '</div>';
 }
 ?>
 <div class="salto1px"></div>
@@ -5891,10 +5855,10 @@ echo html_lnkarchivo((int)$_REQUEST['cara01discv2soporteorigen'], (int)$_REQUEST
 </div>
 <label class="Label30">
 <input type="button" id="banexacara01discv2archivoorigen" name="banexacara01discv2archivoorigen" value="Anexar" class="btAnexarS" onclick="carga_cara01discv2archivoorigen()" title="Cargar archivo" style="display:<?php if ((int)$_REQUEST['cara01id'] != 0) {
-echo 'block';
-} else {
-echo 'none';
-} ?>;" />
+																echo 'block';
+															} else {
+																echo 'none';
+															} ?>;" />
 </label>
 <label class="Label30">
 <?php
@@ -6627,7 +6591,7 @@ echo $html_cara01acad_razonunad;
 </label>
 <div class="salto1px"></div>
 <?php
-if ($bAntiguo) {
+if (!$bAntiguo) {
 ?>
 <label class="Label450">
 <?php
@@ -10310,7 +10274,7 @@ echo $html_cara01factorprincipaldesc;
 <?php
 }
 ?>
-<div class="salto1px"></div>
+<div class="salto1px">
 </div>
 
 <?php

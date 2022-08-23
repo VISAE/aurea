@@ -6627,7 +6627,7 @@ echo $html_cara01acad_razonunad;
 </label>
 <div class="salto1px"></div>
 <?php
-if ($bAntiguo) {
+if (!$bAntiguo) {
 ?>
 <label class="Label450">
 <?php

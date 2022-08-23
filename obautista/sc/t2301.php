@@ -858,10 +858,10 @@ if ($bEntra){
 		$tabla1=$objDB->ejecutasql($sSQL);
 		if ($fila1=$objDB->sf($tabla1)){
 			if (isset($acara44sexov1identidadgen[$fila1['cara44sexov1identidadgen']])!=0){
-				$lin_cara44sexov1identidadgen=$cSepara.utf8_decode($acara44sexov1identidadgen[$fila1['cara44sexov1identidadgen']]);
+				$lin_cara44sexov1identidadgen=$cSepara.utf8_decode(html_entity_decode($acara44sexov1identidadgen[$fila1['cara44sexov1identidadgen']]));
 			}
 			if (isset($acara44sexov1orientasexo[$fila1['cara44sexov1orientasexo']])!=0){
-				$lin_cara44sexov1orientasexo=$cSepara.utf8_decode($acara44sexov1orientasexo[$fila1['cara44sexov1orientasexo']]);
+				$lin_cara44sexov1orientasexo=$cSepara.utf8_decode(html_entity_decode($acara44sexov1orientasexo[$fila1['cara44sexov1orientasexo']]));
 			}
 			$lin_cara44campesinado=$cSepara.$fila1['cara44campesinado'];
 			if ($aBloque[2]){
@@ -1150,44 +1150,42 @@ if ($bEntra){
 			if (isset($acara01discfisica[$fila['cara01discfisica']])!=0){$lin_cara01discfisica=$cSepara.$acara01discfisica[$fila['cara01discfisica']];}
 			$lin_cara01disccognitiva=$cSepara.$fila['cara01disccognitiva'];
 			if (isset($acara01disccognitiva[$fila['cara01disccognitiva']])!=0){$lin_cara01disccognitiva=$cSepara.$acara01disccognitiva[$fila['cara01disccognitiva']];}
-            if($fila['cara01discversion']==1){
-                $acara01discv2=array($fila['cara01discv2sensorial'],$fila['cara02discv2intelectura'],$fila['cara02discv2fisica'],$fila['cara02discv2psico']);
-                foreach($acara01discv2 as $i_id){
-                    if (isset($acara37discapacidades[$i_id])==0){
-                        $sSQL='SELECT cara37nombre FROM cara37discapacidades WHERE cara37id='.$i_id.'';
-                        $tablae=$objDB->ejecutasql($sSQL);
-                        if ($objDB->nf($tablae)>0){
-                            $filae=$objDB->sf($tablae);
-                            $acara37discapacidades[$i_id]=str_replace($cSepara, $cComplementa, $filae['cara37nombre']);
-                            }else{
-                            $acara37discapacidades[$i_id]='';
-                            }
-                        }
-                    }
-                $lin_cara01discv2sensorial=$cSepara.utf8_decode($acara37discapacidades[$fila['cara01discv2sensorial']]);
-                $lin_cara02discv2intelectura=$cSepara.utf8_decode($acara37discapacidades[$fila['cara02discv2intelectura']]);
-                $lin_cara02discv2fisica=$cSepara.utf8_decode($acara37discapacidades[$fila['cara02discv2fisica']]);
-                $lin_cara02discv2psico=$cSepara.utf8_decode($acara37discapacidades[$fila['cara02discv2psico']]);
-                $lin_cara02discv2sistemica=$cSepara.utf8_decode($acara02discv2sistemica[$fila['cara02discv2sistemica']]);
-                $lin_cara02discv2sistemicaotro=$cSepara.str_replace($cSepara, $cComplementa, cadena_letrasynumeros(utf8_decode($fila['cara02discv2sistemicaotro']), ' '));
-                $lin_cara02discv2multiple=$cSepara.utf8_decode($acara02discv2multiple[$fila['cara02discv2multiple']]);
-                $lin_cara02discv2multipleotro=$cSepara.str_replace($cSepara, $cComplementa, cadena_letrasynumeros(utf8_decode($fila['cara02discv2multipleotro']), ' '));
-				if ($fila['cara01discv2archivoorigen']!=0){
-					$lin_cara01discv2archivoorigen=$cSepara.'Si';
-					}
-                $i_cara02talentoexcepcional=$fila['cara02talentoexcepcional'];
-				if (isset($acara02talentoexcepcional[$i_cara02talentoexcepcional])==0){
-					$sSQL='SELECT cara38nombre FROM cara38talentos WHERE cara38id='.$i_cara02talentoexcepcional.'';
+			$acara01discv2=array($fila['cara01discv2sensorial'],$fila['cara02discv2intelectura'],$fila['cara02discv2fisica'],$fila['cara02discv2psico']);
+			foreach($acara01discv2 as $i_id){
+				if (isset($acara37discapacidades[$i_id])==0){
+					$sSQL='SELECT cara37nombre FROM cara37discapacidades WHERE cara37id='.$i_id.'';
 					$tablae=$objDB->ejecutasql($sSQL);
 					if ($objDB->nf($tablae)>0){
 						$filae=$objDB->sf($tablae);
-                        $acara02talentoexcepcional[$i_cara02talentoexcepcional]=str_replace($cSepara, $cComplementa, $filae['cara38nombre']);
+						$acara37discapacidades[$i_id]=str_replace($cSepara, $cComplementa, $filae['cara37nombre']);
 						}else{
-                        $acara02talentoexcepcional[$i_cara02talentoexcepcional]='';
+						$acara37discapacidades[$i_id]='';
 						}
 					}
-				$lin_cara02talentoexcepcional=$cSepara.utf8_decode(html_entity_decode($acara02talentoexcepcional[$i_cara02talentoexcepcional]));
-                }
+				}
+			$lin_cara01discv2sensorial=$cSepara.utf8_decode($acara37discapacidades[$fila['cara01discv2sensorial']]);
+			$lin_cara02discv2intelectura=$cSepara.utf8_decode($acara37discapacidades[$fila['cara02discv2intelectura']]);
+			$lin_cara02discv2fisica=$cSepara.utf8_decode($acara37discapacidades[$fila['cara02discv2fisica']]);
+			$lin_cara02discv2psico=$cSepara.utf8_decode($acara37discapacidades[$fila['cara02discv2psico']]);
+			$lin_cara02discv2sistemica=$cSepara.utf8_decode($acara02discv2sistemica[$fila['cara02discv2sistemica']]);
+			$lin_cara02discv2sistemicaotro=$cSepara.str_replace($cSepara, $cComplementa, cadena_letrasynumeros(utf8_decode($fila['cara02discv2sistemicaotro']), ' '));
+			$lin_cara02discv2multiple=$cSepara.utf8_decode($acara02discv2multiple[$fila['cara02discv2multiple']]);
+			$lin_cara02discv2multipleotro=$cSepara.str_replace($cSepara, $cComplementa, cadena_letrasynumeros(utf8_decode($fila['cara02discv2multipleotro']), ' '));
+			if ($fila['cara01discv2archivoorigen']!=0){
+				$lin_cara01discv2archivoorigen=$cSepara.'Si';
+				}
+			$i_cara02talentoexcepcional=$fila['cara02talentoexcepcional'];
+			if (isset($acara02talentoexcepcional[$i_cara02talentoexcepcional])==0){
+				$sSQL='SELECT cara38nombre FROM cara38talentos WHERE cara38id='.$i_cara02talentoexcepcional.'';
+				$tablae=$objDB->ejecutasql($sSQL);
+				if ($objDB->nf($tablae)>0){
+					$filae=$objDB->sf($tablae);
+					$acara02talentoexcepcional[$i_cara02talentoexcepcional]=str_replace($cSepara, $cComplementa, $filae['cara38nombre']);
+					}else{
+					$acara02talentoexcepcional[$i_cara02talentoexcepcional]='';
+					}
+				}
+			$lin_cara02talentoexcepcional=$cSepara.utf8_decode(html_entity_decode($acara02talentoexcepcional[$i_cara02talentoexcepcional]));
 			$bEntra=true;
 			if ($fila['cara01perayuda']==-1){
 				$bEntra=false;

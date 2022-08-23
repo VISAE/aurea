@@ -104,6 +104,7 @@ function f2301_IniciarEncuesta($idTercero, $idPeriodo, $objDB, $bDebug = false, 
 	$cara01tipocaracterizacion = 0;
 	$bInsertarEncuesta = false;
 	$bEsAntiguo = false;
+	$idUltimaEncuesta = 0;
 	$sSQL = 'SELECT cara01id, cara01fechaencuesta FROM cara01encuesta WHERE cara01idtercero=' . $idTercero . '' . $sCondi . ' ORDER BY cara01fechaencuesta DESC';
 	if ($bDebug) {
 		$sDebug = $sDebug . fecha_microtiempo() . ' <b>Caracterizaci&oacute;n</b> Verificando encuestas de: ' . $sSQL . '<br>';
@@ -118,6 +119,7 @@ function f2301_IniciarEncuesta($idTercero, $idPeriodo, $objDB, $bDebug = false, 
 		$bEsAntiguo = true;
 		$fila = $objDB->sf($tabla);
 		$iFechaUltimaCaracterizacion = $fila['cara01fechaencuesta'];
+		$idUltimaEncuesta = $fila['cara01id'];
 		//Ahora tenemos que ver si la fecha de ultima matricula es mayor a un año.
 		$sSQL = 'SELECT core16fecharecibido, core16peraca FROM core16actamatricula WHERE core16tercero=' . $idTercero . ' AND core16peraca>' . $idPeriodoBaseAntiguos . '';
 		if ($bDebug) {
@@ -329,6 +331,10 @@ function f2301_IniciarEncuesta($idTercero, $idPeriodo, $objDB, $bDebug = false, 
 				}
 				$tabla = $objDB->ejecutasql($sSQL);
 				// Fin insertando nuevas preguntas de la encuesta
+				if ($cara01tipocaracterizacion == 3) {
+					// Precargue de respuestas anteriores
+					f2301_AlimentarEncuesta($idUltimaEncuesta, $cara01id, $objDB, $bDebug);
+				}
 				list($sErrorP, $sDebugP) = f2301_AjustarTipoEncuesta($cara01id, $objDB, $bDebug);
 				$sDebug = $sDebug . $sDebugP;
 				list($sErrorP, $sDebugP) = f2301_IniciarPreguntas($cara01id, $objDB, $bDebug);
@@ -5579,5 +5585,319 @@ function f2301_HtmlTablaConsejero($aParametros)
 		$objResponse->assign('div_debug', 'innerHTML', $sDebug);
 	}
 	return $objResponse;
+}
+function f2301_AlimentarEncuesta($idUltimaEncuesta, $idNuevaEncuesta, $objDB, $bDebug = false)
+{
+	$sError = '';
+	$sDebug = '';
+	$sCondi = '';	
+	$sDirBase = __DIR__ . '/';
+	require $sDirBase . 'app.php';
+	$sSQL = 'SELECT * FROM cara01encuesta WHERE cara01id=' . $idUltimaEncuesta . '';
+	if ($bDebug) {
+		$sDebug = $sDebug . fecha_microtiempo() . ' <b>Precargue de la &uacute;ltima caracterizaci&oacute;n</b>: ' . $sSQL . '<br>';
+	}
+	$tabla = $objDB->ejecutasql($sSQL);
+	if ($objDB->nf($tabla) == 0) {
+	} else {
+		$fila = $objDB->sf($tabla);
+		$sSQL = 'UPDATE cara01encuesta SET '
+			.'cara01agnos="' . $fila['cara01agnos'] . '", '
+			.'cara01sexo="' . $fila['cara01sexo'] . '", '
+			.'cara01pais="' . $fila['cara01pais'] . '", '
+			.'cara01depto="' . $fila['cara01depto'] . '", '
+			.'cara01ciudad="' . $fila['cara01ciudad'] . '", '
+			.'cara01nomciudad="' . $fila['cara01nomciudad'] . '", '
+			.'cara01direccion="' . $fila['cara01direccion'] . '", '
+			.'cara01estrato="' . $fila['cara01estrato'] . '", '
+			.'cara01zonares="' . $fila['cara01zonares'] . '", '
+			.'cara01estcivil="' . $fila['cara01estcivil'] . '", '
+			.'cara01nomcontacto="' . $fila['cara01nomcontacto'] . '", '
+			.'cara01parentezcocontacto="' . $fila['cara01parentezcocontacto'] . '", '
+			.'cara01celcontacto="' . $fila['cara01celcontacto'] . '", '
+			.'cara01correocontacto="' . $fila['cara01correocontacto'] . '", '
+			.'cara01raizal="' . $fila['cara01raizal'] . '", '
+			.'cara01palenquero="' . $fila['cara01palenquero'] . '", '
+			.'cara01afrocolombiano="' . $fila['cara01afrocolombiano'] . '", '
+			.'cara01otracomunnegras="' . $fila['cara01otracomunnegras'] . '", '
+			.'cara01rom="' . $fila['cara01rom'] . '", '
+			.'cara01indigenas="' . $fila['cara01indigenas'] . '", '
+			.'cara01victimadesplazado="' . $fila['cara01victimadesplazado'] . '", '
+			.'cara01idconfirmadesp="' . $fila['cara01idconfirmadesp'] . '", '
+			.'cara01fechaconfirmadesp="' . $fila['cara01fechaconfirmadesp'] . '", '
+			.'cara01victimaacr="' . $fila['cara01victimaacr'] . '", '
+			.'cara01idconfirmacr="' . $fila['cara01idconfirmacr'] . '", '
+			.'cara01fechaconfirmacr="' . $fila['cara01fechaconfirmacr'] . '", '
+			.'cara01inpecfuncionario="' . $fila['cara01inpecfuncionario'] . '", '
+			.'cara01inpecrecluso="' . $fila['cara01inpecrecluso'] . '", '
+			.'cara01inpectiempocondena="' . $fila['cara01inpectiempocondena'] . '", '
+			.'cara01centroreclusion="' . $fila['cara01centroreclusion'] . '", '
+			.'cara01discsensorial="' . $fila['cara01discsensorial'] . '", '
+			.'cara01discfisica="' . $fila['cara01discfisica'] . '", '
+			.'cara01disccognitiva="' . $fila['cara01disccognitiva'] . '", '
+			.'cara01idconfirmadisc="' . $fila['cara01idconfirmadisc'] . '", '
+			.'cara01fechaconfirmadisc="' . $fila['cara01fechaconfirmadisc'] . '", '
+			.'cara01fam_tipovivienda="' . $fila['cara01fam_tipovivienda'] . '", '
+			.'cara01fam_vivecon="' . $fila['cara01fam_vivecon'] . '", '
+			.'cara01fam_numpersgrupofam="' . $fila['cara01fam_numpersgrupofam'] . '", '
+			.'cara01fam_hijos="' . $fila['cara01fam_hijos'] . '", '
+			.'cara01fam_personasacargo="' . $fila['cara01fam_personasacargo'] . '", '
+			.'cara01fam_dependeecon="' . $fila['cara01fam_dependeecon'] . '", '
+			.'cara01fam_escolaridadpadre="' . $fila['cara01fam_escolaridadpadre'] . '", '
+			.'cara01fam_escolaridadmadre="' . $fila['cara01fam_escolaridadmadre'] . '", '
+			.'cara01fam_numhermanos="' . $fila['cara01fam_numhermanos'] . '", '
+			.'cara01fam_posicionherm="' . $fila['cara01fam_posicionherm'] . '", '
+			.'cara01fam_familiaunad="' . $fila['cara01fam_familiaunad'] . '", '
+			.'cara01acad_tipocolegio="' . $fila['cara01acad_tipocolegio'] . '", '
+			.'cara01acad_modalidadbach="' . $fila['cara01acad_modalidadbach'] . '", '
+			.'cara01acad_estudioprev="' . $fila['cara01acad_estudioprev'] . '", '
+			.'cara01acad_ultnivelest="' . $fila['cara01acad_ultnivelest'] . '", '
+			.'cara01acad_obtubodiploma="' . $fila['cara01acad_obtubodiploma'] . '", '
+			.'cara01acad_hatomadovirtual="' . $fila['cara01acad_hatomadovirtual'] . '", '
+			.'cara01acad_tiemposinest="' . $fila['cara01acad_tiemposinest'] . '", '
+			.'cara01acad_razonestudio="' . $fila['cara01acad_razonestudio'] . '", '
+			.'cara01acad_primeraopc="' . $fila['cara01acad_primeraopc'] . '", '
+			.'cara01acad_programagusto="' . $fila['cara01acad_programagusto'] . '", '
+			.'cara01acad_razonunad="' . $fila['cara01acad_razonunad'] . '", '
+			.'cara01campus_compescrito="' . $fila['cara01campus_compescrito'] . '", '
+			.'cara01campus_portatil="' . $fila['cara01campus_portatil'] . '", '
+			.'cara01campus_tableta="' . $fila['cara01campus_tableta'] . '", '
+			.'cara01campus_telefono="' . $fila['cara01campus_telefono'] . '", '
+			.'cara01campus_energia="' . $fila['cara01campus_energia'] . '", '
+			.'cara01campus_internetreside="' . $fila['cara01campus_internetreside'] . '", '
+			.'cara01campus_expvirtual="' . $fila['cara01campus_expvirtual'] . '", '
+			.'cara01campus_ofimatica="' . $fila['cara01campus_ofimatica'] . '", '
+			.'cara01campus_foros="' . $fila['cara01campus_foros'] . '", '
+			.'cara01campus_conversiones="' . $fila['cara01campus_conversiones'] . '", '
+			.'cara01campus_usocorreo="' . $fila['cara01campus_usocorreo'] . '", '
+			.'cara01campus_aprendtexto="' . $fila['cara01campus_aprendtexto'] . '", '
+			.'cara01campus_aprendvideo="' . $fila['cara01campus_aprendvideo'] . '", '
+			.'cara01campus_aprendmapas="' . $fila['cara01campus_aprendmapas'] . '", '
+			.'cara01campus_aprendeanima="' . $fila['cara01campus_aprendeanima'] . '", '
+			.'cara01campus_mediocomunica="' . $fila['cara01campus_mediocomunica'] . '", '
+			.'cara01lab_situacion="' . $fila['cara01lab_situacion'] . '", '
+			.'cara01lab_sector="' . $fila['cara01lab_sector'] . '", '
+			.'cara01lab_caracterjuri="' . $fila['cara01lab_caracterjuri'] . '", '
+			.'cara01lab_cargo="' . $fila['cara01lab_cargo'] . '", '
+			.'cara01lab_antiguedad="' . $fila['cara01lab_antiguedad'] . '", '
+			.'cara01lab_tipocontrato="' . $fila['cara01lab_tipocontrato'] . '", '
+			.'cara01lab_rangoingreso="' . $fila['cara01lab_rangoingreso'] . '", '
+			.'cara01lab_tiempoacadem="' . $fila['cara01lab_tiempoacadem'] . '", '
+			.'cara01lab_tipoempresa="' . $fila['cara01lab_tipoempresa'] . '", '
+			.'cara01lab_tiempoindepen="' . $fila['cara01lab_tiempoindepen'] . '", '
+			.'cara01lab_debebusctrab="' . $fila['cara01lab_debebusctrab'] . '", '
+			.'cara01lab_origendinero="' . $fila['cara01lab_origendinero'] . '", '
+			.'cara01bien_baloncesto="' . $fila['cara01bien_baloncesto'] . '", '
+			.'cara01bien_voleibol="' . $fila['cara01bien_voleibol'] . '", '
+			.'cara01bien_futbolsala="' . $fila['cara01bien_futbolsala'] . '", '
+			.'cara01bien_artesmarc="' . $fila['cara01bien_artesmarc'] . '", '
+			.'cara01bien_tenisdemesa="' . $fila['cara01bien_tenisdemesa'] . '", '
+			.'cara01bien_ajedrez="' . $fila['cara01bien_ajedrez'] . '", '
+			.'cara01bien_juegosautoc="' . $fila['cara01bien_juegosautoc'] . '", '
+			.'cara01bien_interesrepdeporte="' . $fila['cara01bien_interesrepdeporte'] . '", '
+			.'cara01bien_deporteint="' . $fila['cara01bien_deporteint'] . '", '
+			.'cara01bien_teatro="' . $fila['cara01bien_teatro'] . '", '
+			.'cara01bien_danza="' . $fila['cara01bien_danza'] . '", '
+			.'cara01bien_musica="' . $fila['cara01bien_musica'] . '", '
+			.'cara01bien_circo="' . $fila['cara01bien_circo'] . '", '
+			.'cara01bien_artplast="' . $fila['cara01bien_artplast'] . '", '
+			.'cara01bien_cuenteria="' . $fila['cara01bien_cuenteria'] . '", '
+			.'cara01bien_interesreparte="' . $fila['cara01bien_interesreparte'] . '", '
+			.'cara01bien_arteint="' . $fila['cara01bien_arteint'] . '", '
+			.'cara01bien_interpreta="' . $fila['cara01bien_interpreta'] . '", '
+			.'cara01bien_nivelinter="' . $fila['cara01bien_nivelinter'] . '", '
+			.'cara01bien_danza_mod="' . $fila['cara01bien_danza_mod'] . '", '
+			.'cara01bien_danza_clas="' . $fila['cara01bien_danza_clas'] . '", '
+			.'cara01bien_danza_cont="' . $fila['cara01bien_danza_cont'] . '", '
+			.'cara01bien_danza_folk="' . $fila['cara01bien_danza_folk'] . '", '
+			.'cara01bien_niveldanza="' . $fila['cara01bien_niveldanza'] . '", '
+			.'cara01bien_emprendedor="' . $fila['cara01bien_emprendedor'] . '", '
+			.'cara01bien_nombreemp="' . $fila['cara01bien_nombreemp'] . '", '
+			.'cara01bien_capacempren="' . $fila['cara01bien_capacempren'] . '", '
+			.'cara01bien_tipocapacita="' . $fila['cara01bien_tipocapacita'] . '", '
+			.'cara01bien_impvidasalud="' . $fila['cara01bien_impvidasalud'] . '", '
+			.'cara01bien_estraautocuid="' . $fila['cara01bien_estraautocuid'] . '", '
+			.'cara01bien_pv_personal="' . $fila['cara01bien_pv_personal'] . '", '
+			.'cara01bien_pv_familiar="' . $fila['cara01bien_pv_familiar'] . '", '
+			.'cara01bien_pv_academ="' . $fila['cara01bien_pv_academ'] . '", '
+			.'cara01bien_pv_labora="' . $fila['cara01bien_pv_labora'] . '", '
+			.'cara01bien_pv_pareja="' . $fila['cara01bien_pv_pareja'] . '", '
+			.'cara01bien_amb="' . $fila['cara01bien_amb'] . '", '
+			.'cara01bien_amb_agu="' . $fila['cara01bien_amb_agu'] . '", '
+			.'cara01bien_amb_bom="' . $fila['cara01bien_amb_bom'] . '", '
+			.'cara01bien_amb_car="' . $fila['cara01bien_amb_car'] . '", '
+			.'cara01bien_amb_info="' . $fila['cara01bien_amb_info'] . '", '
+			.'cara01bien_amb_temas="' . $fila['cara01bien_amb_temas'] . '", '
+			.'cara01psico_costoemocion="' . $fila['cara01psico_costoemocion'] . '", '
+			.'cara01psico_reaccionimpre="' . $fila['cara01psico_reaccionimpre'] . '", '
+			.'cara01psico_estres="' . $fila['cara01psico_estres'] . '", '
+			.'cara01psico_pocotiempo="' . $fila['cara01psico_pocotiempo'] . '", '
+			.'cara01psico_actitudvida="' . $fila['cara01psico_actitudvida'] . '", '
+			.'cara01psico_duda="' . $fila['cara01psico_duda'] . '", '
+			.'cara01psico_problemapers="' . $fila['cara01psico_problemapers'] . '", '
+			.'cara01psico_satisfaccion="' . $fila['cara01psico_satisfaccion'] . '", '
+			.'cara01psico_discusiones="' . $fila['cara01psico_discusiones'] . '", '
+			.'cara01psico_atencion="' . $fila['cara01psico_atencion'] . '", '
+			.'cara01telefono1="' . $fila['cara01telefono1'] . '", '
+			.'cara01telefono2="' . $fila['cara01telefono2'] . '", '
+			.'cara01correopersonal="' . $fila['cara01correopersonal'] . '", '
+			.'cara01perayuda="' . $fila['cara01perayuda'] . '", '
+			.'cara01perotraayuda="' . $fila['cara01perotraayuda'] . '", '
+			.'cara01discsensorialotra="' . $fila['cara01discsensorialotra'] . '", '
+			.'cara01discfisicaotra="' . $fila['cara01discfisicaotra'] . '", '
+			.'cara01disccognitivaotra="' . $fila['cara01disccognitivaotra'] . '", '
+			.'cara01discv2sensorial="' . $fila['cara01discv2sensorial'] . '", '
+			.'cara02discv2intelectura="' . $fila['cara02discv2intelectura'] . '", '
+			.'cara02discv2fisica="' . $fila['cara02discv2fisica'] . '", '
+			.'cara02discv2psico="' . $fila['cara02discv2psico'] . '", '
+			.'cara02discv2sistemica="' . $fila['cara02discv2sistemica'] . '", '
+			.'cara02discv2sistemicaotro="' . $fila['cara02discv2sistemicaotro'] . '", '
+			.'cara02discv2multiple="' . $fila['cara02discv2multiple'] . '", '
+			.'cara02discv2multipleotro="' . $fila['cara02discv2multipleotro'] . '", '
+			.'cara02talentoexcepcional="' . $fila['cara02talentoexcepcional'] . '", '
+			.'cara01discv2tiene="' . $fila['cara01discv2tiene'] . '", '
+			.'cara01discv2trastaprende="' . $fila['cara01discv2trastaprende'] . '", '
+			.'cara01discv2soporteorigen="' . $fila['cara01discv2soporteorigen'] . '", '
+			.'cara01discv2archivoorigen="' . $fila['cara01discv2archivoorigen'] . '", '
+			.'cara01discv2trastornos="' . $fila['cara01discv2trastornos'] . '", '
+			.'cara01discv2contalento="' . $fila['cara01discv2contalento'] . '", '
+			.'cara01discv2condicionmedica="' . $fila['cara01discv2condicionmedica'] . '", '
+			.'cara01discv2condmeddet="' . $fila['cara01discv2condmeddet'] . '", '
+			.'cara01discv2pruebacoeficiente="' . $fila['cara01discv2pruebacoeficiente'] . '" '
+			.'WHERE cara01id=' . $idNuevaEncuesta . '';
+		if ($bDebug) {
+			$sDebug = $sDebug . fecha_microtiempo() . ' Precargue 2301 ' . $sSQL . '<br>';
+		}
+		$result = $objDB->ejecutasql($sSQL);
+		if ($result == false) {
+			$sError = $ERR['falla_guardar'] . ' [2301] ..<!-- ' . $sSQL . ' -->';
+		} else {
+		}
+		$sSQL = 'SELECT * FROM cara44encuesta WHERE cara44id=' . $idUltimaEncuesta . '';
+		if ($bDebug) {
+			$sDebug = $sDebug . fecha_microtiempo() . ' <b>Precargue de las preguntas complementarias</b>: ' . $sSQL . '<br>';
+		}
+		$tabla = $objDB->ejecutasql($sSQL);
+		if ($objDB->nf($tabla) > 0) {
+			$fila = $objDB->sf($tabla);
+			$sSQL = 'UPDATE cara44encuesta SET '
+				.'cara44campesinado="' . $fila['cara44campesinado'] . '", '
+				.'cara44sexoversion="' . $fila['cara44sexoversion'] . '", '
+				.'cara44sexov1identidadgen="' . $fila['cara44sexov1identidadgen'] . '", '
+				.'cara44sexov1orientasexo="' . $fila['cara44sexov1orientasexo'] . '", '
+				.'cara44bienversion="' . $fila['cara44bienversion'] . '", '
+				.'cara44bienv2altoren="' . $fila['cara44bienv2altoren'] . '", '
+				.'cara44bienv2atletismo="' . $fila['cara44bienv2atletismo'] . '", '
+				.'cara44bienv2baloncesto="' . $fila['cara44bienv2baloncesto'] . '", '
+				.'cara44bienv2futbol="' . $fila['cara44bienv2futbol'] . '", '
+				.'cara44bienv2gimnasia="' . $fila['cara44bienv2gimnasia'] . '", '
+				.'cara44bienv2natacion="' . $fila['cara44bienv2natacion'] . '", '
+				.'cara44bienv2voleibol="' . $fila['cara44bienv2voleibol'] . '", '
+				.'cara44bienv2tenis="' . $fila['cara44bienv2tenis'] . '", '
+				.'cara44bienv2paralimpico="' . $fila['cara44bienv2paralimpico'] . '", '
+				.'cara44bienv2otrodeporte="' . $fila['cara44bienv2otrodeporte'] . '", '
+				.'cara44bienv2otrodeportedetalle="' . $fila['cara44bienv2otrodeportedetalle'] . '", '
+				.'cara44bienv2activdanza="' . $fila['cara44bienv2activdanza'] . '", '
+				.'cara44bienv2activmusica="' . $fila['cara44bienv2activmusica'] . '", '
+				.'cara44bienv2activteatro="' . $fila['cara44bienv2activteatro'] . '", '
+				.'cara44bienv2activartes="' . $fila['cara44bienv2activartes'] . '", '
+				.'cara44bienv2activliteratura="' . $fila['cara44bienv2activliteratura'] . '", '
+				.'cara44bienv2activculturalotra="' . $fila['cara44bienv2activculturalotra'] . '", '
+				.'cara44bienv2activculturalotradetalle="' . $fila['cara44bienv2activculturalotradetalle'] . '", '
+				.'cara44bienv2evenfestfolc="' . $fila['cara44bienv2evenfestfolc'] . '", '
+				.'cara44bienv2evenexpoarte="' . $fila['cara44bienv2evenexpoarte'] . '", '
+				.'cara44bienv2evenhistarte="' . $fila['cara44bienv2evenhistarte'] . '", '
+				.'cara44bienv2evengalfoto="' . $fila['cara44bienv2evengalfoto'] . '", '
+				.'cara44bienv2evenliteratura="' . $fila['cara44bienv2evenliteratura'] . '", '
+				.'cara44bienv2eventeatro="' . $fila['cara44bienv2eventeatro'] . '", '
+				.'cara44bienv2evencine="' . $fila['cara44bienv2evencine'] . '", '
+				.'cara44bienv2evenculturalotro="' . $fila['cara44bienv2evenculturalotro'] . '", '
+				.'cara44bienv2evenculturalotrodetalle="' . $fila['cara44bienv2evenculturalotrodetalle'] . '", '
+				.'cara44bienv2emprendimiento="' . $fila['cara44bienv2emprendimiento'] . '", '
+				.'cara44bienv2empresa="' . $fila['cara44bienv2empresa'] . '", '
+				.'cara44bienv2emprenrecursos="' . $fila['cara44bienv2emprenrecursos'] . '", '
+				.'cara44bienv2emprenconocim="' . $fila['cara44bienv2emprenconocim'] . '", '
+				.'cara44bienv2emprenplan="' . $fila['cara44bienv2emprenplan'] . '", '
+				.'cara44bienv2emprenejecutar="' . $fila['cara44bienv2emprenejecutar'] . '", '
+				.'cara44bienv2emprenfortconocim="' . $fila['cara44bienv2emprenfortconocim'] . '", '
+				.'cara44bienv2emprenidentproblema="' . $fila['cara44bienv2emprenidentproblema'] . '", '
+				.'cara44bienv2emprenotro="' . $fila['cara44bienv2emprenotro'] . '", '
+				.'cara44bienv2emprenotrodetalle="' . $fila['cara44bienv2emprenotrodetalle'] . '", '
+				.'cara44bienv2emprenmarketing="' . $fila['cara44bienv2emprenmarketing'] . '", '
+				.'cara44bienv2emprenplannegocios="' . $fila['cara44bienv2emprenplannegocios'] . '", '
+				.'cara44bienv2emprenideas="' . $fila['cara44bienv2emprenideas'] . '", '
+				.'cara44bienv2emprencreacion="' . $fila['cara44bienv2emprencreacion'] . '", '
+				.'cara44bienv2saludfacteconom="' . $fila['cara44bienv2saludfacteconom'] . '", '
+				.'cara44bienv2saludpreocupacion="' . $fila['cara44bienv2saludpreocupacion'] . '", '
+				.'cara44bienv2saludconsumosust="' . $fila['cara44bienv2saludconsumosust'] . '", '
+				.'cara44bienv2saludinsomnio="' . $fila['cara44bienv2saludinsomnio'] . '", '
+				.'cara44bienv2saludclimalab="' . $fila['cara44bienv2saludclimalab'] . '", '
+				.'cara44bienv2saludalimenta="' . $fila['cara44bienv2saludalimenta'] . '", '
+				.'cara44bienv2saludemocion="' . $fila['cara44bienv2saludemocion'] . '", '
+				.'cara44bienv2saludestado="' . $fila['cara44bienv2saludestado'] . '", '
+				.'cara44bienv2saludmedita="' . $fila['cara44bienv2saludmedita'] . '", '
+				.'cara44bienv2crecimedusexual="' . $fila['cara44bienv2crecimedusexual'] . '", '
+				.'cara44bienv2crecimcultciudad="' . $fila['cara44bienv2crecimcultciudad'] . '", '
+				.'cara44bienv2crecimrelpareja="' . $fila['cara44bienv2crecimrelpareja'] . '", '
+				.'cara44bienv2crecimrelinterp="' . $fila['cara44bienv2crecimrelinterp'] . '", '
+				.'cara44bienv2crecimdinamicafam="' . $fila['cara44bienv2crecimdinamicafam'] . '", '
+				.'cara44bienv2crecimautoestima="' . $fila['cara44bienv2crecimautoestima'] . '", '
+				.'cara44bienv2creciminclusion="' . $fila['cara44bienv2creciminclusion'] . '", '
+				.'cara44bienv2creciminteliemoc="' . $fila['cara44bienv2creciminteliemoc'] . '", '
+				.'cara44bienv2crecimcultural="' . $fila['cara44bienv2crecimcultural'] . '", '
+				.'cara44bienv2crecimartistico="' . $fila['cara44bienv2crecimartistico'] . '", '
+				.'cara44bienv2crecimdeporte="' . $fila['cara44bienv2crecimdeporte'] . '", '
+				.'cara44bienv2crecimambiente="' . $fila['cara44bienv2crecimambiente'] . '", '
+				.'cara44bienv2crecimhabsocio="' . $fila['cara44bienv2crecimhabsocio'] . '", '
+				.'cara44bienv2ambienbasura="' . $fila['cara44bienv2ambienbasura'] . '", '
+				.'cara44bienv2ambienreutiliza="' . $fila['cara44bienv2ambienreutiliza'] . '", '
+				.'cara44bienv2ambienluces="' . $fila['cara44bienv2ambienluces'] . '", '
+				.'cara44bienv2ambienfrutaverd="' . $fila['cara44bienv2ambienfrutaverd'] . '", '
+				.'cara44bienv2ambienenchufa="' . $fila['cara44bienv2ambienenchufa'] . '", '
+				.'cara44bienv2ambiengrifo="' . $fila['cara44bienv2ambiengrifo'] . '", '
+				.'cara44bienv2ambienbicicleta="' . $fila['cara44bienv2ambienbicicleta'] . '", '
+				.'cara44bienv2ambientranspub="' . $fila['cara44bienv2ambientranspub'] . '", '
+				.'cara44bienv2ambienducha="' . $fila['cara44bienv2ambienducha'] . '", '
+				.'cara44bienv2ambiencaminata="' . $fila['cara44bienv2ambiencaminata'] . '", '
+				.'cara44bienv2ambiensiembra="' . $fila['cara44bienv2ambiensiembra'] . '", '
+				.'cara44bienv2ambienconferencia="' . $fila['cara44bienv2ambienconferencia'] . '", '
+				.'cara44bienv2ambienrecicla="' . $fila['cara44bienv2ambienrecicla'] . '", '
+				.'cara44bienv2ambienotraactiv="' . $fila['cara44bienv2ambienotraactiv'] . '", '
+				.'cara44bienv2ambienotraactivdetalle="' . $fila['cara44bienv2ambienotraactivdetalle'] . '", '
+				.'cara44bienv2ambienreforest="' . $fila['cara44bienv2ambienreforest'] . '", '
+				.'cara44bienv2ambienmovilidad="' . $fila['cara44bienv2ambienmovilidad'] . '", '
+				.'cara44bienv2ambienclimatico="' . $fila['cara44bienv2ambienclimatico'] . '", '
+				.'cara44bienv2ambienecofemin="' . $fila['cara44bienv2ambienecofemin'] . '", '
+				.'cara44bienv2ambienbiodiver="' . $fila['cara44bienv2ambienbiodiver'] . '", '
+				.'cara44bienv2ambienecologia="' . $fila['cara44bienv2ambienecologia'] . '", '
+				.'cara44bienv2ambieneconomia="' . $fila['cara44bienv2ambieneconomia'] . '", '
+				.'cara44bienv2ambienrecnatura="' . $fila['cara44bienv2ambienrecnatura'] . '", '
+				.'cara44bienv2ambienreciclaje="' . $fila['cara44bienv2ambienreciclaje'] . '", '
+				.'cara44bienv2ambienmascota="' . $fila['cara44bienv2ambienmascota'] . '", '
+				.'cara44bienv2ambiencartohum="' . $fila['cara44bienv2ambiencartohum'] . '", '
+				.'cara44bienv2ambienespiritu="' . $fila['cara44bienv2ambienespiritu'] . '", '
+				.'cara44bienv2ambiencarga="' . $fila['cara44bienv2ambiencarga'] . '", '
+				.'cara44bienv2ambienotroenfoq="' . $fila['cara44bienv2ambienotroenfoq'] . '", '
+				.'cara44bienv2ambienotroenfoqdetalle="' . $fila['cara44bienv2ambienotroenfoqdetalle'] . '", '
+				.'cara44fam_madrecabeza="' . $fila['cara44fam_madrecabeza'] . '", '
+				.'cara44acadhatenidorecesos="' . $fila['cara44acadhatenidorecesos'] . '", '
+				.'cara44acadrazonreceso="' . $fila['cara44acadrazonreceso'] . '", '
+				.'cara44acadrazonrecesodetalle="' . $fila['cara44acadrazonrecesodetalle'] . '", '
+				.'cara44campus_usocorreounad="' . $fila['cara44campus_usocorreounad'] . '", '
+				.'cara44campus_usocorreounadno="' . $fila['cara44campus_usocorreounadno'] . '", '
+				.'cara44campus_usocorreounadnodetalle="' . $fila['cara44campus_usocorreounadnodetalle'] . '", '
+				.'cara44campus_medioactivunad="' . $fila['cara44campus_medioactivunad'] . '", '
+				.'cara44campus_medioactivunaddetalle="' . $fila['cara44campus_medioactivunaddetalle'] . '" '
+				.'WHERE cara44id=' . $idNuevaEncuesta . '';
+			if ($bDebug) {
+				$sDebug = $sDebug . fecha_microtiempo() . ' Precargue 2344 ' . $sSQL . '<br>';
+			}
+			$result = $objDB->ejecutasql($sSQL);
+			if ($result == false) {
+				$sError = $ERR['falla_guardar'] . ' [2344] ..<!-- ' . $sSQL . ' -->';
+			} else {
+			}
+		}
+	}
 }
 ?>
