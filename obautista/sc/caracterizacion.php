@@ -4074,11 +4074,18 @@ if (false) {
 		<?php
 		if ($_REQUEST['cara01completa'] != 'S') {
 		?>
-
 			function guardarpregunta(id10, iVr) {
 				var aValores = new Array();
 				aValores[0] = id10;
 				aValores[1] = iVr;
+				/*
+				var objFila = document.getElementById('fila_rpta_' . id10);
+				if (iVr == 0) {
+					objFila.style.backgroundColor = 'red';
+				} else {
+					objFila.style.backgroundColor = 'green';
+				}
+				*/
 				xajax_f2310_GuardarRespuesta(aValores)
 			}
 	<?php
