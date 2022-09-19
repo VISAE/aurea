@@ -1,0 +1,4 @@
+Que se pueda descarta una factura que aparece como paga y que se pueda revivir 
+un recibo que no aparece pago.
+
+

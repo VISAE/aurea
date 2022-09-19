@@ -1,0 +1,135 @@
+/*
+$break-sm: 576px;
+$break-md: 768px;
+$break-lg: 992px;
+$break-xl: 1200px;
+*/
+
+@media (max-width: 1300px) {
+  .navbar-expand-xl .navbar-nav {
+    -ms-flex-direction: column;
+    flex-direction: column;
+  }
+}
+
+@media (max-width: $break-xl) {
+  .main section.images {
+    flex: .6;
+  }
+  
+  .navbar-dark .navbar-nav .nav-link {
+    margin: 0 0 .2rem 0;
+  }
+
+  .main section.images .logo {
+    // display: none;
+    padding: 0;
+    
+    & img {
+      max-width: 200px;
+    }
+  }
+
+  .main section.dates .logo {
+    display: flex;
+  }
+}
+
+@media (max-width: $break-lg) {
+  .main section.images .logo img {
+    max-width: 140px;
+  }
+
+  .response__out {
+    margin-top: 1rem;
+  }
+
+  .footer {
+    display: none;
+  }
+}
+
+@media (max-width: $break-md) {
+  .header {
+    position: inherit;
+    // height: $header-height-md;
+    height: auto;
+
+    & .container {
+      flex-flow: column;
+    }
+
+    & img {
+      margin: 0.4rem 0;
+      max-height: calc($header-height-md - 20px);;
+    }
+
+    &__title {
+      width: 100%;
+      align-self: inherit;
+
+      & h1 {
+        text-align: center;
+        font-size: 140%;
+      }
+    }
+  }
+  
+  .main {
+    position: inherit;
+
+    & section.images {
+      display: none;
+    }
+
+    & section.dates {
+      position: inherit;
+      margin: 0;
+      z-index: inherit;
+      max-height: inherit;
+    }
+  }
+
+  .keypads__li {
+    
+    & .ico {
+      padding: 1rem 0.4rem;
+      font-size: 2rem;
+
+      & i {
+        min-width: 36px;
+      }
+    }
+
+    & .info {
+      
+      & h3 a {
+        padding: 1rem 1rem 0.5rem 1rem;
+      }
+
+      & p a {
+        padding: 0 1rem 1rem 1rem;
+      }
+    }
+  }
+}
+
+@media (max-width: $break-sm) {
+
+  .main section.dates {
+    padding: 0 $limit-padding-sm $limit-padding-sm $limit-padding-sm;
+  }
+
+  .navbar-nav, .article h2 span {
+    width: 100%;
+  }
+
+  .article h2 span {
+    align-items: flex-start;
+  }
+
+  .article__area {
+    border-radius: inherit;
+    border-radius: 0px 0 8px 8px;
+  }
+}

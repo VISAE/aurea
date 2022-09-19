@@ -204,22 +204,24 @@ function f3072_TablaDetalleV2($aParametros, $objDB, $bDebug = false)
 	if (isset($aParametros[102]) == 0) {
 		$aParametros[102] = 20;
 	}
-	/*
 	if (isset($aParametros[103]) == 0) {
 		$aParametros[103] = '';
 	}
 	if (isset($aParametros[104]) == 0) {
 		$aParametros[104] = '';
 	}
-	*/
+	if (isset($aParametros[105]) == 0) {
+		$aParametros[105] = '';
+	}
 	$idTercero = $aParametros[100];
 	$sDebug = '';
 	if (true) {
 		//Leemos los parametros de entrada.
 		$pagina = $aParametros[101];
 		$lineastabla = $aParametros[102];
-		//$bNombre=trim($aParametros[103]);
-		//$bListar = numeros_validar($aParametros[104]);
+		$bDoc=trim($aParametros[103]);
+		$bNombre=trim($aParametros[104]);
+		$bListar = numeros_validar($aParametros[105]);
 	}
 	$bAbierta = true;
 	/*
@@ -255,14 +257,18 @@ function f3072_TablaDetalleV2($aParametros, $objDB, $bDebug = false)
 	*/
 	if (true) {
 		//Esta condición la ponemos para mantener la conparación con los arhcivos tipo e
-		$sSQLadd = '';
+		$sSQLadd = ' AND TB.unae40estado > 0';
 		$sSQLadd1 = '';
+		if ($aParametros[105] != '') {
+			$sSQLadd = $sSQLadd . ' AND TB.unae40estado LIKE "%' . $aParametros[105] . '%"';
+		}
 		/*
 		if ($aParametros[104] != '') {
-			$sSQLadd = $sSQLadd . ' AND TB.campo2 LIKE "%' . $aParametros[104] . '%"';
-		}
-		if ($aParametros[104] != '') {
 			$sSQLadd1 = $sSQLadd1 . 'TB.campo2 LIKE "%' . $aParametros[104] . '%" AND ';
+		}
+		*/
+		if ($bDoc != '') {
+			$sSQLadd = $sSQLadd . ' AND T22.unad11doc LIKE "%' . $bDoc . '%"';
 		}
 		if ($bNombre != '') {
 			$sBase = strtoupper($bNombre);
@@ -270,12 +276,11 @@ function f3072_TablaDetalleV2($aParametros, $objDB, $bDebug = false)
 			for ($k = 1; $k <= count($aNoms); $k++) {
 				$sCadena = $aNoms[$k - 1];
 					if ($sCadena != '') {
-					$sSQLadd = $sSQLadd . ' AND T6.unad11razonsocial LIKE "%' . $sCadena . '%"';
+					$sSQLadd = $sSQLadd . ' AND T22.unad11razonsocial LIKE "%' . $sCadena . '%"';
 					//$sSQLadd1 = $sSQLadd1 . 'T1.unad11razonsocial LIKE "%' . $sCadena . '%" AND ';
 				}
 			}
 		}
-		*/
 	}
 	//-- Area para saltar comparaciones con los archivos tipo e
 	//-- Fin del area no comparada
@@ -336,37 +341,10 @@ function f3072_TablaDetalleV2($aParametros, $objDB, $bDebug = false)
 	$res = $res . '<div class="table-responsive">
 	<table border="0" align="center" cellpadding="0" cellspacing="2" class="tablaapp">
 	<thead class="fondoazul"><tr>
-	<td colspan="2"><b>' . $ETI['unae40idtercero'] . '</b></td>
-	<td><b>' . $ETI['unae40consec'] . '</b></td>
-	<td><b>' . $ETI['unae40tipodocorigen'] . '</b></td>
-	<td><b>' . $ETI['unae40docorigen'] . '</b></td>
-	<td><b>' . $ETI['unae40or_nombre1'] . '</b></td>
-	<td><b>' . $ETI['unae40or_nombre2'] . '</b></td>
-	<td><b>' . $ETI['unae40or_apellido1'] . '</b></td>
-	<td><b>' . $ETI['unae40or_apellido2'] . '</b></td>
-	<td><b>' . $ETI['unae40or_sexo'] . '</b></td>
-	<td><b>' . $ETI['unae40or_fechanac'] . '</b></td>
-	<td><b>' . $ETI['unae40or_fechadoc'] . '</b></td>
-	<td><b>' . $ETI['unae40tipodocdestino'] . '</b></td>
-	<td><b>' . $ETI['unae40docdestino'] . '</b></td>
-	<td><b>' . $ETI['unae40des_nombre1'] . '</b></td>
-	<td><b>' . $ETI['unae40des_nombre2'] . '</b></td>
-	<td><b>' . $ETI['unae40des_apellido1'] . '</b></td>
-	<td><b>' . $ETI['unae40des_apellido2'] . '</b></td>
-	<td><b>' . $ETI['unae40des_sexo'] . '</b></td>
-	<td><b>' . $ETI['unae40des_fechanac'] . '</b></td>
-	<td><b>' . $ETI['unae40des_fechadoc'] . '</b></td>
 	<td colspan="2"><b>' . $ETI['unae40idsolicita'] . '</b></td>
 	<td><b>' . $ETI['unae40fechasol'] . '</b></td>
 	<td><b>' . $ETI['unae40horasol'] . '</b></td>
-	<td><b>' . $ETI['unae40idarchivo'] . '</b></td>
 	<td><b>' . $ETI['unae40estado'] . '</b></td>
-	<td><b>' . $ETI['unae40detalle'] . '</b></td>
-	<td colspan="2"><b>' . $ETI['unae40idaprueba'] . '</b></td>
-	<td><b>' . $ETI['unae40fechaapr'] . '</b></td>
-	<td><b>' . $ETI['unae40horaaprueba'] . '</b></td>
-	<td><b>' . $ETI['unae40tiempod'] . '</b></td>
-	<td><b>' . $ETI['unae40tiempoh'] . '</b></td>
 	<td align="right">
 	' . html_paginador('paginaf3072', $registros, $lineastabla, $pagina, 'paginarf3072()') . '
 	' . html_lpp('lppf3072', $lineastabla, 'paginarf3072()') . '
@@ -426,7 +404,7 @@ function f3072_TablaDetalleV2($aParametros, $objDB, $bDebug = false)
 		}
 		$et_unae40fechasol = '';
 		if ($filadet['unae40fechasol'] != '00/00/0000') {
-			$et_unae40fechasol = $filadet['unae40fechasol'];
+			$et_unae40fechasol = fecha_desdenumero($filadet['unae40fechasol']);
 		}
 		$et_unae40horasol = html_TablaHoraMin($filadet['unae40horasol'], $filadet['unae40minsol']);
 		$et_unae40idarchivo = '';
@@ -434,9 +412,9 @@ function f3072_TablaDetalleV2($aParametros, $objDB, $bDebug = false)
 			//$et_unae40idarchivo = '<img src="verarchivo.php?cont=' . $filadet['unae40idorigen'] . '&id=' . $filadet['unae40idarchivo'] . '&maxx=150"/>';
 			$et_unae40idarchivo = html_lnkarchivo((int)$filadet['unae40idorigen'], (int)$filadet['unae40idarchivo']);
 		}
-		$et_unae40estado = $ETI['msg_abierto'];
+		$et_unae40estado = $aunae40estado[$filadet['unae40estado']];
 		if ($filadet['unae40estado'] == 7) {
-			$et_unae40estado = $ETI['msg_cerrado'];
+			// $et_unae40estado = $ETI['msg_cerrado'];
 		}
 		$et_unae40idaprueba_doc = '';
 		$et_unae40idaprueba_nombre = '';
@@ -453,40 +431,11 @@ function f3072_TablaDetalleV2($aParametros, $objDB, $bDebug = false)
 			$sLink = '<a href="javascript:cargaridf3072(' . $filadet['unae40id'] . ')" class="lnkresalte">' . $ETI['lnk_cargar'] . '</a>';
 		}
 		$res = $res . '<tr' . $sClass . '>
-		<td>' . $et_unae40idtercero_doc . '</td>
-		<td>' . $et_unae40idtercero_nombre . '</td>
-		<td>' . $sPrefijo . $filadet['unae40consec'] . $sSufijo . '</td>
-		<td>' . $sPrefijo . cadena_notildes($filadet['unae40tipodocorigen']) . $sSufijo . '</td>
-		<td>' . $sPrefijo . cadena_notildes($filadet['unae40docorigen']) . $sSufijo . '</td>
-		<td>' . $sPrefijo . cadena_notildes($filadet['unae40or_nombre1']) . $sSufijo . '</td>
-		<td>' . $sPrefijo . cadena_notildes($filadet['unae40or_nombre2']) . $sSufijo . '</td>
-		<td>' . $sPrefijo . cadena_notildes($filadet['unae40or_apellido1']) . $sSufijo . '</td>
-		<td>' . $sPrefijo . cadena_notildes($filadet['unae40or_apellido2']) . $sSufijo . '</td>
-		<td>' . $sPrefijo . $et_unae40or_sexo . $sSufijo . '</td>
-		<td>' . $sPrefijo . $et_unae40or_fechanac . $sSufijo . '</td>
-		<td>' . $sPrefijo . $et_unae40or_fechadoc . $sSufijo . '</td>
-		<td>' . $sPrefijo . cadena_notildes($filadet['unae40tipodocdestino']) . $sSufijo . '</td>
-		<td>' . $sPrefijo . cadena_notildes($filadet['unae40docdestino']) . $sSufijo . '</td>
-		<td>' . $sPrefijo . cadena_notildes($filadet['unae40des_nombre1']) . $sSufijo . '</td>
-		<td>' . $sPrefijo . cadena_notildes($filadet['unae40des_nombre2']) . $sSufijo . '</td>
-		<td>' . $sPrefijo . cadena_notildes($filadet['unae40des_apellido1']) . $sSufijo . '</td>
-		<td>' . $sPrefijo . cadena_notildes($filadet['unae40des_apellido2']) . $sSufijo . '</td>
-		<td>' . $sPrefijo . $et_unae40des_sexo . $sSufijo . '</td>
-		<td>' . $sPrefijo . $et_unae40des_fechanac . $sSufijo . '</td>
-		<td>' . $sPrefijo . $et_unae40des_fechadoc . $sSufijo . '</td>
 		<td>' . $et_unae40idsolicita_doc . '</td>
 		<td>' . $et_unae40idsolicita_nombre . '</td>
 		<td>' . $sPrefijo . $et_unae40fechasol . $sSufijo . '</td>
 		<td>' . $sPrefijo . $et_unae40horasol . $sSufijo . '</td>
-		<td>' . $et_unae40idarchivo . '</td>
 		<td>' . $sPrefijo . $et_unae40estado . $sSufijo . '</td>
-		<td>' . $sPrefijo . $filadet['unae40detalle'] . $sSufijo . '</td>
-		<td>' . $et_unae40idaprueba_doc . '</td>
-		<td>' . $et_unae40idaprueba_nombre . '</td>
-		<td>' . $sPrefijo . $et_unae40fechaapr . $sSufijo . '</td>
-		<td>' . $sPrefijo . $et_unae40horaaprueba . $sSufijo . '</td>
-		<td>' . $sPrefijo . $filadet['unae40tiempod'] . $sSufijo . '</td>
-		<td>' . $sPrefijo . $filadet['unae40tiempoh'] . $sSufijo . '</td>
 		<td>' . $sLink . '</td>
 		</tr>';
 	}
@@ -660,13 +609,13 @@ function f3072_db_GuardarV2($DATA, $objDB, $bDebug = false, $idTercero = 0)
 	if (isset($DATA['unae40des_fechadoc']) == 0) {
 		$DATA['unae40des_fechadoc'] = '';
 	}
+	*/
 	if (isset($DATA['unae40estado']) == 0) {
 		$DATA['unae40estado'] = '';
 	}
 	if (isset($DATA['unae40detalle']) == 0) {
 		$DATA['unae40detalle'] = '';
 	}
-	*/
 	$DATA['unae40consec'] = numeros_validar($DATA['unae40consec']);
 	$DATA['unae40tipodocorigen'] = htmlspecialchars(trim($DATA['unae40tipodocorigen']));
 	$DATA['unae40docorigen'] = htmlspecialchars(trim($DATA['unae40docorigen']));
@@ -701,18 +650,17 @@ function f3072_db_GuardarV2($DATA, $objDB, $bDebug = false, $idTercero = 0)
 	if ($DATA['unae40estado'] == '') {
 		$DATA['unae40estado'] = 0;
 	}
-		/*
 	if ($DATA['unae40horaaprueba'] == '') {
 		$DATA['unae40horaaprueba'] = 0;
 	}
 	if ($DATA['unae40minaprueba'] == '') {
 		$DATA['unae40minaprueba'] = 0;
 	}
-	*/
 	// -- Seccion para validar los posibles causales de error.
 	$sSepara = ', ';
 	switch ($DATA['unae40estado']) {
 		case 7:
+		case 9:
 		//if (!fecha_esvalida($DATA['unae40fechaapr'])) {
 			//$DATA['unae40fechaapr'] = '00/00/0000';
 			//$sError = $ERR['unae40fechaapr'] . $sSepara . $sError;
@@ -720,13 +668,12 @@ function f3072_db_GuardarV2($DATA, $objDB, $bDebug = false, $idTercero = 0)
 		if ($DATA['unae40idaprueba'] == 0) {
 			$sError = $ERR['unae40idaprueba'] . $sSepara . $sError;
 		}
-		//if ($DATA['unae40detalle'] == '') {
-			//$sError = $ERR['unae40detalle'] . $sSepara . $sError;
-		//}
-		//if (!fecha_esvalida($DATA['unae40fechasol'])) {
-			//$DATA['unae40fechasol'] = '00/00/0000';
-			//$sError = $ERR['unae40fechasol'] . $sSepara . $sError;
-			//}
+		if ($DATA['unae40detalle'] == '') {
+			$sError = $ERR['unae40detalle'] . $sSepara . $sError;
+		}
+		if ($DATA['unae40fechasol'] == 0) {
+			$sError = $ERR['unae40fechasol'] . $sSepara . $sError;
+		}
 		if ($DATA['unae40idsolicita'] == 0) {
 			$sError = $ERR['unae40idsolicita'] . $sSepara . $sError;
 		}
@@ -741,15 +688,15 @@ function f3072_db_GuardarV2($DATA, $objDB, $bDebug = false, $idTercero = 0)
 		if ($DATA['unae40des_sexo'] == '') {
 			$sError = $ERR['unae40des_sexo'] . $sSepara . $sError;
 		}
-		if ($DATA['unae40des_apellido2'] == '') {
-			$sError = $ERR['unae40des_apellido2'] . $sSepara . $sError;
-		}
+		// if ($DATA['unae40des_apellido2'] == '') {
+		// 	$sError = $ERR['unae40des_apellido2'] . $sSepara . $sError;
+		// }
 		if ($DATA['unae40des_apellido1'] == '') {
 			$sError = $ERR['unae40des_apellido1'] . $sSepara . $sError;
 		}
-		if ($DATA['unae40des_nombre2'] == '') {
-			$sError = $ERR['unae40des_nombre2'] . $sSepara . $sError;
-		}
+		// if ($DATA['unae40des_nombre2'] == '') {
+		// 	$sError = $ERR['unae40des_nombre2'] . $sSepara . $sError;
+		// }
 		if ($DATA['unae40des_nombre1'] == '') {
 			$sError = $ERR['unae40des_nombre1'] . $sSepara . $sError;
 		}
@@ -769,18 +716,21 @@ function f3072_db_GuardarV2($DATA, $objDB, $bDebug = false, $idTercero = 0)
 			//}
 		//Fin de las valiaciones NO LLAVE.
 		if ($sError != '') {
-			$DATA['unae40estado'] = 0;
+			$DATA['unae40estado'] = 3;
+		}
+		if ($bDebug) {
+			$sDebug = $sDebug . fecha_microtiempo() . ' ESTADO ' . $DATA['unae40estado'] . '<br>';
 		}
 		$sErrorCerrando = $sError;
-		$sError = '';
+		// $sError = '';
 		break;
 	}
 	//Valiaciones de campos obligatorios en todo guardar.
-	if ($DATA['unae40idtercero'] == 0) {
-		$sError = $ERR['unae40idtercero'];
-	}
+	// if ($DATA['unae40idtercero'] == 0) {
+	// 	$sError = $ERR['unae40idtercero'];
+	// }
 	// -- Tiene un cerrado.
-	if ($DATA['unae40estado'] == 7) {
+	if ($DATA['unae40estado'] == 7 || $DATA['unae40estado'] == 9) {
 		//Validaciones previas a cerrar
 		//Aprobó las Validaciones al cerrar
 		if ($sError.$sErrorCerrando != '') {
@@ -790,6 +740,16 @@ function f3072_db_GuardarV2($DATA, $objDB, $bDebug = false, $idTercero = 0)
 		} else {
 			$bCerrando = true;
 			//Acciones del cierre
+			$DATA['unae40fechaapr'] = fecha_DiaMod();
+			$DATA['unae40horaaprueba'] = fecha_hora();
+			$DATA['unae40minaprueba'] = fecha_minuto();
+			list($dia, $mes, $anio) = fecha_DividirNumero($DATA['unae40fechasol']);
+			$objFechaS = date_create($anio.'-'.$mes.'-'.$dia.' '.$DATA['unae40horasol'].':'.$DATA['unae40minsol']);
+			list($dia, $mes, $anio) = fecha_DividirNumero($DATA['unae40fechaapr']);
+			$objFechaA = date_create($anio.'-'.$mes.'-'.$dia.' '.$DATA['unae40horaaprueba'].':'.$DATA['unae40minaprueba']);
+			$objDifFechas = date_diff($objFechaS, $objFechaA);
+			$DATA['unae40tiempod'] = $objDifFechas->d;
+			$DATA['unae40tiempoh'] = $objDifFechas->h;
 		}
 	}
 	// -- Fin del cerrado.
@@ -935,6 +895,12 @@ function f3072_db_GuardarV2($DATA, $objDB, $bDebug = false, $idTercero = 0)
 			$scampo[9] = 'unae40des_fechadoc';
 			$scampo[10] = 'unae40estado';
 			$scampo[11] = 'unae40detalle';
+			$scampo[12] = 'unae40idaprueba';
+			$scampo[13] = 'unae40fechaapr';
+			$scampo[14] = 'unae40horaaprueba';
+			$scampo[15] = 'unae40minaprueba';
+			$scampo[16] = 'unae40tiempod';
+			$scampo[17] = 'unae40tiempoh';
 			$sdato[1] = $DATA['unae40tipodocdestino'];
 			$sdato[2] = $DATA['unae40docdestino'];
 			$sdato[3] = $DATA['unae40des_nombre1'];
@@ -946,7 +912,13 @@ function f3072_db_GuardarV2($DATA, $objDB, $bDebug = false, $idTercero = 0)
 			$sdato[9] = $DATA['unae40des_fechadoc'];
 			$sdato[10] = $DATA['unae40estado'];
 			$sdato[11] = $unae40detalle;
-			$iNumCamposMod = 11;
+			$sdato[12] = $DATA['unae40idaprueba'];
+			$sdato[13] = $DATA['unae40fechaapr'];
+			$sdato[14] = $DATA['unae40horaaprueba'];
+			$sdato[15] = $DATA['unae40minaprueba'];
+			$sdato[16] = $DATA['unae40tiempod'];
+			$sdato[17] = $DATA['unae40tiempoh'];
+			$iNumCamposMod = 17;
 			$sWhere = 'unae40id=' . $DATA['unae40id'] . '';
 			$sSQL = 'SELECT * FROM unae40historialcambdoc WHERE ' . $sWhere;
 			$sdatos = '';
@@ -1171,11 +1143,15 @@ function f3072_TablaDetalleBusquedas($aParametros, $objDB)
 	if (isset($aParametros[104]) == 0) {
 		$aParametros[104] = '';
 	}
+	if (isset($aParametros[105]) == 0) {
+		$aParametros[105] = '';
+	}
 	$idTercero = $aParametros[100];
 	$pagina = $aParametros[101];
 	$lineastabla = $aParametros[102];
-	//$bNombre=trim($aParametros[103]);
-	//$bListar = numeros_validar($aParametros[104]);
+	$bDoc=trim($aParametros[103]);
+	$bNombre=trim($aParametros[104]);
+	$bListar = numeros_validar($aParametros[105]);
 	$bAbierta = true;
 	/*
 	$sSQL = 'SELECT Campo FROM Tabla WHERE Id=' . $sValorId;

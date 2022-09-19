@@ -1,0 +1,65 @@
+.dataTable-content {
+    & .dataTables_wrapper {
+
+        // &:first-child {
+        //     background-color: blue;
+        // }
+
+        & .dataTables_length {
+            display: none;
+        }
+
+        & .dataTables_filter {
+            display: flex;
+            justify-content: end;
+        }
+    }
+
+    .pagination {
+        font-size: 0.8rem;
+
+        & .page-link {
+            color:  $blue;
+        }
+
+        & .page-item.active .page-link {
+            color: $white;
+            background-color:  $blue;
+        }
+    }
+}
+
+.dataTable_list_manuales {
+    width: 100%;
+
+    & thead {
+        display: none;
+    }
+
+    & td {
+        padding: 0;
+
+        & a {
+            display: flex;
+            padding: 0.75rem;
+            align-items: center;
+
+            & i {
+                margin-right: 1rem;
+                padding: 0.4rem;
+                font-size: 1.2rem;
+                background: $yellow;
+                border-radius: 4px;
+            }
+
+            &:hover, &:focus {
+                text-decoration: none;
+                background-color: $yellow;
+
+                & i {
+                    background: $white;
+                }
+            }
+        }
+    }
+}

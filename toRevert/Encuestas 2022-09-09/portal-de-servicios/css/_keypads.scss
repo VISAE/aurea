@@ -1,0 +1,75 @@
+.keypads {
+  padding: 40px 0 0 0;
+
+  & ul {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  & a {
+    color: $blue;
+
+    &:hover, &:focus {
+      text-decoration: none;
+    }
+  }
+
+  &__li {
+    display: flex;
+    margin-bottom: 2rem;
+
+    & .ico {
+      display: flex;
+      padding: 2rem .8rem;
+      font-size: 3.6rem;
+      background-color: $yellow;
+      border-radius: 8px 0px 0px 8px;
+
+      & i {
+        min-width: 60px;
+        text-align: center;
+      }
+    }
+
+    & .info {
+      width: 100%;
+      background-color: $white;
+      border-radius: 0px 8px 8px 0px;
+
+      & h3 {
+        margin: 0;
+  
+        a {
+          padding: 2rem 2rem 0.5rem 2rem;
+          display: flex;
+        }
+      }
+  
+      & p {
+        margin: 0;
+  
+        a {
+          margin: 0;
+          padding: 0 2rem 2rem 2rem;
+          display: flex;
+        }
+      }
+    }
+
+    &:hover, &:focus {
+
+      & .ico {
+        padding-top: 1rem;
+      }
+
+      & .info {
+        background-color: $gray1;
+      }
+    }
+
+    &:last-child {
+      margin: 0;
+    }
+  }
+}

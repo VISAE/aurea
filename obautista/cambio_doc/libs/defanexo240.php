@@ -4,9 +4,9 @@
 --- angel.avellaneda@unad.edu.co - http://www.unad.edu.co
 --- Modelo Version 2.28.2 jueves, 26 de mayo de 2022
 */
-$btabla = 'unae24historialcambdoc';
-$borigen = 'unae24idorigen';
-$bidarchivo = 'unae24idarchivo';
-$bidreg = 'unae24id';
+$btabla = 'unae40historialcambdoc';
+$borigen = 'unae40idorigen';
+$bidarchivo = 'unae40idarchivo';
+$bidreg = 'unae40id';
 $bunico = true;
 ?>

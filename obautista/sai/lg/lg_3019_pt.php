@@ -1,0 +1,92 @@
+<?php
+/*
+--- © Angel Mauro Avellaneda Barreto - UNAD - 2020 ---
+--- angel.avellaneda@unad.edu.co - http://www.unad.edu.co
+--- Modelo Version 2.25.4 domingo, 19 de julio de 2020
+*/
+$ETI['app_nombre']='APP';
+$ETI['grupo_nombre']='Grupo';
+$ETI['titulo']='Sesiones de chat';
+$ETI['titulo_sector2']='Sesiones de chat';
+$ETI['titulo_sector93']='Mudar consecutivo';
+$ETI['titulo_3019']='Sesiones de chat';
+$ETI['sigla_3019']='Sesiones de chat';
+$ETI['bt_ter_buscar']='Pesquisar terceiro';
+$ETI['bt_ter_crear']='Criar terceiro';
+$ETI['lnk_cargar']='Editar';
+$ETI['saiu19agno']='Agno';
+$ETI['saiu19mes']='Mes';
+$ETI['saiu19tiporadicado']='Tiporadicado';
+$ETI['saiu19consec']='Consec';
+$ETI['saiu19id']='Id';
+$ETI['saiu19dia']='Dia';
+$ETI['saiu19hora']='Hora';
+$ETI['saiu19minuto']='Minuto';
+$ETI['saiu19estado']='Estado';
+$ETI['saiu19idchat']='Chat';
+$ETI['saiu19idsolicitante']='Solicitante';
+$ETI['saiu19tipointeresado']='Tipointeresado';
+$ETI['saiu19clasesolicitud']='Clasesolicitud';
+$ETI['saiu19tiposolicitud']='Tiposolicitud';
+$ETI['saiu19temasolicitud']='Temasolicitud';
+$ETI['saiu19idzona']='Zona';
+$ETI['saiu19idcentro']='Centro';
+$ETI['saiu19codpais']='Codpais';
+$ETI['saiu19coddepto']='Coddepto';
+$ETI['saiu19codciudad']='Codciudad';
+$ETI['saiu19idescuela']='Escuela';
+$ETI['saiu19idprograma']='Programa';
+$ETI['saiu19idperiodo']='Periodo';
+$ETI['saiu19numorigen']='Numorigen';
+$ETI['saiu19idpqrs']='Pqrs';
+$ETI['saiu19detalle']='Detalle';
+$ETI['saiu19horafin']='Horafin';
+$ETI['saiu19minutofin']='Minutofin';
+$ETI['saiu19paramercadeo']='Paramercadeo';
+$ETI['saiu19idresponsable']='Responsable';
+$ETI['saiu19tiemprespdias']='Tiemprespdias';
+$ETI['saiu19tiempresphoras']='Tiempresphoras';
+$ETI['saiu19tiemprespminutos']='Tiemprespminutos';
+$ETI['saiu19solucion']='Solucion';
+$ETI['saiu19idcaso']='Caso';
+
+$ERR['saiu19agno']='&Eacute; necess&aacute;rio o dado '.$ETI['saiu19agno'];
+$ERR['saiu19mes']='&Eacute; necess&aacute;rio o dado '.$ETI['saiu19mes'];
+$ERR['saiu19tiporadicado']='&Eacute; necess&aacute;rio o dado '.$ETI['saiu19tiporadicado'];
+$ERR['saiu19consec']='&Eacute; necess&aacute;rio o dado '.$ETI['saiu19consec'];
+$ERR['saiu19id']='&Eacute; necess&aacute;rio o dado '.$ETI['saiu19id'];
+$ERR['saiu19dia']='&Eacute; necess&aacute;rio o dado '.$ETI['saiu19dia'];
+$ERR['saiu19hora']='&Eacute; necess&aacute;rio o dado '.$ETI['saiu19hora'];
+$ERR['saiu19minuto']='&Eacute; necess&aacute;rio o dado '.$ETI['saiu19minuto'];
+$ERR['saiu19estado']='&Eacute; necess&aacute;rio o dado '.$ETI['saiu19estado'];
+$ERR['saiu19idchat']='&Eacute; necess&aacute;rio o dado '.$ETI['saiu19idchat'];
+$ERR['saiu19idsolicitante']='&Eacute; necess&aacute;rio o dado '.$ETI['saiu19idsolicitante'];
+$ERR['saiu19tipointeresado']='&Eacute; necess&aacute;rio o dado '.$ETI['saiu19tipointeresado'];
+$ERR['saiu19clasesolicitud']='&Eacute; necess&aacute;rio o dado '.$ETI['saiu19clasesolicitud'];
+$ERR['saiu19tiposolicitud']='&Eacute; necess&aacute;rio o dado '.$ETI['saiu19tiposolicitud'];
+$ERR['saiu19temasolicitud']='&Eacute; necess&aacute;rio o dado '.$ETI['saiu19temasolicitud'];
+$ERR['saiu19idzona']='&Eacute; necess&aacute;rio o dado '.$ETI['saiu19idzona'];
+$ERR['saiu19idcentro']='&Eacute; necess&aacute;rio o dado '.$ETI['saiu19idcentro'];
+$ERR['saiu19codpais']='&Eacute; necess&aacute;rio o dado '.$ETI['saiu19codpais'];
+$ERR['saiu19coddepto']='&Eacute; necess&aacute;rio o dado '.$ETI['saiu19coddepto'];
+$ERR['saiu19codciudad']='&Eacute; necess&aacute;rio o dado '.$ETI['saiu19codciudad'];
+$ERR['saiu19idescuela']='&Eacute; necess&aacute;rio o dado '.$ETI['saiu19idescuela'];
+$ERR['saiu19idprograma']='&Eacute; necess&aacute;rio o dado '.$ETI['saiu19idprograma'];
+$ERR['saiu19idperiodo']='&Eacute; necess&aacute;rio o dado '.$ETI['saiu19idperiodo'];
+$ERR['saiu19numorigen']='&Eacute; necess&aacute;rio o dado '.$ETI['saiu19numorigen'];
+$ERR['saiu19idpqrs']='&Eacute; necess&aacute;rio o dado '.$ETI['saiu19idpqrs'];
+$ERR['saiu19detalle']='&Eacute; necess&aacute;rio o dado '.$ETI['saiu19detalle'];
+$ERR['saiu19horafin']='&Eacute; necess&aacute;rio o dado '.$ETI['saiu19horafin'];
+$ERR['saiu19minutofin']='&Eacute; necess&aacute;rio o dado '.$ETI['saiu19minutofin'];
+$ERR['saiu19paramercadeo']='&Eacute; necess&aacute;rio o dado '.$ETI['saiu19paramercadeo'];
+$ERR['saiu19idresponsable']='&Eacute; necess&aacute;rio o dado '.$ETI['saiu19idresponsable'];
+$ERR['saiu19tiemprespdias']='&Eacute; necess&aacute;rio o dado '.$ETI['saiu19tiemprespdias'];
+$ERR['saiu19tiempresphoras']='&Eacute; necess&aacute;rio o dado '.$ETI['saiu19tiempresphoras'];
+$ERR['saiu19tiemprespminutos']='&Eacute; necess&aacute;rio o dado '.$ETI['saiu19tiemprespminutos'];
+$ERR['saiu19solucion']='&Eacute; necess&aacute;rio o dado '.$ETI['saiu19solucion'];
+$ERR['saiu19idcaso']='&Eacute; necess&aacute;rio o dado '.$ETI['saiu19idcaso'];
+$asaiu19paramercadeo=array('', '');
+$isaiu19paramercadeo=0;
+$asaiu19solucion=array('', '');
+$isaiu19solucion=0;
+?>

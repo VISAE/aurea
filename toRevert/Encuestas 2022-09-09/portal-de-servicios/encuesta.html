@@ -1,0 +1,299 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0">
+
+    <meta name="description" content="Plataforma Aurea, Universidad Abierta y a Distancia UNAD de Colombia">
+    <meta name="author" content="Universidad Abierta y a Distancia UNAD de Colombia">
+
+    <link rel="icon" type="image/svg+xml" href="./img/favicon/favicon.svg">
+    <link rel="icon" type="image/png" href="./img/favicon/favicon.png">
+
+    <title>Plataforma Aurea, Universidad Abierta y a Distancia UNAD de Colombia</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Serif&family=Open+Sans:wght@400;600;700&display=swap" rel="stylesheet">
+
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.1/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="./css/style.css" media="all" />
+    <link rel="stylesheet" href="./css/font-awesome.min.css" media="all" />
+
+    <script src="https://cdn.jsdelivr.net/npm/jquery@3.6.0/dist/jquery.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.1/dist/js/bootstrap.bundle.min.js"></script>
+
+    <!--
+    <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js"></script>
+    <script>window.jQuery || document.write('<script src="assets/js/vendor/jquery-slim.min.js"><\/script>')</script>
+    -->
+</head>
+<body>
+
+  <!-- HEADER -->
+  <header class="header">
+    <div class="container">
+      <a href="/">
+        <img src="./img/unad.svg" alt="Logo Universidad Abierta y a Distancia UNAD de Colombia">
+      </a>
+      <div class="header__title">
+        <h1>Portal de Servicios</h1>
+      </div>
+    </div>
+  </header>
+  <!-- end HEADER -->
+
+
+  <!-- MAIN -->
+  <main class="main">
+    <!-- slider images  -->
+    <section class="images">
+      <div class="logo">
+        <img src="./img/plataforma-aurea.png" alt="Plataforma Aurea" />
+      </div>
+      <span></span>
+      <div class="preload">
+        <img src="./img/slide/001.jpg" />
+        <img src="./img/slide/002.jpg" />
+        <img src="./img/slide/003.jpg" />
+        <img src="./img/slide/004.jpg" />
+      </div>
+      <div class="slide">
+        <div style="background-image:url(./img/slide/001.jpg)"></div>
+        <div style="background-image:url(./img/slide/002.jpg)"></div>
+        <div style="background-image:url(./img/slide/003.jpg)"></div>
+        <div style="background-image:url(./img/slide/004.jpg)"></div>
+      </div>  
+    </section>
+    <!-- end slider images  -->
+
+    <!-- dates area -->
+    <section class="dates">
+      <!-- menu -->
+      <nav class="navbar navbar-expand-xl navbar-dark">
+        <ul class="navbar-nav">
+          <li class="nav-item">
+            <a class="nav-link" href="index.html">
+              <i class="fa fa-home"></i>
+              Inicio
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="repositorio-manuales.html">
+              <i class="fa fa-file"></i>
+              Repositorio de Manuales de usuario
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="paz-y-salvo.html">
+              <i class="fa fa-check"></i>
+              Verificacion de Paz y salvo
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link active" href="encuesta.html">
+              <i class="fa fa-list"></i>
+              Encuesta
+            </a>
+          </li>
+        </ul>
+      </nav>
+      <!-- end menu -->
+
+      <hr />
+
+      <article class="article">
+        <h2>
+          <span><i class="fa fa-list"></i> Encuesta</span>
+        </h2>
+        <div class="article__area row">
+          <!-- form area -->
+          <div class="col-12">
+            <form>
+              <div class="form-group row">
+                <div class="col-sm-12">
+                  <h4 for="inputCode" class="text-center">Ingresa tu código</h4>
+                  <input type="text" class="form-control form-control-lg text-center" id="inputCode" placeholder="Digítalo aquí">
+                </div>
+              </div>
+
+              <hr>
+
+              <div class="form-group row">
+                <div class="col-sm-6">
+                  <label for="inputFirstname">First name</label>
+                  <input type="text" class="form-control" id="inputFirstname" placeholder="First name">
+                </div>
+                <div class="col-sm-6">
+                  <label for="inputLastname">Last name</label>
+                  <input type="text" class="form-control" id="inputLastname" placeholder="Last name">
+                </div>
+              </div>
+
+              <div class="form-group row">
+                <div class="col-sm-6">
+                  <label for="inputAddressLine1">Address</label>
+                  <input type="text" class="form-control" id="inputAddressLine1" placeholder="Street Address">
+                </div>
+                <div class="col-sm-6">
+                  <label for="inputCity">City</label>
+                  <input type="text" class="form-control" id="inputCity" placeholder="City">
+               </div>
+              </div>
+
+              <div class="form-group row">
+                <div class="col-sm-6">
+                  <label for="inputContactNumber">Contact Number</label>
+                  <input type="number" class="form-control" id="inputContactNumber" placeholder="Contact Number">
+                </div>
+                <div class="col-sm-3">
+                  <label for="inputState">State</label>
+                  <input type="text" class="form-control" id="inputState" placeholder="State">
+                </div>
+                <div class="col-sm-3">
+                  <label for="inputPostalCode">Postal Code</label>
+                  <input type="text" class="form-control" id="inputPostalCode" placeholder="Postal Code">
+                </div>
+              </div>
+
+              <div class="form-group row">
+                <div class="col-sm-6">
+                  <label for="Select1">Select</label>
+                  <select class="form-control" id="Select1">
+                    <option>1</option>
+                    <option>2</option>
+                    <option>3</option>
+                    <option>4</option>
+                    <option>5</option>
+                  </select>
+                </div>
+                <div class="col-sm-6">
+                  <label for="inputWebsite">Website</label>
+                  <input type="text" class="form-control" id="inputWebsite" placeholder="Website">
+                </div>
+              </div>
+
+              <div class="form-group row">
+                <div class="col-sm-12">
+                  <label for="Textarea1">Example textarea</label>
+                  <textarea class="form-control" id="Textarea1" rows="3"></textarea>  
+                </div>
+              </div>
+
+              <div class="form-group row">
+                <div class="col-sm-6">
+                  <label>Checkbox</label>
+                  <div class="form-check">
+                    <input class="form-check-input" type="checkbox" value="" id="defaultCheck1">
+                    <label class="form-check-label" for="defaultCheck1">
+                      Default checkbox
+                    </label>
+                  </div>
+                  <div class="form-check">
+                    <input class="form-check-input" type="checkbox" value="" id="defaultCheck2" disabled>
+                    <label class="form-check-label" for="defaultCheck2">
+                      Disabled checkbox
+                    </label>
+                  </div>
+                </div>
+
+                <div class="col-sm-6">
+                  <label>Radio</label>
+                  <div class="form-check">
+                    <input class="form-check-input" type="radio" name="exampleRadios" id="exampleRadios1" value="option1" checked>
+                    <label class="form-check-label" for="exampleRadios1">
+                      Default radio
+                    </label>
+                  </div>
+                  <div class="form-check">
+                    <input class="form-check-input" type="radio" name="exampleRadios" id="exampleRadios2" value="option2">
+                    <label class="form-check-label" for="exampleRadios2">
+                      Second default radio
+                    </label>
+                  </div>
+                  <div class="form-check">
+                    <input class="form-check-input" type="radio" name="exampleRadios" id="exampleRadios3" value="option3" disabled>
+                    <label class="form-check-label" for="exampleRadios3">
+                      Disabled radio
+                    </label>
+                  </div>
+                </div>
+              </div>
+
+              <div class="form-group row">
+                <div class="col-sm-12">
+                  <div class="form-group row">
+                    <div class="col-sm-12">
+                      <label>Checkbox inline</label>
+                    </div>
+                      <div class="col-sm-12">
+                        <div class="form-check form-check-inline">
+                          <input class="form-check-input" type="checkbox" id="inlineCheckbox1" value="option1">
+                          <label class="form-check-label" for="inlineCheckbox1">1</label>
+                        </div>
+                        <div class="form-check form-check-inline">
+                          <input class="form-check-input" type="checkbox" id="inlineCheckbox2" value="option2">
+                          <label class="form-check-label" for="inlineCheckbox2">2</label>
+                        </div>
+                        <div class="form-check form-check-inline">
+                          <input class="form-check-input" type="checkbox" id="inlineCheckbox3" value="option3" disabled>
+                          <label class="form-check-label" for="inlineCheckbox3">3 (disabled)</label>
+                        </div>
+                      </div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="form-group row">
+                <div class="col-sm-12">
+                  <div class="form-group row">
+                    <div class="col-sm-12">
+                      <label>Radio inline</label>
+                    </div>
+                      <div class="col-sm-12">
+                        <div class="form-check form-check-inline">
+                          <input class="form-check-input" type="radio" name="inlineRadioOptions" id="inlineRadio1" value="option1">
+                          <label class="form-check-label" for="inlineRadio1">1</label>
+                        </div>
+                        <div class="form-check form-check-inline">
+                          <input class="form-check-input" type="radio" name="inlineRadioOptions" id="inlineRadio2" value="option2">
+                          <label class="form-check-label" for="inlineRadio2">2</label>
+                        </div>
+                        <div class="form-check form-check-inline">
+                          <input class="form-check-input" type="radio" name="inlineRadioOptions" id="inlineRadio3" value="option3" disabled>
+                          <label class="form-check-label" for="inlineRadio3">3 (disabled)</label>
+                        </div>
+                      </div>
+                  </div>
+                </div>
+              </div>
+
+              <hr>
+
+              <div class="form-group form-check">
+                <input type="checkbox" class="form-check-input" id="CheckAcept">
+                <label class="form-check-label" for="CheckAcept">Acepto</label>
+              </div>
+
+              <button type="button" class="btn btn-aurea px-4 float-right">Enviar</button>
+            </form>
+          </div>
+          <!-- end form area -->
+        </div>
+      </article>
+    </section>
+    <!-- end dates area -->
+  
+    <!-- footer -->
+    <footer class="footer">
+      <p>Universidad Nacional Abierta y a Distancia UNAD de Colombia - © Copyright UNAD 2022</p>
+      <!-- <strong>Línea anticorrupción: </strong> <a href="tel:6013443700" target="_blank" title="Línea anticorrupción: 601-3443700 ext. 1544">601-3443700 ext. 1544</a><br> En Bogotá D.C. (Colombia) <strong>Teléfono: </strong><a href="tel:6013759500" target="_blank" title="Teléfono: 601-375 9500">601-375 9500 </a> <strong> - Línea gratuita nacional:</strong> <a href="tel:018000115223" target="_blank" title="Línea gratuita nacional: 01 8000 115223 "> 01 8000 115223</a><br> Institución de Educación Superior sujeta a inspección y vigilancia por el Ministerio de Educación Nacional <br> <strong>Universidad Nacional Abierta y a Distancia UNAD de Colombia - © Copyright UNAD 2022</strong> -->
+    </footer>
+    <!-- end footer -->
+</main>
+<!-- end MAIN -->
+
+</body>
+</html>
