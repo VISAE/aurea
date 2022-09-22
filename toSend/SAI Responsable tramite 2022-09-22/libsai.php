@@ -1310,37 +1310,6 @@ function f3046_HtmlComunicado($id46, $idTercero, $objDB, $bDegug = false)
 	}
 	return array($sRes, $sDebug);
 }
-function f3070_SeleccionaResponsable($idZona, $idCentro, $idEscuela, $idPrograma, $objDB, $bDebug = false)
-{
-	$sError = '';
-	$sDebug = '';
-	$idunidad = 0;
-	$idgrupotrabajo = 0;
-	$idresponsable = 0;
-	$sSQL = 'SELECT saiu70idunidad, saiu70idgrupotrabajo
-	FROM saiu70responsabletrami AS T
-	WHERE (T.saiu70idzona = 0 OR T.saiu70idzona = ' . $idZona . ')
-	AND (T.saiu70idcentro = 0 OR T.saiu70idcentro = ' . $idCentro . ')
-	AND (T.saiu70idescuela = 0 OR T.saiu70idescuela = ' . $idEscuela . ')
-	AND (T.saiu70idprograma = 0 OR T.saiu70idprograma = ' . $idPrograma . ')
-	ORDER BY T.saiu70idzona DESC, T.saiu70idcentro DESC, 
-	T.saiu70idescuela DESC, T.saiu70idprograma DESC 
-	LIMIT 0,1' . '';
-	if ($bDebug) {
-		$sDebug = $sDebug . fecha_microtiempo() . ' Consulta responsable tramite ' . $sSQL . '<br>';
-	}
-	$tabla = $objDB->ejecutasql($sSQL);
-	if ($objDB->nf($tabla) > 0) {
-		$fila = $objDB->sf($tabla);
-		$idunidad = $fila['saiu70idunidad'];
-		$idgrupotrabajo = $fila['saiu70idgrupotrabajo'];
-		$idresponsable = $fila['saiu70idresponsable'];
-	} else {
-		$sError = 'No se encuentra el registro solicitado {Zona: ' . $idZona . ' Centro: ' . $idCentro . ' Escuela: ' . $idEscuela . ' Programa: ' . $idPrograma . '}';
-	}
-	// if ($sError != '') {}
-	return array($idunidad, $idgrupotrabajo, $idresponsable, $sError, $sDebug);
-}
 //Esta funcion no no se debe usar
 function f12206_db_GuardarV2_Depreciar($DATA, $objDB, $bDebug = false)
 {
@@ -2871,5 +2840,36 @@ function f12206_CambiarDeCentro($core01id, $idZonaDest, $idCentroDest, $sNota, $
 		//$tabla=$objDB->ejecutasql($sSQL);
 	}
 	return array($corf06id, $sError, $sDebug);
+}
+function f3070_SeleccionaResponsable($idZona, $idCentro, $idEscuela, $idPrograma, $objDB, $bDebug = false)
+{
+	$sError = '';
+	$sDebug = '';
+	$idunidad = 0;
+	$idgrupotrabajo = 0;
+	$idresponsable = 0;
+	$sSQL = 'SELECT saiu70idunidad, saiu70idgrupotrabajo
+	FROM saiu70responsabletrami AS T
+	WHERE (T.saiu70idzona = 0 OR T.saiu70idzona = ' . $idZona . ')
+	AND (T.saiu70idcentro = 0 OR T.saiu70idcentro = ' . $idCentro . ')
+	AND (T.saiu70idescuela = 0 OR T.saiu70idescuela = ' . $idEscuela . ')
+	AND (T.saiu70idprograma = 0 OR T.saiu70idprograma = ' . $idPrograma . ')
+	ORDER BY T.saiu70idzona DESC, T.saiu70idcentro DESC, 
+	T.saiu70idescuela DESC, T.saiu70idprograma DESC 
+	LIMIT 0,1' . '';
+	if ($bDebug) {
+		$sDebug = $sDebug . fecha_microtiempo() . ' Consulta responsable tramite ' . $sSQL . '<br>';
+	}
+	$tabla = $objDB->ejecutasql($sSQL);
+	if ($objDB->nf($tabla) > 0) {
+		$fila = $objDB->sf($tabla);
+		$idunidad = $fila['saiu70idunidad'];
+		$idgrupotrabajo = $fila['saiu70idgrupotrabajo'];
+		$idresponsable = $fila['saiu70idresponsable'];
+	} else {
+		$sError = 'No se encuentra el registro solicitado {Zona: ' . $idZona . ' Centro: ' . $idCentro . ' Escuela: ' . $idEscuela . ' Programa: ' . $idPrograma . '}';
+	}
+	// if ($sError != '') {}
+	return array($idunidad, $idgrupotrabajo, $idresponsable, $sError, $sDebug);
 }
 ?>
