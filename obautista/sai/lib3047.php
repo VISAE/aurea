@@ -439,8 +439,11 @@ function f3047_TablaDetalleV2($aParametros, $objDB, $bDebug = false)
 	if (isset($aParametros[107]) == 0) {
 		$aParametros[107] = '';
 	}
-	if (isset($aParametros[108]) == 0) {
-		$aParametros[108] = '';
+	if (isset($aParametros[109]) == 0) {
+		$aParametros[109] = '';
+	}
+	if (isset($aParametros[110]) == 0) {
+		$aParametros[110] = '';
 	}
 	$idTercero = $aParametros[100];
 	$sDebug = '';
@@ -454,6 +457,8 @@ function f3047_TablaDetalleV2($aParametros, $objDB, $bDebug = false)
 	$bDoc = $aParametros[106];
 	$bTipo = numeros_validar($aParametros[107]);
 	$bMotivo = numeros_validar($aParametros[108]);
+	$bUnidad = numeros_validar($aParametros[109]);
+	$bResponsable = numeros_validar($aParametros[110]);
 	}
 	$bAbierta = true;
 	/*
@@ -489,19 +494,19 @@ function f3047_TablaDetalleV2($aParametros, $objDB, $bDebug = false)
 		//Esta condición la ponemos para mantener la conparación con los arhcivos tipo e
 		$sSQLadd = '';
 		$sSQLadd1 = '';
-	if ($bEstado != '') {
-		$sSQLadd1 = $sSQLadd1 . 'TB.saiu47estado=' . $bEstado . ' AND ';
-	}
-	if ($bDoc != '') {
-		$sSQLadd = $sSQLadd . ' AND T11.unad11doc LIKE "%' . $bDoc . '%"';
-	}
-	if ($bMotivo != '') {
-		$sSQLadd1 = $sSQLadd1 . 'TB.saiu47t1idmotivo=' . $bMotivo . ' AND ';
-	} else {
-		if ($bTipo != '') {
-			$sSQLadd1 = $sSQLadd1 . 'TB.saiu47tipotramite=' . $bTipo . ' AND ';
+		if ($bEstado != '') {
+			$sSQLadd1 = $sSQLadd1 . 'TB.saiu47estado=' . $bEstado . ' AND ';
 		}
-	}
+		if ($bDoc != '') {
+			$sSQLadd = $sSQLadd . ' AND T11.unad11doc LIKE "%' . $bDoc . '%"';
+		}
+		if ($bMotivo != '') {
+			$sSQLadd1 = $sSQLadd1 . 'TB.saiu47t1idmotivo=' . $bMotivo . ' AND ';
+		} else {
+			if ($bTipo != '') {
+				$sSQLadd1 = $sSQLadd1 . 'TB.saiu47tipotramite=' . $bTipo . ' AND ';
+			}
+		}
 		if ($bNombre != '') {
 			$sBase = strtoupper($bNombre);
 			$aNoms=explode(' ', $sBase);
@@ -513,6 +518,22 @@ function f3047_TablaDetalleV2($aParametros, $objDB, $bDebug = false)
 				}
 			}
 		}
+		if ($bUnidad != '') {
+			$sSQLadd1 = $sSQLadd1 . 'TB.saiu47idunidad=' . $bUnidad . ' AND ';
+		}
+		if ($bResponsable != '') {
+			if ($bResponsable == 1) {
+				$sSQL = 'SELECT TB.bita28id AS id
+				FROM bita28eqipoparte AS TB, unad11terceros AS T2 
+				WHERE TB.bita28idtercero=T2.unad11id AND TB.bita28idtercero=' . $idTercero . ' AND TB.bita28activo="S" ' . '';				
+				$tabla = $objDB->ejecutasql($sSQL);
+				if ($objDB->nf($tabla) > 0) {
+					$fila = $objDB->sf($tabla);
+					$sSQLadd1 = $sSQLadd1 . 'TB.saiu47idresponsable=' . $fila['id'] . ' AND ';
+				}
+			}
+		}
+
 	}
 	//-- Area para saltar comparaciones con los archivos tipo e
 	//-- Fin del area no comparada
@@ -897,6 +918,9 @@ function f3047_db_GuardarV2($DATA, $objDB, $bDebug = false, $idTercero = 0)
 	}
 	if ($DATA['saiu47t707idcuenta'] == '') {
 		$DATA['saiu47t707idcuenta'] = 0;
+	}
+	if ($DATA['saiu47idresponsable'] == '') {
+		$DATA['saiu47idresponsable'] = 0;
 	}
 	// -- Seccion para validar los posibles causales de error.
 	$sSepara = ', ';
@@ -1841,6 +1865,7 @@ function f3047_NotificarEvento($saiu47agno, $saiu47id, $objDB, $bDebug = false, 
 		$objMail->TraerSMTP($idSMTP);
 		$objMail->sAsunto = utf8_encode($sTituloMensaje);
 		$sMensaje = 'Se notifica al correo ' . $sCorreoMensajes;
+		$sCorreoMensajes = 'omar.bautista@unad.edu.co'; //! ESTO ES PARA EL ENTORNO DE DESARROLLO
 		$objMail->addCorreo($sCorreoMensajes, $sCorreoMensajes);
 		if ($sCorreoCopia != '') {
 			$objMail->addCorreo($sCorreoCopia, $sCorreoCopia, 'O');
@@ -1871,7 +1896,8 @@ function f3047_CambiaEstado($iAgno, $saiu47id, $idOrigen, $idDestino, $saiu49det
 	$bNotificaFuncionario = false;
 	$sMensaje = '';
 	if ($sError == '') {
-		$sSQL = 'SELECT saiu47tipotramite, saiu47idsolicitante, saiu47estado, saiu47idresponsable, saiu47idgrupotrabajo 
+		$sSQL = 'SELECT saiu47tipotramite, saiu47idsolicitante, saiu47estado, saiu47idresponsable, saiu47idgrupotrabajo, 
+		saiu47idzona, saiu47idcentro, saiu47idescuela, saiu47idprograma 
 		FROM ' . $sTabla47 . ' WHERE saiu47id=' . $saiu47id . '';
 		$tabla = $objDB->ejecutasql($sSQL);
 		if ($objDB->nf($tabla) > 0) {
@@ -1879,6 +1905,10 @@ function f3047_CambiaEstado($iAgno, $saiu47id, $idOrigen, $idDestino, $saiu49det
 			$saiu47tipotramite = $fila['saiu47tipotramite'];
 			$saiu49idresponsable = $fila['saiu47idresponsable'];
 			$saiu47idsolicitante = $fila['saiu47idsolicitante'];
+			$saiu47idzona = $fila['saiu47idzona'];
+			$saiu47idcentro = $fila['saiu47idcentro'];
+			$saiu47idescuela = $fila['saiu47idescuela'];
+			$saiu47idprograma = $fila['saiu47idprograma'];
 			if ($saiu49idresponsable == 0) {
 				$saiu49idresponsable = $fila['saiu47idsolicitante'];
 			}
@@ -1917,6 +1947,22 @@ function f3047_CambiaEstado($iAgno, $saiu47id, $idOrigen, $idDestino, $saiu49det
 				case 1: //Solicitudes de devolución
 					switch ($idDestino) {
 						case 1: //Radicado
+							$bNotificar = true;
+							if ($saiu47idsolicitante != $_SESSION['unad_id_tercero']) {
+								$bNotificaFuncionario = true;
+							}
+							list($saiu47idunidad, $saiu47idgrupotrabajo, $saiu47idresponsable, $sError, $sDebugE) = f3070_SeleccionaResponsable(1, $saiu47idzona, $saiu47idcentro, $saiu47idescuela, $saiu47idprograma, $objDB, $bDebug);
+							$sDebug = $sDebug . $sDebugE;
+							$sInfoComplemento = ', saiu47idunidad=' . $saiu47idunidad . ', saiu47idgrupotrabajo=' . $saiu47idgrupotrabajo . ', saiu47idresponsable=' . $saiu47idresponsable . '';
+							if ($bDebug) {
+								$sDebug = $sDebug . fecha_microtiempo() . ' EN RADICADO Complemento SQL: ' . $sInfoComplemento . '<br>';
+							}
+							break;						
+						case 4: //En validación de datos
+							list($saiu47idunidad, $saiu47idgrupotrabajo, $saiu47idresponsable, $sError, $sDebugE) = f3070_SeleccionaResponsable(2, $saiu47idzona, $saiu47idcentro, $saiu47idescuela, $saiu47idprograma, $objDB, $bDebug);
+							$sDebug = $sDebug . $sDebugE;
+							$sInfoComplemento = ', saiu47idunidad=' . $saiu47idunidad . ', saiu47idgrupotrabajo=' . $saiu47idgrupotrabajo . ', saiu47idresponsable=' . $saiu47idresponsable . '';
+							break;
 						case 5: //Devuelto
 							$bNotificar = true;
 							if ($saiu47idsolicitante != $_SESSION['unad_id_tercero']) {
@@ -1924,6 +1970,9 @@ function f3047_CambiaEstado($iAgno, $saiu47id, $idOrigen, $idDestino, $saiu49det
 							}
 							break;
 						case 6: //En estudio
+							list($saiu47idunidad, $saiu47idgrupotrabajo, $saiu47idresponsable, $sError, $sDebugE) = f3070_SeleccionaResponsable(3, $saiu47idzona, $saiu47idcentro, $saiu47idescuela, $saiu47idprograma, $objDB, $bDebug);
+							$sDebug = $sDebug . $sDebugE;
+							$sInfoComplemento = ', saiu47idunidad=' . $saiu47idunidad . ', saiu47idgrupotrabajo=' . $saiu47idgrupotrabajo . ', saiu47idresponsable=' . $saiu47idresponsable . '';
 							break;
 						case 7: //Procedente  (debe tener resolucion.)
 							$sInfoComplemento = ', saiu47idaprueba=' . $_SESSION['unad_id_tercero'] . ', saiu47fechaaprueba=' . fecha_DiaMod() . ', saiu47horaaprueba=' . fecha_hora() . ', saiu47minutoaprueba=' . fecha_minuto() . '';
@@ -1940,12 +1989,17 @@ function f3047_CambiaEstado($iAgno, $saiu47id, $idOrigen, $idDestino, $saiu49det
 					}
 					break;
 			}
-			$sSQL = 'UPDATE ' . $sTabla47 . ' SET saiu47estado=' . $idDestino . $sInfoComplemento . ' WHERE saiu47id=' . $saiu47id . '';
-			$result = $objDB->ejecutasql($sSQL);
+			if ($sError == '') {
+				$sSQL = 'UPDATE ' . $sTabla47 . ' SET saiu47estado=' . $idDestino . $sInfoComplemento . ' WHERE saiu47id=' . $saiu47id . '';
+				$result = $objDB->ejecutasql($sSQL);
+			} else {
+				$bNotificar = false;
+			}
 		}
 	}
 	if ($bNotificar) {
-		list($sError, $sDebug, $sMensaje) = f3047_NotificarEvento($iAgno, $saiu47id, $objDB, $bDebug, $bNotificaFuncionario);
+		list($sError, $sDebugE, $sMensaje) = f3047_NotificarEvento($iAgno, $saiu47id, $objDB, $bDebug, $bNotificaFuncionario);
+		$sDebug = $sDebug . $sDebugE;
 	}
 	return array($sError, $sDebug, $sMensaje);
 }
@@ -1988,4 +2042,25 @@ function f3047_Combobmotivo($aParametros)
 	$objResponse->call('paginarf3047()');
 	//$objResponse->call('$("#bmotivo").chosen()');
 	return $objResponse;
+}
+function f3047_ConsultaAsignado($saiu47id, $saiu47agno, $objDB, $bDebug = false) 
+{
+	$sError = '';
+	$sDebug = '';
+	$saiu47idunidad = '';
+	$saiu47idgrupotrabajo = '';
+	$saiu47idresponsable = '';
+	$sSQLcondi = 'saiu47id=' . $saiu47id . '';
+	$sSQL = 'SELECT saiu47idunidad, saiu47idgrupotrabajo, saiu47idresponsable 
+	FROM saiu47tramites_' . $saiu47agno . ' WHERE ' . $sSQLcondi;
+	$tabla = $objDB->ejecutasql($sSQL);
+	if ($objDB->nf($tabla) > 0) {
+		$fila = $objDB->sf($tabla);
+		$saiu47idunidad = $fila['saiu47idunidad'];
+		$saiu47idgrupotrabajo = $fila['saiu47idgrupotrabajo'];
+		$saiu47idresponsable = $fila['saiu47idresponsable'];
+	} else  {
+		$sError = $sError = 'No fue posible consultar la asignación. <br>' . $sSQL . '<br>';
+	}
+	return array($saiu47idunidad, $saiu47idgrupotrabajo, $saiu47idresponsable, $sError, $sDebug);
 }

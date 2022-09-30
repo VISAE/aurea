@@ -1310,16 +1310,17 @@ function f3046_HtmlComunicado($id46, $idTercero, $objDB, $bDegug = false)
 	}
 	return array($sRes, $sDebug);
 }
-function f3070_SeleccionaResponsable($idZona, $idCentro, $idEscuela, $idPrograma, $objDB, $bDebug = false)
+function f3070_SeleccionaResponsable($idPaso, $idZona, $idCentro, $idEscuela, $idPrograma, $objDB, $bDebug = false)
 {
 	$sError = '';
 	$sDebug = '';
 	$idunidad = 0;
 	$idgrupotrabajo = 0;
 	$idresponsable = 0;
-	$sSQL = 'SELECT saiu70idunidad, saiu70idgrupotrabajo
+	$sSQL = 'SELECT saiu70idunidad, saiu70idgrupotrabajo, saiu70idresponsable
 	FROM saiu70responsabletrami AS T
-	WHERE (T.saiu70idzona = 0 OR T.saiu70idzona = ' . $idZona . ')
+	WHERE T.saiu70numpaso = ' . $idPaso . '
+	AND (T.saiu70idzona = 0 OR T.saiu70idzona = ' . $idZona . ')
 	AND (T.saiu70idcentro = 0 OR T.saiu70idcentro = ' . $idCentro . ')
 	AND (T.saiu70idescuela = 0 OR T.saiu70idescuela = ' . $idEscuela . ')
 	AND (T.saiu70idprograma = 0 OR T.saiu70idprograma = ' . $idPrograma . ')
@@ -1336,7 +1337,7 @@ function f3070_SeleccionaResponsable($idZona, $idCentro, $idEscuela, $idPrograma
 		$idgrupotrabajo = $fila['saiu70idgrupotrabajo'];
 		$idresponsable = $fila['saiu70idresponsable'];
 	} else {
-		$sError = 'No se encuentra el registro solicitado {Zona: ' . $idZona . ' Centro: ' . $idCentro . ' Escuela: ' . $idEscuela . ' Programa: ' . $idPrograma . '}';
+		$sError = 'No se encuentra el registro solicitado {Paso: ' . $idPaso . ' Zona: ' . $idZona . ' Centro: ' . $idCentro . ' Escuela: ' . $idEscuela . ' Programa: ' . $idPrograma . '}';
 	}
 	// if ($sError != '') {}
 	return array($idunidad, $idgrupotrabajo, $idresponsable, $sError, $sDebug);

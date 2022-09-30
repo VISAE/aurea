@@ -115,4 +115,6 @@ $ETI['msg_historial']='Historial de solicitudes';
 $AYU['ayuda_cr']='Apreciado estudiante: Esta solicitud se debe tramitar cuando usted hace un pago diferente a los recibos de pago emitidos con codigos de barras.<br>
 Favor describir en el detalle la forma de pago.';
 
+$ETI['saiu47asignado'] = 'Asignado';
+$ETI['titulo_sector2_saiu47'] = 'Reasignar responsable';
 ?>
