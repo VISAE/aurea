@@ -1,0 +1,304 @@
+@import	"normalize", "_general";
+
+/* Generals
+   ========================================================================== */
+
+*, *:before, *:after {
+	box-sizing: content-box;
+}
+
+*:focus {
+	outline: thin dotted ;
+}
+
+
+html, body {
+	margin: 0;
+	padding: 0;
+}
+
+body {
+	font-family: $font_site;
+	background-color: $blue;
+}
+
+
+h1 {
+	@include type-heavy;
+	font-size: 1.8em;
+}
+
+h2 {
+	display: flex;
+	margin: 0;
+	font-size: 170%;
+	font-weight: 700;
+}
+
+a, input, button, select, li {
+	box-sizing: border-box;
+	transition: all 0.3s;
+}
+
+a {
+	color: $blue;
+}
+
+hr {
+	border-top-color: #ced4da;
+}
+
+/* Header
+   ========================================================================== */
+
+.header {
+	position: absolute;
+	z-index: 10;
+	display: flex;
+	margin: 0;
+	width: 100%;
+	height: $header-height;
+	background-color: $white;
+
+	& .container {
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		justify-content: space-between;
+	}
+
+	& img {
+		width: 100%;
+		max-height: calc($header-height - 20px);;
+	}
+
+	&__title {
+		align-self: flex-end;
+
+		& h1 {
+			margin: 0;
+			padding: .4rem 1.2rem;
+			font-size: 160%;
+			color: $blue;
+			background-color: $yellow;
+			border-radius: 8px 8px 0px 0px;
+		}
+	}
+}
+
+/* Main
+   ========================================================================== */
+
+.main {
+	display: flex;
+	position: absolute;
+	top: 0;
+	bottom: 0;
+	width: 100%;
+	color: $white;
+
+	& section {
+		margin-top: $header-height;
+		max-height: calc(100vh - $header-height);
+
+		&.images {
+			flex: 1;
+			position: relative;
+			overflow: hidden;
+			background: url(../img/biblioteca.jpg) center center no-repeat;
+			background-size: cover;
+
+			& .logo {
+				position: absolute;
+				z-index: 10;
+				right: 0;
+				margin-top: 2rem;
+				padding: .5rem;
+				background-color: $blue;
+				border-radius: 20px 0 0 20px;
+			}
+
+			& span {
+				position: absolute;
+				z-index: 1;
+				top: 0;
+				bottom: 0;
+				width: 100%;
+				background: rgba(244, 121, 32, 0.6);
+				// background-color: $blue;
+				opacity: .6;
+			}
+
+			& .preload {
+				display: none;
+			}
+		}
+
+		&.dates {
+			flex: 2;
+			position: relative;
+			z-index: 1;
+			padding: 0 $limit-padding $limit-padding $limit-padding;
+			overflow-x: auto;
+			background-color: $blue;
+		}
+	}
+}
+
+/* slide
+   ========================================================================== */
+
+@import	"slide";
+
+/* keypads
+   ========================================================================== */
+
+@import	"keypads";
+
+
+/* Ajust bootstrap
+   ========================================================================== */
+
+.navbar {
+	padding:$limit-padding 0 0 0;
+}
+
+.navbar-dark .navbar-nav .nav-link {
+	margin: 0 4px;
+	padding-left: 1rem;
+	padding-right: 1rem;
+	color: $white;
+	background-color: $black-transparent;
+	border-radius: 4px;
+
+	&:first-child {
+		margin-left: 0;
+	}
+
+	& i {	padding-right: 0.3rem;
+		color: $yellow;
+	}
+
+	&:focus, &:hover, &.active {
+		color: $blue-dark;
+		background-color: $yellow;
+	
+		& i {
+			color: $blue;
+		}
+	}
+}
+
+.dropdown-menu {
+	background-color: $yellow;
+
+	& .dropdown-item {
+		color: $blue-dark;
+	}
+
+	& .dropdown-item:focus, & .dropdown-item:hover {
+		background-color: $gray1;
+	}
+}
+
+
+.btn-aurea {
+	text-transform: uppercase;
+	@include type-heavy;
+	font-size: 0.9rem;
+	color: $blue;
+	background-color: $yellow;
+
+	&:hover, &:focus {
+		color: $white;
+		background-color: $blue;	
+	}
+}
+
+/* Area dates - article
+   ========================================================================== */
+
+.article {
+	padding-top: 20px;
+
+	& h2 span {
+		display: flex;
+	    align-items: center;
+		padding: 0.8rem 1rem;
+		color: $blue;
+		background-color: $yellow;
+		border-radius: 8px 8px 0 0;
+
+		& i {
+			margin-right: 0.6rem;
+		}
+	}
+
+	&__area {
+		margin: 0;
+		padding: 1rem 0;
+		color: $blue;
+		background-color: $gray1;
+		border-radius: 0 8px 8px 8px;
+
+		& [class*="col-"] {
+			box-sizing: border-box;
+		}
+
+		& .response {
+			padding-left: 1rem;
+
+			&__out {
+				padding: 1rem;
+				background-color: $white;
+				border-radius: 8px;
+			}
+
+			& .false {
+				color: $red-alert;
+			}
+		}
+	}
+}
+
+/* List Manuales
+   ========================================================================== */
+
+@import	"dataTable_list_manuales";
+
+
+/* Adjust
+   ========================================================================== */
+
+
+textarea {
+	box-sizing: border-box;
+}
+
+/* Footer
+   ========================================================================== */
+
+.footer {
+	position: fixed;
+	z-index: 10;
+	bottom: 0;
+	width: 100%;
+    height: 30px;
+	display: flex;
+    flex-flow: column;
+    align-items: end;
+    justify-content: center;
+	font-size: .8rem;
+	color: $blue;
+	background-color: $yellow;
+
+	& p {
+		margin: 0;
+		padding: 0 1rem;
+		text-align: right;
+	}
+}
+
+/* responsive
+   ========================================================================== */
+@import	"responsive";

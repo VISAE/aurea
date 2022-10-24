@@ -36,7 +36,7 @@ function f3070_HTMLComboV2_saiu70numpaso($objDB, $objCombos, $valor, $vrsaiu70id
 	$iPasos = 1;
 	$objCombos->nuevo('saiu70numpaso', $valor, true, '-');
 	//$objCombos->iAncho=450;
-	$objCombos->sAccion = 'RevisaLlave();';
+	// $objCombos->sAccion = 'RevisaLlave();';
 	switch($vrsaiu70idtipotramite){
 		case 1: // Solicitud de devolucion.
 			$iPasos = 3;
@@ -56,9 +56,8 @@ function f3070_HTMLComboV2_saiu70idzona($objDB, $objCombos, $valor)
 		$mensajes_todas = $APP->rutacomun . 'lg/lg_todas_es.php';
 	}
 	require $mensajes_todas;
-	$objCombos->nuevo('saiu70idzona', $valor, true, '{' . $ETI['msg_seleccione'] . '}');
+	$objCombos->nuevo('saiu70idzona', $valor, true, '{' . $ETI['msg_todas'] . '}', 0);
 	//$objCombos->iAncho=450;
-	$objCombos->addItem('0', '{' . $ETI['msg_todas'] . '}');
 	$objCombos->sAccion = 'carga_combo_saiu70idcentro()';
 	$sSQL = 'SELECT unad23id AS id, unad23nombre AS nombre FROM unad23zona WHERE unad23conestudiantes = "S"';
 	$res = $objCombos->html($sSQL, $objDB);
@@ -72,10 +71,9 @@ function f3070_HTMLComboV2_saiu70idcentro($objDB, $objCombos, $valor, $vrsaiu70i
 		$mensajes_todas = $APP->rutacomun . 'lg/lg_todas_es.php';
 	}
 	require $mensajes_todas;
-	$objCombos->nuevo('saiu70idcentro', $valor, true, '{' . $ETI['msg_seleccione'] . '}', '');
+	$objCombos->nuevo('saiu70idcentro', $valor, true, '{' . $ETI['msg_todos'] . '}', 0);
 	//$objCombos->iAncho=450;
-	$objCombos->addItem('0', '{' . $ETI['msg_todos'] . '}');
-	$objCombos->sAccion = 'RevisaLlave();';
+	// $objCombos->sAccion = 'RevisaLlave();';
 	$sSQL = '';
 	if ((int)$vrsaiu70idzona != 0) {
 		$sSQL = 'SELECT unad24id AS id, unad24nombre AS nombre FROM unad24sede WHERE unad24idzona=' . $vrsaiu70idzona . ' AND unad24activa = "S" ' . '';
@@ -91,9 +89,8 @@ function f3070_HTMLComboV2_saiu70idescuela($objDB, $objCombos, $valor)
 		$mensajes_todas = $APP->rutacomun . 'lg/lg_todas_es.php';
 	}
 	require $mensajes_todas;
-	$objCombos->nuevo('saiu70idescuela', $valor, true, '{' . $ETI['msg_seleccione'] . '}');
+	$objCombos->nuevo('saiu70idescuela', $valor, true, '{' . $ETI['msg_todas'] . '}', 0);
 	//$objCombos->iAncho=450;
-	$objCombos->addItem('0', '{' . $ETI['msg_todas'] . '}');
 	$objCombos->sAccion = 'carga_combo_saiu70idprograma()';
 	$sSQL = 'SELECT core12id AS id, core12nombre AS nombre FROM core12escuela WHERE core12tieneestudiantes = "S"';
 	$res = $objCombos->html($sSQL, $objDB);
@@ -107,10 +104,9 @@ function f3070_HTMLComboV2_saiu70idprograma($objDB, $objCombos, $valor, $vrsaiu7
 		$mensajes_todas = $APP->rutacomun . 'lg/lg_todas_es.php';
 	}
 	require $mensajes_todas;
-	$objCombos->nuevo('saiu70idprograma', $valor, true, '{' . $ETI['msg_seleccione'] . '}');
+	$objCombos->nuevo('saiu70idprograma', $valor, true, '{' . $ETI['msg_todos'] . '}', 0);
 	//$objCombos->iAncho=450;
-	$objCombos->addItem('0', '{' . $ETI['msg_todos'] . '}');
-	$objCombos->sAccion = 'RevisaLlave();';
+	// $objCombos->sAccion = 'RevisaLlave();';
 	$sSQL = '';
 	if ((int)$vrsaiu70idescuela != 0) {
 		$sSQL = 'SELECT core09id AS id, CONCAT(core09nombre, " [", core09codigo, "]", CASE core09activo WHEN "S" THEN "" ELSE " [INACTIVO]" END) AS nombre 
@@ -147,7 +143,7 @@ function f3070_HTMLComboV2_saiu70idresponsable($objDB, $objCombos, $valor, $vrsa
 		$mensajes_todas = $APP->rutacomun . 'lg/lg_todas_es.php';
 	}
 	require $mensajes_todas;
-	$objCombos->nuevo('saiu70idresponsable', $valor, true, '{' . $ETI['msg_ninguno'] . '}', 0);
+	$objCombos->nuevo('saiu70idresponsable', $valor, true, '{' . $ETI['msg_seleccione'] . '}');
 	//$objCombos->iAncho=450;
 	$sSQL = '';
 	if ((int)$vrsaiu70idgrupotrabajo != 0) {
@@ -233,12 +229,10 @@ function f3070_Combosaiu70idgrupotrabajo($aParametros)
 	$objDB->xajax();
 	$objCombos = new clsHtmlCombos();
 	$html_saiu70idgrupotrabajo = f3070_HTMLComboV2_saiu70idgrupotrabajo($objDB, $objCombos, '', $aParametros[0]);
-	$html_saiu70idresponsable = f3070_HTMLComboV2_saiu70idresponsable($objDB, $objCombos, '', '');
 	$objDB->CerrarConexion();
 	$objResponse = new xajaxResponse();
 	$objResponse->assign('div_saiu70idgrupotrabajo', 'innerHTML', $html_saiu70idgrupotrabajo);
 	$objResponse->call('$("#saiu70idgrupotrabajo").chosen({width:"450px"})');
-	$objResponse->assign('div_saiu70idresponsable', 'innerHTML', $html_saiu70idresponsable);
 	return $objResponse;
 }
 function f3070_Combosaiu70idresponsable($aParametros)
@@ -905,15 +899,27 @@ function f3070_db_GuardarV2($DATA, $objDB, $bDebug = false, $idTercero = 0)
 			$idAccion = 2;
 			$bPasa = true;
 		} else {
-			$scampo[1] = 'saiu70activo';
-			$scampo[2] = 'saiu70idunidad';
-			$scampo[3] = 'saiu70idgrupotrabajo';
-			$scampo[4] = 'saiu70idresponsable';
-			$sdato[1] = $DATA['saiu70activo'];
-			$sdato[2] = $DATA['saiu70idunidad'];
-			$sdato[3] = $DATA['saiu70idgrupotrabajo'];
-			$sdato[4] = $DATA['saiu70idresponsable'];
-			$iNumCamposMod = 4;
+			$scampo[1] = 'saiu70idtipotramite';
+			$scampo[2] = 'saiu70numpaso';
+			$scampo[3] = 'saiu70idzona';
+			$scampo[4] = 'saiu70idcentro';
+			$scampo[5] = 'saiu70idescuela';
+			$scampo[6] = 'saiu70idprograma';
+			$scampo[7] = 'saiu70activo';
+			$scampo[8] = 'saiu70idunidad';
+			$scampo[9] = 'saiu70idgrupotrabajo';
+			$scampo[10] = 'saiu70idresponsable';
+			$sdato[1] = $DATA['saiu70idtipotramite'];
+			$sdato[2] = $DATA['saiu70numpaso'];
+			$sdato[3] = $DATA['saiu70idzona'];
+			$sdato[4] = $DATA['saiu70idcentro'];
+			$sdato[5] = $DATA['saiu70idescuela'];
+			$sdato[6] = $DATA['saiu70idprograma'];
+			$sdato[7] = $DATA['saiu70activo'];
+			$sdato[8] = $DATA['saiu70idunidad'];
+			$sdato[9] = $DATA['saiu70idgrupotrabajo'];
+			$sdato[10] = $DATA['saiu70idresponsable'];
+			$iNumCamposMod = 10;
 			$sWhere = 'saiu70id=' . $DATA['saiu70id'] . '';
 			$sSQL = 'SELECT * FROM saiu70responsabletrami WHERE ' . $sWhere;
 			$sdatos = '';

@@ -68,8 +68,13 @@ function autoMensaje(){
 	return $sError;
 	}
 function Enviar($bDebug=false){
+	list($sError, $sDebug)=$this->EnviarV2();
+	return $sError;
+	}
+function EnviarV2($bDebug=false){
 	$sPref='unad69';
 	$sError='';
+	$sDebug='';
 	if ($this->iDestinatarios==0){
 		$sError='No se han agregado destinatarios.';
 		}
@@ -95,10 +100,12 @@ function Enviar($bDebug=false){
 		$mail->Username=$fila17[$sPref.'usuariomail'];
 		$mail->From=$fila17[$sPref.'usuariomail'];
 		$mail->FromName=$fila17[$sPref.'titulo'];
+		if ($bDebug){$sDebug=$sDebug=' <b>ENVIANDO CORREO</b>: Origen Username:'.$fila17[$sPref.'usuariomail'].'<br>';}
 		if ($fila17[$sPref.'autenticacion']!=''){
 			$mail->SMTPAuth=true;
 			$mail->SMTPSecure=strtolower($fila17[$sPref.'autenticacion']);
-			$mail->Password=$fila17[$sPref.'pwdmail'];
+			$sClave=$fila17[$sPref.'pwdmail'];
+			$mail->Password=$sClave;
 			}else{
 			$mail->SMTPAuth=false;
 			if ($this->sOrigen==''){
@@ -147,7 +154,7 @@ function Enviar($bDebug=false){
 		unset($mail);
 		//Termina de enviar el correo.
 		}
-	return $sError;
+	return array($sError, $sDebug);
 	}
 function NuevoMensaje(){
 	//Alista la libreria para que se vuelva a enviar el mensaje pero a otro destinatario.

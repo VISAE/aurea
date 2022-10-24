@@ -1,0 +1,60 @@
+/* ------------------------------------------------------------------------
+Colores
+------------------------------------------------------------------------- */
+
+$white: #FFF;
+$black: #000;
+$black-transparent: rgba(0,0,0,.2);
+
+
+$blue: #005883;
+$yellow: #F0B429;
+$orange: #F47920;
+
+$blue-dark: #01496C;
+
+$gray1: #F6F6F6;
+
+$red-alert: #F42D20;
+
+
+/* ------------------------------------------------------------------------
+Type Styles
+------------------------------------------------------------------------- */
+
+$font_site: "Open Sans", "Helvetica Neue", Helvetica, Verdana, Arial, sans-serif;
+
+@mixin type-heavy {
+	font-weight: 600;
+}
+
+@mixin type-heading {
+	font-family: $font_site;
+	@include type-heavy;
+	line-height: 1.25em;
+}
+
+
+/* ------------------------------------------------------------------------
+Measures
+------------------------------------------------------------------------- */
+
+$header-height: 100px;
+$header-height-md: 90px;
+$limit-padding: 40px;
+$limit-padding-sm: 10px;
+
+
+/* ------------------------------------------------------------------------
+breakpoint
+------------------------------------------------------------------------- */
+
+$break-sm: 576px;
+$break-md: 768px;
+$break-lg: 992px;
+$break-xl: 1200px;
+
+// navbar-expand-sm = mobile menu on xs screens <576px
+// navbar-expand-md = mobile menu on sm screens <768px
+// navbar-expand-lg = mobile menu on md screens <992px
+// navbar-expand-xl = mobile menu on lg screens <1200px
