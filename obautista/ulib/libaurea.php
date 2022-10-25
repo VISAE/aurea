@@ -967,6 +967,7 @@ function AUREA_HTML_CuerpoCorreoEncuesta($sCodigo, $idImagen, $sURL, $iFechaServ
 	if (!file_exists($mensajes_17)) {$mensajes_17 = $APP->rutacomun . 'lg/lg_17_es.php';}
 	require $mensajes_17;
 	$sRutaImg = 'https://datateca.unad.edu.co/img/';
+	$sURLDestino = 'https://aurea.unad.edu.co/satisfaccion/';
 	$idEntidad = Traer_Entidad();
 	switch ($idEntidad) {
 	case 1:
@@ -996,12 +997,6 @@ function AUREA_HTML_CuerpoCorreoEncuesta($sCodigo, $idImagen, $sURL, $iFechaServ
 	<img class="text-center" style="max-width: 100%; display: block;" width="260" src="' . $sRutaImg . 'correo2022/estudiante' . $sNumImage . '.jpg">
 	</td>
 	<td align="center" bgcolor="#F1F1F1">';
-	/*
-						<br>
-						<span style="font-size: 14px;">
-							https://aurea.unad.edu.co/satisfaccion/?u=' . $sURL . '
-						</span>
-	*/
 	$sRes = $sRes . '<font face="Arial, Helvetica, sans-serif" color="#333333">
 	<p>' . $ETI['mail_enc_parte1'] . $sFechaLarga . $ETI['mail_enc_parte2'] . '</p>
 </font>
@@ -1012,7 +1007,7 @@ function AUREA_HTML_CuerpoCorreoEncuesta($sCodigo, $idImagen, $sURL, $iFechaServ
 			<td align="center" bgcolor="#F0B429" style="font-size:22px;">
 				<font face="Arial, Helvetica, sans-serif" color="#005883">
 					<a style="padding: 10px 20px; color: #005883; font-size: 12px; text-decoration: none; word-wrap: break-word;" target="_blank"
-					href="https://aurea.unad.edu.co/satisfaccion/?u=' . $sURL . '">
+					href="' . $sURLDestino . '?u=' . $sURL . '">
 						<span style="font-size: 24px;">RESPONDER</span>
 					</a>
 				</font>
@@ -1031,8 +1026,8 @@ function AUREA_HTML_CuerpoCorreoEncuesta($sCodigo, $idImagen, $sURL, $iFechaServ
 			<td align="center" bgcolor="#005883" style="font-size:14px;">
 				<font face="Arial, Helvetica, sans-serif" color="#ffffff">
 					<a style="padding: 10px 20px; color: #ffffff; font-size: 12px; text-decoration: none; word-wrap: break-word;" target="_blank"
-					href="https://aurea.unad.edu.co/satisfaccion/?n=' . $sURL . '">
-						Si no desea responder, por favor haga clic aquí
+					href="' . $sURLDestino . '?n=' . $sURL . '">
+						Si no desea responder, por favor haga clic aqu&iacute;
 					</a>
 				</font>
 			</td>
@@ -1048,32 +1043,116 @@ function AUREA_HTML_CuerpoCorreoEncuesta($sCodigo, $idImagen, $sURL, $iFechaServ
 	<p>
 		En caso de que no pueda acceder desde este correo, por favor ingrese a<br>
 		<a style="padding: 10px 20px; color: #005883; word-wrap: break-word;" target="_blank"
-			href="https://aurea.unad.edu.co/satisfaccion/">
-			https://aurea.unad.edu.co/satisfaccion/
+			href="' . $sURLDestino . '">' . $sURLDestino . '
 		</a><br>
 		e ingrese su n&uacute;mero de documento y el c&oacute;digo <b>' . $sCodigo . '</b>
 	</p>
 	<br>
 </font>';
-	/*
-		$sRes = $sRes . '<font face="Arial, Helvetica, sans-serif" color="#333333">
-		<p>'.$ETI['mail_enc_parte1'].$sFechaLarga.$ETI['mail_enc_parte2'].':</p>
-		</font>
-		<font face="Arial, Helvetica, sans-serif" color="#333333" size="12">
-		<p style="padding: 10px 20px; background: #F0B429;">'.$sCodigo.'</p>
-		</font>
-
-		<font face="Arial, Helvetica, sans-serif" color="#333333">
-		<p><div style="word-wrap: break-word; width: 100%; max-width: 330px; padding: 0 10px;">'.$ETI['mail_login_parte3'].':
-		<a style="color: #005883;" href="'.$sURL.'" target="_blank">'.$sURL.'</a>
-		</div></p>
-
-		</font>';
-	*/
 	$sRes = $sRes . '</td>
 	</tr>
 	</tbody>
 	</table>';
+	return $sRes;
+}
+// Correo de desercion
+function AUREA_HTML_CuerpoCorreoDesercion($sCodigo, $idImagen, $sMes, $aure73id, $iFechaServicio) {
+	require './app.php';
+	if (isset($_SESSION['unad_idioma']) == 0) {
+		$_SESSION['unad_idioma'] = 'es';
+	}
+	$mensajes_17 = $APP->rutacomun . 'lg/lg_17_' . $_SESSION['unad_idioma'] . '.php';
+	if (!file_exists($mensajes_17)) {$mensajes_17 = $APP->rutacomun . 'lg/lg_17_es.php';}
+	require $mensajes_17;
+	$sRutaImg = 'https://datateca.unad.edu.co/img/';
+	$sURLDestino = 'https://aurea.unad.edu.co/satisfaccion/';
+	$idEntidad = Traer_Entidad();
+	switch ($idEntidad) {
+	case 1:
+		$sRutaImg = 'https://datateca.unad.edu.co/img/fl/';
+		break;
+	}
+	$sNumImage = '';
+	switch ($idImagen) {
+	case '0':
+	case '1':
+	case '2':
+	case '3':
+	case '4':
+	case '5':
+	case '6':
+	case '7':
+	case '8':
+	case '9':
+		$sNumImage = '_' . $idImagen;
+		break;
+	}
+	$sFechaLarga = formato_FechaLargaDesdeNumero($iFechaServicio, true);
+	$sRes = '';
+	/*
+		$sRes = '<table border="0" cellpadding="30" cellspacing="0" width="100%" style="width: 100%; max-width: 100%; min-width: 100%;">
+		<tbody>
+		<tr>
+		<td align="center" bgcolor="#F1F1F1">
+		<font face="Arial, Helvetica, sans-serif" color="#333333" size="4">
+		<p>Queremos conocer porqu&eacute; no continuas con nosotros, por favor selecciona una de las siguentes opciones:</p>
+		</font>
+		</td>
+		</tr>
+		</tbody>
+		</table>';
+	*/
+	$sRes = $sRes . '<font face="Arial, Helvetica, sans-serif" color="#333333">
+	<table border="0" cellpadding="20" cellspacing="0" width="100%" style="width: 100%; max-width: 100%; min-width: 100%;">
+	<tbody>
+	<tr>
+	<td align="center">
+	<table border="0" cellpadding="0" cellspacing="0" width="80%" style="width: 80%; max-width: 80%; min-width: 80%;">';
+	$sCuerpo = '';
+	$iFilas = 12;
+	$aValor = array(0, 1, 3, 4, 5, 6,
+		7, 9, 10, 13, 14,
+		2, 11);
+	$aIconos = array('', 'no.png', 'time.png', 'student.png', 'quality.png', 'support.png',
+		'cursor.png', 'program.png', 'university.png', 'wifi.png', 'money.png',
+		'break.png', 'clear.png');
+	$aEtiquetas = array('', 'No Adaptaci&oacute;n a la Modalidad de estudio', 'Administraci&oacute;n del tiempo y/o h&aacute;bitos de estudio', 'Prefiere la modalidad presencial', 'No Recibi&oacute; servicio de Calidad', 'No Recibi&oacute; Soporte t&eacute;cnico y administrativo',
+		'Poco dominio de herramientas ofim&aacute;ticas', 'El programa acad&eacute;mico no responde a sus expectativas', 'Se encuentra estudiando en otra universidad', 'Dificultades en conectividad', 'Factor econ&oacute;mico',
+		'Dificultades personales y/o familiares', 'Prefiero no responder');
+	for ($k = 1; $k <= $iFilas; $k++) {
+		if ($sCuerpo != '') {
+			$sCuerpo = $sCuerpo . '<tr><td colspan="2"><hr></td></tr>';
+		}
+		$URL = url_encode('' . $sMes . '|' . $aure73id . '|' . md5($iFechaServicio) . '|' . $aValor[$k]);
+		$sURL = '' . $URL . '';
+		$sCuerpo = $sCuerpo . '<tr>
+		<td width="80" align="center" valign="baseline">
+		<a href="' . $sURLDestino . '?u=' . $sURL . '"><img src="' . $sRutaImg . 'ico-encuestas/' . $aIconos[$k] . '" style="display:block"></a>
+		</td>
+		<td valign="middle">
+		<a style="text-decoration: none; padding: 30px 0; color: #333333;" target="_blank" href="' . $sURLDestino . '?u=' . $sURL . '">
+		' . $aEtiquetas[$k] . '
+		</a>
+		</td>
+	</tr>';
+	}
+	$sRes = $sRes . $sCuerpo;
+	$sRes = $sRes . '</table>
+	<font face="Arial, Helvetica, sans-serif">
+	<p>
+		En caso de que no pueda acceder desde este correo, por favor ingrese a<br>
+		<a style="padding: 10px 20px; color: #005883; word-wrap: break-word;" target="_blank"
+			href="' . $sURLDestino . '">' . $sURLDestino . '
+		</a><br>
+		e ingrese su n&uacute;mero de documento y el c&oacute;digo <b>' . $sCodigo . '</b>
+	</p>
+	<br>
+	</font>
+	</td>
+	</tr>
+	</tbody>
+	</table>
+	</font>';
 	return $sRes;
 }
 //
@@ -1108,9 +1187,9 @@ function AUREA_HTML_PieCorreo() {
 		break;
 	default:
 		$sDato1 = 'Instituci&oacute;n de Educaci&oacute;n Superior sujeta a inspecci&oacute;n y vigilancia por el Ministerio de Educaci&oacute;n Nacional de Colombia - IES 2102';
-		$sDato2 = 'En Bogotá D.C. (Colombia) Tel: <a style="color: #005883;" href="tel:+576013443700">(+57)(601)344 3700</a>
+		$sDato2 = 'En Bogot&aacute; D.C. (Colombia) Tel: <a style="color: #005883;" href="tel:+576013443700">(+57)(601)344 3700</a>
 			<br>
-			Línea gratuita nacional: <a style="color: #005883;">01 8000 115223</a>';
+			L&iacute;nea gratuita nacional: <a style="color: #005883;">01 8000 115223</a>';
 		break;
 	}
 	$sRes = '<table border="0" cellpadding="0" cellspacing="0" width="100%" style="width: 100%; max-width: 100%; min-width: 100%;">
@@ -1541,6 +1620,9 @@ function AUREA_IniciarEncuestaPublica($idTercero, $iTipoEncuesta, $idModulo, $id
 	$sError = '';
 	$sDebug = '';
 	$aure73codigo = '';
+	$sMes = date('Ym');
+	$aure73id = 0;
+	$bExisteEncuesta = false;
 	switch ($iTipoEncuesta) {
 	case 1: // Satisfacción
 		$sNomTipoEncuesta = 'Satisfacción';
@@ -1560,7 +1642,6 @@ function AUREA_IniciarEncuestaPublica($idTercero, $iTipoEncuesta, $idModulo, $id
 		$mensajes_17 = $APP->rutacomun . 'lg/lg_17_' . $sIdioma . '.php';
 		if (!file_exists($mensajes_17)) {$mensajes_17 = $APP->rutacomun . 'lg/lg_17_es.php';}
 		require $mensajes_17;
-		$sMes = date('Ym');
 		$sTabla = 'aure73encuesta' . $sMes;
 		$bexiste = $objDB->bexistetabla($sTabla);
 		if (!$bexiste) {
@@ -1587,7 +1668,9 @@ function AUREA_IniciarEncuestaPublica($idTercero, $iTipoEncuesta, $idModulo, $id
 	if ($sError == '') {
 		$sCorreoUsuario = '';
 		$iCodigoRastro = 0;
-		list($sCorreoUsuario, $sError, $sDebugM) = AUREA_CorreoNotifica($idTercero, $objDB, $bDebug);
+		//list($sCorreoUsuario, $sError, $sDebugM)=AUREA_CorreoNotifica($idTercero, $objDB, $bDebug);
+		$sCorreoUsuario = 'omar.bautista@unad.edu.co'; //! PRUEBAS
+		$sDebugM = ''; //! PRUEBAS
 		$sDebug = $sDebug . $sDebugM;
 	}
 	if ($sError == '') {
@@ -1603,7 +1686,7 @@ function AUREA_IniciarEncuestaPublica($idTercero, $iTipoEncuesta, $idModulo, $id
 			switch ($idModulo) {
 			case 2202: // Estudiantes - Encuesta de deserción
 				$aure73tipointeresado = 1;
-				$sSQL = 'SELECT core01idescuela, core01idprograma, core01idzona, core011idcead, core01peracainicial
+				$sSQL = 'SELECT core01idescuela, core01idprograma, core01idzona, core011idcead, core01peracainicial, core01desc_cont_encuesta, core01desc_id_encuesta
 					FROM core01estprograma
 					WHERE core01id=' . $idRegistro . '';
 				$tabla = $objDB->ejecutasql($sSQL);
@@ -1614,6 +1697,23 @@ function AUREA_IniciarEncuestaPublica($idTercero, $iTipoEncuesta, $idModulo, $id
 					$aure73idescuela = $fila['core01idescuela'];
 					$aure73idprograma = $fila['core01idprograma'];
 					$aure73idperiodo = $fila['core01peracainicial'];
+					if ($fila['core01desc_id_encuesta'] != 0) {
+						$bExisteEncuesta = true;
+						$sMes = $fila['core01desc_cont_encuesta'];
+						$aure73id = $fila['core01desc_id_encuesta'];
+						$sTabla = 'aure73encuesta' . $sMes;
+						$sSQL = 'SELECT aure73codigo, aure73fechagenera FROM aure73encuesta' . $sMes . ' WHERE aure73id=' . $aure73id . '';
+						$tabla = $objDB->ejecutasql($sSQL);
+						if ($objDB->nf($tabla) > 0) {
+							$fila = $objDB->sf($tabla);
+							$aure73codigo = $fila['aure73codigo'];
+							$aure73fechagenera = $fila['aure73fechagenera'];
+							$idImagenCorreo = substr(numeros_validar($aure73codigo), 3, 1);
+							if ($idImagenCorreo === '') {
+								$idImagenCorreo = 1;
+							}
+						}
+					}
 				} else {
 					$sError = 'No se ha encontrado el registro de referencia.';
 				}
@@ -1676,30 +1776,21 @@ function AUREA_IniciarEncuestaPublica($idTercero, $iTipoEncuesta, $idModulo, $id
 			}
 			break;
 		}
-		$aure73consec = tabla_consecutivo($sTabla, 'aure73consec', 'aure73idtercero=' . $idTercero . '', $objDB);
-		$aure73fechagenera = fecha_DiaMod();
-		$aure73codigo = md5($aure73fechagenera . $idTercero . $sTabla . $aure73consec);
-		$idImagenCorreo = substr(numeros_validar($aure73codigo), 3, 1);
-		if ($idImagenCorreo === '') {
-			$idImagenCorreo = 1;
-		}
-		$aure73codigo = substr($aure73codigo, 0, 10);
-		$aure73id = tabla_consecutivo($sTabla, 'aure73id', '', $objDB);
-		$sCampos273 = 'aure73idtercero, aure73consec, aure73id, aure73tipoencuesta, aure73idmodulo,
-		aure73idtabla, aure73idregistro, aure73fechagenera, aure73tipointeresado, aure73idzona,
-		aure73idcentro, aure73idescuela, aure73idprograma, aure73idperiodo, aure73edad,
-		aure73codigo, aure73acepta, aure73t1_p1, aure73t1_p2, aure73t1_p3,
-		aure73t1_p4, aure73t1_p5, aure73t2_p1, aure73t2_comentario, aure73fecharespuesta';
-		$sValores273 = '' . $idTercero . ', ' . $aure73consec . ', ' . $aure73id . ', ' . $iTipoEncuesta . ', ' . $idModulo . ',
-		' . $idTabla . ', ' . $idRegistro . ', ' . $aure73fechagenera . ', ' . $aure73tipointeresado . ', ' . $aure73idzona . ',
-		' . $aure73idcentro . ', ' . $aure73idescuela . ', ' . $aure73idprograma . ', ' . $aure73idperiodo . ', ' . $aure73edad . ',
-		"' . $aure73codigo . '", ' . $aure73acepta . ', ' . $aure73t1_p1 . ', ' . $aure73t1_p2 . ', ' . $aure73t1_p3 . ',
-		' . $aure73t1_p4 . ', ' . $aure73t1_p5 . ', ' . $aure73t2_p1 . ', "' . $aure73t2_comentario . '", ' . $aure73fecharespuesta . '';
-		$sSQL = 'INSERT INTO ' . $sTabla . ' (' . $sCampos273 . ') VALUES (' . $sValores273 . ');';
-		$result = $objDB->ejecutasql($sSQL);
-		if ($result == false) {
-			//Fallo el registro del codigo, hacemos un reintento, pero refrescando el id.
+		if (!$bExisteEncuesta) {
+			$aure73consec = tabla_consecutivo($sTabla, 'aure73consec', 'aure73idtercero=' . $idTercero . '', $objDB);
+			$aure73fechagenera = fecha_DiaMod();
+			$aure73codigo = md5($aure73fechagenera . $idTercero . $sTabla . $aure73consec);
+			$idImagenCorreo = substr(numeros_validar($aure73codigo), 3, 1);
+			if ($idImagenCorreo === '') {
+				$idImagenCorreo = 1;
+			}
+			$aure73codigo = substr($aure73codigo, 0, 10);
 			$aure73id = tabla_consecutivo($sTabla, 'aure73id', '', $objDB);
+			$sCampos273 = 'aure73idtercero, aure73consec, aure73id, aure73tipoencuesta, aure73idmodulo,
+			aure73idtabla, aure73idregistro, aure73fechagenera, aure73tipointeresado, aure73idzona,
+			aure73idcentro, aure73idescuela, aure73idprograma, aure73idperiodo, aure73edad,
+			aure73codigo, aure73acepta, aure73t1_p1, aure73t1_p2, aure73t1_p3,
+			aure73t1_p4, aure73t1_p5, aure73t2_p1, aure73t2_comentario, aure73fecharespuesta';
 			$sValores273 = '' . $idTercero . ', ' . $aure73consec . ', ' . $aure73id . ', ' . $iTipoEncuesta . ', ' . $idModulo . ',
 			' . $idTabla . ', ' . $idRegistro . ', ' . $aure73fechagenera . ', ' . $aure73tipointeresado . ', ' . $aure73idzona . ',
 			' . $aure73idcentro . ', ' . $aure73idescuela . ', ' . $aure73idprograma . ', ' . $aure73idperiodo . ', ' . $aure73edad . ',
@@ -1708,8 +1799,19 @@ function AUREA_IniciarEncuestaPublica($idTercero, $iTipoEncuesta, $idModulo, $id
 			$sSQL = 'INSERT INTO ' . $sTabla . ' (' . $sCampos273 . ') VALUES (' . $sValores273 . ');';
 			$result = $objDB->ejecutasql($sSQL);
 			if ($result == false) {
-				//No, esto fallo definitivamente.
-				$sError = $ERR['falla_codigo'];
+				//Fallo el registro del codigo, hacemos un reintento, pero refrescando el id.
+				$aure73id = tabla_consecutivo($sTabla, 'aure73id', '', $objDB);
+				$sValores273 = '' . $idTercero . ', ' . $aure73consec . ', ' . $aure73id . ', ' . $iTipoEncuesta . ', ' . $idModulo . ',
+				' . $idTabla . ', ' . $idRegistro . ', ' . $aure73fechagenera . ', ' . $aure73tipointeresado . ', ' . $aure73idzona . ',
+				' . $aure73idcentro . ', ' . $aure73idescuela . ', ' . $aure73idprograma . ', ' . $aure73idperiodo . ', ' . $aure73edad . ',
+				"' . $aure73codigo . '", ' . $aure73acepta . ', ' . $aure73t1_p1 . ', ' . $aure73t1_p2 . ', ' . $aure73t1_p3 . ',
+				' . $aure73t1_p4 . ', ' . $aure73t1_p5 . ', ' . $aure73t2_p1 . ', "' . $aure73t2_comentario . '", ' . $aure73fecharespuesta . '';
+				$sSQL = 'INSERT INTO ' . $sTabla . ' (' . $sCampos273 . ') VALUES (' . $sValores273 . ');';
+				$result = $objDB->ejecutasql($sSQL);
+				if ($result == false) {
+					//No, esto fallo definitivamente.
+					$sError = $ERR['falla_codigo'];
+				}
 			}
 		}
 	}
@@ -1722,13 +1824,16 @@ function AUREA_IniciarEncuestaPublica($idTercero, $iTipoEncuesta, $idModulo, $id
 		$sTituloCorreo = $ETI['mail_enc_titulo'] . ' ' . $sNomEntidad . '';
 		$URL = url_encode('' . $sMes . '|' . $aure73id . '|' . md5($aure73fechagenera));
 		$sURL = '' . $URL . '';
-		$sMsg = AUREA_HTML_EncabezadoCorreo($sTituloCorreo);
 		switch ($iTipoEncuesta) {
 		case 1: // Satisfaccion
+			$sMsg = AUREA_HTML_EncabezadoCorreo($sTituloCorreo);
 			$sMsg = $sMsg . AUREA_HTML_CuerpoCorreoEncuesta($aure73codigo, $idImagenCorreo, $sURL, $aure73fechagenera);
 			break;
 		case 2: // Deserción.
 			$sTituloCorreo = $ETI['mail_enc_titulo_2'] . ' ' . $sNomEntidad . '';
+			//$sMsg=AUREA_HTML_EncabezadoCorreo($sTituloCorreo);
+			$sMsg = AUREA_HTML_EncabezadoCorreo('Queremos conocer porqu&eacute; no continuas con nosotros, por favor selecciona una de las siguentes opciones:');
+			$sMsg = $sMsg . AUREA_HTML_CuerpoCorreoDesercion($aure73codigo, $idImagenCorreo, $sMes, $aure73id, $aure73fechagenera);
 			break;
 		}
 		$sMsg = $sMsg . AUREA_HTML_PieCorreo();
@@ -1758,6 +1863,6 @@ function AUREA_IniciarEncuestaPublica($idTercero, $iTipoEncuesta, $idModulo, $id
 		}
 		//Termina el envio del codigo...
 	}
-	return array($aure73codigo, $sError, $sDebug);
+	return array($aure73codigo, $sError, $sDebug, $sMes, $aure73id);
 }
 ?>

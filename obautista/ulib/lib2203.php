@@ -5,6 +5,8 @@
 --- Modelo Versión 2.22.8 jueves, 28 de marzo de 2019
 --- 2203 Plan de estudios
 */
+define ('TIPOS_CURSO', 12);
+
 class cls2203_registro{
 var $iEstado=0;
 var $iFormaNota=0;
@@ -18,6 +20,10 @@ var $iObligatorio=0;
 var $sCodCurso='';
 var $sCodEquivalente='';
 var $sNomCurso='';
+var $sInfoEquivalentes='';
+var $sInfoHomologa='';
+var $sInfoPrerequisito='';
+var $dNotaFinal=0;
 /*
 0	Básico	1	1
 1	Específico	1	2
@@ -57,15 +63,23 @@ function __construct($sCodCurso, $sNomCurso, $iTipoCurso, $iNumCreditos){
 }
 class cls2203_plan{
 var $aAprobados=array();
+var $aTotalAprobado=array();
+var $aEstado=array();
 var $aFilas=array();
 var $aNecesarios=array();
 var $aRegistros=array();
 var $aTipoCredito=array();
+var $aComunes=array();
+var $aComunEscuela=array();
+var $icore01id=0;
 var $idContenedor=0;
 var $idPlan=0;
 var $idPlanOrigen=0;
+var $iEstadoPlan=0;
 var $iNecesarios=0;
+var $iNumAprobRequisitos=0;
 var $iRegistros=0;
+var $iTotalRegistros=0;
 var $iPesoTotal=0;
 function Iniciar(){
 	$this->iNecesarios=0;
@@ -73,72 +87,298 @@ function Iniciar(){
 	$this->iPesoTotal=0;
 	$this->aNecesarios=array();
 	$this->aRegistros=array();
-	for ($k=0;$k<10;$k++){
+	for ($k=0;$k<13;$k++){
 		$this->aNecesarios[$k]=0;
 		$this->aAprobados[$k]=0;
+		$this->aTotalAprobado[$k]=0;
 		$this->aFilas[$k]=0;
 		$this->aTipoCredito[$k]='{'.$k.'}';
 		}
 	}
-function CargarDatos($core01id, $objDB, $bDebug=false){
+function CargarDatosV2($core01id, $aParametros, $objDB, $bDebug=false){
 	$sError='';
 	$sDebug='';
 	$this->Iniciar();
-	$sSQL='SELECT core01idplandeestudios, core01gradoestado FROM core01estprograma WHERE core01id='.$core01id.'';
+
+	$this->aComunes=array();
+	$this->aComunEscuela=array();
+	$sSQL='SELECT core35id, core35nombre, core35tono FROM core35estadoenpde';
+	$tabla=$objDB->ejecutasql($sSQL);
+	while($fila=$objDB->sf($tabla)){
+		$this->aEstado[$fila['core35id']]['nombre']=cadena_notildes($fila['core35nombre']);
+		$this->aEstado[$fila['core35id']]['tono']=$fila['core35tono'];
+		}
+
+	$sSQL='SELECT core01idplandeestudios, core01gradoestado, core01idtercero, core01idestado, core01idescuela FROM core01estprograma WHERE core01id='.$core01id.'';
 	$tabla=$objDB->ejecutasql($sSQL);
 	if ($objDB->nf($tabla)>0){
 		$fila=$objDB->sf($tabla);
+		$this->iEstadoPlan=$fila['core01idestado'];
+		$this->icore01id=$core01id;
 		$this->idPlanOrigen=$fila['core01idplandeestudios'];
+		$idTercero=$fila['core01idtercero'];
+		$idEscuela=$fila['core01idescuela'];
 		}
 	if ($this->idPlanOrigen<1){
 		if ($bDebug){$sDebug=$sDebug.fecha_microtiempo().'No se ha asignado un plan de estudios.<br>';}
 		return array($sError, $sDebug);
 		die();
 		}
+	if ($this->idContenedor==0){
+		list($idContenedor, $sErrorCont)=f1011_BloqueTercero($idTercero, $objDB);
+		$this->idContenedor=$idContenedor;
+		}
 	$sSQL='SELECT core13id, core13nombre FROM core13tiporegistroprog';
 	$tabla=$objDB->ejecutasql($sSQL);
 	while($fila=$objDB->sf($tabla)){
 		$this->aTipoCredito[$fila['core13id']]=$fila['core13nombre'];
 		}
-	$sSQL='SELECT core01numcredbasicos, core01numcredespecificos, core01numcredelecgenerales, core01numcredelecescuela, core01numcredelecprograma, core01numcredeleccomplem 
-FROM core01estprograma 
-WHERE core01id='.$core01id.'';
+
+	if (isset($aParametros[101])==0){$aParametros[101]=1;}
+	if (isset($aParametros[102])==0){$aParametros[102]=200;}
+	if (isset($aParametros[103])==0){$aParametros[103]='';}
+	if (isset($aParametros[104])==0){$aParametros[104]='';}
+	if (isset($aParametros[105])==0){$aParametros[105]='';}
+	if (isset($aParametros[106])==0){$aParametros[106]='';}
+	$pagina=$aParametros[101];
+	$lineastabla=$aParametros[102];
+	$sSQLadd='';
+	$sSQLadd1='';
+	$sCondiTipo='';
+	$bConFiltro=false;
+	//if ($aParametros[104]!=''){$sSQLadd1=$sSQLadd1.'TB.core11componeteconoce='.$aParametros[104].' AND ';}
+	if ($aParametros[106]!=''){
+		$sSQLadd1=$sSQLadd1.'TB.core03itipocurso='.$aParametros[106].' AND ';
+		$bConFiltro=true;
+		}
+	//Codigo del curso
+	if ($aParametros[105]!=''){
+		$sSQLadd=$sSQLadd.' AND T4.unad40titulo LIKE "%'.$aParametros[105].'%"';
+		$bConFiltro=true;
+		}
+	if ($aParametros[103]!=''){
+		$sBase=trim(strtoupper($aParametros[103]));
+		$aNoms=explode(' ', $sBase);
+		for ($k=1;$k<=count($aNoms);$k++){
+			$sCadena=$aNoms[$k-1];
+			if ($sCadena!=''){
+				$sSQLadd=$sSQLadd.' AND T4.unad40nombre LIKE "%'.$sCadena.'%"';
+				//$sSQLadd1=$sSQLadd1.'T1.unad11razonsocial LIKE "%'.$sCadena.'%" AND ';
+				}
+			}
+		$bConFiltro=true;
+		}
+	if ($bConFiltro){
+		$aFactor=array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
+		$sSQL='SELECT TB.core03itipocurso 
+		FROM core03plandeestudios_'.$this->idContenedor.' AS TB, unad40curso AS T4 
+		WHERE '.$sSQLadd1.' TB.core03idestprograma='.$core01id.' AND TB.core03idequivalente=0 AND TB.core03idcurso=T4.unad40id '.$sSQLadd.'
+		GROUP BY TB.core03itipocurso';
+		if ($bDebug){$sDebug=$sDebug.fecha_microtiempo().' Revisando los filtros: '.$sSQL.'<br>';}
+		$tabla=$objDB->ejecutasql($sSQL);
+		while($fila=$objDB->sf($tabla)){
+			$aFactor[$fila['core03itipocurso']]=1;
+			}
+		}else{
+		$aFactor=array(1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1);
+		}
+	$bTraerICB=false;
+	$bTraerDBC=false;
+	$sSQL='SELECT core01numcredbasicos, core01numcredespecificos, core01numcredelecgenerales, core01numcredelecescuela, 
+	core01numcredelecprograma, core01numcredeleccomplem, core01gradoidopcion 
+	FROM core01estprograma 
+	WHERE core01id='.$core01id.$sCondiTipo.'';
 	$tabla=$objDB->ejecutasql($sSQL);
 	if ($objDB->nf($tabla)>0){
 		$fila=$objDB->sf($tabla);
-		$this->aNecesarios[0]=$fila['core01numcredbasicos'];
-		$this->aNecesarios[1]=$fila['core01numcredespecificos'];
-		$this->aNecesarios[5]=$fila['core01numcredelecgenerales'];
-		$this->aNecesarios[6]=$fila['core01numcredelecescuela'];
-		$this->aNecesarios[2]=$fila['core01numcredelecprograma'];
-		$this->aNecesarios[4]=$fila['core01numcredeleccomplem'];
+		$this->aNecesarios[0]=$fila['core01numcredbasicos']*$aFactor[0];
+		$this->aNecesarios[1]=$fila['core01numcredespecificos']*$aFactor[1];
+		$this->aNecesarios[5]=$fila['core01numcredelecgenerales']*$aFactor[5];
+		$this->aNecesarios[6]=$fila['core01numcredelecescuela']*$aFactor[6];
+		$this->aNecesarios[2]=$fila['core01numcredelecprograma']*$aFactor[2];
+		$this->aNecesarios[4]=$fila['core01numcredeleccomplem']*$aFactor[4];
+		if ($fila['core01numcredelecgenerales']>0){$bTraerICB=true;}
+		if ($fila['core01numcredelecescuela']>0){$bTraerDBC=true;}
+		switch ($fila['core01gradoidopcion']){
+			case 4: // Diplomado de profundizacion.
+				$this->aNecesarios[10]=10;
+				break;
+		}
 		}
 	for ($k=0;$k<10;$k++){
 		$this->iNecesarios=$this->iNecesarios+$this->aNecesarios[$k];
 		}
-	$sSQLadd='';
-	$sSQLadd1='';
-	$sSQL='SELECT TB.core03idcurso, TB.core03id, T4.unad40consec, T4.unad40nombre, TB.core03obligatorio, TB.core03numcreditos, TB.core03nivelcurso, TB.core03nota75, TB.core03fechanota75, TB.core03nota25, TB.core03fechanota25, TB.core03notahomologa, TB.core03fechanotahomologa, TB.core03detallehomologa, TB.core03fechainclusion, TB.core03notafinal, TB.core03formanota, TB.core03estado, TB.core03idtercero, TB.core03itipocurso, TB.core03peracaaprueba, TB.core03idusuarionota75, TB.core03idusuarionota25, TB.core03idusuarionotahomo 
-FROM core03plandeestudios_'.$this->idContenedor.' AS TB, unad40curso AS T4 
-WHERE '.$sSQLadd1.' TB.core03idestprograma='.$core01id.' AND TB.core03idcurso=T4.unad40id '.$sSQLadd.'
-ORDER BY TB.core03itipocurso, TB.core03nivelcurso, TB.core03idcurso';
-	if ($bDebug){$sDebug=$sDebug.fecha_microtiempo().' Carga de datos: '.$sSQL.'<br>';}
+	$bCargaComunes=true;
+	switch($this->iEstadoPlan){
+		case 7: //Egresando
+		case 10: //Graduado
+		$bCargaComunes=false;
+		break;
+		}
+	if ($bCargaComunes){
+		$sIds40='-99';
+		if ($bTraerDBC){
+			//Saber cuales son los electivos de escuela
+			$sSQL='SELECT TB.core28idcurso AS idCurso
+			FROM core28electivos AS TB 
+			WHERE TB.core28idescuela='.$idEscuela.' AND TB.core28ofertado="S" AND TB.core28idcurso NOT IN ('.$sIds40.')';
+			if ($this->idPlanOrigen>0){
+				$sSQL=$sSQL.' UNION 
+				SELECT TC.corf14idcurso AS idCurso
+				FROM corf14cursoexcepcion AS TC
+				WHERE corf14idplanest='.$this->idPlanOrigen.' AND TC.corf14tipocredito=6 AND TC.corf14idcurso NOT IN ('.$sIds40.')';
+				}
+			$tabla=$objDB->ejecutasql($sSQL);
+			while($fila=$objDB->sf($tabla)){
+				$sIds40=$sIds40.','.$fila['idCurso'];
+				$this->aComunEscuela[$fila['idCurso']]=1;
+				}
+			}
+		//Ahora los disciplinares comunes
+		if ($bTraerICB){
+			//Saber cuales son los electivos de escuela
+			$sSQL='SELECT TB.core28idcurso AS idCurso
+			FROM core28electivos AS TB 
+			WHERE TB.core28idescuela=0 AND TB.core28ofertado="S" AND TB.core28idcurso NOT IN ('.$sIds40.')';
+			if ($this->idPlanOrigen>0){
+				$sSQL=$sSQL.' UNION 
+				SELECT TC.corf14idcurso AS idCurso
+				FROM corf14cursoexcepcion AS TC
+				WHERE corf14idplanest='.$this->idPlanOrigen.' AND TC.corf14tipocredito=5 AND TC.corf14idcurso NOT IN ('.$sIds40.')';
+				}
+			$tabla=$objDB->ejecutasql($sSQL);
+			while($fila=$objDB->sf($tabla)){
+				$this->aComunes[$fila['idCurso']]=1;
+				}
+			// Julio 15 de 2022 - Por solicitud de la VIACI se hace excepcion para un curso en un plan de estudios.
+			if ($this->idPlanOrigen == 3) {
+				$this->aComunes[112001] = 1;
+			}
+			}
+		}
+	// - AND (TB.core03itipocurso IN (0,1) OR (TB.core03itipocurso NOT IN (0,1) AND TB.core03estado<>9)) 
+	//, TB.core03notahomologa, TB.core03fechanotahomologa, TB.core03detallehomologa, TB.core03idusuarionotahomo, 
+	$sSQL='SELECT TB.core03idcurso, TB.core03id, T4.unad40consec, T4.unad40nombre, TB.core03obligatorio, TB.core03numcreditos, 
+	TB.core03nivelcurso, TB.core03nota75, TB.core03fechanota75, TB.core03nota25, TB.core03fechanota25, 
+	TB.core03fechainclusion, TB.core03notafinal, TB.core03formanota, 
+	TB.core03estado, TB.core03idtercero, TB.core03itipocurso, TB.core03peracaaprueba, TB.core03idusuarionota75, 
+	TB.core03idusuarionota25, TB.core03tieneequivalente, TB.core03idprerequisito, 
+	TB.core03idprerequisito2, TB.core03idprerequisito3, TB.core03idcorequisito, TB.core03idequivalencia 
+	FROM core03plandeestudios_'.$this->idContenedor.' AS TB, unad40curso AS T4 
+	WHERE '.$sSQLadd1.' TB.core03idestprograma='.$core01id.' AND TB.core03idequivalente=0 
+	AND TB.core03idcurso=T4.unad40id '.$sSQLadd.'
+	ORDER BY TB.core03itipocurso, TB.core03nivelcurso, TB.core03idcurso';
+	if ($bDebug){$sDebug=$sDebug.fecha_microtiempo().' Carga de datos PLAN DE ESTUDIO INDIVIDUAL: '.$sSQL.'<br>';}
 	$tabla=$objDB->ejecutasql($sSQL);
+	if ($tabla==false){
+		}else{
+		$registros=$objDB->nf($tabla);
+		$this->iTotalRegistros=$registros;
+		if ((($registros-1)/$lineastabla)<($pagina-1)){$pagina=(int)(($registros-1)/$lineastabla)+1;}
+		if ($registros>$lineastabla){
+			$rbase=($pagina-1)*$lineastabla;
+			$limite=' LIMIT '.$rbase.', '.$lineastabla;
+			$tabla=$objDB->ejecutasql($sSQL.$limite);
+			}
+		}
 	while($fila=$objDB->sf($tabla)){
+		$sInfoEquivalentes='';
+		$sInfoHomologa='';
+		$sInfoPrerequisito='';
 		$objCurso=new cls2203_registro($fila['core03idcurso'], $fila['unad40nombre'],$fila['core03itipocurso'],$fila['core03numcreditos']);
+		$objCurso->iEstado=$fila['core03estado'];
+		$bCursoAprobado=false;
+		switch($objCurso->iEstado){
+			case 5: //Homologado
+			case 7: //Aprobado
+			case 8: //Requisito cumplido
+			case 11: // Aprobado Por Convenio
+			case 15: // Aprobado por suficiencia
+			case 17: // Ciclo Aprobado En Otra Institución
+			case 25: // Hologado por Equivalencia.
+			$bCursoAprobado=true;
+			break;
+			case 10: // Plan de Transición
+			if ($fila['core03idequivalencia']!=0){
+				$sInfoHomologa=' ['.$fila['core03idequivalencia'].']';
+				}
+			$bCursoAprobado=true;
+			break;
+			default:
+			if ($fila['core03tieneequivalente']!=0){
+				$sSQL='SELECT TB.core03idcurso, T4.unad40titulo, T4.unad40nombre FROM core03plandeestudios_'.$this->idContenedor.' AS TB, unad40curso AS T4 WHERE TB.core03idestprograma='.$core01id.' AND ((TB.core03idcursoreemp1='.$fila['core03idcurso'].') OR (TB.core03idcursoreemp2='.$fila['core03idcurso'].')) AND TB.core03idcurso=T4.unad40id ';
+				$sInfoEquivalentes='Cursos equivalentes:';
+				$tablae=$objDB->ejecutasql($sSQL);
+				while($filae=$objDB->sf($tablae)){
+					$sInfoEquivalentes=$sInfoEquivalentes.' <b>'.$filae['unad40titulo'].'</b> '.cadena_notildes($filae['unad40nombre']).'';
+					}
+				}
+			//TB.core03idprerequisito, TB.core03idprerequisito2, TB.core03idprerequisito3, TB.core03idcorequisito
+			if ($fila['core03idprerequisito']!=0){
+				$sTituloPrerequisito='['.$fila['core03idprerequisito'].'] ';
+				$sInfoPrerequisito=$sInfoPrerequisito.$sTituloPrerequisito;
+				}
+			if ($fila['core03idprerequisito2']!=0){
+				$sTituloPrerequisito='['.$fila['core03idprerequisito2'].'] ';
+				$sInfoPrerequisito=$sInfoPrerequisito.$sTituloPrerequisito;
+				}
+			if ($fila['core03idprerequisito3']!=0){
+				$sTituloPrerequisito='['.$fila['core03idprerequisito3'].'] ';
+				$sInfoPrerequisito=$sInfoPrerequisito.$sTituloPrerequisito;
+				}
+			if ($fila['core03idcorequisito']!=0){
+				$sTituloPrerequisito='{Corequisito: '.$fila['core03idcorequisito'].'} ';
+				if ($sInfoPrerequisito!=''){$sInfoPrerequisito=$sInfoPrerequisito.'<br>';}
+				$sInfoPrerequisito=$sInfoPrerequisito.$sTituloPrerequisito;
+				}
+			break;
+			}
+		if ($bCursoAprobado){
+			$objCurso->iNumCreAprobados=$fila['core03numcreditos'];
+			switch($fila['core03itipocurso']){
+				case 3: //Requisito de grado
+				$this->iNumAprobRequisitos=$this->iNumAprobRequisitos+$fila['core03numcreditos'];
+				break;
+				}
+			if ($objCurso->iEstado==25){
+				$sInfoEquivalentes=$fila['core03idprerequisito3'];
+				}
+			}
 		$objCurso->iObligatorio=$fila['core03obligatorio'];
 		$objCurso->iNivel=$fila['core03nivelcurso'];
 		$objCurso->iNota75=$fila['core03nota75'];
 		$objCurso->iNota25=$fila['core03nota25'];
+		$objCurso->dNotaFinal=$fila['core03notafinal'];
 		$objCurso->iFormaNota=$fila['core03formanota'];
-		$objCurso->iEstado=$fila['core03estado'];
+		$objCurso->sInfoEquivalentes=$sInfoEquivalentes;
+		$objCurso->sInfoHomologa=$sInfoHomologa;
+		$objCurso->sInfoPrerequisito=$sInfoPrerequisito;
 		$this->iPesoTotal=$this->iPesoTotal+$objCurso->iPeso;
 		$this->iRegistros++;
 		$this->aRegistros[$this->iRegistros]=$objCurso;
+		//$bPuedeSerComun=true;
+		switch($fila['core03itipocurso']){
+			case 3: //Requisito de grado
+			$this->aNecesarios[3]=$this->aNecesarios[3]+$fila['core03numcreditos'];
+			break;
+			}
 		}
+	//Hacemos la carga de los aprobados.
+	$sEstadosAprobado=f2201_PEIEstadosAprobado();
+	$sSQL='SELECT TB.core03itipocurso, SUM(TB.core03numcreditos) AS Total 
+	FROM core03plandeestudios_'.$this->idContenedor.' AS TB 
+	WHERE TB.core03idestprograma='.$this->icore01id.' AND TB.core03idequivalente=0 
+	AND TB.core03estado IN ('.$sEstadosAprobado.')
+	GROUP BY TB.core03itipocurso';
+	if ($bDebug){$sDebug=$sDebug.fecha_microtiempo().' Cargando aprobacion: '.$sSQL.'<br>';}
+	$tabla3=$objDB->ejecutasql($sSQL);
+	while($fila3=$objDB->sf($tabla3)){
+		$this->aTotalAprobado[$fila3['core03itipocurso']]=$fila3['Total'];
+		}
+
 	return array($sError, $sDebug);
 	}
-function html(){
+function htmlV2($aParametros){
 	require './app.php';
 	$mensajes_todas=$APP->rutacomun.'lg/lg_todas_'.$_SESSION['unad_idioma'].'.php';
 	if (!file_exists($mensajes_todas)){$mensajes_todas=$APP->rutacomun.'lg/lg_todas_es.php';}
@@ -150,6 +390,7 @@ function html(){
 		return '<span class="rojo">'.$ETI['msg_noplan'].'</span>';
 		die();
 		}
+	$sVerde='style="color:#FFFFFF" bgcolor="#006600"';
 /*
 0	Básico	1	1
 1	Específico	1	2
@@ -161,36 +402,37 @@ function html(){
 7	Curso Libre	0	8
 8	No Categorizado	0	9
 9   Opcion de grado.
-<td><b>'.$ETI['core03fechanota75'].'</b></td>
-<td><b>'.$ETI['core03fechanota25'].'</b></td>
-<td align="right">
-'.html_paginador('paginaf2203', $registros, $lineastabla, $pagina, 'paginarf2203()').'
-'.html_lpp('lppf2203', $lineastabla, 'paginarf2203()').'
-</td>
+10	Plan de Transición	12	000033	TRAN
+11	Aprobado Por Convenio	12	000033	CONV
+12	Solicitado en Suficiencia	5	FF6600	SSUF
+13	En Estudio de Suficiencia	7	FF6600	ESUF
+14	Suficiencia Aprobada	9	FF6600	SUFA
+15	Aprobado por suficiencia	11	000033	SUFI
+17	Ciclo Aprobado En Otra Institución	11	000033	EXTE
+25	Homologado por Equivalencia	10	000033	HOME
 */
+	if (isset($aParametros[101])==0){$aParametros[101]=1;}
+	if (isset($aParametros[102])==0){$aParametros[102]=200;}
+	$pagina=$aParametros[101];
+	$lineastabla=$aParametros[102];
+	$registros=$this->iTotalRegistros;
+	
 	$sFilaEncabezado='<tr class="fondoazul">
-<td colspan="2"><b>'.$ETI['core03idcurso'].'</b></td>
-<td></td>
-<td><b>'.$ETI['core03numcreditos'].'</b></td>
-<td><b>'.$ETI['core03nivelcurso'].'</b></td>
-<td><b>'.$ETI['core03notafinal'].'</b></td>
-<td><b>'.$ETI['core03estado'].'</b></td>
-</tr>';
-	/*
-<td><b>'.$ETI['core03nota75'].'</b></td>
-<td><b>'.$ETI['core03nota25'].'</b></td>
-<td><b>'.$ETI['core03notahomologa'].'</b></td>
-<td><b>'.$ETI['core03formanota'].'</b></td>
-<td><b>'.$ETI['msg_fechanota'].'</b></td>
-	*/
-	//<b>'.$ETI['core03obligatorio'].'</b>
-	$iCols=7;
-	$sVerde=' bgcolor="#006600"';
-	$aEstado=array('Disponible', 'Pendiente de prerequisito', '', '', '', 'Homologado', '', 'Calificado', '', 'Excludio');
+	<td colspan="2"><b>'.$ETI['core03idcurso'].'</b></td>
+	<td></td>
+	<td><b>'.$ETI['core03numcreditos'].'</b></td>
+	<td><b>'.$ETI['core03nivelcurso'].'</b></td>
+	<td><b>'.$ETI['core03notafinal'].'</b></td>
+	<td colspan="2"><b>'.$ETI['core03estado'].'</b></td>
+	</tr>';
+	$iCols=8;
+	$sVerde=' style="color:#FFFFFF" bgcolor="#006600"';
+	//$aEstado=array('Disponible', 'Pendiente de prerequisito', '', '', '', 'Homologado', '', 'Calificado', '', 'Excludio');
 	$sRes='<table border="0" align="center" cellpadding="0" cellspacing="2" class="tablaapp">';
-	for ($k=0;$k<10;$k++){
+	$bConPaginador=false;
+	for ($k=0;$k<11;$k++){
 		$bPasa=false;
-		$iAvance=10;
+		$iAvance=0;
 		if ($k==0){
 			if ($this->iNecesarios==0){$bPasa=true;}
 			}
@@ -200,33 +442,128 @@ function html(){
 			if ($iAvance>100){$iAvance=100;}
 			}
 		if ($bPasa){
+			$iColsEncabezado=$iCols;
+			$sPaginador='';
+			if (!$bConPaginador){
+				$iColsEncabezado=$iCols-3;
+				$sPaginador='<td colspan="3" align="right">
+				'.html_paginador('paginaf2203', $registros, $lineastabla, $pagina, 'paginarf2203()').'
+				'.html_lpp('lppf2203', $lineastabla, 'paginarf2203()', 200).'
+				</td>';
+				$bConPaginador=true;
+				}
+			$sResultado='';
+			if ($this->aNecesarios[$k]>0){
+				if ($this->aTotalAprobado[$k]==$this->aNecesarios[$k]){
+					$sResultado=' <span class="verde">Completo</span>';
+					}else{
+					if ($this->aTotalAprobado[$k]>$this->aNecesarios[$k]){
+						$iSobrantes=$this->aTotalAprobado[$k]-$this->aNecesarios[$k];
+						$sResultado=' - <b>'.$iSobrantes.'</b> Sobrantes';
+						}else{
+						$iPendientes=$this->aNecesarios[$k]-$this->aTotalAprobado[$k];
+						$sResultado=' : <b>'.$iPendientes.'</b> pendientes';
+						}
+					}
+				$sResultado=' ['.$this->aTotalAprobado[$k].' de '.$this->aNecesarios[$k].$sResultado.']';
+				}
+			$sTituloFila='<b>'.cadena_notildes($this->aTipoCredito[$k]).'</b>'.$sResultado.' ';
 			$sRes=$sRes.'<tr class="fondoazul">
-<td colspan="'.$iCols.'" align="center"><b>'.cadena_notildes($this->aTipoCredito[$k]).'</b></td>
-</tr>'.$sFilaEncabezado;
+			<td colspan="'.$iColsEncabezado.'" align="center">'.$sTituloFila.'</td>'.$sPaginador.'
+			</tr>'.$sFilaEncabezado;
 			//Mostrar el contenido del componente.
 			for ($j=1;$j<=$this->iRegistros;$j++){
 				$objCurso=$this->aRegistros[$j];
 				if ($objCurso->iTipoCurso==$k){
-					$sPref='';
-					$sSuf='';
-					if ($objCurso->iNumCreAprobados>0){
-						$sPref='<b>';
-						$sSuf='</b>';
+					$sFondo='';
+					$sNotaFin='[Pendiente]';
+					switch($objCurso->iEstado){
+						case 0: //Pendiente de matricula
+						$sPref='';
+						$sSuf='';
+						break;
+						case 9: //No requerido
+						$sNotaFin='';
+						$sPref='<span style="color:#'.$this->aEstado[$objCurso->iEstado]['tono'].'">';
+						$sSuf='</span>';
+						break;
+						case 11: // Aprobado por convenio
+						case 17: //Ciclo Aprobado En Otra Institución
+						$sPref='<span style="color:#'.$this->aEstado[$objCurso->iEstado]['tono'].'"><b>';
+						$sSuf='</b></span>';
+						$sFondo='';
+						$sNotaFin='--';
+						break;
+						default:
+						$sPref='<span style="color:#'.$this->aEstado[$objCurso->iEstado]['tono'].'"><b>';
+						$sSuf='</b></span>';
+						if ($objCurso->iNumCreAprobados>0){
+							//$sPref='<b>';
+							//$sSuf='</b>';
+							$sFondo=$sVerde;
+							/*
+							$iNota75=f2400_NotaDesdePuntaje($objCurso->iNota75, 75);
+							$iNota25=f2400_NotaDesdePuntaje($objCurso->iNota25, 25);
+							$iNotaFin=formato_numero((($iNota75*3)+$iNota25)/4, 1);
+							*/
+							$iNotaFin=formato_numero(($objCurso->dNotaFinal/100), 1);
+							//['.$iNota75.' - '.$iNota25.'] 
+							$sNotaFin='<b>'.$iNotaFin.'</b>';
+							}
+						break;
 						}
 					$sObligatorio='';
 					if ($objCurso->iObligatorio!=0){
 						$sObligatorio='Obligatorio';
 						}
-					$sNotaFin='[Pendiente]';
+					$sInfoComplemento='';
+					$sInfoEstado=$this->aEstado[$objCurso->iEstado]['nombre'];
+					switch ($objCurso->iEstado){
+						case 1: // Pendiente de prerequisito
+						$sInfoEstado=$sInfoEstado.' '.$objCurso->sInfoPrerequisito;
+						break;
+						case 10: //Transicion
+						$sInfoEstado=$sInfoEstado.' '.$objCurso->sInfoHomologa;
+						break;
+						}
+					$sEquivalentes=$objCurso->sInfoEquivalentes;
+					switch ($objCurso->iEstado){
+						case 25:
+						$sInfoComplemento=' [Equivalente a: <b>'.$sEquivalentes.'</b>]';
+						$sEquivalentes='';
+						break;
+						}
+					//$objCurso->iNumCreAprobados.' / '
+					$sBotonComun='';
+					$sAnchoColumna=' colspan="2"';
+					if ($objCurso->iTipoCurso!=6){
+						if (isset($this->aComunEscuela[$objCurso->sCodCurso])!=0){
+							$sBotonComun='</td><td><input id="btEDC" name="btEDC" type="button" value="EDC" class="btMiniActualizar" onclick="pasa_ec('.$objCurso->sCodCurso.', 6)" title="Pasar a Electivo Disciplinar Com&uacute;n"/>';
+							$sAnchoColumna='';
+							}
+						}
+					//ahora puede ser un basico comun
+					if ($objCurso->iTipoCurso!=5){
+						if (isset($this->aComunes[$objCurso->sCodCurso])!=0){
+							$sBotonComun='</td><td><input id="btEBC" name="btEBC" type="button" value="EBC" class="btMiniMas" onclick="pasa_ec('.$objCurso->sCodCurso.', 5)" title="Pasar a Electivo IBC"/>';
+							$sAnchoColumna='';
+							}
+						}
 					$sRes=$sRes.'<tr>
-<td>'.$sPref.$objCurso->sCodCurso.$sSuf.'</td>
-<td>'.$sPref.cadena_notildes($objCurso->sNomCurso).$sSuf.'</td>
-<td>'.$sPref.$sObligatorio.$sSuf.'</td>
-<td align="center">'.$sPref.$objCurso->iNumCreAprobados.' / '.$objCurso->iNumCreditos.$sSuf.'</td>
-<td>'.$sPref.$objCurso->iNivel.$sSuf.'</td>
-<td>'.$sPref.$sNotaFin.$sSuf.'</td>
-<td>'.$sPref.$aEstado[$objCurso->iEstado].$sSuf.'</td>
-</tr>';
+					<td>'.$sPref.$objCurso->sCodCurso.$sSuf.'</td>
+					<td>'.$sPref.cadena_notildes($objCurso->sNomCurso).$sSuf.$sInfoComplemento.'</td>
+					<td>'.$sPref.$sObligatorio.$sSuf.'</td>
+					<td align="center">'.$sPref.$objCurso->iNumCreditos.$sSuf.'</td>
+					<td>'.$sPref.$objCurso->iNivel.$sSuf.'</td>
+					<td align="center"'.$sFondo.'>'.$sNotaFin.'</td>
+					<td align="center"'.$sAnchoColumna.'>'.$sPref.$sInfoEstado.$sSuf.$sBotonComun.'</td>
+					</tr>';
+					if ($sEquivalentes!=''){
+						$sRes=$sRes.'<tr>
+						<td></td>
+						<td colspan="6">'.$sPref.$objCurso->sInfoEquivalentes.$sSuf.'</td>
+						</tr>';
+						}
 					}
 				}
 			//Muestra una tabla de progreso del componente.
@@ -236,16 +573,20 @@ function html(){
 					$sLinea2='<td width="'.(100-$iAvance).'%" align="center">'.(100-$iAvance).' %</td>';
 					}
 				$sRes=$sRes.'<tr>
-<td colspan="'.$iCols.'"><table border="0" align="center" cellpadding="0" cellspacing="2" class="tablaapp">
-<tr>
-<td width="'.$iAvance.'%"'.$sVerde.' align="center"><span style="color:#FFFFFF">'.$iAvance.' %</span></td>'.$sLinea2.'
-</tr>
-</table></td>
-</tr>';
+				<td colspan="'.$iCols.'"><table border="0" align="center" cellpadding="0" cellspacing="2" class="tablaapp">
+				<tr>
+				<td width="'.$iAvance.'%"'.$sVerde.' align="center"><span style="color:#FFFFFF">'.$iAvance.' %</span></td>'.$sLinea2.'
+				</tr>
+				</table></td>
+				</tr>';
 				}
 			}
 		}
 	$sRes=$sRes.'</table>';
+	if (!$bConPaginador){
+		$sRes=$sRes.'<input id="paginaf2203" name="paginaf2203" type="hidden" value="'.$pagina.'"/>
+		<input id="lppf2203" name="lppf2203" type="hidden" value="'.$lineastabla.'"/>';
+		}
 	return $sRes;
 	}
 function __construct($idPlan){
@@ -332,19 +673,19 @@ function f2203_db_Guardar($valores, $objDB, $bDebug=false){
 	if ($core03idestprograma==''){$sError=$ERR['core03idestprograma'].$sSepara.$sError;}
 	if ($sError==''){
 		list($sError, $sInfo)=tercero_Bloqueado($core03idusuarionotahomo, $objDB);
-		if ($sInfo!=''){$sError=$sError.'<br>'.sInfo;}
+		if ($sInfo!=''){$sError=$sError.'<br>'.$sInfo;}
 		}
 	if ($sError==''){
 		list($sError, $sInfo)=tercero_Bloqueado($core03idusuarionota25, $objDB);
-		if ($sInfo!=''){$sError=$sError.'<br>'.sInfo;}
+		if ($sInfo!=''){$sError=$sError.'<br>'.$sInfo;}
 		}
 	if ($sError==''){
 		list($sError, $sInfo)=tercero_Bloqueado($core03idusuarionota75, $objDB);
-		if ($sInfo!=''){$sError=$sError.'<br>'.sInfo;}
+		if ($sInfo!=''){$sError=$sError.'<br>'.$sInfo;}
 		}
 	if ($sError==''){
 		list($sError, $sInfo)=tercero_Bloqueado($core03idtercero, $objDB);
-		if ($sInfo!=''){$sError=$sError.'<br>'.sInfo;}
+		if ($sInfo!=''){$sError=$sError.'<br>'.$sInfo;}
 		}
 	if ($sError==''){
 		$sSQL='SELECT  FROM  WHERE ="'.$core03idcurso.'"';
@@ -556,10 +897,10 @@ function f2203_TablaDetalleV2($aParametros, $objDB, $bDebug=false){
 	if ($idContenedor==''){$idContenedor=0;}
 	$aParametros[0]=numeros_validar($aParametros[0]);
 	if ($aParametros[0]==''){$aParametros[0]=-1;}
-	$sDebug='';
 	$core01id=$aParametros[0];
 	$pagina=$aParametros[101];
 	$lineastabla=$aParametros[102];
+	$sDebug='';
 	$babierta=false;
 	//$sSQL='SELECT Campo FROM core01estprograma WHERE core01id='.$core01id;
 	//$tabla=$objDB->ejecutasql($sSQL);
@@ -570,128 +911,18 @@ function f2203_TablaDetalleV2($aParametros, $objDB, $bDebug=false){
 	$sSQLadd='';
 	$sSQLadd1='';
 	$sLeyenda='';
-	if (false){
+	if ($sLeyenda!=''){
 		$sLeyenda='<div class="salto1px"></div>
-<div class="GrupoCamposAyuda">
-<b>Importante:</b> Mensaje al usuario
-<div class="salto1px"></div>
-</div>';
+		<div class="GrupoCamposAyuda">
+		'.$sLeyenda.'
+		<div class="salto1px"></div>
+		</div>';
 		}
 	$objPlan=new cls2203_plan($core01id);
 	$objPlan->idContenedor=$idContenedor;
-	list($sError, $sDebugP)=$objPlan->CargarDatos($core01id, $objDB, $bDebug);
+	list($sError, $sDebugP)=$objPlan->CargarDatosV2($core01id, $aParametros, $objDB, $bDebug);
 	$sDebug=$sDebug.$sDebugP;
-	$res=$objPlan->html();
-	return array(utf8_encode($res), $sDebug);
-	//if ((int)$aParametros[103]!=-1){$sSQLadd=$sSQLadd.' AND TB.campo='.$aParametros[103];}
-	//if ($aParametros[103]!=''){$sSQLadd=$sSQLadd.' AND TB.campo2 LIKE "%'.$aParametros[103].'%"';}
-	/*
-	if ($aParametros[104]!=''){
-		$sBase=trim(strtoupper($aParametros[104]));
-		$aNoms=explode(' ', $sBase);
-		for ($k=1;$k<=count($aNoms);$k++){
-			$sCadena=$aNoms[$k-1];
-			if ($sCadena!=''){
-				$sSQLadd=$sSQLadd.' AND T6.unad11razonsocial LIKE "%'.$sCadena.'%"';
-				//$sSQLadd1=$sSQLadd1.'T1.unad11razonsocial LIKE "%'.$sCadena.'%" AND ';
-				}
-			}
-		}
-	*/
-	$sTitulos='Estprograma, Curso, Id, Tercero, Programa, Itipocurso, Obligatorio, Numcreditos, Nivelcurso, Peracaaprueba, Nota75, Fechanota75, Usuarionota75, Nota25, Fechanota25, Usuarionota25, Notahomologa, Fechanotahomologa, Usuarionotahomo, Detallehomologa, Fechainclusion, Notafinal, Formanota, Estado';
-	$sSQL='SELECT TB.core03idcurso, TB.core03id, T4.unad40consec, T4.unad40nombre, TB.core03obligatorio, TB.core03numcreditos, TB.core03nivelcurso, TB.core03nota75, TB.core03fechanota75, TB.core03nota25, TB.core03fechanota25, TB.core03notahomologa, TB.core03fechanotahomologa, TB.core03detallehomologa, TB.core03fechainclusion, TB.core03notafinal, TB.core03formanota, TB.core03estado, TB.core03idtercero, TB.core03itipocurso, TB.core03peracaaprueba, TB.core03idusuarionota75, TB.core03idusuarionota25, TB.core03idusuarionotahomo 
-FROM core03plandeestudios_'.$idContenedor.' AS TB, unad40curso AS T4 
-WHERE '.$sSQLadd1.' TB.core03idestprograma='.$core01id.' AND TB.core03idcurso=T4.unad40id '.$sSQLadd.'
-ORDER BY TB.core03itipocurso, TB.core03nivelcurso, TB.core03idcurso';
-	$sSQLlista=str_replace("'","|",$sSQL);
-	$sSQLlista=str_replace('"',"|",$sSQLlista);
-	$sErrConsulta='<input id="consulta_2203" name="consulta_2203" type="hidden" value="'.$sSQLlista.'"/>
-<input id="titulos_2203" name="titulos_2203" type="hidden" value="'.$sTitulos.'"/>';
-	if ($bDebug){$sDebug=$sDebug.fecha_microtiempo().' Consulta 2203: '.$sSQL.'<br>';}
-	$tabladetalle=$objDB->ejecutasql($sSQL);
-	if ($tabladetalle==false){
-		$registros=0;
-		$sErrConsulta=$sErrConsulta.'..<input id="err" name="err" type="hidden" value="'.$sSQL.' '.$objDB->serror.'"/>';
-		//$sLeyenda=$sSQL;
-		}else{
-		$registros=$objDB->nf($tabladetalle);
-		}
-	while($filadet=$objDB->sf($tabladetalle)){
-		}
-	$res=$sErrConsulta.$sLeyenda.'<table border="0" align="center" cellpadding="0" cellspacing="2" class="tablaapp">
-<tr class="fondoazul">
-<td colspan="2"><b>'.$ETI['core03idcurso'].'</b></td>
-<td><b>'.$ETI['core03obligatorio'].'</b></td>
-<td><b>'.$ETI['core03numcreditos'].'</b></td>
-<td><b>'.$ETI['core03nivelcurso'].'</b></td>
-<td><b>'.$ETI['core03nota75'].'</b></td>
-<td><b>'.$ETI['core03fechanota75'].'</b></td>
-<td><b>'.$ETI['core03nota25'].'</b></td>
-<td><b>'.$ETI['core03fechanota25'].'</b></td>
-<td><b>'.$ETI['core03notahomologa'].'</b></td>
-<td><b>'.$ETI['core03fechainclusion'].'</b></td>
-<td><b>'.$ETI['core03notafinal'].'</b></td>
-<td><b>'.$ETI['core03formanota'].'</b></td>
-<td><b>'.$ETI['core03estado'].'</b></td>
-<td align="right">
-'.html_paginador('paginaf2203', $registros, $lineastabla, $pagina, 'paginarf2203()').'
-'.html_lpp('lppf2203', $lineastabla, 'paginarf2203()').'
-</td>
-</tr>';
-	$tlinea=1;
-	while($filadet=$objDB->sf($tabladetalle)){
-		$sPrefijo='';
-		$sSufijo='';
-		$sClass='';
-		$sLink='';
-		if (false){
-			$sPrefijo='<b>';
-			$sSufijo='</b>';
-			}
-		if(($tlinea%2)==0){$sClass=' class="resaltetabla"';}
-		$tlinea++;
-		$et_core03idcurso=$sPrefijo.cadena_notildes($filadet['unad40nombre']).$sSufijo;
-		$et_core03idtercero=$sPrefijo.$filadet['core03idtercero'].$sSufijo;
-		$et_core03obligatorio=$sPrefijo.$filadet['core03obligatorio'].$sSufijo;
-		$et_core03numcreditos=$sPrefijo.$filadet['core03numcreditos'].$sSufijo;
-		$et_core03nivelcurso=$sPrefijo.$filadet['core03nivelcurso'].$sSufijo;
-		$et_core03peracaaprueba=$sPrefijo.cadena_notildes($filadet['exte02nombre']).$sSufijo;
-		$et_core03nota75=$sPrefijo.formato_moneda($filadet['core03nota75']).$sSufijo;
-		$et_core03fechanota75=$sPrefijo.$filadet['core03fechanota75'].$sSufijo;
-		$et_core03idusuarionota75=$sPrefijo.$filadet['core03idusuarionota75'].$sSufijo;
-		$et_core03nota25=$sPrefijo.formato_moneda($filadet['core03nota25']).$sSufijo;
-		$et_core03fechanota25=$sPrefijo.$filadet['core03fechanota25'].$sSufijo;
-		$et_core03idusuarionota25=$sPrefijo.$filadet['core03idusuarionota25'].$sSufijo;
-		$et_core03notahomologa=$sPrefijo.formato_moneda($filadet['core03notahomologa']).$sSufijo;
-		$et_core03fechanotahomologa=$sPrefijo.$filadet['core03fechanotahomologa'].$sSufijo;
-		$et_core03idusuarionotahomo=$sPrefijo.$filadet['core03idusuarionotahomo'].$sSufijo;
-		$et_core03detallehomologa=$sPrefijo.cadena_notildes($filadet['core03detallehomologa']).$sSufijo;
-		$et_core03fechainclusion=$sPrefijo.$filadet['core03fechainclusion'].$sSufijo;
-		$et_core03notafinal=$sPrefijo.formato_moneda($filadet['core03notafinal']).$sSufijo;
-		$et_core03formanota=$sPrefijo.$filadet['core03formanota'].$sSufijo;
-		$et_core03estado=$sPrefijo.$filadet['core03estado'].$sSufijo;
-		if ($babierta){
-			$sLink='<a href="javascript:cargaridf2203('.$filadet['core03id'].')" class="lnkresalte">'.$ETI['lnk_cargar'].'</a>';
-			}
-		$res=$res.'<tr'.$sClass.'>
-<td>'.$sPrefijo.$filadet['core03idcurso'].$sSufijo.'</td>
-<td>'.$et_core03idcurso.'</td>
-<td>'.$et_core03obligatorio.'</td>
-<td>'.$et_core03numcreditos.'</td>
-<td>'.$et_core03nivelcurso.'</td>
-<td>'.$et_core03peracaaprueba.'</td>
-<td align="right">'.$et_core03nota75.'</td>
-<td align="right">'.$et_core03nota25.'</td>
-<td align="right">'.$et_core03notahomologa.'</td>
-<td>'.$et_core03fechainclusion.'</td>
-<td align="right">'.$et_core03notafinal.'</td>
-<td>'.$et_core03formanota.'</td>
-<td>'.$et_core03estado.'</td>
-<td>'.$sLink.'</td>
-</tr>';
-		}
-	$res=$res.'</table>';
-	$objDB->liberar($tabladetalle);
+	$res=$objPlan->htmlV2($aParametros).'';
 	return array(utf8_encode($res), $sDebug);
 	}
 function f2203_Clonar($core03idestprograma, $core03idestprogramaPadre, $objDB){

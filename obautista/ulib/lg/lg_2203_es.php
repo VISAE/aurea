@@ -62,8 +62,10 @@ $ERR['core03notafinal']='Necesita el dato '.$ETI['core03notafinal'];
 $ERR['core03formanota']='Necesita el dato '.$ETI['core03formanota'];
 $ERR['core03estado']='Necesita el dato '.$ETI['core03estado'];
 
-$ETI['msg_noplan']='No se ha asignado un plan de estudios.';
 
+$ETI['msg_componeteconoce']='Componente de conocimiento';
 $ETI['msg_fechanota']='Fecha Nota';
+$ETI['msg_noplan']='No se ha asignado un plan de estudios.';
+$ETI['msg_tiporegistro']='Tipo de registro';
 
 ?>
