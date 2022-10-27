@@ -148,7 +148,7 @@ $ETI['bt_mostrar']='Mostrar';
 $ETI['bt_ocultar']='Ocultar';
 
 $ETI['mail_enc_titulo']='Encuesta de calidad del servicio';
-$ETI['mail_enc_titulo_2']='No haz vuelto a estudiar';
+$ETI['mail_enc_titulo_2']='No has vuelto a estudiar';
 $ETI['mail_enc_parte1']='Apreciado Usuario, agradecemos su opini&oacute;n respecto a la atenci&oacute;n recibida el d&iacute;a ';
 $ETI['mail_enc_parte2']=' y nos gustar&iacute;a su opini&oacute;n respecto a la calidad de nuestro servicio';
 

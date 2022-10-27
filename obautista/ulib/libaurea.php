@@ -601,8 +601,8 @@ function AUREA_CrearTabla_aure73encuesta($sMes, $objDB, $bDebug = false) {
 		aure73idprograma int NULL DEFAULT 0, aure73idperiodo int NULL DEFAULT 0, aure73edad int NULL DEFAULT 0,
 		aure73codigo varchar(10) NULL, aure73acepta int NULL DEFAULT 0, aure73t1_p1 int NULL DEFAULT 0,
 		aure73t1_p2 int NULL DEFAULT 0, aure73t1_p3 int NULL DEFAULT 0, aure73t1_p4 int NULL DEFAULT 0,
-		aure73t1_p5 int NULL DEFAULT 0, aure73t2_p1 int NULL DEFAULT 0, aure73t2_comentario varchar(250) NULL,
-		aure73fecharespuesta int NULL DEFAULT 0)";
+		aure73t1_p5 int NULL DEFAULT 0, aure73t2_p1 int NULL DEFAULT 0, aure73t2_p2 int NULL DEFAULT 0, 
+		aure73t2_comentario varchar(250) NULL, aure73fecharespuesta int NULL DEFAULT 0)";
 		$result = $objDB->ejecutasql($sSQL);
 		if ($result == false) {
 			$sError = 'No es posible iniciar el contenedor de encuesta para  ' . $sMes;
@@ -967,7 +967,8 @@ function AUREA_HTML_CuerpoCorreoEncuesta($sCodigo, $idImagen, $sURL, $iFechaServ
 	if (!file_exists($mensajes_17)) {$mensajes_17 = $APP->rutacomun . 'lg/lg_17_es.php';}
 	require $mensajes_17;
 	$sRutaImg = 'https://datateca.unad.edu.co/img/';
-	$sURLDestino = 'https://aurea.unad.edu.co/satisfaccion/';
+	// $sURLDestino = 'https://aurea.unad.edu.co/satisfaccion/';
+	$sURLDestino = 'https://softwaretest.unad.edu.co/obautista/satisfaccion/'; //! PRUEBAS
 	$idEntidad = Traer_Entidad();
 	switch ($idEntidad) {
 	case 1:
@@ -1065,7 +1066,8 @@ function AUREA_HTML_CuerpoCorreoDesercion($sCodigo, $idImagen, $sMes, $aure73id,
 	if (!file_exists($mensajes_17)) {$mensajes_17 = $APP->rutacomun . 'lg/lg_17_es.php';}
 	require $mensajes_17;
 	$sRutaImg = 'https://datateca.unad.edu.co/img/';
-	$sURLDestino = 'https://aurea.unad.edu.co/satisfaccion/';
+	// $sURLDestino = 'https://aurea.unad.edu.co/satisfaccion/';
+	$sURLDestino = 'https://softwaretest.unad.edu.co/obautista/satisfaccion/'; //! PRUEBAS
 	$idEntidad = Traer_Entidad();
 	switch ($idEntidad) {
 	case 1:
