@@ -1,0 +1,12 @@
+cuando se cierra el reconocimeinto no esta armando la financiación. (revisar cedula 1020768948.)
+En el pdf falta incorporar el ajuste que se hizo en la tabla por periodos (los recaudos no asociados a un periodo)
+
+Colocar el valor total de los saldos en el PDF
+
+en SAI -
+
+Desde tramites, dejar un boton que salte al estado financiero.
+En el estado de cuenta poner un detalle de los convenios incluidos en las facturas...
+
+
+Los tiempo de respuesta de del cambio de centro puede ser de 3 a 5 dias... poner la anotación.

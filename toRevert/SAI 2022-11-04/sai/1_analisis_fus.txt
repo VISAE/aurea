@@ -1,0 +1,42 @@
+1	 	Actualización de Datos Basicos
+
+18 		Traslado de Documentos. --- ESTA FUNCIONANDO...
+(solo aprobar aquellas que son de su zona..)
+(ajustar el excel de novedades de cambio de centro)
+
+1	 	Actualización de Datos Basicos
+2 		Cambio de Programa. (EN CONJUNTO CON LAS ESCUELAS)
+	10 	Recibo de pago - Cambio de Programa. - ESTO QUEDA EN EL MISMO CAMBIO DE PROGRAMA.
+
+17 		Solicitud Aplicación descuento o convenio 
+16 		Renovación Crédito Icetex  --- NO ES LO MIMOS QUE SOLICITAR UN CONVENIO...
+6 		Contenidos Analíticos.
+5 		Certificados de NOTAS (Debe solicitar que periodos --- pensar en el tema de la validez en el tiempo) 
+		y/o Constancias.
+	Tipos de certificados - (CONJUNTO CON LAS ESCUELAS... )
+11 		Recibo de pago - Certificados y/o Constancias. --- ESTO QUEDA EN LA MISMA SOLICITUD DE CERTIFICADO.
+4 		Cargue de documentos para legalización y formalización de matrícula
+7 		Duplicado Diploma de Grado.
+13 		Recibo de pago - Duplicado Diploma de Grado. -- QUEDA EN LA SOLICITUD DE DUPLICADO DE DIPLOMA
+	
+------------ PASA A LAS ESCUELAS
+9 		Homologaciones y/o Nivelaciones
+14 		Recibo de pago - Estudio de Homologación. - QUEDA EN MISMO PROCESO DE HOMOLOGACIONES
+12 		Recibo de pago - Créditos Homologados. (QUEDA DENTRO DEL PROCESO DE HOMOLOGACIONES
+
+ --------------- AUTOMATICO ----------------
+8 		Eliminación de Facturas de Pago.
+15 		Reenvío Enlace de Liquidación y Matrícula --- Puedan acceder al enlace
+
+ ---------------- DESAPARECEN --------------
+3 		Cargue de Créditos Homologados.
+
+Cambio de programa
+Solicitud de devoluciones
+Solicitud de descuentos - convenios
+Contenidos Analiticos {Son los archivos que dicen que fue lo que se estudió}
+Certificados y constancias
+Expediente documental
+Duplicado de diploma
+Homologaciones
+Copias de recibos de pago

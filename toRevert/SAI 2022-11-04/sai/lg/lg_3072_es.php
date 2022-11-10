@@ -1,0 +1,92 @@
+<?php
+/*
+--- © Angel Mauro Avellaneda Barreto - UNAD - 2022 ---
+--- angel.avellaneda@unad.edu.co - http://www.unad.edu.co
+--- Modelo Version 2.28.2 viernes, 2 de septiembre de 2022
+*/
+$ETI['app_nombre'] = 'APP';
+$ETI['grupo_nombre'] = 'Grupo';
+$ETI['titulo'] = 'Aprobar cambio de datos basicos';
+$ETI['titulo_sector2'] = 'Aprobar cambio de datos basicos';
+$ETI['titulo_sector93'] = 'Cambio de consecutivo';
+$ETI['titulo_3072'] = 'Aprobar cambio de datos basicos';
+$ETI['sigla_3072'] = 'Aprobar cambio de datos basicos';
+$ETI['bt_ter_buscar'] = 'Buscar tercero';
+$ETI['bt_ter_crear'] = 'Crear tercero';
+$ETI['lnk_cargar'] = 'Editar';
+$ETI['unae40idtercero'] = 'Tercero';
+$ETI['unae40consec'] = 'Consecutivo';
+$ETI['msg_unae40consec'] = 'Consecutivo actual';
+$ETI['msg_unae40consec_nuevo'] = 'Nuevo consecutivo';
+$ETI['unae40id'] = 'Ref :';
+$ETI['unae40tipodocorigen'] = 'Tipodocorigen';
+$ETI['unae40docorigen'] = 'Docorigen';
+$ETI['unae40or_nombre1'] = 'Or_nombre1';
+$ETI['unae40or_nombre2'] = 'Or_nombre2';
+$ETI['unae40or_apellido1'] = 'Or_apellido1';
+$ETI['unae40or_apellido2'] = 'Or_apellido2';
+$ETI['unae40or_sexo'] = 'Or_sexo';
+$ETI['unae40or_fechanac'] = 'Or_fechanac';
+$ETI['unae40or_fechadoc'] = 'Or_fechadoc';
+$ETI['unae40tipodocdestino'] = 'Tipodocdestino';
+$ETI['unae40docdestino'] = 'Docdestino';
+$ETI['unae40des_nombre1'] = 'Des_nombre1';
+$ETI['unae40des_nombre2'] = 'Des_nombre2';
+$ETI['unae40des_apellido1'] = 'Des_apellido1';
+$ETI['unae40des_apellido2'] = 'Des_apellido2';
+$ETI['unae40des_sexo'] = 'Des_sexo';
+$ETI['unae40des_fechanac'] = 'Des_fechanac';
+$ETI['unae40des_fechadoc'] = 'Des_fechadoc';
+$ETI['unae40idsolicita'] = 'Solicita';
+$ETI['unae40fechasol'] = 'Fechasol';
+$ETI['unae40horasol'] = 'Horasol';
+$ETI['unae40minsol'] = 'Minsol';
+$ETI['unae40idorigen'] = 'Origen';
+$ETI['eliminar_unae40idarchivo'] = 'Desea eliminar el archivo?';
+$ETI['unae40idarchivo'] = 'Archivo';
+$ETI['unae40estado'] = 'Estado';
+$ETI['unae40detalle'] = 'Detalle';
+$ETI['unae40idaprueba'] = 'Aprueba';
+$ETI['unae40fechaapr'] = 'Fechaapr';
+$ETI['unae40horaaprueba'] = 'Horaaprueba';
+$ETI['unae40minaprueba'] = 'Minaprueba';
+$ETI['unae40tiempod'] = 'Tiempod';
+$ETI['unae40tiempoh'] = 'Tiempoh';
+$ETI['msg_cierre3072'] = '&iquest;Est&aacute; seguro de cerrar el registro?<br>luego de cerrado no se permite modificar.';
+
+$ERR['unae40idtercero'] = 'Necesita el dato ' . $ETI['unae40idtercero'];
+$ERR['unae40consec'] = 'Necesita el dato ' . $ETI['unae40consec'];
+$ERR['unae40id'] = 'Necesita el dato ' . $ETI['unae40id'];
+$ERR['unae40tipodocorigen'] = 'Necesita el dato ' . $ETI['unae40tipodocorigen'];
+$ERR['unae40docorigen'] = 'Necesita el dato ' . $ETI['unae40docorigen'];
+$ERR['unae40or_nombre1'] = 'Necesita el dato ' . $ETI['unae40or_nombre1'];
+$ERR['unae40or_nombre2'] = 'Necesita el dato ' . $ETI['unae40or_nombre2'];
+$ERR['unae40or_apellido1'] = 'Necesita el dato ' . $ETI['unae40or_apellido1'];
+$ERR['unae40or_apellido2'] = 'Necesita el dato ' . $ETI['unae40or_apellido2'];
+$ERR['unae40or_sexo'] = 'Necesita el dato ' . $ETI['unae40or_sexo'];
+$ERR['unae40or_fechanac'] = 'Necesita el dato ' . $ETI['unae40or_fechanac'];
+$ERR['unae40or_fechadoc'] = 'Necesita el dato ' . $ETI['unae40or_fechadoc'];
+$ERR['unae40tipodocdestino'] = 'Necesita el dato ' . $ETI['unae40tipodocdestino'];
+$ERR['unae40docdestino'] = 'Necesita el dato ' . $ETI['unae40docdestino'];
+$ERR['unae40des_nombre1'] = 'Necesita el dato ' . $ETI['unae40des_nombre1'];
+$ERR['unae40des_nombre2'] = 'Necesita el dato ' . $ETI['unae40des_nombre2'];
+$ERR['unae40des_apellido1'] = 'Necesita el dato ' . $ETI['unae40des_apellido1'];
+$ERR['unae40des_apellido2'] = 'Necesita el dato ' . $ETI['unae40des_apellido2'];
+$ERR['unae40des_sexo'] = 'Necesita el dato ' . $ETI['unae40des_sexo'];
+$ERR['unae40des_fechanac'] = 'Necesita el dato ' . $ETI['unae40des_fechanac'];
+$ERR['unae40des_fechadoc'] = 'Necesita el dato ' . $ETI['unae40des_fechadoc'];
+$ERR['unae40idsolicita'] = 'Necesita el dato ' . $ETI['unae40idsolicita'];
+$ERR['unae40fechasol'] = 'Necesita el dato ' . $ETI['unae40fechasol'];
+$ERR['unae40horasol'] = 'Necesita el dato ' . $ETI['unae40horasol'];
+$ERR['unae40minsol'] = 'Necesita el dato ' . $ETI['unae40minsol'];
+$ERR['unae40idorigen'] = 'Necesita el dato ' . $ETI['unae40idorigen'];
+$ERR['unae40idarchivo'] = 'Necesita el dato ' . $ETI['unae40idarchivo'];
+$ERR['unae40estado'] = 'Necesita el dato ' . $ETI['unae40estado'];
+$ERR['unae40detalle'] = 'Necesita el dato ' . $ETI['unae40detalle'];
+$ERR['unae40idaprueba'] = 'Necesita el dato ' . $ETI['unae40idaprueba'];
+$ERR['unae40fechaapr'] = 'Necesita el dato ' . $ETI['unae40fechaapr'];
+$ERR['unae40horaaprueba'] = 'Necesita el dato ' . $ETI['unae40horaaprueba'];
+$ERR['unae40minaprueba'] = 'Necesita el dato ' . $ETI['unae40minaprueba'];
+$ERR['unae40tiempod'] = 'Necesita el dato ' . $ETI['unae40tiempod'];
+$ERR['unae40tiempoh'] = 'Necesita el dato ' . $ETI['unae40tiempoh'];
+?>

@@ -141,8 +141,8 @@ $ETI['cara44acadrazonrecesodetalle']='&iquest;Cu&aacute;l raz&oacute;n?';
 $ETI['cara44campus_usocorreounad']='&iquest;El uso del correo electr&oacute;nico institucional de la UNAD es?';
 $ETI['cara44campus_usocorreounadno']='Por favor indique porque no usa el correo';
 $ETI['cara44campus_usocorreounadnodetalle']='&iquest;Cu&aacute;l?';
-$ETI['cara44campus_medioactivunad']='Indique el medio por el cual se ha enterando de las actividades y procesos de la Universidad';
-$ETI['cara44campus_medioactivunaddetalle']='Indique el otro medio por el cual se ha enterando de las actividades y procesos de la Universidad';
+$ETI['cara44campus_medioactivunad']='&iquest;Cu&aacute;l es el medio por el cual se ha enterando de las actividades y procesos de la Universidad?';
+$ETI['cara44campus_medioactivunaddetalle']='&iquest;Cu&aacute;l es el medio por el cual se ha enterando de las actividades y procesos de la Universidad?';
 $ETI['cara44lab_origendineroantiguo']='&iquest;De d&oacute;nde provienen los recursos econ&oacute;micos con los que usted estudia en la UNAD?';
 
 $ERR['cara44campesinado']='Necesita el dato '.$ETI['cara44campesinado'];

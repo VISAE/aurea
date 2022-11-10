@@ -703,6 +703,7 @@ if (($_REQUEST['paso'] == 1) || ($_REQUEST['paso'] == 3)) {
 			$sSQLcondi = 'saiu05id=' . $_REQUEST['saiu05id'] . '';
 		}
 		$sSQL = 'SELECT * FROM ' . $sTabla . ' WHERE ' . $sSQLcondi;
+		$sDebug=$sDebug.fecha_microtiempo().' SQL CARGA LISTA '.$sSQL.'<br>';
 		$tabla = $objDB->ejecutasql($sSQL);
 		if ($objDB->nf($tabla) > 0) {
 			$fila = $objDB->sf($tabla);
@@ -2577,6 +2578,10 @@ echo $ETI['msg_bnombre'];
 <label>
 <input id="bnombre" name="bnombre" type="text" value="<?php echo $_REQUEST['bnombre']; ?>" onchange="paginarf3005()" autocomplete="off" />
 </label>
+<?php
+} else {
+?>
+<input id="bnombre" name="bnombre" type="hidden" value="<?php echo $_REQUEST['bnombre']; ?>" />
 <?php
 }
 ?>

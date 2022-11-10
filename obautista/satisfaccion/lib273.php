@@ -70,12 +70,15 @@ function f273_BuscaCodigo($aParametros) {
 		}
 	}
 	if($sError == '') {
+		$idRespuesta = -99; //! REVISAR RESPUESTA
 		$sSQL = 'SHOW TABLES LIKE "aure73encuesta%"';
 		$tablac = $objDB->ejecutasql($sSQL);
 		while ($filac = $objDB->sf($tablac)) {
 			$iContenedor = substr($filac[0], 14);
 			if ($iContenedor != 0) {
-				$sSQL = 'SELECT aure73id FROM ' . $filac[0] . ' WHERE aure73idtercero=' . $idTercero . ' AND aure73codigo="' . $aure73codigo . '"';
+				$sSQL = 'SELECT aure73id 
+				FROM ' . $filac[0] . ' 
+				WHERE aure73idtercero=' . $idTercero . ' AND aure73codigo="' . $aure73codigo . '"';
 				$tabla = $objDB->ejecutasql($sSQL);
 				if ($objDB->nf($tabla) > 0) {
 					$fila = $objDB->sf($tabla);
@@ -89,7 +92,6 @@ function f273_BuscaCodigo($aParametros) {
 		}
 	}
 	if($sError == '') {
-		$idRespuesta = 0; //! REVISAR RESPUESTA
 		list($html_encuesta) = f273_HTMLForm_Encuesta($iMes, $idEncuesta, $idRespuesta, $objDB);
 	}
 	$objDB->CerrarConexion();
@@ -98,6 +100,7 @@ function f273_BuscaCodigo($aParametros) {
 		$objResponse->assign('div_aure73formencuesta', 'innerHTML', $html_encuesta);
 		$objResponse->assign('div_aure73formencuesta', 'style.display', 'block');
 		$objResponse->assign('div_aure73formcodigo', 'style.display', 'none');
+		$objResponse->script('$("select").addClass("form-control");');
 	} else {
 		$objResponse->call('muestramensajes("danger", "' . $sError . '")');
 	}
@@ -295,14 +298,18 @@ function f273_EnviaFactorDeserta($aParametros) {
 		$aure73acepta = 1;
 		$aure73fecharespuesta = fecha_ArmarNumero();
 		$sFechaHoy = fecha_ArmarNumero();
+		$aure73idregistro = 0;
+		$aure73t2_p2 = -1;
 		$bPasa = false;
 		$sTabla = 'aure73encuesta' . $iMes;
 		$sHTML = '';
-		$sSQL = 'SELECT aure73fecharespuesta FROM ' . $sTabla . ' WHERE aure73id=' . $aure73id . '';
+		$sSQL = 'SELECT aure73fecharespuesta, aure73idregistro, aure73t2_p2 FROM ' . $sTabla . ' WHERE aure73id=' . $aure73id . '';
 		$tabla = $objDB->ejecutasql($sSQL);
 		if ($objDB->nf($tabla) > 0) {
 			$fila = $objDB->sf($tabla);
-			if ($fila['aure73fecharespuesta'] == 0 || $fila['aure73fecharespuesta'] == $sFechaHoy) {
+			$aure73idregistro = $fila['aure73idregistro'];
+			$aure73t2_p2 = $fila['aure73t2_p2'];
+				if ($fila['aure73fecharespuesta'] == 0 || $fila['aure73fecharespuesta'] == $sFechaHoy) {
 				$scampo[1] = 'aure73t2_p1';
 				$scampo[2] = 'aure73fecharespuesta';
 				$sdato[1] = $aure73t2_p1;
@@ -338,6 +345,8 @@ function f273_EnviaFactorDeserta($aParametros) {
 					if ($result == false) {
 						$sError = $ERR['falla_guardar'];
 					} else {
+						list($sErrorR, $sDebugR) = f2202_RespuestaEncuesta($aure73idregistro, $aure73t2_p1, $aure73t2_p2, $objDB, $bDebug);
+						$sDebug = $sDebug . $sDebugR;
 						list($sHTMLEncuesta, $sDebugE) = f273_HTMLForm_EncuestaDesercion($iMes, $aure73id, $aure73t2_p1, $objDB, true, $bDebug);
 						$sDebug = $sDebug . $sDebugE;
 						$sHTML = $sHTML . $sHTMLEncuesta;
@@ -383,7 +392,9 @@ function f273_EnviaEncuestaDes($aParametros) {
 	if ($APP->dbpuerto != '') {
 		$objDB->dbPuerto = $APP->dbpuerto;
 	}
+	$bDebug = false;
 	$sError = '';
+	$sDebug = '';
 	// -- Se inicia validando todas las posibles entradas de usuario.
 	if (isset($aParametros[100]) == 0) {
 		$aParametros[100] = '';
@@ -395,12 +406,16 @@ function f273_EnviaEncuestaDes($aParametros) {
 		$aParametros[102] = -1;
 	}
 	if (isset($aParametros[103]) == 0) {
-		$aParametros[102] = '';
+		$aParametros[103] = '';
+	}
+	if (isset($aParametros[104]) == 0) {
+		$aParametros[104] = '';
 	}
 	$iMes = cadena_Validar($aParametros[100]);
 	$aure73id = numeros_validar($aParametros[101]);
 	$aure73t2_p2 = numeros_validar($aParametros[102]);
 	$aure73t2_comentario = cadena_Validar($aParametros[103]);
+	$aure73t2_p1 = numeros_validar($aParametros[104]);
 	// -- Seccion para validar los posibles causales de error.
 	$sSepara = ', ';
 	if ($iMes == '') {
@@ -411,24 +426,32 @@ function f273_EnviaEncuestaDes($aParametros) {
 	}
 	if ($aure73t2_p2 == '' || $aure73t2_p2 == -1) {
 		$sError = $ERR['aure73t2_p2'] . $sSepara . $sError;
-	}	
+	}
+	if ($aure73t2_p1 == '' || $aure73t2_p1 == -1) {
+		$sError = $ERR['aure73t2_p1'] . $sSepara . $sError;
+	}
 	// if ($aure73t2_comentario == '') {
 	// 	$sError = $ERR['aure73t2_comentario'] . $sSepara . $sError;
 	// }
 	if ($sError == '') {
 		$bPasa = false;
+		$aure73idregistro=0;
 		$sTabla = 'aure73encuesta' . $iMes;
 		$sHTML = '';
-		$sSQL = 'SELECT aure73t2_p2 FROM ' . $sTabla . ' WHERE aure73id=' . $aure73id . '';
+		$sSQL = 'SELECT aure73idregistro, aure73t2_p1, aure73t2_p2 FROM ' . $sTabla . ' WHERE aure73id=' . $aure73id . '';
 		$tabla = $objDB->ejecutasql($sSQL);
 		if ($objDB->nf($tabla) > 0) {
 			$fila = $objDB->sf($tabla);
-			if ($fila['aure73t2_p2'] == -1) {
-				$scampo[1] = 'aure73t2_p2';
-				$scampo[2] = 'aure73t2_comentario';
-				$sdato[1] = $aure73t2_p2;
-				$sdato[2] = $aure73t2_comentario;
-				$numcmod=2;
+			$aure73idregistro = $fila['aure73idregistro'];
+			//if ($fila['aure73t2_p2'] == -1) {}
+			if (true) {
+				$scampo[1] = 'aure73t2_p1';
+				$scampo[2] = 'aure73t2_p2';
+				$scampo[3] = 'aure73t2_comentario';
+				$sdato[1] = $aure73t2_p1;
+				$sdato[2] = $aure73t2_p2;
+				$sdato[3] = $aure73t2_comentario;
+				$numcmod=3;
 				$sWhere = 'aure73id=' . $aure73id . '';
 				$sSQL = 'SELECT * FROM ' . $sTabla . ' WHERE ' . $sWhere;
 				$sdatos = '';
@@ -458,7 +481,9 @@ function f273_EnviaEncuestaDes($aParametros) {
 					$result = $objDB->ejecutasql($sSQL);					
 					if ($result == false) {
 						$sError = $ERR['falla_guardar'];
-					} else {						
+					} else {
+						list($sErrorR, $sDebugR) = f2202_RespuestaEncuesta($aure73idregistro, $aure73t2_p1, $aure73t2_p2, $objDB, $bDebug);
+						$sDebug = $sDebug . $sDebugR;
 						$sHTML = $sHTML . '<div class="col-sm-12">' . htmlAlertas('azul', 'Se ha guardado la informaci&oacute;n') . '</div>';
 					}
 				}
@@ -495,10 +520,18 @@ function f273_HTMLForm_Encuesta($iMes, $idEncuesta, $idRespuesta, $objDB, $bDebu
 	$sSQLadd = '';
 	$sHTML = '';
 	$sDebug = '';
-	$sSQLadd = $sSQLadd . ' AND TB.aure73id=' . $idEncuesta . '';
-	$sSQL = 'SELECT TB.aure73fecharespuesta, TB.aure73tipoencuesta, T6.aure74nombre, T5.unad11razonsocial, T1.core12nombre, T2.core09nombre, T3.unad23nombre, T4.unad24nombre, TB.aure73t2_p1
-	FROM ' . $sTabla . ' AS TB, core12escuela AS T1, core09programa AS T2, unad23zona AS T3, unad24sede AS T4, unad11terceros AS T5, aure74tipoencuesta AS T6
-	WHERE TB.aure73idescuela=T1.core12id AND TB.aure73idprograma=T2.core09id AND TB.aure73idzona=T3.unad23id AND TB.aure73idcentro=T4.unad24id AND TB.aure73idtercero=T5.unad11id AND TB.aure73tipoencuesta=aure74id' . $sSQLadd . '';
+	$bModoCarga = false;
+	if ($idRespuesta == -99){
+		$bModoCarga = true;
+	}
+	//$sSQLadd = $sSQLadd . ' AND ';
+	$sSQL = 'SELECT TB.aure73fecharespuesta, TB.aure73tipoencuesta, T6.aure74nombre, T5.unad11razonsocial, T1.core12nombre, 
+	T2.core09nombre, T3.unad23nombre, T4.unad24nombre, TB.aure73t2_p1, TB.aure73t2_p2, TB.aure73idregistro
+	FROM ' . $sTabla . ' AS TB, core12escuela AS T1, core09programa AS T2, unad23zona AS T3, unad24sede AS T4, 
+	unad11terceros AS T5, aure74tipoencuesta AS T6
+	WHERE TB.aure73id=' . $idEncuesta . ' AND TB.aure73idescuela=T1.core12id AND TB.aure73idprograma=T2.core09id 
+	AND TB.aure73idzona=T3.unad23id AND TB.aure73idcentro=T4.unad24id AND TB.aure73idtercero=T5.unad11id 
+	AND TB.aure73tipoencuesta=T6.aure74id';
 	if ($bDebug) {
 		$sDebug = $sDebug . fecha_microtiempo() . ' Consultando encuesta: ' . $sSQL . '<br>';
 	}
@@ -630,31 +663,43 @@ function f273_HTMLForm_Encuesta($iMes, $idEncuesta, $idRespuesta, $objDB, $bDebu
 			}
 		} else {
 			if ($fila['aure73tipoencuesta'] == 2) {	// encuesta de deserción
-				$sFechaHoy = fecha_DiaMod();			
+				$sFechaHoy = fecha_DiaMod();
+				$bEntraEncuesta = false;	
 				if ($fila['aure73fecharespuesta'] == 0) {
+					$bEntraEncuesta = true;
+				} else {
+					if ($fila['aure73fecharespuesta'] == $sFechaHoy) {
+						$bEntraEncuesta = true;
+					}
+				}
+				if ($bEntraEncuesta){
 					$aure73acepta = 1;
-					$aure73fecharespuesta = fecha_ArmarNumero();
+					$aure73fecharespuesta = $sFechaHoy;
 					$bPasa = false;
-					$scampo[1] = 'aure73acepta';
-					$scampo[2] = 'aure73t2_p1';
-					$scampo[3] = 'aure73fecharespuesta';
-					$sdato[1] = $aure73acepta;
-					$sdato[2] = $idRespuesta;
-					$sdato[3] = $aure73fecharespuesta;
-					$numcmod=3;
-					$sWhere = 'aure73id=' . $idEncuesta . '';
-					$sSQL = 'SELECT * FROM ' . $sTabla . ' WHERE ' . $sWhere;
-					$sdatos = '';
-					$result = $objDB->ejecutasql($sSQL);
-					if ($objDB->nf($result) > 0) {
-						$filabase = $objDB->sf($result);
-						for ($k = 1; $k <= $numcmod; $k++) {
-							if ($filabase[$scampo[$k]] != $sdato[$k]) {
-								if ($sdatos != '') {
-									$sdatos = $sdatos . ', ';
+					if ($bModoCarga){
+						$idRespuesta = $fila['aure73t2_p1'];
+					} else {
+						$scampo[1] = 'aure73acepta';
+						$scampo[2] = 'aure73t2_p1';
+						$scampo[3] = 'aure73fecharespuesta';
+						$sdato[1] = $aure73acepta;
+						$sdato[2] = $idRespuesta;
+						$sdato[3] = $aure73fecharespuesta;
+						$numcmod=3;
+						$sWhere = 'aure73id=' . $idEncuesta . '';
+						$sSQL = 'SELECT * FROM ' . $sTabla . ' WHERE ' . $sWhere;
+						$sdatos = '';
+						$result = $objDB->ejecutasql($sSQL);
+						if ($objDB->nf($result) > 0) {
+							$filabase = $objDB->sf($result);
+							for ($k = 1; $k <= $numcmod; $k++) {
+								if ($filabase[$scampo[$k]] != $sdato[$k]) {
+									if ($sdatos != '') {
+										$sdatos = $sdatos . ', ';
+									}
+									$sdatos = $sdatos . $scampo[$k] . '="' . $sdato[$k] . '"';
+									$bPasa = true;
 								}
-								$sdatos = $sdatos . $scampo[$k] . '="' . $sdato[$k] . '"';
-								$bPasa = true;
 							}
 						}
 					}
@@ -672,22 +717,15 @@ function f273_HTMLForm_Encuesta($iMes, $idEncuesta, $idRespuesta, $objDB, $bDebu
 						if ($result == false) {					
 							$sHTML = $sHTML . htmlAlertas('rojo', $ERR['falla_guardar']);
 						} else {
-							list($sHTMLEncuesta, $sDebugE) = f273_HTMLForm_EncuestaDesercion($iMes, $idEncuesta, $idRespuesta, $objDB, false, true);
-							$sDebug = $sDebug . $sDebugE;
-							$sHTML = $sHTML . $sHTMLEncuesta;
+							list($sErrorR, $sDebugR) = f2202_RespuestaEncuesta($fila['aure73idregistro'], $idRespuesta, $fila['aure73t2_p2'], $objDB, $bDebug);
+							$sDebug = $sDebug . $sDebugR;
 						}
-					}				
-				} else {
-					if ($fila['aure73fecharespuesta'] == $sFechaHoy) {
-						if ($bDebug) {
-							$sDebug = $sDebug . fecha_microtiempo() . ' La encuesta: es de hoy<br>';
-						}
-						list($sHTMLEncuesta, $sDebugE) = f273_HTMLForm_EncuestaDesercion($iMes, $idEncuesta, $fila['aure73t2_p1'], $objDB, false, $bDebug);
-						$sDebug = $sDebug . $sDebugE;
-						$sHTML = $sHTML . $sHTMLEncuesta;
-					} else {
-						$sHTML = $sHTML . htmlAlertas('naranja', $ETI['aure73cerrada']);
 					}
+					list($sHTMLEncuesta, $sDebugE) = f273_HTMLForm_EncuestaDesercion($iMes, $idEncuesta, $idRespuesta, $objDB, false, $bDebug);
+					$sDebug = $sDebug . $sDebugE;
+					$sHTML = $sHTML . $sHTMLEncuesta;
+				} else {
+					$sHTML = $sHTML . htmlAlertas('naranja', $ETI['aure73cerrada']);
 				}
 			}
 		}
@@ -712,19 +750,22 @@ function f273_HTMLForm_EncuestaDesercion($iMes, $idEncuesta, $idRespuesta, $objD
 	$sSQLadd = '';
 	$sHTML = '';
 	$sDebug = '';
+	$iHoy = fecha_DiaMod();
 	$objCombos = new clsHtmlCombos();
 	$objCombos->nuevo('aure73factordeserta', $idRespuesta, true, '{' . $ETI['msg_seleccione'] . '}');
 	$objCombos->sAccion = 'opcion_combo_aure73factordeserta();';
-	$sWhere = 'cara15id NOT IN (0, 12, 15)';
-	$sSQL = 'SELECT cara15id AS id, cara15nombre AS nombre 
+	$sSQL = 'SELECT cara15id AS id, cara15textoencuesta AS nombre 
 	FROM cara15factordeserta 
-	WHERE ' . $sWhere . ' 
-	ORDER BY cara15orden';
+	WHERE cara15vaaencuesta=1 
+	ORDER BY cara15ordenencuesta, cara15textoencuesta';
 	$html_aure73factordeserta = $objCombos->html($sSQL, $objDB);
-	$sSQLadd = $sSQLadd . ' AND TB.aure73id=' . $idEncuesta . '';
-	$sSQL = 'SELECT TB.aure73fecharespuesta, TB.aure73tipoencuesta, TB.aure73t2_p2, T6.aure74nombre, T5.unad11razonsocial, T1.core12nombre, T2.core09nombre, T3.unad23nombre, T4.unad24nombre
-	FROM ' . $sTabla . ' AS TB, core12escuela AS T1, core09programa AS T2, unad23zona AS T3, unad24sede AS T4, unad11terceros AS T5, aure74tipoencuesta AS T6
-	WHERE TB.aure73idescuela=T1.core12id AND TB.aure73idprograma=T2.core09id AND TB.aure73idzona=T3.unad23id AND TB.aure73idcentro=T4.unad24id AND TB.aure73idtercero=T5.unad11id AND TB.aure73tipoencuesta=aure74id' . $sSQLadd . '';
+	//$sSQLadd = $sSQLadd . ' AND ';
+	$sSQL = 'SELECT TB.aure73fecharespuesta, TB.aure73tipoencuesta, TB.aure73t2_p2, T6.aure74nombre, T5.unad11razonsocial, 
+	T1.core12nombre, T2.core09nombre, T3.unad23nombre, T4.unad24nombre, TB.aure73t2_comentario
+	FROM ' . $sTabla . ' AS TB, core12escuela AS T1, core09programa AS T2, unad23zona AS T3, unad24sede AS T4, 
+	unad11terceros AS T5, aure74tipoencuesta AS T6
+	WHERE TB.aure73id=' . $idEncuesta . ' AND TB.aure73idescuela=T1.core12id AND TB.aure73idprograma=T2.core09id AND TB.aure73idzona=T3.unad23id 
+	AND TB.aure73idcentro=T4.unad24id AND TB.aure73idtercero=T5.unad11id AND TB.aure73tipoencuesta=T6.aure74id';
 	if ($bDebug) {
 		$sDebug = $sDebug . fecha_microtiempo() . ' Consultando encuesta para HTML: ' . $sSQL . '<br>';
 	}
@@ -751,29 +792,53 @@ function f273_HTMLForm_EncuestaDesercion($iMes, $idEncuesta, $idRespuesta, $objD
 			' . $html_aure73factordeserta . '
 			</div>
 		</div>';
-		if ($bCambiaFactor) {			
-			$sHTML = $sHTML . htmlAlertas('azul', $ETI['aure73factordeserta_g'] . '<br>' . $ETI['aure73gracias']);
-		} else {
-			$sHTML = $sHTML . htmlAlertas('verde', $ETI['aure73gracias']);
+		if ($idRespuesta != -1) {
+			if ($bCambiaFactor) {			
+				$sHTML = $sHTML . htmlAlertas('azul', $ETI['aure73factordeserta_g'] . '<br>' . $ETI['aure73gracias']);
+			} else {
+				$sHTML = $sHTML . htmlAlertas('verde', $ETI['aure73gracias']);
+			}
 		}
+		$bConContinua = false;
 		if ($fila['aure73t2_p2'] == -1) {
+			$bConContinua = true;
+		} else {
+			if ($fila['aure73fecharespuesta'] == 0){
+				$bConContinua = true;
+			} else {
+				if ($fila['aure73fecharespuesta'] == $iHoy) {
+					$bConContinua = true;
+				}
+			}
+		}
+		if ($bConContinua){
+			$sVr1 = '';
+			$sVr2 = '';
+			switch ($fila['aure73t2_p2']){
+				case 0:
+					$sVr1 = ' checked';
+					break;
+				case 1:
+					$sVr2 = ' checked';
+					break;
+			}
 			$sHTML = $sHTML . '<hr><div class="form-group row" id="div_adicional">
 				<div class="col-sm-12">
 					<label>' . $ETI['aure73t2_p2_t'] . '</label>
 				</div>
 				<div class="col-sm-12">
 					<div class="form-check form-check-inline">
-						<input class="form-check-input" type="radio" name="aure73t2_p2" id="aure73t2_p2_1" value="1" required>
+						<input class="form-check-input" type="radio" name="aure73t2_p2" id="aure73t2_p2_1" value="1" required' . $sVr2. '>
 						<label class="form-check-label" for="aure73t2_p2_1">SI</label>
 					</div>
 					<div class="form-check form-check-inline">
-						<input class="form-check-input" type="radio" name="aure73t2_p2" id="aure73t2_p2_2" value="0" required>
+						<input class="form-check-input" type="radio" name="aure73t2_p2" id="aure73t2_p2_2" value="0" required' . $sVr1. '>
 						<label class="form-check-label" for="aure73t2_p2_2">NO</label>
 					</div>
 				</div>
 				<div class="col-sm-12">
 					<label for="aure73t2_comentario">¿Quiere agregar algo?</label>
-					<textarea class="form-control" id="aure73t2_comentario" name="aure73t2_comentario" rows="3"></textarea>  
+					<textarea class="form-control" id="aure73t2_comentario" name="aure73t2_comentario" rows="3">' . $fila['aure73t2_comentario']. '</textarea>  
 				</div>
 				<div class="col-sm-12">
 					<input type="button" id="cmdEnviaEncuesta" name="cmdEnviaEncuesta" class="btn btn-aurea px-4 float-right" title="' . $ETI['bt_enviar'] . '" value="' . $ETI['bt_enviar'] . '" onclick="enviaencuestades()">
@@ -874,4 +939,17 @@ function htmlAlertas($sColor, $sTexto) {
 	}
 	$sHTML = $sHTML . '<div class="alert alert-' . $sTipo . '" role="alert"><strong>' . $sTexto . '</strong></div>';
 	return $sHTML;
+}
+//Guardar la encuesta en el origen..
+function f2202_RespuestaEncuesta($id01, $iRtpa1, $iRpta2, $objDB, $bDebug = false){
+	$sError = '';
+	$sDebug = '';
+	$iHoy = fecha_DiaMod();
+	$sSQL = 'UPDATE core01estprograma SET core01factordeserta=' . $iRtpa1 . ', core01desc_fecharesp=' . $iHoy . ', core01desc_continua=' . $iRpta2 . ' WHERE core01id=' . $id01 . '';
+	//echo $sSQL;
+	if ($bDebug){
+		$sDebug = $sDebug . fecha_microtiempo() . ' Actualizando PEI: ' . $sSQL . '<br>';
+	}
+	$result = $objDB->ejecutasql($sSQL);
+	return array($sError, $sDebug);
 }

@@ -1,0 +1,14 @@
+Que en terceros salga el nombre completo.
+
+En Unidades la busqueda dde terceros esta fallando.
+La unidades hijas deberian salir debajo de las unidades padres.
+
+
+En Equipos de trabajo colocar filtro de nombre y de unidad unidad funcional.
+Poner si el equipo de trabajo pertenece a una zona o a un centro...
+No esta funcionando el filtro de listar.
+
+
+Ajustar el formato de dias habiles.
+
+Colocar la fecha limite en todos los modulos que requieran respuesta (y un boton para actualizarla.)

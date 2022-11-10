@@ -1,0 +1,44 @@
+
+- Priorizar la solicitud de devolución.
+
+
+SELECT 1 AS Cont, COUNT(saiu40idtercero) AS Total 
+FROM saiu40baseconotifica_1
+
+
+
+SELECT 1 AS Cont, saiu41idperiodo, COUNT(saiu40idtercero) AS Total 
+FROM saiu40baseconotifica_1
+GROUP BY saiu41idperiodo
+UNION 
+SELECT 2 AS Cont, saiu41idperiodo, COUNT(saiu40idtercero) AS Total 
+FROM saiu40baseconotifica_2
+GROUP BY saiu41idperiodo
+UNION 
+SELECT 3 AS Cont, saiu41idperiodo, COUNT(saiu40idtercero) AS Total 
+FROM saiu40baseconotifica_3
+GROUP BY saiu41idperiodo
+UNION 
+SELECT 4 AS Cont, saiu41idperiodo, COUNT(saiu40idtercero) AS Total 
+FROM saiu40baseconotifica_4
+GROUP BY saiu41idperiodo
+UNION 
+SELECT 5 AS Cont, saiu41idperiodo, COUNT(saiu40idtercero) AS Total 
+FROM saiu40baseconotifica_5
+GROUP BY saiu41idperiodo
+UNION 
+SELECT 6 AS Cont, saiu41idperiodo, COUNT(saiu40idtercero) AS Total 
+FROM saiu40baseconotifica_6
+GROUP BY saiu41idperiodo
+UNION 
+SELECT 7 AS Cont, saiu41idperiodo, COUNT(saiu40idtercero) AS Total 
+FROM saiu40baseconotifica_7
+GROUP BY saiu41idperiodo
+UNION 
+SELECT 8 AS Cont, saiu41idperiodo, COUNT(saiu40idtercero) AS Total 
+FROM saiu40baseconotifica_8
+GROUP BY saiu41idperiodo
+UNION 
+SELECT 9 AS Cont, saiu41idperiodo, COUNT(saiu40idtercero) AS Total 
+FROM saiu40baseconotifica_9
+GROUP BY saiu41idperiodo

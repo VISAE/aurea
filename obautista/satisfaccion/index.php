@@ -2,7 +2,7 @@
 /*
 --- © Omar Augusto Bautista Mora - UNAD - 2022 ---
 --- omar.bautista@unad.edu.co - http://www.unad.edu.co
---- Modelo Versión 1.00.0 lunes, 24 de octubre de 2022
+--- Modelo Versión 2.28.4b lunes, 24 de octubre de 2022
 */
 if (file_exists('./err_control.php')) {
 	require './err_control.php';
@@ -136,8 +136,6 @@ $objCombos->nuevo('aure73tipodoc', $_REQUEST['aure73tipodoc'], true, '{' . $ETI[
 $html_aure73tipodoc = $objCombos->html('', $objDB);
 
 ?>
-
-
 <!doctype html>
 <html lang="es">
 
@@ -196,6 +194,7 @@ $html_aure73tipodoc = $objCombos->html('', $objDB);
 			$aParametros[101] = window.document.frmencuesta.aure73id.value;
 			$aParametros[102] = window.document.frmencuesta.aure73t2_p2.value;
 			$aParametros[103] = window.document.frmencuesta.aure73t2_comentario.value;
+			$aParametros[104] = window.document.frmencuesta.aure73factordeserta.value;
 			xajax_f273_EnviaEncuestaDes($aParametros);
 		}
 
