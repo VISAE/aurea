@@ -268,10 +268,16 @@ if (false){
 <script language="javascript" src="<?php echo $APP->rutacomun; ?>js/jquery-3.3.1.min.js"></script>
 <script language="javascript" src="<?php echo $APP->rutacomun; ?>js/popper.min.js"></script>
 <script language="javascript" src="<?php echo $APP->rutacomun; ?>js/bootstrap.min.js"></script>
+<script language="javascript" src="<?php echo $APP->rutacomun; ?>js/Chart.min.js"></script>
+<script language="javascript" src="<?php echo $APP->rutacomun; ?>js/Chartjs-plugin-datalabels.js"></script>
+<script language="javascript" src="<?php echo $APP->rutacomun; ?>js/jquery.qtip.min.js"></script>
+<script language="javascript" src="<?php echo $APP->rutacomun; ?>js/jquery.maphilight.min.js"></script>
 <link rel="stylesheet" href="<?php echo $APP->rutacomun; ?>js/bootstrap.min.css" type="text/css"/>
 <link rel="stylesheet" href="<?php echo $APP->rutacomun; ?>css/criticalPath.css" type="text/css"/>
 <link rel="stylesheet" href="<?php echo $APP->rutacomun; ?>css/principal.css" type="text/css"/>
-<link rel="stylesheet" href="<?php echo $APP->rutacomun; ?>unad_estilos2018.css" type="text/css"/>
+<link rel="stylesheet" href="<?php echo $APP->rutacomun; ?>unad_estilos2018.css?ver=<?php echo time(); ?>" type="text/css"/>
+<link rel="stylesheet" href="<?php echo $APP->rutacomun; ?>js/Chart.min.css" type="text/css"/>
+<link rel="stylesheet" href="<?php echo $APP->rutacomun; ?>js/jquery.qtip.min.css" type="text/css"/>
 <?php
 ?>
 <script language="javascript">
@@ -373,6 +379,7 @@ function paginarf2357(){
 	params[103]=window.document.frmedita.cara57peraca.value;
 	//params[104]=window.document.frmedita.blistar.value;
 	document.getElementById('div_f2357detalle').innerHTML='<div class="GrupoCamposAyuda"><div class="MarquesinaMedia">Procesando datos, por favor espere.</div></div><input id="paginaf2357" name="paginaf2357" type="hidden" value="'+params[101]+'" /><input id="lppf2357" name="lppf2357" type="hidden" value="'+params[102]+'" />';
+	document.getElementById('div_f2357dashboard').style.display='none';
 	xajax_f2357_HtmlTabla(params);
 	xajax_f2357_HtmlDashboard(params);
 	}
@@ -420,59 +427,6 @@ function procesarmatricula(){
 		window.document.frmedita.submit();
 		}
 	}
-function crearGraficoBarra(sGrafico, aEtiquetas, sOrientacion, grupoDatos) {
-    var ctx = document.getElementById(sGrafico).getContext("2d");
-    var myChart = new Chart(ctx, {
-        type: sOrientacion,
-        data: {
-            labels: aEtiquetas,
-            datasets: grupoDatos
-        },
-        options: {
-            scales: {
-                xAxes: [{ stacked: true }],
-                yAxes: [{
-                    stacked: true,
-                    ticks: {
-                        beginAtZero: true
-                    }
-                }]
-            }
-        }
-    });
-    }
-function grupoDatosGraficos(aTitulos, aDatos, grupoApilado, colorFondo, colorLinea) {
-    var i;
-    var aObjetos = new Array();
-    for(i=0;i<aTitulos.length;i++){
-        var objeto = {
-            label: aTitulos[i],
-            stack: 'Stack ' + grupoApilado[i],
-            data: aDatos.map(a => a['grupo'+i]),
-            backgroundColor: colorFondo[i],
-            borderColor: colorLinea[i],
-            borderWidth: 1
-            };
-        aObjetos.push(objeto);
-        }
-    return aObjetos;
-    }
-function pintarGraficos(json) {
-    for(var sGrafico in json) {
-        document.getElementById('div_f2357detalle_'+sGrafico).innerHTML=json[sGrafico].sHTML;
-        var aTitulos = json[sGrafico].aConfiguracion.aTitulos;
-        var aEtiquetas = json[sGrafico].aEtiquetas;
-        if(aEtiquetas.length>8){aEtiquetas=aEtiquetas.slice(0,8);}
-        var aDatos = json[sGrafico].aDatos;
-        if(aDatos.length>8){aDatos=aDatos.slice(0,8);}
-        var sOrientacion = json[sGrafico].aConfiguracion.sOrientacion;
-        var colorFondo = json[sGrafico].aConfiguracion.colorFondo;
-        var colorLinea = json[sGrafico].aConfiguracion.colorLinea;
-        var grupoApilado = json[sGrafico].aConfiguracion.grupoApilado;
-        var grupoDatos = grupoDatosGraficos(aTitulos, aDatos, grupoApilado, colorFondo, colorLinea);
-        crearGraficoBarra(sGrafico, aEtiquetas, sOrientacion, grupoDatos);
-        }
-    }
 // -->
 </script>
 <form id="frmimpp" name="frmimpp" method="post" action="p2357.php" target="_blank">
@@ -552,16 +506,16 @@ echo '<h2>'.$ETI['titulo_2357'].'</h2>';
 <input id="boculta111" name="boculta111" type="hidden" value="<?php echo $_REQUEST['boculta111']; ?>" />
 <?php
 $bGrupo1=true;
-$bGrupo2=true;
-$bGrupo3=true;
-$bGrupo4=true;
-$bGrupo5=true;
-$bGrupo6=true;
-$bGrupo7=true;
-$bGrupo8=true;
-$bGrupo9=true;
-$bGrupo10=true;
-$bGrupo11=true;
+$bGrupo2=false;
+$bGrupo3=false;
+$bGrupo4=false;
+$bGrupo5=false;
+$bGrupo6=false;
+$bGrupo7=false;
+$bGrupo8=false;
+$bGrupo9=false;
+$bGrupo10=false;
+$bGrupo11=false;
 //Div para ocultar
 $bconexpande=false;
 if ($bconexpande){
@@ -616,6 +570,7 @@ echo ' '.$csv_separa;
 echo $sTabla2357;
 ?>
 </div>
+<div id="div_f2357dashboard" style="display:none">
 <?php
 $sPrevTitulo='<hr />
 <b>';
@@ -652,6 +607,7 @@ if ($bGrupo1){
 		if ($_REQUEST['ficha']==1){$sEstilo='';}
 		}
 ?>
+<div id="div_f2357grafico" class="GrupoCampos450"></div>
 <div class="salto1px"></div>
 <div class="GrupoCampos" id="div_ficha1"<?php echo $sEstilo; ?>>
 <?php
@@ -675,7 +631,7 @@ echo $ETI['cara57infgral'];
 </label>
 <div class="salto1px"></div>
 <div id="div_p101" style="display:<?php if ($_REQUEST['boculta101']==0){echo 'none'; }else{echo 'block';} ?>;">
-<div class="GrupoCampos450">
+<div class="GrupoCampos520">
 <label class="TituloGrupo">
 <?php
 echo 'Matriculados por Zonas';
@@ -685,7 +641,7 @@ echo 'Matriculados por Zonas';
 <div id="div_f2357detalle_aZonas">
 </div>
 </div>
-<div class="GrupoCampos450">
+<div class="GrupoCampos520">
 <label class="TituloGrupo">
 <?php
 echo 'Matriculados por Sedes';
@@ -696,7 +652,7 @@ echo 'Matriculados por Sedes';
 </div>
 </div>
 <div class="salto1px"></div>
-<div class="GrupoCampos450">
+<div class="GrupoCampos520">
 <label class="TituloGrupo">
 <?php
 echo 'Matriculados por Escuelas';
@@ -706,7 +662,7 @@ echo 'Matriculados por Escuelas';
 <div id="div_f2357detalle_aEscuelas">
 </div>
 </div>
-<div class="GrupoCampos450">
+<div class="GrupoCampos520">
 <label class="TituloGrupo">
 <?php
 echo 'Matriculados por Programas';
@@ -1264,6 +1220,7 @@ echo 'Grafico n';
 	}
 ?>
 </div>
+</div>
 </div><!-- /div_areatrabajo -->
 </div><!-- /DIV_areaform -->
 </div><!-- /DIV_Sector1 -->
@@ -1373,8 +1330,6 @@ if ($bMueveScroll){
 </script>
 <link rel="stylesheet" href="<?php echo $APP->rutacomun; ?>js/chosen.css" type="text/css"/>
 <script language="javascript" src="<?php echo $APP->rutacomun; ?>js/chosen.jquery.js"></script>
-<link rel="stylesheet" href="<?php echo $APP->rutacomun; ?>js/Chart.min.css" type="text/css"/>
-<script language="javascript" src="<?php echo $APP->rutacomun; ?>js/Chart.min.js"></script>
 <script language="javascript">
 <!--
 $().ready(function(){
@@ -1383,6 +1338,7 @@ $("#cara57peraca").chosen();
 -->
 </script>
 <script language="javascript" src="<?php echo $APP->rutacomun; ?>unad_todas.js?ver=8"></script>
+<script language="javascript" src="jsi/js2357.js?ver=<?php echo time(); ?>"></script>
 <?php
 forma_piedepagina();
 ?>

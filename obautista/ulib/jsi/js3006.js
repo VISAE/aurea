@@ -66,8 +66,8 @@ function limpiaf3006(){
 	window.document.frmedita.saiu06idusuario_td.value=window.document.frmedita.stipodoc.value;
 	window.document.frmedita.saiu06idusuario_doc.value='';
 	document.getElementById('div_saiu06idusuario').innerHTML='';
-	//ter_traerxid('saiu06idusuario', window.document.frmedita.idusuario.value);
-	fecha_AsignarNum('saiu06fecha', iFechaBaseNum);
+	ter_traerxid('saiu06idusuario', window.document.frmedita.idusuario.value);
+	// fecha_AsignarNum('saiu06fecha', iFechaBaseNum);
 	verboton('belimina3006','none');
 	}
 function eliminaf3006(){
@@ -106,6 +106,8 @@ function cargadatof3006(llave1){
 function cargaridf3006(llave1){
 	var params=new Array();
 	params[0]=2;
+	params[97]=window.document.frmedita.saiu05agno.value;
+	params[98]=window.document.frmedita.saiu05mes.value;
 	params[103]=llave1;
 	xajax_f3006_Traer(params);
 	expandepanel(3006,'block',0);

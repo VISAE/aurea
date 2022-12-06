@@ -257,6 +257,7 @@ function f3007_TablaDetalleV2($aParametros, $objDB, $bDebug=false){
 	if ($aParametros[0]==''){$aParametros[0]=-1;}
 	$sDebug='';
 	$saiu05id=$aParametros[0];
+	$sTabla5='saiu05solicitud'.f3000_Contenedor($aParametros[97], $aParametros[98]);
 	$sTabla7='saiu07anexos'.f3000_Contenedor($aParametros[97], $aParametros[98]);
 	$idTercero=$aParametros[100];
 	$pagina=$aParametros[101];
@@ -271,12 +272,33 @@ function f3007_TablaDetalleV2($aParametros, $objDB, $bDebug=false){
 	$sSQLadd='';
 	$sSQLadd1='';
 	$sLeyenda='';
+	if (!$objDB->bexistetabla($sTabla5)){
+		$sLeyenda='No ha sido posible acceder al contenedor de datos';
+		}else{
+		$bConBotonesDoc=false;
+		$bConRevision=false;
+		$bConEditar=false;
+		$sSQL='SELECT saiu05estado FROM '.$sTabla5.' WHERE saiu05id='.$saiu05id;
+		$tabla=$objDB->ejecutasql($sSQL);
+		if ($objDB->nf($tabla)>0){
+			$fila=$objDB->sf($tabla);
+			if ($fila['saiu05estado']==0){
+				$bConBotonesDoc=true;
+				$bAbierta=true;
+				}
+			if ($fila['saiu05estado']==3){$bConRevision=true;}
+			if ($fila['saiu05estado']==5){$bConBotonesDoc=true;}
+			if ($fila['saiu05estado']==6){$bConEditar=true;}
+			}
+		}
 	if ($sLeyenda!=''){
 		$sLeyenda='<div class="salto1px"></div>
-<div class="GrupoCamposAyuda">
-'.$sLeyenda.'
-<div class="salto1px"></div>
-</div>';
+		<div class="GrupoCamposAyuda">
+		'.$sLeyenda.'
+		<div class="salto1px"></div>
+		</div>';
+		return array($sLeyenda.'<input id="paginaf3007" name="paginaf3007" type="hidden" value="'.$pagina.'"/><input id="lppf3007" name="lppf3007" type="hidden" value="'.$lineastabla.'"/>', $sDebug);
+		die();
 		}
 /*
 	$aEstado=array();
@@ -302,14 +324,18 @@ function f3007_TablaDetalleV2($aParametros, $objDB, $bDebug=false){
 		}
 	*/
 	$sTitulos='Solicitud, Consec, Id, Tipoanexo, Detalle, Origen, Archivo, Usuario, Fecha, Hora, Minuto, Estado, Validad, Fechavalida, Horavalida, Minvalida';
-	$sSQL='SELECT TB.saiu07idsolicitud, TB.saiu07consec, TB.saiu07id, T4.saiu04titulo, TB.saiu07detalle, TB.saiu07idorigen, TB.saiu07idarchivo, T8.unad11razonsocial AS C8_nombre, TB.saiu07fecha, TB.saiu07hora, TB.saiu07minuto, T12.saiu14nombre, T13.unad11razonsocial AS C13_nombre, TB.saiu07fechavalida, TB.saiu07horavalida, TB.saiu07minvalida, TB.saiu07idtipoanexo, TB.saiu07idusuario, T8.unad11tipodoc AS C8_td, T8.unad11doc AS C8_doc, TB.saiu07estado, TB.saiu07idvalidad, T13.unad11tipodoc AS C13_td, T13.unad11doc AS C13_doc 
-FROM '.$sTabla7.' AS TB, saiu04temaanexo AS T4, unad11terceros AS T8, saiu14estadoanexo AS T12, unad11terceros AS T13 
-WHERE '.$sSQLadd1.' TB.saiu07idsolicitud='.$saiu05id.' AND TB.saiu07idtipoanexo=T4.saiu04id AND TB.saiu07idusuario=T8.unad11id AND TB.saiu07estado=T12.saiu14id AND TB.saiu07idvalidad=T13.unad11id '.$sSQLadd.'
-ORDER BY TB.saiu07consec';
+	$sSQL='SELECT TB.saiu07idsolicitud, TB.saiu07consec, TB.saiu07id, T4.saiu04titulo, TB.saiu07detalle, 
+	TB.saiu07idorigen, TB.saiu07idarchivo, T8.unad11razonsocial AS C8_nombre, TB.saiu07fecha, TB.saiu07hora, 
+	TB.saiu07minuto, T12.saiu14nombre, T13.unad11razonsocial AS C13_nombre, TB.saiu07fechavalida, TB.saiu07horavalida, 
+	TB.saiu07minvalida, TB.saiu07idtipoanexo, TB.saiu07idusuario, T8.unad11tipodoc AS C8_td, T8.unad11doc AS C8_doc, 
+	TB.saiu07estado, TB.saiu07idvalidad, T13.unad11tipodoc AS C13_td, T13.unad11doc AS C13_doc, T4.saiu04obligatorio 
+	FROM '.$sTabla7.' AS TB, saiu04temaanexo AS T4, unad11terceros AS T8, saiu14estadoanexo AS T12, unad11terceros AS T13 
+	WHERE '.$sSQLadd1.' TB.saiu07idsolicitud='.$saiu05id.' AND TB.saiu07idtipoanexo=T4.saiu04id AND TB.saiu07idusuario=T8.unad11id AND TB.saiu07estado=T12.saiu14id AND TB.saiu07idvalidad=T13.unad11id '.$sSQLadd.'
+	ORDER BY TB.saiu07consec';
 	$sSQLlista=str_replace("'","|",$sSQL);
 	$sSQLlista=str_replace('"',"|",$sSQLlista);
 	$sErrConsulta='<input id="consulta_3007" name="consulta_3007" type="hidden" value="'.$sSQLlista.'"/>
-<input id="titulos_3007" name="titulos_3007" type="hidden" value="'.$sTitulos.'"/>';
+	<input id="titulos_3007" name="titulos_3007" type="hidden" value="'.$sTitulos.'"/>';
 	$tabladetalle=$objDB->ejecutasql($sSQL);
 	if ($tabladetalle==false){
 		if ($bDebug){$sDebug=$sDebug.fecha_microtiempo().' Consulta 3007: '.$sSQL.'<br>';}
@@ -328,78 +354,96 @@ ORDER BY TB.saiu07consec';
 			$tabladetalle=$objDB->ejecutasql($sSQL.$limite);
 			}
 		}
-	$res=$sErrConsulta.$sLeyenda.'<table border="0" align="center" cellpadding="0" cellspacing="2" class="tablaapp">
-<tr class="fondoazul">
-<td><b>'.$ETI['saiu07consec'].'</b></td>
-<td><b>'.$ETI['saiu07idtipoanexo'].'</b></td>
-<td><b>'.$ETI['saiu07detalle'].'</b></td>
-<td><b>'.$ETI['saiu07idarchivo'].'</b></td>
-<td colspan="2"><b>'.$ETI['saiu07idusuario'].'</b></td>
-<td><b>'.$ETI['saiu07fecha'].'</b></td>
-<td><b>'.$ETI['saiu07hora'].'</b></td>
-<td><b>'.$ETI['saiu07estado'].'</b></td>
-<td colspan="2"><b>'.$ETI['saiu07idvalidad'].'</b></td>
-<td><b>'.$ETI['saiu07fechavalida'].'</b></td>
-<td><b>'.$ETI['saiu07horavalida'].'</b></td>
-<td align="right">
-'.html_paginador('paginaf3007', $registros, $lineastabla, $pagina, 'paginarf3007()').'
-'.html_lpp('lppf3007', $lineastabla, 'paginarf3007()').'
-</td>
-</tr>';
+	$res=$sErrConsulta.$sLeyenda;
+	$res=$res.'<div class="table-responsive">
+	<table border="0" align="center" cellpadding="0" cellspacing="2" class="tablaapp">
+	<thead class="fondoazul"><tr>
+	<td><b>'.$ETI['saiu07consec'].'</b></td>
+	<td><b>'.$ETI['saiu07idtipoanexo'].'</b></td>
+	<td><b>'.$ETI['saiu04obligatorio'].'</b></td>
+	<td colspan="2"><b>'.$ETI['saiu07idarchivo'].'</b></td>
+	<td><b>'.$ETI['saiu07fecha'].'</b></td>
+	<td><b>'.$ETI['saiu07estado'].'</b></td>
+	<td><b>'.$ETI['saiu07fechavalida'].'</b></td>
+	<td align="right" colspan="2">
+	'.html_paginador('paginaf3007', $registros, $lineastabla, $pagina, 'paginarf3007()').'
+	'.html_lpp('lppf3007', $lineastabla, 'paginarf3007()').'
+	</td>
+	</tr></thead>';
 	$tlinea=1;
 	while($filadet=$objDB->sf($tabladetalle)){
 		$sPrefijo='';
 		$sSufijo='';
-		$sClass='';
+		$sClass=' class="resaltetabla"';
 		$sLink='';
-		if (false){
+		$sLink2='';
+		if ($filadet['saiu07idvalidad']!=0){
 			$sPrefijo='<b>';
 			$sSufijo='</b>';
 			}
-		if(($tlinea%2)==0){$sClass=' class="resaltetabla"';}
+		if(($tlinea%2)==0){$sClass='';}
 		$tlinea++;
+		$id07=$filadet['saiu07id'];
 		$et_saiu07consec=$sPrefijo.$filadet['saiu07consec'].$sSufijo;
 		$et_saiu07idtipoanexo=$sPrefijo.cadena_notildes($filadet['saiu04titulo']).$sSufijo;
-		$et_saiu07detalle=$sPrefijo.cadena_notildes($filadet['saiu07detalle']).$sSufijo;
+		$et_saiu04obligatorio='';
+		if ($filadet['saiu04obligatorio']=="N"){
+			$et_saiu04obligatorio=$sPrefijo.'Opcional'.$sSufijo;
+			}
 		$et_saiu07idarchivo='';
 		if ($filadet['saiu07idarchivo']!=0){
 			//$et_saiu07idarchivo='<img src="verarchivo.php?cont='.$filadet['saiu07idorigen'].'&id='.$filadet['saiu07idarchivo'].'&maxx=150"/>';
 			$et_saiu07idarchivo=html_lnkarchivo((int)$filadet['saiu07idorigen'], (int)$filadet['saiu07idarchivo']);
 			}
-		$et_saiu07idusuario=$sPrefijo.$filadet['saiu07idusuario'].$sSufijo;
 		$et_saiu07fecha='';
 		if ($filadet['saiu07fecha']!=0){$et_saiu07fecha=$sPrefijo.fecha_desdenumero($filadet['saiu07fecha']).$sSufijo;}
 		$et_saiu07hora=html_TablaHoraMin($filadet['saiu07hora'], $filadet['saiu07minuto']);
 		$et_saiu07minuto=$sPrefijo.$filadet['saiu07minuto'].$sSufijo;
 		$et_saiu07estado=$sPrefijo.cadena_notildes($filadet['saiu14nombre']).$sSufijo;
-		$et_saiu07idvalidad=$sPrefijo.$filadet['saiu07idvalidad'].$sSufijo;
+		$sBotonAnexa='';
+		if ($filadet['saiu07idvalidad']==0){
+			if ($bConBotonesDoc){
+				$sBotonAnexa='<input id="banexasaiu07idarchivo_'.$id07.'" name="banexasaiu07idarchivo_'.$id07.'" type="button" value="Anexar" class="btMiniAnexar" onclick="carga_saiu07idarchivo('.$id07.')" title="Cargar archivo"/>';
+				$bMostrarDetalle=true;
+				}
+			}
 		$et_saiu07fechavalida='';
 		if ($filadet['saiu07fechavalida']!=0){$et_saiu07fechavalida=$sPrefijo.fecha_desdenumero($filadet['saiu07fechavalida']).$sSufijo;}
 		$et_saiu07horavalida=html_TablaHoraMin($filadet['saiu07horavalida'], $filadet['saiu07minvalida']);
 		$et_saiu07minvalida=$sPrefijo.$filadet['saiu07minvalida'].$sSufijo;
+		if ($bConRevision){
+		if ($filadet['saiu07idvalidad']==0){
+			$sLink='<a href="javascript:apruebaidf3007('.$filadet['saiu07id'].')" class="lnkresalte">Aprobar</a>';
+			}else{
+			$sLink2='<a href="javascript:retiraidf3007('.$filadet['saiu07id'].')" class="lnkresalte">Desaprobar</a>';
+			}
+		}
+		if ($bConEditar){
+		if ($filadet['saiu07idvalidad']==0){
+			$sLink2='<a href="javascript:cargaridf3007('.$filadet['saiu07id'].')" class="lnkresalte">'.$ETI['lnk_cargar'].'</a>';
+			}
+		}
 		if ($bAbierta){
-			$sLink='<a href="javascript:cargaridf3007('.$filadet['saiu07id'].')" class="lnkresalte">'.$ETI['lnk_cargar'].'</a>';
+			if ($filadet['saiu07idvalidad']!=0){
+				$sLink2='<a href="javascript:retiraidf3007('.$filadet['saiu07id'].')" class="lnkresalte">Desaprobar</a>';
+				}
 			}
 		$res=$res.'<tr'.$sClass.'>
-<td>'.$et_saiu07consec.'</td>
-<td>'.$et_saiu07idtipoanexo.'</td>
-<td>'.$et_saiu07detalle.'</td>
-<td>'.$et_saiu07idarchivo.'</td>
-<td>'.$sPrefijo.$filadet['C8_td'].' '.$filadet['C8_doc'].$sSufijo.'</td>
-<td>'.$sPrefijo.cadena_notildes($filadet['C8_nombre']).$sSufijo.'</td>
-<td>'.$et_saiu07fecha.'</td>
-<td>'.$et_saiu07hora.'</td>
-<td>'.$et_saiu07minuto.'</td>
-<td>'.$et_saiu07estado.'</td>
-<td>'.$sPrefijo.$filadet['C13_td'].' '.$filadet['C13_doc'].$sSufijo.'</td>
-<td>'.$sPrefijo.cadena_notildes($filadet['C13_nombre']).$sSufijo.'</td>
-<td>'.$et_saiu07fechavalida.'</td>
-<td>'.$et_saiu07horavalida.'</td>
-<td>'.$et_saiu07minvalida.'</td>
-<td>'.$sLink.'</td>
-</tr>';
+		<td>'.$et_saiu07consec.'</td>
+		<td>'.$et_saiu07idtipoanexo.'</td>
+		<td>'.$et_saiu04obligatorio.'</td>
+		<td>'.$sBotonAnexa.'</td>
+		<td>'.$et_saiu07idarchivo.'</td>
+		<td>'.$et_saiu07fecha.' '.$et_saiu07hora.' '.$et_saiu07minuto.'</td>
+		<td>'.$et_saiu07estado.'</td>
+		<td>'.$et_saiu07fechavalida.'</td>
+		<td>'.$sLink.'</td>
+		<td>'.$sLink2.'</td>
+		</tr>';
 		}
-	$res=$res.'</table>';
+	$res=$res.'</table>
+	<div class="salto5px"></div>
+	</div>';
 	$objDB->liberar($tabladetalle);
 	return array(utf8_encode($res), $sDebug);
 	}

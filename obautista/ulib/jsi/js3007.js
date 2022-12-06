@@ -11,13 +11,13 @@ function limpia_saiu07idarchivo(){
 	verboton('beliminasaiu07idarchivo','none');
 	//paginarf0000();
 	}
-function carga_saiu07idarchivo(){
+function carga_saiu07idarchivo(saiu07id){
 	window.document.frmedita.iscroll.value=window.pageYOffset;
 	window.document.frmedita.div96v1.value='';
 	window.document.frmedita.div96v2.value='';
 	window.document.frmedita.div96v3.value='';
 	document.getElementById('div_96titulo').innerHTML='<h2>'+window.document.frmedita.titulo_3005.value+' - Cargar archivo</h2>';
-	document.getElementById('div_96cuerpo').innerHTML='<iframe id="iframe96" src="framearchivo.php?ref=3007&id='+window.document.frmedita.saiu07id.value+'" height="400px" width="100%" frameborder="0"></iframe>';
+	document.getElementById('div_96cuerpo').innerHTML='<iframe id="iframe96" src="framearchivodis.php?ref=3007&id='+saiu07id+'&tabla=_'+window.document.frmedita.saiu05agno.value+window.document.frmedita.saiu05mes.value+'" height="400px" width="100%" frameborder="0"></iframe>';
 	expandesector(96);
 	window.scrollTo(0, 150);
 	}

@@ -36,7 +36,7 @@ $ETI['saiu05raddespcalend'] = 'Raddespcalend';
 $ETI['saiu05raddesphab'] = 'Raddesphab';
 $ETI['saiu05estado']='Estado';
 $ETI['saiu05idmedio']='Medio';
-$ETI['saiu05idtiposolorigen']='Tiposolorigen';
+$ETI['saiu05idtiposolorigen']='Categor&iacute;a';
 $ETI['saiu05idtemaorigen']='Temaorigen';
 $ETI['saiu05idtiposolfin']='Tiposolfin';
 $ETI['saiu05idtemafin']='Temafin';
@@ -88,7 +88,7 @@ $ETI['saiu05evalclaridad'] = 'Evalclaridad';
 $ETI['saiu05evalcalridmotivo'] = 'Evalcalridmotivo';
 $ETI['saiu05evalresolvio'] = 'Evalresolvio';
 $ETI['saiu05evalsugerencias'] = 'Evalsugerencias';
-$ETI['saiu05idcategoria'] = 'Categoria';
+$ETI['saiu05idcategoria'] = 'Tipo de Solicitud';
 
 $ERR['saiu05agno']='Is necessary the data '.$ETI['saiu05agno'];
 $ERR['saiu05mes']='Is necessary the data '.$ETI['saiu05mes'];
@@ -162,7 +162,7 @@ $ERR['saiu05evalresolvio'] = 'Necesita el dato ' . $ETI['saiu05evalresolvio'];
 $ERR['saiu05evalsugerencias'] = 'Necesita el dato ' . $ETI['saiu05evalsugerencias'];
 $ERR['saiu05idcategoria'] = 'Necesita el dato ' . $ETI['saiu05idcategoria'];
 
-$ERR['saiu05idtiposolorigen_2']='Por favor seleccione el tipo y tema de solicitud';
+$ERR['saiu05idtiposolorigen_2']='Por favor seleccione la categor&iacute;a y tema de solicitud';
 $ERR['saiu05idtemaorigen_2']='Por favor seleccione el tema de solicitud';
 $ERR['saiu05detalle_2']='Por favor detalle su solicitud';
 

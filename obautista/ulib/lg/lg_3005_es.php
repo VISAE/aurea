@@ -36,7 +36,7 @@ $ETI['saiu05raddespcalend'] = 'Raddespcalend';
 $ETI['saiu05raddesphab'] = 'Raddesphab';
 $ETI['saiu05estado']='Estado';
 $ETI['saiu05idmedio']='Via de solicitud';
-$ETI['saiu05idtiposolorigen']='Tipo de solicitud';
+$ETI['saiu05idtiposolorigen']='Categor&iacute;a';
 $ETI['saiu05idtemaorigen']='Tema';
 $ETI['saiu05idtiposolfin']='Tiposolfin';
 $ETI['saiu05idtemafin']='Temafin';
@@ -58,7 +58,7 @@ $ETI['saiu05infocomplemento']='Info complemento';
 $ETI['saiu05idunidadresp'] = 'Unidad';
 $ETI['saiu05idequiporesp'] = 'Equipo';
 $ETI['saiu05idsupervisor'] = 'Supervisor';
-$ETI['saiu05idresponsable']='Atiende';
+$ETI['saiu05idresponsable']='Responsable';
 $ETI['saiu05idescuela']='Escuela';
 $ETI['saiu05idprograma']='Programa';
 $ETI['saiu05idperiodo']='Periodo';
@@ -88,7 +88,7 @@ $ETI['saiu05evalclaridad'] = 'Evalclaridad';
 $ETI['saiu05evalcalridmotivo'] = 'Evalcalridmotivo';
 $ETI['saiu05evalresolvio'] = 'Evalresolvio';
 $ETI['saiu05evalsugerencias'] = 'Evalsugerencias';
-$ETI['saiu05idcategoria'] = 'Categor&iacute;a';
+$ETI['saiu05idcategoria'] = 'Tipo';
 
 $ERR['saiu05agno']='Necesita el dato '.$ETI['saiu05agno'];
 $ERR['saiu05mes']='Necesita el dato '.$ETI['saiu05mes'];
@@ -162,9 +162,21 @@ $ERR['saiu05evalresolvio'] = 'Necesita el dato ' . $ETI['saiu05evalresolvio'];
 $ERR['saiu05evalsugerencias'] = 'Necesita el dato ' . $ETI['saiu05evalsugerencias'];
 $ERR['saiu05idcategoria'] = 'Necesita el dato ' . $ETI['saiu05idcategoria'];
 
-$ERR['saiu05idtiposolorigen_2']='Por favor seleccione el tipo y tema de solicitud';
+$ERR['saiu05idtiposolorigen_2']='Por favor seleccione la categor&iacute;a y tema de solicitud';
 $ERR['saiu05idtemaorigen_2']='Por favor seleccione el tema de solicitud';
 $ERR['saiu05detalle_2']='Por favor detalle su solicitud';
+$ERR['saiu05opinvalida']='Opci&oacute;n inv&aacute;lida';
+$ERR['saiu05idtercero']='Id Tercero no v&aacute;lido';
 
 $ETI['msg_numsolicitud']='N&deg; de solicitud';
+$ETI['saiu05refdoc']='C&oacute;digo';
+$ETI['saiu05atiende']='Atiende';
+
+$ETI['digite'] = 'Dig&iacute;telo aqu&iacute;';
+$ETI['bt_consultar']='Consultar';
+$ETI['bt_radicar']='Radicar';
+$ETI['bt_campus']='Ingresar con credenciales de campus';
+$ETI['bt_inscribirse']='Crear usuario en campus';
+$ETI['bt_anonimo']='Ingresar anonimamente';
+$ETI['bt_cierrasesion']='Cerrar sesi&oacute;n';
 ?>

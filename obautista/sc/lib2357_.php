@@ -323,50 +323,7 @@ function f2357_HtmlTabla($aParametros){
 		}
 	return $objResponse;
 	}
-function f2357_configuracionGrafico($sGrafico, $iTamano){
-    $aConfiguracion=array();
-    $aPaleta=array('AliceBlue','AntiqueWhite','Aqua','Aquamarine','Azure','Beige','Bisque','Black','BlanchedAlmond','Blue','BlueViolet','Brown','BurlyWood','CadetBlue','Chartreuse','Chocolate','Coral','CornflowerBlue','Cornsilk','Crimson','Cyan','DarkBlue','DarkCyan','DarkGoldenRod','DarkGray','DarkGrey','DarkGreen','DarkKhaki','DarkMagenta','DarkOliveGreen','DarkOrange','DarkOrchid','DarkRed','DarkSalmon','DarkSeaGreen','DarkSlateBlue','DarkSlateGray','DarkSlateGrey','DarkTurquoise','DarkViolet','DeepPink','DeepSkyBlue','DimGray','DimGrey','DodgerBlue','FireBrick','FloralWhite','ForestGreen','Fuchsia','Gainsboro','GhostWhite','Gold','GoldenRod','Gray','Grey','Green','GreenYellow','HoneyDew','HotPink','IndianRed','Indigo','Ivory','Khaki','Lavender','LavenderBlush','LawnGreen','LemonChiffon','LightBlue','LightCoral','LightCyan','LightGoldenRodYellow','LightGray','LightGrey','LightGreen','LightPink','LightSalmon','LightSeaGreen','LightSkyBlue','LightSlateGray','LightSlateGrey','LightSteelBlue','LightYellow','Lime','LimeGreen','Linen','Magenta','Maroon','MediumAquaMarine','MediumBlue','MediumOrchid','MediumPurple','MediumSeaGreen','MediumSlateBlue','MediumSpringGreen','MediumTurquoise','MediumVioletRed','MidnightBlue','MintCream','MistyRose','Moccasin','NavajoWhite','Navy','OldLace','Olive','OliveDrab','Orange','OrangeRed','Orchid','PaleGoldenRod','PaleGreen','PaleTurquoise','PaleVioletRed','PapayaWhip','PeachPuff','Peru','Pink','Plum','PowderBlue','Purple','RebeccaPurple','Red','RosyBrown','RoyalBlue','SaddleBrown','Salmon','SandyBrown','SeaGreen','SeaShell','Sienna','Silver','SkyBlue','SlateBlue','SlateGray','SlateGrey','Snow','SpringGreen','SteelBlue','Tan','Teal','Thistle','Tomato','Turquoise','Violet','Wheat','White','WhiteSmoke','Yellow','YellowGreen');
-    $aColorFondo=array();
-    $aColorLinea=array();
-    $sColorFondo=$aPaleta[array_rand($aPaleta)];
-    $sColorLinea=$aPaleta[array_rand($aPaleta)];
-    $aIndices=array_rand($aPaleta,$iTamano);
-    foreach ($aIndices as $iIndice) {$aColorFondo[]=$aPaleta[$iIndice];}
-    $aIndices=array_rand($aPaleta,$iTamano);
-    foreach ($aIndices as $iIndice) {$aColorLinea[]=$aPaleta[$iIndice];}
-    switch ($sGrafico){
-        case 'aZonas':
-            $aConfiguracion['aTitulos']=array('Antiguos','Nuevos');
-            $aConfiguracion['sOrientacion']='bar';
-            $aConfiguracion['colorFondo']=$aColorFondo;
-            $aConfiguracion['colorLinea']=$aColorLinea;
-            $aConfiguracion['grupoApilado']=array(0,1);
-            break;
-        case 'aSedes':
-            $aConfiguracion['aTitulos']=array('Antiguos','Nuevos');
-            $aConfiguracion['sOrientacion']='bar';
-            $aConfiguracion['colorFondo']=$aColorFondo;
-            $aConfiguracion['colorLinea']=$aColorLinea;
-            $aConfiguracion['grupoApilado']=array(0,1);
-            break;
-        case 'aEscuelas':
-            $aConfiguracion['aTitulos']=array('Antiguos','Nuevos');
-            $aConfiguracion['sOrientacion']='bar';
-            $aConfiguracion['colorFondo']=$aColorFondo;
-            $aConfiguracion['colorLinea']=$aColorLinea;
-            $aConfiguracion['grupoApilado']=array(0,1);
-            break;
-        case 'aProgramas':
-            $aConfiguracion['aTitulos']=array('Antiguos','Nuevos');
-            $aConfiguracion['sOrientacion']='horizontalBar';
-            $aConfiguracion['colorFondo']=$aColorFondo;
-            $aConfiguracion['colorLinea']=$aColorLinea;
-            $aConfiguracion['grupoApilado']=array(0,1);
-            break;
-        }
-        return $aConfiguracion;
-    }
-function f2357_CargarDataDashboard($idPeraca, $objDB, $bDebug=false){
+function f2357_CargarDataDashboard($idPeraca, $objDB, $objGraficos, $bDebug=false){	
 	$sDebug='';
 	$aEscuela=array();
 	$aPrograma=array();
@@ -374,61 +331,134 @@ function f2357_CargarDataDashboard($idPeraca, $objDB, $bDebug=false){
 	$aSede=array();
 	$aMatriculados=array("aZonas"=>array(),"aSedes"=>array(),"aEscuelas"=>array(),"aProgramas"=>array());
     $sSQL='SELECT core12id, core12nombre, core12sigla 
-FROM core12escuela AS TB 
-WHERE core12tieneestudiantes="S"';
+	FROM core12escuela AS TB 
+	WHERE core12tieneestudiantes="S"';
 	$tabla=$objDB->ejecutasql($sSQL);
 	while($fila=$objDB->sf($tabla)){
 		$aEscuela[$fila['core12id']]=utf8_encode($fila['core12sigla']);
 		}
     $sSQL='SELECT core09id, core09nombre 
-FROM core09programa AS TB 
-WHERE core09activo="S"';
+	FROM core09programa AS TB 
+	WHERE core09activo="S"';
 	$tabla=$objDB->ejecutasql($sSQL);
 	while($fila=$objDB->sf($tabla)){
 		$aPrograma[$fila['core09id']]=utf8_encode($fila['core09nombre']);
 		}
     $sSQL='SELECT unad23id, unad23nombre, unad23sigla 
-FROM unad23zona AS TB 
-WHERE unad23conestudiantes="S"';
+	FROM unad23zona AS TB 
+	WHERE unad23conestudiantes="S"';
 	$tabla=$objDB->ejecutasql($sSQL);
 	while($fila=$objDB->sf($tabla)){
 		$aZona[$fila['unad23id']]=utf8_encode($fila['unad23sigla']);
 		}
     $sSQL='SELECT unad24id, unad24nombre, unad24activa 
-FROM unad24sede AS TB 
-WHERE unad24activa="S"';
+	FROM unad24sede AS TB 
+	WHERE unad24activa="S"';
 	$tabla=$objDB->ejecutasql($sSQL);
 	while($fila=$objDB->sf($tabla)){
 		$aSede[$fila['unad24id']]=utf8_encode($fila['unad24nombre']);
 		}
+	$aContenidoMapa = array('ZCAR' => '', 'ZOCC' => '', 'ZCORI' => '', 'ZCBOY' => '', 'ZCBOG' => '', 'ZSUR' => '', 'ZCSUR' => '', 'ZAO' => '');
+	$aTotalesMapa = array('ZCAR' => array('antiguos'=>0, 'nuevos'=>0, 'total'=>0), 'ZOCC' => array('antiguos'=>0, 'nuevos'=>0, 'total'=>0), 'ZCORI' => array('antiguos'=>0, 'nuevos'=>0, 'total'=>0), 'ZCBOY' => array('antiguos'=>0, 'nuevos'=>0, 'total'=>0), 'ZCBOG' => array('antiguos'=>0, 'nuevos'=>0, 'total'=>0), 'ZSUR' => array('antiguos'=>0, 'nuevos'=>0, 'total'=>0), 'ZCSUR' => array('antiguos'=>0, 'nuevos'=>0, 'total'=>0), 'ZAO' => array('antiguos'=>0, 'nuevos'=>0, 'total'=>0));
+	$aConfiguracion=array(
+		"aZonas"=>array(
+			'aTitulos' => array('Antiguos','Nuevos'),
+			'sTipo' => 'bar',
+			'colorFondo' => array(),
+			'colorLinea' => array(),
+			'grupoApilado' => array(0,1)
+		),
+		"aSedes"=>array(
+			'aTitulos' => array('Antiguos','Nuevos'),
+			'sTipo' => 'bar',
+			'colorFondo' => array(),
+			'colorLinea' => array(),
+			'grupoApilado' => array(0,1)
+		),
+		"aEscuelas"=>array(
+			'aTitulos' => array('Antiguos','Nuevos'),
+			'sTipo' => 'bar',
+			'colorFondo' => array(),
+			'colorLinea' => array(),
+			'grupoApilado' => array(0,1)
+		),
+		"aProgramas"=>array(
+			'aTitulos' => array('Antiguos','Nuevos'),
+			'sTipo' => 'horizontalBar',
+			'colorFondo' => array(),
+			'colorLinea' => array(),
+			'grupoApilado' => array(0,1)
+		)
+	);
 	$sSQL='SELECT core16idzona, core16idcead, core16idescuela, core16idprograma, core16nuevo FROM core16actamatricula WHERE core16peraca='.$idPeraca.'';
 	$tabla=$objDB->ejecutasql($sSQL);
     while ($fila = $objDB->sf($tabla)) {
         if (isset($aZona[$fila['core16idzona']])) {
             if (isset($aMatriculados['aZonas'][$fila['core16idzona']]) == 0) {
-                $aMatriculados['aZonas'][$fila['core16idzona']] = array('nombre' => $aZona[$fila['core16idzona']], 'cantidad' => array('grupo0' => 0, 'grupo1' => 0), 'total' => 0);
+                $aMatriculados['aZonas'][$fila['core16idzona']] = array(
+					'nombre' => $aZona[$fila['core16idzona']], 
+					'cantidad' => array('grupo0' => 0, 'grupo1' => 0), 
+					'total' => 0
+				);
+				if (isset($objGraficos->aPaletaZonas[$fila['core16idzona']])) {
+					$aConfiguracion['aZonas']['colorFondo'][] = $objGraficos->aPaletaZonas[$fila['core16idzona']][0];
+					$aConfiguracion['aZonas']['colorLinea'][] = $objGraficos->aPaletaZonas[$fila['core16idzona']][1];
+				} else {
+					$aConfiguracion['aZonas']['colorFondo'][] = $objGraficos->aPaletaUNAD['Azul'][1];
+					$aConfiguracion['aZonas']['colorLinea'][] = $objGraficos->aPaletaUNAD['Azul'][4];
+				}
+				$aTotalesMapa[$aZona[$fila['core16idzona']]] = array('antiguos'=>0, 'nuevos'=>0, 'total'=>0, 'sedes'=>array());
             }
             if ($fila['core16nuevo'] == 0) { // Antiguos
                 $aMatriculados['aZonas'][$fila['core16idzona']]['cantidad']['grupo0']++;
+				$aTotalesMapa[$aZona[$fila['core16idzona']]]['antiguos']++;
             } else {
                 $aMatriculados['aZonas'][$fila['core16idzona']]['cantidad']['grupo1']++;
+				$aTotalesMapa[$aZona[$fila['core16idzona']]]['nuevos']++;
             }
             $aMatriculados['aZonas'][$fila['core16idzona']]['total']++;
+			$aTotalesMapa[$aZona[$fila['core16idzona']]]['total']++;
         }
         if (isset($aSede[$fila['core16idcead']])) {
             if (isset($aMatriculados['aSedes'][$fila['core16idcead']]) == 0) {
-                $aMatriculados['aSedes'][$fila['core16idcead']] = array('nombre' => $aSede[$fila['core16idcead']], 'cantidad' => array('grupo0' => 0, 'grupo1' => 0), 'total' => 0);
+                $aMatriculados['aSedes'][$fila['core16idcead']] = array(
+					'nombre' => $aSede[$fila['core16idcead']], 
+					'cantidad' => array('grupo0' => 0, 'grupo1' => 0), 
+					'total' => 0
+				);
+				if (isset($objGraficos->aPaletaZonas[$fila['core16idzona']])) {
+					$aConfiguracion['aSedes']['colorFondo'][] = $objGraficos->aPaletaZonas[$fila['core16idzona']][0];
+					$aConfiguracion['aSedes']['colorLinea'][] = $objGraficos->aPaletaZonas[$fila['core16idzona']][1];
+				} else {
+					$aConfiguracion['aSedes']['colorFondo'][] = $objGraficos->aPaletaUNAD['Azul'][1];
+					$aConfiguracion['aSedes']['colorLinea'][] = $objGraficos->aPaletaUNAD['Azul'][4];
+				}
+				$aTotalesMapa[$aZona[$fila['core16idzona']]]['sedes'][$aSede[$fila['core16idcead']]] = array('antiguos'=>0, 'nuevos'=>0, 'total'=>0);
             }
             if ($fila['core16nuevo'] == 0) { // Antiguos
                 $aMatriculados['aSedes'][$fila['core16idcead']]['cantidad']['grupo0']++;
+				$aTotalesMapa[$aZona[$fila['core16idzona']]]['sedes'][$aSede[$fila['core16idcead']]]['antiguos']++;
             } else {
                 $aMatriculados['aSedes'][$fila['core16idcead']]['cantidad']['grupo1']++;
+				$aTotalesMapa[$aZona[$fila['core16idzona']]]['sedes'][$aSede[$fila['core16idcead']]]['nuevos']++;
             }
             $aMatriculados['aSedes'][$fila['core16idcead']]['total']++;
+			$aTotalesMapa[$aZona[$fila['core16idzona']]]['sedes'][$aSede[$fila['core16idcead']]]['total']++;
         }
         if (isset($aEscuela[$fila['core16idescuela']])) {
             if (isset($aMatriculados['aEscuelas'][$fila['core16idescuela']]) == 0) {
-                $aMatriculados['aEscuelas'][$fila['core16idescuela']] = array('nombre' => $aEscuela[$fila['core16idescuela']], 'cantidad' => array('grupo0' => 0, 'grupo1' => 0), 'total' => 0);
+                $aMatriculados['aEscuelas'][$fila['core16idescuela']] = array(
+					'nombre' => $aEscuela[$fila['core16idescuela']], 
+					'cantidad' => array('grupo0' => 0, 'grupo1' => 0), 
+					'total' => 0
+				);
+				if (isset($objGraficos->aPaletaEscuelas[$fila['core16idescuela']])) {
+					$aConfiguracion['aEscuelas']['colorFondo'][] = $objGraficos->aPaletaEscuelas[$fila['core16idescuela']][1];
+					$aConfiguracion['aEscuelas']['colorLinea'][] = $objGraficos->aPaletaEscuelas[$fila['core16idescuela']][4];
+				} else {
+					$aConfiguracion['aEscuelas']['colorFondo'][] = $objGraficos->aPaletaUNAD['Azul'][1];
+					$aConfiguracion['aEscuelas']['colorLinea'][] = $objGraficos->aPaletaUNAD['Azul'][4];
+				}
             }
             if ($fila['core16nuevo'] == 0) { // Antiguos
                 $aMatriculados['aEscuelas'][$fila['core16idescuela']]['cantidad']['grupo0']++;
@@ -439,7 +469,18 @@ WHERE unad24activa="S"';
         }
         if (isset($aPrograma[$fila['core16idprograma']])) {
             if (isset($aMatriculados['aProgramas'][$fila['core16idprograma']]) == 0) {
-                $aMatriculados['aProgramas'][$fila['core16idprograma']] = array('nombre' => $aPrograma[$fila['core16idprograma']], 'cantidad' => array('grupo0' => 0, 'grupo1' => 0), 'total' => 0);
+                $aMatriculados['aProgramas'][$fila['core16idprograma']] = array(
+					'nombre' => $aPrograma[$fila['core16idprograma']], 
+					'cantidad' => array('grupo0' => 0, 'grupo1' => 0), 
+					'total' => 0
+				);
+				if (isset($objGraficos->aPaletaEscuelas[$fila['core16idescuela']])) {
+					$aConfiguracion['aProgramas']['colorFondo'][] = $objGraficos->aPaletaEscuelas[$fila['core16idescuela']][1];
+					$aConfiguracion['aProgramas']['colorLinea'][] = $objGraficos->aPaletaEscuelas[$fila['core16idescuela']][4];
+				} else {
+					$aConfiguracion['aProgramas']['colorFondo'][] = $objGraficos->aPaletaUNAD['Azul'][1];
+					$aConfiguracion['aProgramas']['colorLinea'][] = $objGraficos->aPaletaUNAD['Azul'][4];
+				}
             }
             if ($fila['core16nuevo'] == 0) { // Antiguos
                 $aMatriculados['aProgramas'][$fila['core16idprograma']]['cantidad']['grupo0']++;
@@ -455,10 +496,11 @@ WHERE unad24activa="S"';
 
         }*/
 	$objDB->liberar($tabla);
-	return array($aMatriculados, $sDebug);
+	return array($aMatriculados, $aConfiguracion, $aTotalesMapa, $sDebug);
 	}
 function f2357_DashboardDetalle($aParametros, $objDB, $bDebug=false){
 	require './app.php';
+	require $APP->rutacomun.'libgraficos.php';
 	$mensajes_todas=$APP->rutacomun.'lg/lg_todas_'.$_SESSION['unad_idioma'].'.php';
 	if (!file_exists($mensajes_todas)){$mensajes_todas=$APP->rutacomun.'lg/lg_todas_es.php';}
 	$mensajes_2357='lg/lg_2357_'.$_SESSION['unad_idioma'].'.php';
@@ -476,6 +518,7 @@ function f2357_DashboardDetalle($aParametros, $objDB, $bDebug=false){
 	$aGraficos=array();
 	$babierta=true;
 	$sLeyenda='';
+    $objGraficos=new ClsGraficos('canvas_f2357grafico','map', $ETI['cara57mapa']);
 	if ($aParametros[103]==''){
 		$sLeyenda='<div class="salto1px"></div>
 <div class="GrupoCamposAyuda">
@@ -488,18 +531,18 @@ function f2357_DashboardDetalle($aParametros, $objDB, $bDebug=false){
 	$sSQLadd='';
 	$sSQLadd1='';
 
-	list($aMatriculados, $sDebugD)=f2357_CargarDataDashboard($aParametros[103], $objDB, $bDebug);
-	$sDebug=$sDebug.$sDebugD;
+	list($aMatriculados, $aConfiguracion, $aTotalesMapa, $sDebugD)=f2357_CargarDataDashboard($aParametros[103], $objDB, $objGraficos, $bDebug);
+	list($sHTMLMapa, $sScriptMapa, $sDebugG) = f2357_HtmlGrafico($aTotalesMapa, $objGraficos, $bDebug);
+	$sDebug=$sDebug.$sDebugD.$sDebugG;
 	foreach ($aMatriculados as $sGrafico=>$aValores) {
-        $sHTML='<canvas id="'.$sGrafico.'" width="400" height="365"></canvas>';
+        $sHTML='<canvas id="'.$sGrafico.'" class="lienzo" width="400" height="365"></canvas>';
         $aDatos = array_column($aValores,'total');
-        array_multisort($aDatos, SORT_DESC, $aValores);
+        array_multisort($aDatos, SORT_DESC, $aValores, $aConfiguracion[$sGrafico]['colorFondo'], $aConfiguracion[$sGrafico]['colorLinea']);
         $aEtiquetas = array_column($aValores,'nombre');
         $aDatos = array_column($aValores,'cantidad');
-        $aConfiguracion = f2357_configuracionGrafico($sGrafico, count($aEtiquetas));
-        $aGraficos[$sGrafico] = array('sHTML'=>$sHTML, 'aEtiquetas'=>$aEtiquetas, 'aDatos'=>$aDatos, 'aConfiguracion'=>$aConfiguracion);
+        $aGraficos[$sGrafico] = array('sHTML'=>$sHTML, 'aEtiquetas'=>$aEtiquetas, 'aDatos'=>$aDatos, 'aConfiguracion'=>$aConfiguracion[$sGrafico]);
         }
-	return array($aGraficos, $sDebug);
+	return array($aGraficos, $sHTMLMapa, $sScriptMapa, $sDebug);
 	}
 function f2357_HtmlDashboard($aParametros){
 	$_SESSION['u_ultimominuto']=iminutoavance();
@@ -513,15 +556,60 @@ function f2357_HtmlDashboard($aParametros){
 	$objDB=new clsdbadmin($APP->dbhost, $APP->dbuser, $APP->dbpass, $APP->dbname);
 	if ($APP->dbpuerto!=''){$objDB->dbPuerto=$APP->dbpuerto;}
 	$objDB->xajax();
-	list($aDetalle, $sDebugTabla)=f2357_DashboardDetalle($aParametros, $objDB, $bDebug);
+	list($aDetalle, $sHTMLMapa, $sScriptMapa, $sDebugTabla)=f2357_DashboardDetalle($aParametros, $objDB, $bDebug);
 	$sDebug=$sDebug.$sDebugTabla;
 	$objDB->CerrarConexion();
 	$objResponse=new xajaxResponse();
-	$objResponse->call('pintarGraficos('.json_encode($aDetalle).')');
+	$objResponse->call('pintarGraficosf2357('.json_encode($aDetalle).')');
 	//$objResponse->assign('div_f2357detalle', 'innerHTML', $sDetalle);
+	$objResponse->assign('div_f2357grafico', 'innerHTML', $sHTMLMapa);
+	$objResponse->assign('div_f2357dashboard', 'style.display', 'block');
+    $objResponse->script($sScriptMapa);
 	if ($bDebug){
 		$objResponse->assign('div_debug', 'innerHTML', $sDebug);
 		}
 	return $objResponse;
 	}
+//
+function f2357_HtmlGrafico($aParametros, $objGraficos, $bDebug=false){
+    $_SESSION['u_ultimominuto']=iminutoavance();
+    $sError='';
+    $bDebug=false;
+    $sDebug='';
+    $opts=$aParametros;
+    if(!is_array($opts)){$opts=json_decode(str_replace('\"','"',$opts),true);}
+    if (isset($opts[99])!=0){if ($opts[99]==1){$bDebug=true;}}
+    require './app.php';
+    $sDetalle=$objGraficos->construyeLienzo(400,500);
+	$aTitulos = array('ZCAR' => 'Zona Caribe', 'ZOCC' => 'Zona Occidente', 'ZCORI' => 'Zona Centro Oriente', 'ZCBOY' => 'Zona Centro Boyacá', 'ZCBOG' => 'Zona Centro Bogotá Cundinamarca', 'ZSUR' => 'Zona Sur', 'ZCSUR' => 'Zona Centro Sur', 'ZAO' => 'Zona Amazonas Orinoquia');
+	$aContenidoMapa = array('ZCAR' => '', 'ZOCC' => '', 'ZCORI' => '', 'ZCBOY' => '', 'ZCBOG' => '', 'ZSUR' => '', 'ZCSUR' => '', 'ZAO' => '');
+	foreach($aParametros as $sClave => $aValor) {		
+		$sEncabezadoTabla = '<h6>' . $sClave . ' - ' . $aValor['total'] . ' Matriculados</h6>
+		<table style=\"font-size:12px;\">
+			<thead>
+				<tr><th rowspan=\"2\">Centro</th><th colspan=\"3\" style=\"text-align: center;\">Matriculados</th></tr>
+				<tr><th>Antiguos</th><th>Nuevos</th><th>Total</th></tr>
+			</thead>
+		<tbody>';		
+		$sTotales = '<tr>
+			<th>Total:</th>
+			<th style=\"text-align: right; border-top: 1px solid black;\">' . $aValor['antiguos'] . '</th>
+			<th style=\"text-align: right; border-top: 1px solid black;\">' . $aValor['nuevos'] . '</th>
+			<th style=\"text-align: right; border-top: 1px solid black; border-left: 1px solid black;\">' . $aValor['total'] . '</th>
+		</tr>';
+		if (isset($aValor['sedes'])) {
+			foreach($aValor['sedes'] as $sClave1 => $aValor1) {
+				$aContenidoMapa[$sClave] .= '<tr>
+					<td>' . $sClave1 . '</td>
+					<td style=\"text-align: right;\">' . $aValor1['antiguos'] . '</td>
+					<td style=\"text-align: right;\">' . $aValor1['nuevos'] . '</td>
+					<td style=\"text-align: right; font-weight: bold;\">' . $aValor1['total'] . '</td>
+				</tr>';				
+			}		
+		}
+		$aContenidoMapa[$sClave] = preg_replace("/\r|\n|\t/", "", $sEncabezadoTabla . $aContenidoMapa[$sClave] . $sTotales . '</tbody></table>');
+	}
+    $sDetalleScript=$objGraficos->construyeScript($aTitulos,$aContenidoMapa);
+    return array($sDetalle, $sDetalleScript, $sDebug);
+    }
 ?>

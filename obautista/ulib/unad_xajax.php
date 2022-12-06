@@ -115,6 +115,8 @@ function sesion_abandona_V2($bDebug=false, $bConCorreo=false, $aDatos=NULL){
 		}
 	if ($ifalta<1){
 		$objResponse=new xajaxResponse();
+		$objResponse->call("MensajeAlarmaV2(Se ha cerrado la sesi&oacute;n', 2)");
+		$objResponse->assign('div_tiempo','innerHTML', '');
 		$objResponse->redirect('salir.php');
 		return $objResponse;
 		}else{
@@ -251,43 +253,136 @@ function unad11_importar_V2($sDoc, $sUserCampus, $objDB, $bDebug=false){
 		}
 	$idRolUnad=0;
 	$bDBExterna=false;
+	$bExiste=false;
+	$bInterCambio=false;
+	$iVersionOrigen=1;
+	$unad11genero='';
+	$unad11fechanace='00/00/0000';
+	$unad11direccion='.';
+	$unad01estrato=0;
+	$unad11fechadoc=0;
+	$unad11idrca=0;
+	$unad11fecharca=0;
+	$iHoy=fecha_DiaMod();
 	$sSQL='SET CHARACTER SET utf8';
 	$tabla=$objDB->ejecutasql($sSQL);
 	switch($idEntidad){
 		case 1: //UNAD Florida.
-		$sModelo='M';
-		if (isset($APP->dbmodelocampus)!=0){
-			if ($APP->dbmodelocampus=='O'){$sModelo='O';}
-			if ($APP->dbmodelocampus=='P'){$sModelo='P';}
+		if (isset($APP->dbhostcampus)!=0){
+			$sModelo='M';
+			if (isset($APP->dbmodelocampus)!=0){
+				if ($APP->dbmodelocampus=='O'){$sModelo='O';}
+				if ($APP->dbmodelocampus=='P'){$sModelo='P';}
+				}
+			$objDBOrigen=new clsdbadmin($APP->dbhostcampus, $APP->dbusercampus, $APP->dbpasscampus, $APP->dbnamecampus, $sModelo);
+			if ($APP->dbpuertocampus!=''){$objDBOrigen->dbPuerto=$APP->dbpuertocampus;}
+			$bDBExterna=true;
+			if ($bDebug){$sDebug=$sDebug.fecha_microtiempo().' Conectando con base de datos externa ['.$APP->dbnamecampus.']<br>';}
+			if ($sDoc!=''){
+				//$sWhere='idnumber="'.$sDoc.'"';
+				$sWhere='nid="'.$sDoc.'"';
+				}else{
+				//$sWhere='username="'.$sUserCampus.'"';
+				$sWhere='susername="'.$sUserCampus.'"';
+				}
+			$sSQL='SELECT nid AS id, susername AS username, nid AS idnumber, sname AS firstname, snlast AS lastname, semail AS email, 
+			spassword AS password, sphone AS phone1 
+			FROM users WHERE '.$sWhere;
+			}else{
+			$objDBOrigen=$objDB;
+			$sSQL='SELECT 1 FROM unad11terceros WHERE unad11id=-9999';
 			}
-		$objDBOrigen=new clsdbadmin($APP->dbhostcampus, $APP->dbusercampus, $APP->dbpasscampus, $APP->dbnamecampus, $sModelo);
-		if ($APP->dbpuertocampus!=''){$objDBOrigen->dbPuerto=$APP->dbpuertocampus;}
-		$bDBExterna=true;
-		if ($bDebug){$sDebug=$sDebug.fecha_microtiempo().' Conectando con base de datos externa ['.$APP->dbnamecampus.']<br>';}
-		$sWhere='susername="'.$sUserCampus.'"';
-		$sSQL='SELECT nid AS id, susername AS username, nid AS idnumber, sname AS firstname, snlast AS lastname, semail AS email, spassword AS password, sphone AS phone1 FROM users WHERE '.$sWhere;
 		break;
 		default: //UNAD Colombia.
-		//$objDBOrigen=$objDB;
-		$objDBOrigen=new clsdbadmin($APP->dbhostcampus, $APP->dbusercampus, $APP->dbpasscampus, $APP->dbnamecampus);
-		if ($APP->dbpuertocampus!=''){$objDBOrigen->dbPuerto=$APP->dbpuertocampus;}
-		$bDBExterna=true;
-		if ($bDebug){$sDebug=$sDebug.fecha_microtiempo().' Conectando con base de datos externa ['.$APP->dbnamecampus.']<br>';}
-		if ($sDoc!=''){
-			$sWhere='idnumber="'.$sDoc.'"';
-			}else{
-			$sWhere='username="'.$sUserCampus.'"';
+		if (isset($APP->dbhostryc)!=0){
+			$objDBOrigen=new clsdbadmin($APP->dbhostryc, $APP->dbuserryc, $APP->dbpassryc, $APP->dbnameryc);
+			if ($APP->dbpuertoryc!=''){$objDBOrigen->dbPuerto=$APP->dbpuertoryc;}
+			if ($objDBOrigen->Conectar()){
+				$bDBExterna=true;
+				if ($bDebug){$sDebug=$sDebug.fecha_microtiempo().' Conectando con base de datos externa ['.$APP->dbnamecampus.']<br>';}
+				}else{
+				if ($bDebug){$sDebug=$sDebug.fecha_microtiempo().' Error al intentar conectar datos externa ['.$objDBOrigen->serror.']<br>';}
+				}
 			}
-		$sSQL='SELECT id, username, idnumber, firstname, lastname, email, password, phone1 FROM mdl_user WHERE '.$sWhere;
+		if ($bDBExterna){
+			if ($sDoc!=''){
+				//$sWhere='idnumber="'.$sDoc.'"';
+				$sWhere='documento="'.$sDoc.'"';
+				}else{
+				//$sWhere='username="'.$sUserCampus.'"';
+				$sWhere='usuario="'.$sUserCampus.'"';
+				}
+			//$sSQL='SELECT id, username, idnumber, firstname, lastname, email, password, phone1 FROM mdl_user WHERE '.$sWhere.'';
+			/*
+			$sSQL='SELECT 0 AS id, usuario AS username, documento AS idnumber, nombres AS firstname, apellidos AS lastname, correo_e AS email, 
+			clave AS password, telefono AS phone1, primer_nombre, segundo_nombre, primer_apellido, segundo_apellido, 
+			fecha_expedicion, sexo, estrato, estado_civil, YEAR(fecha_nacimiento) AS Agno_Nace, MONTH(fecha_nacimiento) AS Mes_Nace, 
+			DAY(fecha_nacimiento) AS Dia_Nace, YEAR(fecha_expedicion) AS Agno_Doc, MONTH(fecha_expedicion) AS Mes_Doc, 
+			DAY(fecha_expedicion) AS Dia_Doc 
+			FROM usuarios_sii WHERE '.$sWhere.'';
+			*/
+			$sSQL='SELECT 0 AS id, usuario AS username, documento AS idnumber, nombres AS firstname, apellidos AS lastname, correo_e AS email, 
+			clave AS password, telefono AS phone1 
+			FROM usuarios_sii WHERE '.$sWhere.'';
+			$iVersionOrigen=2;
+			//if ($bDebug){$sDebug=$sDebug.fecha_microtiempo().' Revisando DB Origen '.$sSQL.'<br>';}
+			}else{
+			$objDBOrigen=$objDB;
+			$sSQL='SELECT 1 FROM unad11terceros WHERE unad11id=-9999';
+			}
 		break;
 		}
 	if ($bDebug){$sDebug=$sDebug.fecha_microtiempo().' Consulta de origen: '.$sSQL.'<br>';}
 	$tabla=$objDBOrigen->ejecutasql($sSQL);
+	if ($objDBOrigen->nf($tabla)==0){
+		if ($iVersionOrigen==2){
+			if ($sDoc!=''){
+				//Septiembre 23 de 2021 - No le han creado el usuario...
+				$sSQL='SELECT 0 AS id, CONCAT("CC", documento) AS username, documento AS idnumber, primer_nombre AS firstname, 
+				primer_apellido AS lastname, correo1 AS email, "" AS password, telefono_movil AS phone1 
+				FROM preinscripcion WHERE documento='.$sDoc.' ORDER BY fecha_grab DESC';
+				$tabla=$objDBOrigen->ejecutasql($sSQL);
+				}
+			}
+		}
 	if ($objDBOrigen->nf($tabla)>0){
 		$fila=$objDBOrigen->sf($tabla);
+		$idMoodle=$fila['id'];
 		$idUsuario=$fila['username'];
 		$sDoc=$fila['idnumber'];
+		$nombres=substr($fila['firstname'],0,30);
+		$sNombre2='';
+		$apellidos=substr($fila['lastname'],0,30);
+		$sApellido2='';
+		$correo=substr($fila['email'],0,50);
+		$sTelefono=$fila['phone1'];
+		$sClave=$fila['password'];
+		if ($iVersionOrigen==2){
+			$sSQL='SELECT primer_nombre, segundo_nombre, primer_apellido, segundo_apellido, genero, estrato, direccion_res, paiso, 
+			YEAR(fecna) AS Agno_Nace, MONTH(fecna) AS Mes_Nace, DAY(fecna) AS Dia_Nace, fechaexpedicion  
+			FROM preinscripcion WHERE documento='.$sDoc.' ORDER BY fecha_grab DESC';
+			//fecha_nacimiento, fecha_expedicion, ,, estado_civil
+			//Agno_Nace, Mes_Nace, Dia_Nace, Agno_Doc, Mes_Doc, Dia_Doc
+			$tabla2=$objDBOrigen->ejecutasql($sSQL);
+			if ($objDBOrigen->nf($tabla2)>0){
+				$fila2=$objDBOrigen->sf($tabla2);
+				$nombres=substr($fila2['primer_nombre'],0,30);
+				$sNombre2=substr($fila2['segundo_nombre'],0,30);
+				$apellidos=substr($fila2['primer_apellido'],0,30);
+				$sApellido2=substr($fila2['segundo_apellido'],0,30);
+				$unad11genero=$fila2['genero'];
+				$unad01estrato=$fila2['estrato'];
+				$unad11direccion=cadena_reemplazar($fila2['direccion_res'], '"', '');
+				$unad11idrca=$sDoc;
+				$unad11fecharca=$iHoy;
+				$unad11fechanace=fecha_armar($fila2['Dia_Nace'], $fila2['Mes_Nace'], $fila2['Agno_Nace']);
+				//$unad11fechadoc=fecha_ArmarNumero($fila['Dia_Doc'], $fila['Mes_Doc'], $fila['Agno_Doc']);
+				}
+			}
+		$razonsocial=substr(trim($nombres.' '.$sNombre2).' '.trim($apellidos.' '.$sApellido2),0,100);
+		$bExiste=true;
 		$sSQLConsulta=$sSQL;
+		//Verificamos si el usuario existe entonces es cuestion de que pudo haber actualizado el documento.
 		$sSQL='SELECT unad11id, unad11doc FROM unad11terceros WHERE unad11usuario="'.$idUsuario.'"';
 		$tabla11=$objDB->ejecutasql($sSQL);
 		if ($objDB->nf($tabla11)>0){
@@ -302,54 +397,87 @@ function unad11_importar_V2($sDoc, $sUserCampus, $objDB, $bDebug=false){
 				seg_auditar(111, $_SESSION['unad_id_tercero'], 3, $fila11['unad11id'], $sWhere, $objDB);
 				}
 			}
-		}else{
-		$sError='No encontrado.';
+		}
+	if (!$bExiste){
+		//Puede que este en la tabla de intercambio..
+		$sSQL='SELECT * FROM cort01infopersona WHERE cort01numerodoc="'.$sDoc.'" AND cort01tipodoc=1';
+		$tabla=$objDB->ejecutasql($sSQL);
+		if ($objDB->nf($tabla)>0){
+			$fila=$objDB->sf($tabla);
+			$idUsuario='CC'.$fila['cort01numerodoc'];
+			$sDoc=$fila['cort01numerodoc'];
+			$idMoodle=0;
+			$nombres=substr($fila['cort01primernom'],0,30);
+			$sNombre2=substr($fila['cort01segundonom'],0,30);;
+			$apellidos=substr($fila['cort01primerapellido'],0,30);
+			$sApellido2=substr($fila['cort01segundoapellido'],0,30);
+			$razonsocial=substr($fila['cort01primernom'].' '.$fila['cort01segundonom'].' '.$fila['cort01primerapellido'].' '.$fila['cort01segundoapellido'],0,100);
+			$correo=substr($fila['cort01correopersonal'],0,50);
+			$sTelefono=$fila['cort01telefono'];
+			$bExiste=true;
+			$idRolUnad=0;
+			$sClave='';
+			$bInterCambio=true;
+			$inter_tipo=$fila['cort01tipodoc'];
+			$inter_id=$fila['cort01sii_id'];
+			$inter_proceso=$fila['cort01sii_fechaproceso'];
+			//cort01tipodoc, cort01numerodoc, cort01primernom, cort01segundonom, cort01primerapellido, cort01segundoapellido, cort01direccion, cort01telefono, cort01correopersonal, cort01fechanace, cort01fechacrea, cort01fechaactualiza
+			}
+		}
+	if (!$bExiste){
+		$sError='No se ha encontrado el documento '.$sDoc.'.';
 		}
 	if ($sError==''){
 		$scampos='unad11tipodoc, unad11doc, unad11id, unad11pais, unad11usuario, 
-unad11dv, unad11nombre1, unad11nombre2, unad11apellido1, unad11apellido2, 
-unad11genero, unad11fechanace, unad11rh, unad11ecivil, unad11razonsocial, 
-unad11direccion, unad11telefono, unad11correo, unad11sitioweb, unad11nacionalidad, 
-unad11deptoorigen, unad11ciudadorigen, unad11deptodoc, unad11ciudaddoc, unad11clave, 
-unad11idmoodle, unad11idncontents, unad11iddatateca, unad11idcampus, unad11claveapps, 
-unad11fechacrea, unad11mincrea, unad11rolunad, unad11fechaclave';
-		$nombres=substr($fila['firstname'],0,30);
-		$apellidos=substr($fila['lastname'],0,30);
-		$razonsocial=substr($fila['firstname'].' '.$fila['lastname'],0,100);
-		$correo=substr($fila['email'],0,50);
+		unad11dv, unad11nombre1, unad11nombre2, unad11apellido1, unad11apellido2, 
+		unad11genero, unad11fechanace, unad11rh, unad11ecivil, unad11razonsocial, 
+		unad11direccion, unad11telefono, unad11correo, unad11sitioweb, unad11nacionalidad, 
+		unad11deptoorigen, unad11ciudadorigen, unad11deptodoc, unad11ciudaddoc, unad11clave, 
+		unad11idmoodle, unad11idncontents, unad11iddatateca, unad11idcampus, unad11claveapps, 
+		unad11fechacrea, unad11mincrea, unad11rolunad, unad11fechaclave, unad11idrca, 
+		unad11fecharca, unad01estrato, unad11fechadoc';
 		$sSQL='SELECT MAX(unad11id) FROM unad11terceros';
 		$tablaid=$objDB->ejecutasql($sSQL);
 		$filaid=$objDB->sf($tablaid);
-		$id11=$filaid[0]+1;					
-		$unad11fechacrea=fecha_DiaMod();
+		$id11=$filaid[0]+1;
+		$unad11fechacrea=$iHoy;
 		$unad11mincrea=fecha_MinutoMod();
 		$sPais='057';
 		if ($idEntidad==1){$sPais='001';}
-		$svalores='"CC", "'.$fila['idnumber'].'", '.$id11.', "'.$sPais.'", "'.trim($fila['username']).'", 
-"", "'.$nombres.'", "", "'.$apellidos.'", "", 
-"", "00/00/0000", "", "", "'.$razonsocial.'", 
-".", "'.$fila['phone1'].'", "'.$correo.'", "", "'.$sPais.'", 
-"", "", "", "", "'.$fila['password'].'", 
-'.$fila['id'].', '.$fila['id'].', '.$fila['id'].', '.$fila['id'].', "", 
-'.$unad11fechacrea.', '.$unad11mincrea.', '.$idRolUnad.', '.$unad11fechacrea.'';
+		$svalores='"CC", "'.$sDoc.'", '.$id11.', "'.$sPais.'", "'.$idUsuario.'", 
+		"", "'.$nombres.'", "'.$sNombre2.'", "'.$apellidos.'", "'.$sApellido2.'", 
+		"'.$unad11genero.'", "'.$unad11fechanace.'", "", "", "'.$razonsocial.'", 
+		".", "'.$sTelefono.'", "'.$correo.'", "", "'.$sPais.'", 
+		"", "", "", "", "'.$sClave.'", 
+		'.$idMoodle.', '.$idMoodle.', '.$idMoodle.', '.$idMoodle.', "", 
+		'.$unad11fechacrea.', '.$unad11mincrea.', '.$idRolUnad.', '.$unad11fechacrea.', "'.$unad11idrca.'", 
+		'.$unad11fecharca.', '.$unad01estrato.', '.$unad11fechadoc.'';
 		$sSQL='INSERT INTO unad11terceros ('.$scampos.') VALUES ('.$svalores.');';
 		$res=$objDB->ejecutasql($sSQL);
 		if ($res==false){
 			//Fallo la insersion, posiblemente los nombres vienen mal...
-			$nombres=cadena_letrasynumeros(substr($fila['firstname'],0,30));
-			$apellidos=cadena_letrasynumeros(substr($fila['lastname'],0,30));
+			$nombres=cadena_letrasynumeros(substr($nombres,0,30));
+			$apellidos=cadena_letrasynumeros(substr($apellidos,0,30));
 			$razonsocial=$nombres.' '.$apellidos;
-			$svalores='"CC", "'.$fila['idnumber'].'", '.$id11.', "'.$sPais.'", "'.trim($fila['username']).'", 
-"", "'.$nombres.'", "", "'.$apellidos.'", "", 
-"", "00/00/0000", "", "", "'.$razonsocial.'", 
-".", "'.$fila['phone1'].'", "'.$correo.'", "", "'.$sPais.'", 
-"", "", "", "", "'.$fila['password'].'", 
-'.$fila['id'].', '.$fila['id'].', '.$fila['id'].', '.$fila['id'].', "", 
-'.$unad11fechacrea.', '.$unad11mincrea.', '.$idRolUnad.', '.$unad11fechacrea.'';
+			$svalores='"CC", "'.$sDoc.'", '.$id11.', "'.$sPais.'", "'.$idUsuario.'", 
+			"", "'.$nombres.'", "", "'.$apellidos.'", "", 
+			"'.$unad11genero.'", "'.$unad11fechanace.'", "", "", "'.$razonsocial.'", 
+			"'.$unad11direccion.'", "'.$sTelefono.'", "'.$correo.'", "", "'.$sPais.'", 
+			"", "", "", "", "'.$sClave.'", 
+			'.$idMoodle.', '.$idMoodle.', '.$idMoodle.', '.$idMoodle.', "", 
+			'.$unad11fechacrea.', '.$unad11mincrea.', '.$idRolUnad.', '.$unad11fechacrea.', "'.$unad11idrca.'", 
+			'.$unad11fecharca.', '.$unad01estrato.', '.$unad11fechadoc.'';
 			$sSQL='INSERT INTO unad11terceros ('.$scampos.') VALUES ('.$svalores.');';
 			$res=$objDB->ejecutasql($sSQL);
 			}
 		if ($bDebug){$sDebug=$sDebug.fecha_microtiempo().' Consulta de insersion: '.$sSQL.'<br>';}
+		if ($bInterCambio){
+			//$inter_tipo=$fila['cort01tipodoc'];
+			//$inter_id=$fila['cort01sii_id'];
+			//$inter_proceso=$fila['cort01sii_fechaproceso'];
+			$sSQL='UPDATE cort01infopersona SET cort01sii_id='.$id11.', cort01sii_fechaproceso='.$inter_proceso.' WHERE cort01numerodoc="'.$sDoc.'" AND cort01tipodoc='.$inter_tipo.'';
+			$tabla=$objDB->ejecutasql($sSQL);
+			}
 		}
 	if ($bDBExterna){
 		$objDBOrigen->CerrarConexion();
@@ -357,6 +485,7 @@ unad11fechacrea, unad11mincrea, unad11rolunad, unad11fechaclave';
 	return array($sError, $sDebug);
 	}
 function unad11_Mostrar_v2($params){
+	//Septiembre 9 de 2020 - Se agrega el parametro especial incialmente para incluir necesidades especiales
 	$_SESSION['u_ultimominuto']=iminutoavance();
 	//if ($tipodoc!='CE'){$doc=solonumeros($doc);}
 	$respuesta='';
@@ -369,12 +498,14 @@ function unad11_Mostrar_v2($params){
 	$bXajax=true;
 	if (isset($params[4])==0){$params[4]='';}
 	if (isset($params[5])==0){$params[5]='';}
+	if (isset($params[6])==0){$params[6]=0;}
 	if ($doc!=''){
 		require './app.php';
 		$objDB=new clsdbadmin($APP->dbhost, $APP->dbuser, $APP->dbpass, $APP->dbname);
 		if ($APP->dbpuerto!=''){$objDB->dbPuerto=$APP->dbpuerto;}
 		$objDB->xajax();
-		list($respuesta, $id, $tipodoc, $doc)=html_tercero($tipodoc, $doc, 0, 1, $objDB);
+		$iEspecial=(int)$params[6];
+		list($respuesta, $id, $tipodoc, $doc)=html_tercero($tipodoc, $doc, 0, 1, $objDB, $iEspecial);
 		if ($respuesta==''){
 			//IMPORTACION AUTOMATICA DE TERCEROS - MARZO 19 DE 2014
 			// Ver si esta en la tabla mdl_user

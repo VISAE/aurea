@@ -1588,6 +1588,97 @@ function f226_TituloUnidad($id26, $objDB)
 	return $sRes;
 }
 //
+function f236_Complementos($fila){
+	$unad01autoriza_tel = -1;
+	$unad01autoriza_mat = -1;
+	$unad01autoriza_bien = -1;
+	$unad01autoriza_bol = -1;
+	if (isset($fila['unad01autoriza_tel']) != 0){
+		$unad01autoriza_tel = $fila['unad01autoriza_tel'];
+	}
+	if (isset($fila['unad01autoriza_mat']) != 0){
+		$unad01autoriza_mat = $fila['unad01autoriza_mat'];
+	}
+	if (isset($fila['unad01autoriza_tel']) != 0){
+		$unad01autoriza_bien = $fila['unad01autoriza_bien'];
+	}
+	if (isset($fila['unad01autoriza_tel']) != 0){
+		$unad01autoriza_bol = $fila['unad01autoriza_bol'];
+	}
+	$sComplementoTel = '';
+	$sComplementoCorreo = '';
+	$bFull = true;
+	$bTodoPendiente = true;
+	$sSoloAutoriza = '';
+	switch($unad01autoriza_tel){
+		case '-1':
+			break;
+		case 1:
+			$bTodoPendiente = false;
+			$sSoloAutoriza = 'Acompa&ntilde;amiento Cursos';
+			break;
+		default:
+			$bTodoPendiente = false;
+			$bFull = false;
+			break;
+	}
+	// Matricula.
+	switch($unad01autoriza_mat){
+		case '-1':
+			break;
+		case 1:
+			$bTodoPendiente = false;
+			if ($sSoloAutoriza != ''){
+				$sSoloAutoriza = $sSoloAutoriza . ', ';
+			}
+			$sSoloAutoriza = $sSoloAutoriza .'Matricula';
+			break;
+		default:
+			$bTodoPendiente = false;
+			$bFull = false;
+			break;
+	}
+	// Bienestar
+	switch($unad01autoriza_bien){
+		case '-1':
+			break;
+		case 1:
+			$bTodoPendiente = false;
+			if ($sSoloAutoriza != ''){
+				$sSoloAutoriza = $sSoloAutoriza . ', ';
+			}
+			$sSoloAutoriza = $sSoloAutoriza . 'Bienestar';
+			break;
+		default:
+			$bTodoPendiente = false;
+			$bFull = false;
+			break;
+	}
+	// ---
+	if (!$bFull){
+		if ($bTodoPendiente){
+			$sComplementoTel = ' <span class="rojo">Autorizaci&oacute;n datos personales pendiente</span>';
+		} else {
+			if ($sSoloAutoriza == ''){
+				$sComplementoTel = ' <span class="rojo">NO AUTORIZA contacto telef&oacute;nico</span>';
+			} else {
+				$sComplementoTel = ' Llamar solo para temas: <span class="verde">' . $sSoloAutoriza . '</span>';
+			}
+		}
+	}
+	// ----- Ahora el correo.
+	switch($unad01autoriza_bol){
+		case '-1':
+			$sComplementoCorreo = ' <span class="rojo">Autorizaci&oacute;n datos personales pendiente</span>';
+			break;
+		case 1:
+			break;
+		default:
+			$sComplementoCorreo = ' <span class="rojo">NO AUTORIZA contacto por correo</span>';
+			break;
+	}
+	return array($sComplementoTel, $sComplementoCorreo);
+}
 function f236_VerInfoPersonal($idTercero, $objDB, $iFormato = 0, $bDebug = false)
 {
 	$sRes = '';
@@ -1600,7 +1691,9 @@ function f236_VerInfoPersonal($idTercero, $objDB, $iFormato = 0, $bDebug = false
 		$sError = 'No es posible procesar datos en este momento.';
 	}
 	if ($sError == '') {
-		$sSQL = 'SELECT unad11correo, unad11telefono FROM unad11terceros WHERE unad11id=' . $idTercero . '';
+		$sSQL = 'SELECT unad11correo, unad11telefono, unad01autoriza_tel, unad01autoriza_bol, unad01autoriza_mat, unad01autoriza_bien 
+		FROM unad11terceros 
+		WHERE unad11id=' . $idTercero . '';
 		$tabla = $objDB->ejecutasql($sSQL);
 		if ($objDB->nf($tabla) > 0) {
 			$fila = $objDB->sf($tabla);
@@ -1613,11 +1706,12 @@ function f236_VerInfoPersonal($idTercero, $objDB, $iFormato = 0, $bDebug = false
 				$sTelefono = trim($fila['unad11telefono']);
 			}
 			if ($bConInfo) {
-				$sRes = 'Tel&eacute;fono: <b>' . $sTelefono . '</b>';
+				list ($sComplementoTel, $sComplementoCorreo) = f236_Complementos($fila);
+				$sRes = 'Tel&eacute;fono: <b>' . $sTelefono . '</b> ' . $sComplementoTel;
 				if ($sRes != '') {
 					$sRes = $sRes . '<br>';
 				}
-				$sRes = $sRes . 'Correo personal: <b>' . $sCorreo . '</b>';
+				$sRes = $sRes . 'Correo personal: <b>' . $sCorreo . '</b>' . $sComplementoCorreo;
 			}
 			if ($idTercero == $_SESSION['unad_id_tercero']) {
 				$bConInfo = false;
@@ -1817,6 +1911,8 @@ function f1011_BloqueTercero($idTercero, $objDB)
 				$sSQL = "ALTER TABLE " . $sTabla . " ADD INDEX core03plandeestudios_curso(core03idcurso)";
 				$bResultado = $objDB->ejecutasql($sSQL);
 				$sSQL = "ALTER TABLE " . $sTabla . " ADD INDEX core03plandeestudios_estado(core03estado)";
+				$bResultado = $objDB->ejecutasql($sSQL);
+				$sSQL = "ALTER TABLE " . $sTabla . " ADD INDEX core03plandeestudios_prematricula(core03premidperiodo)";
 				$bResultado = $objDB->ejecutasql($sSQL);
 
 				$sTabla = 'core04matricula_' . $iRes;

@@ -20,12 +20,12 @@ $ETI['saiu07detalle']='Detalle';
 $ETI['saiu07idorigen']='Origen';
 $ETI['saiu07idarchivo']='Archivo';
 $ETI['saiu07idusuario']='Usuario';
-$ETI['saiu07fecha']='Fecha';
+$ETI['saiu07fecha']='Fecha Cargue';
 $ETI['saiu07hora']='Hora';
 $ETI['saiu07minuto']='Minuto';
 $ETI['saiu07estado']='Estado';
 $ETI['saiu07idvalidad']='Validad';
-$ETI['saiu07fechavalida']='Fechavalida';
+$ETI['saiu07fechavalida']='Fecha validaci&oacute;n';
 $ETI['saiu07horavalida']='Horavalida';
 $ETI['saiu07minvalida']='Minvalida';
 
@@ -45,4 +45,6 @@ $ERR['saiu07idvalidad']='Necesita el dato '.$ETI['saiu07idvalidad'];
 $ERR['saiu07fechavalida']='Necesita el dato '.$ETI['saiu07fechavalida'];
 $ERR['saiu07horavalida']='Necesita el dato '.$ETI['saiu07horavalida'];
 $ERR['saiu07minvalida']='Necesita el dato '.$ETI['saiu07minvalida'];
+
+$ETI['saiu04obligatorio']='Requerido';
 ?>

@@ -65,7 +65,7 @@ function f3006_db_Guardar($iContenedor, $valores, $objDB, $bDebug = false)
 		}
 	}
 	if ($sError == '') {
-		$sTabla06 = 'saiu06solanotacion_' . $iContenedor;
+		$sTabla06 = 'saiu06solanotacion' . $iContenedor;
 		if ((int)$saiu06id == 0) {
 			if ((int)$saiu06consec == 0) {
 				$saiu06consec = tabla_consecutivo($sTabla06, 'saiu06consec', 'saiu06idsolicitud=' . $saiu06idsolicitud . '', $objDB);
@@ -271,6 +271,9 @@ function f3006_TablaDetalleV2($aParametros, $objDB, $bDebug = false)
 	if (isset($aParametros[98]) == 0) {
 		$aParametros[98] = fecha_mes();
 	}
+	if (isset($aParametros[99]) == 0) {
+		$aParametros[99] = false;
+	}
 	if (isset($aParametros[100]) == 0) {
 		$aParametros[100] = $_SESSION['unad_id_tercero'];
 	}
@@ -290,6 +293,7 @@ function f3006_TablaDetalleV2($aParametros, $objDB, $bDebug = false)
 	$sDebug = '';
 	$saiu05id = $aParametros[0];
 	$sTabla6 = 'saiu06solanotacion' . f3000_Contenedor($aParametros[97], $aParametros[98]);
+	$bVistaUsr = $aParametros[99];
 	$idTercero = $aParametros[100];
 	$pagina = $aParametros[101];
 	$lineastabla = $aParametros[102];
@@ -320,6 +324,7 @@ function f3006_TablaDetalleV2($aParametros, $objDB, $bDebug = false)
 */
 	//if ((int)$aParametros[103]!=-1){$sSQLadd=$sSQLadd.' AND TB.campo='.$aParametros[103];}
 	//if ($aParametros[103]!=''){$sSQLadd=$sSQLadd.' AND TB.campo2 LIKE "%'.$aParametros[103].'%"';}
+	if ($bVistaUsr){$sSQLadd=$sSQLadd.' AND TB.saiu06visible = "S" ' . '';}
 	/*
 	if ($aParametros[103]!=''){
 		$sBase=trim(strtoupper($aParametros[103]));
@@ -366,13 +371,13 @@ ORDER BY TB.saiu06consec';
 	}
 	$res = $sErrConsulta . $sLeyenda . '<table border="0" align="center" cellpadding="0" cellspacing="2" class="tablaapp">
 	<tr class="fondoazul">
-	<td><b>' . $ETI['saiu06consec'] . '</b></td>
-	<td><b>' . $ETI['saiu06anotacion'] . '</b></td>
-	<td><b>' . $ETI['saiu06visible'] . '</b></td>
-	<td><b>' . $ETI['saiu06descartada'] . '</b></td>
-	<td><b>' . $ETI['saiu06idarchivo'] . '</b></td>
-	<td colspan="2"><b>' . $ETI['saiu06idusuario'] . '</b></td>
-	<td><b>' . $ETI['saiu06fecha'] . '</b></td>
+	<td><b>' . $ETI['saiu06consec'] . '</b></td>';
+	if ($bVistaUsr) {
+		$res = $res . '<td><b>' . $ETI['saiu06anotacion'] . '</b></td>';
+	} else {
+		$res = $res . '<td colspan="2"><b>' . $ETI['saiu06idusuario'] . '</b></td>';
+	}
+	$res = $res . '<td><b>' . $ETI['saiu06fecha'] . '</b></td>
 	<td><b>' . $ETI['saiu06hora'] . '</b></td>
 	<td align="right">
 	' . html_paginador('paginaf3006', $registros, $lineastabla, $pagina, 'paginarf3006()') . '
@@ -416,19 +421,22 @@ ORDER BY TB.saiu06consec';
 		$et_saiu06hora = html_TablaHoraMin($filadet['saiu06hora'], $filadet['saiu06minuto']);
 		$et_saiu06minuto = $sPrefijo . $filadet['saiu06minuto'] . $sSufijo;
 		if ($bAbierta) {
-			$sLink = '<a href="javascript:cargaridf3006(' . $filadet['saiu06id'] . ')" class="lnkresalte">' . $ETI['lnk_cargar'] . '</a>';
+			$lnk = $ETI['lnk_cargar'];
+			if ($bVistaUsr) {
+				$lnk = $ETI['lnk_consultar'];
+			}
+			$sLink = '<a href="javascript:cargaridf3006(' . $filadet['saiu06id'] . ')" class="lnkresalte">' . $lnk . '</a>';
 		}
 		$res = $res . '<tr' . $sClass . '>
-		<td>' . $et_saiu06consec . '</td>
-		<td>' . $et_saiu06anotacion . '</td>
-		<td>' . $et_saiu06visible . '</td>
-		<td>' . $et_saiu06descartada . '</td>
-		<td>' . $et_saiu06idarchivo . '</td>
-		<td>' . $sPrefijo . $filadet['C9_td'] . ' ' . $filadet['C9_doc'] . $sSufijo . '</td>
-		<td>' . $sPrefijo . cadena_notildes($filadet['C9_nombre']) . $sSufijo . '</td>
-		<td>' . $et_saiu06fecha . '</td>
+		<td>' . $et_saiu06consec . '</td>';
+		if ($bVistaUsr) {
+			$res = $res . '<td>' . mb_strimwidth($et_saiu06anotacion, 0, 20, '...') . '</td>';
+		} else {
+			$res = $res . '<td>' . $sPrefijo . $filadet['C9_td'] . ' ' . $filadet['C9_doc'] . $sSufijo . '</td>
+			<td>' . $sPrefijo . cadena_notildes($filadet['C9_nombre']) . $sSufijo . '</td>';
+		}
+		$res = $res . '<td>' . $et_saiu06fecha . '</td>
 		<td>' . $et_saiu06hora . '</td>
-		<td>' . $et_saiu06minuto . '</td>
 		<td>' . $sLink . '</td>
 		</tr>';
 	}
@@ -517,7 +525,7 @@ function f3006_Guardar($valores, $aParametros)
 		}
 		$objDB->xajax();
 		$bHayDb = true;
-		$iContenedor = $aParametros[97] . $aParametros[98];
+		$iContenedor = f3000_Contenedor($aParametros[97], $aParametros[98]);
 		list($sError, $iAccion, $saiu06id, $sDebugGuardar) = f3006_db_Guardar($iContenedor, $valores, $objDB, $bDebug);
 		$sDebug = $sDebug . $sDebugGuardar;
 	}
@@ -579,8 +587,8 @@ function f3006_Traer($aParametros)
 		}
 		$objDB->xajax();
 		$bHayDb = true;
-		$iContenedor = $aParametros[97] . $aParametros[98];
-		$sTabla06 = 'saiu06solanotacion_' . $iContenedor;
+		$iContenedor = f3000_Contenedor($aParametros[97], $aParametros[98]);
+		$sTabla06 = 'saiu06solanotacion' . $iContenedor;
 		$sSQLcondi = '';
 		if ($paso == 1) {
 			$sSQLcondi = $sSQLcondi . 'saiu06idsolicitud=' . $saiu06idsolicitud . ' AND saiu06consec=' . $saiu06consec . '';
@@ -632,6 +640,7 @@ function f3006_Traer($aParametros)
 		$objResponse->assign('saiu06idusuario_doc', 'value', $saiu06idusuario_doc);
 		$objResponse->assign('div_saiu06idusuario', 'innerHTML', $saiu06idusuario_nombre);
 		$objResponse->assign('saiu06fecha', 'value', $fila['saiu06fecha']);
+		$objResponse->assign('div_saiu06fecha', 'innerHTML', fecha_desdenumero($fila['saiu06fecha']));
 		list($iDia, $iMes, $iAgno) = fecha_DividirNumero($fila['saiu06fecha'], true);
 		$objResponse->assign('saiu06fecha_dia', 'value', $iDia);
 		$objResponse->assign('saiu06fecha_mes', 'value', $iMes);
@@ -640,6 +649,7 @@ function f3006_Traer($aParametros)
 		$objResponse->assign('div_saiu06hora', 'innerHTML', $html_saiu06hora);
 		$objResponse->call("MensajeAlarmaV2('', 0)");
 		$objResponse->call("verboton('belimina3006','block')");
+		$objResponse->assign('div_p3006_Campos', 'style.display', 'block');
 	} else {
 		if ($paso == 1) {
 			$objResponse->assign('saiu06consec', 'value', $saiu06consec);
@@ -745,10 +755,13 @@ function f3006_PintarLlaves($aParametros)
 	$iPiel = $APP->piel;
 	$html_saiu06consec = '<input id="saiu06consec" name="saiu06consec" type="text" value="" onchange="revisaf3006()" class="cuatro"/>';
 	$html_saiu06id = '<input id="saiu06id" name="saiu06id" type="hidden" value=""/>';
+	$et_saiu06fecha='00/00/0000';
+	$html_saiu06fecha=html_oculto('saiu06fecha', 0, $et_saiu06fecha);
 	$html_saiu06hora = html_HoraMin('saiu06hora', fecha_hora(), 'saiu06minuto', fecha_minuto(), true);
 	$objResponse = new xajaxResponse();
 	$objResponse->assign('div_saiu06consec', 'innerHTML', $html_saiu06consec);
 	$objResponse->assign('div_saiu06id', 'innerHTML', $html_saiu06id);
+	$objResponse->assign('div_saiu06fecha','innerHTML', $html_saiu06fecha);
 	$objResponse->assign('div_saiu06hora', 'innerHTML', $html_saiu06hora);
 	return $objResponse;
 }
