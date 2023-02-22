@@ -36,6 +36,44 @@ if (!file_exists('./app.php')) {
 }
 mb_internal_encoding('UTF-8');
 require './app.php';
+if (isset($_SESSION['unad_id_tercero']) == 0) {
+	$_SESSION['unad_id_tercero']=0;
+}
+if (isset($APP->https) == 0) {
+	$APP->https = 0;
+}
+if ($APP->https == 2) {
+	$bObliga = false;
+	if (isset($_SERVER['HTTPS']) == 0) {
+		$bObliga = true;
+	} else {
+		if ($_SERVER['HTTPS'] != 'on') {
+			$bObliga = true;
+		}
+	}
+	if ($bObliga) {
+		$pageURL = 'https://' . $_SERVER['SERVER_NAME'] . $_SERVER['REQUEST_URI'];
+		header('Location:' . $pageURL);
+		die();
+	}
+}
+/*
+if (!file_exists('./opts.php')) {
+	require './opts.php';
+	if ($OPT->opcion == 1) {
+		$bOpcion = true;
+	}
+}
+*/
+$bPeticionXAJAX = false;
+if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+	if (isset($_POST['xjxfun'])) {
+		$bPeticionXAJAX = true;
+	}
+}
+if (!$bPeticionXAJAX) {
+	$_SESSION['u_ultimominuto'] = (date('W') * 1440) + (date('H') * 60) + date('i');
+}
 require $APP->rutacomun . 'unad_todas.php';
 require $APP->rutacomun . 'libs/clsdbadmin.php';
 require $APP->rutacomun . 'unad_librerias.php';
@@ -47,7 +85,21 @@ require $APP->rutacomun . 'libsai.php';
 require $APP->rutacomun . 'libtiempo.php';
 require $APP->rutacomun . 'libaurea.php';
 require $APP->rutacomun . 'libmail.php';
+if (($bPeticionXAJAX) && ($_SESSION['unad_id_tercero'] == 0)) {
+	// viene por xajax.
+	$xajax = new xajax();
+	$xajax->configure('javascript URI', $APP->rutacomun . 'xajax/');
+	$xajax->register(XAJAX_FUNCTION, 'sesion_abandona_V2');
+	$xajax->processRequest();
+	die();
+}
+$grupo_id = 1; //Necesita ajustarlo...
 $iCodModulo = 3005;
+$audita[1] = false;
+$audita[2] = true;
+$audita[3] = true;
+$audita[4] = true;
+$audita[5] = false;
 // -- Se cargan los archivos de idioma
 $mensajes_todas = $APP->rutacomun . 'lg/lg_todas_' . $_SESSION['unad_idioma'] . '.php';
 if (!file_exists($mensajes_todas)) {
@@ -78,8 +130,21 @@ if (!$objDB->Conectar()) {
 		$sDebug = $sDebug . fecha_microtiempo() . ' Error al intentar conectar con la base de datos <b>' . $objDB->serror . '</b><br>';
 	}
 }
+if (!$bCerrado) {
+	$bDevuelve = true;
+	if ($_SESSION['unad_id_tercero'] == 0) {
+		$bDevuelve = false;
+	}
+	if (!$bDevuelve) {
+		$bCerrado = true;
+		$sMsgCierre = '<div class="MarquesinaGrande">No cuenta con permiso para acceder a este modulo [' . $iCodModulo . '].</div>';
+	}
+}
 if ($bCerrado) {
 	$objDB->CerrarConexion();
+	if ($_SESSION['unad_id_tercero'] == 1) {
+		$_SESSION['unad_id_tercero'] = 0;
+	}
 	require $APP->rutacomun . 'unad_forma_v2.php';
 	forma_cabeceraV3($xajax, $ETI['titulo_3005']);
 	echo $et_menu;
@@ -135,6 +200,7 @@ if (isset($_REQUEST['paso']) == 0) {
 }
 // -- 3005 saiu05solicitud
 require $APP->rutacomun . 'lib3005.php';
+require 'lib3005_externa.php';
 // -- 3000 Historial de solicitudes
 require $APP->rutacomun . 'lib3000.php';
 // -- 3006 Anotaciones
@@ -150,6 +216,8 @@ $xajax->register(XAJAX_FUNCTION, 'unad11_TraerXidSAI');
 $xajax->register(XAJAX_FUNCTION, 'formatear_moneda');
 $xajax->register(XAJAX_FUNCTION, 'f3005_Combosaiu05idtemaorigen');
 $xajax->register(XAJAX_FUNCTION, 'f3005_Combosaiu05idequiporesp');
+$xajax->register(XAJAX_FUNCTION, 'sesion_abandona_V2');
+$xajax->register(XAJAX_FUNCTION, 'sesion_mantenerV4');
 $xajax->register(XAJAX_FUNCTION, 'f3005_HtmlTabla');
 $xajax->register(XAJAX_FUNCTION, 'f3005_ExisteDato');
 $xajax->register(XAJAX_FUNCTION, 'f3005_Busquedas');
@@ -169,6 +237,9 @@ $xajax->register(XAJAX_FUNCTION, 'f3007_HtmlTabla');
 $xajax->register(XAJAX_FUNCTION, 'f3007_PintarLlaves');
 $xajax->register(XAJAX_FUNCTION, 'f236_TraerInfoPersonal');
 $xajax->processRequest();
+if ($bPeticionXAJAX) {
+	die(); // Esto hace que las llamadas por xajax terminen aquí.
+}
 $bcargo = false;
 $sError = '';
 $sErrorCerrando = '';
@@ -299,7 +370,7 @@ if (isset($_REQUEST['saiu05idinteresado_doc']) == 0) {
 	$_REQUEST['saiu05idinteresado_doc'] = '';
 }
 if (isset($_REQUEST['saiu05tipointeresado']) == 0) {
-	$_REQUEST['saiu05tipointeresado'] = '';
+	$_REQUEST['saiu05tipointeresado'] = 6;
 }
 if (isset($_REQUEST['saiu05rptaforma']) == 0) {
 	$_REQUEST['saiu05rptaforma'] = 0;
@@ -790,10 +861,28 @@ if (($_REQUEST['paso'] == 1) || ($_REQUEST['paso'] == 3)) {
 if ($_REQUEST['opcion'] == 2) {
 	$_REQUEST['paso'] = -1;
 }
+//Cerrar
+$sMensajeMail = '';
+$bCerrando = false;
+if ($_REQUEST['paso'] == 16) {
+	$_REQUEST['paso'] = 12;
+	$iAgno=fecha_agno();
+	$iContenedor = $iAgno . fecha_mes();
+	$sTabla='saiu05solicitud_' . $iContenedor;
+	if (!$objDB->bexistetabla($sTabla)) {
+		$sError = 'No ha sido posible acceder al contenedor de datos';
+	}
+	if ($sError == '') {
+		$_REQUEST['saiu05estado'] = 0;
+		$bCerrando = true;
+	} else {
+		$_REQUEST['paso'] = 2;
+	}
+}
 //Insertar o modificar un elemento
 if (($_REQUEST['paso'] == 10) || ($_REQUEST['paso'] == 12)) {
 	$bMueveScroll = true;
-	list($_REQUEST, $sError, $iTipoError, $sDebugGuardar) = f3005_db_GuardarV2($_REQUEST, $objDB, $bDebug, $idTercero);
+	list($_REQUEST, $sError, $iTipoError, $sDebugGuardar) = f3005_db_Guardar($_REQUEST, $objDB, $bDebug, $idTercero);
 	$sDebug = $sDebug . $sDebugGuardar;
 	if ($sError == '') {
 		$sError = '<b>' . $ETI['msg_itemguardado'] . '</b>';
@@ -879,7 +968,7 @@ if ($_REQUEST['paso'] == -1) {
 	$_REQUEST['saiu05idinteresado'] = 0; //$idTercero;
 	$_REQUEST['saiu05idinteresado_td'] = $APP->tipo_doc;
 	$_REQUEST['saiu05idinteresado_doc'] = '';
-	$_REQUEST['saiu05tipointeresado'] = '';
+	$_REQUEST['saiu05tipointeresado'] = 6;
 	$_REQUEST['saiu05rptaforma'] = 0;
 	$_REQUEST['saiu05rptacorreo'] = '';
 	$_REQUEST['saiu05rptadireccion'] = '';
@@ -974,7 +1063,7 @@ if ($bLimpiaHijos) {
 	$_REQUEST['saiu07minvalida'] = fecha_minuto();
 }
 //AQUI SE DEBEN CARGAR TODOS LOS DATOS QUE LA FORMA NECESITE.
-$bConMedio = true;
+$bConMedio = false;
 if ((int)$_REQUEST['paso'] > 0) {
 	if ($_REQUEST['saiu05idmedio'] != $iViaWeb) {
 		$bConMedio = false;
@@ -1032,7 +1121,7 @@ if ((int)$_REQUEST['paso'] == 0) {
 	list($saiu05idtemaorigen_nombre, $sErrorDet) = tabla_campoxid('saiu03temasol', 'saiu03titulo', 'saiu03id', $_REQUEST['saiu05idtemaorigen'], '{' . $ETI['msg_sindato'] . '}', $objDB);
 	$html_saiu05idtemaorigen = html_oculto('saiu05idtemaorigen', $_REQUEST['saiu05idtemaorigen'], $saiu05idtemaorigen_nombre);
 }
-list($saiu05idsolicitante_rs, $_REQUEST['saiu05idsolicitante'], $_REQUEST['saiu05idsolicitante_td'], $_REQUEST['saiu05idsolicitante_doc']) = html_tercero($_REQUEST['saiu05idsolicitante_td'], $_REQUEST['saiu05idsolicitante_doc'], $_REQUEST['saiu05idsolicitante'], 0, $objDB);
+list($saiu05idsolicitante_rs, $_REQUEST['saiu05idsolicitante'], $_REQUEST['saiu05idsolicitante_td'], $_REQUEST['saiu05idsolicitante_doc']) = html_tercero($_REQUEST['saiu05idsolicitante_td'], $_REQUEST['saiu05idsolicitante_doc'], $idTercero, 0, $objDB);
 list($saiu05idinteresado_rs, $_REQUEST['saiu05idinteresado'], $_REQUEST['saiu05idinteresado_td'], $_REQUEST['saiu05idinteresado_doc']) = html_tercero($_REQUEST['saiu05idinteresado_td'], $_REQUEST['saiu05idinteresado_doc'], $_REQUEST['saiu05idinteresado'], 0, $objDB);
 $objCombos->nuevo('saiu05tipointeresado', $_REQUEST['saiu05tipointeresado'], false, '{' . $ETI['msg_seleccione'] . '}');
 $sSQL = 'SELECT bita07id AS id, bita07nombre AS nombre FROM bita07tiposolicitante ORDER BY bita07nombre';
@@ -1045,7 +1134,7 @@ $html_saiu05costogenera = $objCombos->html('', $objDB);
 
 $objCombos->nuevo('saiu05rptaforma', $_REQUEST['saiu05rptaforma'], false, '{' . $ETI['msg_seleccione'] . '}');
 $objCombos->sAccion = 'ajustarformarpta()';
-$sSQL = 'SELECT saiu12id AS id, saiu12nombre AS nombre FROM saiu12formarespuesta ORDER BY saiu12nombre';
+$sSQL = 'SELECT saiu12id AS id, saiu12nombre AS nombre FROM saiu12formarespuesta WHERE saiu12id IN (0,1) ORDER BY saiu12nombre';
 $html_saiu05rptaforma = $objCombos->html($sSQL, $objDB);
 list($saiu05idresponsable_rs, $_REQUEST['saiu05idresponsable'], $_REQUEST['saiu05idresponsable_td'], $_REQUEST['saiu05idresponsable_doc']) = html_tercero($_REQUEST['saiu05idresponsable_td'], $_REQUEST['saiu05idresponsable_doc'], $_REQUEST['saiu05idresponsable'], 0, $objDB);
 $objCombos->nuevo('saiu05idcategoria', $_REQUEST['saiu05idcategoria'], true, '{' . $ETI['msg_seleccione'] . '}');
@@ -1206,6 +1295,22 @@ if (false) {
 		window.document.frmedita.submit();
 	}
 
+	function enviacerrar() {
+		ModalConfirm('Se proceder&aacute; a radicar y dar cierre a la PQRS, esta seguro de continuar?');
+		ModalDialogConfirm(function(confirm) {
+			if (confirm) {
+				ejecuta_enviacerrar();
+			}
+		});
+	}
+
+	function ejecuta_enviacerrar() {
+		MensajeAlarmaV2('<?php echo $ETI['msg_ejecutando']; ?>', 2);
+		expandesector(98);
+		window.document.frmedita.paso.value = 16;
+		window.document.frmedita.submit();
+	}
+
 	function cambiapagina() {
 		expandesector(98);
 		window.document.frmedita.submit();
@@ -1360,23 +1465,7 @@ if ($iNumFormatosImprime>0) {
 	function verrpt() {
 		window.document.frmimprime.submit();
 	}
-
-	function eliminadato() {
-		ModalConfirm('<?php echo $ETI['msg_confirmaeliminar']; ?>');
-		ModalDialogConfirm(function(confirm) {
-			if (confirm) {
-				ejecuta_eliminadato();
-			}
-		});
-	}
-
-	function ejecuta_eliminadato() {
-		MensajeAlarmaV2('<?php echo $ETI['msg_ejecutando']; ?>', 2);
-		expandesector(98);
-		window.document.frmedita.paso.value = 13;
-		window.document.frmedita.submit();
-	}
-
+	
 	function RevisaLlave() {
 		var datos = new Array();
 		datos[1] = window.document.frmedita.saiu05agno.value;
@@ -1506,6 +1595,11 @@ if ($iNumFormatosImprime>0) {
 		retornacontrol();
 	}
 
+	function mantener_sesion() {
+		xajax_sesion_mantenerV4();
+	}
+	setInterval('xajax_sesion_abandona_V2();', 60000);
+
 	function AyudaLocal(sCampo) {
 		var divAyuda = document.getElementById('div_ayuda_' + sCampo);
 		if (typeof divAyuda === 'undefined') {
@@ -1532,12 +1626,14 @@ if ($iNumFormatosImprime>0) {
 			paginarf3006();
 		}
 		if (ref == 3007) {
+			/*
 			if (sRetorna != '') {
 				window.document.frmedita.saiu07idorigen.value = window.document.frmedita.div96v1.value;
 				window.document.frmedita.saiu07idarchivo.value = sRetorna;
 				verboton('beliminasaiu07idarchivo', 'block');
 			}
 			archivo_lnk(window.document.frmedita.saiu07idorigen.value, window.document.frmedita.saiu07idarchivo.value, 'div_saiu07idarchivo');
+			*/
 			paginarf3007();
 		}
 		MensajeAlarmaV2('', 0);
@@ -1607,7 +1703,31 @@ if ($iNumFormatosImprime>0) {
 		window.document.frmopcion.opcion.value = opcion;
 		window.document.frmopcion.submit();
 	}
+
+	function mod_tratadatos() {
+		ModalConfirmV2('<?php echo $ETI['msg_tratadatos']; ?>', () => {
+			ejecuta_tratadatos();
+		});
+	}
+
+	function ejecuta_tratadatos() {
+		return true;
+	}
 </script>
+<?php
+if ($_REQUEST['saiu05estado'] == 0) {
+?>
+<form class="login">
+<h1 class="TituloAzul1">C&oacute;digo de referencia de consulta<br><span class="rojo"><?php echo $_REQUEST['saiu05numref']; ?></span></h1>
+<div class="GrupoCampos400">
+<label>Conserve este código para realizar la consulta del avance de su solicitud.</label>
+</div>
+<div class="salto1px"></div>
+<input id="cmdFinaliza" name="cmdFinaliza" type="button" value="Finalizar" onclick="window.location.href='index.php';" class="BotonAzul">
+</form>
+<?php
+} else {
+?>
 <?php
 if ($_REQUEST['paso'] != 0) {
 ?>
@@ -1653,15 +1773,6 @@ if ($_REQUEST['paso'] != 0) {
 <div class="titulosD">
 <input id="cmdAyuda" name="cmdAyuda" type="button" class="btUpAyuda" onclick="muestraayuda(<?php echo $APP->idsistema . ', ' . $iCodModulo; ?>);" title="<?php echo $ETI['bt_ayuda']; ?>" value="<?php echo $ETI['bt_ayuda']; ?>" />
 <?php
-if ($_REQUEST['paso'] == 2) {
-if ($seg_4 == 1) {
-if ($_REQUEST['saiu05estado'] == -1) {
-?>
-<input id="cmdEliminar" name="cmdEliminar" type="button" class="btUpEliminar" onclick="eliminadato();" title="<?php echo $ETI['bt_eliminar']; ?>" value="<?php echo $ETI['bt_eliminar']; ?>" />
-<?php
-}
-}
-}
 $bHayImprimir = false;
 $sScript = 'imprimelista()';
 $sClaseBoton = 'btEnviarExcel';
@@ -1693,6 +1804,7 @@ if ($_REQUEST['opcion'] == 2 && $_REQUEST['saiu05estado'] == -1) {
 <?php
 }
 ?>
+<input id="cmdVolver" name="cmdVolver" type="button" class="btSupVolver" onclick="window.location.href='index.php';" title="Volver" value="Volver">
 </div>
 <div class="titulosI">
 <?php
@@ -1741,6 +1853,18 @@ if ($_REQUEST['boculta3005'] != 0) {
 <?php
 }
 //Mostrar formulario para editar
+?>
+<?php
+if ($_SESSION['unad_id_tercero'] == 1) {
+?>
+<div class="GrupoCamposAyuda">
+<?php
+echo $ETI['advertencia'] . $ETI['msg_anonimo'];
+?>
+<div class="salto1px"></div>
+</div>
+<?php
+}
 ?>
 <input id="saiu05origenagno" name="saiu05origenagno" type="hidden" value="<?php echo $_REQUEST['saiu05origenagno']; ?>" />
 <input id="saiu05origenmes" name="saiu05origenmes" type="hidden" value="<?php echo $_REQUEST['saiu05origenmes']; ?>" />
@@ -1856,13 +1980,24 @@ echo $ETI['saiu05idsolicitante'];
 </label>
 <div class="salto1px"></div>
 <input id="saiu05idsolicitante" name="saiu05idsolicitante" type="hidden" value="<?php echo $_REQUEST['saiu05idsolicitante']; ?>" />
+<?php
+if ($_REQUEST['saiu05idsolicitante'] > 1) {
+?>
 <div id="div_saiu05idsolicitante_llaves">
 <?php
-$bOculto = false;
+$bOculto = true;
 echo html_DivTerceroV2('saiu05idsolicitante', $_REQUEST['saiu05idsolicitante_td'], $_REQUEST['saiu05idsolicitante_doc'], $bOculto, 0, $ETI['ing_doc']);
 ?>
 </div>
 <div class="salto1px"></div>
+<?php
+} else {
+?>
+<input name="saiu05idsolicitante_td" type="hidden" id="saiu05idsolicitante_td" value="<?php echo $_REQUEST['saiu05idsolicitante_td']; ?>">
+<input name="saiu05idsolicitante_doc" type="hidden" id="saiu05idsolicitante_doc" value="<?php echo $_REQUEST['saiu05idsolicitante_doc']; ?>">
+<?php
+}
+?>
 <div id="div_saiu05idsolicitante" class="L"><?php echo $saiu05idsolicitante_rs; ?></div>
 <div class="salto1px"></div>
 <label class="Label160">
@@ -1892,110 +2027,22 @@ echo $ETI['saiu05idmedio'] . ' ' . $html_saiu05idmedio;
 }
 ?>
 <div class="salto1px"></div>
-</div>
-
-
-<div class="GrupoCampos520">
-<label class="Label130">
 <?php
-echo $ETI['saiu05idtiposolorigen'];
+if ($_SESSION['unad_id_tercero'] > 0) {
+	$sHref = 'https://aurea2.unad.edu.co/c2/miperfil.php';
+	$sOnclick = '';	
+	if ($_SESSION['unad_id_tercero'] == 1) {
+		$sHref = 'javascript:;';
+		$sOnclick = 'mod_tratadatos();';
+	}
 ?>
-</label>
-<label class="Label350">
-<?php
-echo $html_saiu05idtiposolorigen;
-?>
-</label>
+<a id="cmdTrataDatos" name="cmdTrataDatos" class="BotonAzul200" title="<?php echo $ETI['bt_tratadatos']; ?>" href="<?php echo $sHref; ?>" onclick="<?php echo $sOnclick; ?>" style="width:420px; padding:7px 10px;"><?php echo $ETI['bt_tratadatos']; ?></a>
 <div class="salto1px"></div>
-<label class="Label130">
-<?php
-echo $ETI['saiu05idtemaorigen'];
-?>
-</label>
-<label class="Label350">
-<div id="div_saiu05idtemaorigen">
-<?php
-echo $html_saiu05idtemaorigen;
-?>
-</div>
-</label>
-<div class="salto1px"></div>
-<?php
-if (true) {
-?>
-<label class="Label250">
-<?php
-echo $ETI['saiu05rptaforma'];
-?>
-</label>
-<label class="Label160">
-<?php
-echo $html_saiu05rptaforma;
-?>
-</label>
-<div class="salto1px"></div>
-<?php
-$sEstilo = ' style="display:none"';
-?>
-<div id="div_saiu05rptacorreo" <?php echo $sEstilo; ?>>
-<label class="Label250">
-<?php
-echo $ETI['saiu05rptacorreo'];
-?>
-</label>
-<label class="Label250">
-<input id="saiu05rptacorreo" name="saiu05rptacorreo" type="text" value="<?php echo $_REQUEST['saiu05rptacorreo']; ?>" maxlength="50" placeholder="<?php echo $ETI['ing_campo'] . $ETI['saiu05rptacorreo']; ?>" />
-</label>
-</div>
-<div id="div_saiu05rptadireccion" <?php echo $sEstilo; ?>>
-<label class="L">
-<?php
-echo $ETI['saiu05rptadireccion'];
-?>
-
-<input id="saiu05rptadireccion" name="saiu05rptadireccion" type="text" value="<?php echo $_REQUEST['saiu05rptadireccion']; ?>" maxlength="100" class="L" placeholder="<?php echo $ETI['ing_campo'] . $ETI['saiu05rptadireccion']; ?>" />
-</label>
-</div>
-<div class="salto1px"></div>
-<label class="Label250">
-<?php
-echo $ETI['saiu05costogenera'];
-?>
-</label>
-<label class="Label160">
-<?php
-echo $html_saiu05costogenera;
-?>
-</label>
-<div class="salto1px"></div>
-<?php
-$sEstilo = ' style="display:none"';
-if ($_REQUEST['saiu05costogenera'] == 1) {
-	$sEstilo = '';
-}
-?>
-<div id="div_saiu05costovalor" <?php echo $sEstilo; ?>>
-<label class="Label250">
-<?php
-echo $ETI['saiu05costovalor'];
-?>
-</label>
-<label class="Label160">
-<input id="saiu05costovalor" name="saiu05costovalor" type="text" value="<?php echo formato_numero($_REQUEST['saiu05costovalor'], 2); ?>" class="veinte" maxlength="15" style="text-align:right" onchange="formatea_moneda(this);" placeholder="<?php echo $ETI['ing_vr']; ?>" />
-</label>
-
-<input id="saiu05costorefpago" name="saiu05costorefpago" type="hidden" value="<?php echo $_REQUEST['saiu05costorefpago']; ?>" />
-</div>
 <?php
 }
 ?>
-<div class="salto1px"></div>
 </div>
-<input id="saiu05idtemafin" name="saiu05idtemafin" type="hidden" value="<?php echo $_REQUEST['saiu05idtemafin']; ?>" />
-<input id="saiu05idtiposolfin" name="saiu05idtiposolfin" type="hidden" value="<?php echo $_REQUEST['saiu05idtiposolfin']; ?>" />
 
-
-<div class="salto1px"></div>
 
 
 <div class="GrupoCampos520">
@@ -2067,6 +2114,114 @@ echo html_oculto('saiu05numradicado', $_REQUEST['saiu05numradicado']);
 ?>
 <div class="salto1px"></div>
 </div>
+
+
+
+
+<div class="GrupoCampos520">
+<label class="Label130">
+<?php
+echo $ETI['saiu05idtiposolorigen'];
+?>
+</label>
+<label class="Label350">
+<?php
+echo $html_saiu05idtiposolorigen;
+?>
+</label>
+<div class="salto1px"></div>
+<label class="Label130">
+<?php
+echo $ETI['saiu05idtemaorigen'];
+?>
+</label>
+<label class="Label350">
+<div id="div_saiu05idtemaorigen">
+<?php
+echo $html_saiu05idtemaorigen;
+?>
+</div>
+</label>
+<div class="salto1px"></div>
+<label class="Label250">
+<?php
+echo $ETI['saiu05rptaforma'];
+?>
+</label>
+<label class="Label160">
+<?php
+echo $html_saiu05rptaforma;
+?>
+</label>
+<div class="salto1px"></div>
+<?php
+$sEstilo = ' style="display:none"';
+?>
+<div id="div_saiu05rptacorreo" <?php echo $sEstilo; ?>>
+<label class="Label250">
+<?php
+echo $ETI['saiu05rptacorreo'];
+?>
+</label>
+<label class="Label250">
+<input id="saiu05rptacorreo" name="saiu05rptacorreo" type="text" value="<?php echo $_REQUEST['saiu05rptacorreo']; ?>" maxlength="50" placeholder="<?php echo $ETI['ing_campo'] . $ETI['saiu05rptacorreo']; ?>" />
+</label>
+</div>
+<div id="div_saiu05rptadireccion" <?php echo $sEstilo; ?>>
+<label class="L">
+<?php
+echo $ETI['saiu05rptadireccion'];
+?>
+
+<input id="saiu05rptadireccion" name="saiu05rptadireccion" type="text" value="<?php echo $_REQUEST['saiu05rptadireccion']; ?>" maxlength="100" class="L" placeholder="<?php echo $ETI['ing_campo'] . $ETI['saiu05rptadireccion']; ?>" />
+</label>
+</div>
+<?php
+if (false) {
+?>
+<div class="salto1px"></div>
+<label class="Label250">
+<?php
+echo $ETI['saiu05costogenera'];
+?>
+</label>
+<label class="Label160">
+<?php
+echo $html_saiu05costogenera;
+?>
+</label>
+<div class="salto1px"></div>
+<?php
+$sEstilo = ' style="display:none"';
+if ($_REQUEST['saiu05costogenera'] == 1) {
+	$sEstilo = '';
+}
+?>
+<div id="div_saiu05costovalor" <?php echo $sEstilo; ?>>
+<label class="Label250">
+<?php
+echo $ETI['saiu05costovalor'];
+?>
+</label>
+<label class="Label160">
+<input id="saiu05costovalor" name="saiu05costovalor" type="text" value="<?php echo formato_numero($_REQUEST['saiu05costovalor'], 2); ?>" class="veinte" maxlength="15" style="text-align:right" onchange="formatea_moneda(this);" placeholder="<?php echo $ETI['ing_vr']; ?>" />
+</label>
+<input id="saiu05costorefpago" name="saiu05costorefpago" type="hidden" value="<?php echo $_REQUEST['saiu05costorefpago']; ?>" />
+</div>
+<?php
+} else {
+?>
+<input id="saiu05costogenera" name="saiu05costogenera" type="hidden" value="<?php echo $_REQUEST['saiu05costogenera']; ?>" />
+<input id="saiu05costovalor" name="saiu05costovalor" type="hidden" value="<?php echo $_REQUEST['saiu05costovalor']; ?>" />
+<input id="saiu05costorefpago" name="saiu05costorefpago" type="hidden" value="<?php echo $_REQUEST['saiu05costorefpago']; ?>" />
+<?php
+}
+?>
+<div class="salto1px"></div>
+</div>
+<input id="saiu05idtemafin" name="saiu05idtemafin" type="hidden" value="<?php echo $_REQUEST['saiu05idtemafin']; ?>" />
+<input id="saiu05idtiposolfin" name="saiu05idtiposolfin" type="hidden" value="<?php echo $_REQUEST['saiu05idtiposolfin']; ?>" />
+
 
 
 <div class="salto1px"></div>
@@ -2173,11 +2328,17 @@ echo $ETI['saiu05detalle'];
 </label>
 <input id="saiu05infocomplemento" name="saiu05infocomplemento" type="hidden" value="<?php echo $_REQUEST['saiu05infocomplemento']; ?>" />
 <div class="salto1px"></div>
+<?php
+if (false) {
+?>
 <input id="saiu05idescuela" name="saiu05idescuela" type="hidden" value="<?php echo $_REQUEST['saiu05idescuela']; ?>" />
 <input id="saiu05idprograma" name="saiu05idprograma" type="hidden" value="<?php echo $_REQUEST['saiu05idprograma']; ?>" />
 <input id="saiu05idperiodo" name="saiu05idperiodo" type="hidden" value="<?php echo $_REQUEST['saiu05idperiodo']; ?>" />
 <input id="saiu05idcurso" name="saiu05idcurso" type="hidden" value="<?php echo $_REQUEST['saiu05idcurso']; ?>" />
 <input id="saiu05idgrupo" name="saiu05idgrupo" type="hidden" value="<?php echo $_REQUEST['saiu05idgrupo']; ?>" />
+<?php
+}
+?>
 <input id="saiu05tiemprespdias" name="saiu05tiemprespdias" type="hidden" value="<?php echo $_REQUEST['saiu05tiemprespdias']; ?>" />
 <input id="saiu05tiempresphoras" name="saiu05tiempresphoras" type="hidden" value="<?php echo $_REQUEST['saiu05tiempresphoras']; ?>" />
 <input id="saiu05fecharespprob" name="saiu05fecharespprob" type="hidden" value="<?php echo $_REQUEST['saiu05fecharespprob']; ?>" />
@@ -2192,6 +2353,19 @@ echo $ETI['saiu05detalle'];
 echo $ETI['titulo_3007'];
 ?>
 </label>
+<?php
+if ($_REQUEST['paso'] == 0) {
+?>
+<div class="salto1px"></div>
+<div class="GrupoCamposAyuda">
+<?php
+echo $ETI['saiu04guardarprimero'];
+?>
+<div class="salto1px"></div>
+</div>
+<?php
+}
+?>
 <input id="boculta3007" name="boculta3007" type="hidden" value="<?php echo $_REQUEST['boculta3007']; ?>" />
 <?php
 if ($_REQUEST['paso'] == 2) {
@@ -2418,7 +2592,14 @@ echo 'none';
 <div class="salto1px"></div>
 </div>
 <?php
-} //Termina el segundo bloque  condicional - bloque editar.
+} else { //Termina el segundo bloque  condicional - bloque editar.
+?>
+<input id="saiu07idorigen" name="saiu07idorigen" type="hidden" value="<?php echo $_REQUEST['saiu07idorigen']; ?>" />
+<input id="saiu07idarchivo" name="saiu07idarchivo" type="hidden" value="<?php echo $_REQUEST['saiu07idarchivo']; ?>" />
+<input id="saiu07idusuario" name="saiu07idusuario" type="hidden" value="<?php echo $_REQUEST['saiu07idusuario']; ?>" />
+<input id="saiu07idvalidad" name="saiu07idvalidad" type="hidden" value="<?php echo $_REQUEST['saiu07idvalidad']; ?>" />
+<?php
+}
 ?>
 <div class="salto1px"></div>
 <div id="div_f3007detalle">
@@ -2433,6 +2614,35 @@ echo $sTabla3007;
 </div>
 <?php
 // -- Termina Grupo campos 3007 Anexos
+?>
+<div class="salto5px"></div>
+<?php
+if ($_REQUEST['paso'] == 0) {
+?>
+<label class="Label320"></label>
+<label class="Label60"></label>
+<label class="Label160">
+<input id="cmdGuardar" name="cmdGuardar" type="button" class="BotonAzul160" value="Guardar" onclick="enviaguardar();" title="Guardar" />
+</label>
+<div class="salto1px"></div>
+<?php
+} else {
+	switch ($_REQUEST['saiu05estado']) {
+		case -1: // Borrador
+?>
+<label class="Label320"></label>
+<label class="Label60"></label>
+<label class="Label160">
+<input id="cmdSolicitar" name="cmdSolicitar" type="button" class="BotonAzul160" value="Solicitar" onclick="enviacerrar();" title="Solicitar" />
+</label>
+<div class="salto1px"></div>
+<?php
+		break;
+	}
+}
+?>
+<?php
+if (false) {
 ?>
 <?php
 // -- Inicia Grupo campos 3006 Anotaciones
@@ -2562,6 +2772,9 @@ echo $sTabla3006;
 </div>
 <?php
 // -- Termina Grupo campos 3006 Anotaciones
+?>
+<?php
+}
 ?>
 <?php
 if (false) {
@@ -2762,8 +2975,9 @@ if ($sDebug != '') {
 <input id="itipoerror" name="itipoerror" type="hidden" value="<?php echo $iTipoError; ?>" />
 <input id="debug" name="debug" type="hidden" value="<?php echo $_REQUEST['debug']; ?>" />
 </form>
-
-
+<?php
+} // Cierre validación saiu05idestado
+?>
 
 <?php
 // Termina el bloque div_interna
@@ -2804,16 +3018,34 @@ if ($_REQUEST['paso'] == 0) {
 ?>
 <script language="javascript">
 $().ready(function() {
-$("#saiu05idtiposolorigen, #saiu05idtemaorigen").chosen({
+jQuery("#saiu05idtiposolorigen, #saiu05idtemaorigen").chosen({
 	no_results_text: "No existen coincidencias: ",
 	width: "100%"});
 });
+<?php
+if ($_SESSION['unad_id_tercero'] > 1) {
+?>
+ter_muestra('saiu05idsolicitante', 0);
+<?php
+}
+?>
 </script>
 <?php
 }
 ?>
 <script language="javascript" src="ac_3005.js?v=1"></script>
 <script language="javascript" src="<?php echo $APP->rutacomun; ?>unad_todas.js?ver=8"></script>
+<script>
+$().ready(function() {
+<?php
+if ($_SESSION['unad_id_tercero'] == 1) {
+?>
+ModalMensaje("<?php echo $ETI['msg_anonimo']; ?>");
+<?php
+}
+?>
+});
+</script>
 <?php
 forma_piedepagina();
 ?>

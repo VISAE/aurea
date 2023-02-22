@@ -410,7 +410,7 @@ if (isset($_REQUEST['bnombre']) == 0) {
 	$_REQUEST['bnombre'] = '';
 }
 if (isset($_REQUEST['blistar']) == 0) {
-	$_REQUEST['blistar'] = '';
+	$_REQUEST['blistar'] = 0;
 }
 //Si Modifica o Elimina Cargar los campos
 if (($_REQUEST['paso'] == 1) || ($_REQUEST['paso'] == 3)) {
@@ -650,7 +650,7 @@ list($unae40idtercero_rs, $_REQUEST['unae40idtercero'], $_REQUEST['unae40idterce
 $unae40or_sexo_nombre = dato_spredet(0, $objDB, 'SELECT unad22nombre AS nombre FROM unad22combos WHERE unad22codopcion="' . $_REQUEST['unae40or_sexo'] . '"');
 $unae40or_fechadoc = $ETI['msg_sinfecha'];
 if($_REQUEST['unae40or_fechadoc'] != 0) {
-	$unae40or_fechadoc = formato_fechalarga($_REQUEST['unae40or_fechadoc']);
+	$unae40or_fechadoc = formato_FechaLargaDesdeNumero($_REQUEST['unae40or_fechadoc']);
 }
 //$unae40or_sexo_nombre = '&nbsp;';
 //if ((int)$_REQUEST['unae40or_sexo'] != 0) {
@@ -669,12 +669,14 @@ if ((int)$_REQUEST['paso'] == 0) {
 }
 //Alistar datos adicionales
 $bPuedeAbrir = false;
+$bPuedeCerrar = false;
+$bPuedeEliminar = false;
 if ($_REQUEST['paso'] != 0) {
 	if ($_REQUEST['unae40estado'] == 7) {
 		//Definir las condiciones que permitirán abrir el registro.
 		list($bDevuelve, $sDebugP) = seg_revisa_permisoV3($iCodModulo, 17, $idTercero, $objDB);
 		if ($bDevuelve) {
-			$bPuedeAbrir = true;
+			// $bPuedeAbrir = true;
 		}
 	}
 }
@@ -914,7 +916,9 @@ if ($iNumFormatosImprime>0) {
 	function verrpt() {
 		window.document.frmimprime.submit();
 	}
-
+<?php
+if($bPuedeEliminar) {
+?>
 	function eliminadato() {
 		ModalConfirm('<?php echo $ETI['msg_confirmaeliminar']; ?>');
 		ModalDialogConfirm(function(confirm) {
@@ -930,7 +934,9 @@ if ($iNumFormatosImprime>0) {
 		window.document.frmedita.paso.value = 13;
 		window.document.frmedita.submit();
 	}
-
+<?php
+}
+?>
 	function RevisaLlave() {
 		var datos = new Array();
 		datos[1] = window.document.frmedita.unae40idtercero.value;
@@ -1171,7 +1177,7 @@ if ($_REQUEST['paso'] != 0) {
 <input id="cmdAyuda" name="cmdAyuda" type="button" class="btUpAyuda" onclick="muestraayuda(<?php echo $APP->idsistema . ', ' . $iCodModulo; ?>);" title="<?php echo $ETI['bt_ayuda']; ?>" value="<?php echo $ETI['bt_ayuda']; ?>" />
 <?php
 if ($_REQUEST['paso'] == 2) {
-	if ($_REQUEST['unae40estado'] == 0) {
+	if ($bPuedeEliminar) {
 ?>
 <input id="cmdEliminar" name="cmdEliminar" type="button" class="btUpEliminar" onclick="eliminadato();" title="<?php echo $ETI['bt_eliminar']; ?>" value="<?php echo $ETI['bt_eliminar']; ?>" />
 <?php
@@ -1204,7 +1210,7 @@ if ($bHayImprimir) {
 ?>
 <input id="cmdLimpiar" name="cmdLimpiar" type="button" class="btUpLimpiar" onclick="limpiapagina();" title="<?php echo $ETI['bt_limpiar']; ?>" value="<?php echo $ETI['bt_limpiar']; ?>" />
 <?php
-if ($_REQUEST['unae40estado'] == 0) {
+if ($bPuedeCerrar) {
 ?>
 <?php
 	if ($_REQUEST['paso']>0) {
@@ -1378,7 +1384,7 @@ echo html_HoraMin('unae40horasol', $_REQUEST['unae40horasol'], 'unae40minsol', $
 ?>
 </div>
 <div class="salto1px"></div>
-<div class="GrupoCampos450">
+<div class="GrupoCampos450" style="display:none;">
 <label class="TituloGrupo">
 <?php
 echo $ETI['unae40idsolicita'];
@@ -1399,6 +1405,7 @@ echo html_DivTerceroV2('unae40idsolicita', $_REQUEST['unae40idsolicita_td'], $_R
 <div class="salto1px"></div>
 <div class="GrupoCampos450">
 <label class="TituloGrupo">
+<label class="Label160"></label>
 <?php
 echo $ETI['unae40datosor'];
 ?>
@@ -1522,38 +1529,23 @@ echo html_oculto('unae40or_fechanac', $_REQUEST['unae40or_fechanac'], formato_fe
 </label>
 <div class="salto1px"></div>
 </div>
-<div class="GrupoCampos450">
+<div class="GrupoCampos300">
 <label class="TituloGrupo">
 <?php
 echo $ETI['unae40datosdes'];
 ?>
 </label>
 <div class="salto1px"></div>
-<label class="Label160">
-<?php
-echo $ETI['unae40tipodocdestino'];
-?>
-</label>
 <label class="Label130">
 <?php
 echo $html_unae40tipodocdestino;
 ?>
 </label>
 <div class="salto1px"></div>
-<label class="Label160">
-<?php
-echo $ETI['unae40docdestino'];
-?>
-</label>
 <label class="Label220">
 <input id="unae40docdestino" name="unae40docdestino" type="text" value="<?php echo $_REQUEST['unae40docdestino']; ?>" maxlength="20" placeholder="<?php echo $ETI['ing_campo'] . $ETI['unae40docdestino']; ?>" />
 </label>
 <div class="salto1px"></div>
-<label class="Label160">
-<?php
-echo $ETI['unae40des_fechadoc'];
-?>
-</label>
 <div class="Campo220">
 <?php
 echo html_fecha('unae40des_fechadoc', $_REQUEST['unae40des_fechadoc'], true, '', $iAgnoIni, $iAgnoFin);
@@ -1569,58 +1561,28 @@ if (false) {
 }
 ?>
 <div class="salto1px"></div>
-<label class="Label160">
-<?php
-echo $ETI['unae40des_nombre1'];
-?>
-</label>
 <label class="Label220">
 <input id="unae40des_nombre1" name="unae40des_nombre1" type="text" value="<?php echo $_REQUEST['unae40des_nombre1']; ?>" maxlength="50" placeholder="<?php echo $ETI['ing_campo'] . $ETI['unae40des_nombre1']; ?>" />
 </label>
 <div class="salto1px"></div>
-<label class="Label160">
-<?php
-echo $ETI['unae40des_nombre2'];
-?>
-</label>
 <label class="Label220">
 <input id="unae40des_nombre2" name="unae40des_nombre2" type="text" value="<?php echo $_REQUEST['unae40des_nombre2']; ?>" maxlength="50" placeholder="<?php echo $ETI['ing_campo'] . $ETI['unae40des_nombre2']; ?>" />
 </label>
 <div class="salto1px"></div>
-<label class="Label160">
-<?php
-echo $ETI['unae40des_apellido1'];
-?>
-</label>
 <label class="Label220">
 <input id="unae40des_apellido1" name="unae40des_apellido1" type="text" value="<?php echo $_REQUEST['unae40des_apellido1']; ?>" maxlength="50" placeholder="<?php echo $ETI['ing_campo'] . $ETI['unae40des_apellido1']; ?>" />
 </label>
 <div class="salto1px"></div>
-<label class="Label160">
-<?php
-echo $ETI['unae40des_apellido2'];
-?>
-</label>
 <label class="Label220">
 <input id="unae40des_apellido2" name="unae40des_apellido2" type="text" value="<?php echo $_REQUEST['unae40des_apellido2']; ?>" maxlength="50" placeholder="<?php echo $ETI['ing_campo'] . $ETI['unae40des_apellido2']; ?>" />
 </label>
 <div class="salto1px"></div>
-<label class="Label160">
-<?php
-echo $ETI['unae40des_sexo'];
-?>
-</label>
 <label class="Label130">
 <?php
 echo $html_unae40des_sexo;
 ?>
 </label>
 <div class="salto1px"></div>
-<label class="Label160">
-<?php
-echo $ETI['unae40des_fechanac'];
-?>
-</label>
 <div class="Campo220">
 <?php
 echo html_fecha('unae40des_fechanac', $_REQUEST['unae40des_fechanac'], true, '', $iAgnoIni, $iAgnoFin);
@@ -1660,7 +1622,7 @@ if ((int)$_REQUEST['unae40id'] == 0) {
 if ((int)$_REQUEST['unae40idarchivo'] != 0) {
 	$sEstiloElimina = ' style="inline-block;"';
 }
-if ($_REQUEST['unae40estado'] == 0) {
+if (false) {
 ?>
 <label class="Label30">
 <input id="banexaunae40idarchivo" name="banexaunae40idarchivo" type="button" value="Anexar" class="btAnexarS" onclick="carga_unae40idarchivo()" title="Cargar archivo"<?php echo $sEstiloAnexa; ?>/>

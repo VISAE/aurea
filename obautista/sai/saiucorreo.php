@@ -591,6 +591,8 @@ while($filac=$objDB->sf($tablac)){
 $html_blistar=$objCombos->html('', $objDB);
 $objCombos->nuevo('blistar2', $_REQUEST['blistar2'], true, '{'.$ETI['msg_todas'].'}');
 $objCombos->sAccion='paginarf3020()';
+$aListar2=array();
+$iListar2=0;
 $objCombos->addArreglo($aListar2, $iListar2);
 $html_blistar2=$objCombos->html('', $objDB);
 //$html_blistar=$objCombos->comboSistema(3020, 1, $objDB, 'paginarf3020()');

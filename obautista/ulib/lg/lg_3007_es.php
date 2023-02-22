@@ -47,4 +47,5 @@ $ERR['saiu07horavalida']='Necesita el dato '.$ETI['saiu07horavalida'];
 $ERR['saiu07minvalida']='Necesita el dato '.$ETI['saiu07minvalida'];
 
 $ETI['saiu04obligatorio']='Requerido';
+$ETI['saiu04guardarprimero']='<b>Recuerde:</b> para anexar evidencias es necesario que primero guarde su solicitud.';
 ?>

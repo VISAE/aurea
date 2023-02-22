@@ -324,6 +324,9 @@ if ($bDevuelve) {
 	$seg_5 = 1;
 }
 //Cargar las tablas de datos
+$sHTMLMapa = '';
+$sScriptMapa = '';
+$aDetalle = array();
 $aParametros[0] = ''; //$_REQUEST['p1_2357'];
 $aParametros[100] = $idTercero;
 $aParametros[101] = $_REQUEST['paginaf2357'];
@@ -332,6 +335,10 @@ $aParametros[103] = $_REQUEST['cara57peraca'];
 //$aParametros[104]=$_REQUEST['blistar'];
 list($sTabla2357, $sDebugTabla) = f2357_TablaDetalleV2($aParametros, $objDB, $bDebug);
 $sDebug = $sDebug . $sDebugTabla;
+if ((int)$_REQUEST['cara57peraca'] != 0){
+	list($aDetalle, $sHTMLMapa, $sScriptMapa, $sDebugTabla)=f2357_DashboardDetalle($aParametros, $objDB, $bDebug);
+	$sDebug=$sDebug.$sDebugTabla;
+}
 $bDebugMenu = false;
 list($et_menu, $sDebugM) = html_menuV2($APP->idsistema, $objDB, $iPiel, $bDebugMenu, $idTercero);
 $sDebug = $sDebug . $sDebugM;
@@ -472,7 +479,7 @@ forma_mitad();
 		document.getElementById('div_f2357detalle').innerHTML = '<div class="GrupoCamposAyuda"><div class="MarquesinaMedia">Procesando datos, por favor espere.</div></div><input id="paginaf2357" name="paginaf2357" type="hidden" value="' + params[101] + '" /><input id="lppf2357" name="lppf2357" type="hidden" value="' + params[102] + '" />';
 		document.getElementById('div_f2357dashboard').style.display = 'none';
 		xajax_f2357_HtmlTabla(params);
-		xajax_f2357_HtmlDashboard(params);
+		//xajax_f2357_HtmlDashboard(params);
 	}
 
 	function revfoco(objeto) {
@@ -536,6 +543,7 @@ forma_mitad();
 	}
 	// 
 </script>
+<script language="javascript" src="jsi/js2357.js?ver=2"></script>
 <form id="frmimpp" name="frmimpp" method="post" action="p2357.php" target="_blank">
 <input id="r" name="r" type="hidden" value="2357" />
 <input id="v3" name="v3" type="hidden" value="" />
@@ -695,14 +703,21 @@ echo $sTabla2357;
 ?>
 </div>
 
-
-<div id="div_f2357dashboard" style="display:none">
+<?php
+$sEstilo = ' style="display:none"';
+//$_REQUEST['bocultaDashboard'] = 1;
+$_REQUEST['bocultaDashboard'] = 0;
+if ((int)$_REQUEST['cara57peraca'] != 0){
+	$sEstilo = '';
+	$_REQUEST['bocultaDashboard'] = 0;
+}
+?>
+<div id="div_f2357dashboard"<?php echo $sEstilo; ?>>
 <?php
 $sPrevTitulo = '<hr />
 <b>';
 $sPrevTitulo2 = '<b>';
 $sSufTitulo = '</b>';
-$_REQUEST['bocultaDashboard'] = 1;
 ?>
 <div class="salto1px"></div>
 <?php
@@ -710,11 +725,6 @@ echo $sPrevTitulo . $ETI['cara57dashboard'] . $sSufTitulo;
 ?>
 <input id="bocultaDashboard" name="bocultaDashboard" type="hidden" value="<?php echo $_REQUEST['bocultaDashboard']; ?>" />
 <div class="ir_derecha" style="width:62px;">
-<!--
-<label class="Label30">
-<input id="btexcelDashboard" name="btexcelDashboard" type="button" value="Exportar" class="btMiniExcel" onclick="imprimeDashboard();" title="Exportar"/>
-</label>
--->
 <label class="Label30">
 <input id="btexpandeDashboard" name="btexpandeDashboard" type="button" value="Expandir" class="btMiniExpandir" onclick="expandepanel('Dashboard','block',0);" title="<?php echo $ETI['bt_mostrar']; ?>" style="display:<?php if ($_REQUEST['bocultaDashboard'] == 0) {
 echo 'none';
@@ -747,7 +757,7 @@ $sEstilo = '';
 }
 }
 ?>
-<div id="div_f2357grafico" class="GrupoCampos450"></div>
+<div id="div_f2357grafico" class="GrupoCampos450"><?php echo $sHTMLMapa; ?></div>
 <div class="salto1px"></div>
 <div class="GrupoCampos" id="div_ficha1" <?php echo $sEstilo; ?>>
 <?php
@@ -1618,6 +1628,16 @@ if ($bMueveScroll) {
 echo 'setTimeout(function(){retornacontrol();}, 2);
 ';
 }
+if ((int)$_REQUEST['cara57peraca'] != 0){
+	echo 'setTimeout(pintagrafica(), 2);
+	';	
+?>
+function pintagrafica(){
+	pintarGraficosf2357(<?php echo json_encode($aDetalle); ?>);
+	<?php echo $sScriptMapa; ?>
+}
+<?php
+}
 ?>
 </script>
 <link rel="stylesheet" href="<?php echo $APP->rutacomun; ?>js/chosen.css" type="text/css" />
@@ -1628,7 +1648,6 @@ $("#cara57peraca").chosen();
 });
 </script>
 <script language="javascript" src="<?php echo $APP->rutacomun; ?>unad_todas.js?ver=8"></script>
-<script language="javascript" src="jsi/js2357.js?ver=<?php echo time(); ?>"></script>
 <?php
 forma_piedepagina();
 ?>
