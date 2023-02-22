@@ -1,6 +1,6 @@
 <?php
 $APP=new stdclass();
-$APP->idsistema=23;
+$APP->idsistema=30;
 $APP->tipo_doc='CC';
 $APP->idserver=4;
 $APP->tiempolimite=120;

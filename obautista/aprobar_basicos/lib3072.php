@@ -211,7 +211,7 @@ function f3072_TablaDetalleV2($aParametros, $objDB, $bDebug = false)
 		$aParametros[104] = '';
 	}
 	if (isset($aParametros[105]) == 0) {
-		$aParametros[105] = '';
+		$aParametros[105] = 0;
 	}
 	$idTercero = $aParametros[100];
 	$sDebug = '';
@@ -257,10 +257,10 @@ function f3072_TablaDetalleV2($aParametros, $objDB, $bDebug = false)
 	*/
 	if (true) {
 		//Esta condición la ponemos para mantener la conparación con los arhcivos tipo e
-		$sSQLadd = ' AND TB.unae40estado > 0';
+		$sSQLadd = '';
 		$sSQLadd1 = '';
-		if ($aParametros[105] != '') {
-			$sSQLadd = $sSQLadd . ' AND TB.unae40estado LIKE "%' . $aParametros[105] . '%"';
+		if ($bListar != '') {
+			$sSQLadd = $sSQLadd . ' AND TB.unae40estado LIKE "%' . $bListar . '%"';
 		}
 		/*
 		if ($aParametros[104] != '') {

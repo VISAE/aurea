@@ -58,7 +58,7 @@ $ETI['saiu05infocomplemento']='Info complemento';
 $ETI['saiu05idunidadresp'] = 'Unidad';
 $ETI['saiu05idequiporesp'] = 'Equipo';
 $ETI['saiu05idsupervisor'] = 'Supervisor';
-$ETI['saiu05idresponsable']='Responsable';
+$ETI['saiu05idresponsable']='Asignado a';
 $ETI['saiu05idescuela']='Escuela';
 $ETI['saiu05idprograma']='Programa';
 $ETI['saiu05idperiodo']='Periodo';
@@ -179,4 +179,14 @@ $ETI['bt_campus']='Ingresar con credenciales de campus';
 $ETI['bt_inscribirse']='Crear usuario en campus';
 $ETI['bt_anonimo']='Ingresar anonimamente';
 $ETI['bt_cierrasesion']='Cerrar sesi&oacute;n';
+$ETI['bt_continuar']='Continuar';
+$ETI['sesioniniciada']='Usted ya inici&oacute; sesi&oacute;n en Campus.';
+$ETI['advertencia']='<b>Advertencia: </b>';
+$ETI['msg_anonimo']='Esta PQRS permite realizarse sin autenticaci&oacute;n, preste atenci&oacute;n al c&oacute;digo de radicado el cual ser&aacute; el &uacute;nico referente de consulta.';
+$ETI['saiu03idliderrespon']='L&iacute;der responsable';
+$ETI['bt_tratadatos']='Autorizaci&oacute;n para el tratamiento de datos personales';
+$ETI['msg_tratadatos']='La UNIVERSIDAD NACIONAL ABIERTA Y A DISTANCIA en adelante UNAD con Nit. 860.512.780-4 y domicilio en la Calle 14 sur N 14-23 de la ciudad de Bogot&aacute;, ente universitario aut&oacute;nomo del orden nacional, con r&eacute;gimen especial en los t&eacute;rminos de la Ley 30 de 1992, est&aacute; comprometida con el correcto tratamiento de los datos personales de los que es responsable.<br><br>La UNAD realizar&aacute; el tratamiento de datos personales mediante la recolecci&oacute;n, transferencia, transmisi&oacute;n, almacenamiento, depuraci&oacute;n, uso, an&aacute;lisis, circulaci&oacute;n, actualizaci&oacute;n, supresi&oacute;n y cruce de informaci&oacute;n, con la finalidad de:<br><strong>Recibir respuesta a la solicitud en el correo de notificaciones indicado.</strong><br><br>Sus derechos como titular de la informaci&oacute;n son los previstos en la Constitucci&oacute;n, la Ley 1581 de 2012, Decretos reglamentarios y nuestra Pol&iacute;tica de tratamiento de datos personales, la cual podr&aacute; consultar en el siguiente link www.unad.edu.co, especialmente los siguientes: conocer, actualizar, Revocar la autorizaci&oacute;n y/o solicitar la supresi&oacute;n del dato, a menos que exista un deber legal o contractual que haga imperativo conservar la informaci&oacute;n, abstenerse de responder las preguntas sobre datos sensibles.<br><br>Estos derechos los podr&aacute; ejercer a trav&eacute;s de los canales o medios dispuestos por la UNAD para la atenci&oacute;n al p&uacute;blico, al correo electr&oacute;nico sgeneral@unad.edu.co para la atenci&oacute;n de requerimientos relacionados con el tratamiento de mis datos personales y el ejercicio de los derechos mencionados en esta autorizaci&oacute;n.<br><br>Mediante el presente se autoriza a la Universidad Nacional Abierta y a Distancia (UNAD) de forma libre, previa, expresa e informada para darle tratamiento a datos personales, en t&eacute;rminos aqu&iacute; referenciados.';
+$ETI['bt_tramitar']='Iniciar Tr&aacute;mite';
+
+$ERR['saiu05refdoc'] = 'Necesita el dato ' . $ETI['saiu05refdoc'];
 ?>

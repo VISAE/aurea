@@ -68,41 +68,50 @@ class clsLinea{
 		//$this->iEncAntiguos=$id;
 		}
 	}
-function f2357_CargarData($idPeraca, $objDB, $bDebug=false){
+function f2357_CargarData($idPeriodo, $objDB, $bDebug=false){
 	$sDebug='';
 	$aEsc=array();
 	$iNumEsc=0;
 	$sSQL='SELECT core12id, core12nombre 
-FROM core12escuela AS TB 
-ORDER BY core12nombre';
+	FROM core12escuela AS TB 
+	ORDER BY core12nombre';
 	$tabla=$objDB->ejecutasql($sSQL);
 	while($fila=$objDB->sf($tabla)){
 		$objLin=new clsLinea($fila['core12id'], cadena_notildes($fila['core12nombre']));
 		$iNumEsc++;
 		$aEsc[$iNumEsc]=$objLin;
 		}
-	$sSQL='SELECT core16idescuela, core16nuevo, COUNT(core16id) AS Total FROM core16actamatricula WHERE core16peraca='.$idPeraca.' GROUP BY core16idescuela, core16nuevo';
+	$sSQL='SELECT core16idescuela, core16nuevo, COUNT(core16id) AS Total 
+	FROM core16actamatricula 
+	WHERE core16peraca='.$idPeriodo.' AND core16tipomatricula IN (0, 1) 
+	GROUP BY core16idescuela, core16nuevo';
 	$tabla=$objDB->ejecutasql($sSQL);
 	while($fila=$objDB->sf($tabla)){
 		for ($k=1;$k<=$iNumEsc;$k++){
 			$objLin=$aEsc[$k];
 			if ($objLin->idEscuela==$fila['core16idescuela']){
-				if ($fila['core16nuevo']==0){
-					$objLin->iMatAntiguos=$fila['Total'];
-					}else{
+				switch($fila['core16nuevo']){
+					case 1://Nuevo
 					$objLin->iMatNuevos=$fila['Total'];
+					break;
+					default: //Antiguo, 8 Reingresos.
+					$objLin->iMatAntiguos=$objLin->iMatAntiguos+$fila['Total'];
+					break;
 					}
 				$k=$iNumEsc+1;
 				}
 			}
 		}
-	$sSQL='SELECT cara01idescuela, cara01tipocaracterizacion, cara01completa, COUNT(cara01id) AS Total FROM cara01encuesta WHERE cara01idperaca='.$idPeraca.' GROUP BY cara01idescuela, cara01tipocaracterizacion, cara01completa';
+	$sSQL='SELECT cara01idescuela, cara01condicicionmatricula, cara01completa, COUNT(cara01id) AS Total 
+	FROM cara01encuesta 
+	WHERE cara01idperaca='.$idPeriodo.' 
+	GROUP BY cara01idescuela, cara01condicicionmatricula, cara01completa';
 	$tabla=$objDB->ejecutasql($sSQL);
 	while($fila=$objDB->sf($tabla)){
 		for ($k=1;$k<=$iNumEsc;$k++){
 			$objLin=$aEsc[$k];
 			if ($objLin->idEscuela==$fila['cara01idescuela']){
-				if ($fila['cara01tipocaracterizacion']==3){
+				if ($fila['cara01condicicionmatricula']!=1){
 					$objLin->iEncAntiguos=$objLin->iEncAntiguos+$fila['Total'];
 					if ($fila['cara01completa']=='S'){
 						$objLin->iCompletasAntiguos=$objLin->iCompletasAntiguos+$fila['Total'];
@@ -146,13 +155,13 @@ function f2357_TablaDetalleV2($aParametros, $objDB, $bDebug=false){
 	$sLeyenda='';
 	if ($aParametros[103]==''){
 		$sLeyenda='<div class="salto1px"></div>
-<div class="GrupoCamposAyuda">
-<b>Debe seleccionar un periodo para ejecutar la consulta</b>
-<div class="salto1px"></div>
-</div>';
+		<div class="GrupoCamposAyuda">
+		<b>Debe seleccionar un periodo para ejecutar la consulta</b>
+		<div class="salto1px"></div>
+		</div>';
 		return array(utf8_encode($sLeyenda.'<input id="paginaf2357" name="paginaf2357" type="hidden" value="'.$pagina.'"/><input id="lppf2357" name="lppf2357" type="hidden" value="'.$lineastabla.'"/>'), $sDebug);
 		}
-	$idPeraca=$aParametros[103];
+	$idPeriodo=$aParametros[103];
 	$sSQLadd='';
 	$sSQLadd1='';
 	//if ((int)$aParametros[103]!=-1){$sSQLadd=$sSQLadd.' AND TB.campo='.$aParametros[103];}
@@ -174,11 +183,12 @@ function f2357_TablaDetalleV2($aParametros, $objDB, $bDebug=false){
 	list($objDBRyC, $sDebugR)=TraerDBRyCV2($bDebug);
 	if ($objDBRyC==NULL){
 		}else{
+		// AND T1.cur_edificio<>99 
 		$sSQL='SELECT TR.ins_estudiante 
-FROM registro AS TR, cursos_periodos AS T1 
-WHERE TR.ano='.$idPeraca.' AND TR.ins_novedad=79 AND TR.estado="A"
-AND TR.ins_curso=T1.consecutivo AND T1.cur_edificio<>99 
-GROUP BY TR.ins_estudiante';
+		FROM registro AS TR, cursos_periodos AS T1 
+		WHERE TR.ano='.$idPeriodo.' AND TR.ins_novedad IN (77, 79)
+		AND TR.ins_curso=T1.consecutivo
+		GROUP BY TR.ins_estudiante';
 		if ($bDebug){$sDebug=$sDebug.fecha_microtiempo().' alumnos en matricula RyC: '.$sSQL.'<br>';}
 		$tabla=$objDBRyC->ejecutasql($sSQL);
 		$iTotalRyC=$objDBRyC->nf($tabla);
@@ -190,24 +200,24 @@ GROUP BY TR.ins_estudiante';
 	$sTitulos='Peraca';
 	$sSQLlista='';
 	$sErrConsulta='<input id="consulta_2357" name="consulta_2357" type="hidden" value="'.$sSQLlista.'"/>
-<input id="titulos_2357" name="titulos_2357" type="hidden" value="'.$sTitulos.'"/>';
+	<input id="titulos_2357" name="titulos_2357" type="hidden" value="'.$sTitulos.'"/>';
 	$res=$sErrConsulta.$sLeyenda.'<input id="paginaf2357" name="paginaf2357" type="hidden" value="'.$pagina.'"/><input id="lppf2357" name="lppf2357" type="hidden" value="'.$lineastabla.'"/>
-<table border="0" align="center" cellpadding="0" cellspacing="2" class="tablaapp">
-<tr class="fondoazul">
-<td rowspan="2"><b>'.$ETI['msg_escuela'].'</b></td>
-<td colspan="4" align="center"><b>'.$ETI['msg_antiguos'].'</b></td>
-<td colspan="4" align="center"><b>'.$ETI['msg_nuevos'].'</b></td>
-</tr>
-<tr class="fondoazul">
-<td align="center"><b>'.$ETI['msg_matricula'].'</b></td>
-<td align="center"><b>'.$ETI['msg_encuestas'].'</b></td>
-<td align="center"><b>'.$ETI['msg_completas'].'</b></td>
-<td align="center"><b>'.$ETI['msg_avance'].'</b></td>
-<td align="center"><b>'.$ETI['msg_matricula'].'</b></td>
-<td align="center"><b>'.$ETI['msg_encuestas'].'</b></td>
-<td align="center"><b>'.$ETI['msg_completas'].'</b></td>
-<td align="center"><b>'.$ETI['msg_avance'].'</b></td>
-</tr>';
+	<table border="0" align="center" cellpadding="0" cellspacing="2" class="tablaapp">
+	<tr class="fondoazul">
+	<td rowspan="2"><b>'.$ETI['msg_escuela'].'</b></td>
+	<td colspan="4" align="center"><b>'.$ETI['msg_antiguos'].'</b></td>
+	<td colspan="4" align="center"><b>'.$ETI['msg_nuevos'].'</b></td>
+	</tr>
+	<tr class="fondoazul">
+	<td align="center"><b>'.$ETI['msg_matricula'].'</b></td>
+	<td align="center"><b>'.$ETI['msg_encuestas'].'</b></td>
+	<td align="center"><b>'.$ETI['msg_completas'].'</b></td>
+	<td align="center"><b>'.$ETI['msg_avance'].'</b></td>
+	<td align="center"><b>'.$ETI['msg_matricula'].'</b></td>
+	<td align="center"><b>'.$ETI['msg_encuestas'].'</b></td>
+	<td align="center"><b>'.$ETI['msg_completas'].'</b></td>
+	<td align="center"><b>'.$ETI['msg_avance'].'</b></td>
+	</tr>';
 	$tlinea=1;
 	$iMatNuevos=0;
 	$iMatAntiguos=0;
@@ -226,36 +236,36 @@ GROUP BY TR.ins_estudiante';
 			$iEncAntiguos=$iEncAntiguos+$objLin->iEncAntiguos;
 			$iCompletasNuevos=$iCompletasNuevos+$objLin->iCompletasNuevos;
 			$iCompletasAntiguos=$iCompletasAntiguos+$objLin->iCompletasAntiguos;
-		$sPrefijo='';
-		$sSufijo='';
-		$sClass='';
-		$sLink='';
-		if (false){
-			$sPrefijo='<b>';
-			$sSufijo='</b>';
+			$sPrefijo='';
+			$sSufijo='';
+			$sClass='';
+			$sLink='';
+			if (false){
+				$sPrefijo='<b>';
+				$sSufijo='</b>';
+				}
+			$et_avanceA='';
+			$et_avanceN='';
+			if ($objLin->iEncAntiguos>0){
+				$et_avanceA=formato_numero($objLin->iCompletasAntiguos/$objLin->iEncAntiguos*100, 2).' %';
+				}
+			if ($objLin->iEncNuevos>0){
+				$et_avanceN=formato_numero($objLin->iCompletasNuevos/$objLin->iEncNuevos*100, 2).' %';
+				}
+			if(($tlinea%2)==0){$sClass=' class="resaltetabla"';}
+			$tlinea++;
+			$res=$res.'<tr'.$sClass.'>
+			<td>'.$sPrefijo.$objLin->sNomEscuela.$sSufijo.'</td>
+			<td align="right">'.$sPrefijo.formato_numero($objLin->iMatAntiguos).$sSufijo.'</td>
+			<td align="right">'.$sPrefijo.formato_numero($objLin->iEncAntiguos).$sSufijo.'</td>
+			<td align="right">'.$sPrefijo.formato_numero($objLin->iCompletasAntiguos).$sSufijo.'</td>
+			<td align="right">'.$sPrefijo.$et_avanceA.$sSufijo.'</td>
+			<td align="right">'.$sPrefijo.formato_numero($objLin->iMatNuevos).$sSufijo.'</td>
+			<td align="right">'.$sPrefijo.formato_numero($objLin->iEncNuevos).$sSufijo.'</td>
+			<td align="right">'.$sPrefijo.formato_numero($objLin->iCompletasNuevos).$sSufijo.'</td>
+			<td align="right">'.$sPrefijo.$et_avanceN.$sSufijo.'</td>
+			</tr>';
 			}
-		$et_avanceA='';
-		$et_avanceN='';
-		if ($objLin->iEncAntiguos>0){
-			$et_avanceA=formato_numero($objLin->iCompletasAntiguos/$objLin->iEncAntiguos*100, 2).' %';
-			}
-		if ($objLin->iEncNuevos>0){
-			$et_avanceN=formato_numero($objLin->iCompletasNuevos/$objLin->iEncNuevos*100, 2).' %';
-			}
-		if(($tlinea%2)==0){$sClass=' class="resaltetabla"';}
-		$tlinea++;
-		$res=$res.'<tr'.$sClass.'>
-<td>'.$sPrefijo.$objLin->sNomEscuela.$sSufijo.'</td>
-<td align="right">'.$sPrefijo.formato_numero($objLin->iMatAntiguos).$sSufijo.'</td>
-<td align="right">'.$sPrefijo.formato_numero($objLin->iEncAntiguos).$sSufijo.'</td>
-<td align="right">'.$sPrefijo.formato_numero($objLin->iCompletasAntiguos).$sSufijo.'</td>
-<td align="right">'.$sPrefijo.$et_avanceA.$sSufijo.'</td>
-<td align="right">'.$sPrefijo.formato_numero($objLin->iMatNuevos).$sSufijo.'</td>
-<td align="right">'.$sPrefijo.formato_numero($objLin->iEncNuevos).$sSufijo.'</td>
-<td align="right">'.$sPrefijo.formato_numero($objLin->iCompletasNuevos).$sSufijo.'</td>
-<td align="right">'.$sPrefijo.$et_avanceN.$sSufijo.'</td>
-</tr>';
-		}
 		}
 	$sPrefijo='';
 	$sSufijo='';
@@ -277,6 +287,9 @@ GROUP BY TR.ins_estudiante';
 	if ($iTotalRyC>0){
 		if ($iTotalRyC>($iMatNuevos+$iMatAntiguos)){
 			$sLinkMatricula=$sLinkMatricula.' <a href="javascript:procesarmatricula()" class="lnkresalte">'.$ETI['lnk_procesamatricula'].'</a>';
+			}
+		if ($bDebug){
+			$sLinkMatricula=$sLinkMatricula.' <a href="javascript:procesarmatricula(1)" class="lnkresalte">Reconstruir Completo</a>';
 			}
 		}
 	$res=$res.'<tr class="fondoazul">
@@ -313,16 +326,34 @@ function f2357_HtmlTabla($aParametros){
 	$objDB=new clsdbadmin($APP->dbhost, $APP->dbuser, $APP->dbpass, $APP->dbname);
 	if ($APP->dbpuerto!=''){$objDB->dbPuerto=$APP->dbpuerto;}
 	$objDB->xajax();
+	$sDebug = $sDebug . fecha_microtiempo() . ' Iniciando Tabla detalle 2357 <br>';
+	if ($bDebug) {
+	}
 	list($sDetalle, $sDebugTabla)=f2357_TablaDetalleV2($aParametros, $objDB, $bDebug);
 	$sDebug=$sDebug.$sDebugTabla;
+	//Inicia el dashboard
+	if ($bDebug) {
+		$sDebug = $sDebug . fecha_microtiempo() . ' Iniciando Dashboard <br>';
+	}
+	list($aDetalle, $sHTMLMapa, $sScriptMapa, $sDebugTabla)=f2357_DashboardDetalle($aParametros, $objDB, $bDebug);
+	$sDebug=$sDebug.$sDebugTabla;
+	// Termina
 	$objDB->CerrarConexion();
 	$objResponse=new xajaxResponse();
 	$objResponse->assign('div_f2357detalle', 'innerHTML', $sDetalle);
+	//Pinta el dashboard
+	$objResponse->call('pintarGraficosf2357('.json_encode($aDetalle).')');
+	$objResponse->assign('div_f2357grafico', 'innerHTML', $sHTMLMapa);
+	$objResponse->assign('div_f2357dashboard', 'style.display', 'block');
+    $objResponse->script($sScriptMapa);
+	// --- 
 	if ($bDebug){
 		$objResponse->assign('div_debug', 'innerHTML', $sDebug);
 		}
 	return $objResponse;
 	}
+
+
 function f2357_CargarDataDashboard($idPeraca, $objDB, $objGraficos, $bDebug=false){	
 	$sDebug='';
 	$aEscuela=array();
@@ -356,10 +387,10 @@ function f2357_CargarDataDashboard($idPeraca, $objDB, $objGraficos, $bDebug=fals
 	WHERE unad24activa="S"';
 	$tabla=$objDB->ejecutasql($sSQL);
 	while($fila=$objDB->sf($tabla)){
-		$aSede[$fila['unad24id']]=utf8_encode($fila['unad24nombre']);
+		$aSede[$fila['unad24id']]=($fila['unad24nombre']);
 		}
-	$aContenidoMapa = array('ZCAR' => '', 'ZOCC' => '', 'ZCORI' => '', 'ZCBOY' => '', 'ZCBOG' => '', 'ZSUR' => '', 'ZCSUR' => '', 'ZAO' => '');
-	$aTotalesMapa = array('ZCAR' => array('antiguos'=>0, 'nuevos'=>0, 'total'=>0), 'ZOCC' => array('antiguos'=>0, 'nuevos'=>0, 'total'=>0), 'ZCORI' => array('antiguos'=>0, 'nuevos'=>0, 'total'=>0), 'ZCBOY' => array('antiguos'=>0, 'nuevos'=>0, 'total'=>0), 'ZCBOG' => array('antiguos'=>0, 'nuevos'=>0, 'total'=>0), 'ZSUR' => array('antiguos'=>0, 'nuevos'=>0, 'total'=>0), 'ZCSUR' => array('antiguos'=>0, 'nuevos'=>0, 'total'=>0), 'ZAO' => array('antiguos'=>0, 'nuevos'=>0, 'total'=>0));
+	$aContenidoMapa = array('ZCAR' => '', 'ZOCC' => '', 'ZCORI' => '', 'ZCBOY' => '', 'ZCBC' => '', 'ZSUR' => '', 'ZCSUR' => '', 'ZAO' => '');
+	$aTotalesMapa = array('ZCAR' => array('antiguos'=>0, 'nuevos'=>0, 'total'=>0), 'ZOCC' => array('antiguos'=>0, 'nuevos'=>0, 'total'=>0), 'ZCORI' => array('antiguos'=>0, 'nuevos'=>0, 'total'=>0), 'ZCBOY' => array('antiguos'=>0, 'nuevos'=>0, 'total'=>0), 'ZCBC' => array('antiguos'=>0, 'nuevos'=>0, 'total'=>0), 'ZSUR' => array('antiguos'=>0, 'nuevos'=>0, 'total'=>0), 'ZCSUR' => array('antiguos'=>0, 'nuevos'=>0, 'total'=>0), 'ZAO' => array('antiguos'=>0, 'nuevos'=>0, 'total'=>0));
 	$aConfiguracion=array(
 		"aZonas"=>array(
 			'aTitulos' => array('Antiguos','Nuevos'),
@@ -390,7 +421,9 @@ function f2357_CargarDataDashboard($idPeraca, $objDB, $objGraficos, $bDebug=fals
 			'grupoApilado' => array(0,1)
 		)
 	);
-	$sSQL='SELECT core16idzona, core16idcead, core16idescuela, core16idprograma, core16nuevo FROM core16actamatricula WHERE core16peraca='.$idPeraca.'';
+	$sSQL='SELECT core16idzona, core16idcead, core16idescuela, core16idprograma, core16nuevo 
+	FROM core16actamatricula 
+	WHERE core16peraca='.$idPeraca.'';
 	$tabla=$objDB->ejecutasql($sSQL);
     while ($fila = $objDB->sf($tabla)) {
         if (isset($aZona[$fila['core16idzona']])) {
@@ -521,10 +554,10 @@ function f2357_DashboardDetalle($aParametros, $objDB, $bDebug=false){
     $objGraficos=new ClsGraficos('canvas_f2357grafico','map', $ETI['cara57mapa']);
 	if ($aParametros[103]==''){
 		$sLeyenda='<div class="salto1px"></div>
-<div class="GrupoCamposAyuda">
-<b>Debe seleccionar un periodo para ejecutar la consulta</b>
-<div class="salto1px"></div>
-</div>';
+		<div class="GrupoCamposAyuda">
+		<b>Debe seleccionar un periodo para ejecutar la consulta</b>
+		<div class="salto1px"></div>
+		</div>';
 		return array(utf8_encode($sLeyenda), $sDebug);
 		}
 	$idPeraca=$aParametros[103];
@@ -547,7 +580,7 @@ function f2357_DashboardDetalle($aParametros, $objDB, $bDebug=false){
 function f2357_HtmlDashboard($aParametros){
 	$_SESSION['u_ultimominuto']=iminutoavance();
 	$sError='';
-	$bDebug=false;
+	$bDebug=true;
 	$sDebug='';
 	$opts=$aParametros;
 	if(!is_array($opts)){$opts=json_decode(str_replace('\"','"',$opts),true);}
@@ -556,12 +589,15 @@ function f2357_HtmlDashboard($aParametros){
 	$objDB=new clsdbadmin($APP->dbhost, $APP->dbuser, $APP->dbpass, $APP->dbname);
 	if ($APP->dbpuerto!=''){$objDB->dbPuerto=$APP->dbpuerto;}
 	$objDB->xajax();
+	if ($bDebug) {
+		$sDebug = fecha_microtiempo() . 'Iniciando Dashboard <br>';
+	}
 	list($aDetalle, $sHTMLMapa, $sScriptMapa, $sDebugTabla)=f2357_DashboardDetalle($aParametros, $objDB, $bDebug);
 	$sDebug=$sDebug.$sDebugTabla;
 	$objDB->CerrarConexion();
 	$objResponse=new xajaxResponse();
-	$objResponse->call('pintarGraficosf2357('.json_encode($aDetalle).')');
 	//$objResponse->assign('div_f2357detalle', 'innerHTML', $sDetalle);
+	$objResponse->call('pintarGraficosf2357('.json_encode($aDetalle).')');
 	$objResponse->assign('div_f2357grafico', 'innerHTML', $sHTMLMapa);
 	$objResponse->assign('div_f2357dashboard', 'style.display', 'block');
     $objResponse->script($sScriptMapa);
@@ -581,8 +617,8 @@ function f2357_HtmlGrafico($aParametros, $objGraficos, $bDebug=false){
     if (isset($opts[99])!=0){if ($opts[99]==1){$bDebug=true;}}
     require './app.php';
     $sDetalle=$objGraficos->construyeLienzo(400,500);
-	$aTitulos = array('ZCAR' => 'Zona Caribe', 'ZOCC' => 'Zona Occidente', 'ZCORI' => 'Zona Centro Oriente', 'ZCBOY' => 'Zona Centro Boyacá', 'ZCBOG' => 'Zona Centro Bogotá Cundinamarca', 'ZSUR' => 'Zona Sur', 'ZCSUR' => 'Zona Centro Sur', 'ZAO' => 'Zona Amazonas Orinoquia');
-	$aContenidoMapa = array('ZCAR' => '', 'ZOCC' => '', 'ZCORI' => '', 'ZCBOY' => '', 'ZCBOG' => '', 'ZSUR' => '', 'ZCSUR' => '', 'ZAO' => '');
+	$aTitulos = array('ZCAR' => 'Zona Caribe', 'ZOCC' => 'Zona Occidente', 'ZCORI' => 'Zona Centro Oriente', 'ZCBOY' => 'Zona Centro Boyac&aacute;', 'ZCBC' => 'Zona Centro Bogot&aacute; Cundinamarca', 'ZSUR' => 'Zona Sur', 'ZCSUR' => 'Zona Centro Sur', 'ZAO' => 'Zona Amazon&iacute;a Orinoqu&iacute;a');
+	$aContenidoMapa = array('ZCAR' => '', 'ZOCC' => '', 'ZCORI' => '', 'ZCBOY' => '', 'ZCBC' => '', 'ZSUR' => '', 'ZCSUR' => '', 'ZAO' => '');
 	foreach($aParametros as $sClave => $aValor) {		
 		$sEncabezadoTabla = '<h6>' . $sClave . ' - ' . $aValor['total'] . ' Matriculados</h6>
 		<table style=\"font-size:12px;\">

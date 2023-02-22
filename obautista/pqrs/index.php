@@ -26,6 +26,8 @@ if (!file_exists('./app.php')){
 	echo '<b>Error N 1 de instalaci&oacute;n</b><br>No se ha establecido un archivo de configuraci&oacute;n, por favor comuniquese con el administrador del sistema.';
 	die();
 	}
+mb_internal_encoding('UTF-8');
+require './app.php';
 //forzar a https
 $bAplicaGeo=true;
 $iHTTPS=0;
@@ -35,7 +37,6 @@ if (file_exists('./opts.php')){
 	$iHTTPS=$OPT->https;
 	}
 if ($iHTTPS==0){$bAplicaGeo=false;}
-require './app.php';
 $bPeticionXAJAX=false;
 if ($_SERVER['REQUEST_METHOD']=='POST'){if (isset($_POST['xjxfun'])){$bPeticionXAJAX=true;}}
 if (!$bPeticionXAJAX){$_SESSION['u_ultimominuto']=(date('W')*1440)+(date('H')*60)+date('i');}
@@ -47,16 +48,13 @@ require $APP->rutacomun . 'libhtml.php';
 require $APP->rutacomun . 'xajax/xajax_core/xajax.inc.php';
 require $APP->rutacomun . 'unad_xajax.php';
 // -- Se cargan los archivos de idioma
-if (isset($_SESSION['unad_idioma']) == 0) {
-	$_SESSION['unad_idioma'] = 'es';
-}
 $mensajes_todas = $APP->rutacomun . 'lg/lg_todas_' . $_SESSION['unad_idioma'] . '.php';
 if (!file_exists($mensajes_todas)) {
 	$mensajes_todas = $APP->rutacomun . 'lg/lg_todas_es.php';
 }
 $mensajes_3005 = $APP->rutacomun . 'lg/lg_3005_' . $_SESSION['unad_idioma'] . '.php';
 if (!file_exists($mensajes_3005)) {
-	$mensajes_3005 = 'lg/lg_3005_es.php';
+	$mensajes_3005 = $APP->rutacomun . 'lg/lg_3005_es.php';
 }
 require $mensajes_todas;
 require $mensajes_3005;
@@ -65,6 +63,8 @@ require 'lib3005_externa.php';
 
 $sError = '';
 $bEnSesion=false;
+if (isset($_SESSION['unad_id_tercero'])==0){$_SESSION['unad_id_tercero']=0;}
+if ($_SESSION['unad_id_tercero']==1){$_SESSION['unad_id_tercero']=0;}
 if ((int)$_SESSION['unad_id_tercero']!=0){$bEnSesion=true;}
 if ($bEnSesion){
 $iCodModulo=17;
@@ -189,6 +189,8 @@ $xajax = new xajax();
 $xajax->configure('javascript URI', $APP->rutacomun . 'xajax/');
 $xajax->register(XAJAX_FUNCTION, 'sesion_abandona_V2');
 $xajax->register(XAJAX_FUNCTION, 'f3005_HTMLOpcionInicial');
+$xajax->register(XAJAX_FUNCTION, 'f3005_IngresaAnonimo');
+$xajax->register(XAJAX_FUNCTION, 'f3005_ConsultaCodigo');
 $xajax->processRequest();
 $xajax->printJavascript($APP->rutacomun . 'xajax/');
 if ($bPeticionXAJAX){
@@ -289,6 +291,16 @@ if ($bEnSesion){
 			htmlToast.className = htmlToast.className.replace(/bg-\w+/g, 'bg-' + tipo);
 			document.getElementsByClassName('toast-body')[0].innerHTML = texto;
 			objToast.show();
+		}
+
+		function ingresaanonimo() {
+			xajax_f3005_IngresaAnonimo();
+		}
+
+		function enviacodigo() {
+			let $aParametros = new Array();
+			$aParametros[100] = window.document.frmcodigo.saui05numref.value;
+			xajax_f3005_ConsultaCodigo($aParametros);
 		}
 	</script>
 </head>

@@ -8,5 +8,8 @@ $btabla='saiu07anexos';
 $borigen='saiu07idorigen';
 $bidarchivo='saiu07idarchivo';
 $bidreg='saiu07id';
+$bfecha='saiu07fecha';
+$bhora='saiu07hora';
+$bminuto='saiu07minuto';
 $bunico=true;
 ?>
