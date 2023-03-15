@@ -6,7 +6,7 @@
 function limpia_saiu07idarchivo(){
 	window.document.frmedita.saiu07idorigen.value=0;
 	window.document.frmedita.saiu07idarchivo.value=0;
-	var da_Archivo=document.getElementById('div_saiu07idarchivo');
+	let da_Archivo=document.getElementById('div_saiu07idarchivo');
 	da_Archivo.innerHTML='&nbsp;';
 	verboton('beliminasaiu07idarchivo','none');
 	//paginarf0000();
@@ -16,21 +16,26 @@ function carga_saiu07idarchivo(saiu07id){
 	window.document.frmedita.div96v1.value='';
 	window.document.frmedita.div96v2.value='';
 	window.document.frmedita.div96v3.value='';
+	let agno=window.document.frmedita.saiu05agno.value;
+	let mes=window.document.frmedita.saiu05mes.value;
+	if (mes < 10) {
+		mes = '0' + mes;
+	}
 	document.getElementById('div_96titulo').innerHTML='<h2>'+window.document.frmedita.titulo_3005.value+' - Cargar archivo</h2>';
-	document.getElementById('div_96cuerpo').innerHTML='<iframe id="iframe96" src="framearchivodis.php?ref=3007&id='+saiu07id+'&tabla=_'+window.document.frmedita.saiu05agno.value+window.document.frmedita.saiu05mes.value+'" height="400px" width="100%" frameborder="0"></iframe>';
+	document.getElementById('div_96cuerpo').innerHTML='<iframe id="iframe96" src="framearchivodis.php?ref=3007&id='+saiu07id+'&tabla=_'+agno+mes+'" height="400px" width="100%" frameborder="0"></iframe>';
 	expandesector(96);
 	window.scrollTo(0, 150);
 	}
 function eliminasaiu07idarchivo(){
-	var did=window.document.frmedita.saiu07id;
+	let did=window.document.frmedita.saiu07id;
 	if (confirm("Esta seguro de eliminar el archivo?")){
 		xajax_elimina_archivo_saiu07idarchivo(did.value);
 		//paginarf0000();
 		}
 	}
 function guardaf3007(){
-	var params=new Array();
-	var valores=new Array();
+	let params=new Array();
+	let valores=new Array();
 	valores[1]=window.document.frmedita.saiu05id.value;
 	valores[2]=window.document.frmedita.saiu07consec.value;
 	valores[3]=window.document.frmedita.saiu07id.value;
@@ -56,10 +61,10 @@ function guardaf3007(){
 	xajax_f3007_Guardar(valores, params);
 	}
 function limpiaf3007(){
-	var sfbase=window.document.frmedita.shoy.value;
-	var iFechaBaseNum=window.document.frmedita.ihoy.value;
+	let sfbase=window.document.frmedita.shoy.value;
+	let iFechaBaseNum=window.document.frmedita.ihoy.value;
 	MensajeAlarmaV2('', 0);
-	var params=new Array();
+	let params=new Array();
 	xajax_f3007_PintarLlaves(params);
 	window.document.frmedita.saiu07idtipoanexo.value='';
 	window.document.frmedita.saiu07detalle.value='';
@@ -80,7 +85,7 @@ function limpiaf3007(){
 	verboton('belimina3007','none');
 	}
 function eliminaf3007(){
-	var params=new Array();
+	let params=new Array();
 	params[0]=window.document.frmedita.saiu05id.value;
 	params[1]=window.document.frmedita.saiu05id.value;
 	params[2]=window.document.frmedita.saiu07consec.value;
@@ -99,7 +104,7 @@ function eliminaf3007(){
 		}
 	}
 function revisaf3007(){
-	var params=new Array();
+	let params=new Array();
 	params[0]=1;
 	params[1]=window.document.frmedita.saiu05id.value;
 	params[2]=window.document.frmedita.saiu07consec.value;
@@ -113,14 +118,14 @@ function cargadatof3007(llave1){
 	revisaf3007();
 	}
 function cargaridf3007(llave1){
-	var params=new Array();
+	let params=new Array();
 	params[0]=2;
 	params[103]=llave1;
 	xajax_f3007_Traer(params);
 	expandepanel(3007,'block',0);
 	}
 function paginarf3007(){
-	var params=new Array();
+	let params=new Array();
 	params[0]=window.document.frmedita.saiu05id.value;
 	params[97]=window.document.frmedita.saiu05agno.value;
 	params[98]=window.document.frmedita.saiu05mes.value;

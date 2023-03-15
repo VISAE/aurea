@@ -412,10 +412,10 @@ if (isset($_REQUEST['saiu05infocomplemento']) == 0) {
 	$_REQUEST['saiu05infocomplemento'] = '';
 }
 if (isset($_REQUEST['saiu05idunidadresp']) == 0) {
-	$_REQUEST['saiu05idunidadresp'] = '';
+	$_REQUEST['saiu05idunidadresp'] = 0;
 }
 if (isset($_REQUEST['saiu05idequiporesp']) == 0) {
-	$_REQUEST['saiu05idequiporesp'] = '';
+	$_REQUEST['saiu05idequiporesp'] = 0;
 }
 if (isset($_REQUEST['saiu05idsupervisor']) == 0) {
 	$_REQUEST['saiu05idsupervisor'] = 0;
@@ -887,6 +887,8 @@ if (($_REQUEST['paso'] == 10) || ($_REQUEST['paso'] == 12)) {
 	if ($sError == '') {
 		$sError = '<b>' . $ETI['msg_itemguardado'] . '</b>';
 		$iTipoError = 1;
+	} else {
+		$_REQUEST['saiu05estado'] = -1;
 	}
 }
 // Cambio de consecutivo.
@@ -982,8 +984,8 @@ if ($_REQUEST['paso'] == -1) {
 	$_REQUEST['saiu05numref'] = '';
 	$_REQUEST['saiu05detalle'] = '';
 	$_REQUEST['saiu05infocomplemento'] = '';
-	$_REQUEST['saiu05idunidadresp'] = '';
-	$_REQUEST['saiu05idequiporesp'] = '';
+	$_REQUEST['saiu05idunidadresp'] = 0;
+	$_REQUEST['saiu05idequiporesp'] = 0;
 	$_REQUEST['saiu05idsupervisor'] = 0; //$idTercero;
 	$_REQUEST['saiu05idsupervisor_td'] = $APP->tipo_doc;
 	$_REQUEST['saiu05idsupervisor_doc'] = '';
@@ -1732,7 +1734,7 @@ if ($_REQUEST['saiu05estado'] == 0) {
 if ($_REQUEST['paso'] != 0) {
 ?>
 <script language="javascript" src="<?php echo $APP->rutacomun; ?>jsi/js3006.js?v=1"></script>
-<script language="javascript" src="<?php echo $APP->rutacomun; ?>jsi/js3007.js"></script>
+<script language="javascript" src="<?php echo $APP->rutacomun; ?>jsi/js3007.js?v=1"></script>
 <form id="frmimpp" name="frmimpp" method="post" action="<?php echo $APP->rutacomun; ?>p3005.php" target="_blank">
 <input id="r" name="r" type="hidden" value="3005" />
 <input id="id3005" name="id3005" type="hidden" value="<?php echo $_REQUEST['saiu05id']; ?>" />
@@ -1903,7 +1905,7 @@ echo html_oculto('saiu05dia', $_REQUEST['saiu05dia'], $et_saiu05dia);
 ?>
 </label>
 </label>
-<label class="Label200">
+<label class="Label220">
 <label class="Label60">
 <?php
 echo $ETI['saiu05hora'];
@@ -1946,7 +1948,7 @@ echo '<b>' . $sNumSol . '</b>';
 <input id="saiu05mes" name="saiu05mes" type="hidden" value="<?php echo $_REQUEST['saiu05mes']; ?>" />
 <input id="saiu05tiporadicado" name="saiu05tiporadicado" type="hidden" value="<?php echo $_REQUEST['saiu05tiporadicado']; ?>" />
 <input id="saiu05consec" name="saiu05consec" type="hidden" value="<?php echo $_REQUEST['saiu05consec']; ?>" />
-<label class="Label200">
+<label class="Label220">
 <label class="Label60">
 <?php
 echo $ETI['saiu05id'];
@@ -2156,6 +2158,9 @@ echo $html_saiu05rptaforma;
 <div class="salto1px"></div>
 <?php
 $sEstilo = ' style="display:none"';
+if ($_REQUEST['saiu05rptaforma'] == 1) {
+	$sEstilo = ' style="display:block"';
+}
 ?>
 <div id="div_saiu05rptacorreo" <?php echo $sEstilo; ?>>
 <label class="Label250">
@@ -2167,6 +2172,12 @@ echo $ETI['saiu05rptacorreo'];
 <input id="saiu05rptacorreo" name="saiu05rptacorreo" type="text" value="<?php echo $_REQUEST['saiu05rptacorreo']; ?>" maxlength="50" placeholder="<?php echo $ETI['ing_campo'] . $ETI['saiu05rptacorreo']; ?>" />
 </label>
 </div>
+<?php
+$sEstilo = ' style="display:none"';
+if ($_REQUEST['saiu05rptaforma'] == 2) {
+	$sEstilo = ' style="display:block"';
+}
+?>
 <div id="div_saiu05rptadireccion" <?php echo $sEstilo; ?>>
 <label class="L">
 <?php
@@ -2294,30 +2305,6 @@ echo html_DivTerceroV2('saiu05idinteresado', $_REQUEST['saiu05idinteresado_td'],
 
 
 
-<?php
-if (false) {
-?>
-<div class="GrupoCampos450">
-<label class="TituloGrupo">
-<?php
-echo $ETI['saiu05idresponsable'];
-?>
-</label>
-<div class="salto1px"></div>
-<input id="saiu05idresponsable" name="saiu05idresponsable" type="hidden" value="<?php echo $_REQUEST['saiu05idresponsable']; ?>" />
-<div id="div_saiu05idresponsable_llaves">
-<?php
-$bOculto = true;
-echo html_DivTerceroV2('saiu05idresponsable', $_REQUEST['saiu05idresponsable_td'], $_REQUEST['saiu05idresponsable_doc'], $bOculto, 0, $ETI['ing_doc']);
-?>
-</div>
-<div class="salto1px"></div>
-<div id="div_saiu05idresponsable" class="L"><?php echo $saiu05idresponsable_rs; ?></div>
-<div class="salto1px"></div>
-</div>
-<?php
-}
-?>
 </div>
 <div class="salto1px"></div>
 <label class="txtAreaS">
@@ -2622,7 +2609,7 @@ if ($_REQUEST['paso'] == 0) {
 <label class="Label320"></label>
 <label class="Label60"></label>
 <label class="Label160">
-<input id="cmdGuardar" name="cmdGuardar" type="button" class="BotonAzul160" value="Guardar" onclick="enviaguardar();" title="Guardar" />
+<input id="cmdGuardar" name="cmdGuardar" type="button" class="BotonAzul160" value="<?php echo $ETI['bt_guardar']; ?>" onclick="enviaguardar();" title="<?php echo $ETI['bt_guardar']; ?>" />
 </label>
 <div class="salto1px"></div>
 <?php
@@ -2633,7 +2620,7 @@ if ($_REQUEST['paso'] == 0) {
 <label class="Label320"></label>
 <label class="Label60"></label>
 <label class="Label160">
-<input id="cmdSolicitar" name="cmdSolicitar" type="button" class="BotonAzul160" value="Solicitar" onclick="enviacerrar();" title="Solicitar" />
+<input id="cmdSolicitar" name="cmdSolicitar" type="button" class="BotonAzul160" value="<?php echo $ETI['bt_solicitar']; ?>" onclick="enviacerrar();" title="<?php echo $ETI['bt_solicitar']; ?>" />
 </label>
 <div class="salto1px"></div>
 <?php
@@ -2776,6 +2763,10 @@ echo $sTabla3006;
 <?php
 }
 ?>
+<input id="saiu05idunidadresp" name="saiu05idunidadresp" type="hidden" value="<?php echo $_REQUEST['saiu05idunidadresp']; ?>" />
+<input id="saiu05idequiporesp" name="saiu05idequiporesp" type="hidden" value="<?php echo $_REQUEST['saiu05idequiporesp']; ?>" />
+<input id="saiu05idsupervisor" name="saiu05idsupervisor" type="hidden" value="<?php echo $_REQUEST['saiu05idsupervisor']; ?>" />
+<input id="saiu05idresponsable" name="saiu05idresponsable" type="hidden" value="<?php echo $_REQUEST['saiu05idresponsable']; ?>" />
 <?php
 if (false) {
 	//Ejemplo de boton de ayuda
@@ -3038,7 +3029,7 @@ ter_muestra('saiu05idsolicitante', 0);
 <script>
 $().ready(function() {
 <?php
-if ($_SESSION['unad_id_tercero'] == 1) {
+if ($_SESSION['unad_id_tercero'] == 1 && $_REQUEST['saiu05estado'] == -1) {
 ?>
 ModalMensaje("<?php echo $ETI['msg_anonimo']; ?>");
 <?php

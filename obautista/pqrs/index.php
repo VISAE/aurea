@@ -411,13 +411,14 @@ if ($bEnSesion){
 								</div>
 							</div>
 						</div>
+						<div id="div_mensajes" class="text-center"></div>
 						<?php
 						?>
 					</div>
 					<!-- end form area -->
 				</div>
 				<!-- toast -->
-				<div style="position: fixed; top: 80%; right: 0; padding:5px;">
+				<div style="position: fixed; top: 40%; right: 0; padding:5px;">
 					<div id="liveToast" class="toast align-items-center text-white bg-primary border-0" role="alert" aria-live="assertive" aria-atomic="true" data-delay="5000">
 						<div class="d-flex">
 							<div class="toast-body">

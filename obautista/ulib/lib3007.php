@@ -262,7 +262,7 @@ function f3007_TablaDetalleV2($aParametros, $objDB, $bDebug=false){
 	$idTercero=$aParametros[100];
 	$pagina=$aParametros[101];
 	$lineastabla=$aParametros[102];
-	$bAbierta=true;
+	$bAbierta=false;
 	//$sSQL='SELECT Campo FROM saiu05solicitud WHERE saiu05id='.$saiu05id;
 	//$tabla=$objDB->ejecutasql($sSQL);
 	//if ($objDB->nf($tabla)>0){
@@ -286,7 +286,7 @@ function f3007_TablaDetalleV2($aParametros, $objDB, $bDebug=false){
 				$bConBotonesDoc=true;
 				$bAbierta=true;
 				}
-			if ($fila['saiu05estado']==0){$bConRevision=true;}
+			if ($fila['saiu05estado']==2){$bConRevision=true;}
 			// if ($fila['saiu05estado']==5){$bConBotonesDoc=true;}
 			// if ($fila['saiu05estado']==6){$bConEditar=true;}
 			}
@@ -724,6 +724,81 @@ function f3007_PintarLlaves($aParametros){
 // -----------------------------------
 // ---- Funciones personalizadas  ----
 // -----------------------------------
+function f3007_CargarDocumentos($iAgno, $iMes, $saiu05id, $objDB, $bDebug = false, $bForzar = false)
+{
+	$sError = '';
+	$sDebug = '';
+	$sTabla05 = 'saiu05solicitud'.f3000_Contenedor($iAgno,$iMes);
+	$sTabla07 = 'saiu07anexos'.f3000_Contenedor($iAgno,$iMes);
+	if (!$objDB->bexistetabla($sTabla05)) {
+		$sError = 'No ha sido posible acceder al contenedor de datos';
+	} else {
+	}
+	if ($sError == '') {
+		$sSQL = 'SELECT saiu07id, saiu07idarchivo FROM ' . $sTabla07 . ' WHERE saiu07idsolicitud=' . $saiu05id . ';';
+		$tabla = $objDB->ejecutasql($sSQL);
+		if ($objDB->nf($tabla) > 0) {
+			$sError = 'Ya existen documentos cargados.';
+			$sWhere = '';
+			while ($fila = $objDB->sf($tabla)) {
+				if ($fila['saiu07idarchivo'] != 0) {
+					if ($sWhere==''){
+						$sWhere=$sWhere.'WHERE saiu07id IN (';
+					} else {
+						$sWhere=$sWhere.', ';
+					}
+					$sWhere=$sWhere.$fila['saiu07id'];
+				}
+			}
+			if ($sWhere != '') {
+				$sWhere=$sWhere.')';
+				$sSQL = 'UPDATE ' . $sTabla07 . ' SET saiu07estado=1 ' . $sWhere . ';';
+				$result = $objDB->ejecutasql($sSQL);
+				if ($result==false){
+					$sError=$sError . '<br>Falla cambio de estado anexos ';
+				}
+			}
+		}
+		$sDebug = $sDebug . fecha_microtiempo() . ' documentos cargados: ' . $sSQL . '<br>';
+	}
+	if ($sError == '') {
+		$sSQL = 'SELECT saiu05idsolicitante, saiu05idtemaorigen FROM ' . $sTabla05 . ' WHERE saiu05id=' . $saiu05id . '';
+		$tabla = $objDB->ejecutasql($sSQL);
+		if ($objDB->nf($tabla) > 0) {
+			$fila = $objDB->sf($tabla);
+			$saiu04idtema = $fila['saiu05idtemaorigen'];
+			$saiu07idusuario = $fila['saiu05idsolicitante'];
+		} else {
+			$sError = 'No se ha encontrado el registro solicitado [Ref ' . $saiu05id . ' A&ntilde;o ' . $iAgno . '-' . $iMes . ']';
+		}
+		$sDebug = $sDebug . fecha_microtiempo() . ' id solicitante: ' . $sSQL . '<br>';
+	}
+	if ($sError == '') {
+		$sCampos3007 = '  saiu07idsolicitud, saiu07consec, saiu07id, saiu07idtipoanexo, saiu07detalle, 
+		saiu07idorigen, saiu07idarchivo, saiu07idusuario, saiu07fecha, saiu07hora, saiu07minuto, 
+		saiu07estado, saiu07idvalidad, saiu07fechavalida, saiu07horavalida, saiu07minvalida';
+		$saiu07consec = tabla_consecutivo($sTabla07, 'saiu07consec', 'saiu07idsolicitud=' . $saiu05id . '', $objDB);
+		$saiu07id = tabla_consecutivo($sTabla07, 'saiu07id', '', $objDB);
+		$sSQL = 'SELECT saiu04id, saiu04obligatorio 
+		FROM saiu04temaanexo 
+		WHERE saiu04idtema=' . $saiu04idtema . ' AND saiu04activo="S" 
+		ORDER BY saiu04orden';
+		$tabla = $objDB->ejecutasql($sSQL);
+		while ($fila = $objDB->sf($tabla)) {
+			$sValores3007 = '' . $saiu05id . ', ' . $saiu07consec . ', ' . $saiu07id . ', ' . $fila['saiu04id'] . ', "", 
+			0, 0, ' . $saiu07idusuario . ', 0, 0, 0,
+			0, 0, 0, 0, 0';
+			$sSQL = 'INSERT INTO ' . $sTabla07 . ' (' . $sCampos3007 . ') VALUES (' . $sValores3007 . ');';
+			$result = $objDB->ejecutasql($sSQL);
+			if ($bDebug) {
+				$sDebug = $sDebug . fecha_microtiempo() . ' Insertando: ' . $sSQL . '<br>';
+			}
+			$saiu07consec++;
+			$saiu07id++;
+		}
+	}
+	return array($sError, $sDebug);
+}
 function f3007_AprobarDocumento($aParametros){
 	$_SESSION['u_ultimominuto']=iminutoavance();
 	require './app.php';

@@ -65,14 +65,17 @@ function f3005_HTMLOpcionInicial($aParametros) {
                 $sScript = $sScript . 'window.location.href="saipqrs.php";';
             } else {
                 $sHTML = $sHTML . '<div class="form-group row">
+                    <div class="col-sm-12 pt-2">' . $ETI['msg_iracampus'] . '</div>
                     <div class="col-sm-12">
                         <a id="cmdIrACampus" name="cmdIrACampus" class="btn btn-aurea w-50" title="' . $ETI['bt_campus'] . '" href="./login.php">' . $ETI['bt_campus'] . '</a>
                     </div>
+					<div class="col-sm-12 pt-2">' . $ETI['msg_irainscribirse'] . '</div>
                     <div class="col-sm-12">
-                        <a id="cmdIrAInscribirse" name="cmdIrAInscribirse" class="btn btn-aurea w-50 mt-2" title="' . $ETI['bt_inscribirse'] . '" href="https://campus0d.unad.edu.co/campus/inscripcion.php">' . $ETI['bt_inscribirse'] . '</a>
+                        <a id="cmdIrAInscribirse" name="cmdIrAInscribirse" class="btn btn-aurea w-50" title="' . $ETI['bt_inscribirse'] . '" href="https://campus0d.unad.edu.co/campus/inscripcion.php">' . $ETI['bt_inscribirse'] . '</a>
                     </div>
+					<div class="col-sm-12 pt-2">' . $ETI['msg_iranonimo'] . '</div>
                     <div class="col-sm-12">
-                        <a id="cmdIrAAnonimo" name="cmdIrAAnonimo" class="btn btn-aurea w-50 mt-2" title="' . $ETI['bt_anonimo'] . '" href="javascript:;" onclick="ingresaanonimo();">' . $ETI['bt_anonimo'] . '</a>
+                        <a id="cmdIrAAnonimo" name="cmdIrAAnonimo" class="btn btn-aurea w-50" title="' . $ETI['bt_anonimo'] . '" href="javascript:;" onclick="ingresaanonimo();">' . $ETI['bt_anonimo'] . '</a>
                     </div>
                 </div>';
             }
@@ -142,6 +145,8 @@ function f3005_ConsultaCodigo($aParametros) {
 	}
 	$sError = '';
 	$sHTML = '';
+	$sHTMLMsg = '';
+	$sTipoMsg = '';
 	$sSepara = ' ';
 	if (isset($aParametros[100]) == 0) {
 		$aParametros[100] = '';
@@ -149,6 +154,8 @@ function f3005_ConsultaCodigo($aParametros) {
 	$saui05numref = cadena_Validar($aParametros[100], true);
 	if (true) {
 		if ($saui05numref == '') {
+			$sTipoMsg = 'danger';
+			$sHTMLMsg = $ERR['codigo'];
 			$sError = $ERR['saiu05refdoc'] . $sSepara . $sError;
 		}
 		//Fin de las valiaciones NO LLAVE.
@@ -156,12 +163,16 @@ function f3005_ConsultaCodigo($aParametros) {
 	if($sError == '') {
 		$aCodigo = explode('-',$saui05numref);
 		if (count($aCodigo) < 3) {
-			$sError = 'Codigo incorrecto.';
+			$sTipoMsg = 'danger';
+			$sHTMLMsg = $ERR['codigo'];
+			$sError = $ERR['codigo'];
 		} else {
 			$sTabla05 = 'saiu05solicitud_' . $aCodigo[0];
 			$sIdSolicitiud = $aCodigo[1];
 			if (!$objDB->bexistetabla($sTabla05)) {
-				$sError = 'No ha sido posible acceder al contenedor de datos';
+				$sTipoMsg = 'danger';
+				$sHTMLMsg = $ERR['contenedor'];
+				$sError = $ERR['contenedor'];
 			} else {
 				$sSQL = 'SELECT 1 FROM ' . $sTabla05 . ' WHERE saiu05id = ' . $sIdSolicitiud . ' AND saiu05numref = "' . $saui05numref . '"';
 				$tabla = $objDB->ejecutasql($sSQL);
@@ -182,7 +193,7 @@ function f3005_ConsultaCodigo($aParametros) {
 							$sHTML = $sHTML . '<tr>
 							<td>' . $fila['saiu06consec'] . '</td>
 							<td>' . $fila['saiu06anotacion'] . '</td>
-							<td>' . $fila['saiu06fecha'] . '</td>
+							<td>' . formato_FechaLargaDesdeNumero($fila['saiu06fecha']) . '</td>
 							</tr>';
 						}
 						$sHTML = $sHTML . '</tbody></table>
@@ -192,10 +203,26 @@ function f3005_ConsultaCodigo($aParametros) {
 							</div>
 						</div>';
 					} else {
-						$sError = 'No se han registrado anotaciones';
+						$sError = $ERR['encontrado'];
+					}
+					$sTablaSolicitud05 = 'saiu05solicitud_' . $aCodigo[0];
+					$sSQL = 'SELECT TB.saiu05dia, TB.saiu05hora, TB.saiu05minuto, T1.`saiu11nombre`
+					FROM ' . $sTablaSolicitud05 . ' AS TB, saiu11estadosol AS T1
+					WHERE TB.saiu05estado=T1.saiu11id AND TB.saiu05id = ' . $sIdSolicitiud . '';
+					$tabla = $objDB->ejecutasql($sSQL);
+					if ($fila = $objDB->sf($tabla)) {
+						$sEstado = $fila['saiu11nombre'];
+						if ($fila['saiu05dia'] < 10) {
+							$fila['saiu05dia'] = '0'.$fila['saiu05dia'];
+						}
+						$sFechaRad = formato_FechaLargaDesdeNumero($aCodigo[0].$fila['saiu05dia']);
+						$sTipoMsg = 'success';
+						$sHTMLMsg = 'La PQRS se encuentra en estado ' . $sEstado . '<br>Fecha de radicado: ' . $sFechaRad . '';						
 					}
 				} else {
-					$sError = 'Codigo incorrecto.';
+					$sTipoMsg = 'danger';
+					$sHTMLMsg = $ERR['codigo'];
+					$sError = $ERR['codigo'];
 				}
 			}
 		}
@@ -204,9 +231,11 @@ function f3005_ConsultaCodigo($aParametros) {
     if($sError == '') {
         // $objResponse->script($sScript);
         $objResponse->assign('div_saiu05rutaspqrs', 'innerHTML', $sHTML);
-    } else {
-        $objResponse->call('muestramensajes("danger", "' . $sError . '")');
+		$sError = $ERR['encontrado'];
     }
+	$objResponse->call('muestramensajes("' . $sTipoMsg . '", "' . $sError . '")');
+	$objResponse->assign('div_mensajes','className','p-3 mb-2 bg-' . $sTipoMsg . ' text-white text-center');
+	$objResponse->assign('div_mensajes','innerHTML',$sHTMLMsg);
     return $objResponse;
 }
 function f3005_db_Guardar($DATA, $objDB, $bDebug=false){
@@ -320,6 +349,17 @@ function f3005_db_Guardar($DATA, $objDB, $bDebug=false){
 		if ($DATA['saiu05idcategoria']==''){$sError=$ERR['saiu05idcategoria'].$sSepara.$sError;}
 		//Fin de las valiaciones NO LLAVE.
 		}
+	if ($DATA['saiu05rptaforma']==0) {
+		$DATA['saiu05rptacorreo'] = '';
+		$DATA['saiu05rptadireccion'] = '';
+	}
+	$saiu05idunidadresp = $DATA['saiu05idunidadresp'];
+	$saiu05idequiporesp = $DATA['saiu05idequiporesp'];
+	$saiu05idsupervisor = $DATA['saiu05idsupervisor'];
+	$saiu05idresponsable = $DATA['saiu05idresponsable'];
+	$sTabla05='saiu05solicitud'.f3000_Contenedor($DATA['saiu05agno'],$DATA['saiu05mes']);
+	$sTabla09='saiu09cambioestado'.f3000_Contenedor($DATA['saiu05agno'],$DATA['saiu05mes']);
+	$saiu05estadoorigen=-1;
 	//Valiaciones de campos obligatorios en todo guardar.
 	// -- Se verifican los valores de campos de otras tablas.
 	if ($DATA['saiu05idresponsable_doc']!=''){
@@ -344,11 +384,6 @@ function f3005_db_Guardar($DATA, $objDB, $bDebug=false){
 			}
 		}
 	if ($sError==''){
-		if(strlen($DATA['saiu05mes'])==2){
-			$sTabla05='saiu05solicitud_'.$DATA['saiu05agno'].$DATA['saiu05mes'];
-			}else{
-			$sTabla05='saiu05solicitud_'.$DATA['saiu05agno'].'0'.$DATA['saiu05mes'];
-			}
 		if ($DATA['paso']==10){
 			//El codigo no es posible que sea puesto por nadie.
 			//$bQuitarCodigo=true;
@@ -375,6 +410,67 @@ function f3005_db_Guardar($DATA, $objDB, $bDebug=false){
 			if ($DATA['saiu05id']==-1){$sError=$objDB->serror;}
 			}
 		}
+	if ($sError==''){
+		if ($DATA['saiu05estado'] < 0){
+			$saiu05idunidadresp = 0;
+			$saiu05idequiporesp = 0;
+			$saiu05idsupervisor = 0;
+			$saiu05idresponsable = 0;
+			$sSQL = 'SELECT saiu03idunidadresp1, saiu03idequiporesp1, saiu03idliderrespon1
+			FROM saiu03temasol
+			WHERE saiu03id = ' . $DATA['saiu05idtemaorigen'] . '';
+			if ($bDebug) {
+				$sDebug = $sDebug . fecha_microtiempo() . ' Consulta responsable solicitud ' . $sSQL . '<br>';
+			}
+			$tabla = $objDB->ejecutasql($sSQL);
+			if ($objDB->nf($tabla) > 0) {
+				$fila = $objDB->sf($tabla);
+				$saiu05idunidadresp = $fila['saiu03idunidadresp1'];
+				$saiu05idequiporesp = $fila['saiu03idequiporesp1'];
+				$saiu05idsupervisor = $fila['saiu03idliderrespon1'];
+				if ($saiu05idequiporesp > 0) {
+					$sSQL = 'SELECT bita28idtercero
+					FROM bita28eqipoparte
+					WHERE bita28idequipotrab = ' . $saiu05idequiporesp . ' AND bita28activo = "S"' . '';
+					$tabla = $objDB->ejecutasql($sSQL);
+					if ($objDB->nf($tabla) > 0) {
+						$aEquipo = array();
+						$sEquipo = '';
+						while ($fila = $objDB->sf($tabla)) {
+							$aEquipo[] = $fila['bita28idtercero'];
+						}
+						$sEquipo = implode(',',$aEquipo);
+						$sSQL = 'SELECT saiu05idresponsable, COUNT(saiu05id) AS asignaciones
+						FROM ' . $sTabla05 . '
+						WHERE saiu05idresponsable IN (' . $sEquipo . ')
+						GROUP BY saiu05idresponsable
+						ORDER BY asignaciones';
+						$tabla = $objDB->ejecutasql($sSQL);
+						$iResponsables = $objDB->nf($tabla);
+						if ($iResponsables > 0) {
+							$aResponsables = array();
+							while($fila = $objDB->sf($tabla)) {
+								$aResponsables[] = $fila['saiu05idresponsable'];
+							}
+							shuffle($aResponsables);
+							if ($iResponsables >= count($aEquipo)) {
+								$saiu05idresponsable = $aResponsables[0];
+							} else {
+								$aSinAsignar = array_values(array_diff($aEquipo, $aResponsables));
+								shuffle($aSinAsignar);
+								$saiu05idresponsable = $aSinAsignar[0];
+							}
+						}
+					}
+				}
+				if ($bDebug) {
+					$sDebug = $sDebug . fecha_microtiempo() . ' Unidad - Equipo - Lider - Responsable ' . $saiu05idunidadresp .' - '. $saiu05idequiporesp .' - '. $saiu05idsupervisor .' - '. $saiu05idresponsable . '<br>';
+				}
+			} else {
+				$sError = $sError . 'No se ha configurado el tema de solicitud.';
+			}
+		}
+	}
 	$bCalularTotales=false;
 	if ($sError==''){
 		if (get_magic_quotes_gpc()==1){$DATA['saiu05detalle']=stripslashes($DATA['saiu05detalle']);}
@@ -389,59 +485,11 @@ function f3005_db_Guardar($DATA, $objDB, $bDebug=false){
 		//Si el campo saiu05respuesta permite html quite la linea htmlspecialchars para el campo y habilite la siguiente linea:
 		//$saiu05respuesta=addslashes($DATA['saiu05respuesta']);
 		$saiu05respuesta=str_replace('"', '\"', $DATA['saiu05respuesta']);
-		$idunidad = 0;
-		$idgrupotrabajo = 0;
-		$idresponsable = 0;
-		$sSQL = 'SELECT saiu03idunidadresp1, saiu03idequiporesp1, saiu03idliderrespon1
-		FROM saiu03temasol
-		WHERE saiu03id = ' . $DATA['saiu05idtemaorigen'] . '';
-		if ($bDebug) {
-			$sDebug = $sDebug . fecha_microtiempo() . ' Consulta responsable solicitud ' . $sSQL . '<br>';
-		}
-		$tabla = $objDB->ejecutasql($sSQL);
-		if ($objDB->nf($tabla) > 0) {
-			$fila = $objDB->sf($tabla);
-			$idunidad = $fila['saiu03idunidadresp1'];
-			$idgrupotrabajo = $fila['saiu03idequiporesp1'];
-			$idresponsable = $fila['saiu03idliderrespon1'];
-			if ($idgrupotrabajo > 0) {
-				$sSQL = 'SELECT bita28idtercero
-				FROM bita28eqipoparte
-				WHERE bita28idequipotrab = ' . $idgrupotrabajo . ' AND bita28activo = "S"' . '';
-				$tabla = $objDB->ejecutasql($sSQL);
-				if ($objDB->nf($tabla) > 0) {
-					$aEquipo = array();
-					$sEquipo = '';
-					while ($fila = $objDB->sf($tabla)) {
-						$aEquipo[] = $fila['bita28idtercero'];
-					}
-					$sEquipo = implode(',',$aEquipo);
-					$sSQL = 'SELECT saiu05idresponsable, COUNT(saiu05id) AS asignaciones
-					FROM ' . $sTabla05 . '
-					WHERE saiu05idresponsable IN (' . $sEquipo . ')
-					GROUP BY saiu05idresponsable
-					ORDER BY asignaciones';
-					$tabla = $objDB->ejecutasql($sSQL);
-					$iResponsables = $objDB->nf($tabla);
-					if ($iResponsables >= count($aEquipo)) {
-						$fila = $objDB->sf($tabla);
-						$idresponsable = $fila['saiu05idresponsable'];
-					} else {
-						$aResponsables = array();
-						while($fila = $objDB->sf($tabla)) {
-							$aResponsables[] = $fila['saiu05idresponsable'];
-						}
-						$aSinAsignar = array_values(array_diff($aEquipo, $aResponsables));
-						$idresponsable = $aSinAsignar[0];
-					}
-				}
-			}
-		}
 		$bpasa=false;
 		if ($DATA['paso']==10){
-			$DATA['saiu05agno']=fecha_agno();
-			$DATA['saiu05mes']=fecha_mes();
-			$DATA['saiu05dia']=fecha_dia();
+			$DATA['saiu05agno']=(int)fecha_agno();
+			$DATA['saiu05mes']=(int)fecha_mes();
+			$DATA['saiu05dia']=(int)fecha_dia();
 			$DATA['saiu05origenagno']=0;
 			$DATA['saiu05origenmes']=0;
 			$DATA['saiu05origenid']=0;
@@ -457,7 +505,7 @@ function f3005_db_Guardar($DATA, $objDB, $bDebug=false){
 			$DATA['saiu05prioridad']=0;
 			$DATA['saiu05idzona']=0;
 			$DATA['saiu05cead']=0;
-			$DATA['saiu05numref']=$DATA['saiu05agno'].$DATA['saiu05mes'].'-'.$DATA['saiu05id'].'-'.strtoupper(substr(str_shuffle(md5($DATA['saiu05id'])),0,5));
+			$DATA['saiu05numref']=fecha_agno().fecha_mes().'-'.$DATA['saiu05id'].'-'.strtoupper(substr(str_shuffle(md5($DATA['saiu05id'])),0,5));
 			$DATA['saiu05idescuela']=0;
 			$DATA['saiu05idprograma']=0;
 			$DATA['saiu05idperiodo']=0;
@@ -468,16 +516,17 @@ function f3005_db_Guardar($DATA, $objDB, $bDebug=false){
 			$DATA['saiu05fecharespprob']=0; //fecha_hoy();
 			$DATA['saiu05numradicado']=0;
 			// $DATA['saiu05idcategoria']=0;
-			$DATA['saiu05idunidadresp']=$idunidad;
-			$DATA['saiu05idequiporesp']=$idgrupotrabajo;
-			$DATA['saiu05idresponsable']=$idresponsable;
+			$DATA['saiu05idunidadresp']=$saiu05idunidadresp;
+			$DATA['saiu05idequiporesp']=$saiu05idequiporesp;
+			$DATA['saiu05idsupervisor']=$saiu05idsupervisor;
+			$DATA['saiu05idresponsable']=$saiu05idresponsable;
 			$sCampos3005='saiu05agno, saiu05mes, saiu05tiporadicado, saiu05consec, saiu05id, 
 saiu05origenagno, saiu05origenmes, saiu05origenid, saiu05dia, saiu05hora, 
 saiu05minuto, saiu05estado, saiu05idmedio, saiu05idtiposolorigen, saiu05idtemaorigen, 
 saiu05idtemafin, saiu05idtiposolfin, saiu05idsolicitante, saiu05idinteresado, saiu05tipointeresado, 
 saiu05rptaforma, saiu05rptacorreo, saiu05rptadireccion, saiu05costogenera, saiu05costovalor, 
 saiu05costorefpago, saiu05prioridad, saiu05idzona, saiu05cead, saiu05numref, 
-saiu05detalle, saiu05infocomplemento, saiu05idunidadresp, saiu05idequiporesp, saiu05idresponsable, saiu05idescuela, saiu05idprograma, 
+saiu05detalle, saiu05infocomplemento, saiu05idunidadresp, saiu05idequiporesp, saiu05idsupervisor, saiu05idresponsable, saiu05idescuela, saiu05idprograma, 
 saiu05idperiodo, saiu05idcurso, saiu05idgrupo, saiu05tiemprespdias, saiu05tiempresphoras, 
 saiu05fecharespprob, saiu05respuesta, saiu05idmoduloproc, saiu05identificadormod, saiu05numradicado, saiu05idcategoria';
 			$sValores3005=''.$DATA['saiu05agno'].', '.$DATA['saiu05mes'].', '.$DATA['saiu05tiporadicado'].', '.$DATA['saiu05consec'].', '.$DATA['saiu05id'].', 
@@ -486,7 +535,7 @@ saiu05fecharespprob, saiu05respuesta, saiu05idmoduloproc, saiu05identificadormod
 '.$DATA['saiu05idtemafin'].', '.$DATA['saiu05idtiposolfin'].', '.$DATA['saiu05idsolicitante'].', '.$DATA['saiu05idinteresado'].', '.$DATA['saiu05tipointeresado'].', 
 '.$DATA['saiu05rptaforma'].', "'.$DATA['saiu05rptacorreo'].'", "'.$DATA['saiu05rptadireccion'].'", '.$DATA['saiu05costogenera'].', '.$DATA['saiu05costovalor'].', 
 "'.$DATA['saiu05costorefpago'].'", '.$DATA['saiu05prioridad'].', '.$DATA['saiu05idzona'].', '.$DATA['saiu05cead'].', "'.$DATA['saiu05numref'].'", 
-"'.$saiu05detalle.'", "'.$saiu05infocomplemento.'", '.$DATA['saiu05idunidadresp'].', '.$DATA['saiu05idequiporesp'].', '.$DATA['saiu05idresponsable'].', '.$DATA['saiu05idescuela'].', '.$DATA['saiu05idprograma'].', 
+"'.$saiu05detalle.'", "'.$saiu05infocomplemento.'", '.$DATA['saiu05idunidadresp'].', '.$DATA['saiu05idequiporesp'].', '.$DATA['saiu05idsupervisor'].', '.$DATA['saiu05idresponsable'].', '.$DATA['saiu05idescuela'].', '.$DATA['saiu05idprograma'].', 
 '.$DATA['saiu05idperiodo'].', '.$DATA['saiu05idcurso'].', '.$DATA['saiu05idgrupo'].', '.$DATA['saiu05tiemprespdias'].', '.$DATA['saiu05tiempresphoras'].', 
 "'.$DATA['saiu05fecharespprob'].'", "'.$saiu05respuesta.'", '.$DATA['saiu05idmoduloproc'].', '.$DATA['saiu05identificadormod'].', '.$DATA['saiu05numradicado'].', '.$DATA['saiu05idcategoria'].'';
 			if ($APP->utf8==1){
@@ -510,8 +559,9 @@ saiu05fecharespprob, saiu05respuesta, saiu05idmoduloproc, saiu05identificadormod
 			$scampo[9]='saiu05detalle';
 			$scampo[10]='saiu05idunidadresp';
 			$scampo[11]='saiu05idequiporesp';
-			$scampo[12]='saiu05idresponsable';
-			$scampo[13]='saiu05estado';
+			$scampo[12]='saiu05idsupervisor';
+			$scampo[13]='saiu05idresponsable';
+			$scampo[14]='saiu05estado';
 			$sdato[1]=$DATA['saiu05dia'];
 			$sdato[2]=$DATA['saiu05idcategoria'];
 			$sdato[3]=$DATA['saiu05idtiposolorigen'];
@@ -521,11 +571,12 @@ saiu05fecharespprob, saiu05respuesta, saiu05idmoduloproc, saiu05identificadormod
 			$sdato[7]=$DATA['saiu05rptacorreo'];
 			$sdato[8]=$DATA['saiu05rptadireccion'];
 			$sdato[9]=$saiu05detalle;
-			$sdato[10]=$idunidad;
-			$sdato[11]=$idgrupotrabajo;
-			$sdato[12]=$idresponsable;
-			$sdato[13]=$DATA['saiu05estado'];
-			$numcmod=13;
+			$sdato[10]=$saiu05idunidadresp;
+			$sdato[11]=$saiu05idequiporesp;
+			$sdato[12]=$saiu05idsupervisor;
+			$sdato[13]=$saiu05idresponsable;
+			$sdato[14]=$DATA['saiu05estado'];
+			$numcmod=14;
 			$sWhere='saiu05id='.$DATA['saiu05id'].'';
 			$sSQL='SELECT * FROM '.$sTabla05.' WHERE '.$sWhere;
 			$sdatos='';
@@ -573,7 +624,27 @@ saiu05fecharespprob, saiu05respuesta, saiu05idmoduloproc, saiu05identificadormod
 					$DATA['paso']=2;
 					}
 				}else{
-				list($sErrorC, $sDebugC) = f3005_CargarDocumentos($DATA['saiu05agno'], $DATA['saiu05mes'], $DATA['saiu05id'], $objDB, $bDebug);
+				list($sErrorC, $sDebugC) = f3007_CargarDocumentos($DATA['saiu05agno'], $DATA['saiu05mes'], $DATA['saiu05id'], $objDB, $bDebug);
+				if ($DATA['saiu05estado'] != $saiu05estadoorigen) {
+					$saiu09consec=tabla_consecutivo($sTabla09, 'saiu09consec', '', $objDB);
+					if ($saiu09consec==-1){$sError=$objDB->serror;}
+					$saiu09id=tabla_consecutivo($sTabla09,'saiu09id', '', $objDB);
+					if ($saiu09id==-1){$sError=$objDB->serror;}
+					if ($sError=='') {
+						$iHoy=fecha_DiaMod();
+						$iHora=fecha_hora();
+						$iMinuto=fecha_minuto();
+						$sCampos3009 = 'saiu09idsolicitud,saiu09consec,saiu09id,saiu09idestadoorigen,saiu09idestadofin,
+						saiu09idusuario,saiu09fecha,saiu09hora,saiu09minuto';
+						$sValores3009 = $DATA['saiu05id'] . ',' . $saiu09consec . ',' . $saiu09id . ',' . $saiu05estadoorigen . ',' . $DATA['saiu05estado'] . ',
+						' . $DATA['saiu05idsolicitante'] . ',' . $iHoy . ',' . $iHora . ',' . $iMinuto . '';
+						$sSQL = 'INSERT INTO ' . $sTabla09 . '(' . $sCampos3009 .') VALUES (' . $sValores3009 . ')';
+						$result=$objDB->ejecutasql($sSQL);
+						if ($result==false){
+							$sError=$ERR['falla_guardar'].' [3009] ..<!-- '.$sSQL.' -->';
+						}
+					}
+				}
 				if ($bDebug){
 					$sDebug=$sDebug.fecha_microtiempo().' Guardar 3005 '.$sSQL.'<br>';
 					$sDebug=$sDebug.$sDebugC;
