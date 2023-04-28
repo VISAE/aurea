@@ -11,7 +11,7 @@ function limpia_saiu07idarchivo(){
 	verboton('beliminasaiu07idarchivo','none');
 	//paginarf0000();
 	}
-function carga_saiu07idarchivo(saiu07id){
+function carga_saiu07idarchivo(saiu07id = 0){
 	window.document.frmedita.iscroll.value=window.pageYOffset;
 	window.document.frmedita.div96v1.value='';
 	window.document.frmedita.div96v2.value='';

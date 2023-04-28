@@ -37,4 +37,9 @@ $ETI['msg_per_aca']='Per&iacute;odo';
 
 $ETI['msg_perfiles']='Perfiles del sistema';
 
+$ETI['tableropqrs'] = 'Tablero de control PQRS';
+$ETI['unidadresp'] = 'Unidad';
+$ETI['equiporesp'] = 'Equipo';
+$ETI['responsable'] = 'Integrante';
+$ETI['agno'] = 'A&ntilde;o';
 ?>

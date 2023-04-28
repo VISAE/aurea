@@ -1140,7 +1140,7 @@ $sSQL = 'SELECT saiu12id AS id, saiu12nombre AS nombre FROM saiu12formarespuesta
 $html_saiu05rptaforma = $objCombos->html($sSQL, $objDB);
 list($saiu05idresponsable_rs, $_REQUEST['saiu05idresponsable'], $_REQUEST['saiu05idresponsable_td'], $_REQUEST['saiu05idresponsable_doc']) = html_tercero($_REQUEST['saiu05idresponsable_td'], $_REQUEST['saiu05idresponsable_doc'], $_REQUEST['saiu05idresponsable'], 0, $objDB);
 $objCombos->nuevo('saiu05idcategoria', $_REQUEST['saiu05idcategoria'], true, '{' . $ETI['msg_seleccione'] . '}');
-$sSQL = 'SELECT saiu68id AS id, saiu68nombre AS nombre FROM saiu68categoria ORDER BY saiu68nombre';
+$sSQL = 'SELECT saiu68id AS id, saiu68nombre AS nombre FROM saiu68categoria WHERE saiu68publica = 1 ORDER BY saiu68nombre';
 $html_saiu05idcategoria = $objCombos->html($sSQL, $objDB);
 if ((int)$_REQUEST['paso'] == 0) {
 } else {
@@ -1829,7 +1829,7 @@ echo '<h3>' . $sTitulo . '</h3>';
 <div class="areatrabajo">
 <?php
 //Div para ocultar
-$bConExpande = true;
+$bConExpande = false;
 if ($bConExpande) {
 ?>
 <div class="ir_derecha"<?php echo $sAnchoExpandeContrae; ?>>
@@ -2033,12 +2033,14 @@ echo $ETI['saiu05idmedio'] . ' ' . $html_saiu05idmedio;
 if ($_SESSION['unad_id_tercero'] > 0) {
 	$sHref = 'https://aurea2.unad.edu.co/c2/miperfil.php';
 	$sOnclick = '';	
+	$sTarget =  '_blank';
 	if ($_SESSION['unad_id_tercero'] == 1) {
 		$sHref = 'javascript:;';
 		$sOnclick = 'mod_tratadatos();';
+		$sTarget =  '';
 	}
 ?>
-<a id="cmdTrataDatos" name="cmdTrataDatos" class="BotonAzul200" title="<?php echo $ETI['bt_tratadatos']; ?>" href="<?php echo $sHref; ?>" onclick="<?php echo $sOnclick; ?>" style="width:420px; padding:7px 10px;"><?php echo $ETI['bt_tratadatos']; ?></a>
+<a id="cmdTrataDatos" name="cmdTrataDatos" class="BotonAzul200" title="<?php echo $ETI['bt_tratadatos']; ?>" href="<?php echo $sHref; ?>" target="<?php echo $sTarget; ?>" onclick="<?php echo $sOnclick; ?>" style="width:420px; padding:7px 10px;"><?php echo $ETI['bt_tratadatos']; ?></a>
 <div class="salto1px"></div>
 <?php
 }

@@ -2879,4 +2879,274 @@ function f12206_CambiarDeCentro($core01id, $idZonaDest, $idCentroDest, $sNota, $
 	}
 	return array($corf06id, $sError, $sDebug);
 }
+function f3000_Combobita27equipotrabajo($aParametros){
+	$_SESSION['u_ultimominuto']=iminutoavance();
+	if(!is_array($aParametros)){$aParametros=json_decode(str_replace('\"','"',$aParametros),true);}
+	require './app.php';
+	$objDB=new clsdbadmin($APP->dbhost, $APP->dbuser, $APP->dbpass, $APP->dbname);
+	if ($APP->dbpuerto!=''){$objDB->dbPuerto=$APP->dbpuerto;}
+	$objDB->xajax();
+	$objCombos=new clsHtmlCombos('n');
+	$html_bita27equipotrabajo=f3000_HTMLComboV2_bita27equipotrabajo($objDB, $objCombos, '', $aParametros[0]);
+	$objDB->CerrarConexion();
+	$objResponse=new xajaxResponse();
+	$objResponse->assign('div_bita27equipotrabajo', 'innerHTML', $html_bita27equipotrabajo);
+	$objResponse->call('carga_combo_bita28eqipoparte()');
+	$objResponse->call('paginarf3000()');
+	// $objResponse->call('jQuery("#bita27equipotrabajo").chosen({no_results_text: "No existen coincidencias: ",width: "100%"})');
+	return $objResponse;
+}
+function f3000_HTMLComboV2_bita27equipotrabajo($objDB, $objCombos, $valor, $vrbita27idunidadfunc){
+	require './app.php';
+	$mensajes_todas=$APP->rutacomun.'lg/lg_todas_'.$_SESSION['unad_idioma'].'.php';
+	if (!file_exists($mensajes_todas)){$mensajes_todas=$APP->rutacomun.'lg/lg_todas_es.php';}
+	require $mensajes_todas;
+	$objCombos->nuevo('bita27equipotrabajo', $valor, true, '{'.$ETI['msg_seleccione'].'}');
+	$sSQL='';
+	if ((int)$vrbita27idunidadfunc!=0){
+		// $objCombos->iAncho=450;
+		$sSQL='SELECT bita27id AS id, bita27nombre AS nombre 
+			FROM bita27equipotrabajo
+			WHERE bita27idunidadfunc="'.$vrbita27idunidadfunc.'"';
+	}
+	$objCombos->sAccion = 'carga_combo_bita28eqipoparte()';
+	$res=$objCombos->html($sSQL, $objDB);
+	return $res;
+}
+function f3000_Combobita28eqipoparte($aParametros){
+	$_SESSION['u_ultimominuto']=iminutoavance();
+	if(!is_array($aParametros)){$aParametros=json_decode(str_replace('\"','"',$aParametros),true);}
+	require './app.php';
+	$objDB=new clsdbadmin($APP->dbhost, $APP->dbuser, $APP->dbpass, $APP->dbname);
+	if ($APP->dbpuerto!=''){$objDB->dbPuerto=$APP->dbpuerto;}
+	$objDB->xajax();
+	$objCombos=new clsHtmlCombos('n');
+	$html_bita28eqipoparte=f3000_HTMLComboV2_bita28eqipoparte($objDB, $objCombos, '', $aParametros[0]);
+	$objDB->CerrarConexion();
+	$objResponse=new xajaxResponse();
+	$objResponse->assign('div_bita28eqipoparte', 'innerHTML', $html_bita28eqipoparte);
+	$objResponse->call('paginarf3000()');
+	// $objResponse->call('jQuery("#bita28eqipoparte").chosen({no_results_text: "No existen coincidencias: ",width: "100%"})');
+	return $objResponse;
+}
+function f3000_HTMLComboV2_bita28eqipoparte($objDB, $objCombos, $valor, $vrbita28idequipotrab){
+	require './app.php';
+	$mensajes_todas=$APP->rutacomun.'lg/lg_todas_'.$_SESSION['unad_idioma'].'.php';
+	if (!file_exists($mensajes_todas)){$mensajes_todas=$APP->rutacomun.'lg/lg_todas_es.php';}
+	require $mensajes_todas;
+	$objCombos->nuevo('bita28eqipoparte', $valor, true, '{'.$ETI['msg_seleccione'].'}');
+	$sSQL='';
+	if ((int)$vrbita28idequipotrab!=0){
+		// $objCombos->iAncho=450;
+		$sCondi='bita28idequipotrab="'.$vrbita28idequipotrab.'"';
+		$sSQL='SELECT TB.bita28idtercero AS id, T2.unad11razonsocial AS nombre 
+			FROM bita28eqipoparte AS TB, unad11terceros AS T2
+			WHERE TB.bita28idtercero=T2.unad11id AND TB.bita28activo="S" AND bita28idequipotrab="'.$vrbita28idequipotrab.'"';
+	}
+	$objCombos->sAccion = 'paginarf3000()';
+	$res=$objCombos->html($sSQL, $objDB);
+	return $res;
+}
+function f3000_TablaDetallePQRS($aParametros, $objDB, $bDebug=false){
+	require './app.php';
+	$mensajes_todas=$APP->rutacomun.'lg/lg_todas_'.$_SESSION['unad_idioma'].'.php';
+	if (!file_exists($mensajes_todas)){$mensajes_todas=$APP->rutacomun.'lg/lg_todas_es.php';}
+	$mensajes_3000='lg/lg_3000_'.$_SESSION['unad_idioma'].'.php';
+	if (!file_exists($mensajes_3000)){$mensajes_3000='lg/lg_3000_es.php';}
+	require $mensajes_todas;
+	require $mensajes_3000;
+	if(!is_array($aParametros)){$aParametros=json_decode(str_replace('\"','"',$aParametros),true);}
+	if (isset($aParametros[100])==0){$aParametros[100]=$_SESSION['unad_id_tercero'];}
+	// if (isset($aParametros[101])==0){$aParametros[101]=1;}
+	// if (isset($aParametros[102])==0){$aParametros[102]=100;}
+	if (isset($aParametros[103])==0){$aParametros[103]='';}
+	if (isset($aParametros[104])==0){$aParametros[104]='';}
+	if (isset($aParametros[105])==0){$aParametros[105]='';}
+	if (isset($aParametros[106])==0){$aParametros[106]='';}
+	//$aParametros[103]=numeros_validar($aParametros[103]);
+	$sDebug='';
+	$idTercero=$aParametros[100];
+	$idUnidad=numeros_validar($aParametros[103]);
+	$idEquipo=numeros_validar($aParametros[104]);
+	$idResponsable=numeros_validar($aParametros[105]);
+	$iAgno=numeros_validar($aParametros[106]);
+	$babierta=true;
+	//$sSQL='SELECT Campo FROM Tabla WHERE Id='.$sValorId;
+	//$tabla=$objDB->ejecutasql($sSQL);
+	//if ($objDB->nf($tabla)>0){
+		//$fila=$objDB->sf($tabla);
+		//if ($fila['Campo']!='S'){$babierta=true;}
+		//}
+	$sLeyenda='';
+	//if ((int)$idUnidad==0){$sLeyenda='No ha seleccionado una unidad funcional';}
+	if ($sLeyenda!=''){
+		$sLeyenda='<div class="salto1px"></div>
+<div class="GrupoCamposAyuda">
+'.$sLeyenda.'
+<div class="salto1px"></div>
+</div>';
+		return array(utf8_encode($sLeyenda.'<input id="paginaf3000" name="paginaf3000" type="hidden" value="'.$pagina.'"/><input id="lppf3000" name="lppf3000" type="hidden" value="'.$lineastabla.'"/>'), $sDebug);
+		die();
+		}
+	$sSQLadd='';
+	$sSQLadd1='';
+	//if ((int)$aParametros[103]!=-1){$sSQLadd=$sSQLadd.' AND TB.campo='.$aParametros[103];}
+	//if ($aParametros[103]!=''){$sSQLadd=$sSQLadd.' AND TB.campo2 LIKE "%'.$aParametros[103].'%"';}
+	/*
+	if ($aParametros[104]!=''){
+		$sBase=trim(strtoupper($aParametros[104]));
+		$aNoms=explode(' ', $sBase);
+		for ($k=1;$k<=count($aNoms);$k++){
+			$sCadena=$aNoms[$k-1];
+			if ($sCadena!=''){
+				$sSQLadd=$sSQLadd.' AND T6.unad11razonsocial LIKE "%'.$sCadena.'%"';
+				//$sSQLadd1=$sSQLadd1.'T1.unad11razonsocial LIKE "%'.$sCadena.'%" AND ';
+				}
+			}
+		}
+	*/
+	// $sBotones='<input id="paginaf2300" name="paginaf2300" type="hidden" value="'.$pagina.'"/><input id="lppf2300" name="lppf2300" type="hidden" value="'.$lineastabla.'"/>';
+	$sBotones='';
+	$sTitulos='-, Borrador, Solicitado, En tramite, Resuelto';
+	$asaiu05idcategoria=array();
+	$aTablas=array();
+	$iTablas=0;
+	$iNumSolicitudes=0;
+	$sSQL='SELECT saiu15agno, saiu15mes, SUM(saiu15numsolicitudes) AS Solicitudes 
+	FROM saiu15historico 
+	WHERE saiu15agno='.$iAgno.' AND saiu15tiporadicado=1
+	GROUP BY saiu15agno, saiu15mes';
+	if ($bDebug){$sDebug=$sDebug.fecha_microtiempo().' Historico: '.$sSQL.'<br>';}
+	$tabla15=$objDB->ejecutasql($sSQL);
+	while($fila15=$objDB->sf($tabla15)){
+		$iNumSolicitudes=$iNumSolicitudes+$fila15['Solicitudes'];
+		if ($fila15['saiu15mes']<10){
+			$sContenedor=$fila15['saiu15agno'].'0'.$fila15['saiu15mes'];
+			}else{
+			$sContenedor=$fila15['saiu15agno'].$fila15['saiu15mes'];
+			}
+		$iTablas++;
+		$aTablas[$iTablas]=$sContenedor;
+	}
+	$sSQL='';
+	$sErrConsulta='';
+	$sWhere='';
+	if ($idUnidad != '') {
+		$sWhere = $sWhere . ' AND saiu05idunidadresp=' . $idUnidad . '';
+	}
+	if ($idEquipo != '') {
+		$sWhere = $sWhere . ' AND saiu05idequiporesp=' . $idEquipo . '';
+	}
+	if ($idResponsable != '') {
+		$sWhere = $sWhere . ' AND saiu05idresponsable=' . $idResponsable . '';
+	}
+	$sSQL='';
+	for ($k=1;$k<=$iTablas;$k++){
+		if ($k!=1){$sSQL=$sSQL.' UNION ALL ';}
+		$sContenedor=$aTablas[$k];
+		$sSQL=$sSQL.'SELECT saiu05idcategoria, saiu05estado
+		FROM saiu05solicitud_' . $sContenedor . '
+		WHERE saiu05tiporadicado=1 ' . $sWhere . '';
+	}
+	if ($bDebug){$sDebug=$sDebug.fecha_microtiempo().' Tabla detalle SQL: ' . $sSQL.'<br>';}
+	if ($sSQL != '') {
+		$sSQLlista=str_replace("'","|",$sSQL);
+		$sSQLlista=str_replace('"',"|",$sSQLlista);
+		$sErrConsulta='<input id="consulta_3000" name="consulta_3000" type="hidden" value="'.$sSQLlista.'"/>
+		<input id="titulos_3000" name="titulos_3000" type="hidden" value="'.$sTitulos.'"/>';
+		if ($bDebug){$sDebug=$sDebug.fecha_microtiempo().' Consulta 3000: '.$sSQL.'<br>';}
+		$tabladetalle=$objDB->ejecutasql($sSQL);
+		if ($tabladetalle==false){
+			$registros=0;
+			$sErrConsulta=$sErrConsulta.'..<input id="err" name="err" type="hidden" value="'.$sSQL.' '.$objDB->serror.'"/>';
+			//$sLeyenda=$sSQL;
+		}else{
+			$registros=$objDB->nf($tabladetalle);
+			if ($registros==0){
+				$sTabla='<table border="0" align="center" cellpadding="0" cellspacing="2" class="tablaapp">
+				<tr class="fondoazul">
+				<td align="center"><b>'.'No se registran solicitudes'.'</b></td>
+				</tr>
+				</table>';
+				return array(utf8_encode($sErrConsulta.$sBotones).$sTabla, $sDebug);
+			} 
+		}
+	}
+	$res=$sErrConsulta.$sLeyenda.$sBotones.'<table border="0" align="center" cellpadding="0" cellspacing="2" class="tablaapp">
+<tr class="fondoazul">
+<td colspan="5" align="center"><b>'.'Consolidado de solicitudes PQRS '. $iAgno .'</b></td>
+</tr>
+<tr class="fondoazul">
+<td><b>'.'Tipo de Solicitud'.'</b></td>
+<td align="center"><b>'.'Borrador'.'</b></td>
+<td align="center"><b>'.'Solicitado'.'</b></td>
+<td align="center"><b>'.'En tr&aacute;mite'.'</b></td>
+<td align="center"><b>'.'Resuelto'.'</b></td>
+<td><b>'.''.'</b></td>
+</tr>';
+	$tlinea=1;
+	while($filadet=$objDB->sf($tabladetalle)){
+		$i_saiu05idcategoria=$filadet['saiu05idcategoria'];
+		if (isset($asaiu05idcategoria[$i_saiu05idcategoria])==0){
+			$sSQL='SELECT saiu68nombre FROM saiu68categoria WHERE saiu68id='.$i_saiu05idcategoria.'';
+			$tablae=$objDB->ejecutasql($sSQL);
+			if ($objDB->nf($tablae)>0){
+				$filae=$objDB->sf($tablae);
+				$asaiu05idcategoria[$i_saiu05idcategoria]=array('nombre'=>$filae['saiu68nombre'], 'valores'=>array(-1=>0,0=>0,2=>0,7=>0));
+			}else{
+				$asaiu05idcategoria[$i_saiu05idcategoria]='';
+			}
+		}
+		if ($asaiu05idcategoria[$i_saiu05idcategoria]!='') {
+			$asaiu05idcategoria[$i_saiu05idcategoria]['valores'][$filadet['saiu05estado']]++;
+		}
+	}
+	foreach ($asaiu05idcategoria as $aCategoria) {
+		$sPrefijo='';
+		$sSufijo='';
+		$sClass='';
+		$sLink='';
+		if (true){
+			$sPrefijo='<b>';
+			$sSufijo='</b>';
+			}
+		if(($tlinea%2)==0){$sClass=' class="resaltetabla"';}
+		$tlinea++;
+		if ($babierta){
+			//$sLink='<a href="javascript:cargadato('."'".$filadet['cara00id']."'".')" class="lnkresalte">'.$ETI['lnk_cargar'].'</a>';
+		}
+		$res=$res.'<tr'.$sClass.'>
+<td>'.$sPrefijo.cadena_notildes($aCategoria['nombre']).$sSufijo.'</td>
+<td align="center">'.$aCategoria['valores'][-1].'</td>
+<td align="center">'.$aCategoria['valores'][0].'</td>
+<td align="center">'.$aCategoria['valores'][2].'</td>
+<td align="center">'.$aCategoria['valores'][7].'</td>
+</tr>';
+	}
+	$res=$res.'</table>';
+	$objDB->liberar($tabladetalle);
+	return array(utf8_encode($res), $sDebug);
+}
+function f3000_HtmlTablaPQRS($aParametros){
+	$_SESSION['u_ultimominuto']=iminutoavance();
+	$sError='';
+	$bDebug=false;
+	$sDebug='';
+	$opts=$aParametros;
+	if(!is_array($opts)){$opts=json_decode(str_replace('\"','"',$opts),true);}
+	if (isset($opts[99])!=0){if ($opts[99]==1){$bDebug=true;}}
+	require './app.php';
+	$objDB=new clsdbadmin($APP->dbhost, $APP->dbuser, $APP->dbpass, $APP->dbname);
+	if ($APP->dbpuerto!=''){$objDB->dbPuerto=$APP->dbpuerto;}
+	$objDB->xajax();
+	list($sDetalle, $sDebugTabla)=f3000_TablaDetallePQRS($aParametros, $objDB, $bDebug);
+	$sDebug=$sDebug.$sDebugTabla;
+	$objDB->CerrarConexion();
+	$objResponse=new xajaxResponse();
+	$objResponse->assign('div_f3000detalle', 'innerHTML', $sDetalle);
+	if ($bDebug){
+		$objResponse->assign('div_debug', 'innerHTML', $sDebug);
+	}
+	return $objResponse;
+}
 ?>

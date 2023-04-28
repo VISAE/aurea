@@ -167,6 +167,7 @@ $ERR['saiu05idtemaorigen_2']='Por favor seleccione el tema de solicitud';
 $ERR['saiu05detalle_2']='Por favor detalle su solicitud';
 $ERR['saiu05opinvalida']='Opci&oacute;n inv&aacute;lida';
 $ERR['saiu05idtercero']='Id Tercero no v&aacute;lido';
+$ERR['saiu05anotacion']='Debe agregar una anotaci&oacute;n del avance del proceso';
 
 $ETI['msg_numsolicitud']='N&deg; de solicitud';
 $ETI['saiu05refdoc']='C&oacute;digo';
@@ -194,6 +195,7 @@ $ETI['msg_irainscribirse']='Si no cuenta con usuario en nuestra plataforma:';
 $ETI['msg_iranonimo']='O si lo desea puede:';
 $ETI['msg_bestado']='Estado';
 $ETI['msg_borrador']='Borrador';
+$ETI['mail_resp_titulo']='Respuesta a su solicitud PQRS';
 
 $aEstados = array('Solicitado','','En tr&aacute;mite','','','','','Resuelto');
 
@@ -201,4 +203,59 @@ $ERR['saiu05refdoc'] = 'Necesita el dato ' . $ETI['saiu05refdoc'];
 $ERR['contenedor'] = 'No ha sido posible acceder al contenedor de datos';
 $ERR['codigo'] = 'C&oacute;digo Incorrecto';
 $ERR['encontrado'] = 'Se ha encontrado informaci&oacute;n de la PQRS';
+
+// Inicio etiquetas y mensajes de encuesta
+$ETI['titulo_encuesta'] = 'Encuesta';
+$ETI['bt_enviar'] = 'Enviar';
+$ETI['fecha'] = 'Fecha de encuesta';
+$ETI['texto_encuesta'] = 'Califique de 1 a 5 los siguientes aspectos, en el que 5 es excelente y 1 deficiente: ';
+$ETI['texto_solicitante'] = 'Informaci&oacute;n del solicitante:';
+$ETI['saiu05idencuesta'] = 'Id encuesta';
+$ETI['saiu05codigo'] = 'C&oacute;digo';
+$ETI['saiu05razonsocial'] = 'Nombre';
+$ETI['saiu05idzona'] = 'Zona';
+$ETI['saiu05idcentro'] = 'Centro';
+$ETI['saiu05idescuela'] = 'Escuela';
+$ETI['saiu05idprograma'] = 'Programa';
+$ETI['saiu05gracias'] = 'Gracias por su respuesta';
+$ETI['saiu05cerrada'] = 'Ya di&oacute; respuesta a esta encuesta';
+$ETI['saiu05noexiste'] = 'No se ha encontrado la encuesta';
+$ETI['saiu05evalamabilidad'] = '¿Califique la amabilidad y empat&iacute;a por parte del gestor del servicio&quest;';
+$ETI['saiu05evalamabmotivo'] = 'Observaciones y sugerencias';
+$ETI['saiu05evalrapidez'] = '¿El tiempo de respuesta a su solicitud fue el adecuado&quest;';
+$ETI['saiu05evalrapidmotivo'] = 'Observaciones y sugerencias';
+$ETI['saiu05evalclaridad'] = '¿El lenguaje utilizado en la respuesta fue claro&quest;';
+$ETI['saiu05evalcalridmotivo'] = 'Observaciones y sugerencias';
+$ETI['saiu05evalresolvio'] = '¿La respuesta brindada permiti&oacute; atender su necesidad&quest;';
+$ETI['saiu05evalsugerencias'] = 'Observaciones y sugerencias';
+$ETI['saiu05evalconocimiento'] = 'Califique la apropiaci&oacute;n y conocimiento de la informaci&oacute;n por parte del gestor del servicio';
+$ETI['saiu05evalconocmotivo'] = 'Observaciones y sugerencias';
+$ETI['saiu05evalutilidad'] = '¿Como califica la accesibilidad, utilidad e innovaci&oacute;n del Sistema de Atenci&oacute;n Integral&quest;';
+$ETI['saiu05evalutilmotivo'] = 'Observaciones y sugerencias';
+$ETI['saiu05evalcontrtamotivo'] = 'Observaciones y sugerencias';
+$ETI['valor5'] = 'Excelente';
+$ETI['valor4'] = 'Bueno';
+$ETI['valor3'] = 'Aceptable';
+$ETI['valor2'] = 'Malo';
+$ETI['valor1'] = 'Deficiente';
+$ETI['bt_motivo'] = 'Comentarios';
+$ETI['motivo'] = 'Sugerencias o comentarios';
+$ETI['mail_enc_titulo']='Encuesta de calidad del servicio';
+$ETI['mail_enc_parte1']='Apreciado Usuario, agradecemos su opini&oacute;n respecto a la atenci&oacute;n recibida el d&iacute;a ';
+$ETI['mail_enc_parte2']=' y nos gustar&iacute;a su opini&oacute;n respecto a la calidad de nuestro servicio.';
+
+$ERR['fecha'] = 'Necesita el dato ' . $ETI['fecha'];
+$ERR['saiu05idencuesta'] = 'Necesita el dato ' . $ETI['saiu05id'];
+$ERR['saiu05codigo'] = 'Necesita el dato ' . $ETI['saiu05codigo'];
+$ERR['saiu05evalamabilidad'] = 'Necesita el dato ' . $ETI['saiu05evalamabilidad'];
+$ERR['saiu05evalrapidez'] = 'Necesita el dato ' . $ETI['saiu05evalrapidez'];
+$ERR['saiu05evalclaridad'] = 'Necesita el dato ' . $ETI['saiu05evalclaridad'];
+$ERR['saiu05evalresolvio'] = 'Necesita el dato ' . $ETI['saiu05evalresolvio'];
+$ERR['saiu05evalconocimiento'] = 'Necesita el dato ' . $ETI['saiu05evalconocimiento'];
+$ERR['saiu05evalutilidad'] = 'Necesita el dato ' . $ETI['saiu05evalutilidad'];
+$ERR['saui05numref'] = 'C&oacute;digo erroneo';
+$ERR['saui05altertable'] = 'Ha ocurrido un error intentando agregar columnas al contenedor';
+$ERR['mail_resp_error'] = 'Ha ocurrido un error intentando enviar el mensaje de respuesta';
+$ERR['mail_enc_error'] = 'Ha ocurrido un error intentando enviar la encuesta de satisfacci&oacute;n';
+// Fin etiquetas y mensajes de encuesta
 ?>

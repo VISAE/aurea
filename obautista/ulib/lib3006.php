@@ -59,6 +59,13 @@ function f3006_db_Guardar($iContenedor, $valores, $objDB, $bDebug = false)
 		$sError = $ERR['saiu06idsolicitud'] . $sSepara . $sError;
 	}
 	if ($sError == '') {
+		if ((int)$saiu06id != 0) {
+			if ($saiu06idusuario != $_SESSION['unad_id_tercero']) {
+				$sError = $ERR['noeditar'];
+			}
+		}
+	}
+	if ($sError == '') {
 		list($sError, $sInfo) = tercero_Bloqueado($saiu06idusuario, $objDB);
 		if ($sInfo != '') {
 			$sError = $sError . '<br>' . $sInfo;
@@ -207,7 +214,13 @@ function f3006_db_Eliminar($aParametros, $objDB, $bDebug = false)
 	$saiu06idsolicitud = numeros_validar($aParametros[1]);
 	$saiu06consec = numeros_validar($aParametros[2]);
 	$saiu06id = numeros_validar($aParametros[3]);
+	$saiu06idusuario = numeros_validar($aParametros[9]);
 	$sTabla06 = 'saiu06solanotacion' . f3000_Contenedor($aParametros[97], $aParametros[98]);
+	if ($sError == '') {
+		if ($saiu06idusuario != $_SESSION['unad_id_tercero']) {
+			$sError = $ERR['noeliminar'];
+		}
+	}
 	if ($sError == '') {
 		if (!seg_revisa_permiso($iCodModulo, 4, $objDB)) {
 			$sError = $ERR['4'];
@@ -537,7 +550,8 @@ function f3006_Guardar($valores, $aParametros)
 		//if ($iAccion==2){
 		//$objResponse->call('cargaridf3006('.$saiu06id.')');
 		//}else{
-		$objResponse->call('limpiaf3006');
+		//$objResponse->call('limpiaf3006');
+		$objResponse->call('cargaridf3006(' . $saiu06id . ')');
 		//}
 		$objResponse->call("MensajeAlarmaV2('" . $ETI['msg_itemguardado'] . "', 1)");
 	} else {

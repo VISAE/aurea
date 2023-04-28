@@ -310,7 +310,7 @@ if (($_REQUEST['paso'] == 1) || ($_REQUEST['paso'] == 3)) {
 		$_REQUEST['saiu68activa'] = $fila['saiu68activa'];
 		$_REQUEST['saiu68orden'] = $fila['saiu68orden'];
 		$_REQUEST['saiu68publica'] = $fila['saiu68publica'];
-		$_REQUEST['saiu68nombre'] = $fila['saiu68nombre'];
+		$_REQUEST['saiu68nombre'] = cadena_notildes($fila['saiu68nombre']);
 		$bcargo = true;
 		$_REQUEST['paso'] = 2;
 		$_REQUEST['boculta3068'] = 0;

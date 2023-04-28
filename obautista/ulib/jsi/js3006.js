@@ -6,7 +6,7 @@
 function limpia_saiu06idarchivo(){
 	window.document.frmedita.saiu06idorigen.value=0;
 	window.document.frmedita.saiu06idarchivo.value=0;
-	var da_Archivo=document.getElementById('div_saiu06idarchivo');
+	let da_Archivo=document.getElementById('div_saiu06idarchivo');
 	da_Archivo.innerHTML='&nbsp;';
 	verboton('beliminasaiu06idarchivo','none');
 	//paginarf0000();
@@ -16,21 +16,29 @@ function carga_saiu06idarchivo(){
 	window.document.frmedita.div96v1.value='';
 	window.document.frmedita.div96v2.value='';
 	window.document.frmedita.div96v3.value='';
+	let saiu06id=window.document.frmedita.saiu06id.value;
+	let agno=window.document.frmedita.saiu05agno.value;
+	let mes=window.document.frmedita.saiu05mes.value;
+	if (mes < 10) {
+		mes = '0' + mes;
+	}
 	document.getElementById('div_96titulo').innerHTML='<h2>'+window.document.frmedita.titulo_3005.value+' - Cargar archivo</h2>';
-	document.getElementById('div_96cuerpo').innerHTML='<iframe id="iframe96" src="framearchivo.php?ref=3006&id='+window.document.frmedita.saiu06id.value+'" height="400px" width="100%" frameborder="0"></iframe>';
+	document.getElementById('div_96cuerpo').innerHTML='<iframe id="iframe96" src="framearchivodis.php?ref=3006&id='+saiu06id+'&tabla=_'+agno+mes+'" height="400px" width="100%" frameborder="0"></iframe>';
 	expandesector(96);
 	window.scrollTo(0, 150);
 	}
 function eliminasaiu06idarchivo(){
-	var did=window.document.frmedita.saiu06id;
+	let did=window.document.frmedita.saiu06id;
+	let agno=window.document.frmedita.saiu05agno.value;
+	let mes=window.document.frmedita.saiu05mes.value;
 	if (confirm("Esta seguro de eliminar el archivo?")){
-		xajax_elimina_archivo_saiu06idarchivo(did.value);
+		xajax_elimina_archivo_saiu06idarchivo(did.value, agno, mes);
 		//paginarf0000();
 		}
 	}
 function guardaf3006(){
-	var params=new Array();
-	var valores=new Array();
+	let params=new Array();
+	let valores=new Array();
 	valores[1]=window.document.frmedita.saiu05id.value;
 	valores[2]=window.document.frmedita.saiu06consec.value;
 	valores[3]=window.document.frmedita.saiu06id.value;
@@ -52,10 +60,10 @@ function guardaf3006(){
 	xajax_f3006_Guardar(valores, params);
 	}
 function limpiaf3006(){
-	var sfbase=window.document.frmedita.shoy.value;
-	var iFechaBaseNum=window.document.frmedita.ihoy.value;
+	let sfbase=window.document.frmedita.shoy.value;
+	let iFechaBaseNum=window.document.frmedita.ihoy.value;
 	MensajeAlarmaV2('', 0);
-	var params=new Array();
+	let params=new Array();
 	xajax_f3006_PintarLlaves(params);
 	window.document.frmedita.saiu06anotacion.value='';
 	window.document.frmedita.saiu06visible.value='';
@@ -71,11 +79,12 @@ function limpiaf3006(){
 	verboton('belimina3006','none');
 	}
 function eliminaf3006(){
-	var params=new Array();
+	let params=new Array();
 	params[0]=window.document.frmedita.saiu05id.value;
 	params[1]=window.document.frmedita.saiu05id.value;
 	params[2]=window.document.frmedita.saiu06consec.value;
 	params[3]=window.document.frmedita.saiu06id.value;
+	params[9]=window.document.frmedita.saiu06idusuario.value;
 	//params[14]=window.document.frmedita.p1_3006.value;
 	params[97]=window.document.frmedita.saiu05agno.value;
 	params[98]=window.document.frmedita.saiu05mes.value;
@@ -90,7 +99,7 @@ function eliminaf3006(){
 		}
 	}
 function revisaf3006(){
-	var params=new Array();
+	let params=new Array();
 	params[0]=1;
 	params[1]=window.document.frmedita.saiu05id.value;
 	params[2]=window.document.frmedita.saiu06consec.value;
@@ -104,7 +113,7 @@ function cargadatof3006(llave1){
 	revisaf3006();
 	}
 function cargaridf3006(llave1){
-	var params=new Array();
+	let params=new Array();
 	params[0]=2;
 	params[97]=window.document.frmedita.saiu05agno.value;
 	params[98]=window.document.frmedita.saiu05mes.value;
@@ -113,7 +122,7 @@ function cargaridf3006(llave1){
 	expandepanel(3006,'block',0);
 	}
 function paginarf3006(){
-	var params=new Array();
+	let params=new Array();
 	params[0]=window.document.frmedita.saiu05id.value;
 	params[97]=window.document.frmedita.saiu05agno.value;
 	params[98]=window.document.frmedita.saiu05mes.value;

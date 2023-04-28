@@ -146,9 +146,11 @@ function f107_VerificarPerfiles($idTercero, $idPeriodo, $objDB, $bDebug = false)
 		$sCondi[5] = 'SELECT 1 FROM unad23zona WHERE unad23director=' . $idTercero . '';
 		$sCondi[6] = 'SELECT 1 FROM unad24sede WHERE unad24director=' . $idTercero . ' AND unad24activa="S"';
 		$sCondi[7] = 'SELECT 1 FROM corf57comiteescuela WHERE corf57idcoordinador=' . $idTercero . '';
-		$iTotalPerfiles = 7;
+		$sCondi[8] = 'SELECT 1 FROM corf65programaapoyo WHERE corf65idtercero=' . $idTercero . ' AND ((corf65fechafin=0) OR (corf65fechafin<' . $iHoy . '))';
+		$iTotalPerfiles = 8;
 		$sSQL = 'SELECT core00idperfildecano, core00idperfiladminescuela, core00idperfilliderprog, core00idperfiltutor, 
-		core00idperfilcursoscomunes, core00idperfildirzona, core00idperfildircentro, core00idperfiladmincomite 
+		core00idperfilcursoscomunes, core00idperfildirzona, core00idperfildircentro, core00idperfiladmincomite, 
+		core00idperfil_apoyoprog 
 		FROM core00params 
 		WHERE core00id=1';
 		if ($bDebug) {
@@ -164,6 +166,7 @@ function f107_VerificarPerfiles($idTercero, $idPeriodo, $objDB, $bDebug = false)
 			$aCFG[5] = $fila['core00idperfildirzona'];
 			$aCFG[6] = $fila['core00idperfildircentro'];
 			$aCFG[7] = $fila['core00idperfiladmincomite'];
+			$aCFG[8] = $fila['core00idperfil_apoyoprog'];
 		}
 		for ($j = 1; $j <= $iTotalPerfiles; $j++) {
 			$tabla = $objDB->ejecutasql($sCondi[$j]);
@@ -358,6 +361,71 @@ function f107_VerificarPerfiles($idTercero, $idPeriodo, $objDB, $bDebug = false)
 			if ($id05 != 0) {
 				$tabla = $objDB->ejecutasql($sCondi[$j]);
 				if ($objDB->nf($tabla) > 0) {
+					$aPerfil[$id05] = 1;
+				}
+			}
+		}
+	}
+	// 36 - SIGMA
+	if (true) {
+		$sCondi = array();
+		$sCondi[1] = 'SELECT 1 FROM plan04proyecto WHERE plan04idadmin=' . $idTercero . '';
+		$sCondi[2] = 'SELECT 1 FROM plan04proyecto WHERE plan04idresponsable=' . $idTercero . '';
+		$sCondi[3] = 'SELECT 1 FROM plan12planproymetavr WHERE ((plan12idresponsable=' . $idTercero . ') OR (plan12idnuevoresp=' . $idTercero . '))';
+		$sCondi[4] = 'SELECT 1 FROM plan14metaprod WHERE plan14idgestor=' . $idTercero . '';
+		$sCondi[5] = 'SELECT 1 FROM plan16metaprodcierre WHERE plan16idgestor=' . $idTercero . '';
+		//$sCondi[4] = 'SELECT 1 FROM plan15metaactividad WHERE plan15idgestor=' . $idTercero . '';
+		$iTotalPerfiles = 5;
+		$sSQL = 'SELECT * FROM plan00config WHERE plan00id=1';
+		if ($bDebug) {
+			$sDebug = $sDebug . fecha_microtiempo() . ' Configuraci&oacute;n de perfiles de SIGMA 2.0 ' . $sSQL . '<br>';
+		}
+		$tabla = $objDB->ejecutasql($sSQL);
+		if ($objDB->nf($tabla) > 0) {
+			$fila = $objDB->sf($tabla);
+			$aCFG[1] = $fila['plan00idperfiladmproy'];
+			$aCFG[2] = $fila['plan00idperfilrespproy'];
+			$aCFG[3] = $fila['plan00idperfilmetaprev'];
+			$aCFG[4] = $fila['plan00idcoordevidencia'];// Responsable de producto
+			$aCFG[5] = $fila['plan00idperfilevidencia'];
+		}
+		/* 
+		plan00idperfiladmproy
+		plan00idperfilrespproy
+		plan00idperfilmetaprev
+		plan00idcoordevidencia
+		plan00idperfilevidencia
+		*/
+		for ($j = 1; $j <= $iTotalPerfiles; $j++) {
+			$tabla = $objDB->ejecutasql($sCondi[$j]);
+			if ($objDB->nf($tabla) > 0) {
+				$id05 = $aCFG[$j];
+				if ($id05 != 0) {
+					$aPerfil[$id05] = 1;
+				}
+			}
+		}
+	}
+	//GTR - Tareas y Recursos (Talento Humano)
+	if (true) {
+		$sCondi[1] = 'SELECT 1 FROM gthu54hvlaboral 
+		WHERE gthu54idtercero=' . $idTercero . ' AND gthu54funcionario=1 AND gthu54ifechaingreso<=' . $iHoy . ' 
+		AND (gthu54ifechafin=0 OR gthu54ifechafin>' . $iHoy . ')';
+		$iTotalPerfiles = 1;
+		$sSQL = 'SELECT gthu00idperfilfunc FROM gthu00config WHERE gthu00id=1';
+		if ($bDebug) {
+			$sDebug = $sDebug . fecha_microtiempo() . ' Configuraci&oacute;n de perfiles de GTR ' . $sSQL . '<br>';
+		}
+		$tabla = $objDB->ejecutasql($sSQL);
+		if ($objDB->nf($tabla) > 0) {
+			$fila = $objDB->sf($tabla);
+			$aCFG[1] = $fila['gthu00idperfilfunc'];
+		}
+		for ($j = 1; $j <= $iTotalPerfiles; $j++) {
+			$tabla = $objDB->ejecutasql($sCondi[$j]);
+			if ($objDB->nf($tabla) > 0) {
+				$id05 = $aCFG[$j];
+				if ($id05 != 0) {
 					$aPerfil[$id05] = 1;
 				}
 			}
@@ -1216,6 +1284,22 @@ function f124_CentroPertenece($idTercero, $idRevisa, $objDB, $bDebug = false, $b
 	}
 	return array($idCentro, $idZona, $sDebug);
 }
+//Cursos que hacen parte de un periodo 
+function f140_CursosPeriodo($idPeriodo, $objDB, $bDebug = false, $idEscuela = 0, $idPrograma = 0, $bOfertados = true) {
+	$sIds = '-99';
+	$sDebug = '';
+	$sCondi = '';
+	if ($bOfertados){
+		$sCondi = ' AND ofer08estadooferta=1';
+	}
+	$sSQL = 'SELECT ofer08idcurso FROM ofer08oferta WHERE ofer08idper_aca=' . $idPeriodo . '';
+	$tabla = $objDB->ejecutasql($sSQL);
+	while ($fila = $objDB->sf($tabla)) {
+		$sIds = $sIds . ',' . $fila['ofer08idcurso'];
+	}
+	return array($sIds, $sDebug);
+}
+
 function f140_IdentificadorCurso($idCurso, $NumAula, $idPeriodo, $objDB, $bDebug = false)
 {
 	$sRes = '';
@@ -1409,7 +1493,7 @@ function f146_FechaInicial($idPeriodo, $objDB, $bDebug = false, $bForzar = false
 			FROM ofer14per_acaparams 
 			WHERE ofer14idper_aca=' . $idPeriodo . '';
 			if ($bDebug) {
-				$sDebug = $sDebug . ' <b>Fecha Inicial</b> Consultando historicos: ' . $sSQL . '<br>';
+				$sDebug = $sDebug . fecha_microtiempo() . ' <b>Fecha Inicial</b> Consultando historicos: ' . $sSQL . '<br>';
 			}
 			$tabla = $objDB->ejecutasql($sSQL);
 			if ($objDB->nf($tabla) > 0) {
@@ -1568,7 +1652,10 @@ function f226_ConsultaCombo($sWhere = '', $objDB = NULL)
 	if ($sWhere != '') {
 		$sWhere = $sWhere . ' AND ';
 	}
-	$sSQL = 'SELECT unae26id AS id, CONCAT(unae26prefijo, unae26nombre) AS nombre FROM unae26unidadesfun WHERE unae26idzona=0 AND ' . $sWhere . ' unae26id>0 ORDER BY unae26activa DESC, unae26lugar, unae26orden, unae26nombre';
+	$sSQL = 'SELECT unae26id AS id, CONCAT(unae26prefijo, unae26nombre) AS nombre 
+	FROM unae26unidadesfun 
+	WHERE unae26idzona=0 AND ' . $sWhere . ' unae26id>0 
+	ORDER BY unae26activa DESC, unae26lugar, unae26orden, unae26nombre';
 	return $sSQL;
 }
 function f226_TituloUnidad($id26, $objDB)
@@ -2242,6 +2329,9 @@ function f2220_RegistrarAsignacion($idTercero, $idPeriodo, $idCurso, $iNumAsigna
 		$sError = 'No hay lugar a asignaci&oacute;n';
 	}
 	if ($sError == '') {
+		if ($iNumAsignados == '') {
+			$iNumAsignados = 0;
+		}
 		$sSQL = 'SELECT core20id, core20numestaplicados, core20numgrupos, core20fechacargaini 
 		FROM core20asignacion 
 		WHERE core20idtutor=' . $idTercero . ' AND core20idperaca=' . $idPeriodo . ' AND core20idcurso=' . $idCurso . '';
@@ -4278,6 +4368,37 @@ function f3000_AjustarTablas($objDB, $bDebug = false)
 	}
 	return array($sDebug);
 }
+function f3005_RevisarTabla($sContenedor, $objDB, $bDebug = false)
+{
+	$sError = '';
+	$sDebug = '';
+	$sTabla05='saiu05solicitud_'.$sContenedor;
+	$sSQL = "SELECT saiu05idarchivo FROM " . $sTabla05 . " LIMIT 0, 1;";
+	$result = $objDB->ejecutasql($sSQL);
+	if ($result == false) {
+		$sSQL = "ALTER TABLE " . $sTabla05 . " 
+		ADD saiu05idorigen INT NULL DEFAULT 0 AFTER saiu05respuesta,
+		ADD saiu05idarchivo INT NULL DEFAULT 0 AFTER saiu05idorigen";
+		$result = $objDB->ejecutasql($sSQL);
+		if ($result == false) {
+			$sError = $sError . ' Falla al intentar agregar campos de anexo respuesta';
+		}
+	}
+	$sSQL = "SELECT saiu05evalconocimiento FROM " . $sTabla05 . " LIMIT 0, 1;";
+	$result = $objDB->ejecutasql($sSQL);
+	if ($result == false) {
+		$sSQL = "ALTER TABLE " . $sTabla05 . " 
+		ADD saiu05evalconocimiento INT NULL DEFAULT 0 AFTER saiu05evalsugerencias,
+		ADD saiu05evalconocmotivo TEXT NULL AFTER saiu05evalconocimiento,
+		ADD saiu05evalutilidad INT NULL DEFAULT 0 AFTER saiu05evalconocmotivo,
+		ADD saiu05evalutilmotivo TEXT NULL AFTER saiu05evalutilidad";
+		$result = $objDB->ejecutasql($sSQL);
+		if ($result == false) {
+			$sError = $sError . ' Falla al intentar agregar campos de encuesta';
+		}
+	}
+	return array($sError, $sDebug);
+}
 function f3000_TablasMes($iAgno, $iMes, $objDB, $bDebug = false)
 {
 	$sError = '';
@@ -4300,18 +4421,22 @@ function f3000_TablasMes($iAgno, $iMes, $objDB, $bDebug = false)
 		saiu05idescuela int NULL DEFAULT 0, saiu05idprograma int NULL DEFAULT 0, saiu05idperiodo int NULL DEFAULT 0, 
 		saiu05idcurso int NULL DEFAULT 0, saiu05idgrupo int NULL DEFAULT 0, saiu05tiemprespdias int NULL DEFAULT 0, 
 		saiu05tiempresphoras int NULL DEFAULT 0, saiu05fecharespprob int NULL DEFAULT 0, saiu05respuesta Text NULL, 
+		saiu05idorigen int NULL DEFAULT 0, saiu05idarchivo int NULL DEFAULT 0,
 		saiu05fecharespdef int NULL DEFAULT 0, saiu05horarespdef int NULL DEFAULT 0, saiu05minrespdef int NULL DEFAULT 0, 
 		saiu05diasproc int NULL DEFAULT 0, saiu05minproc int NULL DEFAULT 0, saiu05diashabproc int NULL DEFAULT 0, 
 		saiu05minhabproc int NULL DEFAULT 0, saiu05idmoduloproc int NULL DEFAULT 0, saiu05identificadormod int NULL DEFAULT 0, 
 		saiu05numradicado int NULL DEFAULT 0, saiu05evalacepta int NULL DEFAULT 0, saiu05evalfecha int NULL DEFAULT 0, 
 		saiu05evalamabilidad int NULL DEFAULT 0, saiu05evalamabmotivo Text NULL, saiu05evalrapidez int NULL DEFAULT 0, 
 		saiu05evalrapidmotivo Text NULL, saiu05evalclaridad int NULL DEFAULT 0, saiu05evalcalridmotivo Text NULL, 
-		saiu05evalresolvio int NULL DEFAULT 0, saiu05evalsugerencias Text NULL, saiu05idcategoria int NULL DEFAULT 0, 
+		saiu05evalresolvio int NULL DEFAULT 0, saiu05evalsugerencias Text NULL, saiu05evalconocimiento int NULL DEFAULT 0, 
+		saiu05evalconocmotivo Text NULL, saiu05evalutilidad int NULL DEFAULT 0, saiu05evalutilmotivo Text NULL, saiu05idcategoria int NULL DEFAULT 0, 
 		saiu05raddia int NULL DEFAULT 0, saiu05radhora int NULL DEFAULT 0, saiu05radmin int NULL DEFAULT 0, 
 		saiu05raddespcalend int NULL DEFAULT 0, saiu05raddesphab int NULL DEFAULT 0)";
 		$bResultado = $objDB->ejecutasql($sSQL);
 		if ($bResultado == false) {
 			$sError = 'No ha sido posible iniciar la creaci&oacute;n de lso contenedores para ' . $iAgno . $iMes . ', Por favor informe al administrador del sistema';
+		} else {
+			list ($sError, $sDebugT) = f3005_RevisarTabla($iAgno . $iMes, $objDB, $bDebug);
 		}
 		if ($sError == '') {
 			$sSQL = "ALTER TABLE " . $sTabla . " ADD PRIMARY KEY(saiu05id)";
@@ -4611,6 +4736,19 @@ function f3000_TablasMes($iAgno, $iMes, $objDB, $bDebug = false)
 	}
 	return array($sError, $sDebug);
 }
+// -- Cargos de una persona, a partir de una fecha
+function f3254_ConsultaComboCargo($idTercero, $iFecha, $sWhere = '')
+{
+	if ($iFecha > 0) {
+		$sWhere = $sWhere . ' TB.gthu54ifechaingreso<=' . $iFecha . ' AND 
+		(TB.gthu54ifechafin=0 OR TB.gthu54ifechafin>=' . $iFecha . ') AND ';
+	}
+	$sSQL = 'SELECT TB.gthu54idcargo AS id, CONCAT(T1.gthv01nombre, " - Desde ", TB.gthu54fechaini, CASE TB.gthu54ifechafin WHEN 0 THEN "" ELSE CONCAT(" Hasta ", TB.gthu54fechafin) END) AS nombre 
+	FROM gthu54hvlaboral AS TB, gthv01cargo AS T1
+	WHERE TB.gthu54idtercero=' . $idTercero . ' AND TB.gthu54funcionario=1 AND ' . $sWhere . ' TB.gthu54idcargo=T1.gthv01id 
+	ORDER BY TB.gthu54ifechaingreso DESC';
+	return $sSQL;
+}
 //Nota de novedad
 function f12206_InfoNovedadCurso($idPeriodo, $idCurso, $idTercero, $objDB, $bDebug = false, $iModelo = 0)
 {
@@ -4764,7 +4902,7 @@ function TraerDBRyCV2($bDebug = false)
 			$objRyC = NULL;
 		} else {
 			if ($bDebug) {
-				$sDebug = $sDebug . '' . fecha_microtiempo() . ' Conectado con la base de datos ' . $APP->dbnameryc . ' [' . $sRutaIni . ']<br>';
+				$sDebug = $sDebug . '' . fecha_microtiempo() . ' Conectado con la base de datos ' . $APP->dbnameryc . ' en ' . $APP->dbhostryc . ' [' . $sRutaIni . ']<br>';
 			}
 		}
 	} else {
@@ -4885,14 +5023,14 @@ function TraerDBFL($bDebug = false)
 function Traer_Entidad()
 {
 	$sDirBase = __DIR__ . '/';
-	require $sDirBase . 'app.php';
 	$idEntidad = 0;
-	if (isset($APP->entidad) != 0) {
-		if ($APP->entidad == 1) {
-			$idEntidad = 1;
+	if (file_exists($sDirBase . 'app.php')){
+		require $sDirBase . 'app.php';
+		if (isset($APP->entidad) != 0) {
+			if ($APP->entidad == 1) {
+				$idEntidad = 1;
+			}
 		}
 	}
 	return $idEntidad;
 }
-
-?>

@@ -37,4 +37,7 @@ $ERR['saiu06idusuario']='&Eacute; necess&aacute;rio o dado '.$ETI['saiu06idusuar
 $ERR['saiu06fecha']='&Eacute; necess&aacute;rio o dado '.$ETI['saiu06fecha'];
 $ERR['saiu06hora']='&Eacute; necess&aacute;rio o dado '.$ETI['saiu06hora'];
 $ERR['saiu06minuto']='&Eacute; necess&aacute;rio o dado '.$ETI['saiu06minuto'];
+
+$ERR['noeditar']='No se permite editar anotaci&oacute;n de otro usuario';
+$ERR['noeliminar']='No se permite eliminar anotaci&oacute;n de otro usuario';
 ?>

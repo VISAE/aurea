@@ -151,6 +151,9 @@ $xajax->configure('javascript URI', $APP->rutacomun.'xajax/');
 $xajax->register(XAJAX_FUNCTION,'sesion_abandona_V2');
 $xajax->register(XAJAX_FUNCTION,'sesion_mantenerV4');
 $xajax->register(XAJAX_FUNCTION,'f269_HtmlTablaSistema');
+$xajax->register(XAJAX_FUNCTION,'f3000_Combobita27equipotrabajo');
+$xajax->register(XAJAX_FUNCTION,'f3000_Combobita28eqipoparte');
+$xajax->register(XAJAX_FUNCTION,'f3000_HtmlTablaPQRS');
 $xajax->processRequest();
 if ($bPeticionXAJAX){
 	die(); // Esto hace que las llamadas por xajax terminen aquí.
@@ -162,10 +165,28 @@ $iTipoError=0;
 $bLimpiaHijos=false;
 $bMueveScroll=false;
 $iSector=1;
+$iAgnoFin = fecha_agno();
 // -- Se inicializan las variables, primero las que controlan la visualización de la página.
 if (isset($_REQUEST['iscroll'])==0){$_REQUEST['iscroll']=0;}
 if (isset($_REQUEST['paginaf269'])==0){$_REQUEST['paginaf269']=1;}
 if (isset($_REQUEST['lppf269'])==0){$_REQUEST['lppf269']=20;}
+//Crear los controles que requieran llamado a base de datos
+$objCombos = new clsHtmlCombos();
+$objCombos->nuevo('unae26unidadesfun', '', true, '{' . $ETI['msg_seleccione'] . '}');
+$objCombos->sAccion = 'carga_combo_bita27equipotrabajo();';
+$objCombos->iAncho = 370;
+$sSQL = 'SELECT unae26id AS id, CONCAT(unae26prefijo, "", unae26nombre) AS nombre FROM unae26unidadesfun WHERE unae26idzona=0 AND unae26id>0 ORDER BY unae26lugar, unae26nivel, unae26nombre';
+$html_unae26unidadesfun = $objCombos->html($sSQL, $objDB);
+$html_bita27equipotrabajo = f3000_HTMLComboV2_bita27equipotrabajo($objDB, $objCombos, '', '');
+$html_bita28eqipoparte = f3000_HTMLComboV2_bita28eqipoparte($objDB, $objCombos, '', '');
+$objCombos->nuevo('bagno', '', false, '{' . $ETI['msg_todos'] . '}');
+$objCombos->sAccion = 'paginarf3000()';
+$objCombos->numeros(2020, $iAgnoFin, 1);
+$html_bagno = $objCombos->html('', $objDB);
+$aParametros[100]=$idTercero;
+$aParametros[106]=$iAgnoFin;
+list($sTabla3000, $sDebugTabla)=f3000_TablaDetallePQRS($aParametros, $objDB, $bDebug);
+$sDebug=$sDebug.$sDebugTabla;
 //DATOS PARA COMPLETAR EL FORMULARIO
 list($sHTMLPendientes, $iEnProceso, $iACargo, $iVencidas, $iEnSupervision, $sDebugD)=f3000_Estado($idTercero, $objDB, true, $bDebug, true);
 $sDebug=$sDebug.$sDebugD;
@@ -270,6 +291,30 @@ function cierraDiv96(ref){
 	MensajeAlarmaV2('', 0);
 	retornacontrol();
 	}
+function carga_combo_bita27equipotrabajo() {
+	var params = new Array();
+	params[0] = window.document.frmedita.unae26unidadesfun.value;
+	document.getElementById('div_bita27equipotrabajo').innerHTML = '<b>Procesando datos, por favor espere...</b><input id="bita27equipotrabajo" name="bita27equipotrabajo" type="hidden" value="" />';
+	xajax_f3000_Combobita27equipotrabajo(params);
+}
+function carga_combo_bita28eqipoparte() {
+	var params = new Array();
+	params[0] = window.document.frmedita.bita27equipotrabajo.value;
+	document.getElementById('div_bita28eqipoparte').innerHTML = '<b>Procesando datos, por favor espere...</b><input id="bita28eqipoparte" name="bita28eqipoparte" type="hidden" value="" />';
+	xajax_f3000_Combobita28eqipoparte(params);
+}
+function paginarf3000() {
+	var params = new Array();
+	params[99] = window.document.frmedita.debug.value;
+	params[100] = <?php echo $idTercero; ?>;
+	params[103] = window.document.frmedita.unae26unidadesfun.value;
+	params[104] = window.document.frmedita.bita27equipotrabajo.value;
+	params[105] = window.document.frmedita.bita28eqipoparte.value;
+	params[106] = window.document.frmedita.bagno.value;
+	// params[106] = window.document.frmedita.blistar.value;
+	document.getElementById('div_f3000detalle').innerHTML = '<div class="GrupoCamposAyuda"><div class="MarquesinaMedia">Procesando datos, por favor espere.</div></div><input id="paginaf3000" name="paginaf3000" type="hidden" value="' + params[101] + '" /><input id="lppf3005" name="lppf3005" type="hidden" value="' + params[102] + '" />';
+	xajax_f3000_HtmlTablaPQRS(params);
+}
 </script>
 <div id="interna">
 <form id="frmedita" name="frmedita" method="post" action="" autocomplete="off">
@@ -306,9 +351,69 @@ echo $sTabla269;
 </div>
 </div><!-- CIERRA EL DIV areatrabajo -->
 </div><!-- CIERRA EL DIV areaform -->
+<div class="areaform">
+<div class="areatrabajo">
+<label class="TituloGrupo">
+<?php
+echo $ETI['tableropqrs'];
+?>
+</label>
+<div class="salto1px"></div>
+<label class="Label90">
+<?php
+echo $ETI['unidadresp'];
+?>
+</label>
+<label class="Label450">
+<?php
+echo $html_unae26unidadesfun;
+?>
+</label>
+<label class="Label60">
+<?php
+echo $ETI['agno'];
+?>
+</label>
+<label class="Label90">
+<?php
+echo $html_bagno;
+?>
+</label>
+<div class="salto1px"></div>
+<label class="Label90">
+<?php
+echo $ETI['equiporesp'];
+?>
+</label>
+<label class="Label380">
+<div id="div_bita27equipotrabajo">
+<?php
+echo $html_bita27equipotrabajo;
+?>
+</div>
+</label>
+<div class="salto1px"></div>
+<label class="Label90">
+<?php
+echo $ETI['responsable'];
+?>
+</label>
+<label class="Label380">
+<div id="div_bita28eqipoparte">
+<?php
+echo $html_bita28eqipoparte;
+?>
+</div>
+</label>
+<div class="salto1px"></div>
+<div id="div_f3000detalle">
+<?php
+echo $sTabla3000;
+?>
+</div>
+</div><!-- CIERRA EL DIV areatrabajo -->
+</div><!-- CIERRA EL DIV areaform -->
 </div><!-- /DIV_Sector1 -->
-
-
 <div id="div_sector2" style="display:none">
 <div class="titulos">
 <div class="titulosD">

@@ -147,13 +147,24 @@ function cadena_aletoria($iLargo = 8)
 	}
 	return $sRes;
 }
+// Abril 27 de 2023 - Se ajusta el modelo de codificacion para PHP 8
 function cadena_codificar($sCadena)
 {
-	return ($sCadena);
+	//return utf8_encode($sCadena);
+	if (cadena_esISO($sCadena)) {
+		return $sCadena;
+	} else {
+		return iconv('UTF-8', 'ISO-8859-1', $sCadena);
+	}
 }
 function cadena_decodificar($sCadena) 
 {
-	return utf8_decode($sCadena);
+	//return utf8_decode($sCadena);
+	if (cadena_esISO($sCadena)) {
+		return iconv('ISO-8859-1', 'UTF-8', $sCadena);
+	} else {
+		return $sCadena;
+	}
 }
 function cadena_contiene($sBase, $sDato)
 {
@@ -182,6 +193,9 @@ function cadena_esutf8($string)
         | [\xF1-\xF3][\x80-\xBF]{3}
         |  \xF4[\x80-\x8F][\x80-\xBF]{2}
     )*$%xs', $sBase);
+}
+function cadena_esISO($sCadena) {
+	return mb_detect_encoding($sCadena, "ISO-8859-1", true) == "ISO-8859-1" ? true : false;
 }
 function cadena_letras($semilla, $adicionales = '')
 {
@@ -298,6 +312,64 @@ function cadena_LimpiarNombreArchivo($semilla, $adicionales = '')
 	}
 	return $cf;
 }
+// 18 de Abril de 2023 -- Cuando no queda de otra, toca quitar las tildes.
+function cadena_LimpiarTildes($semilla, $adicionales = '', $sComodin = '?')
+{
+	$permitidos = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890._-/*+()%$#[]{}@!|° ' . $adicionales;
+	$cf = '';
+	if (strlen($permitidos) > 0) {
+		$largo = strlen($semilla);
+		for ($k = 0; $k < $largo; $k++) {
+			$una = substr($semilla, $k, 1);
+			switch ($una) {
+				case 'á':
+					$una = 'a';
+					break;
+				case 'Á':
+					$una = 'A';
+					break;
+				case 'é':
+					$una = 'e';
+					break;
+				case 'É':
+					$una = 'E';
+					break;
+				case 'í':
+					$una = 'i';
+					break;
+				case 'Í':
+					$una = 'I';
+					break;
+				case 'ó':
+					$una = 'o';
+					break;
+				case 'Ó':
+					$una = 'O';
+					break;
+				case 'ú':
+					$una = 'u';
+					break;
+				case 'Ú':
+					$una = 'U';
+					break;
+				case 'ñ':
+					$una = 'n';
+					break;
+				case 'Ñ':
+					$una = 'N';
+					break;
+			}
+			$lugar = strpos($permitidos, $una);
+			if ($lugar === false) {
+				$cf = $cf . $sComodin;
+			} else {
+				$cf = $cf . $una;
+			}
+		}
+	}
+	return $cf;
+}
+//
 function cadena_notildes($origen, $butf8 = false)
 {
 	$nuevo = $origen;
@@ -312,15 +384,15 @@ function cadena_notildes($origen, $butf8 = false)
 		'á', 'é', 'í', 'ó', 'ú', 'è', 'ì', 'ò', 'ñ', 'Ñ',
 		'Á', 'É', 'Í', 'Ó', 'Ú', '¿', '¬', '°', 'Â', 'Ç',
 		'©', '¡', 'ª', '­', '–', '™', 'ê', 'ã', 'ç', 'â',
-		'õ', '“', '”', '´', 'ü', 'Ü', '∩', 'π', '^'
+		'õ', '“', '”', '´', 'ü', 'Ü', '∩', 'π', '^', '’'
 	);
 	$sH = array(
 		'&aacute;', '&eacute;', '&iacute;', '&oacute;', '&uacute;', '&egrave;', '&igrave;', '&ograve;', '&ntilde;', '&Ntilde;',
 		'&Aacute;', '&Eacute;', '&Iacute;', '&Oacute;', '&Uacute;', '&iquest;', '&not;', '&deg;', '&Acirc;', '&Ccedil;',
 		'&copy;', '&iexcl;', '&ordf;', '&shy;', '&ndash;', '&trade;', '&ecirc;', '&atilde;', '&ccedil;', '&acirc;',
-		'&otilde;', '&ldquo;', '&rdquo;', '&acute;', '&uuml;', '&Uuml;', '&cap;', '&pi;', '&#94;'
+		'&otilde;', '&ldquo;', '&rdquo;', '&acute;', '&uuml;', '&Uuml;', '&cap;', '&pi;', '&#94;', '&#8217;'
 	);
-	$iTotal = 38;
+	$iTotal = 39;
 	for ($k = 0; $k <= $iTotal; $k++) {
 		$nuevo = str_replace($sT[$k], $sH[$k], $nuevo);
 	}
@@ -440,7 +512,7 @@ function cadena_ResuelveParaHTML($sBase)
 }
 function cadena_Validar($semilla, $bTolerante = false)
 {
-	$sSignos = '.,;()!¡$=+_$?¿|°*[]{}~"@:' . "'";
+	$sSignos = '.,;()!¡$=+-_$?¿|°*[]{}~"@:' . "'";
 	$permitidos = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890ñáéíóúüÑÁÉÍÓÚÜ ' . $sSignos;
 	if ($bTolerante) {
 		$permitidos = $permitidos . '-/';
@@ -464,7 +536,7 @@ function cadena_utf8($cadena)
 	if (cadena_esutf8($cadena)) {
 		return $cadena;
 	} else {
-		return utf8_encode($cadena);
+		return cadena_codificar($cadena);
 	}
 }
 // -- Funciones de correo electrónico.
@@ -1060,8 +1132,7 @@ function fecha_mesNumDias($iMes, $iAgno)
 	switch ($iMes) {
 		case 2:
 			$iNumDiasMes = 28;
-			$bPasa = date('w', mktime(0, 0, 0, 2, 29, $iAgno));
-			if ($bPasa) {
+			if (checkdate($iMes, 29, $iAgno)) {
 				$iNumDiasMes = 29;
 			}
 			break;
@@ -1329,10 +1400,6 @@ function formato_horaminuto($ihora, $iminuto)
 {
 	return html_TablaHoraMin($ihora, $iminuto);
 }
-function formatear_moneda($dValor, $iDecimales = 2) 
-{
-	return formato_moneda($dValor, $iDecimales);
-}
 function formato_moneda($dValor, $iDecimales = 2, $sPref = '$ ')
 {
 	$dValor2 = numeros_validar($dValor, true, $iDecimales);
@@ -1355,6 +1422,20 @@ function formato_numero($dValor, $iDecimales = 0, $bVacio = false)
 	$sFinal = number_format($dValor2, $iDecimales, '.', ',');
 	return $sFinal;
 }
+
+function formato_porcentaje($dValor, $iDecimales = 2, $bVacio = false)
+{
+	$dValor2 = numeros_validar($dValor, true, $iDecimales);
+	if ($dValor2 == '') {
+		if ($bVacio) {
+			return '';
+		}
+		$dValor2 = 0;
+	}
+	$sFinal = number_format($dValor2, $iDecimales, '.', ',') . ' %';
+	return $sFinal;
+}
+
 function formato_sino($svalor, $spred = 'No')
 {
 	switch ($svalor) {
@@ -2053,7 +2134,14 @@ function html_MenuGrupoV3($grupo, $idsistema, $iPiel, $objDB, $completo = true, 
 				$sClaseLinkBase = '';
 			}
 		}
-		if ($iPiel == 1) {
+		$bPielTipoUno = false;
+		switch($iPiel) {
+			case 1:
+			case 2:
+				$bPielTipoUno = true;
+				break;
+		}
+		if ($bPielTipoUno) {
 			$sClaseLinkBase = ' class="dropdown-item"';
 			$sInicioBloque = '<div class="dropdown-menu">';
 			$sFinBloque = '</div>';
@@ -2128,6 +2216,7 @@ function html_menuV2($idsistema, $objDB, $iPiel = 1, $bDebug = false, $idTercero
 	$et_inisesion = 'Iniciar Sesi&oacute;n';
 	$et_ayuda = 'Ayuda';
 	$et_acerca = 'Acerca de...';
+	$et_erp = 'ERP';
 	$et_manuales = 'Manuales';
 	$et_miperfil = 'Mi perfil';
 	$et_modulos = 'M&oacute;dulos';
@@ -2176,7 +2265,14 @@ function html_menuV2($idsistema, $objDB, $iPiel = 1, $bDebug = false, $idTercero
 		$sInicioItem = '<li>';
 		$sFinItem = '</li>';
 	}
-	if ($iPiel == 1) {
+	$bPielTipoUno = false;
+	switch($iPiel) {
+		case 1:
+		case 2:
+			$bPielTipoUno = true;
+			break;
+	}
+	if ($bPielTipoUno) {
 		$sHTML = '<ul class="nav nav-tabs">';
 		$sClaseLinkBase = ' class="nav-link dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false"';
 		$sClaseLinkItem = ' class="dropdown-item"';
@@ -2200,7 +2296,7 @@ function html_menuV2($idsistema, $objDB, $iPiel = 1, $bDebug = false, $idTercero
 			}
 			$sHTML = $sHTML . $sInicioItem . '<a href="miperfil.php"' . $sClaseLinkItem . '><span>' . $et_miperfil . '</span></a>' . $sFinItem;
 			$sHTML = $sHTML . $sInicioItem . '<a href="unadentorno.php"' . $sClaseLinkItem . '><span>' . $et_entorno . '</span></a>' . $sFinItem;
-			if ($iPiel == 1) {
+			if ($bPielTipoUno) {
 				$sHTML = $sHTML . $sInicioItem . '<a href="salir.php"' . $sClaseLinkItem . '><span>' . $et_salir . '</span></a>' . $sFinItem;
 			}
 			//if ($_SESSION['ent_chat']=='S')
@@ -2286,14 +2382,32 @@ function html_menuV2($idsistema, $objDB, $iPiel = 1, $bDebug = false, $idTercero
 	while ($fila = $objDB->sf($tabla)) {
 		$sSistema = $sSistema . ',' . $fila['unad02idsistema'];
 	}
+	//Vemos los temas asociados a modulos academicos y eventos.
 	$sSQL = 'SELECT unad01nombre, unad01descripcion, unad01ruta 
 	FROM unad01sistema 
-	WHERE unad01id IN (' . $sSistema . ') AND unad01publico="S" AND unad01instalado="S" 
-	ORDER BY unad01nombre';
+	WHERE unad01id IN (' . $sSistema . ') AND unad01publico="S" AND unad01instalado="S" AND unad01orden<70 
+	ORDER BY unad01orden, unad01nombre';
 	$tabla = $objDB->ejecutasql($sSQL);
 	if ($objDB->nf($tabla) > 0) {
 		$bConModulos = true;
 		$sHTML = $sHTML . '<li' . $sClaseLiBase . '><a href="#"' . $sClaseLinkBase . '><span>' . $et_modulos . '</span></a>' . $sInicioBloque;
+	}
+	while ($fila = $objDB->sf($tabla)) {
+		$sHTML = $sHTML . $sInicioItem . '<a href="' . $fila['unad01ruta'] . '"' . $sClaseLinkItem . ' title="' . cadena_notildes($fila['unad01descripcion']) . '" target="_blank"><span>' . strtoupper($fila['unad01nombre']) . '</span></a>' . $sFinItem;
+	}
+	if ($bConModulos) {
+		$sHTML = $sHTML . $sFinBloque . '</li>';
+	}
+	//ERP
+	$bConModulos = false;
+	$sSQL = 'SELECT unad01nombre, unad01descripcion, unad01ruta 
+	FROM unad01sistema 
+	WHERE unad01id IN (' . $sSistema . ') AND unad01publico="S" AND unad01instalado="S" AND unad01orden>69  
+	ORDER BY unad01orden, unad01nombre';
+	$tabla = $objDB->ejecutasql($sSQL);
+	if ($objDB->nf($tabla) > 0) {
+		$bConModulos = true;
+		$sHTML = $sHTML . '<li' . $sClaseLiBase . '><a href="#"' . $sClaseLinkBase . '><span>' . $et_erp . '</span></a>' . $sInicioBloque;
 	}
 	while ($fila = $objDB->sf($tabla)) {
 		$sHTML = $sHTML . $sInicioItem . '<a href="' . $fila['unad01ruta'] . '"' . $sClaseLinkItem . ' title="' . cadena_notildes($fila['unad01descripcion']) . '" target="_blank"><span>' . strtoupper($fila['unad01nombre']) . '</span></a>' . $sFinItem;
@@ -2310,7 +2424,7 @@ function html_menuV2($idsistema, $objDB, $iPiel = 1, $bDebug = false, $idTercero
 		$sHTML = $sHTML . '</ul>
 		</div>';
 	}
-	if ($iPiel == 1) {
+	if ($bPielTipoUno) {
 		$sHTML = $sHTML . '</ul>';
 	}
 	return array($sHTML, $sDebug);
@@ -2753,7 +2867,19 @@ function html_tipodocV2($nombre, $valor, $accion = '', $con_nulo = false, $bConE
 ';
 	return $res;
 }
+// Tema de licencia
+function licencia_PuedeSeguir($idTercero, $idSistema, $objDB)
+{
+	$bContinua = true;
+	$sError = '';
+	$iTipoLicencia = 1001;
+	return array($bContinua, $sError, $iTipoLicencia);
+}
+function licencia_AgregarAccion($idTercero, $idSistema, $objDB)
+{
 
+}
+// Fin del tema de licencia
 function login_activaperfil($idtercero, $idperfil, $sestado, $objDB, $fechalimite = '00/00/0000')
 {
 	if ($idtercero < 1) {
@@ -2822,6 +2948,7 @@ function login_iniciarsesion($objDB, $bDebug = false)
 		$_SESSION['unad_geo_lon'] = '';
 		$_SESSION['unad_id_sesion'] = 0;
 		$_SESSION['u_ipusuario'] = '';
+		$_SESSION['u_visual'] = 0;
 	}
 	$iAgnoMes = fecha_AgnoMes();
 	if ($bDebug) {
@@ -2889,11 +3016,12 @@ function login_iniciarsesion($objDB, $bDebug = false)
 			$result = $objDB->ejecutasql($sSQL);
 			seg_rastro(17, 1, 0, $_SESSION['unad_id_tercero'], 'Inicia sesion ' . formato_numero($id71) . ' en ' . $sTabla71 . '', $objDB);
 			//Junio 28 de 2019 - Se cargan los parametros del tercero para la sesion
-			$sSQL = 'SELECT unad11idioma FROM unad11terceros WHERE unad11id=' . $_SESSION['unad_id_tercero'] . '';
+			$sSQL = 'SELECT unad11idioma, unad11idvisual FROM unad11terceros WHERE unad11id=' . $_SESSION['unad_id_tercero'] . '';
 			$tabla = $objDB->ejecutasql($sSQL);
 			if ($objDB->nf($tabla) > 0) {
 				$fila = $objDB->sf($tabla);
 				$_SESSION['unad_idioma'] = $fila['unad11idioma'];
+				$_SESSION['u_visual'] = $fila['unad11idvisual'];
 			}
 			//Enero 23 de 2019 - Se incluye la revision de perfiles que se deja en la libdatos.
 			list($sError, $sDebugG) = f107_VerificarPerfiles($_SESSION['unad_id_tercero'], '', $objDB, $bDebug);
@@ -3675,7 +3803,7 @@ function url_decode($string)
 		if (isset($val_get[1]) == 0) {
 			$val_get[1] = '';
 		}
-		$_GET[$val_get[0]] = utf8_decode($val_get[1]);
+		//$_GET[$val_get[0]] = utf8_decode($val_get[1]);
 	}
 }
 function url_decode_simple($string)
