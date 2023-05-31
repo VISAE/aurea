@@ -2599,6 +2599,33 @@ echo $ETI['saiu05respuesta'];
 ?>
 </label>
 <div class="salto1px"></div>
+<?php
+if ($_REQUEST['saiu05estado']==7) {
+?>
+<label class="Label60">
+<?php
+echo $ETI['saiu05fecharespdef'];
+?>
+</label>
+<label class="Label130">
+<?php
+echo html_oculto('saiu05fecharespdef', $_REQUEST['saiu05fecharespdef'], fecha_desdenumero($_REQUEST['saiu05fecharespdef']));
+?>
+</label>
+<label class="Label60">
+<?php
+echo $ETI['saiu05hora'];
+?>
+</label>
+<label class="Label130">
+<?php
+echo html_HoraMin('saiu05horarespdef', $_REQUEST['saiu05horarespdef'], 'saiu05minrespdef', $_REQUEST['saiu05minrespdef'], true);
+?>
+</label>
+<?php
+}
+?>
+<div class="salto1px"></div>
 <div class="GrupoCampos520">
 <label class="txtAreaS">
 <textarea id="saiu05respuesta" name="saiu05respuesta" placeholder="<?php echo $ETI['ing_campo'] . $ETI['saiu05respuesta']; ?>"><?php echo $_REQUEST['saiu05respuesta']; ?></textarea>

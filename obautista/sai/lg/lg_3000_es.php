@@ -42,4 +42,13 @@ $ETI['unidadresp'] = 'Unidad';
 $ETI['equiporesp'] = 'Equipo';
 $ETI['responsable'] = 'Integrante';
 $ETI['agno'] = 'A&ntilde;o';
+$ETI['msg_blistar'] = 'Listar';
+$ETI['vence_solicitud'] = 'Vencimiento de solicitudes';
+$ETI['vence_rojo'] = 'Vencidas';
+$ETI['vence_naranja'] = 'Por vencerse';
+$ETI['vence_verde'] = 'A tiempo';
+$ETI['tiempos_resp'] = 'Tiempos de respuesta';
+$ETI['tiempos_rojo'] = 'Mayor a 4 d&iacute;as';
+$ETI['tiempos_naranja'] = 'Entre 2 y 3 d&iacute;as';
+$ETI['tiempos_verde'] = 'Menor o igual a 1 d&iacute;a';
 ?>

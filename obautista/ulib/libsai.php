@@ -2963,6 +2963,7 @@ function f3000_TablaDetallePQRS($aParametros, $objDB, $bDebug=false){
 	if (isset($aParametros[104])==0){$aParametros[104]='';}
 	if (isset($aParametros[105])==0){$aParametros[105]='';}
 	if (isset($aParametros[106])==0){$aParametros[106]='';}
+	if (isset($aParametros[107])==0){$aParametros[107]='';}
 	//$aParametros[103]=numeros_validar($aParametros[103]);
 	$sDebug='';
 	$idTercero=$aParametros[100];
@@ -2970,6 +2971,8 @@ function f3000_TablaDetallePQRS($aParametros, $objDB, $bDebug=false){
 	$idEquipo=numeros_validar($aParametros[104]);
 	$idResponsable=numeros_validar($aParametros[105]);
 	$iAgno=numeros_validar($aParametros[106]);
+	$bListar=numeros_validar($aParametros[107]);
+	//if ($bDebug){$sDebug=$sDebug.fecha_microtiempo().' bListar: ' . $aParametros[107].'<br>';}
 	$babierta=true;
 	//$sSQL='SELECT Campo FROM Tabla WHERE Id='.$sValorId;
 	//$tabla=$objDB->ejecutasql($sSQL);
@@ -3010,6 +3013,12 @@ function f3000_TablaDetallePQRS($aParametros, $objDB, $bDebug=false){
 	$sTitulos='-, Borrador, Solicitado, En tramite, Resuelto';
 	$asaiu05idcategoria=array();
 	$aTablas=array();
+	$iVenceRojo=0;
+	$iVenceNaranja=0;
+	$iVenceVerde=0;
+	$iTiempoRojo=0;
+	$iTiempoNaranja=0;
+	$iTiempoVerde=0;
 	$iTablas=0;
 	$iNumSolicitudes=0;
 	$sSQL='SELECT saiu15agno, saiu15mes, SUM(saiu15numsolicitudes) AS Solicitudes 
@@ -3038,13 +3047,46 @@ function f3000_TablaDetallePQRS($aParametros, $objDB, $bDebug=false){
 		$sWhere = $sWhere . ' AND saiu05idequiporesp=' . $idEquipo . '';
 	}
 	if ($idResponsable != '') {
-		$sWhere = $sWhere . ' AND saiu05idresponsable=' . $idResponsable . '';
+		$sWhere = $sWhere . ' AND saiu05idresponsable=' . $idResponsable . '';		
+	}
+	if ($bListar != '') {
+		switch($bListar) {
+			case 1:
+				$sWhere = $sWhere . ' AND saiu05idresponsable=' . $idTercero . '';				
+				break;
+			case 2:
+				$aEquipos = array();
+				$sEquipos = '';
+				$sSQL='SELECT bita27id FROM bita27equipotrabajo WHERE bita27activo=1 AND bita27idlider=' . $idTercero . '';
+				$tabla= $objDB->ejecutasql($sSQL);
+				if ($objDB->nf($tabla)>0) {
+					while ($fila = $objDB->sf($tabla)) {
+						$aEquipos[] = $fila['bita27id'];
+					}
+				} else {
+					$sSQL='SELECT bita28idequipotrab FROM bita28eqipoparte WHERE bita28activo="S" AND bita28idtercero=' . $idTercero . '';
+					$tabla= $objDB->ejecutasql($sSQL);
+					if ($objDB->nf($tabla)>0) {
+						while ($fila = $objDB->sf($tabla)) {
+							$aEquipos[] = $fila['bita28idequipotrab'];
+						}
+					}
+				}
+				$sEquipos = implode(',',$aEquipos);
+				if ($sEquipos != '') {
+					$sWhere = $sWhere . ' AND saiu05idequiporesp IN (' . $sEquipos . ')';
+				} else {
+					$sWhere = $sWhere . ' AND saiu05idresponsable=' . $idTercero . '';
+				}
+				if ($bDebug){$sDebug=$sDebug.fecha_microtiempo().' Lider o Colaborador: '.$sSQL.'<br>';}
+				break;
+		}
 	}
 	$sSQL='';
 	for ($k=1;$k<=$iTablas;$k++){
 		if ($k!=1){$sSQL=$sSQL.' UNION ALL ';}
 		$sContenedor=$aTablas[$k];
-		$sSQL=$sSQL.'SELECT saiu05idcategoria, saiu05estado
+		$sSQL=$sSQL.'SELECT saiu05idcategoria, saiu05estado, saiu05fecharespprob, saiu05fecharespdef
 		FROM saiu05solicitud_' . $sContenedor . '
 		WHERE saiu05tiporadicado=1 ' . $sWhere . '';
 	}
@@ -3068,7 +3110,7 @@ function f3000_TablaDetallePQRS($aParametros, $objDB, $bDebug=false){
 				<td align="center"><b>'.'No se registran solicitudes'.'</b></td>
 				</tr>
 				</table>';
-				return array(utf8_encode($sErrConsulta.$sBotones).$sTabla, $sDebug);
+				return array(utf8_encode($sErrConsulta.$sBotones).$sTabla, $iVenceRojo, $iVenceNaranja, $iVenceVerde, $iTiempoRojo, $iTiempoNaranja, $iTiempoVerde, $sDebug);
 			} 
 		}
 	}
@@ -3100,6 +3142,36 @@ function f3000_TablaDetallePQRS($aParametros, $objDB, $bDebug=false){
 		if ($asaiu05idcategoria[$i_saiu05idcategoria]!='') {
 			$asaiu05idcategoria[$i_saiu05idcategoria]['valores'][$filadet['saiu05estado']]++;
 		}
+		if ($filadet['saiu05estado'] == 7) {
+			// Determina tiempos de respuesta de solicitudes
+			if ($filadet['saiu05fecharespprob'] != 0 && $filadet['saiu05fecharespdef'] != 0) {				
+				if ($filadet['saiu05fecharespprob'] >= $filadet['saiu05fecharespdef']) {
+					$idias = fecha_DiasEntreFechasDesdeNumero($filadet['saiu05fecharespdef'], $filadet['saiu05fecharespprob']);
+					if ($idias < 2) { // Entre 2 y 3 días
+						$iTiempoNaranja++;
+					} else { // Menor o igual a 1 dia
+						$iTiempoVerde++;
+					}
+				} else { // Mayor a 4 días
+					$iTiempoRojo++;
+				}
+			}
+		} else if ($filadet['saiu05estado'] >= 0  && $filadet['saiu05estado'] < 7) {
+			// Determina tiempos de vencimiento de solicitudes
+			if ($filadet['saiu05fecharespprob'] != 0) {
+				$iHoy = fecha_DiaMod();
+				if ($filadet['saiu05fecharespprob'] >= $iHoy) {
+					$idias = fecha_DiasEntreFechasDesdeNumero($iHoy, $filadet['saiu05fecharespprob']);
+					if ($idias <= 1) {
+						$iVenceNaranja++;
+					} else {
+						$iVenceVerde++;
+					}
+				} else {
+					$iVenceRojo++;
+				}
+			}
+		}
 	}
 	foreach ($asaiu05idcategoria as $aCategoria) {
 		$sPrefijo='';
@@ -3125,7 +3197,7 @@ function f3000_TablaDetallePQRS($aParametros, $objDB, $bDebug=false){
 	}
 	$res=$res.'</table>';
 	$objDB->liberar($tabladetalle);
-	return array(utf8_encode($res), $sDebug);
+	return array(utf8_encode($res), $iVenceRojo, $iVenceNaranja, $iVenceVerde, $iTiempoRojo, $iTiempoNaranja, $iTiempoVerde, $sDebug);
 }
 function f3000_HtmlTablaPQRS($aParametros){
 	$_SESSION['u_ultimominuto']=iminutoavance();
@@ -3139,11 +3211,17 @@ function f3000_HtmlTablaPQRS($aParametros){
 	$objDB=new clsdbadmin($APP->dbhost, $APP->dbuser, $APP->dbpass, $APP->dbname);
 	if ($APP->dbpuerto!=''){$objDB->dbPuerto=$APP->dbpuerto;}
 	$objDB->xajax();
-	list($sDetalle, $sDebugTabla)=f3000_TablaDetallePQRS($aParametros, $objDB, $bDebug);
+	list($sDetalle, $iVenceRojo, $iVenceNaranja, $iVenceVerde, $iTiempoRojo, $iTiempoNaranja, $iTiempoVerde, $sDebugTabla)=f3000_TablaDetallePQRS($aParametros, $objDB, $bDebug);
 	$sDebug=$sDebug.$sDebugTabla;
 	$objDB->CerrarConexion();
 	$objResponse=new xajaxResponse();
 	$objResponse->assign('div_f3000detalle', 'innerHTML', $sDetalle);
+	$objResponse->assign('div_f3000vencerojo', 'innerHTML', $iVenceRojo);
+	$objResponse->assign('div_f3000vencenaranja', 'innerHTML', $iVenceNaranja);
+	$objResponse->assign('div_f3000venceverde', 'innerHTML', $iVenceVerde);
+	$objResponse->assign('div_f3000tiemporojo', 'innerHTML', $iTiempoRojo);
+	$objResponse->assign('div_f3000tiemponaranja', 'innerHTML', $iTiempoNaranja);
+	$objResponse->assign('div_f3000tiempoverde', 'innerHTML', $iTiempoVerde);
 	if ($bDebug){
 		$objResponse->assign('div_debug', 'innerHTML', $sDebug);
 	}
