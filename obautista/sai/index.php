@@ -166,7 +166,7 @@ if ($bCerrado) {
 	<link rel="stylesheet" href="<?php echo $APP->rutacomun; ?>js/bootstrap.min.css" type="text/css" />
 	<link rel="stylesheet" href="<?php echo $APP->rutacomun; ?>css/criticalPath.css" type="text/css" />
 	<link rel="stylesheet" href="<?php echo $APP->rutacomun; ?>css/principal.css" type="text/css" />
-	<link rel="stylesheet" href="<?php echo $APP->rutacomun; ?>unad_estilos2018.css" type="text/css" />
+	<link rel="stylesheet" href="<?php echo $APP->rutacomun; ?>unad_estilos2018.css?v=3" type="text/css" />
 	<?php
 	echo $sMsgCierre;
 	if ($bDebug) {
@@ -318,7 +318,7 @@ $html_bagno = $objCombos->html('', $objDB);
 $aParametros[100] = $idTercero;
 $aParametros[106] = $iAgnoFin;
 $aParametros[107] = $_REQUEST['blistar'];
-list($sTabla3000, $iVenceRojo, $iVenceNaranja, $iVenceVerde, $iTiempoRojo, $iTiempoNaranja, $iTiempoVerde, $sDebugTabla) = f3000_TablaDetallePQRS($aParametros, $objDB, $bDebug);
+list($sTabla3000, $iVenceRojo, $iVenceNaranja, $iVenceVerde, $iTiempoRojo, $iTiempoNaranja, $iTiempoVerde, $iIndiceSatisf, $sDebugTabla) = f3000_TablaDetallePQRS($aParametros, $objDB, $bDebug);
 $sDebug = $sDebug . $sDebugTabla;
 //DATOS PARA COMPLETAR EL FORMULARIO
 list($sHTMLPendientes, $iEnProceso, $iACargo, $iVencidas, $iEnSupervision, $sDebugD) = f3000_Estado($idTercero, $objDB, true, $bDebug, true);
@@ -346,7 +346,7 @@ forma_mitad();
 <link rel="stylesheet" href="<?php echo $APP->rutacomun; ?>js/bootstrap.min.css" type="text/css" />
 <link rel="stylesheet" href="<?php echo $APP->rutacomun; ?>css/criticalPath.css" type="text/css" />
 <link rel="stylesheet" href="<?php echo $APP->rutacomun; ?>css/principal.css" type="text/css" />
-<link rel="stylesheet" href="<?php echo $APP->rutacomun; ?>unad_estilos2018.css?v=2" type="text/css" />
+<link rel="stylesheet" href="<?php echo $APP->rutacomun; ?>unad_estilos2018.css?v=3" type="text/css" />
 <?php
 if ($iPiel == 2) {
 ?>
@@ -731,6 +731,27 @@ echo $ETI['tiempos_verde'];
 <div id="div_f3000tiempoverde">
 <?php
 echo $iTiempoVerde;
+?>
+</div>
+</label>
+<div class="salto1px"></div>
+</div>
+<div class="GrupoCampos300">
+<label class="TituloGrupo">
+<?php
+echo $ETI['indice_satisf'];
+?>
+</label>
+<div class="salto1px"></div>
+<label class="Label90">
+<div id="div_f3000indicesatisf" class="textoGrandeCentro">
+<?php
+if ($iIndiceSatisf == 0) {
+	echo '_';
+} else {
+	$iIndiceSatisf = number_format($iIndiceSatisf,2,',','');
+	echo $iIndiceSatisf . '%';
+}
 ?>
 </div>
 </label>

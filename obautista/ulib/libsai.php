@@ -3019,6 +3019,8 @@ function f3000_TablaDetallePQRS($aParametros, $objDB, $bDebug=false){
 	$iTiempoRojo=0;
 	$iTiempoNaranja=0;
 	$iTiempoVerde=0;
+	$iIndiceSatisf=0;
+	$iEncuestas=0;
 	$iTablas=0;
 	$iNumSolicitudes=0;
 	$sSQL='SELECT saiu15agno, saiu15mes, SUM(saiu15numsolicitudes) AS Solicitudes 
@@ -3086,7 +3088,9 @@ function f3000_TablaDetallePQRS($aParametros, $objDB, $bDebug=false){
 	for ($k=1;$k<=$iTablas;$k++){
 		if ($k!=1){$sSQL=$sSQL.' UNION ALL ';}
 		$sContenedor=$aTablas[$k];
-		$sSQL=$sSQL.'SELECT saiu05idcategoria, saiu05estado, saiu05fecharespprob, saiu05fecharespdef
+		$sSQL=$sSQL.'SELECT saiu05idcategoria, saiu05estado, saiu05fecharespprob, saiu05fecharespdef, saiu05evalacepta, 
+		saiu05evalfecha, saiu05evalamabilidad, saiu05evalrapidez, saiu05evalclaridad, saiu05evalresolvio, 
+		saiu05evalconocimiento, saiu05evalutilidad 
 		FROM saiu05solicitud_' . $sContenedor . '
 		WHERE saiu05tiporadicado=1 ' . $sWhere . '';
 	}
@@ -3110,7 +3114,7 @@ function f3000_TablaDetallePQRS($aParametros, $objDB, $bDebug=false){
 				<td align="center"><b>'.'No se registran solicitudes'.'</b></td>
 				</tr>
 				</table>';
-				return array(utf8_encode($sErrConsulta.$sBotones).$sTabla, $iVenceRojo, $iVenceNaranja, $iVenceVerde, $iTiempoRojo, $iTiempoNaranja, $iTiempoVerde, $sDebug);
+				return array(utf8_encode($sErrConsulta.$sBotones).$sTabla, $iVenceRojo, $iVenceNaranja, $iVenceVerde, $iTiempoRojo, $iTiempoNaranja, $iTiempoVerde, $iIndiceSatisf, $sDebug);
 			} 
 		}
 	}
@@ -3156,6 +3160,14 @@ function f3000_TablaDetallePQRS($aParametros, $objDB, $bDebug=false){
 					$iTiempoRojo++;
 				}
 			}
+			if ($filadet['saiu05evalacepta'] == 1 && $filadet['saiu05evalfecha'] != 0) {
+				$iVrMaxItem = 5;
+				$aItems = array_filter(array($filadet['saiu05evalamabilidad'],$filadet['saiu05evalrapidez'],$filadet['saiu05evalclaridad'],$filadet['saiu05evalresolvio'],$filadet['saiu05evalconocimiento'],$filadet['saiu05evalutilidad']));
+				$iNumItems = count($aItems);
+				$iSumaVrEval = $filadet['saiu05evalamabilidad']+$filadet['saiu05evalrapidez']+$filadet['saiu05evalclaridad']+$filadet['saiu05evalresolvio']+$filadet['saiu05evalconocimiento']+$filadet['saiu05evalutilidad'];
+				$iIndiceSatisf = $iIndiceSatisf + ($iSumaVrEval * 100 / ($iNumItems*$iVrMaxItem));
+				$iEncuestas++;
+			}
 		} else if ($filadet['saiu05estado'] >= 0  && $filadet['saiu05estado'] < 7) {
 			// Determina tiempos de vencimiento de solicitudes
 			if ($filadet['saiu05fecharespprob'] != 0) {
@@ -3172,6 +3184,9 @@ function f3000_TablaDetallePQRS($aParametros, $objDB, $bDebug=false){
 				}
 			}
 		}
+	}
+	if ($iEncuestas > 0) {
+		$iIndiceSatisf = $iIndiceSatisf / $iEncuestas;
 	}
 	foreach ($asaiu05idcategoria as $aCategoria) {
 		$sPrefijo='';
@@ -3197,7 +3212,7 @@ function f3000_TablaDetallePQRS($aParametros, $objDB, $bDebug=false){
 	}
 	$res=$res.'</table>';
 	$objDB->liberar($tabladetalle);
-	return array(utf8_encode($res), $iVenceRojo, $iVenceNaranja, $iVenceVerde, $iTiempoRojo, $iTiempoNaranja, $iTiempoVerde, $sDebug);
+	return array(utf8_encode($res), $iVenceRojo, $iVenceNaranja, $iVenceVerde, $iTiempoRojo, $iTiempoNaranja, $iTiempoVerde, $iIndiceSatisf, $sDebug);
 }
 function f3000_HtmlTablaPQRS($aParametros){
 	$_SESSION['u_ultimominuto']=iminutoavance();
@@ -3211,7 +3226,7 @@ function f3000_HtmlTablaPQRS($aParametros){
 	$objDB=new clsdbadmin($APP->dbhost, $APP->dbuser, $APP->dbpass, $APP->dbname);
 	if ($APP->dbpuerto!=''){$objDB->dbPuerto=$APP->dbpuerto;}
 	$objDB->xajax();
-	list($sDetalle, $iVenceRojo, $iVenceNaranja, $iVenceVerde, $iTiempoRojo, $iTiempoNaranja, $iTiempoVerde, $sDebugTabla)=f3000_TablaDetallePQRS($aParametros, $objDB, $bDebug);
+	list($sDetalle, $iVenceRojo, $iVenceNaranja, $iVenceVerde, $iTiempoRojo, $iTiempoNaranja, $iTiempoVerde, $iIndiceSatisf, $sDebugTabla)=f3000_TablaDetallePQRS($aParametros, $objDB, $bDebug);
 	$sDebug=$sDebug.$sDebugTabla;
 	$objDB->CerrarConexion();
 	$objResponse=new xajaxResponse();
@@ -3222,6 +3237,12 @@ function f3000_HtmlTablaPQRS($aParametros){
 	$objResponse->assign('div_f3000tiemporojo', 'innerHTML', $iTiempoRojo);
 	$objResponse->assign('div_f3000tiemponaranja', 'innerHTML', $iTiempoNaranja);
 	$objResponse->assign('div_f3000tiempoverde', 'innerHTML', $iTiempoVerde);
+	if ($iIndiceSatisf == 0) {
+		$objResponse->assign('div_f3000indicesatisf', 'innerHTML', '_');
+	} else {
+		$iIndiceSatisf = number_format($iIndiceSatisf,2,',','');
+		$objResponse->assign('div_f3000indicesatisf', 'innerHTML', $iIndiceSatisf . '%');
+	}
 	if ($bDebug){
 		$objResponse->assign('div_debug', 'innerHTML', $sDebug);
 	}

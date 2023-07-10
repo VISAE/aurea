@@ -926,3 +926,8 @@ ul#navmenu-h ul ul li.iehover ul {
 	margin-bottom:0;
 	text-align:center;
 }
+
+.textoGrandeCentro {
+	font-size:36px;
+	margin-left: 100%;
+}

@@ -226,14 +226,17 @@ function f107_VerificarPerfiles($idTercero, $idPeriodo, $objDB, $bDebug = false)
 	}
 	//Grados
 	if (true) {
-		$sCondi18 = ' AND grad18idtercero=' . $idTercero . ' AND grad18fechainicial>=' . $iHoy . ' AND ((grad18fechafinal=0) OR (grad18fechafinal<=' . $iHoy . '))';
 		$sCondi[1] = 'SELECT 1 FROM grad28comitezonal WHERE grad28idtercero=' . $idTercero . ' AND grad28vigente<>0';
 		$sCondi[2] = 'SELECT 1 FROM grad29comiteescuela WHERE grad29idtercero=' . $idTercero . ' AND grad29vigente<>0';
 		$sCondi[3] = 'SELECT 1 FROM grad30comiteprograma WHERE grad30idtercero=' . $idTercero . ' AND grad30vigente<>0';
-		$sCondi[4] = 'SELECT 1 FROM grad18proyintegrante WHERE grad18idrol=3' . $sCondi18;
-		$sCondi[5] = 'SELECT 1 FROM grad18proyintegrante WHERE grad18idrol=2' . $sCondi18;
-		$sCondi[6] = 'SELECT 1 FROM grad18proyintegrante WHERE grad18idrol=4' . $sCondi18;
-		$sCondi[7] = 'SELECT 1 FROM grad18proyintegrante WHERE grad18idrol=5' . $sCondi18;
+		// Revisor
+		$sCondi[4] = 'SELECT 1 FROM grad11proyecto WHERE grad11idrevisor=' . $idTercero . ' AND grad11estado > 5 AND grad11estado < 20';
+		// Director
+		$sCondi[5] = 'SELECT 1 FROM grad11proyecto WHERE grad11director=' . $idTercero . ' AND grad11estado > 20 AND grad11estado < 70';
+		// Jurado
+		$sCondi[6] = 'SELECT 1 FROM grad11proyecto WHERE (grad11idjurado1=' . $idTercero . ' OR grad11idjurado2=' . $idTercero . ') AND grad11estado > 45 AND grad11estado < 70';
+		// Coevaluador
+		$sCondi[7] = 'SELECT 1 FROM grad11proyecto WHERE (grad11idevaluador1=' . $idTercero . ' OR grad11idevaluador2=' . $idTercero . ') AND grad11estado > 45 AND grad11estado < 70';
 		$iTotalPerfiles = 7;
 		$sSQL = 'SELECT grad00perfilcomiteinvestzonal, 
 		grad00perfilcomiteinvestescuela, grad00perfilcomitecurricularprog, grad00perfilrevisor, grad00perfildirector, 
@@ -371,7 +374,8 @@ function f107_VerificarPerfiles($idTercero, $idPeriodo, $objDB, $bDebug = false)
 		$sCondi = array();
 		$sCondi[1] = 'SELECT 1 FROM plan04proyecto WHERE plan04idadmin=' . $idTercero . '';
 		$sCondi[2] = 'SELECT 1 FROM plan04proyecto WHERE plan04idresponsable=' . $idTercero . '';
-		$sCondi[3] = 'SELECT 1 FROM plan12planproymetavr WHERE ((plan12idresponsable=' . $idTercero . ') OR (plan12idnuevoresp=' . $idTercero . '))';
+		//$sCondi[3] = 'SELECT 1 FROM plan12planproymetavr WHERE ((plan12idresponsable=' . $idTercero . ') OR (plan12idnuevoresp=' . $idTercero . '))';
+		$sCondi[3] = 'SELECT 1 FROM plan07proymeta WHERE plan07idresponsable=' . $idTercero . '';
 		$sCondi[4] = 'SELECT 1 FROM plan14metaprod WHERE plan14idgestor=' . $idTercero . '';
 		$sCondi[5] = 'SELECT 1 FROM plan16metaprodcierre WHERE plan16idgestor=' . $idTercero . '';
 		//$sCondi[4] = 'SELECT 1 FROM plan15metaactividad WHERE plan15idgestor=' . $idTercero . '';
@@ -1285,14 +1289,51 @@ function f124_CentroPertenece($idTercero, $idRevisa, $objDB, $bDebug = false, $b
 	return array($idCentro, $idZona, $sDebug);
 }
 //Cursos que hacen parte de un periodo 
-function f140_CursosPeriodo($idPeriodo, $objDB, $bDebug = false, $idEscuela = 0, $idPrograma = 0, $bOfertados = true) {
+function f140_CursosPeriodo($idPeriodo, $objDB, $bDebug = false, $idEscuela = 0, $idPrograma = 0, $bOfertados = true, $bSoloPropietario = false, $idTercero = 0) {
 	$sIds = '-99';
 	$sDebug = '';
 	$sCondi = '';
 	if ($bOfertados){
 		$sCondi = ' AND ofer08estadooferta=1';
 	}
-	$sSQL = 'SELECT ofer08idcurso FROM ofer08oferta WHERE ofer08idper_aca=' . $idPeriodo . '';
+	//$bSoloPropietario -- Solo aquellos cursos conde es el propietario
+	if ($bSoloPropietario) {
+		if ($idTercero > 0) {
+			$sIds12 = '-99';
+			$sSQL = 'SELECT corf12idoferta FROM corf12directores WHERE corf12idtercero=' . $idTercero . ' AND corf12activo=1';
+			$tabla = $objDB->ejecutasql($sSQL);
+			while ($fila = $objDB->sf($tabla)) {
+				$sIds12 = $sIds12 . ',' . $fila['corf12idoferta'];
+			}
+			// Ahora los cursos donde es un lider de programa
+			$sIds09 = '-99';
+			$sSQL = 'SELECT TB.core09id FROM core09programa AS TB WHERE TB.core09iddirector=' . $idTercero . '';
+			$tabla = $objDB->ejecutasql($sSQL);
+			while ($fila = $objDB->sf($tabla)) {
+				$sIds09 = $sIds09 . ',' . $fila['core09id'];
+			}
+			if ($sIds09 != '-99') {
+				$sSQL = 'SELECT ofer08id 
+				FROM ofer08oferta 
+				WHERE ofer08idper_aca=' . $idPeriodo . ' AND ofer08idprograma IN (' . $sIds09 . ')';
+				$tabla = $objDB->ejecutasql($sSQL);
+				while ($fila = $objDB->sf($tabla)) {
+					$sIds12 = $sIds12 . ',' . $fila['ofer08id'];
+				}
+			}
+			// Ahora si la consulta.
+			$sCondi = $sCondi . ' AND ((ofer08idacomanamento=' . $idTercero . ') OR (ofer08id IN (' . $sIds12 . ')))';
+		} else {
+			// Solo el propietario, pero no hay propietario...
+			$sCondi = ' AND ofer08id=-99';
+		}
+	}
+	$sSQL = 'SELECT ofer08idcurso 
+	FROM ofer08oferta 
+	WHERE ofer08idper_aca=' . $idPeriodo . '' . $sCondi;
+	if ($bDebug) {
+		$sDebug = $sDebug . fecha_microtiempo() . ' <b>Cursos Ofertados</b>: ' . $sSQL . '<br>';
+	}
 	$tabla = $objDB->ejecutasql($sSQL);
 	while ($fila = $objDB->sf($tabla)) {
 		$sIds = $sIds . ',' . $fila['ofer08idcurso'];
@@ -1366,12 +1407,42 @@ function f140_TituloCurso($idCurso, $objDB)
 	}
 	return $sRes;
 }
-function f146_ConsultaCombo($sWhere = '', $objDB = NULL)
+function f146_ConsultaCombo($sWhere = '', $objDB = NULL, $idTercero = 0)
 {
 	switch ($sWhere) {
 		case 1707: //Solo donde se haya hecho oferta.
 			$sIds = '-99';
 			$sSQL = 'SELECT ofer08idper_aca FROM ofer08oferta GROUP BY ofer08idper_aca';
+			$tabla = $objDB->ejecutasql($sSQL);
+			while ($fila = $objDB->sf($tabla)) {
+				$sIds = $sIds . ',' . $fila['ofer08idper_aca'];
+			}
+			$sWhere = 'exte02id IN (' . $sIds . ')';
+			break;
+		case 1708: //Solo donde el personaje sea responsable de una oferta.
+			$sIds = '-99';
+			if ($idTercero > 0) {
+				$sCondi = '';
+				$bTotal = false;
+				$sSQL = 'SELECT TB.core09id FROM core09programa AS TB WHERE TB.core09iddirector=' . $idTercero . '';
+				$tabla = $objDB->ejecutasql($sSQL);
+				if ($objDB->nf($tabla) > 0) {
+					$bTotal = true;
+				}
+				if (!$bTotal) {
+					//No tiene una condicion especial, por tanto o solo donde es director de curso.
+					$sIds12 = '-99';
+					$sSQL = 'SELECT corf12idoferta FROM corf12directores WHERE corf12idtercero=' . $idTercero . ' AND corf12activo=1';
+					$tabla = $objDB->ejecutasql($sSQL);
+					while ($fila = $objDB->sf($tabla)) {
+						$sIds12 = $sIds12 . ',' . $fila['corf12idoferta'];
+					}
+					$sCondi = ' WHERE ((ofer08idacomanamento=' . $idTercero . ') OR (ofer08id IN (' . $sIds12 . ')))';
+				}
+			} else {
+				$sCondi = ' WHERE ofer08id=-99';
+			}
+			$sSQL = 'SELECT ofer08idper_aca FROM ofer08oferta ' . $sCondi . ' GROUP BY ofer08idper_aca';
 			$tabla = $objDB->ejecutasql($sSQL);
 			while ($fila = $objDB->sf($tabla)) {
 				$sIds = $sIds . ',' . $fila['ofer08idper_aca'];
@@ -2640,7 +2711,7 @@ function f2200_ImportarTutoresV2($idPeriodo, $idCurso, $objDB, $bDebug = false, 
 			if ($bConsultarTutor) {
 				$sTipoDoc = TH_EquivalenteTipoDoc($filad['cort02tipodoc']);
 				$sDoc = trim($filad['cort02numerodoc']);
-				$sSQL = 'SELECT unad11id FROM unad11terceros WHERE unad11doc="' . $sDoc . '" AND unad11tipodoc="' . $sTipoDoc . '"';
+				$sSQL = 'SELECT unad11id, unad11estado FROM unad11terceros WHERE unad11doc="' . $sDoc . '" AND unad11tipodoc="' . $sTipoDoc . '"';
 				if ($bDebug) {
 					$sDebug = $sDebug . fecha_microtiempo() . ' Consultando Tutor: ' . $sSQL . '<br>';
 				}
@@ -2661,7 +2732,28 @@ function f2200_ImportarTutoresV2($idPeriodo, $idCurso, $objDB, $bDebug = false, 
 				}
 				if ($objDB->nf($tabla11) > 0) {
 					$fila11 = $objDB->sf($tabla11);
-					$idTutor = $fila11['unad11id'];
+					if ($fila11['unad11estado'] == 0) {
+						$idTutor = $fila11['unad11id'];
+					} else {
+						// Junio 26 de 2023 - Se ajusta problema de tutor
+						// Lo que esta sucediendo es que el tutor puede llegar con una CE y resulta que el usuario activo es una CC
+						if ($sTipoDoc != 'CC') {
+							$sSQL = 'SELECT unad11id, unad11estado FROM unad11terceros WHERE unad11doc="' . $sDoc . '" AND unad11tipodoc="CC"';
+							$tabla11 = $objDB->ejecutasql($sSQL);
+							if ($objDB->nf($tabla11) > 0) {
+								$fila11 = $objDB->sf($tabla11);
+								if ($fila11['unad11estado'] == 0) {
+									$idTutor = $fila11['unad11id'];
+								} else {
+									$sErrLinea = 'El usuario CC ' . $sDoc . ' NO SE ENCUENTRA ACTIVO';
+								}
+							} else {
+								$sErrLinea = 'No se ha encontrado el tutor ' . $sTipoDoc . '' . $sDoc . '';
+							}
+						} else {
+							$sErrLinea = 'El usuario CC ' . $sDoc . ' NO SE ENCUENTRA ACTIVO';
+						}
+					}
 				} else {
 					$sErrLinea = 'No se ha encontrado el tutor ' . $sTipoDoc . '' . $sDoc . '';
 				}
@@ -5034,3 +5126,4 @@ function Traer_Entidad()
 	}
 	return $idEntidad;
 }
+
