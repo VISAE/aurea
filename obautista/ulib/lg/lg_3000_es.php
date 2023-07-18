@@ -109,4 +109,8 @@ $AYU['msg_enproceso']='Su solicitud esta siendo procesada, una vez sea resuelta 
 
 $asaiu11=array('Solicitado', 'Asignado', 'En tramite', 'Para reasignar', 'En pausa', '', '', 'Resuelto', 'Solicitud abandonada', 'Cancelado por el usuario');
 $isaiu11=9;
+
+$ETI['saiucanal']='Canal de atenci&oacute;n';
+$aCanal=array('','Atenci&oacute;n presencial', 'Registro de llamadas', 'Sesiones de chat', 'Registro de correos');
+$iCanal=4;
 ?>

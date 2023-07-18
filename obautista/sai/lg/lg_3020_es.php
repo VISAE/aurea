@@ -97,8 +97,17 @@ $ERR['saiu20tiempresphoras']='Necesita el dato '.$ETI['saiu20tiempresphoras'];
 $ERR['saiu20tiemprespminutos']='Necesita el dato '.$ETI['saiu20tiemprespminutos'];
 $ERR['saiu20solucion']='Necesita el dato '.$ETI['saiu20solucion'];
 $ERR['saiu20idcaso']='Necesita el dato '.$ETI['saiu20idcaso'];
+
+$ERR['saiu20solucion_proceso']='Debe indicar el resultado de la conversaci&oacute;n';
+
 $asaiu20paramercadeo=array('', '');
 $isaiu20paramercadeo=0;
-$asaiu20solucion=array('', '');
-$isaiu20solucion=0;
+$asaiu20solucion=array('En proceso', 'Resuelto en correo de respuesta', '', 'Se inicia Caso', '', 'Se inicia PQRS', '', '', 'Sin resolver');
+$isaiu20solucion=8;
+
+$ETI['msg_fecha']='Fecha';
+$ETI['msg_tipo']='Tipo';
+
+$aListar2=array('', 'Mis registros');
+$iListar2=1;
 ?>
