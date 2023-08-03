@@ -148,7 +148,7 @@ ORDER BY TB.even01consec';
 		}else{
 		$registros=$objDB->nf($tabladetalle);
 		if ($registros==0){
-			//return array(utf8_encode($sErrConsulta.'<input id="paginaf1901" name="paginaf1901" type="hidden" value="'.$pagina.'"/><input id="lppf1901" name="lppf1901" type="hidden" value="'.$lineastabla.'"/>'), $sDebug);
+			//return array(cadena_codificar($sErrConsulta.'<input id="paginaf1901" name="paginaf1901" type="hidden" value="'.$pagina.'"/><input id="lppf1901" name="lppf1901" type="hidden" value="'.$lineastabla.'"/>'), $sDebug);
 			}
 		if ((($registros-1)/$lineastabla)<($pagina-1)){$pagina=(int)(($registros-1)/$lineastabla)+1;}
 		if ($registros>$lineastabla){
@@ -189,7 +189,7 @@ ORDER BY TB.even01consec';
 		}
 	$res=$res.'</table>';
 	$objDB->liberar($tabladetalle);
-	return array(utf8_encode($res), $sDebug);
+	return array(cadena_codificar($res), $sDebug);
 	}
 function f1901_HtmlTabla($aParametros){
 	$_SESSION['u_ultimominuto']=iminutoavance();
@@ -307,8 +307,8 @@ function f1901_db_GuardarV2($DATA, $objDB, $bDebug=false){
 			$sCampos1901='even01consec, even01id, even01nombre';
 			$sValores1901=''.$DATA['even01consec'].', '.$DATA['even01id'].', "'.$DATA['even01nombre'].'"';
 			if ($APP->utf8==1){
-				$sSQL='INSERT INTO even01tipoevento ('.$sCampos1901.') VALUES ('.utf8_encode($sValores1901).');';
-				$sdetalle=$sCampos1901.'['.utf8_encode($sValores1901).']';
+				$sSQL='INSERT INTO even01tipoevento ('.$sCampos1901.') VALUES ('.cadena_codificar($sValores1901).');';
+				$sdetalle=$sCampos1901.'['.cadena_codificar($sValores1901).']';
 				}else{
 				$sSQL='INSERT INTO even01tipoevento ('.$sCampos1901.') VALUES ('.$sValores1901.');';
 				$sdetalle=$sCampos1901.'['.$sValores1901.']';
@@ -345,8 +345,8 @@ function f1901_db_GuardarV2($DATA, $objDB, $bDebug=false){
 				}
 			if ($bpasa){
 				if ($APP->utf8==1){
-					$sdetalle=utf8_encode($sdatos).'['.$sWhere.']';
-					$sSQL='UPDATE even01tipoevento SET '.utf8_encode($sdatos).' WHERE '.$sWhere.';';
+					$sdetalle=cadena_codificar($sdatos).'['.$sWhere.']';
+					$sSQL='UPDATE even01tipoevento SET '.cadena_codificar($sdatos).' WHERE '.$sWhere.';';
 					}else{
 					$sdetalle=$sdatos.'['.$sWhere.']';
 					$sSQL='UPDATE even01tipoevento SET '.$sdatos.' WHERE '.$sWhere.';';
@@ -524,7 +524,7 @@ ORDER BY TB.even01consec';
 		}else{
 		$registros=$objDB->nf($tabladetalle);
 		if ($registros==0){
-			//return array(utf8_encode($sErrConsulta.'<input id="paginaf1901" name="paginaf1901" type="hidden" value="'.$pagina.'"/><input id="lppf1901" name="lppf1901" type="hidden" value="'.$lineastabla.'"/>'), $sDebug);
+			//return array(cadena_codificar($sErrConsulta.'<input id="paginaf1901" name="paginaf1901" type="hidden" value="'.$pagina.'"/><input id="lppf1901" name="lppf1901" type="hidden" value="'.$lineastabla.'"/>'), $sDebug);
 			}
 		if ((($registros-1)/$lineastabla)<($pagina-1)){$pagina=(int)(($registros-1)/$lineastabla)+1;}
 		if ($registros>$lineastabla){
@@ -555,7 +555,7 @@ ORDER BY TB.even01consec';
 		}
 	$res=$res.'</table>';
 	$objDB->liberar($tabladetalle);
-	return utf8_encode($res);
+	return cadena_codificar($res);
 	}
 // -----------------------------------
 // ---- Funciones personalizadas  ----

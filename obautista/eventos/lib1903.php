@@ -65,7 +65,7 @@ function f1903_db_Guardar($valores, $objDB, $bDebug=false){
 			$scampos='even03idevento, even03idcurso, even03id, even03vigente';
 			$svalores=''.$even03idevento.', '.$even03idcurso.', '.$even03id.', "'.$even03vigente.'"';
 			if ($APP->utf8==1){
-				$sSQL='INSERT INTO even03eventocurso ('.$scampos.') VALUES ('.utf8_encode($svalores).');';
+				$sSQL='INSERT INTO even03eventocurso ('.$scampos.') VALUES ('.cadena_codificar($svalores).');';
 				}else{
 				$sSQL='INSERT INTO even03eventocurso ('.$scampos.') VALUES ('.$svalores.');';
 				}
@@ -99,7 +99,7 @@ function f1903_db_Guardar($valores, $objDB, $bDebug=false){
 				}
 			if ($bpasa){
 				if ($APP->utf8==1){
-					$sSQL='UPDATE even03eventocurso SET '.utf8_encode($sdatos).' WHERE '.$sWhere.';';
+					$sSQL='UPDATE even03eventocurso SET '.cadena_codificar($sdatos).' WHERE '.$sWhere.';';
 					}else{
 					$sSQL='UPDATE even03eventocurso SET '.$sdatos.' WHERE '.$sWhere.';';
 					}
@@ -238,7 +238,7 @@ ORDER BY TB.even03idcurso';
 		}else{
 		$registros=$objDB->nf($tabladetalle);
 		if ($registros==0){
-			return array(utf8_encode($sErrConsulta.'<input id="paginaf1903" name="paginaf1903" type="hidden" value="'.$pagina.'"/><input id="lppf1903" name="lppf1903" type="hidden" value="'.$lineastabla.'"/>'), $sDebug);
+			return array(cadena_codificar($sErrConsulta.'<input id="paginaf1903" name="paginaf1903" type="hidden" value="'.$pagina.'"/><input id="lppf1903" name="lppf1903" type="hidden" value="'.$lineastabla.'"/>'), $sDebug);
 			}
 		if ((($registros-1)/$lineastabla)<($pagina-1)){$pagina=(int)(($registros-1)/$lineastabla)+1;}
 		if ($registros>$lineastabla){
@@ -282,7 +282,7 @@ ORDER BY TB.even03idcurso';
 		}
 	$res=$res.'</table>';
 	$objDB->liberar($tabladetalle);
-	return array(utf8_encode($res), $sDebug);
+	return array(cadena_codificar($res), $sDebug);
 	}
 function f1903_Clonar($even03idevento, $even03ideventoPadre, $objDB){
 	$sError='';
@@ -324,7 +324,7 @@ function f1903_Busqueda_db_even03idcurso($sCodigo, $objDB, $bDebug=false){
 			$sRespuesta='<span class="rojo">{'.$sCodigo.' No encontrado}</span>';
 			}
 		}
-	return array($id, utf8_encode($sRespuesta), $sDebug);
+	return array($id, cadena_codificar($sRespuesta), $sDebug);
 	}
 function f1903_Busqueda_even03idcurso($aParametros){
 	if(!is_array($aParametros)){$aParametros=json_decode(str_replace('\"','"',$aParametros),true);}

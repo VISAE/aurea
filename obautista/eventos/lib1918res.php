@@ -1,6 +1,6 @@
 <?php
 /*
---- © Angel Mauro Avellaneda Barreto - UNAD - 2015 - 2016 ---
+--- ï¿½ Angel Mauro Avellaneda Barreto - UNAD - 2015 - 2016 ---
 --- angel.avellaneda@unad.edu.co - http://www.unad.edu.co
 */
 function f1918_TablaDetalleV2Res($params, $objdb, $bDebug=false){
@@ -58,13 +58,13 @@ function f1918_TablaDetalleV2Res($params, $objdb, $bDebug=false){
 	//if ($params[103]!=''){$sqladd=$sqladd.' AND TB.campo2 LIKE "%'.$params[103].'%"';}
 	$sTitulos='Encuesta, Consec, Id, Grupo, Pregunta, Tiporespuesta, Opcional, Concomentario, Rpta0, Rpta1, Rpta2, Rpta3, Rpta4, Rpta5';
 	$sql='SELECT TB.even18idencuesta, TB.even18consec, TB.even18id, T4.even19nombre, TB.even18pregunta, T6.even20nombre, TB.even18opcional, TB.even18concomentario, TB.even18rpta0, TB.even18rpta1, TB.even18rpta2, TB.even18rpta3, TB.even18rpta4, TB.even18rpta5, TB.even18rpta6, TB.even18rpta7, TB.even18rpta8, TB.even18rpta9, TB.even18idgrupo, TB.even18tiporespuesta, TB.even18orden, TB.even18divergente, TB.even18idpregcondiciona, TB.even18valorcondiciona 
-FROM even18encuestapregunta AS TB, even19encuestagrupo AS T4, even20tiporespuesta AS T6 
-WHERE TB.even18idencuesta='.$even16id.' AND TB.even18idgrupo=T4.even19id AND TB.even18tiporespuesta=T6.even20id '.$sqladd.'
-ORDER BY TB.even18orden, TB.even18consec';
+	FROM even18encuestapregunta AS TB, even19encuestagrupo AS T4, even20tiporespuesta AS T6 
+	WHERE TB.even18idencuesta='.$even16id.' AND TB.even18idgrupo=T4.even19id AND TB.even18tiporespuesta=T6.even20id '.$sqladd.'
+	ORDER BY TB.even18orden, TB.even18consec';
 	$sqllista=str_replace("'","|",$sql);
 	$sqllista=str_replace('"',"|",$sqllista);
 	$sErrConsulta='<input id="consulta_1918" name="consulta_1918" type="hidden" value="'.$sqllista.'"/>
-<input id="titulos_1918" name="titulos_1918" type="hidden" value="'.$sTitulos.'"/>';
+	<input id="titulos_1918" name="titulos_1918" type="hidden" value="'.$sTitulos.'"/>';
 	$tabladetalle=$objdb->ejecutasql($sql);
 	if ($tabladetalle==false){
 		if ($bDebug){$sDebug=$sDebug.fecha_microtiempo().' Consulta 1918: '.$sql.'<br>';}
@@ -73,7 +73,7 @@ ORDER BY TB.even18orden, TB.even18consec';
 		}else{
 		$registros=$objdb->nf($tabladetalle);
 		if ($registros==0){
-			return array(utf8_encode($sErrConsulta.'<input id="paginaf1918" name="paginaf1918" type="hidden" value="'.$pagina.'"/><input id="lppf1918" name="lppf1918" type="hidden" value="'.$lineastabla.'"/>'), $sDebug);
+			return array(cadena_codificar($sErrConsulta.'<input id="paginaf1918" name="paginaf1918" type="hidden" value="'.$pagina.'"/><input id="lppf1918" name="lppf1918" type="hidden" value="'.$lineastabla.'"/>'), $sDebug);
 			}
 		if ((($registros-1)/$lineastabla)<($pagina-1)){$pagina=(int)(($registros-1)/$lineastabla)+1;}
 		if ($registros>$lineastabla){
@@ -88,22 +88,22 @@ ORDER BY TB.even18orden, TB.even18consec';
 	$iTotalAplicadas=$iPendientes+$iUniverso;
 	if ($iTotalAplicadas>0){
 		$sTituloUniverso='<tr class="fondoazul">
-<td colspan="9" align="center">Resueltas <b>'.formato_numero($iUniverso).' ('.formato_numero(($iUniverso*100)/$iTotalAplicadas, 2).' %)</b> - Pendientes <b>'.formato_numero($iPendientes).' ('.formato_numero(($iPendientes*100)/$iTotalAplicadas, 2).' %)</b> Total <b>'.formato_numero($iTotalAplicadas).'</b></td>
-</tr>';
+		<td colspan="9" align="center">Resueltas <b>'.formato_numero($iUniverso).' ('.formato_numero(($iUniverso*100)/$iTotalAplicadas, 2).' %)</b> - Pendientes <b>'.formato_numero($iPendientes).' ('.formato_numero(($iPendientes*100)/$iTotalAplicadas, 2).' %)</b> Total <b>'.formato_numero($iTotalAplicadas).'</b></td>
+		</tr>';
 		}
 	$res=$sErrConsulta.'<table border="0" align="center" cellpadding="0" cellspacing="2" class="tablaapp">'.$sTituloUniverso.'
-<tr class="fondoazul">
-<td>&nbsp;</td>
-<td><b>'.$ETI['even18tiporespuesta'].'</b></td>
-<td><b>'.$ETI['even18orden'].'</b></td>
-<td><b>'.$ETI['even18opcional'].'</b></td>
-<td><b>'.$ETI['even18divergente'].'</b></td>
-<td colspan="2"></td>
-<td align="right">
-'.html_paginador('paginaf1918', $registros, $lineastabla, $pagina, 'paginarf1918()').'
-'.html_lpp('lppf1918', $lineastabla, 'paginarf1918()', $iTope).'
-</td>
-</tr>';
+	<tr class="fondoazul">
+	<td>&nbsp;</td>
+	<td><b>'.$ETI['even18tiporespuesta'].'</b></td>
+	<td><b>'.$ETI['even18orden'].'</b></td>
+	<td><b>'.$ETI['even18opcional'].'</b></td>
+	<td><b>'.$ETI['even18divergente'].'</b></td>
+	<td colspan="2"></td>
+	<td align="right">
+	'.html_paginador('paginaf1918', $registros, $lineastabla, $pagina, 'paginarf1918()').'
+	'.html_lpp('lppf1918', $lineastabla, 'paginarf1918()', $iTope).'
+	</td>
+	</tr>';
 	$idPregunta='';
 	$tlinea=1;
 	while($filadet=$objdb->sf($tabladetalle)){
@@ -132,19 +132,19 @@ ORDER BY TB.even18orden, TB.even18consec';
 			$sLink='<a href="javascript:cargaridf1918('."'".$filadet['even18id']."'".')" class="lnkresalte">'.$ETI['lnk_cargar'].'</a>';
 			}
 		$res=$res.'<tr'.$sClass.'>
-<td colspan="8">'.$filadet['even18consec'].' <b>'.cadena_notildes($filadet['even18pregunta']).'</b></td>
-<tr'.$sClass.'>
-<td></td>
-<td>'.$sPrefijo.cadena_notildes($filadet['even20nombre']).$sSufijo.'</td>
-<td>'.$sPrefijo.$filadet['even18orden'].$sSufijo.'</td>
-<td>'.$sPrefijo.$et_even18opcional.$sSufijo.'</td>
-<td>'.$sPrefijo.$et_even18divergente.$sSufijo.'</td>
-<td>'.$sPrefijo.$et_even18idpregcondiciona.$sSufijo.'</td>
-<td>'.$sPrefijo.$et_even18valorcondiciona.$sSufijo.'</td>
-<td>'.$sLink.'</td>
-</tr>';
+		<td colspan="8">'.$filadet['even18consec'].' <b>'.cadena_notildes($filadet['even18pregunta']).'</b></td>
+		<tr'.$sClass.'>
+		<td></td>
+		<td>'.$sPrefijo.cadena_notildes($filadet['even20nombre']).$sSufijo.'</td>
+		<td>'.$sPrefijo.$filadet['even18orden'].$sSufijo.'</td>
+		<td>'.$sPrefijo.$et_even18opcional.$sSufijo.'</td>
+		<td>'.$sPrefijo.$et_even18divergente.$sSufijo.'</td>
+		<td>'.$sPrefijo.$et_even18idpregcondiciona.$sSufijo.'</td>
+		<td>'.$sPrefijo.$et_even18valorcondiciona.$sSufijo.'</td>
+		<td>'.$sLink.'</td>
+		</tr>';
 		$sRespuestas='<table border="1" align="center" cellpadding="0" cellspacing="2" class="tablaapp">
-<tr><td width="71%"></td><td width="2%"></td><td width="10%"></td><td width="2%"></td><td width="15%"></td></tr>';
+		<tr><td width="71%"></td><td width="2%"></td><td width="10%"></td><td width="2%"></td><td width="15%"></td></tr>';
 		switch($filadet['even18tiporespuesta']){
 			case 0:
 			$iTotal0=0;
@@ -160,9 +160,9 @@ ORDER BY TB.even18orden, TB.even18consec';
 					$iTotal1=0;
 					$sCampoRes='even31r'.$filadet['even18id'].'';
 					$sql='SELECT TB.'.$sCampoRes.', COUNT(TB.even31id) AS Total
-FROM even31total_'.$even16id.' AS TB, even21encuestaaplica AS T1 
-WHERE TB.even31id=T1.even21id '.$sCondi2.' 
-GROUP BY TB.'.$sCampoRes.'';
+					FROM even31total_'.$even16id.' AS TB, even21encuestaaplica AS T1 
+					WHERE TB.even31id=T1.even21id '.$sCondi2.' 
+					GROUP BY TB.'.$sCampoRes.'';
 					$sMuestra=$sql;
 					$resTotal=$objdb->ejecutasql($sql);
 					while ($fila21=$objdb->sf($resTotal)){
@@ -191,9 +191,9 @@ GROUP BY TB.'.$sCampoRes.'';
 						$iTotal=0;
 						$sCampoRes='even31r'.$filadet['even18id'].'';
 						$sql='SELECT TB.'.$sCampoRes.', COUNT(TB.even31id) AS Total
-FROM even31total_'.$even16id.' AS TB, even21encuestaaplica AS T1 
-WHERE TB.even31id=T1.even21id '.$sCondi2.' AND TB.'.$sCampoRes.'='.$iConseRespuesta.' 
-GROUP BY TB.'.$sCampoRes.'';
+						FROM even31total_'.$even16id.' AS TB, even21encuestaaplica AS T1 
+						WHERE TB.even31id=T1.even21id '.$sCondi2.' AND TB.'.$sCampoRes.'='.$iConseRespuesta.' 
+						GROUP BY TB.'.$sCampoRes.'';
 						$resTotal=$objdb->ejecutasql($sql);
 						$sMuestra=$sql;
 						if ($objdb->nf($resTotal)>0){
@@ -212,12 +212,12 @@ GROUP BY TB.'.$sCampoRes.'';
 			}
 		$sRespuestas=$sRespuestas.'</table>';
 		$res=$res.'<tr'.$sClass.'>
-<td colspan="2"></td>
-<td colspan="6">'.$sRespuestas.'</td>
-</tr>';
+		<td colspan="2"></td>
+		<td colspan="6">'.$sRespuestas.'</td>
+		</tr>';
 		}
 	$res=$res.'</table>';
-	return array(utf8_encode($res), $sDebug);
+	return array(cadena_codificar($res), $sDebug);
 	}
 function f1918_HtmlTablaRes($params){
 	$_SESSION['u_ultimominuto']=iminutoavance();

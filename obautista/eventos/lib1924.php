@@ -12,7 +12,7 @@ function html_combo_even24idperaca($objdb, $valor){
 	if (!file_exists($mensajes_todas)){$mensajes_todas=$APP->rutacomun.'lg/lg_todas_es.php';}
 	require $mensajes_todas;
 	$res=html_combo('even24idperaca', 'exte02id', 'CONCAT(exte02nombre, " {", exte02id, "}")', 'exte02per_aca', '', 'exte02id DESC', $valor, $objdb, 'revisaf1924()', true, '{'.$ETI['msg_seleccione'].'}', '');
-	return utf8_encode($res);
+	return cadena_codificar($res);
 	}
 function f1924_db_Guardar($valores, $objdb, $bDebug=false){
 	$icodmodulo=1924;
@@ -72,7 +72,7 @@ function f1924_db_Guardar($valores, $objdb, $bDebug=false){
 			$scampos='even24idencuesta, even24idperaca, even24id, even24fechainicial, even24fechafinal';
 			$svalores=''.$even24idencuesta.', '.$even24idperaca.', '.$even24id.', "'.$even24fechainicial.'", "'.$even24fechafinal.'"';
 			if ($APP->utf8==1){
-				$sql='INSERT INTO even24encuestaperaca ('.$scampos.') VALUES ('.utf8_encode($svalores).');';
+				$sql='INSERT INTO even24encuestaperaca ('.$scampos.') VALUES ('.cadena_codificar($svalores).');';
 				}else{
 				$sql='INSERT INTO even24encuestaperaca ('.$scampos.') VALUES ('.$svalores.');';
 				}
@@ -108,7 +108,7 @@ function f1924_db_Guardar($valores, $objdb, $bDebug=false){
 				}
 			if ($bpasa){
 				if ($APP->utf8==1){
-					$sql='UPDATE even24encuestaperaca SET '.utf8_encode($sdatos).' WHERE '.$sWhere.';';
+					$sql='UPDATE even24encuestaperaca SET '.cadena_codificar($sdatos).' WHERE '.$sWhere.';';
 					}else{
 					$sql='UPDATE even24encuestaperaca SET '.$sdatos.' WHERE '.$sWhere.';';
 					}
@@ -212,7 +212,7 @@ ORDER BY TB.even24idperaca DESC';
 		}else{
 		$registros=$objdb->nf($tabladetalle);
 		if ($registros==0){
-			return array(utf8_encode($sErrConsulta.'<input id="paginaf1924" name="paginaf1924" type="hidden" value="'.$pagina.'"/><input id="lppf1924" name="lppf1924" type="hidden" value="'.$lineastabla.'"/>'), $sDebug);
+			return array(cadena_codificar($sErrConsulta.'<input id="paginaf1924" name="paginaf1924" type="hidden" value="'.$pagina.'"/><input id="lppf1924" name="lppf1924" type="hidden" value="'.$lineastabla.'"/>'), $sDebug);
 			}
 		if ((($registros-1)/$lineastabla)<($pagina-1)){$pagina=(int)(($registros-1)/$lineastabla)+1;}
 		if ($registros>$lineastabla){
@@ -259,7 +259,7 @@ ORDER BY TB.even24idperaca DESC';
 </tr>';
 		}
 	$res=$res.'</table>';
-	return array(utf8_encode($res), $sDebug);
+	return array(cadena_codificar($res), $sDebug);
 	}
 function f1924_Clonar($even24idencuesta, $even24idencuestaPadre, $objdb){
 	$sError='';

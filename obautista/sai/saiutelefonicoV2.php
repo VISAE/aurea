@@ -1798,6 +1798,7 @@ if ($bMueveScroll){
 <script language="javascript" src="<?php echo $APP->rutacomun; ?>js/chosen.jquery.js"></script>
 <script language="javascript">
 $().ready(function(){
+$(document). prop( 'title' , <?php echo $ETI['titulo_3018']; ?> + ' Universidad Nacional Abierta y a Distancia - UNAD');
 $("#saiu18idcentro").chosen();
 $("#saiu18coddepto").chosen();
 $("#saiu18codciudad").chosen();

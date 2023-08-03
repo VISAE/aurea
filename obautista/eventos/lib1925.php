@@ -65,7 +65,7 @@ function f1925_db_Guardar($valores, $objdb, $bDebug=false){
 			$scampos='even25idencuesta, even25idcurso, even25id, even25activo';
 			$svalores=''.$even25idencuesta.', '.$even25idcurso.', '.$even25id.', "'.$even25activo.'"';
 			if ($APP->utf8==1){
-				$sql='INSERT INTO even25encuestacurso ('.$scampos.') VALUES ('.utf8_encode($svalores).');';
+				$sql='INSERT INTO even25encuestacurso ('.$scampos.') VALUES ('.cadena_codificar($svalores).');';
 				}else{
 				$sql='INSERT INTO even25encuestacurso ('.$scampos.') VALUES ('.$svalores.');';
 				}
@@ -99,7 +99,7 @@ function f1925_db_Guardar($valores, $objdb, $bDebug=false){
 				}
 			if ($bpasa){
 				if ($APP->utf8==1){
-					$sql='UPDATE even25encuestacurso SET '.utf8_encode($sdatos).' WHERE '.$sWhere.';';
+					$sql='UPDATE even25encuestacurso SET '.cadena_codificar($sdatos).' WHERE '.$sWhere.';';
 					}else{
 					$sql='UPDATE even25encuestacurso SET '.$sdatos.' WHERE '.$sWhere.';';
 					}
@@ -203,7 +203,7 @@ ORDER BY TB.even25idcurso';
 		}else{
 		$registros=$objdb->nf($tabladetalle);
 		if ($registros==0){
-			return array(utf8_encode($sErrConsulta.'<input id="paginaf1925" name="paginaf1925" type="hidden" value="'.$pagina.'"/><input id="lppf1925" name="lppf1925" type="hidden" value="'.$lineastabla.'"/>'), $sDebug);
+			return array(cadena_codificar($sErrConsulta.'<input id="paginaf1925" name="paginaf1925" type="hidden" value="'.$pagina.'"/><input id="lppf1925" name="lppf1925" type="hidden" value="'.$lineastabla.'"/>'), $sDebug);
 			}
 		if ((($registros-1)/$lineastabla)<($pagina-1)){$pagina=(int)(($registros-1)/$lineastabla)+1;}
 		if ($registros>$lineastabla){
@@ -248,7 +248,7 @@ ORDER BY TB.even25idcurso';
 </tr>';
 		}
 	$res=$res.'</table>';
-	return array(utf8_encode($res), $sDebug);
+	return array(cadena_codificar($res), $sDebug);
 	}
 function f1925_Clonar($even25idencuesta, $even25idencuestaPadre, $objdb){
 	$sError='';
@@ -288,7 +288,7 @@ function TraerBusqueda_db_even25idcurso($sCodigo, $objdb){
 			$sRespuesta='<span class="rojo">{'.$sCodigo.' No encontrado}</span>';
 			}
 		}
-	return array($id, utf8_encode($sRespuesta));
+	return array($id, cadena_codificar($sRespuesta));
 	}
 function TraerBusqueda_even25idcurso($params){
 	if(!is_array($params)){$params=json_decode(str_replace('\"','"',$params),true);}

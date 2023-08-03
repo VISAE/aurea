@@ -62,7 +62,7 @@ function f1919_db_Guardar($valores, $objdb, $bDebug=false){
 			$scampos='even19idencuesta, even19consec, even19id, even19nombre';
 			$svalores=''.$even19idencuesta.', '.$even19consec.', '.$even19id.', "'.$even19nombre.'"';
 			if ($APP->utf8==1){
-				$sql='INSERT INTO even19encuestagrupo ('.$scampos.') VALUES ('.utf8_encode($svalores).');';
+				$sql='INSERT INTO even19encuestagrupo ('.$scampos.') VALUES ('.cadena_codificar($svalores).');';
 				}else{
 				$sql='INSERT INTO even19encuestagrupo ('.$scampos.') VALUES ('.$svalores.');';
 				}
@@ -96,7 +96,7 @@ function f1919_db_Guardar($valores, $objdb, $bDebug=false){
 				}
 			if ($bpasa){
 				if ($APP->utf8==1){
-					$sql='UPDATE even19encuestagrupo SET '.utf8_encode($sdatos).' WHERE '.$sWhere.';';
+					$sql='UPDATE even19encuestagrupo SET '.cadena_codificar($sdatos).' WHERE '.$sWhere.';';
 					}else{
 					$sql='UPDATE even19encuestagrupo SET '.$sdatos.' WHERE '.$sWhere.';';
 					}
@@ -198,7 +198,7 @@ WHERE TB.even19idencuesta='.$even16id.' '.$sqladd.'
 		}else{
 		$registros=$objdb->nf($tabladetalle);
 		if ($registros==0){
-			return array(utf8_encode($sErrConsulta.'<input id="paginaf1919" name="paginaf1919" type="hidden" value="'.$pagina.'"/><input id="lppf1919" name="lppf1919" type="hidden" value="'.$lineastabla.'"/>'), $sDebug);
+			return array(cadena_codificar($sErrConsulta.'<input id="paginaf1919" name="paginaf1919" type="hidden" value="'.$pagina.'"/><input id="lppf1919" name="lppf1919" type="hidden" value="'.$lineastabla.'"/>'), $sDebug);
 			}
 		if ((($registros-1)/$lineastabla)<($pagina-1)){$pagina=(int)(($registros-1)/$lineastabla)+1;}
 		if ($registros>$lineastabla){
@@ -238,7 +238,7 @@ WHERE TB.even19idencuesta='.$even16id.' '.$sqladd.'
 </tr>';
 		}
 	$res=$res.'</table>';
-	return array(utf8_encode($res), $sDebug);
+	return array(cadena_codificar($res), $sDebug);
 	}
 function f1919_Clonar($even19idencuesta, $even19idencuestaPadre, $objdb){
 	$sError='';

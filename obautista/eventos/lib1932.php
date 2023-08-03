@@ -69,7 +69,7 @@ function f1932_db_Guardar($valores, $objdb, $bDebug=false){
 			$scampos='even32idencuesta, even32idrol, even32id, even32activo';
 			$svalores=''.$even32idencuesta.', '.$even32idrol.', '.$even32id.', "'.$even32activo.'"';
 			if ($APP->utf8==1){
-				$sql='INSERT INTO even32encuestarol ('.$scampos.') VALUES ('.utf8_encode($svalores).');';
+				$sql='INSERT INTO even32encuestarol ('.$scampos.') VALUES ('.cadena_codificar($svalores).');';
 				}else{
 				$sql='INSERT INTO even32encuestarol ('.$scampos.') VALUES ('.$svalores.');';
 				}
@@ -103,7 +103,7 @@ function f1932_db_Guardar($valores, $objdb, $bDebug=false){
 				}
 			if ($bpasa){
 				if ($APP->utf8==1){
-					$sql='UPDATE even32encuestarol SET '.utf8_encode($sdatos).' WHERE '.$sWhere.';';
+					$sql='UPDATE even32encuestarol SET '.cadena_codificar($sdatos).' WHERE '.$sWhere.';';
 					}else{
 					$sql='UPDATE even32encuestarol SET '.$sdatos.' WHERE '.$sWhere.';';
 					}
@@ -227,7 +227,7 @@ ORDER BY TB.even32idrol';
 		}else{
 		$registros=$objdb->nf($tabladetalle);
 		if ($registros==0){
-			return array(utf8_encode($sErrConsulta.'<input id="paginaf1932" name="paginaf1932" type="hidden" value="'.$pagina.'"/><input id="lppf1932" name="lppf1932" type="hidden" value="'.$lineastabla.'"/>'), $sDebug);
+			return array(cadena_codificar($sErrConsulta.'<input id="paginaf1932" name="paginaf1932" type="hidden" value="'.$pagina.'"/><input id="lppf1932" name="lppf1932" type="hidden" value="'.$lineastabla.'"/>'), $sDebug);
 			}
 		if ((($registros-1)/$lineastabla)<($pagina-1)){$pagina=(int)(($registros-1)/$lineastabla)+1;}
 		if ($registros>$lineastabla){
@@ -270,7 +270,7 @@ ORDER BY TB.even32idrol';
 </tr>';
 		}
 	$res=$res.'</table>';
-	return array(utf8_encode($res), $sDebug);
+	return array(cadena_codificar($res), $sDebug);
 	}
 function f1932_Clonar($even32idencuesta, $even32idencuestaPadre, $objdb){
 	$sError='';

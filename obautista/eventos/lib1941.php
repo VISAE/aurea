@@ -68,7 +68,7 @@ function f1941_db_Guardar($valores, $objDB, $bDebug=false){
 			$scampos='even41idtipoevento, even41consec, even41id, even41activo, even41titulo';
 			$svalores=''.$even41idtipoevento.', '.$even41consec.', '.$even41id.', "'.$even41activo.'", "'.$even41titulo.'"';
 			if ($APP->utf8==1){
-				$sSQL='INSERT INTO even41categoria ('.$scampos.') VALUES ('.utf8_encode($svalores).');';
+				$sSQL='INSERT INTO even41categoria ('.$scampos.') VALUES ('.cadena_codificar($svalores).');';
 				}else{
 				$sSQL='INSERT INTO even41categoria ('.$scampos.') VALUES ('.$svalores.');';
 				}
@@ -104,7 +104,7 @@ function f1941_db_Guardar($valores, $objDB, $bDebug=false){
 				}
 			if ($bpasa){
 				if ($APP->utf8==1){
-					$sSQL='UPDATE even41categoria SET '.utf8_encode($sdatos).' WHERE '.$sWhere.';';
+					$sSQL='UPDATE even41categoria SET '.cadena_codificar($sdatos).' WHERE '.$sWhere.';';
 					}else{
 					$sSQL='UPDATE even41categoria SET '.$sdatos.' WHERE '.$sWhere.';';
 					}
@@ -243,7 +243,7 @@ ORDER BY TB.even41consec';
 		}else{
 		$registros=$objDB->nf($tabladetalle);
 		if ($registros==0){
-			return array(utf8_encode($sErrConsulta.'<input id="paginaf1941" name="paginaf1941" type="hidden" value="'.$pagina.'"/><input id="lppf1941" name="lppf1941" type="hidden" value="'.$lineastabla.'"/>'), $sDebug);
+			return array(cadena_codificar($sErrConsulta.'<input id="paginaf1941" name="paginaf1941" type="hidden" value="'.$pagina.'"/><input id="lppf1941" name="lppf1941" type="hidden" value="'.$lineastabla.'"/>'), $sDebug);
 			}
 		if ((($registros-1)/$lineastabla)<($pagina-1)){$pagina=(int)(($registros-1)/$lineastabla)+1;}
 		if ($registros>$lineastabla){
@@ -290,7 +290,7 @@ ORDER BY TB.even41consec';
 		}
 	$res=$res.'</table>';
 	$objDB->liberar($tabladetalle);
-	return array(utf8_encode($res), $sDebug);
+	return array(cadena_codificar($res), $sDebug);
 	}
 function f1941_Clonar($even41idtipoevento, $even41idtipoeventoPadre, $objDB){
 	$sError='';

@@ -66,7 +66,7 @@ function f1929_db_Guardar($valores, $objdb){
 			$scampos='even29idpregunta, even29consec, even29id, even29etiqueta, even29detalle';
 			$svalores=''.$even29idpregunta.', '.$even29consec.', '.$even29id.', "'.$even29etiqueta.'", "'.$even29detalle.'"';
 			if ($APP->utf8==1){
-				$sql='INSERT INTO even29encpregresp ('.$scampos.') VALUES ('.utf8_encode($svalores).');';
+				$sql='INSERT INTO even29encpregresp ('.$scampos.') VALUES ('.cadena_codificar($svalores).');';
 				}else{
 				$sql='INSERT INTO even29encpregresp ('.$scampos.') VALUES ('.$svalores.');';
 				}
@@ -102,7 +102,7 @@ function f1929_db_Guardar($valores, $objdb){
 				}
 			if ($bpasa){
 				if ($APP->utf8==1){
-					$sql='UPDATE even29encpregresp SET '.utf8_encode($sdatos).' WHERE '.$sWhere.';';
+					$sql='UPDATE even29encpregresp SET '.cadena_codificar($sdatos).' WHERE '.$sWhere.';';
 					}else{
 					$sql='UPDATE even29encpregresp SET '.$sdatos.' WHERE '.$sWhere.';';
 					}
@@ -204,7 +204,7 @@ ORDER BY TB.even29consec';
 		}else{
 		$registros=$objdb->nf($tabladetalle);
 		if ($registros==0){
-			return utf8_encode($sErrConsulta.'<input id="paginaf1929" name="paginaf1929" type="hidden" value="'.$pagina.'"/><input id="lppf1929" name="lppf1929" type="hidden" value="'.$lineastabla.'"/>');
+			return cadena_codificar($sErrConsulta.'<input id="paginaf1929" name="paginaf1929" type="hidden" value="'.$pagina.'"/><input id="lppf1929" name="lppf1929" type="hidden" value="'.$lineastabla.'"/>');
 			}
 		if ((($registros-1)/$lineastabla)<($pagina-1)){$pagina=(int)(($registros-1)/$lineastabla)+1;}
 		if ($registros>$lineastabla){
@@ -249,7 +249,7 @@ ORDER BY TB.even29consec';
 </tr>';
 		}
 	$res=$res.'</table>';
-	return utf8_encode($res);
+	return cadena_codificar($res);
 	}
 function f1929_Clonar($even29idpregunta, $even29idpreguntaPadre, $objdb){
 	$sError='';

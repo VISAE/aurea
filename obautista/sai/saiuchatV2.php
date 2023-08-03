@@ -1751,6 +1751,7 @@ if ($bMueveScroll){
 <script language="javascript">
 <!--
 $().ready(function(){
+$(document). prop( 'title' , <?php echo $ETI['titulo_3019']; ?> + ' Universidad Nacional Abierta y a Distancia - UNAD');
 $("#saiu19idcentro").chosen();
 $("#saiu19coddepto").chosen();
 $("#saiu19codciudad").chosen();

@@ -63,7 +63,7 @@ function f1940_db_Guardar($valores, $objdb, $bDebug=false){
 			$scampos='even40idencuesta, even40idpropietario, even40id, even40activo';
 			$svalores=''.$even40idencuesta.', "'.$even40idpropietario.'", '.$even40id.', "'.$even40activo.'"';
 			if ($APP->utf8==1){
-				$sql='INSERT INTO even40encuestaprop ('.$scampos.') VALUES ('.utf8_encode($svalores).');';
+				$sql='INSERT INTO even40encuestaprop ('.$scampos.') VALUES ('.cadena_codificar($svalores).');';
 				}else{
 				$sql='INSERT INTO even40encuestaprop ('.$scampos.') VALUES ('.$svalores.');';
 				}
@@ -97,7 +97,7 @@ function f1940_db_Guardar($valores, $objdb, $bDebug=false){
 				}
 			if ($bpasa){
 				if ($APP->utf8==1){
-					$sql='UPDATE even40encuestaprop SET '.utf8_encode($sdatos).' WHERE '.$sWhere.';';
+					$sql='UPDATE even40encuestaprop SET '.cadena_codificar($sdatos).' WHERE '.$sWhere.';';
 					}else{
 					$sql='UPDATE even40encuestaprop SET '.$sdatos.' WHERE '.$sWhere.';';
 					}
@@ -233,7 +233,7 @@ ORDER BY TB.even40idpropietario';
 		}else{
 		$registros=$objdb->nf($tabladetalle);
 		if ($registros==0){
-			return array(utf8_encode($sErrConsulta.'<input id="paginaf1940" name="paginaf1940" type="hidden" value="'.$pagina.'"/><input id="lppf1940" name="lppf1940" type="hidden" value="'.$lineastabla.'"/>'), $sDebug);
+			return array(cadena_codificar($sErrConsulta.'<input id="paginaf1940" name="paginaf1940" type="hidden" value="'.$pagina.'"/><input id="lppf1940" name="lppf1940" type="hidden" value="'.$lineastabla.'"/>'), $sDebug);
 			}
 		if ((($registros-1)/$lineastabla)<($pagina-1)){$pagina=(int)(($registros-1)/$lineastabla)+1;}
 		if ($registros>$lineastabla){
@@ -277,7 +277,7 @@ ORDER BY TB.even40idpropietario';
 </tr>';
 		}
 	$res=$res.'</table>';
-	return array(utf8_encode($res), $sDebug);
+	return array(cadena_codificar($res), $sDebug);
 	}
 function f1940_Clonar($even40idencuesta, $even40idencuestaPadre, $objdb){
 	$sError='';

@@ -17,7 +17,7 @@ function html_combo_even16idproceso($objdb, $valor, $vr){
 	//@@ Se debe arreglar la condicion..
 	$scondi='';
 	$res=html_combo('even16idproceso', 'even17id', 'even17nombre', 'even17proceso', $scondi, 'even17nombre', $valor, $objdb, '', true, '{'.$ETI['msg_seleccione'].'}', '');
-	return utf8_encode($res);
+	return cadena_codificar($res);
 	}
 function html_combo_even16idbloqueo($objdb, $valor, $vr){
 	require './app.php';
@@ -27,7 +27,7 @@ function html_combo_even16idbloqueo($objdb, $valor, $vr){
 	//@@ Se debe arreglar la condicion..
 	$scondi='';
 	$res=html_combo('even16idbloqueo', 'unad63id', 'unad63titulo', 'unad63bloqueo', $scondi, 'unad63titulo', $valor, $objdb, '', true, '{'.$ETI['msg_seleccione'].'}', '');
-	return utf8_encode($res);
+	return cadena_codificar($res);
 	}
 function f1916_ExisteDato($datos){
 	if(!is_array($datos)){$datos=json_decode(str_replace('\"','"',$datos),true);}
@@ -256,7 +256,7 @@ ORDER BY TB.even16consec DESC';
 		}else{
 		$registros=$objdb->nf($tabladetalle);
 		if ($registros==0){
-			//return array(utf8_encode($sErrConsulta.'<input id="paginaf1916" name="paginaf1916" type="hidden" value="'.$pagina.'"/><input id="lppf1916" name="lppf1916" type="hidden" value="'.$lineastabla.'"/>'), $sDebug);
+			//return array(cadena_codificar($sErrConsulta.'<input id="paginaf1916" name="paginaf1916" type="hidden" value="'.$pagina.'"/><input id="lppf1916" name="lppf1916" type="hidden" value="'.$lineastabla.'"/>'), $sDebug);
 			}
 		if ((($registros-1)/$lineastabla)<($pagina-1)){$pagina=(int)(($registros-1)/$lineastabla)+1;}
 		if ($registros>$lineastabla){
@@ -307,7 +307,7 @@ ORDER BY TB.even16consec DESC';
 		}
 	$res=$res.'</table>';
 	$objdb->liberar($tabladetalle);
-	return array(utf8_encode($res), $sDebug);
+	return array(cadena_codificar($res), $sDebug);
 	}
 function f1916_HtmlTabla($params){
 	$_SESSION['u_ultimominuto']=iminutoavance();
@@ -522,8 +522,8 @@ even16fechafin, even16publicada, even16caracter, even16tamanomuestra, even16porr
 			$sValores1916=''.$DATA['even16consec'].', '.$DATA['even16id'].', '.$DATA['even16idproceso'].', "'.$DATA['even16porperiodo'].'", "'.$DATA['even16porcurso'].'", "'.$DATA['even16porbloqueo'].'", '.$DATA['even16idbloqueo'].', "'.$even16encabezado.'", '.$DATA['even16idusuario'].', "'.$DATA['even16fechainicio'].'", 
 "'.$DATA['even16fechafin'].'", "'.$DATA['even16publicada'].'", '.$DATA['even16caracter'].', '.$DATA['even16tamanomuestra'].', "'.$DATA['even16porrol'].'", "'.$DATA['even16tienepropietario'].'"';
 			if ($APP->utf8==1){
-				$sql='INSERT INTO even16encuesta ('.$sCampos1916.') VALUES ('.utf8_encode($sValores1916).');';
-				$sdetalle=$sCampos1916.'['.utf8_encode($sValores1916).']';
+				$sql='INSERT INTO even16encuesta ('.$sCampos1916.') VALUES ('.cadena_codificar($sValores1916).');';
+				$sdetalle=$sCampos1916.'['.cadena_codificar($sValores1916).']';
 				}else{
 				$sql='INSERT INTO even16encuesta ('.$sCampos1916.') VALUES ('.$sValores1916.');';
 				$sdetalle=$sCampos1916.'['.$sValores1916.']';
@@ -573,8 +573,8 @@ even16fechafin, even16publicada, even16caracter, even16tamanomuestra, even16porr
 				}
 			if ($bpasa){
 				if ($APP->utf8==1){
-					$sdetalle=utf8_encode($sdatos).'['.$sWhere.']';
-					$sql='UPDATE even16encuesta SET '.utf8_encode($sdatos).' WHERE '.$sWhere.';';
+					$sdetalle=cadena_codificar($sdatos).'['.$sWhere.']';
+					$sql='UPDATE even16encuesta SET '.cadena_codificar($sdatos).' WHERE '.$sWhere.';';
 					}else{
 					$sdetalle=$sdatos.'['.$sWhere.']';
 					$sql='UPDATE even16encuesta SET '.$sdatos.' WHERE '.$sWhere.';';
@@ -628,7 +628,7 @@ xajax_f'.$iModuloBusca.'_HtmlBusqueda(params);';
 	}
 function f1916_TablaDetalleBusquedas($params, $objdb){
 	$res='';
-	return utf8_encode($res);
+	return cadena_codificar($res);
 	}
 function f1916_ProcesarArchivo($DATA, $ARCHIVO, $objdb, $bDebug=false){
 	$sError='';
@@ -797,7 +797,7 @@ ORDER BY TB.even16consec DESC';
 		}else{
 		$registros=$objdb->nf($tabladetalle);
 		if ($registros==0){
-			//return array(utf8_encode($sErrConsulta.'<input id="paginaf1916" name="paginaf1916" type="hidden" value="'.$pagina.'"/><input id="lppf1916" name="lppf1916" type="hidden" value="'.$lineastabla.'"/>'), $sDebug);
+			//return array(cadena_codificar($sErrConsulta.'<input id="paginaf1916" name="paginaf1916" type="hidden" value="'.$pagina.'"/><input id="lppf1916" name="lppf1916" type="hidden" value="'.$lineastabla.'"/>'), $sDebug);
 			}
 		if ((($registros-1)/$lineastabla)<($pagina-1)){$pagina=(int)(($registros-1)/$lineastabla)+1;}
 		if ($registros>$lineastabla){
@@ -843,7 +843,7 @@ ORDER BY TB.even16consec DESC';
 </tr>';
 		}
 	$res=$res.'</table>';
-	return array(utf8_encode($res), $sDebug);
+	return array(cadena_codificar($res), $sDebug);
 	}
 function f1916_HtmlTablaResultado($params){
 	$_SESSION['u_ultimominuto']=iminutoavance();

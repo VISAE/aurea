@@ -203,7 +203,7 @@ WHERE TB.even07idcertificado='.$even06id.' AND TB.even07idvariable=T4.even15id A
 		}else{
 		$registros=$objdb->nf($tabladetalle);
 		if ($registros==0){
-			return utf8_encode($sErrConsulta.'<input id="paginaf1907" name="paginaf1907" type="hidden" value="'.$pagina.'"/><input id="lppf1907" name="lppf1907" type="hidden" value="'.$lineastabla.'"/>');
+			return cadena_codificar($sErrConsulta.'<input id="paginaf1907" name="paginaf1907" type="hidden" value="'.$pagina.'"/><input id="lppf1907" name="lppf1907" type="hidden" value="'.$lineastabla.'"/>');
 			}
 		if ((($registros-1)/$lineastabla)<($pagina-1)){$pagina=(int)(($registros-1)/$lineastabla)+1;}
 		if ($registros>$lineastabla){
@@ -259,7 +259,7 @@ WHERE TB.even07idcertificado='.$even06id.' AND TB.even07idvariable=T4.even15id A
 </tr>';
 		}
 	$res=$res.'</table>';
-	return utf8_encode($res);
+	return cadena_codificar($res);
 	}
 // -- 1907 Variables XAJAX 
 function f1907_Guardar($valores, $params){

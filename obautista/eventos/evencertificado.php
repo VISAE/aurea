@@ -261,7 +261,7 @@ WHERE  '.$sqladd.'';// ORDER BY TB.nombre';
 		}else{
 		$registros=$objdb->nf($tabladetalle);
 		if ($registros==0){
-			//return utf8_encode($sErrConsulta.'<input id="paginaf1906" name="paginaf1906" type="hidden" value="'.$pagina.'"/><input id="lppf1906" name="lppf1906" type="hidden" value="'.$lineastabla.'"/>');
+			//return cadena_codificar($sErrConsulta.'<input id="paginaf1906" name="paginaf1906" type="hidden" value="'.$pagina.'"/><input id="lppf1906" name="lppf1906" type="hidden" value="'.$lineastabla.'"/>');
 			//break;
 			}
 		if ((($registros-1)/$lineastabla)<($pagina-1)){$pagina=(int)(($registros-1)/$lineastabla)+1;}
@@ -305,7 +305,7 @@ WHERE  '.$sqladd.'';// ORDER BY TB.nombre';
 </tr>';
 		}
 	$res=$res.'</table>';
-	return utf8_encode($res);
+	return cadena_codificar($res);
 	}
 //limpiar la pantalla
 if ($_REQUEST['paso']==-1){

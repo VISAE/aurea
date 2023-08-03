@@ -13,7 +13,7 @@ function html_combo_even21idperaca($objDB, $valor){
 	require $mensajes_todas;
 	//$sSQL=f146_ConsultaCombo('', $objDB);
 	$res=html_combo('even21idperaca', 'exte02id', 'exte02nombre', 'exte02per_aca', '', 'exte02nombre', $valor, $objDB, 'revisaf1921()', true, '{'.$ETI['msg_seleccione'].'}', '');
-	return utf8_encode($res);
+	return cadena_codificar($res);
 	}
 function html_combo_even21idbloquedo($objDB, $valor){
 	require './app.php';
@@ -21,7 +21,7 @@ function html_combo_even21idbloquedo($objDB, $valor){
 	if (!file_exists($mensajes_todas)){$mensajes_todas=$APP->rutacomun.'lg/lg_todas_es.php';}
 	require $mensajes_todas;
 	$res=html_combo('even21idbloquedo', 'unad63id', 'unad63titulo', 'unad63bloqueo', '', 'unad63titulo', $valor, $objDB, 'revisaf1921()', true, '{'.$ETI['msg_seleccione'].'}', '');
-	return utf8_encode($res);
+	return cadena_codificar($res);
 	}
 function f1921_db_Guardar($valores, $objDB, $bDebug=false){
 	$icodmodulo=1921;
@@ -93,7 +93,7 @@ function f1921_db_Guardar($valores, $objDB, $bDebug=false){
 			$scampos='even21idencuesta, even21idtercero, even21idperaca, even21idcurso, even21idbloquedo, even21id, even21fechapresenta, even21terminada';
 			$svalores=''.$even21idencuesta.', "'.$even21idtercero.'", '.$even21idperaca.', '.$even21idcurso.', '.$even21idbloquedo.', '.$even21id.', "'.$even21fechapresenta.'", "'.$even21terminada.'"';
 			if ($APP->utf8==1){
-				$sSQL='INSERT INTO even21encuestaaplica ('.$scampos.') VALUES ('.utf8_encode($svalores).');';
+				$sSQL='INSERT INTO even21encuestaaplica ('.$scampos.') VALUES ('.cadena_codificar($svalores).');';
 				}else{
 				$sSQL='INSERT INTO even21encuestaaplica ('.$scampos.') VALUES ('.$svalores.');';
 				}
@@ -129,7 +129,7 @@ function f1921_db_Guardar($valores, $objDB, $bDebug=false){
 				}
 			if ($bpasa){
 				if ($APP->utf8==1){
-					$sSQL='UPDATE even21encuestaaplica SET '.utf8_encode($sdatos).' WHERE '.$sWhere.';';
+					$sSQL='UPDATE even21encuestaaplica SET '.cadena_codificar($sdatos).' WHERE '.$sWhere.';';
 					}else{
 					$sSQL='UPDATE even21encuestaaplica SET '.$sdatos.' WHERE '.$sWhere.';';
 					}
@@ -241,9 +241,11 @@ function f1921_TablaDetalleV2($params, $objDB, $bDebug=false){
 	$sTablas='';
 	if ($bConPeraca){
 		if ($params[105]!=''){$sSQLadd1=$sSQLadd1.' AND TB.even21idperaca='.$params[105];}
+		/*
 		$sCampos=', T3.exte02nombre';
 		$sTablas=', exte02per_aca AS T3';
 		$sSQLadd=' AND TB.even21idperaca=T3.exte02id'.$sSQLadd;
+		*/
 		}
 	if ($bConCurso){
 		if ($params[106]!=''){$sSQLadd1=$sSQLadd1.' AND TB.even21idcurso='.$params[106];}
@@ -255,30 +257,31 @@ function f1921_TablaDetalleV2($params, $objDB, $bDebug=false){
 	//, T3.exte02nombre, T4.unad40nombre, T5.unad63titulo
 	//AND TB.even21idperaca=T3.exte02id AND TB.even21idcurso=T4.unad40id AND TB.even21idbloquedo=T5.unad63id
 	$sTitulos='Encuesta, Tercero, Peraca, Curso, Bloquedo, Id, Fechapresenta, Terminada';
-	$sSQL='SELECT TB.even21idencuesta'.$sCampos.', T2.unad11razonsocial AS C2_nombre, TB.even21id, TB.even21fechapresenta, TB.even21terminada, TB.even21idtercero, T2.unad11tipodoc AS C2_td, T2.unad11doc AS C2_doc, TB.even21idperaca, TB.even21idcurso, TB.even21idbloquedo 
-FROM even21encuestaaplica AS TB, unad11terceros AS T2 '.$sTablas.' 
-WHERE TB.even21idencuesta='.$even16id.' '.$sSQLadd1.' AND TB.even21idtercero=T2.unad11id '.$sSQLadd.'
- ORDER BY TB.even21terminada DESC, TB.even21idperaca DESC, TB.even21idcurso, STR_TO_DATE(TB.even21fechapresenta, "%d/%m/%Y") DESC';
+	$limite='';
+	$sSQL='SELECT 1 
+	FROM even21encuestaaplica AS TB, unad11terceros AS T2 '.$sTablas.' 
+	WHERE TB.even21idencuesta='.$even16id.' '.$sSQLadd1.' AND TB.even21idtercero=T2.unad11id '.$sSQLadd.'';
+	$tabladetalle=$objDB->ejecutasql($sSQL);
+	$registros=$objDB->nf($tabladetalle);
+	if ($registros>$lineastabla){
+		$rbase=($pagina-1)*$lineastabla;
+		$limite=' LIMIT '.$rbase.', '.$lineastabla;
+		}
+	$sSQL='SELECT TB.even21idencuesta'.$sCampos.', T2.unad11razonsocial AS C2_nombre, TB.even21id, TB.even21fechapresenta, 
+	TB.even21terminada, TB.even21idtercero, T2.unad11tipodoc AS C2_td, T2.unad11doc AS C2_doc, TB.even21idperaca, 
+	TB.even21idcurso, TB.even21idbloquedo 
+	FROM even21encuestaaplica AS TB, unad11terceros AS T2 '.$sTablas.' 
+	WHERE TB.even21idencuesta='.$even16id.' '.$sSQLadd1.' AND TB.even21idtercero=T2.unad11id '.$sSQLadd.'
+	ORDER BY TB.even21terminada DESC, TB.even21idperaca DESC, TB.even21idcurso, STR_TO_DATE(TB.even21fechapresenta, "%d/%m/%Y") DESC';
 	$sSQLlista=str_replace("'","|",$sSQL);
 	$sSQLlista=str_replace('"',"|",$sSQLlista);
 	$sErrConsulta='<input id="consulta_1921" name="consulta_1921" type="hidden" value="'.$sSQLlista.'"/>
-<input id="titulos_1921" name="titulos_1921" type="hidden" value="'.$sTitulos.'"/>';
-	$tabladetalle=$objDB->ejecutasql($sSQL);
+	<input id="titulos_1921" name="titulos_1921" type="hidden" value="'.$sTitulos.'"/>';
+	if ($bDebug){$sDebug=$sDebug.fecha_microtiempo().' Consulta 1921: '.$sSQL.'<br>';}
+	$tabladetalle=$objDB->ejecutasql($sSQL.$limite);
 	if ($tabladetalle==false){
-		if ($bDebug){$sDebug=$sDebug.fecha_microtiempo().' Consulta 1921: '.$sSQL.'<br>';}
 		$registros=0;
 		$sErrConsulta=$sErrConsulta.'..<input id="err" name="err" type="hidden" value="'.$sSQL.' '.$objDB->serror.'"/>';
-		}else{
-		$registros=$objDB->nf($tabladetalle);
-		if ($registros==0){
-			return array(utf8_encode($sErrConsulta.'<input id="paginaf1921" name="paginaf1921" type="hidden" value="'.$pagina.'"/><input id="lppf1921" name="lppf1921" type="hidden" value="'.$lineastabla.'"/>'), $sDebug);
-			}
-		if ((($registros-1)/$lineastabla)<($pagina-1)){$pagina=(int)(($registros-1)/$lineastabla)+1;}
-		if ($registros>$lineastabla){
-			$rbase=($pagina-1)*$lineastabla;
-			$limite=' LIMIT '.$rbase.', '.$lineastabla;
-			$tabladetalle=$objDB->ejecutasql($sSQL.$limite);
-			}
 		}
 	$sTitulos='';
 	$iTotal=$iPendientes+$iTerminadas;
@@ -288,24 +291,41 @@ WHERE TB.even21idencuesta='.$even16id.' '.$sSQLadd1.' AND TB.even21idtercero=T2.
 			$sLiberaTodas=' <a href="javascript:liberarf1921pendientes()" class="lnkresalte">'.$ETI['lnk_liberarpendientes'].'</a>';
 			}
 		$sTitulos='<tr class="fondoazul">
-<td colspan="8" align="right">Resueltas <b>'.formato_numero($iTerminadas).' ('.formato_numero(($iTerminadas*100)/$iTotal, 2).' %)</b> - Pendientes <b>'.formato_numero($iPendientes).' ('.formato_numero(($iPendientes*100)/$iTotal, 2).' %)</b> Total <b>'.formato_numero($iTotal).'</b>'.$sLiberaTodas.'</td>
-</tr>';
+		<td colspan="8" align="right">Resueltas <b>'.formato_numero($iTerminadas).' ('.formato_numero(($iTerminadas*100)/$iTotal, 2).' %)</b> - Pendientes <b>'.formato_numero($iPendientes).' ('.formato_numero(($iPendientes*100)/$iTotal, 2).' %)</b> Total <b>'.formato_numero($iTotal).'</b>'.$sLiberaTodas.'</td>
+		</tr>';
 		}
 	$res=$sErrConsulta.'<table border="0" align="center" cellpadding="0" cellspacing="2" class="tablaapp">'.$sTitulos.'
-<tr class="fondoazul">
-<td colspan="2"><b>'.$ETI['even21idtercero'].'</b></td>
-<td><b>'.$ETI['even21idperaca'].'</b></td>
-<td><b>'.$ETI['even21idcurso'].'</b></td>
-<td><b>'.$ETI['even21idbloquedo'].'</b></td>
-<td><b>'.$ETI['even21fechapresenta'].'</b></td>
-<td><b>'.$ETI['even21terminada'].'</b></td>
-<td align="right">
-'.html_paginador('paginaf1921', $registros, $lineastabla, $pagina, 'paginarf1921()').'
-'.html_lpp('lppf1921', $lineastabla, 'paginarf1921()').'
-</td>
-</tr>';
+	<tr class="fondoazul">
+	<td colspan="2"><b>'.$ETI['even21idtercero'].'</b></td>
+	<td><b>'.$ETI['even21idcurso'].'</b></td>
+	<td><b>'.$ETI['even21idbloquedo'].'</b></td>
+	<td><b>'.$ETI['even21fechapresenta'].'</b></td>
+	<td><b>'.$ETI['even21terminada'].'</b></td>
+	<td colspan="2" align="right">
+	'.html_paginador('paginaf1921', $registros, $lineastabla, $pagina, 'paginarf1921()').'
+	'.html_lpp('lppf1921', $lineastabla, 'paginarf1921()').'
+	</td>
+	</tr>';
 	$tlinea=1;
+	$idPeriodo=-99;
 	while($filadet=$objDB->sf($tabladetalle)){
+		if ($bConPeraca){
+		if ($idPeriodo!=$filadet['even21idperaca']){
+			$idPeriodo=$filadet['even21idperaca'];
+			if ($filadet['even21idperaca']!=0){
+				$sNomPeriodo='{'.$idPeriodo.'}';
+				$sSQL='SELECT exte02nombre FROM exte02per_aca WHERE exte02id='.$idPeriodo.'';
+				$tabla2=$objDB->ejecutasql($sSQL);
+				if ($objDB->nf($tabla2)>0){
+					$fila2=$objDB->sf($tabla2);
+					$sNomPeriodo=cadena_notildes($fila2['exte02nombre']);
+					}
+				$res=$res.'<tr class="fondoazul">
+				<td colspan="8" align="center">'.$ETI['even21idperaca'].' <b>'.$sNomPeriodo.'</b></td>
+				</tr>';
+				}
+			}
+		}
 		$sPrefijo='';
 		$sSufijo='';
 		$sClass='';
@@ -319,17 +339,14 @@ WHERE TB.even21idencuesta='.$even16id.' '.$sSQLadd1.' AND TB.even21idtercero=T2.
 		if(($tlinea%2)==0){$sClass=' class="resaltetabla"';}
 		$tlinea++;
 		//TB.even21idperaca, TB.even21idcurso, TB.even21idbloquedo 
-		$et_even21idperaca='';
 		$et_even21idcurso='';
 		if ($filadet['even21idcurso']!=0){
 			$et_even21idcurso=$filadet['even21idcurso'].' '.cadena_notildes($filadet['unad40nombre']);
 			}
 		$et_even21idbloquedo='';
-		if ($filadet['even21idperaca']!=0){
-			$et_even21idperaca=cadena_notildes($filadet['exte02nombre']);
-			}
 		$et_even21fechapresenta='';
 		if ($filadet['even21fechapresenta']!='00/00/0000'){$et_even21fechapresenta=$filadet['even21fechapresenta'];}
+		$sPDF='';
 		if ($babierta){
 			//$sLink='<a href="javascript:cargaridf1921('."'".$filadet['even21id']."'".')" class="lnkresalte">'.$ETI['lnk_cargar'].'</a>';
 			}else{
@@ -342,16 +359,16 @@ WHERE TB.even21idencuesta='.$even16id.' '.$sSQLadd1.' AND TB.even21idtercero=T2.
 		$res=$res.'<tr'.$sClass.'>
 <td>'.$sPrefijo.$filadet['C2_td'].' '.$filadet['C2_doc'].$sSufijo.'</td>
 <td>'.$sPrefijo.cadena_notildes($filadet['C2_nombre']).$sSufijo.'</td>
-<td>'.$sPrefijo.$et_even21idperaca.$sSufijo.'</td>
 <td>'.$sPrefijo.$et_even21idcurso.$sSufijo.'</td>
 <td>'.$sPrefijo.$et_even21idbloquedo.$sSufijo.'</td>
 <td>'.$sPrefijo.$et_even21fechapresenta.$sSufijo.'</td>
 <td>'.$sPrefijo.$et_even21terminada.$sSufijo.'</td>
 <td>'.$sLink.'</td>
+<td>'.$sPDF.'</td>
 </tr>';
 		}
 	$res=$res.'</table>';
-	return array(utf8_encode($res), $sDebug);
+	return array(cadena_codificar($res), $sDebug);
 	}
 function f1921_Clonar($even21idencuesta, $even21idencuestaPadre, $objDB){
 	$sError='';
@@ -391,7 +408,7 @@ function TraerBusqueda_db_even21idcurso($sCodigo, $objDB){
 			$sRespuesta='<span class="rojo">{'.$sCodigo.' No encontrado}</span>';
 			}
 		}
-	return array($id, utf8_encode($sRespuesta));
+	return array($id, cadena_codificar($sRespuesta));
 	}
 function TraerBusqueda_even21idcurso($params){
 	if(!is_array($params)){$params=json_decode(str_replace('\"','"',$params),true);}

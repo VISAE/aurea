@@ -76,7 +76,7 @@ even04correo, even04telefono, even04estadoasistencia';
 			$svalores=''.$even04idevento.', "'.$even04idparticipante.'", '.$even04id.', "'.$even04institucion.'", "'.$even04cargo.'", 
 "'.$even04correo.'", "'.$even04telefono.'", '.$even04estadoasistencia.'';
 			if ($APP->utf8==1){
-				$sSQL='INSERT INTO even04eventoparticipante ('.$scampos.') VALUES ('.utf8_encode($svalores).');';
+				$sSQL='INSERT INTO even04eventoparticipante ('.$scampos.') VALUES ('.cadena_codificar($svalores).');';
 				}else{
 				$sSQL='INSERT INTO even04eventoparticipante ('.$scampos.') VALUES ('.$svalores.');';
 				}
@@ -118,7 +118,7 @@ even04correo, even04telefono, even04estadoasistencia';
 				}
 			if ($bpasa){
 				if ($APP->utf8==1){
-					$sSQL='UPDATE even04eventoparticipante SET '.utf8_encode($sdatos).' WHERE '.$sWhere.';';
+					$sSQL='UPDATE even04eventoparticipante SET '.cadena_codificar($sdatos).' WHERE '.$sWhere.';';
 					}else{
 					$sSQL='UPDATE even04eventoparticipante SET '.$sdatos.' WHERE '.$sWhere.';';
 					}
@@ -257,7 +257,7 @@ ORDER BY TB.even04idparticipante';
 		}else{
 		$registros=$objDB->nf($tabladetalle);
 		if ($registros==0){
-			return array(utf8_encode($sErrConsulta.'<input id="paginaf1904" name="paginaf1904" type="hidden" value="'.$pagina.'"/><input id="lppf1904" name="lppf1904" type="hidden" value="'.$lineastabla.'"/>'), $sDebug);
+			return array(cadena_codificar($sErrConsulta.'<input id="paginaf1904" name="paginaf1904" type="hidden" value="'.$pagina.'"/><input id="lppf1904" name="lppf1904" type="hidden" value="'.$lineastabla.'"/>'), $sDebug);
 			}
 		if ((($registros-1)/$lineastabla)<($pagina-1)){$pagina=(int)(($registros-1)/$lineastabla)+1;}
 		if ($registros>$lineastabla){
@@ -313,7 +313,7 @@ ORDER BY TB.even04idparticipante';
 		}
 	$res=$res.'</table>';
 	$objDB->liberar($tabladetalle);
-	return array(utf8_encode($res), $sDebug);
+	return array(cadena_codificar($res), $sDebug);
 	}
 function f1904_Clonar($even04idevento, $even04ideventoPadre, $objDB){
 	$sError='';

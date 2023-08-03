@@ -128,11 +128,11 @@ if ($bEntra){
 			$aPerfil[$fila['even30id']]=utf8_decode($fila['even30nombre']);
 			}
 		$aPrograma=array();
-		$sql='SELECT exte03id, exte03nombre FROM exte03programa';
+		$sql='SELECT core09id, core09nombre FROM core09programa';
 		$tabla=$objdb->ejecutasql($sql);
 		while ($fila=$objdb->sf($tabla)){
-			$sTitulo=str_replace($cSepara, $cComplementa, utf8_decode($fila['exte03nombre']));
-			$aPrograma[$fila['exte03id']]=$sTitulo;
+			$sTitulo=str_replace($cSepara, $cComplementa, utf8_decode($fila['core09nombre']));
+			$aPrograma[$fila['core09id']]=$sTitulo;
 			}
 		$iNumPreguntas=0;
 		$aPreg=array();
@@ -200,7 +200,7 @@ ORDER BY T11.unad11doc';
 			$objplano=new clsPlanos($sPath.$sNombrePlano);
 			$sDato='UNIVERSIDAD NACIONAL ABIERTA Y A DISTANCIA - UNAD';
 			$objplano->AdicionarLinea($sDato);
-			$sDato=utf8_encode('Sistema de Gestión de Eventos - Proceso Encuestas');
+			$sDato=cadena_codificar('Sistema de Gestión de Eventos - Proceso Encuestas');
 			$objplano->AdicionarLinea($sDato);
 			$objplano->AdicionarLinea($sTituloEncuesta);
 			$sDatoPeriodo='';
@@ -364,7 +364,7 @@ ORDER BY T11.unad11doc';
 				$objHoja->setCellValueByColumnAndRow(0, $iFila, $iFila-8);
 				$objHoja->setCellValueByColumnAndRow(1, $iFila, $fila['unad11doc']);
 				$objHoja->setCellValueByColumnAndRow(2, $iFila, $fila['even21pais']);
-				$objHoja->setCellValueByColumnAndRow(3, $iFila, utf8_encode($sPais));
+				$objHoja->setCellValueByColumnAndRow(3, $iFila, cadena_codificar($sPais));
 				$iFila++;
 				}
 			if ($_REQUEST['clave']!=''){

@@ -16,7 +16,7 @@ function html_combo_even18idgrupo($objDB, $valor, $idEncuesta){
 	require $mensajes_todas;
 	if ($idEncuesta==''){$idEncuesta=-99;}
 	$res=html_combo('even18idgrupo', 'even19id', 'even19nombre', 'even19encuestagrupo', 'even19idencuesta='.$idEncuesta, 'even19nombre', $valor, $objDB, '', true, '{'.$ETI['msg_ninguno'].'}', 0);
-	return utf8_encode($res);
+	return cadena_codificar($res);
 	}
 function html_combo_even18tiporespuesta($objDB, $valor){
 	require './app.php';
@@ -24,7 +24,7 @@ function html_combo_even18tiporespuesta($objDB, $valor){
 	if (!file_exists($mensajes_todas)){$mensajes_todas=$APP->rutacomun.'lg/lg_todas_es.php';}
 	require $mensajes_todas;
 	$res=html_combo('even18tiporespuesta', 'even20id', 'even20nombre', 'even20tiporespuesta', '', 'even20id', $valor, $objDB, '', false, '{'.$ETI['msg_seleccione'].'}', '');
-	return utf8_encode($res);
+	return cadena_codificar($res);
 	}
 function html_combo_even18idpregcondiciona($objDB, $valor, $idEncuesta){
 	require './app.php';
@@ -33,7 +33,7 @@ function html_combo_even18idpregcondiciona($objDB, $valor, $idEncuesta){
 	require $mensajes_todas;
 	if ($idEncuesta==''){$idEncuesta=0;}
 	$res=html_combo('even18idpregcondiciona', 'even18id', 'CONCAT(even18consec, " ", SUBSTR(even18pregunta, 1, 50))', 'even18encuestapregunta', 'even18idencuesta='.$idEncuesta.' AND even18divergente="S"', 'even18consec', $valor, $objDB, 'carga_combo_even18valorcondiciona();', true, '{'.$ETI['msg_ninguna'].'}', '0');
-	return utf8_encode($res);
+	return cadena_codificar($res);
 	}
 function html_combo_even18valorcondiciona($objDB, $valor, $idPregunta){
 	require './app.php';
@@ -58,7 +58,7 @@ function html_combo_even18valorcondiciona($objDB, $valor, $idPregunta){
 		$res=html_combo('even18valorcondiciona', 'even29consec', 'even29etiqueta', 'even29encpregresp', 'even29idpregunta='.$idPregunta, 'even29etiqueta', $valor, $objDB, '', true, '{'.$ETI['msg_ninguna'].'}', '0');
 		break;
 		}
-	return utf8_encode($res);
+	return cadena_codificar($res);
 	}
 function Cargar_even18valorcondiciona($aParametros){
 	$_SESSION['u_ultimominuto']=iminutoavance();
@@ -233,7 +233,7 @@ even18rptatotal, even18idpregcondiciona, even18valorcondiciona, even18url';
 '.$even18rpta7.', '.$even18rpta8.', '.$even18rpta9.', '.$even18orden.', "'.$even18divergente.'", 
 '.$even18rptatotal.', '.$even18idpregcondiciona.', '.$even18valorcondiciona.', "'.$even18url.'"';
 			if ($APP->utf8==1){
-				$sSQL='INSERT INTO even18encuestapregunta ('.$scampos.') VALUES ('.utf8_encode($svalores).');';
+				$sSQL='INSERT INTO even18encuestapregunta ('.$scampos.') VALUES ('.cadena_codificar($svalores).');';
 				}else{
 				$sSQL='INSERT INTO even18encuestapregunta ('.$scampos.') VALUES ('.$svalores.');';
 				}
@@ -283,7 +283,7 @@ even18rptatotal, even18idpregcondiciona, even18valorcondiciona, even18url';
 				}
 			if ($bpasa){
 				if ($APP->utf8==1){
-					$sSQL='UPDATE even18encuestapregunta SET '.utf8_encode($sdatos).' WHERE '.$sWhere.';';
+					$sSQL='UPDATE even18encuestapregunta SET '.cadena_codificar($sdatos).' WHERE '.$sWhere.';';
 					}else{
 					$sSQL='UPDATE even18encuestapregunta SET '.$sdatos.' WHERE '.$sWhere.';';
 					}
@@ -431,7 +431,7 @@ ORDER BY TB.even18orden, TB.even18consec';
 		}else{
 		$registros=$objDB->nf($tabladetalle);
 		if ($registros==0){
-			return array(utf8_encode($sErrConsulta.'<input id="paginaf1918" name="paginaf1918" type="hidden" value="'.$pagina.'"/><input id="lppf1918" name="lppf1918" type="hidden" value="'.$lineastabla.'"/>'), $sDebug);
+			return array(cadena_codificar($sErrConsulta.'<input id="paginaf1918" name="paginaf1918" type="hidden" value="'.$pagina.'"/><input id="lppf1918" name="lppf1918" type="hidden" value="'.$lineastabla.'"/>'), $sDebug);
 			}
 		if ((($registros-1)/$lineastabla)<($pagina-1)){$pagina=(int)(($registros-1)/$lineastabla)+1;}
 		if ($registros>$lineastabla){
@@ -541,7 +541,7 @@ ORDER BY TB.even18orden, TB.even18consec';
 		}
 	$res=$res.'</table>';
 	$objDB->liberar($tabladetalle);
-	return array(utf8_encode($res), $sDebug);
+	return array(cadena_codificar($res), $sDebug);
 	}
 function f1918_Clonar($even18idencuesta, $even18idencuestaPadre, $objDB){
 	$sError='';

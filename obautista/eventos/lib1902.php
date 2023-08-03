@@ -93,7 +93,7 @@ function f1902_Busqueda_db_even02idcertificado($sCodigo, $objDB, $bDebug=false){
 			$sRespuesta='<span class="rojo">{'.$sCodigo.' No encontrado}</span>';
 			}
 		}
-	return array($id, utf8_encode($sRespuesta), $sDebug);
+	return array($id, cadena_codificar($sRespuesta), $sDebug);
 	}
 function f1902_Busqueda_even02idcertificado($aParametros){
 	if(!is_array($aParametros)){$aParametros=json_decode(str_replace('\"','"',$aParametros),true);}
@@ -143,7 +143,7 @@ function f1902_Busqueda_db_even02idrubrica($sCodigo, $objDB, $bDebug=false){
 			$sRespuesta='<span class="rojo">{'.$sCodigo.' No encontrado}</span>';
 			}
 		}
-	return array($id, utf8_encode($sRespuesta), $sDebug);
+	return array($id, cadena_codificar($sRespuesta), $sDebug);
 	}
 function f1902_Busqueda_even02idrubrica($aParametros){
 	if(!is_array($aParametros)){$aParametros=json_decode(str_replace('\"','"',$aParametros),true);}
@@ -467,7 +467,7 @@ ORDER BY TB.even02consec';
 		}else{
 		$registros=$objDB->nf($tabladetalle);
 		if ($registros==0){
-			//return array(utf8_encode($sErrConsulta.'<input id="paginaf1902" name="paginaf1902" type="hidden" value="'.$pagina.'"/><input id="lppf1902" name="lppf1902" type="hidden" value="'.$lineastabla.'"/>'), $sDebug);
+			//return array(cadena_codificar($sErrConsulta.'<input id="paginaf1902" name="paginaf1902" type="hidden" value="'.$pagina.'"/><input id="lppf1902" name="lppf1902" type="hidden" value="'.$lineastabla.'"/>'), $sDebug);
 			}
 		if ((($registros-1)/$lineastabla)<($pagina-1)){$pagina=(int)(($registros-1)/$lineastabla)+1;}
 		if ($registros>$lineastabla){
@@ -532,7 +532,7 @@ $res=$res.'<td>'.$sLink.'</td>
 		}
 	$res=$res.'</table>';
 	$objDB->liberar($tabladetalle);
-	return array(utf8_encode($res), $sDebug);
+	return array(cadena_codificar($res), $sDebug);
 	}
 function f1902_HtmlTabla($aParametros){
 	$_SESSION['u_ultimominuto']=iminutoavance();
@@ -820,8 +820,8 @@ even02insfechafin, even02idcertificado, even02idrubrica, even02detalle, even02fo
 "'.$DATA['even02insfechafin'].'", '.$DATA['even02idcertificado'].', '.$DATA['even02idrubrica'].', "'.$even02detalle.'", '.$DATA['even02formainscripcion'].', "'
 .$DATA['even02url'].'", '.$DATA['even02modalidad'].'," '.$DATA['even02urlinfo'].'"';
 			if ($APP->utf8==1){
-				$sSQL='INSERT INTO even02evento ('.$sCampos1902.') VALUES ('.utf8_encode($sValores1902).');';
-				$sdetalle=$sCampos1902.'['.utf8_encode($sValores1902).']';
+				$sSQL='INSERT INTO even02evento ('.$sCampos1902.') VALUES ('.cadena_codificar($sValores1902).');';
+				$sdetalle=$sCampos1902.'['.cadena_codificar($sValores1902).']';
 				}else{
 				$sSQL='INSERT INTO even02evento ('.$sCampos1902.') VALUES ('.$sValores1902.');';
 				$sdetalle=$sCampos1902.'['.$sValores1902.']';
@@ -906,8 +906,8 @@ even02insfechafin, even02idcertificado, even02idrubrica, even02detalle, even02fo
 				}
 			if ($bpasa){
 				if ($APP->utf8==1){
-					$sdetalle=utf8_encode($sdatos).'['.$sWhere.']';
-					$sSQL='UPDATE even02evento SET '.utf8_encode($sdatos).' WHERE '.$sWhere.';';
+					$sdetalle=cadena_codificar($sdatos).'['.$sWhere.']';
+					$sSQL='UPDATE even02evento SET '.cadena_codificar($sdatos).' WHERE '.$sWhere.';';
 					}else{
 					$sdetalle=$sdatos.'['.$sWhere.']';
 					$sSQL='UPDATE even02evento SET '.$sdatos.' WHERE '.$sWhere.';';
@@ -1103,7 +1103,7 @@ ORDER BY TB.even02consec';
 		}else{
 		$registros=$objDB->nf($tabladetalle);
 		if ($registros==0){
-			//return array(utf8_encode($sErrConsulta.'<input id="paginaf1902" name="paginaf1902" type="hidden" value="'.$pagina.'"/><input id="lppf1902" name="lppf1902" type="hidden" value="'.$lineastabla.'"/>'), $sDebug);
+			//return array(cadena_codificar($sErrConsulta.'<input id="paginaf1902" name="paginaf1902" type="hidden" value="'.$pagina.'"/><input id="lppf1902" name="lppf1902" type="hidden" value="'.$lineastabla.'"/>'), $sDebug);
 			}
 		if ((($registros-1)/$lineastabla)<($pagina-1)){$pagina=(int)(($registros-1)/$lineastabla)+1;}
 		if ($registros>$lineastabla){
@@ -1185,7 +1185,7 @@ ORDER BY TB.even02consec';
 		}
 	$res=$res.'</table>';
 	$objDB->liberar($tabladetalle);
-	return utf8_encode($res);
+	return cadena_codificar($res);
 	}
 // -----------------------------------
 // ---- Funciones personalizadas  ----
