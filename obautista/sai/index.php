@@ -750,7 +750,7 @@ if ($iIndiceSatisf == 0) {
 	echo '_';
 } else {
 	$iIndiceSatisf = number_format($iIndiceSatisf,2,',','');
-	echo $iIndiceSatisf . '%';
+	echo $iIndiceSatisf;
 }
 ?>
 </div>

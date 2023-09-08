@@ -6,10 +6,10 @@
 */
 $ETI['app_nombre']='APP';
 $ETI['grupo_nombre']='Grupo';
-$ETI['titulo']='Peticiones, Quejas, Reclamos y Solicitudes';
+$ETI['titulo']='Peticiones, Quejas, Reclamos y Sugerencias';
 $ETI['titulo_sector2_PQRS']='PQRS - Resasignar responsable';
 $ETI['titulo_sector93']='Cambio de consecutivo';
-$ETI['titulo_3005']='Peticiones, Quejas, Reclamos y Solicitudes';
+$ETI['titulo_3005']='Peticiones, Quejas, Reclamos y Sugerencias';
 $ETI['titulo_3005sai']='Servicio de Atenci&oacute;n Integral - Solicitudes';
 $ETI['sigla_3005']='PQRS';
 $ETI['bloque1_sai']='Solicitudes registradas';

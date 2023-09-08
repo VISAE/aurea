@@ -10,271 +10,191 @@
  * @param debug = 1  (Opcional), bandera para indicar si se generan datos de depuración
  * @date lunes, 31 de julio de 2023
  */
-if (file_exists('./err_control.php')) {
-	require './err_control.php';
-}
-$bDebug = false;
-$sDebug = '';
-if (isset($_REQUEST['deb_doc']) != 0) {
-	if (trim($_REQUEST['deb_doc']) != '') {
-		$bDebug = true;
+if (file_exists('./err_control.php')){require './err_control.php';}
+$bDebug=false;
+$sDebug='';
+if (isset($_REQUEST['deb_doc'])!=0){
+	$bDebug=true;
 	}
-} else {
-	$_REQUEST['deb_doc'] = '';
-}
-if (isset($_REQUEST['debug']) != 0) {
-	if ($_REQUEST['debug'] == 1) {
-		$bDebug = true;
+if (isset($_REQUEST['debug'])!=0){
+	if ($_REQUEST['debug']==1){$bDebug=true;}
 	}
-}
-if ($bDebug) {
-	$iSegIni = microtime(true);
-	$iSegundos = floor($iSegIni);
-	$sMili = floor(($iSegIni - $iSegundos) * 1000);
-	if ($sMili < 100) {
-		if ($sMili < 10) {
-			$sMili = ':00' . $sMili;
-		} else {
-			$sMili = ':0' . $sMili;
-		}
-	} else {
-		$sMili = ':' . $sMili;
+if ($bDebug){
+	$iSegIni=microtime(true);
+	$iSegundos=floor($iSegIni);
+	$sMili=floor(($iSegIni-$iSegundos)*1000);
+	if ($sMili<100){if ($sMili<10){$sMili=':00'.$sMili;}else{$sMili=':0'.$sMili;}}else{$sMili=':'.$sMili;}
+	$sDebug=$sDebug.''.date('H:i:s').$sMili.' Inicia pagina <br>';
 	}
-	$sDebug = $sDebug . date('H:i:s') . $sMili . ' Inicia pagina <br>';
-}
-if (!file_exists('./app.php')) {
+if (!file_exists('./app.php')){
 	echo '<b>Error N 1 de instalaci&oacute;n</b><br>No se ha establecido un archivo de configuraci&oacute;n, por favor comuniquese con el administrador del sistema.';
 	die();
-}
+	}
 mb_internal_encoding('UTF-8');
 require './app.php';
-require $APP->rutacomun . 'unad_sesion.php';
-if (isset($APP->https) == 0) {
-	$APP->https = 0;
-}
-if ($APP->https == 2) {
-	$bObliga = false;
-	if (isset($_SERVER['HTTPS']) == 0) {
-		$bObliga = true;
-	} else {
-		if ($_SERVER['HTTPS'] != 'on') {
-			$bObliga = true;
+require $APP->rutacomun.'unad_sesion.php';
+if (isset($APP->https)==0){$APP->https=0;}
+if ($APP->https==2){
+	$bObliga=false;
+	if (isset($_SERVER['HTTPS'])==0){
+		$bObliga=true;
+		}else{
+		if ($_SERVER['HTTPS']!='on'){$bObliga=true;}
+		}
+	if ($bObliga){
+		$pageURL='https://'.$_SERVER['SERVER_NAME'].$_SERVER['REQUEST_URI'];
+		header('Location:'.$pageURL);
+		die();
 		}
 	}
-	if ($bObliga) {
-		$pageURL = 'https://' . $_SERVER['SERVER_NAME'] . $_SERVER['REQUEST_URI'];
-		header('Location:' . $pageURL);
-		die();
-	}
-}
-/*
-if (!file_exists('./opts.php')) {
-	require './opts.php';
-	if ($OPT->opcion == 1) {
-		$bOpcion = true;
-	}
-}
-*/
-$bPeticionXAJAX = false;
-if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-	if (isset($_POST['xjxfun'])) {
-		$bPeticionXAJAX = true;
-	}
-}
-if (!$bPeticionXAJAX) {
-	$_SESSION['u_ultimominuto'] = (date('W') * 1440) + (date('H') * 60) + date('i');
-}
-require $APP->rutacomun . 'unad_todas.php';
-require $APP->rutacomun . 'libs/clsdbadmin.php';
-require $APP->rutacomun . 'unad_librerias.php';
-//require $APP->rutacomun . 'libdatos.php';
-require $APP->rutacomun . 'libhtml.php';
-require $APP->rutacomun . 'xajax/xajax_core/xajax.inc.php';
-require $APP->rutacomun . 'unad_xajax.php';
-if (($bPeticionXAJAX) && ($_SESSION['unad_id_tercero'] == 0)) {
+//if (!file_exists('./opts.php')){require './opts.php';if ($OPT->opcion==1){$bOpcion=true;}}
+$bPeticionXAJAX=false;
+if ($_SERVER['REQUEST_METHOD']=='POST'){if (isset($_POST['xjxfun'])){$bPeticionXAJAX=true;}}
+if (!$bPeticionXAJAX){$_SESSION['u_ultimominuto']=(date('W')*1440)+(date('H')*60)+date('i');}
+require $APP->rutacomun.'unad_todas.php';
+require $APP->rutacomun.'libs/clsdbadmin.php';
+require $APP->rutacomun.'unad_librerias.php';
+require $APP->rutacomun.'libdatos.php';
+require $APP->rutacomun.'libhtml.php';
+require $APP->rutacomun.'xajax/xajax_core/xajax.inc.php';
+require $APP->rutacomun.'unad_xajax.php';
+require $APP->rutacomun.'libsai.php';
+require $APP->rutacomun.'libtiempo.php';
+if (($bPeticionXAJAX)&&($_SESSION['unad_id_tercero']==0)){
 	// viene por xajax.
-	$xajax = new xajax();
-	$xajax->configure('javascript URI', $APP->rutacomun . 'xajax/');
-	$xajax->register(XAJAX_FUNCTION, 'sesion_abandona_V2');
+	$xajax=new xajax();
+	$xajax->configure('javascript URI', $APP->rutacomun.'xajax/');
+	$xajax->register(XAJAX_FUNCTION,'sesion_abandona_V2');
 	$xajax->processRequest();
 	die();
-}
-$grupo_id = 1; //Necesita ajustarlo...
+	}
+$grupo_id=1;//Necesita ajustarlo...
 $iCodModulo = 3021;
-$audita[1] = false;
-$audita[2] = true;
-$audita[3] = true;
-$audita[4] = true;
-$audita[5] = false;
+$audita[1]=false;
+$audita[2]=true;
+$audita[3]=true;
+$audita[4]=true;
+$audita[5]=false;
 // -- Se cargan los archivos de idioma
-$mensajes_todas = $APP->rutacomun . 'lg/lg_todas_' . $_SESSION['unad_idioma'] . '.php';
-if (!file_exists($mensajes_todas)) {
-	$mensajes_todas = $APP->rutacomun . 'lg/lg_todas_es.php';
-}
-/*
-$mensajes_3000 = 'lg/lg_3000_' . $_SESSION['unad_idioma'] . '.php';
-if (!file_exists($mensajes_3000)) {
-	$mensajes_3000 = 'lg/lg_3000_es.php';
-}
-require $mensajes_3000;
-*/
-$mensajes_3021 = 'lg/lg_3021_' . $_SESSION['unad_idioma'] . '.php';
-if (!file_exists($mensajes_3021)) {
-	$mensajes_3021 = 'lg/lg_3021_es.php';
-}
+$mensajes_todas=$APP->rutacomun.'lg/lg_todas_'.$_SESSION['unad_idioma'].'.php';
+if (!file_exists($mensajes_todas)){$mensajes_todas=$APP->rutacomun.'lg/lg_todas_es.php';}
+$mensajes_3021='lg/lg_3021_'.$_SESSION['unad_idioma'].'.php';
+if (!file_exists($mensajes_3021)){$mensajes_3021='lg/lg_3021_es.php';}
 require $mensajes_todas;
 require $mensajes_3021;
-$xajax = NULL;
-$objDB = new clsdbadmin($APP->dbhost, $APP->dbuser, $APP->dbpass, $APP->dbname);
-if ($APP->dbpuerto != '') {
-	$objDB->dbPuerto = $APP->dbpuerto;
-}
-$iPiel = iDefinirPiel($APP, 1);
-$sAnchoExpandeContrae = ' style="width:62px;"';
-$sOcultaId = ' style="display:none;"';
-$sOcultaConsec = ''; //' style="display:none;"';
-$bCerrado = false;
-$et_menu = '';
-if ($bDebug) {
-	$sDebug = $sDebug . fecha_microtiempo() . ' Probando conexi&oacute;n con la base de datos <b>' . $APP->dbname . '</b> en <b>' . $APP->dbhost . '</b><br>';
-}
-if (!$objDB->Conectar()) {
-	$bCerrado = true;
-	$sMsgCierre = '<div class="MarquesinaGrande">Disculpe las molestias estamos en este momento nuestros servicios no estas disponibles.<br>Por favor intente acceder mas tarde.<br>Si el problema persiste por favor informa al administrador del sistema.</div>';
-	if ($bDebug) {
-		$sDebug = $sDebug . fecha_microtiempo() . ' Error al intentar conectar con la base de datos <b>' . $objDB->serror . '</b><br>';
+$xajax=NULL;
+$objDB=new clsdbadmin($APP->dbhost, $APP->dbuser, $APP->dbpass, $APP->dbname);
+if ($APP->dbpuerto!=''){$objDB->dbPuerto=$APP->dbpuerto;}
+if (isset($APP->piel)==0){$APP->piel=1;}
+$sAnchoExpandeContrae=' style="width:62px;"';
+$iPiel=$APP->piel;
+$iPiel=1; //Piel 2018.
+if ($bDebug){
+	$sDebug=$sDebug.''.fecha_microtiempo().' Probando conexi&oacute;n con la base de datos <b>'.$APP->dbname.'</b> en <b>'.$APP->dbhost.'</b><br>';
 	}
-}
-if (!$bCerrado) {
-	list($bDevuelve, $sDebugP) = seg_revisa_permisoV3($iCodModulo, 1, $_SESSION['unad_id_tercero'], $objDB);
-	if (!$bDevuelve) {
-		$bCerrado = true;
-		$sMsgCierre = '<div class="MarquesinaGrande">No cuenta con permiso para acceder a este modulo [' . $iCodModulo . '].</div>';
-		list($et_menu, $sDebugM) = html_menuV2($APP->idsistema, $objDB, $iPiel, false, $_SESSION['unad_id_tercero']);
+if (!$objDB->Conectar()){
+	$bCerrado=true;
+	if ($bDebug){
+		$sDebug=$sDebug.''.fecha_microtiempo().' Error al intentar conectar con la base de datos <b>'.$objDB->serror.'</b><br>';
+		}
 	}
-}
-if ($bCerrado) {
-	$objDB->CerrarConexion();
-	require $APP->rutacomun . 'unad_forma_v2.php';
-	forma_cabeceraV3($xajax, $ETI['titulo_3021']);
-	echo $et_menu;
-	forma_mitad();
-	?>
-	<script language="javascript" src="<?php echo $APP->rutacomun; ?>js/jquery-3.3.1.min.js"></script>
-	<script language="javascript" src="<?php echo $APP->rutacomun; ?>js/popper.min.js"></script>
-	<script language="javascript" src="<?php echo $APP->rutacomun; ?>js/bootstrap.min.js"></script>
-	<link rel="stylesheet" href="<?php echo $APP->rutacomun; ?>js/bootstrap.min.css" type="text/css" />
-	<link rel="stylesheet" href="<?php echo $APP->rutacomun; ?>css/criticalPath.css" type="text/css" />
-	<link rel="stylesheet" href="<?php echo $APP->rutacomun; ?>css/principal.css" type="text/css" />
-	<link rel="stylesheet" href="<?php echo $APP->rutacomun; ?>unad_estilos2018.css" type="text/css" />
-	<?php
-	echo $sMsgCierre;
-	if ($bDebug) {
-		echo $sDebug;
-	}
-	forma_piedepagina();
+list($bDevuelve, $sDebugP)=seg_revisa_permisoV3($iCodModulo, 1, $_SESSION['unad_id_tercero'], $objDB);
+if (!$bDevuelve){
+	header('Location:nopermiso.php');
 	die();
-}
-if (!$bPeticionXAJAX) {
-	if (noticias_pendientes($objDB)) {
+	}
+if (!$bPeticionXAJAX){
+	if (noticias_pendientes($objDB)){
 		$objDB->CerrarConexion();
 		header('Location:noticia.php?ret=saiupresencial.php');
 		die();
+		}
 	}
-}
-$idTercero = $_SESSION['unad_id_tercero'];
-$bOtroUsuario = false;
-$seg_1707 = 0;
-$bDevuelve = false;
-//list($bDevuelve, $sDebugP) = seg_revisa_permisoV3($iCodModulo, 1707, $_SESSION['unad_id_tercero'], $objDB, $bDebug);
-//$sDebug = $sDebug . $sDebugP;
-if ($bDevuelve) {
-	$seg_1707 = 1;
-}
-if (isset($_REQUEST['deb_tipodoc']) == 0) {
-	$_REQUEST['deb_tipodoc'] = $APP->tipo_doc;
-}
-if ($_REQUEST['deb_doc'] != '') {
-	if ($seg_1707 == 1) {
-		$sSQL = 'SELECT unad11id, unad11razonsocial FROM unad11terceros WHERE unad11doc="' . $_REQUEST['deb_doc'] . '" AND unad11tipodoc="' . $_REQUEST['deb_tipodoc'] . '"';
-		$tabla = $objDB->ejecutasql($sSQL);
-		if ($objDB->nf($tabla) > 0) {
-			$fila = $objDB->sf($tabla);
-			$idTercero = $fila['unad11id'];
-			$bOtroUsuario = true;
-			if ($bDebug) {
-				$sDebug = $sDebug . fecha_microtiempo() . ' Se verifica la ventana de trabajo para el usuario ' . $fila['unad11razonsocial'] . '.<br>';
+$idTercero=$_SESSION['unad_id_tercero'];
+$bOtroUsuario=false;
+if (isset($_REQUEST['deb_doc'])!=0){
+	list($bDevuelve, $sDebugP)=seg_revisa_permisoV3($iCodModulo, 1707, $_SESSION['unad_id_tercero'], $objDB, $bDebug);
+	//$sDebug=$sDebug.$sDebugP;
+	if ($bDevuelve){
+		$sSQL='SELECT unad11id, unad11razonsocial FROM unad11terceros WHERE unad11doc="'.$_REQUEST['deb_doc'].'"';
+		$tabla=$objDB->ejecutasql($sSQL);
+		if ($objDB->nf($tabla)>0){
+			$fila=$objDB->sf($tabla);
+			$idTercero=$fila['unad11id'];
+			$bOtroUsuario=true;
+			if ($bDebug){$sDebug=$sDebug.fecha_microtiempo().' Se verifica la ventana de trabajo para el usuario '.$fila['unad11razonsocial'].'.<br>';}
+			}else{
+			$sError='No se ha encontrado el documento &quot;'.$_REQUEST['deb_doc'].'&quot;';
+			$_REQUEST['deb_doc']='';
 			}
-		} else {
-			$sError = 'No se ha encontrado el documento &quot;' . $_REQUEST['deb_tipodoc'] . ' ' . $_REQUEST['deb_doc'] . '&quot;';
-			$_REQUEST['deb_doc'] = '';
+		}else{
+		if ($bDebug){$sDebug=$sDebug.fecha_microtiempo().' No cuenta con permiso de ingreso como otro usuario [Modulo '.$iCodModulo.' Permiso 1707].<br>';}
+		$_REQUEST['deb_doc']='';
 		}
-	} else {
-		if ($bDebug) {
-			$sDebug = $sDebug . fecha_microtiempo() . ' No cuenta con permiso de ingreso como otro usuario [Modulo ' . $iCodModulo . ' Permiso 1707]<br>';
-		}
-		$_REQUEST['deb_doc'] = '';
+	$bDebug=false;
+	}else{
+	$_REQUEST['deb_doc']='';
 	}
-	$bDebug = false;
-}
-if (isset($_REQUEST['debug']) != 0) {
-	if ($_REQUEST['debug'] == 1) {
-		$bDebug = true;
-		$sOcultaId = '';
+if (isset($_REQUEST['debug'])!=0){
+	if ($_REQUEST['debug']==1){$bDebug=true;}
+	}else{
+	$_REQUEST['debug']=0;
 	}
-} else {
-	$_REQUEST['debug'] = 0;
-}
 //PROCESOS DE LA PAGINA
-//$idEntidad = Traer_Entidad();
-// -- Si esta cargando la pagina por primer vez se revisa si requiere auditar y se manda a hacer un limpiar (paso -1)
-if (isset($_REQUEST['paso']) == 0) {
-	$_REQUEST['paso'] = -1;
-	if ($audita[1]) {
-		seg_auditaingreso($iCodModulo, $_SESSION['unad_id_tercero'], $objDB);
+$idEntidad=0;
+if (isset($APP->entidad)!=0){
+	if ($APP->entidad==1){$idEntidad=1;}
 	}
-}
+$mensajes_3000=$APP->rutacomun.'lg/lg_3000_'.$_SESSION['unad_idioma'].'.php';
+if (!file_exists($mensajes_3000)){$mensajes_3000=$APP->rutacomun.'lg/lg_3000_es.php';}
+require $mensajes_3000;
+// -- Si esta cargando la pagina por primer vez se revisa si requiere auditar y se manda a hacer un limpiar (paso -1)
+if (isset($_REQUEST['paso'])==0){
+	$_REQUEST['paso']=-1;
+	if ($audita[1]){seg_auditaingreso($iCodModulo, $_SESSION['unad_id_tercero'], $objDB);}
+	}
 // -- 3021 saiu21directa
 require 'lib3021.php';
-$xajax = new xajax();
-$xajax->configure('javascript URI', $APP->rutacomun . 'xajax/');
-$xajax->register(XAJAX_FUNCTION, 'unad11_Mostrar_v2');
-$xajax->register(XAJAX_FUNCTION, 'unad11_TraerXid');
-$xajax->register(XAJAX_FUNCTION, 'f3021_Combosaiu21idcentro');
-$xajax->register(XAJAX_FUNCTION, 'f3021_Combosaiu21coddepto');
-$xajax->register(XAJAX_FUNCTION, 'f3021_Combosaiu21codciudad');
-$xajax->register(XAJAX_FUNCTION, 'f3021_Combosaiu21idprograma');
-$xajax->register(XAJAX_FUNCTION, 'sesion_abandona_V2');
-$xajax->register(XAJAX_FUNCTION, 'sesion_mantenerV4');
-$xajax->register(XAJAX_FUNCTION, 'f3021_HtmlTabla');
-$xajax->register(XAJAX_FUNCTION, 'f3021_ExisteDato');
-$xajax->register(XAJAX_FUNCTION, 'f3021_Busquedas');
-$xajax->register(XAJAX_FUNCTION, 'f3021_HtmlBusqueda');
+// -- 3000 Historial de solicitudes
+require $APP->rutacomun.'lib3000.php';
+$xajax=new xajax();
+$xajax->configure('javascript URI', $APP->rutacomun.'xajax/');
+$xajax->register(XAJAX_FUNCTION,'unad11_Mostrar_v2');
+$xajax->register(XAJAX_FUNCTION,'unad11_Mostrar_v2SAI');
+$xajax->register(XAJAX_FUNCTION,'unad11_TraerXid');
+$xajax->register(XAJAX_FUNCTION,'unad11_TraerXidSAI');
+$xajax->register(XAJAX_FUNCTION,'f3021_Combosaiu21tiposolicitud');
+$xajax->register(XAJAX_FUNCTION,'f3021_Combosaiu21temasolicitud');
+$xajax->register(XAJAX_FUNCTION,'f3021_Combosaiu21idcentro');
+$xajax->register(XAJAX_FUNCTION,'f3021_Combosaiu21coddepto');
+$xajax->register(XAJAX_FUNCTION,'f3021_Combosaiu21codciudad');
+$xajax->register(XAJAX_FUNCTION,'f3021_Combosaiu21idprograma');
+$xajax->register(XAJAX_FUNCTION,'sesion_abandona_V2');
+$xajax->register(XAJAX_FUNCTION,'sesion_mantenerV4');
+$xajax->register(XAJAX_FUNCTION,'f3021_HtmlTabla');
+$xajax->register(XAJAX_FUNCTION,'f3021_ExisteDato');
+$xajax->register(XAJAX_FUNCTION,'f3021_Busquedas');
+$xajax->register(XAJAX_FUNCTION,'f3021_HtmlBusqueda');
+$xajax->register(XAJAX_FUNCTION,'f3000_HtmlTabla');
 $xajax->processRequest();
-if ($bPeticionXAJAX) {
+if ($bPeticionXAJAX){
 	die(); // Esto hace que las llamadas por xajax terminen aquí.
-}
-$bcargo = false;
-$sError = '';
-$sErrorCerrando = '';
-$iTipoError = 0;
-$bLimpiaHijos = false;
-$bMueveScroll = false;
-$iSector = 1;
-$iHoy = fecha_DiaMod();
+	}
+$bcargo=false;
+$sError='';
+$sErrorCerrando='';
+$iTipoError=0;
+$bLimpiaHijos=false;
+$bMueveScroll=false;
+$iSector=1;
 // -- Se inicializan las variables, primero las que controlan la visualización de la página.
-if (isset($_REQUEST['iscroll']) == 0) {
-	$_REQUEST['iscroll'] = 0;
-}
-if (isset($_REQUEST['paginaf3021']) == 0) {
-	$_REQUEST['paginaf3021'] = 1;
-}
-if (isset($_REQUEST['lppf3021']) == 0) {
-	$_REQUEST['lppf3021'] = 20;
-}
-if (isset($_REQUEST['boculta3021']) == 0) {
-	$_REQUEST['boculta3021'] = 0;
-}
+if (isset($_REQUEST['iscroll'])==0){$_REQUEST['iscroll']=0;}
+if (isset($_REQUEST['paginaf3018'])==0){$_REQUEST['paginaf3021']=1;}
+if (isset($_REQUEST['lppf3018'])==0){$_REQUEST['lppf3021']=20;}
+if (isset($_REQUEST['boculta3018'])==0){$_REQUEST['boculta3021']=0;}
+if (isset($_REQUEST['paginaf3000'])==0){$_REQUEST['paginaf3000']=1;}
+if (isset($_REQUEST['lppf3000'])==0){$_REQUEST['lppf3000']=10;}
+if (isset($_REQUEST['boculta3000'])==0){$_REQUEST['boculta3000']=0;}
 // -- Inicializar variables de datos.
 if (isset($_REQUEST['saiu21agno']) == 0) {
 	$_REQUEST['saiu21agno'] = 0;

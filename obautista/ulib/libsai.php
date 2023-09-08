@@ -3165,7 +3165,7 @@ function f3000_TablaDetallePQRS($aParametros, $objDB, $bDebug=false){
 				$aItems = array_filter(array($filadet['saiu05evalamabilidad'],$filadet['saiu05evalrapidez'],$filadet['saiu05evalclaridad'],$filadet['saiu05evalresolvio'],$filadet['saiu05evalconocimiento'],$filadet['saiu05evalutilidad']));
 				$iNumItems = count($aItems);
 				$iSumaVrEval = $filadet['saiu05evalamabilidad']+$filadet['saiu05evalrapidez']+$filadet['saiu05evalclaridad']+$filadet['saiu05evalresolvio']+$filadet['saiu05evalconocimiento']+$filadet['saiu05evalutilidad'];
-				$iIndiceSatisf = $iIndiceSatisf + ($iSumaVrEval * 100 / ($iNumItems*$iVrMaxItem));
+				$iIndiceSatisf = $iIndiceSatisf + ($iSumaVrEval / $iNumItems);
 				$iEncuestas++;
 			}
 		} else if ($filadet['saiu05estado'] >= 0  && $filadet['saiu05estado'] < 7) {
