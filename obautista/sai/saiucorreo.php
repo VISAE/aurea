@@ -5,7 +5,7 @@
 --- Modelo Versión 2.25.4 domingo, 19 de julio de 2020
 */
 /** Archivo saiuchat.php.
-* Modulo 3020 saiu20chat.
+* Modulo 3020 saiu20correo.
 * @author Angel Mauro Avellaneda Barreto - angel.avellaneda@unad.edu.co
 * @param debug=1 (Opcional), bandera para indicar si se generan datos de depuración
 * @date domingo, 19 de julio de 2020
@@ -220,7 +220,6 @@ if (isset($_REQUEST['saiu20codciudad'])==0){$_REQUEST['saiu20codciudad']='';}
 if (isset($_REQUEST['saiu20idescuela'])==0){$_REQUEST['saiu20idescuela']='';}
 if (isset($_REQUEST['saiu20idprograma'])==0){$_REQUEST['saiu20idprograma']='';}
 if (isset($_REQUEST['saiu20idperiodo'])==0){$_REQUEST['saiu20idperiodo']='';}
-if (isset($_REQUEST['saiu20numorigen'])==0){$_REQUEST['saiu20numorigen']='';}
 if (isset($_REQUEST['saiu20idpqrs'])==0){$_REQUEST['saiu20idpqrs']=0;}
 if (isset($_REQUEST['saiu20detalle'])==0){$_REQUEST['saiu20detalle']='';}
 if (isset($_REQUEST['saiu20horafin'])==0){$_REQUEST['saiu20horafin']='';}
@@ -234,7 +233,8 @@ if (isset($_REQUEST['saiu20tiempresphoras'])==0){$_REQUEST['saiu20tiempresphoras
 if (isset($_REQUEST['saiu20tiemprespminutos'])==0){$_REQUEST['saiu20tiemprespminutos']='';}
 if (isset($_REQUEST['saiu20solucion'])==0){$_REQUEST['saiu20solucion']='';}
 if (isset($_REQUEST['saiu20idcaso'])==0){$_REQUEST['saiu20idcaso']=0;}
-if (isset($_REQUEST['saiu20numcorreo'])==0){$_REQUEST['saiu20numcorreo']='';}
+if (isset($_REQUEST['saiu20respuesta'])==0){$_REQUEST['saiu20respuesta']='';}
+if (isset($_REQUEST['saiu20correoorigen'])==0){$_REQUEST['saiu20correoorigen']='';}
 // Espacio para inicializar otras variables
 if (isset($_REQUEST['csv_separa'])==0){$_REQUEST['csv_separa']=',';}
 if (isset($_REQUEST['bnombre'])==0){$_REQUEST['bnombre']='';}
@@ -250,15 +250,15 @@ if (isset($_REQUEST['vdtipointeresado'])==0){
 		}
 	$_REQUEST['vdtipointeresado']=$sVr;
 	}
-if (isset($_REQUEST['vdidchat'])==0){
+if (isset($_REQUEST['vdidcorreo'])==0){
 	$sVr='';
-	$sSQL='SELECT saiu27id FROM saiu27chats WHERE saiu27predet=1 ORDER BY saiu27orden, saiu27consec';
+	$sSQL='SELECT saiu27id FROM saiu57correos WHERE saiu57vigente=1 ORDER BY saiu57orden, saiu57consec';
 	$tabla=$objDB->ejecutasql($sSQL);
 	if ($objDB->nf($tabla)>0){
 		$fila=$objDB->sf($tabla);
-		$sVr=$fila['saiu27id'];
+		$sVr=$fila['saiu57id'];
 		}
-	$_REQUEST['vdidchat']=$sVr;
+	$_REQUEST['vdidcorreo']=$sVr;
 	}
 //Si Modifica o Elimina Cargar los campos
 if (($_REQUEST['paso']==1)||($_REQUEST['paso']==3)){
@@ -271,7 +271,7 @@ if (($_REQUEST['paso']==1)||($_REQUEST['paso']==3)){
 		}else{
 		$sSQLcondi='saiu20id='.$_REQUEST['saiu20id'].'';
 		}
-	$sSQL='SELECT * FROM saiu20chat_'.$_REQUEST['saiu20agno'].' WHERE '.$sSQLcondi;
+	$sSQL='SELECT * FROM saiu20correo_'.$_REQUEST['saiu20agno'].' WHERE '.$sSQLcondi;
 	$tabla=$objDB->ejecutasql($sSQL);
 	if ($objDB->nf($tabla)>0){
 		$fila=$objDB->sf($tabla);
@@ -298,7 +298,6 @@ if (($_REQUEST['paso']==1)||($_REQUEST['paso']==3)){
 		$_REQUEST['saiu20idescuela']=$fila['saiu20idescuela'];
 		$_REQUEST['saiu20idprograma']=$fila['saiu20idprograma'];
 		$_REQUEST['saiu20idperiodo']=$fila['saiu20idperiodo'];
-		$_REQUEST['saiu20numorigen']=$fila['saiu20numorigen'];
 		$_REQUEST['saiu20idpqrs']=$fila['saiu20idpqrs'];
 		$_REQUEST['saiu20detalle']=$fila['saiu20detalle'];
 		$_REQUEST['saiu20horafin']=$fila['saiu20horafin'];
@@ -310,7 +309,8 @@ if (($_REQUEST['paso']==1)||($_REQUEST['paso']==3)){
 		$_REQUEST['saiu20tiemprespminutos']=$fila['saiu20tiemprespminutos'];
 		$_REQUEST['saiu20solucion']=$fila['saiu20solucion'];
 		$_REQUEST['saiu20idcaso']=$fila['saiu20idcaso'];
-		$_REQUEST['saiu20numcorreo']=$fila['saiu20numcorreo'];
+		$_REQUEST['saiu20respuesta']=$fila['saiu20respuesta'];
+		$_REQUEST['saiu20correoorigen']=$fila['saiu20correoorigen'];
 		$bcargo=true;
 		$_REQUEST['paso']=2;
 		$_REQUEST['boculta3020']=0;
@@ -350,7 +350,7 @@ if ($_REQUEST['paso']==17){
 	if ($sError!=''){
 		$_REQUEST['saiu20estado']=7;
 		}else{
-		$sSQL='UPDATE saiu20chat_'.$_REQUEST['saiu20agno'].' SET saiu20estado=2 WHERE saiu20id='.$_REQUEST['saiu20id'].'';
+		$sSQL='UPDATE saiu20correo_'.$_REQUEST['saiu20agno'].' SET saiu20estado=2 WHERE saiu20id='.$_REQUEST['saiu20id'].'';
 		$tabla=$objDB->ejecutasql($sSQL);
 		seg_auditar($iCodModulo, $_SESSION['unad_id_tercero'], 3, $_REQUEST['saiu20id'], 'Abre Registro de conversacion chat', $objDB);
 		$_REQUEST['saiu20estado']=2;
@@ -390,7 +390,7 @@ if ($_REQUEST['paso']==93){
 		}
 	if ($sError==''){
 		//Ver que el consecutivo no exista.
-		$sSQL='SELECT saiu20id FROM saiu20chat_'.$_REQUEST['saiu20agno'].' WHERE saiu20consec='.$_REQUEST['saiu20consec_nuevo'].' AND saiu20tiporadicado='.$_REQUEST['saiu20tiporadicado'].' AND saiu20mes='.$_REQUEST['saiu20mes'].' AND saiu20agno='.$_REQUEST['saiu20agno'].'';
+		$sSQL='SELECT saiu20id FROM saiu20correo_'.$_REQUEST['saiu20agno'].' WHERE saiu20consec='.$_REQUEST['saiu20consec_nuevo'].' AND saiu20tiporadicado='.$_REQUEST['saiu20tiporadicado'].' AND saiu20mes='.$_REQUEST['saiu20mes'].' AND saiu20agno='.$_REQUEST['saiu20agno'].'';
 		$tabla=$objDB->ejecutasql($sSQL);
 		if ($objDB->nf($tabla)>0){
 			$sError='El consecutivo '.$_REQUEST['saiu20consec_nuevo'].' ya existe';
@@ -398,7 +398,7 @@ if ($_REQUEST['paso']==93){
 		}
 	if ($sError==''){
 		//Aplicar el cambio.
-		$sSQL='UPDATE saiu20chat_'.$_REQUEST['saiu20agno'].' SET saiu20consec='.$_REQUEST['saiu20consec_nuevo'].' WHERE saiu20id='.$_REQUEST['saiu20id'].'';
+		$sSQL='UPDATE saiu20correo_'.$_REQUEST['saiu20agno'].' SET saiu20consec='.$_REQUEST['saiu20consec_nuevo'].' WHERE saiu20id='.$_REQUEST['saiu20id'].'';
 		$tabla=$objDB->ejecutasql($sSQL);
 		$sDetalle='Cambia el consecutivo de '.$_REQUEST['saiu20consec'].' a '.$_REQUEST['saiu20consec_nuevo'].'';
 		$_REQUEST['saiu20consec']=$_REQUEST['saiu20consec_nuevo'];
@@ -434,7 +434,7 @@ if ($_REQUEST['paso']==-1){
 	$_REQUEST['saiu20minuto']='';
 	$_REQUEST['saiu20estado']=4;
 	if ($_REQUEST['saiu20idcorreo']==''){
-		$_REQUEST['saiu20idcorreo']=$_REQUEST['vdidchat'];
+		$_REQUEST['saiu20idcorreo']=$_REQUEST['vdidcorreo'];
 		}
 	$_REQUEST['saiu20idsolicitante']=0;//$idTercero;
 	$_REQUEST['saiu20idsolicitante_td']=$APP->tipo_doc;
@@ -451,7 +451,6 @@ if ($_REQUEST['paso']==-1){
 	$_REQUEST['saiu20idescuela']='';
 	$_REQUEST['saiu20idprograma']='';
 	$_REQUEST['saiu20idperiodo']='';
-	$_REQUEST['saiu20numorigen']='';
 	$_REQUEST['saiu20idpqrs']=0;
 	$_REQUEST['saiu20detalle']='';
 	$_REQUEST['saiu20horafin']='';
@@ -465,14 +464,15 @@ if ($_REQUEST['paso']==-1){
 	$_REQUEST['saiu20tiemprespminutos']='';
 	$_REQUEST['saiu20solucion']=0;
 	$_REQUEST['saiu20idcaso']=0;
-	$_REQUEST['saiu20numcorreo']='';
+	$_REQUEST['saiu20respuesta']='';
+	$_REQUEST['saiu20correoorigen']='';
 	$_REQUEST['paso']=0;
 	}
 if ($bLimpiaHijos){
 	}
 //AQUI SE DEBEN CARGAR TODOS LOS DATOS QUE LA FORMA NECESITE.
 $iAgno=fecha_agno();
-$sTabla='saiu20chat_'.$iAgno;
+$sTabla='saiu20correo_'.$iAgno;
 if (!$objDB->bexistetabla($sTabla)){
 	list($sErrorT, $sDebugT)=f3000_TablasMes($iAgno, fecha_mes(), $objDB, $bDebug);
 	$sDebug=$sDebug.$sDebugT;
@@ -566,26 +566,22 @@ ORDER BY TB.saiu02ordenchat, TB.saiu02titulo';
 	}
 //Alistar datos adicionales
 $bPuedeAbrir=false;
-$bConBotonAbandona=false;
-$bConBotonCancela=false;
 if ($_REQUEST['paso']!=0){
 	if ($_REQUEST['saiu20estado']>6){
 		//Definir las condiciones que permitirán abrir el registro.
 		list($bDevuelve, $sDebugP)=seg_revisa_permisoV3($iCodModulo, 17, $idTercero, $objDB);
 		if ($bDevuelve){$bPuedeAbrir=true;}
 		}else{
-		$bConBotonAbandona=true;
-		$bConBotonCancela=true;
 		}
 	}
 $id_rpt=0;
 //$id_rpt=reportes_id(_Identificador_Tipo_Reporte_, $objDB);
 $objCombos->nuevo('blistar', $_REQUEST['blistar'], false, '{'.$ETI['msg_todos'].'}');
 $objCombos->sAccion='paginarf3020()';
-$sSQL='SHOW TABLES LIKE "saiu20chat%"';
+$sSQL='SHOW TABLES LIKE "saiu20correo%"';
 $tablac=$objDB->ejecutasql($sSQL);
 while($filac=$objDB->sf($tablac)){
-	$sAgno=substr($filac[0], 11);
+	$sAgno=substr($filac[0], 13);
 	$objCombos->addItem($sAgno, $sAgno);
 	}
 $html_blistar=$objCombos->html('', $objDB);
@@ -958,20 +954,6 @@ function mod_consec(){
 		window.document.frmedita.submit();
 		}
 	}
-function abandonar(){
-	if (confirm("Confirma que el solicitante abandono la llamada?")){
-		expandesector(98);
-		window.document.frmedita.paso.value=21;
-		window.document.frmedita.submit();
-		}
-	}
-function cancelar(){
-	if (confirm("Confirma que la llamada fue cancelada?")){
-		expandesector(98);
-		window.document.frmedita.paso.value=22;
-		window.document.frmedita.submit();
-		}
-	}
 function paginarf3000(){
 	var params=new Array();
 	params[0]=window.document.frmedita.id11.value;
@@ -1025,7 +1007,7 @@ if ($_REQUEST['paso']!=0){
 <input id="seg_5" name="seg_5" type="hidden" value="<?php echo $seg_5; ?>" />
 <input id="seg_6" name="seg_6" type="hidden" value="<?php echo $seg_6; ?>" />
 <input id="vdtipointeresado" name="vdtipointeresado" type="hidden" value="<?php echo $_REQUEST['vdtipointeresado']; ?>" />
-<input id="vdidchat" name="vdidchat" type="hidden" value="<?php echo $_REQUEST['vdidchat']; ?>" />
+<input id="vdidcorreo" name="vdidcorreo" type="hidden" value="<?php echo $_REQUEST['vdidcorreo']; ?>" />
 <div id="div_sector1">
 <div class="titulos">
 <div class="titulosD">
@@ -1219,14 +1201,6 @@ echo $ETI['saiu20idcorreo'];
 echo $html_saiu20idcorreo;
 ?>
 </label>
-<label class="Label160">
-<?php
-echo $ETI['saiu20numcorreo'];
-?>
-</label>
-<label>
-<input id="saiu20numcorreo" name="saiu20numcorreo" type="text" value="<?php echo $_REQUEST['saiu20numcorreo']; ?>" maxlength="20" placeholder="<?php echo $ETI['ing_campo'].$ETI['saiu20numcorreo']; ?>"/>
-</label>
 <div class="salto1px"></div>
 <div class="GrupoCampos450">
 <label class="TituloGrupo">
@@ -1258,9 +1232,9 @@ echo $html_saiu20tipointeresado;
 <div class="salto1px"></div>
 <label class="L">
 <?php
-echo $ETI['saiu20numorigen'];
+echo $ETI['saiu20correoorigen'];
 ?>
-<input id="saiu20numorigen" name="saiu20numorigen" type="text" value="<?php echo $_REQUEST['saiu20numorigen']; ?>" maxlength="20" placeholder="<?php echo $ETI['ing_campo'].$ETI['saiu20numorigen']; ?>" class="L"/>
+<input id="saiu20correoorigen" name="saiu20correoorigen" type="text" value="<?php echo $_REQUEST['saiu20correoorigen']; ?>" maxlength="20" placeholder="<?php echo $ETI['ing_campo'].$ETI['saiu20correoorigen']; ?>" class="L"/>
 </label>
 <div class="salto1px"></div>
 </div>
@@ -1506,27 +1480,11 @@ echo $ETI['saiu20tiemprespdias'].' <b>'.Tiempo_HTML($_REQUEST['saiu20tiemprespdi
 <input id="saiu20tiemprespminutos" name="saiu20tiemprespminutos" type="hidden" value="<?php echo $_REQUEST['saiu20tiemprespminutos']; ?>"/>
 <div class="salto1px"></div>
 <?php
-if ($bConBotonAbandona){
-?>
-<label class="Label130">
-<input id="cmdAbandona" name="cmdAbandona" type="button" value="Abandonada" class="BotonAzul" onclick="abandonar()" title="Llamada abandonada"/>
-</label>
-<label class="Label30"></label>
-<?php
-	}
-if ($bConBotonCancela){
-?>
-<label class="Label130">
-<input id="cmdCancela" name="cmdCancela" type="button" value="Cancelada" class="BotonAzul" onclick="cancelar()" title="Llamada cancelada"/>
-</label>
-<label class="Label30"></label>
-<?php
-	}
 if ($_REQUEST['paso']==2){
 	if ($_REQUEST['saiu20estado']<7){
 ?>
 <label class="Label130">
-<input id="cmdTermina" name="cmdTermina" type="button" value="Terminar" class="BotonAzul" onclick="enviacerrar()" title="Terminar Llamada"/>
+<input id="cmdTermina" name="cmdTermina" type="button" value="<?php echo $ETI['saiu20cerrar']; ?>" class="BotonAzul" onclick="enviacerrar()" title="<?php echo $ETI['saiu20cerrar']; ?>"/>
 </label>
 <?php
 		}
@@ -1761,7 +1719,6 @@ echo html_DivAlarmaV2($sError, $iTipoError);
 ?>
 
 <script language="javascript">
-<!--
 <?php
 if ($iSector!=1){
 	echo 'setTimeout(function(){expandesector('.$iSector.');}, 10);
@@ -1772,14 +1729,12 @@ if ($bMueveScroll){
 ';
 	}
 ?>
--->
 </script>
 <link rel="stylesheet" href="<?php echo $APP->rutacomun; ?>js/jquery.autocomplete.css" type="text/css"/>
 <script language="javascript" src="<?php echo $APP->rutacomun; ?>js/jquery.autocomplete.js"></script>
 <link rel="stylesheet" href="<?php echo $APP->rutacomun; ?>js/chosen.css" type="text/css"/>
 <script language="javascript" src="<?php echo $APP->rutacomun; ?>js/chosen.jquery.js"></script>
 <script language="javascript">
-<!--
 $().ready(function(){
 $("#saiu20idcentro").chosen();
 $("#saiu20coddepto").chosen();
@@ -1795,7 +1750,6 @@ $("#saiu20temasolicitud").chosen();
 $("#saiu20idprograma").chosen();
 $("#saiu20idperiodo").chosen();
 });
--->
 </script>
 <script language="javascript" src="ac_3020.js"></script>
 <script language="javascript" src="<?php echo $APP->rutacomun; ?>unad_todas.js?ver=8"></script>

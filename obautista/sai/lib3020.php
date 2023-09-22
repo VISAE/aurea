@@ -18,11 +18,11 @@ function f3020_HTMLComboV2_saiu20agno($objDB, $objCombos, $valor){
 	$objCombos->nuevo('saiu20agno', $valor, false, '{'.$ETI['msg_seleccione'].'}');
 	//$objCombos->iAncho=450;
 	$objCombos->sAccion='RevisaLlave();';
-	$sSQL='SHOW TABLES LIKE "saiu20chat%"';
+	$sSQL='SHOW TABLES LIKE "saiu20correo%"';
 	//if ($bDebug){$sDebug=$sDebug.fecha_microtiempo().' Total Periodo: Lista de contenedores: '.$sSQL.'<br>';}
 	$tablac=$objDB->ejecutasql($sSQL);
 	while($filac=$objDB->sf($tablac)){
-		$sAgno=substr($filac[0], 11);
+		$sAgno=substr($filac[0], 13);
 		$objCombos->addItem($sAgno, $sAgno);
 		}
 	$res=$objCombos->html('', $objDB);
@@ -192,7 +192,7 @@ function f3020_ExisteDato($datos){
 		$objDB=new clsdbadmin($APP->dbhost, $APP->dbuser, $APP->dbpass, $APP->dbname);
 		if ($APP->dbpuerto!=''){$objDB->dbPuerto=$APP->dbpuerto;}
 		$objDB->xajax();
-		$sSQL='SELECT 1 FROM saiu20chat_'.$saiu20agno.' WHERE saiu20agno='.$saiu20agno.' AND saiu20mes='.$saiu20mes.' AND saiu20tiporadicado='.$saiu20tiporadicado.' AND saiu20consec='.$saiu20consec.'';
+		$sSQL='SELECT 1 FROM saiu20correo_'.$saiu20agno.' WHERE saiu20agno='.$saiu20agno.' AND saiu20mes='.$saiu20mes.' AND saiu20tiporadicado='.$saiu20tiporadicado.' AND saiu20consec='.$saiu20consec.'';
 		$res=$objDB->ejecutasql($sSQL);
 		if ($objDB->nf($res)==0){$bHayLlave=false;}
 		$objDB->CerrarConexion();
@@ -341,13 +341,13 @@ function f3020_TablaDetalleV2($aParametros, $objDB, $bDebug=false){
 			}
 		}
 	*/
-	$sTitulos='Agno, Mes, Tiporadicado, Consec, Id, Dia, Hora, Minuto, Estado, Chat, Solicitante, Tipointeresado, Clasesolicitud, Tiposolicitud, Temasolicitud, Zona, Centro, Codpais, Coddepto, Codciudad, Escuela, Programa, Periodo, Numorigen, Pqrs, Detalle, Horafin, Minutofin, Paramercadeo, Responsable, Tiemprespdias, Tiempresphoras, Tiemprespminutos, Solucion, Caso';
+	$sTitulos='Agno, Mes, Tiporadicado, Consec, Id, Dia, Hora, Minuto, Estado, Correo, Solicitante, Tipointeresado, Clasesolicitud, Tiposolicitud, Temasolicitud, Zona, Centro, Codpais, Coddepto, Codciudad, Escuela, Programa, Periodo, Numorigen, Pqrs, Detalle, Horafin, Minutofin, Paramercadeo, Responsable, Tiemprespdias, Tiempresphoras, Tiemprespminutos, Solucion, Caso';
 	$registros=0;
 	$bGigante=false; //En caso de que la tabla sea muy grande pasarlo a true
 	$sLimite='';
 	if ($bGigante){
 		$sSQL='SELECT COUNT(1) AS Total 
-FROM saiu20chat_'.$iVigencia.' AS TB, unad11terceros AS T12, saiu03temasol AS T16 
+FROM saiu20correo_'.$iVigencia.' AS TB, unad11terceros AS T12, saiu03temasol AS T16 
 WHERE '.$sSQLadd1.' TB.saiu20idsolicitante=T12.unad11id AND TB.saiu20temasolicitud=T16.saiu03id '.$sSQLadd.'';
 		$tabladetalle=$objDB->ejecutasql($sSQL);
 		if ($objDB->nf($tabladetalle)>0){
@@ -360,9 +360,9 @@ WHERE '.$sSQLadd1.' TB.saiu20idsolicitante=T12.unad11id AND TB.saiu20temasolicit
 			$sLimite=' LIMIT '.$rbase.', '.$lineastabla;
 			}
 		}
-	//, TB.saiu20numtelefono, TB.saiu20numorigen, TB.saiu20idpqrs, TB.saiu20detalle, TB.saiu20horafin, TB.saiu20minutofin, TB.saiu20paramercadeo, TB.saiu20tiemprespdias, TB.saiu20tiempresphoras, TB.saiu20tiemprespminutos, TB.saiu20tiporadicado, TB.saiu20idtelefono, TB.saiu20tipointeresado, TB.saiu20clasesolicitud, TB.saiu20tiposolicitud, TB.saiu20temasolicitud, TB.saiu20idzona, TB.saiu20idcentro, TB.saiu20codpais, TB.saiu20coddepto, TB.saiu20codciudad, TB.saiu20idescuela, TB.saiu20idprograma, TB.saiu20idperiodo, TB.saiu20idresponsable
+	//, TB.saiu20numtelefono, TB.saiu20correoorigen, TB.saiu20idpqrs, TB.saiu20detalle, TB.saiu20horafin, TB.saiu20minutofin, TB.saiu20paramercadeo, TB.saiu20tiemprespdias, TB.saiu20tiempresphoras, TB.saiu20tiemprespminutos, TB.saiu20tiporadicado, TB.saiu20idtelefono, TB.saiu20tipointeresado, TB.saiu20clasesolicitud, TB.saiu20tiposolicitud, TB.saiu20temasolicitud, TB.saiu20idzona, TB.saiu20idcentro, TB.saiu20codpais, TB.saiu20coddepto, TB.saiu20codciudad, TB.saiu20idescuela, TB.saiu20idprograma, TB.saiu20idperiodo, TB.saiu20idresponsable
 	$sSQL='SELECT TB.saiu20agno, TB.saiu20mes, TB.saiu20consec, TB.saiu20id, TB.saiu20dia, TB.saiu20hora, TB.saiu20minuto, T12.unad11razonsocial AS C12_nombre, T16.saiu03titulo, TB.saiu20estado, T12.unad11tipodoc AS C12_td, T12.unad11doc AS C12_doc, TB.saiu20idsolicitante 
-FROM saiu20chat_'.$iVigencia.' AS TB, unad11terceros AS T12, saiu03temasol AS T16 
+FROM saiu20correo_'.$iVigencia.' AS TB, unad11terceros AS T12, saiu03temasol AS T16 
 WHERE '.$sSQLadd1.' TB.saiu20idsolicitante=T12.unad11id AND TB.saiu20temasolicitud=T16.saiu03id '.$sSQLadd.'
 ORDER BY TB.saiu20agno DESC, TB.saiu20mes DESC, TB.saiu20dia DESC, TB.saiu20tiporadicado, TB.saiu20consec DESC';
 	$sSQLlista=str_replace("'","|",$sSQL);
@@ -484,7 +484,7 @@ function f3020_db_CargarPadre($DATA, $objDB, $bDebug=false){
 		}else{
 		$sSQLcondi='saiu20id='.$DATA['saiu20id'].'';
 		}
-	$sSQL='SELECT * FROM saiu20chat_'.$DATA['saiu20agno'].' WHERE '.$sSQLcondi;
+	$sSQL='SELECT * FROM saiu20correo_'.$DATA['saiu20agno'].' WHERE '.$sSQLcondi;
 	$tabla=$objDB->ejecutasql($sSQL);
 	if ($objDB->nf($tabla)>0){
 		$fila=$objDB->sf($tabla);
@@ -497,7 +497,7 @@ function f3020_db_CargarPadre($DATA, $objDB, $bDebug=false){
 		$DATA['saiu20hora']=$fila['saiu20hora'];
 		$DATA['saiu20minuto']=$fila['saiu20minuto'];
 		$DATA['saiu20estado']=$fila['saiu20estado'];
-		$DATA['saiu20idchat']=$fila['saiu20idchat'];
+		$DATA['saiu20idcorreo']=$fila['saiu20idcorreo'];
 		$DATA['saiu20idsolicitante']=$fila['saiu20idsolicitante'];
 		$DATA['saiu20tipointeresado']=$fila['saiu20tipointeresado'];
 		$DATA['saiu20clasesolicitud']=$fila['saiu20clasesolicitud'];
@@ -511,7 +511,7 @@ function f3020_db_CargarPadre($DATA, $objDB, $bDebug=false){
 		$DATA['saiu20idescuela']=$fila['saiu20idescuela'];
 		$DATA['saiu20idprograma']=$fila['saiu20idprograma'];
 		$DATA['saiu20idperiodo']=$fila['saiu20idperiodo'];
-		$DATA['saiu20numorigen']=$fila['saiu20numorigen'];
+		$DATA['saiu20correoorigen']=$fila['saiu20correoorigen'];
 		$DATA['saiu20idpqrs']=$fila['saiu20idpqrs'];
 		$DATA['saiu20detalle']=$fila['saiu20detalle'];
 		$DATA['saiu20horafin']=$fila['saiu20horafin'];
@@ -523,7 +523,7 @@ function f3020_db_CargarPadre($DATA, $objDB, $bDebug=false){
 		$DATA['saiu20tiemprespminutos']=$fila['saiu20tiemprespminutos'];
 		$DATA['saiu20solucion']=$fila['saiu20solucion'];
 		$DATA['saiu20idcaso']=$fila['saiu20idcaso'];
-		$DATA['saiu20numsesionchat']=$fila['saiu20numsesionchat'];
+		$DATA['saiu20respuesta']=$fila['saiu20respuesta'];
 		$bcargo=true;
 		$DATA['paso']=2;
 		$DATA['boculta3020']=0;
@@ -564,7 +564,7 @@ function f3020_db_GuardarV2($DATA, $objDB, $bDebug=false){
 	if (isset($DATA['saiu20dia'])==0){$DATA['saiu20dia']='';}
 	if (isset($DATA['saiu20hora'])==0){$DATA['saiu20hora']='';}
 	if (isset($DATA['saiu20minuto'])==0){$DATA['saiu20minuto']='';}
-	if (isset($DATA['saiu20idchat'])==0){$DATA['saiu20idchat']='';}
+	if (isset($DATA['saiu20idcorreo'])==0){$DATA['saiu20idcorreo']='';}
 	if (isset($DATA['saiu20idsolicitante'])==0){$DATA['saiu20idsolicitante']='';}
 	if (isset($DATA['saiu20tipointeresado'])==0){$DATA['saiu20tipointeresado']='';}
 	if (isset($DATA['saiu20clasesolicitud'])==0){$DATA['saiu20clasesolicitud']='';}
@@ -578,14 +578,14 @@ function f3020_db_GuardarV2($DATA, $objDB, $bDebug=false){
 	if (isset($DATA['saiu20idescuela'])==0){$DATA['saiu20idescuela']='';}
 	if (isset($DATA['saiu20idprograma'])==0){$DATA['saiu20idprograma']='';}
 	if (isset($DATA['saiu20idperiodo'])==0){$DATA['saiu20idperiodo']='';}
-	if (isset($DATA['saiu20numorigen'])==0){$DATA['saiu20numorigen']='';}
+	if (isset($DATA['saiu20correoorigen'])==0){$DATA['saiu20correoorigen']='';}
 	if (isset($DATA['saiu20detalle'])==0){$DATA['saiu20detalle']='';}
 	if (isset($DATA['saiu20horafin'])==0){$DATA['saiu20horafin']='';}
 	if (isset($DATA['saiu20minutofin'])==0){$DATA['saiu20minutofin']='';}
 	if (isset($DATA['saiu20paramercadeo'])==0){$DATA['saiu20paramercadeo']='';}
 	if (isset($DATA['saiu20idresponsable'])==0){$DATA['saiu20idresponsable']='';}
 	if (isset($DATA['saiu20solucion'])==0){$DATA['saiu20solucion']='';}
-	if (isset($DATA['saiu20numsesionchat'])==0){$DATA['saiu20numsesionchat']='';}
+	if (isset($DATA['saiu20respuesta'])==0){$DATA['saiu20respuesta']='';}
 	*/
 	$DATA['saiu20agno']=numeros_validar($DATA['saiu20agno']);
 	$DATA['saiu20mes']=numeros_validar($DATA['saiu20mes']);
@@ -594,7 +594,7 @@ function f3020_db_GuardarV2($DATA, $objDB, $bDebug=false){
 	$DATA['saiu20dia']=numeros_validar($DATA['saiu20dia']);
 	$DATA['saiu20hora']=numeros_validar($DATA['saiu20hora']);
 	$DATA['saiu20minuto']=numeros_validar($DATA['saiu20minuto']);
-	$DATA['saiu20idchat']=numeros_validar($DATA['saiu20idchat']);
+	$DATA['saiu20idcorreo']=numeros_validar($DATA['saiu20idcorreo']);
 	$DATA['saiu20tipointeresado']=numeros_validar($DATA['saiu20tipointeresado']);
 	$DATA['saiu20clasesolicitud']=numeros_validar($DATA['saiu20clasesolicitud']);
 	$DATA['saiu20tiposolicitud']=numeros_validar($DATA['saiu20tiposolicitud']);
@@ -607,19 +607,19 @@ function f3020_db_GuardarV2($DATA, $objDB, $bDebug=false){
 	$DATA['saiu20idescuela']=numeros_validar($DATA['saiu20idescuela']);
 	$DATA['saiu20idprograma']=numeros_validar($DATA['saiu20idprograma']);
 	$DATA['saiu20idperiodo']=numeros_validar($DATA['saiu20idperiodo']);
-	$DATA['saiu20numorigen']=htmlspecialchars(trim($DATA['saiu20numorigen']));
+	$DATA['saiu20correoorigen']=htmlspecialchars(trim($DATA['saiu20correoorigen']));
 	$DATA['saiu20detalle']=htmlspecialchars(trim($DATA['saiu20detalle']));
 	$DATA['saiu20horafin']=numeros_validar($DATA['saiu20horafin']);
 	$DATA['saiu20minutofin']=numeros_validar($DATA['saiu20minutofin']);
 	$DATA['saiu20paramercadeo']=numeros_validar($DATA['saiu20paramercadeo']);
 	$DATA['saiu20solucion']=numeros_validar($DATA['saiu20solucion']);
-	$DATA['saiu20numsesionchat']=htmlspecialchars(trim($DATA['saiu20numsesionchat']));
+	$DATA['saiu20respuesta']=htmlspecialchars(trim($DATA['saiu20respuesta']));
 	// -- Se inicializan las variables que puedan pasar vacias {Especialmente números}.
 	//if ($DATA['saiu20dia']==''){$DATA['saiu20dia']=0;}
 	//if ($DATA['saiu20hora']==''){$DATA['saiu20hora']=0;}
 	//if ($DATA['saiu20minuto']==''){$DATA['saiu20minuto']=0;}
 	if ($DATA['saiu20estado']==''){$DATA['saiu20estado']=0;}
-	//if ($DATA['saiu20idchat']==''){$DATA['saiu20idchat']=0;}
+	//if ($DATA['saiu20idcorreo']==''){$DATA['saiu20idcorreo']=0;}
 	//if ($DATA['saiu20tipointeresado']==''){$DATA['saiu20tipointeresado']=0;}
 	if ($DATA['saiu20idpqrs']==''){$DATA['saiu20idpqrs']=0;}
 	//if ($DATA['saiu20paramercadeo']==''){$DATA['saiu20paramercadeo']=0;}
@@ -641,7 +641,7 @@ function f3020_db_GuardarV2($DATA, $objDB, $bDebug=false){
 		//if ($DATA['saiu20minutofin']==''){$sError=$ERR['saiu20minutofin'].$sSepara.$sError;}
 		//if ($DATA['saiu20horafin']==''){$sError=$ERR['saiu20horafin'].$sSepara.$sError;}
 		if ($DATA['saiu20detalle']==''){$sError=$ERR['saiu20detalle'].$sSepara.$sError;}
-		if ($DATA['saiu20numorigen']==''){$sError=$ERR['saiu20numorigen'].$sSepara.$sError;}
+		if ($DATA['saiu20correoorigen']==''){$sError=$ERR['saiu20correoorigen'].$sSepara.$sError;}
 		if ($DATA['saiu20idperiodo']==''){$sError=$ERR['saiu20idperiodo'].$sSepara.$sError;}
 		if ($DATA['saiu20idprograma']==''){$sError=$ERR['saiu20idprograma'].$sSepara.$sError;}
 		if ($DATA['saiu20idescuela']==''){$sError=$ERR['saiu20idescuela'].$sSepara.$sError;}
@@ -655,7 +655,7 @@ function f3020_db_GuardarV2($DATA, $objDB, $bDebug=false){
 		if ($DATA['saiu20clasesolicitud']==''){$sError=$ERR['saiu20clasesolicitud'].$sSepara.$sError;}
 		if ($DATA['saiu20tipointeresado']==''){$sError=$ERR['saiu20tipointeresado'].$sSepara.$sError;}
 		if ($DATA['saiu20idsolicitante']==0){$sError=$ERR['saiu20idsolicitante'].$sSepara.$sError;}
-		if ($DATA['saiu20idchat']==''){$sError=$ERR['saiu20idchat'].$sSepara.$sError;}
+		if ($DATA['saiu20idcorreo']==''){$sError=$ERR['saiu20idcorreo'].$sSepara.$sError;}
 		if ($DATA['saiu20minuto']==''){$sError=$ERR['saiu20minuto'].$sSepara.$sError;}
 		if ($DATA['saiu20hora']==''){$sError=$ERR['saiu20hora'].$sSepara.$sError;}
 		if ($DATA['saiu20dia']==''){$sError=$ERR['saiu20dia'].$sSepara.$sError;}
@@ -715,7 +715,7 @@ function f3020_db_GuardarV2($DATA, $objDB, $bDebug=false){
 		}
 	// -- Fin del cerrado.
 	// -- Se verifican los valores de campos de otras tablas.
-	$sTabla19='saiu20chat_'.$DATA['saiu20agno'];
+	$sTabla19='saiu20correo_'.$DATA['saiu20agno'];
 	if ($DATA['saiu20idresponsable_doc']!=''){
 		if ($sError==''){$sError=tabla_terceros_existe($DATA['saiu20idresponsable_td'], $DATA['saiu20idresponsable_doc'], $objDB, 'El tercero Responsable ');}
 		if ($sError==''){
@@ -781,21 +781,21 @@ function f3020_db_GuardarV2($DATA, $objDB, $bDebug=false){
 			$DATA['saiu20tiemprespminutos']=0;
 			$DATA['saiu20idcaso']=0;
 			$sCampos3020='saiu20agno, saiu20mes, saiu20tiporadicado, saiu20consec, saiu20id, 
-saiu20dia, saiu20hora, saiu20minuto, saiu20estado, saiu20idchat, 
+saiu20dia, saiu20hora, saiu20minuto, saiu20estado, saiu20idcorreo, 
 saiu20idsolicitante, saiu20tipointeresado, saiu20clasesolicitud, saiu20tiposolicitud, saiu20temasolicitud, 
 saiu20idzona, saiu20idcentro, saiu20codpais, saiu20coddepto, saiu20codciudad, 
-saiu20idescuela, saiu20idprograma, saiu20idperiodo, saiu20numorigen, saiu20idpqrs, 
+saiu20idescuela, saiu20idprograma, saiu20idperiodo, saiu20correoorigen, saiu20idpqrs, 
 saiu20detalle, saiu20horafin, saiu20minutofin, saiu20paramercadeo, saiu20idresponsable, 
 saiu20tiemprespdias, saiu20tiempresphoras, saiu20tiemprespminutos, saiu20solucion, saiu20idcaso, 
-saiu20numsesionchat';
+saiu20respuesta';
 			$sValores3020=''.$DATA['saiu20agno'].', '.$DATA['saiu20mes'].', '.$DATA['saiu20tiporadicado'].', '.$DATA['saiu20consec'].', '.$DATA['saiu20id'].', 
-'.$DATA['saiu20dia'].', '.$DATA['saiu20hora'].', '.$DATA['saiu20minuto'].', '.$DATA['saiu20estado'].', '.$DATA['saiu20idchat'].', 
+'.$DATA['saiu20dia'].', '.$DATA['saiu20hora'].', '.$DATA['saiu20minuto'].', '.$DATA['saiu20estado'].', '.$DATA['saiu20idcorreo'].', 
 '.$DATA['saiu20idsolicitante'].', '.$DATA['saiu20tipointeresado'].', '.$DATA['saiu20clasesolicitud'].', '.$DATA['saiu20tiposolicitud'].', '.$DATA['saiu20temasolicitud'].', 
 '.$DATA['saiu20idzona'].', '.$DATA['saiu20idcentro'].', "'.$DATA['saiu20codpais'].'", "'.$DATA['saiu20coddepto'].'", "'.$DATA['saiu20codciudad'].'", 
-'.$DATA['saiu20idescuela'].', '.$DATA['saiu20idprograma'].', '.$DATA['saiu20idperiodo'].', "'.$DATA['saiu20numorigen'].'", '.$DATA['saiu20idpqrs'].', 
+'.$DATA['saiu20idescuela'].', '.$DATA['saiu20idprograma'].', '.$DATA['saiu20idperiodo'].', "'.$DATA['saiu20correoorigen'].'", '.$DATA['saiu20idpqrs'].', 
 "'.$saiu20detalle.'", '.$DATA['saiu20horafin'].', '.$DATA['saiu20minutofin'].', '.$DATA['saiu20paramercadeo'].', '.$DATA['saiu20idresponsable'].', 
 '.$DATA['saiu20tiemprespdias'].', '.$DATA['saiu20tiempresphoras'].', '.$DATA['saiu20tiemprespminutos'].', '.$DATA['saiu20solucion'].', '.$DATA['saiu20idcaso'].', 
-"'.$DATA['saiu20numsesionchat'].'"';
+"'.$DATA['saiu20respuesta'].'"';
 			if ($APP->utf8==1){
 				$sSQL='INSERT INTO '.$sTabla19.' ('.$sCampos3020.') VALUES ('.utf8_encode($sValores3020).');';
 				$sdetalle=$sCampos3020.'['.utf8_encode($sValores3020).']';
@@ -809,7 +809,7 @@ saiu20numsesionchat';
 			$scampo[1]='saiu20dia';
 			$scampo[2]='saiu20hora';
 			$scampo[3]='saiu20minuto';
-			$scampo[4]='saiu20idchat';
+			$scampo[4]='saiu20idcorreo';
 			$scampo[5]='saiu20idsolicitante';
 			$scampo[6]='saiu20tipointeresado';
 			$scampo[7]='saiu20clasesolicitud';
@@ -822,7 +822,7 @@ saiu20numsesionchat';
 			$scampo[14]='saiu20idescuela';
 			$scampo[15]='saiu20idprograma';
 			$scampo[16]='saiu20idperiodo';
-			$scampo[17]='saiu20numorigen';
+			$scampo[17]='saiu20correoorigen';
 			$scampo[18]='saiu20detalle';
 			$scampo[19]='saiu20horafin';
 			$scampo[20]='saiu20minutofin';
@@ -834,11 +834,11 @@ saiu20numsesionchat';
 			$scampo[26]='saiu20tiemprespdias';
 			$scampo[27]='saiu20tiempresphoras';
 			$scampo[28]='saiu20tiemprespminutos';
-			$scampo[29]='saiu20numsesionchat';
+			$scampo[29]='saiu20respuesta';
 			$sdato[1]=$DATA['saiu20dia'];
 			$sdato[2]=$DATA['saiu20hora'];
 			$sdato[3]=$DATA['saiu20minuto'];
-			$sdato[4]=$DATA['saiu20idchat'];
+			$sdato[4]=$DATA['saiu20idcorreo'];
 			$sdato[5]=$DATA['saiu20idsolicitante'];
 			$sdato[6]=$DATA['saiu20tipointeresado'];
 			$sdato[7]=$DATA['saiu20clasesolicitud'];
@@ -851,7 +851,7 @@ saiu20numsesionchat';
 			$sdato[14]=$DATA['saiu20idescuela'];
 			$sdato[15]=$DATA['saiu20idprograma'];
 			$sdato[16]=$DATA['saiu20idperiodo'];
-			$sdato[17]=$DATA['saiu20numorigen'];
+			$sdato[17]=$DATA['saiu20correoorigen'];
 			$sdato[18]=$saiu20detalle;
 			$sdato[19]=$DATA['saiu20horafin'];
 			$sdato[20]=$DATA['saiu20minutofin'];
@@ -863,7 +863,7 @@ saiu20numsesionchat';
 			$sdato[26]=$DATA['saiu20tiemprespdias'];
 			$sdato[27]=$DATA['saiu20tiempresphoras'];
 			$sdato[28]=$DATA['saiu20tiemprespminutos'];
-			$sdato[29]=$DATA['saiu20numsesionchat'];
+			$sdato[29]=$DATA['saiu20respuesta'];
 			$numcmod=29;
 			$sWhere='saiu20id='.$DATA['saiu20id'].'';
 			$sSQL='SELECT * FROM '.$sTabla19.' WHERE '.$sWhere;
@@ -974,7 +974,7 @@ function f3020_db_Eliminar($saiu20agno, $saiu20id, $objDB, $bDebug=false){
 	$sDebug='';
 	$saiu20id=numeros_validar($saiu20id);
 	// Traer los datos para hacer las validaciones.
-	$sTabla19='saiu10chat_'.$saiu20agno;
+	$sTabla19='saiu20correo_'.$saiu20agno;
 	if ($sError==''){
 		$sSQL='SELECT * FROM '.$sTabla19.' WHERE saiu20id='.$saiu20id.'';
 		$tabla=$objDB->ejecutasql($sSQL);
@@ -1026,7 +1026,7 @@ function f3020_db_Eliminar($saiu20agno, $saiu20id, $objDB, $bDebug=false){
 	return array($sError, $iTipoError, $sDebug);
 	}
 function f3020_TituloBusqueda(){
-	return 'Busqueda de Sesiones de chat';
+	return 'Busqueda de Atenciones por Correo';
 	}
 function f3020_ParametrosBusqueda(){
 	$sParams='<label class="Label90">Nombre</label><label><input id="b3020nombre" name="b3020nombre" type="text" value="" onchange="paginarbusqueda()" /></label>';
@@ -1095,10 +1095,10 @@ function f3020_TablaDetalleBusquedas($aParametros, $objDB){
 			}
 		}
 	*/
-	$sTitulos='Agno, Mes, Tiporadicado, Consec, Id, Dia, Hora, Minuto, Estado, Chat, Solicitante, Tipointeresado, Clasesolicitud, Tiposolicitud, Temasolicitud, Zona, Centro, Codpais, Coddepto, Codciudad, Escuela, Programa, Periodo, Numorigen, Pqrs, Detalle, Horafin, Minutofin, Paramercadeo, Responsable, Tiemprespdias, Tiempresphoras, Tiemprespminutos, Solucion, Caso';
-	$sSQL='SELECT TB.saiu20agno, TB.saiu20mes, TB.saiu20tiporadicado, TB.saiu20consec, TB.saiu20id, TB.saiu20dia, TB.saiu20hora, TB.saiu20minuto, T9.saiu11nombre, T10.saiu27nombre, T11.unad11razonsocial AS C11_nombre, T12.bita07nombre, T13.saiu01titulo, T14.saiu02titulo, T15.saiu03titulo, T16.unad23nombre, T17.unad24nombre, T18.unad18nombre, T19.unad19nombre, T20.unad20nombre, T21.core12nombre, T22.core09nombre, T23.exte02nombre, TB.saiu20numorigen, TB.saiu20idpqrs, TB.saiu20detalle, TB.saiu20horafin, TB.saiu20minutofin, TB.saiu20paramercadeo, T30.unad11razonsocial AS C30_nombre, TB.saiu20tiemprespdias, TB.saiu20tiempresphoras, TB.saiu20tiemprespminutos, TB.saiu20solucion, TB.saiu20idcaso, TB.saiu20estado, TB.saiu20idchat, TB.saiu20idsolicitante, T11.unad11tipodoc AS C11_td, T11.unad11doc AS C11_doc, TB.saiu20tipointeresado, TB.saiu20clasesolicitud, TB.saiu20tiposolicitud, TB.saiu20temasolicitud, TB.saiu20idzona, TB.saiu20idcentro, TB.saiu20codpais, TB.saiu20coddepto, TB.saiu20codciudad, TB.saiu20idescuela, TB.saiu20idprograma, TB.saiu20idperiodo, TB.saiu20idresponsable, T30.unad11tipodoc AS C30_td, T30.unad11doc AS C30_doc 
-FROM saiu20chat AS TB, saiu11estadosol AS T9, saiu27chats AS T10, unad11terceros AS T11, bita07tiposolicitante AS T12, saiu01claseser AS T13, saiu02tiposol AS T14, saiu03temasol AS T15, unad23zona AS T16, unad24sede AS T17, unad18pais AS T18, unad19depto AS T19, unad20ciudad AS T20, core12escuela AS T21, core09programa AS T22, exte02per_aca AS T23, unad11terceros AS T30 
-WHERE '.$sSQLadd1.' TB.saiu20estado=T9.saiu11id AND TB.saiu20idchat=T10.saiu27id AND TB.saiu20idsolicitante=T11.unad11id AND TB.saiu20tipointeresado=T12.bita07id AND TB.saiu20clasesolicitud=T13.saiu01id AND TB.saiu20tiposolicitud=T14.saiu02id AND TB.saiu20temasolicitud=T15.saiu03id AND TB.saiu20idzona=T16.unad23id AND TB.saiu20idcentro=T17.unad24id AND TB.saiu20codpais=T18.unad18codigo AND TB.saiu20coddepto=T19.unad19codigo AND TB.saiu20codciudad=T20.unad20codigo AND TB.saiu20idescuela=T21.core12id AND TB.saiu20idprograma=T22.core09id AND TB.saiu20idperiodo=T23.exte02id AND TB.saiu20idresponsable=T30.unad11id '.$sSQLadd.'
+	$sTitulos='Agno, Mes, Tiporadicado, Consec, Id, Dia, Hora, Minuto, Estado, Correo, Solicitante, Tipointeresado, Clasesolicitud, Tiposolicitud, Temasolicitud, Zona, Centro, Codpais, Coddepto, Codciudad, Escuela, Programa, Periodo, Numorigen, Pqrs, Detalle, Horafin, Minutofin, Paramercadeo, Responsable, Tiemprespdias, Tiempresphoras, Tiemprespminutos, Solucion, Caso';
+	$sSQL='SELECT TB.saiu20agno, TB.saiu20mes, TB.saiu20tiporadicado, TB.saiu20consec, TB.saiu20id, TB.saiu20dia, TB.saiu20hora, TB.saiu20minuto, T9.saiu11nombre, T10.saiu57titulo, T11.unad11razonsocial AS C11_nombre, T12.bita07nombre, T13.saiu01titulo, T14.saiu02titulo, T15.saiu03titulo, T16.unad23nombre, T17.unad24nombre, T18.unad18nombre, T19.unad19nombre, T20.unad20nombre, T21.core12nombre, T22.core09nombre, T23.exte02nombre, TB.saiu20correoorigen, TB.saiu20idpqrs, TB.saiu20detalle, TB.saiu20horafin, TB.saiu20minutofin, TB.saiu20paramercadeo, T30.unad11razonsocial AS C30_nombre, TB.saiu20tiemprespdias, TB.saiu20tiempresphoras, TB.saiu20tiemprespminutos, TB.saiu20solucion, TB.saiu20idcaso, TB.saiu20estado, TB.saiu20idcorreo, TB.saiu20idsolicitante, T11.unad11tipodoc AS C11_td, T11.unad11doc AS C11_doc, TB.saiu20tipointeresado, TB.saiu20clasesolicitud, TB.saiu20tiposolicitud, TB.saiu20temasolicitud, TB.saiu20idzona, TB.saiu20idcentro, TB.saiu20codpais, TB.saiu20coddepto, TB.saiu20codciudad, TB.saiu20idescuela, TB.saiu20idprograma, TB.saiu20idperiodo, TB.saiu20idresponsable, T30.unad11tipodoc AS C30_td, T30.unad11doc AS C30_doc 
+FROM saiu20correo AS TB, saiu11estadosol AS T9, saiu57correos AS T10, unad11terceros AS T11, bita07tiposolicitante AS T12, saiu01claseser AS T13, saiu02tiposol AS T14, saiu03temasol AS T15, unad23zona AS T16, unad24sede AS T17, unad18pais AS T18, unad19depto AS T19, unad20ciudad AS T20, core12escuela AS T21, core09programa AS T22, exte02per_aca AS T23, unad11terceros AS T30 
+WHERE '.$sSQLadd1.' TB.saiu20estado=T9.saiu11id AND TB.saiu20idcorreo=T10.saiu57id AND TB.saiu20idsolicitante=T11.unad11id AND TB.saiu20tipointeresado=T12.bita07id AND TB.saiu20clasesolicitud=T13.saiu01id AND TB.saiu20tiposolicitud=T14.saiu02id AND TB.saiu20temasolicitud=T15.saiu03id AND TB.saiu20idzona=T16.unad23id AND TB.saiu20idcentro=T17.unad24id AND TB.saiu20codpais=T18.unad18codigo AND TB.saiu20coddepto=T19.unad19codigo AND TB.saiu20codciudad=T20.unad20codigo AND TB.saiu20idescuela=T21.core12id AND TB.saiu20idprograma=T22.core09id AND TB.saiu20idperiodo=T23.exte02id AND TB.saiu20idresponsable=T30.unad11id '.$sSQLadd.'
 ORDER BY TB.saiu20agno, TB.saiu20mes, TB.saiu20tiporadicado, TB.saiu20consec';
 	$sSQLlista=str_replace("'","|",$sSQL);
 	$sSQLlista=str_replace('"',"|",$sSQLlista);
@@ -1130,7 +1130,7 @@ ORDER BY TB.saiu20agno, TB.saiu20mes, TB.saiu20tiporadicado, TB.saiu20consec';
 <td><b>'.$ETI['saiu20dia'].'</b></td>
 <td><b>'.$ETI['saiu20hora'].'</b></td>
 <td><b>'.$ETI['saiu20estado'].'</b></td>
-<td><b>'.$ETI['saiu20idchat'].'</b></td>
+<td><b>'.$ETI['saiu20idcorreo'].'</b></td>
 <td colspan="2"><b>'.$ETI['saiu20idsolicitante'].'</b></td>
 <td><b>'.$ETI['saiu20tipointeresado'].'</b></td>
 <td><b>'.$ETI['saiu20clasesolicitud'].'</b></td>
@@ -1144,7 +1144,7 @@ ORDER BY TB.saiu20agno, TB.saiu20mes, TB.saiu20tiporadicado, TB.saiu20consec';
 <td><b>'.$ETI['saiu20idescuela'].'</b></td>
 <td><b>'.$ETI['saiu20idprograma'].'</b></td>
 <td><b>'.$ETI['saiu20idperiodo'].'</b></td>
-<td><b>'.$ETI['saiu20numorigen'].'</b></td>
+<td><b>'.$ETI['saiu20correoorigen'].'</b></td>
 <td><b>'.$ETI['saiu20idpqrs'].'</b></td>
 <td><b>'.$ETI['saiu20detalle'].'</b></td>
 <td><b>'.$ETI['saiu20horafin'].'</b></td>
@@ -1190,7 +1190,7 @@ ORDER BY TB.saiu20agno, TB.saiu20mes, TB.saiu20tiporadicado, TB.saiu20consec';
 <td>'.$sPrefijo.cadena_notildes($filadet['core12nombre']).$sSufijo.'</td>
 <td>'.$sPrefijo.cadena_notildes($filadet['core09nombre']).$sSufijo.'</td>
 <td>'.$sPrefijo.cadena_notildes($filadet['exte02nombre']).$sSufijo.'</td>
-<td>'.$sPrefijo.cadena_notildes($filadet['saiu20numorigen']).$sSufijo.'</td>
+<td>'.$sPrefijo.cadena_notildes($filadet['saiu20correoorigen']).$sSufijo.'</td>
 <td>'.$sPrefijo.$filadet['saiu20idpqrs'].$sSufijo.'</td>
 <td>'.$sPrefijo.$filadet['saiu20detalle'].$sSufijo.'</td>
 <td>'.$sPrefijo.$et_saiu20horafin.$sSufijo.'</td>

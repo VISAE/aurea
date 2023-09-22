@@ -29,7 +29,6 @@ $ETI['saiu20hora']='Hora';
 $ETI['saiu20minuto']='Minuto';
 $ETI['saiu20estado']='Estado';
 $ETI['saiu20idcorreo']='Correo';
-$ETI['saiu20numcorreo']='N&deg; de correo';
 $ETI['saiu20correoorigen']='Correo de origen';
 $ETI['saiu20idsolicitante']='Solicitante';
 $ETI['saiu20tipointeresado']='Tipo de interesado';
@@ -56,6 +55,8 @@ $ETI['saiu20tiempresphoras']='Tiempresphoras';
 $ETI['saiu20tiemprespminutos']='Tiemprespminutos';
 $ETI['saiu20solucion']='Solucion';
 $ETI['saiu20idcaso']='Caso';
+$ETI['saiu20respuesta']='Respuesta';
+$ETI['saiu20cerrar']='Cerrar atenci&oacute;n';
 
 $ERR['saiu20agno']='Necesita el dato '.$ETI['saiu20agno'];
 $ERR['saiu20mes']='Necesita el dato '.$ETI['saiu20mes'];
@@ -70,7 +71,6 @@ $ERR['saiu20hora']='Necesita el dato '.$ETI['saiu20hora'];
 $ERR['saiu20minuto']='Necesita el dato '.$ETI['saiu20minuto'];
 $ERR['saiu20estado']='Necesita el dato '.$ETI['saiu20estado'];
 $ERR['saiu20idcorreo']='Necesita el dato '.$ETI['saiu20idcorreo'];
-$ERR['saiu20numcorreo']='Necesita el dato '.$ETI['saiu20numcorreo'];
 $ERR['saiu20correoorigen']='Necesita el dato '.$ETI['saiu20correoorigen'];
 $ERR['saiu20idsolicitante']='Necesita el dato '.$ETI['saiu20idsolicitante'];
 $ERR['saiu20tipointeresado']='Necesita el dato '.$ETI['saiu20tipointeresado'];
@@ -97,6 +97,7 @@ $ERR['saiu20tiempresphoras']='Necesita el dato '.$ETI['saiu20tiempresphoras'];
 $ERR['saiu20tiemprespminutos']='Necesita el dato '.$ETI['saiu20tiemprespminutos'];
 $ERR['saiu20solucion']='Necesita el dato '.$ETI['saiu20solucion'];
 $ERR['saiu20idcaso']='Necesita el dato '.$ETI['saiu20idcaso'];
+$ERR['saiu20respuesta']='Necesita el dato '.$ETI['saiu20respuesta'];
 
 $ERR['saiu20solucion_proceso']='Debe indicar el resultado de la conversaci&oacute;n';
 

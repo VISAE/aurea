@@ -4634,7 +4634,18 @@ function f3000_TablasMes($iAgno, $iMes, $objDB, $bDebug = false)
 		$sTabla = 'saiu19chat_' . $iAgno;
 		$bIniciarContenedor = !$objDB->bexistetabla($sTabla);
 		if ($bIniciarContenedor) {
-			$sSQL = "CREATE TABLE " . $sTabla . " (saiu19agno int NOT NULL, saiu19mes int NOT NULL, saiu19tiporadicado int NOT NULL, saiu19consec int NOT NULL, saiu19id int NULL DEFAULT 0, saiu19dia int NULL DEFAULT 0, saiu19hora int NULL DEFAULT 0, saiu19minuto int NULL DEFAULT 0, saiu19estado int NULL DEFAULT 0, saiu19idchat int NULL DEFAULT 0, saiu19idsolicitante int NULL DEFAULT 0, saiu19tipointeresado int NULL DEFAULT 0, saiu19clasesolicitud int NULL DEFAULT 0, saiu19tiposolicitud int NULL DEFAULT 0, saiu19temasolicitud int NULL DEFAULT 0, saiu19idzona int NULL DEFAULT 0, saiu19idcentro int NULL DEFAULT 0, saiu19codpais varchar(3) NULL, saiu19coddepto varchar(5) NULL, saiu19codciudad varchar(8) NULL, saiu19idescuela int NULL DEFAULT 0, saiu19idprograma int NULL DEFAULT 0, saiu19idperiodo int NULL DEFAULT 0, saiu19numorigen varchar(20) NULL, saiu19idpqrs int NULL DEFAULT 0, saiu19detalle Text NULL, saiu19horafin int NULL DEFAULT 0, saiu19minutofin int NULL DEFAULT 0, saiu19paramercadeo int NULL DEFAULT 0, saiu19idresponsable int NULL DEFAULT 0, saiu19tiemprespdias int NULL DEFAULT 0, saiu19tiempresphoras int NULL DEFAULT 0, saiu19tiemprespminutos int NULL DEFAULT 0, saiu19solucion int NULL DEFAULT 0, saiu19idcaso int NULL DEFAULT 0, saiu19numsesionchat varchar(20) NULL)";
+			$sSQL = "CREATE TABLE " . $sTabla . " (saiu19agno int NOT NULL, saiu19mes int NOT NULL, saiu19tiporadicado int NOT NULL, 
+			saiu19consec int NOT NULL, saiu19id int NULL DEFAULT 0, saiu19dia int NULL DEFAULT 0, saiu19hora int NULL DEFAULT 0, 
+			saiu19minuto int NULL DEFAULT 0, saiu19estado int NULL DEFAULT 0, saiu19idchat int NULL DEFAULT 0, 
+			saiu19idsolicitante int NULL DEFAULT 0, saiu19tipointeresado int NULL DEFAULT 0, saiu19clasesolicitud int NULL DEFAULT 0, 
+			saiu19tiposolicitud int NULL DEFAULT 0, saiu19temasolicitud int NULL DEFAULT 0, saiu19idzona int NULL DEFAULT 0, 
+			saiu19idcentro int NULL DEFAULT 0, saiu19codpais varchar(3) NULL, saiu19coddepto varchar(5) NULL, 
+			saiu19codciudad varchar(8) NULL, saiu19idescuela int NULL DEFAULT 0, saiu19idprograma int NULL DEFAULT 0, 
+			saiu19idperiodo int NULL DEFAULT 0, saiu19numorigen varchar(20) NULL, saiu19idpqrs int NULL DEFAULT 0, saiu19detalle Text NULL, 
+			saiu19horafin int NULL DEFAULT 0, saiu19minutofin int NULL DEFAULT 0, saiu19paramercadeo int NULL DEFAULT 0, 
+			saiu19idresponsable int NULL DEFAULT 0, saiu19tiemprespdias int NULL DEFAULT 0, saiu19tiempresphoras int NULL DEFAULT 0, 
+			saiu19tiemprespminutos int NULL DEFAULT 0, saiu19solucion int NULL DEFAULT 0, saiu19idcaso int NULL DEFAULT 0, 
+			saiu19numsesionchat varchar(20) NULL)";
 			$bResultado = $objDB->ejecutasql($sSQL);
 			$sSQL = "ALTER TABLE " . $sTabla . " ADD PRIMARY KEY(saiu19id)";
 			$bResultado = $objDB->ejecutasql($sSQL);
@@ -4645,6 +4656,63 @@ function f3000_TablasMes($iAgno, $iMes, $objDB, $bDebug = false)
 			$bResultado = $objDB->ejecutasql($sSQL);
 			//Indice por tipo de solicitud.
 			$sSQL = "ALTER TABLE " . $sTabla . " ADD INDEX saiu19chat_tema(saiu19temasolicitud)";
+			$bResultado = $objDB->ejecutasql($sSQL);
+		}
+	}
+	if ($sError == '') {
+		$sTabla = 'saiu20correo_' . $iAgno;
+		$bIniciarContenedor = !$objDB->bexistetabla($sTabla);
+		if ($bIniciarContenedor) {
+			$sSQL = "CREATE TABLE " . $sTabla . " (saiu20agno int NOT NULL, saiu20mes int NOT NULL, saiu20tiporadicado int NOT NULL, 
+			saiu20consec int NOT NULL, saiu20id int NULL DEFAULT 0, saiu20origenagno int NULL, saiu20origenmes int NULL, 
+			saiu20origenid int NULL, saiu20dia int NULL DEFAULT 0, saiu20hora int NULL DEFAULT 0, saiu20minuto int NULL DEFAULT 0, 
+			saiu20estado int NULL DEFAULT 0, saiu20idcorreo int NULL, saiu20idsolicitante int NULL DEFAULT 0, 
+			saiu20tipointeresado int NULL DEFAULT 0, saiu20clasesolicitud int NULL DEFAULT 0, saiu20tiposolicitud int NULL DEFAULT 0, 
+			saiu20temasolicitud int NULL DEFAULT 0, saiu20idzona int NULL DEFAULT 0, saiu20idcentro int NULL DEFAULT 0, 
+			saiu20codpais varchar(3) NULL, saiu20coddepto varchar(5) NULL, saiu20codciudad varchar(8) NULL, saiu20idescuela int NULL DEFAULT 0, 
+			saiu20idprograma int NULL DEFAULT 0, saiu20idperiodo int NULL DEFAULT 0, 
+			saiu20idpqrs int NULL DEFAULT 0, saiu20detalle Text NULL, saiu20horafin int NULL DEFAULT 0, saiu20minutofin int NULL DEFAULT 0, 
+			saiu20paramercadeo int NULL DEFAULT 0, saiu20idresponsable int NULL DEFAULT 0, saiu20tiemprespdias int NULL DEFAULT 0, 
+			saiu20tiempresphoras int NULL DEFAULT 0, saiu20tiemprespminutos int NULL DEFAULT 0, saiu20solucion int NULL DEFAULT 0, 
+			saiu20idcaso int NULL DEFAULT 0, saiu20respuesta Text NULL, saiu20correoorigen varchar(50) NULL)";
+			$bResultado = $objDB->ejecutasql($sSQL);
+			$sSQL = "ALTER TABLE " . $sTabla . " ADD PRIMARY KEY(saiu20id)";
+			$bResultado = $objDB->ejecutasql($sSQL);
+			$sSQL = "ALTER TABLE " . $sTabla . " ADD UNIQUE INDEX saiu20correo_id(saiu20agno, saiu20mes, saiu20tiporadicado, saiu20consec)";
+			$bResultado = $objDB->ejecutasql($sSQL);
+			//Indice por solicitante
+			$sSQL = "ALTER TABLE " . $sTabla . " ADD INDEX saiu20correo_solicitante(saiu20idsolicitante)";
+			$bResultado = $objDB->ejecutasql($sSQL);
+			//Indice por tipo de solicitud.
+			$sSQL = "ALTER TABLE " . $sTabla . " ADD INDEX saiu20correo_tema(saiu20temasolicitud)";
+			$bResultado = $objDB->ejecutasql($sSQL);
+		}
+	}
+	if ($sError == '') {
+		$sTabla = 'saiu21directa_' . $iAgno;
+		$bIniciarContenedor = !$objDB->bexistetabla($sTabla);
+		if ($bIniciarContenedor) {
+			$sSQL = "CREATE TABLE " . $sTabla . " (saiu21agno int NOT NULL, saiu21mes int NOT NULL, saiu21tiporadicado int NOT NULL, 
+			saiu21consec int NOT NULL, saiu21id int NULL DEFAULT 0, saiu21origenagno int NULL, saiu21origenmes int NULL, 
+			saiu21origenid int NULL, saiu21dia int NULL DEFAULT 0, saiu21hora int NULL DEFAULT 0, saiu21minuto int NULL DEFAULT 0, 
+			saiu21estado int NULL DEFAULT 0, saiu21idsolicitante int NULL DEFAULT 0, saiu21tipointeresado int NULL DEFAULT 0, 
+			saiu21clasesolicitud int NULL DEFAULT 0, saiu21tiposolicitud int NULL DEFAULT 0, saiu21temasolicitud int NULL DEFAULT 0, 
+			saiu21idzona int NULL DEFAULT 0, saiu21idcentro int NULL DEFAULT 0, saiu21codpais varchar(3) NULL, saiu21coddepto varchar(5) NULL, 
+			saiu21codciudad varchar(8) NULL, saiu21idescuela int NULL DEFAULT 0, saiu21idprograma int NULL DEFAULT 0, 
+			saiu21idperiodo int NULL DEFAULT 0, saiu21idpqrs int NULL DEFAULT 0, saiu21detalle Text NULL, 
+			saiu21horafin int NULL DEFAULT 0, saiu21minutofin int NULL DEFAULT 0, saiu21paramercadeo int NULL DEFAULT 0, 
+			saiu21idresponsable int NULL DEFAULT 0, saiu21tiemprespdias int NULL DEFAULT 0, saiu21tiempresphoras int NULL DEFAULT 0, 
+			saiu21tiemprespminutos int NULL DEFAULT 0, saiu21solucion int NULL DEFAULT 0, saiu21idcaso int NULL DEFAULT 0, saiu21respuesta Text NULL)";
+			$bResultado = $objDB->ejecutasql($sSQL);
+			$sSQL = "ALTER TABLE " . $sTabla . " ADD PRIMARY KEY(saiu21id)";
+			$bResultado = $objDB->ejecutasql($sSQL);
+			$sSQL = "ALTER TABLE " . $sTabla . " ADD UNIQUE INDEX saiu21directa_id(saiu21agno, saiu21mes, saiu21tiporadicado, saiu21consec)";
+			$bResultado = $objDB->ejecutasql($sSQL);
+			//Indice por solicitante
+			$sSQL = "ALTER TABLE " . $sTabla . " ADD INDEX saiu21directa_solicitante(saiu21idsolicitante)";
+			$bResultado = $objDB->ejecutasql($sSQL);
+			//Indice por tipo de solicitud.
+			$sSQL = "ALTER TABLE " . $sTabla . " ADD INDEX saiu21directa_tema(saiu21temasolicitud)";
 			$bResultado = $objDB->ejecutasql($sSQL);
 		}
 	}

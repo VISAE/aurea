@@ -81,6 +81,30 @@ function unad11_Mostrar_v2SAI($params)
 			$sCampoPrograma = 'saiu19idprograma';
 			$sCampoPeriodo = 'saiu19idperiodo';
 			break;
+		case 3020:
+			$sCampoPais = 'saiu20idzona';
+			$sCampoDepto = 'saiu20coddepto';
+			$sCampoCiudad = 'saiu20codciudad';
+			$sCampoTelefono = 'saiu20numorigen';
+			$sCampoTipoInteresado = 'saiu20tipointeresado';
+			$sCampoZona = 'saiu20idzona';
+			$sCampoCentro = 'saiu20idcentro';
+			$sCampoEscuela = 'saiu20idescuela';
+			$sCampoPrograma = 'saiu20idprograma';
+			$sCampoPeriodo = 'saiu20idperiodo';
+			break;
+		case 3021:
+			$sCampoPais = 'saiu21idzona';
+			$sCampoDepto = 'saiu21coddepto';
+			$sCampoCiudad = 'saiu21codciudad';
+			$sCampoTelefono = 'saiu21numorigen';
+			$sCampoTipoInteresado = 'saiu21tipointeresado';
+			$sCampoZona = 'saiu21idzona';
+			$sCampoCentro = 'saiu21idcentro';
+			$sCampoEscuela = 'saiu21idescuela';
+			$sCampoPrograma = 'saiu21idprograma';
+			$sCampoPeriodo = 'saiu21idperiodo';
+			break;
 		case 3028: //Mesa de ayuda.
 			$sCampoPais = 'saiu28idzona';
 			$sCampoDepto = 'saiu28coddepto';
@@ -213,6 +237,14 @@ function unad11_Mostrar_v2SAI($params)
 				$html_depto = f3019_HTMLComboV2_saiu19coddepto($objDB, $objCombos, $sCodDepto, $sCodPais);
 				$html_ciudad = f3019_HTMLComboV2_saiu19codciudad($objDB, $objCombos, $sCodCiudad, $sCodDepto);
 				break;
+			case 3020: //Correo
+				$html_depto = f3020_HTMLComboV2_saiu20coddepto($objDB, $objCombos, $sCodDepto, $sCodPais);
+				$html_ciudad = f3020_HTMLComboV2_saiu20codciudad($objDB, $objCombos, $sCodCiudad, $sCodDepto);
+				break;
+			case 3021: //Presencial
+				$html_depto = f3021_HTMLComboV2_saiu21coddepto($objDB, $objCombos, $sCodDepto, $sCodPais);
+				$html_ciudad = f3021_HTMLComboV2_saiu21codciudad($objDB, $objCombos, $sCodCiudad, $sCodDepto);
+				break;
 			case 3028:
 				$html_depto = f3028_HTMLComboV2_saiu28coddepto($objDB, $objCombos, $sCodDepto, $sCodPais);
 				$html_ciudad = f3028_HTMLComboV2_saiu28codciudad($objDB, $objCombos, $sCodCiudad, $sCodDepto);
@@ -232,6 +264,14 @@ function unad11_Mostrar_v2SAI($params)
 			case 3019:
 				$html_programa = f3019_HTMLComboV2_saiu19idprograma($objDB, $objCombos, $idPrograma, $idEscuela);
 				$html_centro = f3019_HTMLComboV2_saiu19idcentro($objDB, $objCombos, $idCead, $idZona);
+				break;
+			case 3020:
+				$html_programa = f3020_HTMLComboV2_saiu20idprograma($objDB, $objCombos, $idPrograma, $idEscuela);
+				$html_centro = f3020_HTMLComboV2_saiu20idcentro($objDB, $objCombos, $idCead, $idZona);
+				break;
+			case 3021:
+				$html_programa = f3021_HTMLComboV2_saiu21idprograma($objDB, $objCombos, $idPrograma, $idEscuela);
+				$html_centro = f3021_HTMLComboV2_saiu21idcentro($objDB, $objCombos, $idCead, $idZona);
 				break;
 			case 3028:
 				$html_programa = f3028_HTMLComboV2_saiu28idprograma($objDB, $objCombos, $idPrograma, $idEscuela);
@@ -3189,26 +3229,28 @@ function f3000_TablaDetallePQRS($aParametros, $objDB, $bDebug=false){
 		$iIndiceSatisf = $iIndiceSatisf / $iEncuestas;
 	}
 	foreach ($asaiu05idcategoria as $aCategoria) {
-		$sPrefijo='';
-		$sSufijo='';
-		$sClass='';
-		$sLink='';
-		if (true){
-			$sPrefijo='<b>';
-			$sSufijo='</b>';
+		if ($aCategoria!='') {		
+			$sPrefijo='';
+			$sSufijo='';
+			$sClass='';
+			$sLink='';
+			if (true){
+				$sPrefijo='<b>';
+				$sSufijo='</b>';
+				}
+			if(($tlinea%2)==0){$sClass=' class="resaltetabla"';}
+			$tlinea++;
+			if ($babierta){
+				//$sLink='<a href="javascript:cargadato('."'".$filadet['cara00id']."'".')" class="lnkresalte">'.$ETI['lnk_cargar'].'</a>';
 			}
-		if(($tlinea%2)==0){$sClass=' class="resaltetabla"';}
-		$tlinea++;
-		if ($babierta){
-			//$sLink='<a href="javascript:cargadato('."'".$filadet['cara00id']."'".')" class="lnkresalte">'.$ETI['lnk_cargar'].'</a>';
-		}
-		$res=$res.'<tr'.$sClass.'>
+			$res=$res.'<tr'.$sClass.'>
 <td>'.$sPrefijo.cadena_notildes($aCategoria['nombre']).$sSufijo.'</td>
 <td align="center">'.$aCategoria['valores'][-1].'</td>
 <td align="center">'.$aCategoria['valores'][0].'</td>
 <td align="center">'.$aCategoria['valores'][2].'</td>
 <td align="center">'.$aCategoria['valores'][7].'</td>
 </tr>';
+		}
 	}
 	$res=$res.'</table>';
 	$objDB->liberar($tabladetalle);
