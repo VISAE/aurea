@@ -318,7 +318,8 @@ $html_bagno = $objCombos->html('', $objDB);
 $aParametros[100] = $idTercero;
 $aParametros[106] = $iAgnoFin;
 $aParametros[107] = $_REQUEST['blistar'];
-list($sTabla3000, $iVenceRojo, $iVenceNaranja, $iVenceVerde, $iTiempoRojo, $iTiempoNaranja, $iTiempoVerde, $iIndiceSatisf, $sDebugTabla) = f3000_TablaDetallePQRS($aParametros, $objDB, $bDebug);
+list($sTabla3000, $aVenceRojo, $aVenceNaranja, $aVenceVerde, $aTiempoRojo, $aTiempoNaranja, $aTiempoVerde, $iIndiceSatisf, $sDebugTabla) = f3000_TablaDetallePQRS($aParametros, $objDB, $bDebug);
+$iIndiceSatisf = number_format($iIndiceSatisf,2,',','');
 $sDebug = $sDebug . $sDebugTabla;
 //DATOS PARA COMPLETAR EL FORMULARIO
 list($sHTMLPendientes, $iEnProceso, $iACargo, $iVencidas, $iEnSupervision, $sDebugD) = f3000_Estado($idTercero, $objDB, true, $bDebug, true);
@@ -347,6 +348,7 @@ forma_mitad();
 <link rel="stylesheet" href="<?php echo $APP->rutacomun; ?>css/criticalPath.css" type="text/css" />
 <link rel="stylesheet" href="<?php echo $APP->rutacomun; ?>css/principal.css" type="text/css" />
 <link rel="stylesheet" href="<?php echo $APP->rutacomun; ?>unad_estilos2018.css?v=3" type="text/css" />
+<link rel="stylesheet" href="<?php echo $APP->rutacomun; ?>css/css_tabs.css" type="text/css" />
 <?php
 if ($iPiel == 2) {
 ?>
@@ -492,6 +494,21 @@ if ($iPiel == 2) {
 		// params[106] = window.document.frmedita.blistar.value;
 		document.getElementById('div_f3000detalle').innerHTML = '<div class="GrupoCamposAyuda"><div class="MarquesinaMedia">Procesando datos, por favor espere.</div></div><input id="paginaf3000" name="paginaf3000" type="hidden" value="' + params[101] + '" /><input id="lppf3005" name="lppf3005" type="hidden" value="' + params[102] + '" />';
 		xajax_f3000_HtmlTablaPQRS(params);
+	}
+	function abrir_tab(evt, sId) {
+		evt.preventDefault();
+		var i, tabcontent, tablinks;
+		tabcontent = document.getElementsByClassName("tabcontent");
+		for (i = 0; i < tabcontent.length; i++) {
+			tabcontent[i].style.display = "none";
+		}
+		tablinks = document.getElementsByClassName("tablinks");
+		for (i = 0; i < tablinks.length; i++) {
+			tablinks[i].className = tablinks[i].className.replace(" active", "");
+		}
+		document.getElementById(sId).style.display = "flex";
+		document.getElementById(sId).style.flexWrap = "wrap";
+		evt.currentTarget.className += " active";
 	}
 </script>
 <div id="interna">
@@ -644,6 +661,18 @@ echo $html_bagno;
 echo $sTabla3000;
 ?>
 </div>
+<div class="salto5px"></div>
+<label class="TituloGrupo">
+<?php
+echo $ETI['titulo_indicadores'];
+?>
+</label>
+<div class="salto1px"></div>
+<div class="tab">
+<button class="tablinks" onclick="abrir_tab(event, 'derechos')" id="tab_inicial"><?php echo $ETI['indicador_derechos']; ?></button>
+<button class="tablinks" onclick="abrir_tab(event, 'otraspqrs')"><?php echo $ETI['indicador_otraspqrs']; ?></button>
+</div>
+<div id="derechos" class="tabcontent">
 <div class="GrupoCampos300">
 <label class="TituloGrupo">
 <?php
@@ -656,9 +685,9 @@ echo $ETI['vence_rojo'];
 ?>
 </label>
 <label class="Label60 fondoRojo">
-<div id="div_f3000vencerojo">
+<div id="div_f3000vencerojo_0">
 <?php
-echo $iVenceRojo;
+echo $aVenceRojo[0];
 ?>
 </div>
 </label>
@@ -669,9 +698,9 @@ echo $ETI['vence_naranja'];
 ?>
 </label>
 <label class="Label60 fondoNaranja">
-<div id="div_f3000vencenaranja">
+<div id="div_f3000vencenaranja_0">
 <?php
-echo $iVenceNaranja;
+echo $aVenceNaranja[0];
 ?>
 </div>
 </label>
@@ -682,9 +711,9 @@ echo $ETI['vence_verde'];
 ?>
 </label>
 <label class="Label60 fondoVerde">
-<div id="div_f3000venceverde">
+<div id="div_f3000venceverde_0">
 <?php
-echo $iVenceVerde;
+echo $aVenceVerde[0];
 ?>
 </div>
 </label>
@@ -698,39 +727,39 @@ echo $ETI['tiempos_resp'];
 </label>
 <label class="Label200 fondoRojo">
 <?php
-echo $ETI['tiempos_rojo'];
+echo $ETI['tiempos_rojo_0'];
 ?>
 </label>
 <label class="Label60 fondoRojo">
-<div id="div_f3000tiemporojo">
+<div id="div_f3000tiemporojo_0">
 <?php
-echo $iTiempoRojo;
+echo $aTiempoRojo[0];
 ?>
 </div>
 </label>
 <div class="salto1px"></div>
 <label class="Label200 fondoNaranja">
 <?php
-echo $ETI['tiempos_naranja'];
+echo $ETI['tiempos_naranja_0'];
 ?>
 </label>
 <label class="Label60 fondoNaranja">
-<div id="div_f3000tiemponaranja">
+<div id="div_f3000tiemponaranja_0">
 <?php
-echo $iTiempoNaranja;
+echo $aTiempoNaranja[0];
 ?>
 </div>
 </label>
 <div class="salto1px"></div>
 <label class="Label200 fondoVerde">
 <?php
-echo $ETI['tiempos_verde'];
+echo $ETI['tiempos_verde_0'];
 ?>
 </label>
 <label class="Label60 fondoVerde">
-<div id="div_f3000tiempoverde">
+<div id="div_f3000tiempoverde_0">
 <?php
-echo $iTiempoVerde;
+echo $aTiempoVerde[0];
 ?>
 </div>
 </label>
@@ -744,18 +773,132 @@ echo $ETI['indice_satisf'];
 </label>
 <div class="salto1px"></div>
 <label class="Label90">
-<div id="div_f3000indicesatisf" class="textoGrandeCentro">
+<div id="div_f3000indicesatisf_0" class="textoGrandeCentro">
 <?php
 if ($iIndiceSatisf == 0) {
 	echo '_';
-} else {
-	$iIndiceSatisf = number_format($iIndiceSatisf,2,',','');
+} else {	
 	echo $iIndiceSatisf;
 }
 ?>
 </div>
 </label>
 <div class="salto1px"></div>
+</div>
+</div>
+<div id="otraspqrs" class="tabcontent">
+<div class="GrupoCampos300">
+<label class="TituloGrupo">
+<?php
+echo $ETI['vence_solicitud'];
+?>
+</label>
+<label class="Label200 fondoRojo">
+<?php
+echo $ETI['vence_rojo'];
+?>
+</label>
+<label class="Label60 fondoRojo">
+<div id="div_f3000vencerojo_1">
+<?php
+echo $aVenceRojo[1];
+?>
+</div>
+</label>
+<div class="salto1px"></div>
+<label class="Label200 fondoNaranja">
+<?php
+echo $ETI['vence_naranja'];
+?>
+</label>
+<label class="Label60 fondoNaranja">
+<div id="div_f3000vencenaranja_1">
+<?php
+echo $aVenceNaranja[1];
+?>
+</div>
+</label>
+<div class="salto1px"></div>
+<label class="Label200 fondoVerde">
+<?php
+echo $ETI['vence_verde'];
+?>
+</label>
+<label class="Label60 fondoVerde">
+<div id="div_f3000venceverde_1">
+<?php
+echo $aVenceVerde[1];
+?>
+</div>
+</label>
+<div class="salto1px"></div>
+</div>
+<div class="GrupoCampos300">
+<label class="TituloGrupo">
+<?php
+echo $ETI['tiempos_resp'];
+?>
+</label>
+<label class="Label200 fondoRojo">
+<?php
+echo $ETI['tiempos_rojo_1'];
+?>
+</label>
+<label class="Label60 fondoRojo">
+<div id="div_f3000tiemporojo_1">
+<?php
+echo $aTiempoRojo[1];
+?>
+</div>
+</label>
+<div class="salto1px"></div>
+<label class="Label200 fondoNaranja">
+<?php
+echo $ETI['tiempos_naranja_1'];
+?>
+</label>
+<label class="Label60 fondoNaranja">
+<div id="div_f3000tiemponaranja_1">
+<?php
+echo $aTiempoNaranja[1];
+?>
+</div>
+</label>
+<div class="salto1px"></div>
+<label class="Label200 fondoVerde">
+<?php
+echo $ETI['tiempos_verde_1'];
+?>
+</label>
+<label class="Label60 fondoVerde">
+<div id="div_f3000tiempoverde_1">
+<?php
+echo $aTiempoVerde[1];
+?>
+</div>
+</label>
+<div class="salto1px"></div>
+</div>
+<div class="GrupoCampos300">
+<label class="TituloGrupo">
+<?php
+echo $ETI['indice_satisf'];
+?>
+</label>
+<div class="salto1px"></div>
+<label class="Label90">
+<div id="div_f3000indicesatisf_1" class="textoGrandeCentro">
+<?php
+if ($iIndiceSatisf == 0) {
+	echo '_';
+} else {
+	echo $iIndiceSatisf;
+}
+?>
+</div>
+</label>
+<div class="salto1px"></div>
+</div>
 </div>
 </div><!-- CIERRA EL DIV areatrabajo -->
 </div><!-- CIERRA EL DIV areaform -->
@@ -860,6 +1003,7 @@ echo html_DivAlarmaV2($sError, $iTipoError);
 ?>
 
 <script language="javascript">
+document.getElementById("tab_inicial").click();
 <?php
 if ($iSector != 1) {
 	echo 'setTimeout(function() {

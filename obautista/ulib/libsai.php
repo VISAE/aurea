@@ -970,9 +970,10 @@ function f3000_InfoContacto($idTercero, $idUsuario, $objDB, $bDebug = false)
 	$sError = '';
 	$sDebug = '';
 	if ($idTercero > 0) {
+		//13 de Julio de 2023 - Se considera que el tercero pudo haber solicita ley de olvido - Campo unad11estado en 3
 		$sSQL = 'SELECT unad11telefono, unad11correo, unad11correoinstitucional, unad11correofuncionario, 
 		unad11idtablero, unad11necesidadesp, unad11carariesgo, unad01autoriza_tel, unad01autoriza_bol, unad01autoriza_mat, 
-		unad01autoriza_bien 
+		unad01autoriza_bien, unad11estado 
 		FROM unad11terceros WHERE unad11id=' . $idTercero . '';
 		$tabla = $objDB->ejecutasql($sSQL);
 		if ($objDB->nf($tabla) > 0) {
@@ -990,6 +991,9 @@ function f3000_InfoContacto($idTercero, $idUsuario, $objDB, $bDebug = false)
 					$bPuedeConsultar = true;
 				}
 			}
+			if ($fila['unad11estado'] == 3) {
+				$bPuedeConsultar = false;
+			}
 			if ($bPuedeConsultar) {
 				//, unad01autoriza_tel, unad01autoriza_mat, unad01autoriza_bien, unad01autoriza_bol
 				list ($sComplementoTel, $sComplementoCorreo) = f236_Complementos($fila);
@@ -1001,8 +1005,10 @@ function f3000_InfoContacto($idTercero, $idUsuario, $objDB, $bDebug = false)
 					$sPersonal = $sPersonal . ' ' . $ETI['unad11correo'] . ' <b>' . $fila['unad11correo'] . '</b>'.$sComplementoCorreo;
 				}
 			} else {
-				$sPersonal = '<input id="cmdInfoPersonal" name="cmdInfoPersonal" type="button" class="BotonAzul160" value="Datos personales" onclick="verinfopersonal(' . $idTercero . ');" title="Ver datos personales"/>
-				<div class="salto1px"></div>';
+				if ($fila['unad11estado'] != 3) {
+					$sPersonal = '<input id="cmdInfoPersonal" name="cmdInfoPersonal" type="button" class="BotonAzul160" value="Datos personales" onclick="verinfopersonal(' . $idTercero . ');" title="Ver datos personales"/>
+					<div class="salto1px"></div>';
+				}
 			}
 			if (correo_VerificarDireccion($fila['unad11correofuncionario'])) {
 				if ($sRes != '') {
@@ -1096,6 +1102,10 @@ function f3041_TablaInfoAcademico($aParametros, $objDB, $bDebug = false)
 		$aEstado[$fila['id']]=cadena_notildes($fila['nombre']);
 		}
 	*/
+	//Enero 30 de 2023 - agregamos e cuadro de ultima matricula para que se vea la modalidad. (libcore)
+	list($res, $sDebugH) = f2216_HTMLInfoMatricula(0, $idEstudiante, $objDB, true, $bDebug);
+	$sDebug = $sDebug . $sDebugH;
+	// Termina de mostar los datos de matricula.
 	$iBase = 0; //Nos basamos en los terceros.
 	$sIds = '-99';
 	$sTabla11 = '';
@@ -1130,7 +1140,8 @@ function f3041_TablaInfoAcademico($aParametros, $objDB, $bDebug = false)
 		}
 	}
 	$sSQL = 'SELECT TB.core01idprograma, TB.core01idplandeestudios, T9.core09nombre, TB.core01avanceplanest, TB.core01contestado, 
-	TB.core01idconsejero, TB.core01contestado, TB.core01id, TB.core01idestado, T2.core02nombre 
+	TB.core01idconsejero, TB.core01contestado, TB.core01id, TB.core01idestado, T2.core02nombre, TB.core01desc_idmodelo, 
+	TB.core01desc_probabilidad, TB.core01desc_factorprob, T9.core09aplicacontinuidad 
 	FROM core01estprograma AS TB, core09programa AS T9, core02estadoprograma AS T2
 	WHERE TB.core01idtercero=' . $idEstudiante . ' AND TB.core01idprograma=T9.core09id AND TB.core01idestado=T2.core02id
 	ORDER BY TB.core01fechainicio DESC';
@@ -1162,7 +1173,7 @@ function f3041_TablaInfoAcademico($aParametros, $objDB, $bDebug = false)
 			}
 		}
 	}
-	$res = $sErrConsulta . $sLeyenda;
+	$res = $res . $sErrConsulta . $sLeyenda;
 	$res = $res . $sBotones . '<div class="table-responsive">
 	<table border="0" align="center" cellpadding="0" cellspacing="2" class="tablaapp">';
 	$tlinea = 1;
@@ -1171,6 +1182,7 @@ function f3041_TablaInfoAcademico($aParametros, $objDB, $bDebug = false)
 		$sSufijo = '';
 		$sClass = ' class="resaltetabla"';
 		$sLink = '';
+		$bAplicaFactorDesercion = true;
 		if (($tlinea % 2) != 0) {
 			$sClass = '';
 		}
@@ -1180,6 +1192,9 @@ function f3041_TablaInfoAcademico($aParametros, $objDB, $bDebug = false)
 				$sPrefijo = '<span class="rojo">';
 				$sSufijo = '</span>';
 				break;
+		}
+		if ($filadet['core09aplicacontinuidad'] == 0) {
+			$bAplicaFactorDesercion = false;
 		}
 		$et_programa = '<b>' . cadena_notildes($filadet['core09nombre']) . '</b> ' . $sPrefijo . '[' . cadena_notildes($filadet['core02nombre']) . ']' . $sSufijo;
 		$et_avance = formato_numero($filadet['core01avanceplanest'], 2) . ' %';
@@ -1242,6 +1257,37 @@ function f3041_TablaInfoAcademico($aParametros, $objDB, $bDebug = false)
 		<td>' . $et_nummatriculas . '</td>
 		<td width="10%">' . $et_avance . '</td>
 		</tr>';
+		// 20 Abril 2024 - Ahora la probabilidad de deserción.
+		if ($bAplicaFactorDesercion) {
+			if ($filadet['core01desc_idmodelo'] > 0) {
+				$sNomFactor = '';
+				$sPrefPorc = '<b>';
+				$sSuffPorc = '</b>';
+				if ($filadet['core01desc_probabilidad'] > 0) {
+					$sPrefPorc = '<span class="rojo">';
+					$sSuffPorc = '</span>';
+					$sNomFactor = ' {' . $filadet['core01desc_factorprob'] . '}';
+					$sSQL = 'SELECT cara45titulo FROM cara45mldescfactor WHERE cara45id=' . $filadet['core01desc_factorprob'] . '';
+					$tabla = $objDB->ejecutasql($sSQL);
+					if ($objDB->nf($tabla) > 0) {
+						$fila = $objDB->sf($tabla);
+						$sNomFactor = ' - Factor: <b>' . cadena_notildes($fila['cara45titulo']) . '</b>';
+					}
+				}
+				$res = $res . '<tr' . $sClass . '>
+				<td colspan="4">' . 'Probabilidad de deserci&oacute;n' . ': ' . $sPrefPorc . formato_porcentaje($filadet['core01desc_probabilidad']) . $sSuffPorc . '</b> ' . $sNomFactor . '</td>
+				</tr>';
+			} else {
+				$res = $res . '<tr' . $sClass . '>
+				<td colspan="4">' . 'Pendiente por calcular la probabilidad de deserci&oacute;n' . '</td>
+				</tr>';
+			}
+		} else {
+			$res = $res . '<tr' . $sClass . '>
+			<td colspan="4">' . 'El programa no aplica a c&aacute;lculo de probabilidad de deserci&oacute;n' . '</td>
+			</tr>';
+		}
+		// Ahora el consejero...
 		if ($idConsejero != 0) {
 			$sSQL = 'SELECT unad11razonsocial, unad11correoinstitucional FROM unad11terceros WHERE unad11id=' . $idConsejero . '';
 			$tabla = $objDB->ejecutasql($sSQL);
@@ -1383,9 +1429,10 @@ function f3070_SeleccionaResponsable($idPaso, $idZona, $idCentro, $idEscuela, $i
 		$idgrupotrabajo = $fila['saiu70idgrupotrabajo'];
 		$idresponsable = $fila['saiu70idresponsable'];
 	} else {
-		$sError = 'No se encuentra el registro solicitado {Paso: ' . $idPaso . ' Zona: ' . $idZona . ' Centro: ' . $idCentro . ' Escuela: ' . $idEscuela . ' Programa: ' . $idPrograma . '}';
+		$sError = 'No ha sido posible determinar un responsable para la el tr&aacute;mite.<br>';
+		$sError = $sError . 'SAI - Configurar - Responsables de tr&aacute;mites<br>';
+		$sError = $sError . 'Etapa: ' . $idPaso . ' Zona: ' . $idZona . ' Centro: ' . $idCentro . ' Escuela: ' . $idEscuela . ' Programa: ' . $idPrograma . '';
 	}
-	// if ($sError != '') {}
 	return array($idunidad, $idgrupotrabajo, $idresponsable, $sError, $sDebug);
 }
 //Esta funcion no no se debe usar
@@ -2919,6 +2966,7 @@ function f12206_CambiarDeCentro($core01id, $idZonaDest, $idCentroDest, $sNota, $
 	}
 	return array($corf06id, $sError, $sDebug);
 }
+
 function f3000_Combobita27equipotrabajo($aParametros){
 	$_SESSION['u_ultimominuto']=iminutoavance();
 	if(!is_array($aParametros)){$aParametros=json_decode(str_replace('\"','"',$aParametros),true);}
@@ -3053,12 +3101,12 @@ function f3000_TablaDetallePQRS($aParametros, $objDB, $bDebug=false){
 	$sTitulos='-, Borrador, Solicitado, En tramite, Resuelto';
 	$asaiu05idcategoria=array();
 	$aTablas=array();
-	$iVenceRojo=0;
-	$iVenceNaranja=0;
-	$iVenceVerde=0;
-	$iTiempoRojo=0;
-	$iTiempoNaranja=0;
-	$iTiempoVerde=0;
+	$aVenceRojo=array(0,0);
+	$aVenceNaranja=array(0,0);
+	$aVenceVerde=array(0,0);
+	$aTiempoRojo=array(0,0);
+	$aTiempoNaranja=array(0,0);
+	$aTiempoVerde=array(0,0);
 	$iIndiceSatisf=0;
 	$iEncuestas=0;
 	$iTablas=0;
@@ -3130,7 +3178,7 @@ function f3000_TablaDetallePQRS($aParametros, $objDB, $bDebug=false){
 		$sContenedor=$aTablas[$k];
 		$sSQL=$sSQL.'SELECT saiu05idcategoria, saiu05estado, saiu05fecharespprob, saiu05fecharespdef, saiu05evalacepta, 
 		saiu05evalfecha, saiu05evalamabilidad, saiu05evalrapidez, saiu05evalclaridad, saiu05evalresolvio, 
-		saiu05evalconocimiento, saiu05evalutilidad 
+		saiu05evalconocimiento, saiu05evalutilidad, saiu05idtiposolorigen 
 		FROM saiu05solicitud_' . $sContenedor . '
 		WHERE saiu05tiporadicado=1 ' . $sWhere . '';
 	}
@@ -3154,22 +3202,22 @@ function f3000_TablaDetallePQRS($aParametros, $objDB, $bDebug=false){
 				<td align="center"><b>'.'No se registran solicitudes'.'</b></td>
 				</tr>
 				</table>';
-				return array(utf8_encode($sErrConsulta.$sBotones).$sTabla, $iVenceRojo, $iVenceNaranja, $iVenceVerde, $iTiempoRojo, $iTiempoNaranja, $iTiempoVerde, $iIndiceSatisf, $sDebug);
+				return array(utf8_encode($sErrConsulta.$sBotones).$sTabla, $aVenceRojo, $aVenceNaranja, $aVenceVerde, $aTiempoRojo, $aTiempoNaranja, $aTiempoVerde, $iIndiceSatisf, $sDebug);
 			} 
 		}
 	}
 	$res=$sErrConsulta.$sLeyenda.$sBotones.'<table border="0" align="center" cellpadding="0" cellspacing="2" class="tablaapp">
-<tr class="fondoazul">
-<td colspan="5" align="center"><b>'.'Consolidado de solicitudes PQRS '. $iAgno .'</b></td>
-</tr>
-<tr class="fondoazul">
-<td><b>'.'Tipo de Solicitud'.'</b></td>
-<td align="center"><b>'.'Borrador'.'</b></td>
-<td align="center"><b>'.'Solicitado'.'</b></td>
-<td align="center"><b>'.'En tr&aacute;mite'.'</b></td>
-<td align="center"><b>'.'Resuelto'.'</b></td>
-<td><b>'.''.'</b></td>
-</tr>';
+	<tr class="fondoazul">
+	<td colspan="5" align="center"><b>'.'Consolidado de solicitudes PQRS '. $iAgno .'</b></td>
+	</tr>
+	<tr class="fondoazul">
+	<td><b>'.'Tipo de Solicitud'.'</b></td>
+	<td align="center"><b>'.'Borrador'.'</b></td>
+	<td align="center"><b>'.'Solicitado'.'</b></td>
+	<td align="center"><b>'.'En tr&aacute;mite'.'</b></td>
+	<td align="center"><b>'.'Resuelto'.'</b></td>
+	<td><b>'.''.'</b></td>
+	</tr>';
 	$tlinea=1;
 	while($filadet=$objDB->sf($tabladetalle)){
 		$i_saiu05idcategoria=$filadet['saiu05idcategoria'];
@@ -3189,15 +3237,25 @@ function f3000_TablaDetallePQRS($aParametros, $objDB, $bDebug=false){
 		if ($filadet['saiu05estado'] == 7) {
 			// Determina tiempos de respuesta de solicitudes
 			if ($filadet['saiu05fecharespprob'] != 0 && $filadet['saiu05fecharespdef'] != 0) {				
-				if ($filadet['saiu05fecharespprob'] >= $filadet['saiu05fecharespdef']) {
-					$idias = fecha_DiasEntreFechasDesdeNumero($filadet['saiu05fecharespdef'], $filadet['saiu05fecharespprob']);
-					if ($idias < 2) { // Entre 2 y 3 días
-						$iTiempoNaranja++;
-					} else { // Menor o igual a 1 dia
-						$iTiempoVerde++;
+				$idias = fecha_DiasEntreFechasDesdeNumero($filadet['saiu05fecharespdef'], $filadet['saiu05fecharespprob']);
+				if ($filadet['saiu05idtiposolorigen']==53)  {// Derechos de petición - límite 15 días
+					if ($idias >= 10) { // menor o igual a 5 días
+						$aTiempoVerde[0]++;
+					} else if ($idias >= 6 && $idias < 10) { // Entre 6 y 10 días
+						$aTiempoNaranja[0]++;
+					} else { // Mayor a 10 días
+						$aTiempoRojo[0]++;
 					}
-				} else { // Mayor a 4 días
-					$iTiempoRojo++;
+				} else {
+					if ($filadet['saiu05fecharespprob'] >= $filadet['saiu05fecharespdef']) {
+						if ($idias < 2) { // Entre 2 y 3 días
+							$aTiempoNaranja[1]++;
+						} else { // Menor o igual a 1 dia
+							$aTiempoVerde[1]++;
+						}
+					} else { // Mayor a 4 días
+						$aTiempoRojo[1]++;
+					}
 				}
 			}
 			if ($filadet['saiu05evalacepta'] == 1 && $filadet['saiu05evalfecha'] != 0) {
@@ -3212,15 +3270,27 @@ function f3000_TablaDetallePQRS($aParametros, $objDB, $bDebug=false){
 			// Determina tiempos de vencimiento de solicitudes
 			if ($filadet['saiu05fecharespprob'] != 0) {
 				$iHoy = fecha_DiaMod();
-				if ($filadet['saiu05fecharespprob'] >= $iHoy) {
+				if ($filadet['saiu05fecharespprob'] >= $iHoy) {					
 					$idias = fecha_DiasEntreFechasDesdeNumero($iHoy, $filadet['saiu05fecharespprob']);
-					if ($idias <= 1) {
-						$iVenceNaranja++;
+					if ($filadet['saiu05idtiposolorigen']==53)  {// Derechos de petición - límite 15 días
+						if ($idias <= 5) {
+							$aVenceNaranja[0]++;
+						} else {
+							$aVenceVerde[0]++;
+						}
 					} else {
-						$iVenceVerde++;
+						if ($idias <= 1) {
+							$aVenceNaranja[1]++;
+						} else {
+							$aVenceVerde[1]++;
+						}
 					}
 				} else {
-					$iVenceRojo++;
+					if ($filadet['saiu05idtiposolorigen']==53)  {// Derechos de petición - límite 15 días
+						$aVenceRojo[0]++;
+					} else {
+						$aVenceRojo[1]++;
+					}
 				}
 			}
 		}
@@ -3254,7 +3324,7 @@ function f3000_TablaDetallePQRS($aParametros, $objDB, $bDebug=false){
 	}
 	$res=$res.'</table>';
 	$objDB->liberar($tabladetalle);
-	return array(utf8_encode($res), $iVenceRojo, $iVenceNaranja, $iVenceVerde, $iTiempoRojo, $iTiempoNaranja, $iTiempoVerde, $iIndiceSatisf, $sDebug);
+	return array(utf8_encode($res), $aVenceRojo, $aVenceNaranja, $aVenceVerde, $aTiempoRojo, $aTiempoNaranja, $aTiempoVerde, $iIndiceSatisf, $sDebug);
 }
 function f3000_HtmlTablaPQRS($aParametros){
 	$_SESSION['u_ultimominuto']=iminutoavance();
@@ -3268,17 +3338,23 @@ function f3000_HtmlTablaPQRS($aParametros){
 	$objDB=new clsdbadmin($APP->dbhost, $APP->dbuser, $APP->dbpass, $APP->dbname);
 	if ($APP->dbpuerto!=''){$objDB->dbPuerto=$APP->dbpuerto;}
 	$objDB->xajax();
-	list($sDetalle, $iVenceRojo, $iVenceNaranja, $iVenceVerde, $iTiempoRojo, $iTiempoNaranja, $iTiempoVerde, $iIndiceSatisf, $sDebugTabla)=f3000_TablaDetallePQRS($aParametros, $objDB, $bDebug);
+	list($sDetalle, $aVenceRojo, $aVenceNaranja, $aVenceVerde, $aTiempoRojo, $aTiempoNaranja, $aTiempoVerde, $iIndiceSatisf, $sDebugTabla)=f3000_TablaDetallePQRS($aParametros, $objDB, $bDebug);
 	$sDebug=$sDebug.$sDebugTabla;
 	$objDB->CerrarConexion();
 	$objResponse=new xajaxResponse();
 	$objResponse->assign('div_f3000detalle', 'innerHTML', $sDetalle);
-	$objResponse->assign('div_f3000vencerojo', 'innerHTML', $iVenceRojo);
-	$objResponse->assign('div_f3000vencenaranja', 'innerHTML', $iVenceNaranja);
-	$objResponse->assign('div_f3000venceverde', 'innerHTML', $iVenceVerde);
-	$objResponse->assign('div_f3000tiemporojo', 'innerHTML', $iTiempoRojo);
-	$objResponse->assign('div_f3000tiemponaranja', 'innerHTML', $iTiempoNaranja);
-	$objResponse->assign('div_f3000tiempoverde', 'innerHTML', $iTiempoVerde);
+	$objResponse->assign('div_f3000vencerojo_0', 'innerHTML', $aVenceRojo[0]);
+	$objResponse->assign('div_f3000vencenaranja_0', 'innerHTML', $aVenceNaranja[0]);
+	$objResponse->assign('div_f3000venceverde_0', 'innerHTML', $aVenceVerde[0]);
+	$objResponse->assign('div_f3000tiemporojo_0', 'innerHTML', $aTiempoRojo[0]);
+	$objResponse->assign('div_f3000tiemponaranja_0', 'innerHTML', $aTiempoNaranja[0]);
+	$objResponse->assign('div_f3000tiempoverde_0', 'innerHTML', $aTiempoVerde[0]);
+	$objResponse->assign('div_f3000vencerojo_1', 'innerHTML', $aVenceRojo[1]);
+	$objResponse->assign('div_f3000vencenaranja_1', 'innerHTML', $aVenceNaranja[1]);
+	$objResponse->assign('div_f3000venceverde_1', 'innerHTML', $aVenceVerde[1]);
+	$objResponse->assign('div_f3000tiemporojo_1', 'innerHTML', $aTiempoRojo[1]);
+	$objResponse->assign('div_f3000tiemponaranja_1', 'innerHTML', $aTiempoNaranja[1]);
+	$objResponse->assign('div_f3000tiempoverde_1', 'innerHTML', $aTiempoVerde[1]);
 	if ($iIndiceSatisf == 0) {
 		$objResponse->assign('div_f3000indicesatisf', 'innerHTML', '_');
 	} else {
@@ -3290,4 +3366,4 @@ function f3000_HtmlTablaPQRS($aParametros){
 	}
 	return $objResponse;
 }
-?>
+

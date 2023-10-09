@@ -723,46 +723,48 @@ function f3005_db_GuardarV2($DATA, $objDB, $bDebug=false, $idTercero = 0){
 	$sTabla07='saiu07anexos'.f3000_Contenedor($DATA['saiu05agno'],$DATA['saiu05mes']);
 	$sTabla09='saiu09cambioestado'.f3000_Contenedor($DATA['saiu05agno'],$DATA['saiu05mes']);
 	$saiu05estadoorigen=$DATA['saiu05estado'];	
-	switch ($DATA['saiu05estado']) {
-		case 0:
-			if (!$objDB->bexistetabla($sTabla05)) {
-				$sError = $sError . 'No ha sido posible acceder al contenedor de datos';
-			} else {
-				$sSQL='SELECT saiu05estado FROM '.$sTabla05.' WHERE saiu05id=' . $DATA['saiu05id'] . '';
-				$result=$objDB->ejecutasql($sSQL);
-				if ($fila = $objDB->sf($result)){
-					if ($fila['saiu05estado'] == 0) {
-						$DATA['saiu05estado'] = 2;
-					} else if ($fila['saiu05estado'] == -1) {
-						$saiu05estadoorigen=$fila['saiu05estado'];
+	if (in_array($DATA['paso'],[10,12])) {
+		switch ($DATA['saiu05estado']) {
+			case 0:
+				if (!$objDB->bexistetabla($sTabla05)) {
+					$sError = $sError . 'No ha sido posible acceder al contenedor de datos';
+				} else {
+					$sSQL='SELECT saiu05estado FROM '.$sTabla05.' WHERE saiu05id=' . $DATA['saiu05id'] . '';
+					$result=$objDB->ejecutasql($sSQL);
+					if ($fila = $objDB->sf($result)){
+						if ($fila['saiu05estado'] == 0) {
+							$DATA['saiu05estado'] = 2;
+						} else if ($fila['saiu05estado'] == -1) {
+							$saiu05estadoorigen=$fila['saiu05estado'];
+						}
+					}
+					if ($bDebug) {
+						$sDebug = $sDebug . fecha_microtiempo() . ' ESTADO: ' . $sSQL . '<br>';
 					}
 				}
-				if ($bDebug) {
-					$sDebug = $sDebug . fecha_microtiempo() . ' ESTADO: ' . $sSQL . '<br>';
-				}
-			}
-			break;
-		case 2:
-			if (!$objDB->bexistetabla($sTabla07)) {
-				$sError = $sError . 'No ha sido posible acceder al contenedor de datos de archivos';
-			} else {
-				$sSQL = 'SELECT saiu07idarchivo, saiu07idvalidad FROM ' . $sTabla07 . ' WHERE saiu07idsolicitud=' . $DATA['saiu05id'] . '';
-				$tabla = $objDB->ejecutasql($sSQL);
-				while ($fila = $objDB->sf($tabla)) {
-					if ($fila['saiu07idarchivo'] != 0 && $fila['saiu07idvalidad'] == 0) {
-						$sError = $sError . 'No se han validado todos los anexos';
-						break;
+				break;
+			case 2:
+				if (!$objDB->bexistetabla($sTabla07)) {
+					$sError = $sError . 'No ha sido posible acceder al contenedor de datos de archivos';
+				} else {
+					$sSQL = 'SELECT saiu07idarchivo, saiu07idvalidad FROM ' . $sTabla07 . ' WHERE saiu07idsolicitud=' . $DATA['saiu05id'] . '';
+					$tabla = $objDB->ejecutasql($sSQL);
+					while ($fila = $objDB->sf($tabla)) {
+						if ($fila['saiu07idarchivo'] != 0 && $fila['saiu07idvalidad'] == 0) {
+							$sError = $sError . 'No se han validado todos los anexos';
+							break;
+						}
 					}
 				}
-			}
-			if ($sError=='') {
-				list($sErrorR, $sDebugR) = f3005_RevTabla_saiu05solicitud($sContenedor, $objDB);
-				$sError = $sError . $sErrorR;
-			}
-			if ($sError==''){
-				$DATA['saiu05estado'] = 7;
-			}
-			break;
+				if ($sError=='') {
+					list($sErrorR, $sDebugR) = f3005_RevTabla_saiu05solicitud($sContenedor, $objDB);
+					$sError = $sError . $sErrorR;
+				}
+				if ($sError==''){
+					$DATA['saiu05estado'] = 7;
+				}
+				break;
+		}
 	}
 	if ($DATA['saiu05estado'] == 7) {
 		if ($DATA['saiu05respuesta']==''){$sError=$ERR['saiu05respuesta'].$sSepara.$sError;}
@@ -825,7 +827,16 @@ function f3005_db_GuardarV2($DATA, $objDB, $bDebug=false, $idTercero = 0){
 			}
 		}
 	if ($sError==''){
+		$bEntra = false;
 		if ($DATA['saiu05estado'] >= 0) {
+			switch($DATA['paso']) {
+				case 10:
+				case 12:
+					$bEntra = true;
+					break;
+			}
+		}
+		if ($bEntra) {
 			if (!$objDB->bexistetabla($sTabla06)) {
 				$sError = $sError . 'No ha sido posible acceder al contenedor de datos de anotaciones';
 			} else {
@@ -2181,5 +2192,54 @@ function elimina_archivo_saiu05idarchivo($idpadre, $iAgno, $iMes)
 	$objResponse = new xajaxResponse();
 	$objResponse->call("limpia_saiu05idarchivo");
 	return $objResponse;
+}
+function f3005_ActualizarAtiende($DATA, $objDB, $bDebug=false, $idTercero) {
+	require './app.php';
+	$mensajes_todas = $APP->rutacomun . 'lg/lg_todas_' . $_SESSION['unad_idioma'] . '.php';
+	if (!file_exists($mensajes_todas)) {
+		$mensajes_todas = $APP->rutacomun . 'lg/lg_todas_es.php';
+	}
+	$mensajes_3005 = $APP->rutacomun . 'lg/lg_3005_' . $_SESSION['unad_idioma'] . '.php';
+	if (!file_exists($mensajes_3005)) {
+		$mensajes_3005 = $APP->rutacomun . 'lg/lg_3005_es.php';
+	}
+	require $mensajes_todas;
+	require $mensajes_3005;
+	$sTabla05='saiu05solicitud'.f3000_Contenedor($DATA['saiu05agno'],$DATA['saiu05mes']);
+	$sResultado = '';
+	$sError = '';
+	$sDebug = '';
+	$iTipoError = 0;
+	if (!$objDB->bexistetabla($sTabla05)) {
+		$sError = $sError . 'No ha sido posible acceder al contenedor de datos';
+	}
+	if ($sError == '') {
+		$sSQL = 'SELECT saiu05agno, saiu05mes, saiu05estado, saiu05idtemaorigen FROM ' . $sTabla05 . ' WHERE saiu05id=' . $DATA['saiu05id'] . '';
+		$tabla = $objDB->ejecutasql($sSQL);
+		if ($objDB->nf($tabla) > 0) {
+			$fila = $objDB->sf($tabla);
+			list($DATA['saiu05idunidadresp'], $DATA['saiu05idequiporesp'], $DATA['saiu05idsupervisor'], $DATA['saiu05idresponsable'], $DATA['saiu05tiemprespdias'], $DATA['saiu05tiempresphoras'], $sErrorF, $iTipoError, $sDebugF) = f3005_ConsultaResponsable($fila, $objDB, $bDebug);
+			$sError = $sError . $sErrorF;
+			if ($bDebug) { 
+				$sDebug = $sDebug . $sDebugF;
+			}
+		} else {
+			$sError = $sError . $ETI['saiu05noexiste'];
+		}
+	}
+	if ($sError == '') {
+		if ($DATA['saiu05tiemprespdias'] > 0) {
+			$iFechaBase = fecha_DiaMod();
+			$DATA['saiu05fecharespprob'] = fecha_NumSumarDias($iFechaBase, $DATA['saiu05tiemprespdias']);
+		}
+		list($DATA, $sErrorE, $iTipoError, $sDebugGuardar) = f3005_db_GuardarV2($DATA, $objDB, $bDebug, $idTercero);
+		$sError = $sError . $sErrorE;
+		$sDebug = $sDebug . $sDebugGuardar;
+		if ($sError == '') {
+			$sError = '<b>' . $ETI['msg_itemguardado'] . '</b>';
+			$iTipoError = 1;
+		}
+	}
+	return array($DATA, $sError, $iTipoError, $sDebug);
 }
 //

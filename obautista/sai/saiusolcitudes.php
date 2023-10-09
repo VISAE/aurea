@@ -957,6 +957,19 @@ if ($_REQUEST['paso'] == 22) {
 	$sError = $sError . $sErrorE;
 	$sDebug = $sDebug . $sDebugE;
 }
+// Actualiza atiende
+if ($_REQUEST['paso'] == 27) {
+	if ($bDebug) {
+		$sDebug = $sDebug . fecha_microtiempo() . ' Consultando informaci&oacute;n de responsables.<br>';
+	}
+	if ($_REQUEST['saiu05estado'] < 7){
+		list($_REQUEST, $sErrorE, $iTipoError, $sDebugGuardar) = f3005_ActualizarAtiende($_REQUEST, $objDB, $bDebug, $idTercero);
+		$sError = $sError . $sErrorE;
+		$sDebug = $sDebug . $sDebugGuardar;
+	} else {
+		$sError = $sError . $ETI['saiu05cerrada'];
+	}
+}
 //limpiar la pantalla
 $iViaWeb = 3;
 if ($_REQUEST['paso'] == -1) {
@@ -1989,6 +2002,19 @@ if ($_REQUEST['saiu05estado']==2) {
 <?php
 }
 ?>
+function actualizaratiende() {
+	var sError = '';
+	if (window.document.frmedita.saiu05id.value == '') {
+		sError = 'Por favor seleccione una solicitud.';
+	}
+	if (sError == '') {
+		window.document.frmedita.iscroll.value = window.pageYOffset;
+		MensajeAlarmaV2('<?php echo $ETI['msg_ejecutando']; ?>...', 2);
+		expandesector(98);
+		window.document.frmedita.paso.value = 27;
+		window.document.frmedita.submit();
+	}
+}
 </script>
 <?php
 if ($_REQUEST['paso'] != 0) {
@@ -3188,6 +3214,13 @@ if ((int)$_REQUEST['paso'] != 0) {
 <?php
 echo $ETI['saiu05atiende'];
 ?>
+<div class="ir_derecha" style="width:62px;">
+<input id="bRevAtiende" name="bRevAtiende" type="button" value="Actualizar atiende" class="btMiniActualizar" onclick="actualizaratiende()" title="Actualizar atiende" style="display:<?php if ((int)$_REQUEST['saiu05id'] != 0) {
+echo 'block';
+} else {
+echo 'none';
+} ?>;" />
+</div>
 </label>
 <div class="salto1px"></div>
 <input id="saiu05idsupervisor" name="saiu05idsupervisor" type="hidden" value="<?php echo $_REQUEST['saiu05idsupervisor']; ?>" />
