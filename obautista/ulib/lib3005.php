@@ -403,12 +403,21 @@ function f3005_TablaDetalleV2($aParametros, $objDB, $bDebug=false){
 			break;
 	}
 	$sSQL='';
+	$aTemas=array();
+	$sSQL=$sSQL.'SELECT saiu03id, saiu03titulo FROM saiu03temasol WHERE saiu03activo="S"'.'';
+	$tabla= $objDB->ejecutasql($sSQL);
+	if ($objDB->nf($tabla)>0) {
+		while ($fila = $objDB->sf($tabla)) {
+			$aTemas[$fila['saiu03id']] = $fila['saiu03titulo'];
+		}
+	}
+	$sSQL='';
 	for ($k=1;$k<=$iTablas;$k++){
 		if ($k!=1){$sSQL=$sSQL.' UNION ';}
 		$sContenedor=$aTablas[$k];
 		$sSQL=$sSQL.'SELECT TB.saiu05agno, TB.saiu05mes, TB.saiu05dia, TB.saiu05consec, T12.saiu11nombre, TB.saiu05hora, 
 		TB.saiu05minuto, TB.saiu05id, TB.saiu05estado, T11.unad11tipodoc, T11.unad11doc, 
-		T11.unad11razonsocial, T13.saiu68nombre
+		T11.unad11razonsocial, T13.saiu68nombre, TB.saiu05idtemaorigen
 		FROM saiu05solicitud_'.$sContenedor.' AS TB, saiu11estadosol AS T12, unad11terceros AS T11, saiu68categoria AS T13 
 		WHERE TB.saiu05tiporadicado=1 AND TB.saiu05estado=T12.saiu11id AND TB.saiu05idsolicitante=T11.unad11id AND TB.saiu05idcategoria=T13.saiu68id ' . $sWhere . '';
 	}
@@ -443,6 +452,7 @@ function f3005_TablaDetalleV2($aParametros, $objDB, $bDebug=false){
 	<tr class="fondoazul">
 	<td><b>'.$ETI['msg_numsolicitud'].'</b></td>
 	<td><b>'.$ETI['saiu05idcategoria'].'</b></td>
+	<td><b>'.$ETI['saiu05idtemaorigen'].'</b></td>
 	<td><b>'.$ETI['saiu05idsolicitante'].'</b></td>
 	<td><b>'.$ETI['saiu05razonsocial'].'</b></td>
 	<td colspan="2"><b>'.$ETI['saiu05dia'].'</b></td>
@@ -459,6 +469,7 @@ function f3005_TablaDetalleV2($aParametros, $objDB, $bDebug=false){
 			$sSufijo='';
 			$sClass='';
 			$sLink='';
+			$sTema='';
 			if (false){
 				$sPrefijo='<b>';
 				$sSufijo='</b>';
@@ -474,9 +485,13 @@ function f3005_TablaDetalleV2($aParametros, $objDB, $bDebug=false){
 			if ($bAbierta){
 				$sLink='<a href="javascript:cargaridf3005('.$filadet['saiu05agno'].', '.$filadet['saiu05mes'].', '.$filadet['saiu05id'].')" class="lnkresalte">'.$ETI['lnk_cargar'].'</a>';
 				}
+			if (isset($aTemas[$filadet['saiu05idtemaorigen']])!=0){
+				$sTema=utf8_encode($aTemas[$filadet['saiu05idtemaorigen']]);
+			}
 			$res=$res.'<tr'.$sClass.'>
 			<td>'.$sPrefijo.$et_NumSol.$sSufijo.'</td>
 			<td>'.$sPrefijo.cadena_notildes($filadet['saiu68nombre']).$sSufijo.'</td>
+			<td>'.$sPrefijo.cadena_notildes($sTema).$sSufijo.'</td>
 			<td>'.$sPrefijo.cadena_notildes($filadet['unad11tipodoc']).cadena_notildes($filadet['unad11doc']).$sSufijo.'</td>
 			<td>'.$sPrefijo.cadena_notildes($filadet['unad11razonsocial']).$sSufijo.'</td>
 			<td>'.$sPrefijo.$et_saiu05dia.$sSufijo.'</td>
@@ -857,6 +872,7 @@ function f3005_db_GuardarV2($DATA, $objDB, $bDebug=false, $idTercero = 0){
 	if ($sError==''){
 		if ($DATA['saiu05estado'] < 0){
 			list($saiu05idunidadresp, $saiu05idequiporesp, $saiu05idsupervisor, $saiu05idresponsable, $saiu05tiemprespdias, $saiu05tiempresphoras, $sErrorF, $iTipoError, $sDebugF) = f3005_ConsultaResponsable($DATA, $objDB, $bDebug);
+			$saiu05idresponsable = $saiu05idsupervisor;
 			$sError = $sError . $sErrorF;
 			if ($sError==''){
 				if ($saiu05tiemprespdias > 0) {
@@ -1071,10 +1087,16 @@ saiu05fecharespprob, saiu05respuesta, saiu05idmoduloproc, saiu05identificadormod
 							$sError=$ERR['falla_guardar'].' [3009] ..<!-- '.$sSQL.' -->';
 						}
 					}
-					if ($DATA['saiu05estado'] == 7) {
-						list($sMensaje, $sErrorE, $sDebugE) = f3005_EnviaCorreosCierre($DATA, $sContenedor, $objDB, $bDebug);
-						$sError = $sError . $sErrorE;
-						$sDebug = $sDebug . $sDebugE;
+					switch ($DATA['saiu05estado']) {
+						case 0:
+						case 7:
+							if ($saiu05estadoorigen == -1) {
+								list($sMensaje, $sErrorE, $sDebugE) = f3005_EnviaCorreosSolicitud($DATA, $sContenedor, $objDB, $bDebug, true);
+							}
+							list($sMensaje, $sErrorE, $sDebugE) = f3005_EnviaCorreosSolicitud($DATA, $sContenedor, $objDB, $bDebug);
+							$sError = $sError . $sErrorE;
+							$sDebug = $sDebug . $sDebugE;
+						break;
 					}
 				}
 				if ($bDebug){
@@ -1465,7 +1487,7 @@ function f3005_ConsultaResponsable($DATA, $objDB, $bDebug=false){
 					}
 				}
 			}
-			$saiu05idresponsable = 0;
+			$saiu05idresponsable = $saiu05idsupervisor;
 		} else {
 			$sError = $sError . 'No se ha configurado el tema de solicitud.';
 		}
@@ -1973,7 +1995,7 @@ function htmlAlertas($sColor, $sTexto) {
 	$sHTML = $sHTML . '<div class="alert alert-' . $sTipo . '" role="alert"><strong>' . $sTexto . '</strong></div>';
 	return $sHTML;
 }
-function f3005_EnviaCorreosCierre($DATA, $sContenedor, $objDB, $bDebug = false, $bForzar = false) {
+function f3005_EnviaCorreosSolicitud($DATA, $sContenedor, $objDB, $bDebug = false, $bResponsable = false, $bForzar = false) {
 	require './app.php';
 	$mensajes_todas = $APP->rutacomun . 'lg/lg_todas_' . $_SESSION['unad_idioma'] . '.php';
 	if (!file_exists($mensajes_todas)) {
@@ -1989,27 +2011,49 @@ function f3005_EnviaCorreosCierre($DATA, $sContenedor, $objDB, $bDebug = false, 
 	$sDebug = '';
 	$sMensaje = '';
 	$bEntra = false;
+	$idTercero = 0;
+	$sCorreoDestino = '';
 	if ($DATA['saiu05rptaforma'] == 1) {
 		$bEntra = true;
 	} else {
 		$bEntra = $bForzar;
 	}
 	if ($bEntra) {
-		$bEntra = false;
-		$idTercero = 0;
+		$bEntra = false;		
 		if (isset($DATA['saiu05idsolicitante'])!= 0) {
 			$idTercero = numeros_validar($DATA['saiu05idsolicitante']);
 			if ($idTercero == $DATA['saiu05idsolicitante']) {
 				if ((int)$idTercero != 0) {
 					$bEntra = true;
+					if (isset($DATA['saiu05rptacorreo'])!= 0) {
+						$sCorreoDestino = $DATA['saiu05rptacorreo'];
+					}
+				}
+			}
+		}
+	}
+	if ($bResponsable) {
+		$bEntra = false;
+		$sCorreoDestino = '';
+		if (isset($DATA['saiu05idsupervisor'])!= 0) {
+			$idTercero = numeros_validar($DATA['saiu05idsupervisor']);
+			if ((int)$idTercero != 0) {
+				$bEntra = true;
+			}
+		}
+		if ($bEntra) {
+			if (isset($DATA['saiu05idresponsable'])!= 0) {
+				$saiu05idresponsable = numeros_validar($DATA['saiu05idresponsable']);
+				if ((int)$saiu05idresponsable != 0) {
+					$idTercero = $saiu05idresponsable;
 				}
 			}
 		}
 	}
 	if ($bEntra) {
-		list($bCorreoValido, $sDebugC) = correo_VerificarV2($DATA['saiu05rptacorreo']);
+		list($bCorreoValido, $sDebugC) = correo_VerificarV2($sCorreoDestino);
 		if ($bCorreoValido) {
-			$sCorreoMensajes = $DATA['saiu05rptacorreo'];
+			$sCorreoMensajes = $sCorreoDestino;
 		} else {
 			list($sCorreoMensajes, $unad11idgrupocorreo, $sError, $sDebugN) = AUREA_CorreoNotificaV2($idTercero, $objDB, $bDebug);
 			if ($sError == '') {
@@ -2045,21 +2089,92 @@ function f3005_EnviaCorreosCierre($DATA, $sContenedor, $objDB, $bDebug = false, 
 				$sFechaLarga = formato_FechaLargaDesdeNumero($iFechaServicio, true);
 				$sRutaImg = 'https://datateca.unad.edu.co/img/';
 				$sURLDestino = 'https://aurea.unad.edu.co/sai';
+				$URL = url_encode('' . $DATA['saiu05numref']);
+				$sURLDestinoEnc = 'https://aurea.unad.edu.co/encuesta';
+				$sURL = '' . $URL . '';
+				$sConRespuesta = '';
 				$sMes=date('Ym');
 				$sTabla='aure01login'.$sMes;
 				list($idSMTP, $sDebugS)=AUREA_SmtpMejor($sTabla, $objDB, $bDebug);
 				$objMail=new clsMail_Unad($objDB);
 				$objMail->TraerSMTP($idSMTP);
-				//$sCorreoMensajes = 'omar.bautista@unad.edu.co'; //! PRUEBAS
-				list($unad11razonsocial, $sErrorDet) = tabla_campoxid('unad11terceros', 'unad11razonsocial', 'unad11id', $DATA['saiu05idsolicitante'], '{' . 'An&oacute;nimo' . '}', $objDB);
-				$sTituloMensaje = $ETI['mail_resp_titulo'] . ' ' . $sNomEntidad . '';
-				$sCuerpo = 'Cordial saludo.<br>
-				Estimado(a) <b>' . $unad11razonsocial . '</b><br><br>
-				Para la universidad Nacional Abierta y a Distancia - UNAD es muy importante atender sus solicitudes. 
-				Acorde con lo anterior le informo que la respuesta a su solicitud radicada el día ' . $sFechaLarga . '; 
-				puede ser consultada en el siguiente enlace:<br><a href="' . $sURLDestino . '" target="_blank">' . $sURLDestino . '</a><br>
-				usando el código de radicado: <span style="color: rgb(255, 0, 0); font-size: 16px;"><strong>' . $DATA['saiu05numref'] . '</strong></span><br><br>
-				Cordialmente,<br>
+				list($unad11razonsocial, $sErrorDet) = tabla_campoxid('unad11terceros', 'unad11razonsocial', 'unad11id', $idTercero, '{' . 'An&oacute;nimo' . '}', $objDB);
+				if ($bResponsable) {
+					$sTituloMensaje = $ETI['mail_asig_titulo'] . ' ' . $sNomEntidad . '';
+					$et_NumSol=f3000_NumSolicitud($DATA['saiu05agno'], $DATA['saiu05mes'], $DATA['saiu05consec']);
+					$sCuerpo = 'Cordial saludo.<br>
+					Estimado(a) <b>' . $unad11razonsocial . '</b><br><br>
+					El Sistema de Atenci&oacute;n Integral (SAI) le informa que le ha sido asignada una PQRS radicada el d&iacute;a ' . $sFechaLarga . '; 
+					con el n&uacute;mero de solicitud: <span style="color: rgb(255, 0, 0); font-size: 16px;"><strong>' . $et_NumSol . '</strong></span>.<br><br>
+					Le invitamos a ingresar al m&oacute;dulo de Peticiones, Quejas, Reclamos y Sugerencias para iniciar el tr&aacute;mite de la solicitud.<br><br>';
+				} else {
+					if ($DATA['saiu05estado'] == 0) {
+						$sTituloMensaje = $ETI['mail_solic_titulo'] . ' ' . $sNomEntidad . '';
+						$sConRespuesta = $sConRespuesta . ' ';
+					} else if ($DATA['saiu05estado'] == 7) {
+						$sTituloMensaje = $ETI['mail_resp_titulo'] . ' ' . $sNomEntidad . '';
+						$sConRespuesta = $sConRespuesta . ' la respuesta a ';
+					}
+					$sCuerpo = 'Cordial saludo.<br>
+					Estimado(a) <b>' . $unad11razonsocial . '</b><br><br>
+					Para la universidad Nacional Abierta y a Distancia - UNAD es muy importante atender sus solicitudes. 
+					Acorde con lo anterior le informamos que' . $sConRespuesta . 'su solicitud radicada el día ' . $sFechaLarga . '; 
+					puede ser consultada en el siguiente enlace:<br><a href="' . $sURLDestino . '" target="_blank">' . $sURLDestino . '</a><br>
+					usando el código de radicado: <span style="color: rgb(255, 0, 0); font-size: 16px;"><strong>' . $DATA['saiu05numref'] . '</strong></span><br><br>';
+					if ($DATA['saiu05estado'] == 7) {
+						$sCuerpo = $sCuerpo . '<hr><p style="padding:0 5px;">' . $ETI['mail_enc'] . '</p>
+
+				<table border="0" cellpadding="10" cellspacing="0" width="80%" style="width: 80%; max-width: 80%; min-width: 80%;">
+					<tbody>
+						<tr>
+							<td align="center" bgcolor="#F0B429" style="font-size:22px;">
+								<font face="Arial, Helvetica, sans-serif" color="#005883">
+									<a style="padding: 10px 20px; color: #005883; font-size: 12px; text-decoration: none; word-wrap: break-word;" target="_blank"
+									href="' . $sURLDestinoEnc . '?u=' . $sURL . '">
+										<span style="font-size: 24px;">RESPONDER</span>
+									</a>
+								</font>
+							</td>
+						</tr>
+						<tr>
+							<td height="5">
+							</td>
+						</tr>
+					</tbody>
+				</table>
+
+				<table border="0" cellpadding="10" cellspacing="0" width="60%" style="width: 60%; max-width: 60%; min-width: 60%;">
+					<tbody>
+						<tr>
+							<td align="center" bgcolor="#005883" style="font-size:14px;">
+								<font face="Arial, Helvetica, sans-serif" color="#ffffff">
+									<a style="padding: 10px 20px; color: #ffffff; font-size: 12px; text-decoration: none; word-wrap: break-word;" target="_blank"
+									href="' . $sURLDestinoEnc . '?n=' . $sURL . '">
+										Si no desea responder, por favor haga clic aqu&iacute;
+									</a>
+								</font>
+							</td>
+						</tr>
+						<tr>
+							<td height="5">
+							</td>
+						</tr>
+					</tbody>
+				</table>
+
+				<font face="Arial, Helvetica, sans-serif">
+					<p>
+						En caso de que no pueda acceder desde este correo, por favor ingrese a<br>
+						<a style="padding: 10px 20px; color: #005883; word-wrap: break-word;" target="_blank"
+							href="' . $sURLDestinoEnc . '">' . $sURLDestinoEnc . '
+						</a><br>
+						digite su n&uacute;mero de documento <br> y el c&oacute;digo <b>' . $DATA['saiu05numref'] . '</b>
+					</p>
+					<br>
+				</font>';
+					}
+				}
+				$sCuerpo = $sCuerpo . 'Cordialmente,<br>
 				<b>Sistema de Atención Integral - SAI</b><br>';
 				$sCuerpo=AUREA_HTML_EncabezadoCorreo($sTituloMensaje).$sCuerpo.AUREA_HTML_NoResponder().AUREA_NotificaPieDePagina().AUREA_HTML_PieCorreo();
 				$objMail->sAsunto=cadena_codificar($sTituloMensaje);
@@ -2081,98 +2196,13 @@ function f3005_EnviaCorreosCierre($DATA, $sContenedor, $objDB, $bDebug = false, 
 						$sMensaje=$ERR['mail_resp_error'];
 					}
 				}
-				$URL = url_encode('' . $DATA['saiu05numref']);
-				$sURLDestino = 'https://aurea.unad.edu.co/encuesta';
-				$sURL = '' . $URL . '';
-				$sTituloMensaje = $ETI['mail_enc_titulo'] . ' ' . $sNomEntidad . '';									
-				$sCuerpo = '<table border="0" cellpadding="0" cellspacing="0" width="100%" style="width: 100%; max-width: 100%; min-width: 100%;">
-				<tbody>
-				<tr>
-				<td align="right" bgcolor="#F1F1F1" valign="bottom" width="268" height="290" class="hidden-sm">
-				<img class="text-center" style="max-width: 100%; display: block;" width="260" src="' . $sRutaImg . 'correo2022/estudiante_1.jpg">
-				</td>
-				<td align="center" bgcolor="#F1F1F1">';
-				$sCuerpo = $sCuerpo . '<font face="Arial, Helvetica, sans-serif" color="#333333">
-				<p>' . $ETI['mail_enc_parte1'] . $sFechaLarga . $ETI['mail_enc_parte2'] . '</p>
-			</font>
-
-			<table border="0" cellpadding="10" cellspacing="0" width="80%" style="width: 80%; max-width: 80%; min-width: 80%;">
-				<tbody>
-					<tr>
-						<td align="center" bgcolor="#F0B429" style="font-size:22px;">
-							<font face="Arial, Helvetica, sans-serif" color="#005883">
-								<a style="padding: 10px 20px; color: #005883; font-size: 12px; text-decoration: none; word-wrap: break-word;" target="_blank"
-								href="' . $sURLDestino . '?u=' . $sURL . '">
-									<span style="font-size: 24px;">RESPONDER</span>
-								</a>
-							</font>
-						</td>
-					</tr>
-					<tr>
-						<td height="5">
-						</td>
-					</tr>
-				</tbody>
-			</table>
-
-			<table border="0" cellpadding="10" cellspacing="0" width="60%" style="width: 60%; max-width: 60%; min-width: 60%;">
-				<tbody>
-					<tr>
-						<td align="center" bgcolor="#005883" style="font-size:14px;">
-							<font face="Arial, Helvetica, sans-serif" color="#ffffff">
-								<a style="padding: 10px 20px; color: #ffffff; font-size: 12px; text-decoration: none; word-wrap: break-word;" target="_blank"
-								href="' . $sURLDestino . '?n=' . $sURL . '">
-									Si no desea responder, por favor haga clic aqu&iacute;
-								</a>
-							</font>
-						</td>
-					</tr>
-					<tr>
-						<td height="5">
-						</td>
-					</tr>
-				</tbody>
-			</table>
-
-			<font face="Arial, Helvetica, sans-serif">
-				<p>
-					En caso de que no pueda acceder desde este correo, por favor ingrese a<br>
-					<a style="padding: 10px 20px; color: #005883; word-wrap: break-word;" target="_blank"
-						href="' . $sURLDestino . '">' . $sURLDestino . '
-					</a><br>
-					digite su n&uacute;mero de documento <br> y el c&oacute;digo <b>' . $DATA['saiu05numref'] . '</b>
-				</p>
-				<br>
-			</font>';
-				$sCuerpo = $sCuerpo . '</td>
-				</tr>
-				</tbody>
-				</table>';
-				$sCuerpo=AUREA_HTML_EncabezadoCorreo($sTituloMensaje).$sCuerpo.AUREA_HTML_NoResponder().AUREA_NotificaPieDePagina().AUREA_HTML_PieCorreo();
-				$objMail->sAsunto=cadena_codificar($sTituloMensaje);
-				$sMensaje='Se notifica al correo '.$sCorreoMensajes;
-				$objMail->addCorreo($sCorreoMensajes, $sCorreoMensajes);
-				if ($sCorreoCopia!=''){
-					$objMail->addCorreo($sCorreoCopia, $sCorreoCopia, 'O');
-					$sMensaje=$sMensaje.' con copia a '.$sCorreoCopia;
-				}
-				if ($sError==''){
-					$objMail->sCuerpo=$sCuerpo;
-					if ($bDebug) {
-						$sDebug = $sDebug . fecha_microtiempo() . ' Enviando encuesta de satisfacci&oacute;n a : ' . $sCorreoMensajes . '<br>';
-					}
-					$sError=$objMail->Enviar($bDebug);
-					if ($sError!=''){
-						$sMensaje=$ERR['mail_enc_error'];
-					}
-				}
 			}
 		} else {
 			$sError = 'No se ha definido un correo electr&oacute;nico v&aacute;lidado para notificar el evento.';
 		}
 	} else {
 		if ($bDebug) {
-			$sDebug = $sDebug . fecha_microtiempo() . ' <b>Noficando Respuesta PQRS</b>: No aplica para notificar.<br>';
+			$sDebug = $sDebug . fecha_microtiempo() . ' <b>Noficando Radicaci&oacute;n de PQRS</b>: No aplica para notificar.<br>';
 		}
 	}
 	return array($sMensaje, $sError, $sDebug);

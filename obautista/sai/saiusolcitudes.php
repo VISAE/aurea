@@ -912,7 +912,7 @@ if ($_REQUEST['paso'] == 17) {
 		$sSQL = 'UPDATE ' . $sTabla05 . ' SET saiu05idresponsable=' . $_REQUEST['saiu05idresponsablefin'] . ' WHERE saiu05id=' . $_REQUEST['saiu05id'] . '';
 		$result = $objDB->ejecutasql($sSQL);
 		if ($result==false){
-			$sError=$sError.$ERR['falla_guardar'].' [3005] ..<!-- '.$sSQL.' -->';
+			$sError=$sError.$ERR['saiu05idresponsablefin'].'';
 		} else {
 			seg_auditar($iCodModulo, $_SESSION['unad_id_tercero'], 3, $_REQUEST['saiu05id'], 'Reasigna el responsable ', $objDB);
 			$_REQUEST['saiu05idresponsable']=$_REQUEST['saiu05idresponsablefin'];
@@ -941,6 +941,10 @@ if ($_REQUEST['paso'] == 17) {
 				seg_auditar($iCodModulo, $_SESSION['unad_id_tercero'], 2, $saiu10id, 'Agrega cambio de responsable ', $objDB);
 				$sError = '<b>Se ha realizado la reasignaci&oacute;n.</b>';
 				$iTipoError = 1;
+				$sContenedor = fecha_ArmarAgnoMes($_REQUEST['saiu05agno'], $_REQUEST['saiu05mes']);
+				list($sMensaje, $sErrorE, $sDebugE) = f3005_EnviaCorreosSolicitud($_REQUEST, $sContenedor, $objDB, $bDebug, true, false);
+				$sError = $sError . $sErrorE;
+				$sDebug = $sDebug . $sDebugE;
 			}
 		}
 	}
@@ -953,7 +957,7 @@ if ($_REQUEST['paso'] == 22) {
 		$sDebug = $sDebug . fecha_microtiempo() . ' Iniciando llamada al envio de la notificaci&oacute;n.<br>';
 	}
 	$sContenedor = fecha_ArmarAgnoMes($_REQUEST['saiu05agno'], $_REQUEST['saiu05mes']);
-	list($sMensaje, $sErrorE, $sDebugE) = f3005_EnviaCorreosCierre($_REQUEST, $sContenedor, $objDB, $bDebug, true);
+	list($sMensaje, $sErrorE, $sDebugE) = f3005_EnviaCorreosSolicitud($_REQUEST, $sContenedor, $objDB, $bDebug, false, true);
 	$sError = $sError . $sErrorE;
 	$sDebug = $sDebug . $sDebugE;
 }
@@ -2455,9 +2459,13 @@ if ($_REQUEST['saiu05rptaforma'] == 2) {
 }
 ?>
 <div id="div_saiu05rptadireccion" <?php echo $sEstilo; ?>>
-<label class="L">
+<label class="Label250">
 <?php
 echo $ETI['saiu05rptadireccion'];
+?>
+</label>
+<label class="Label250">
+<?php
 if ($bEditable) {
 ?>
 <input id="saiu05rptadireccion" name="saiu05rptadireccion" type="text" value="<?php echo $_REQUEST['saiu05rptadireccion']; ?>" maxlength="100" class="L" placeholder="<?php echo $ETI['ing_campo'] . $ETI['saiu05rptadireccion']; ?>" />

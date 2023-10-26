@@ -175,6 +175,7 @@ $xajax->register(XAJAX_FUNCTION,'f3004_Traer');
 $xajax->register(XAJAX_FUNCTION,'f3004_Eliminar');
 $xajax->register(XAJAX_FUNCTION,'f3004_HtmlTabla');
 $xajax->register(XAJAX_FUNCTION,'f3004_PintarLlaves');
+$xajax->register(XAJAX_FUNCTION,'f3003_saiu03idliderrespon');
 $xajax->processRequest();
 if ($bPeticionXAJAX){
 	die(); // Esto hace que las llamadas por xajax terminen aquí.
@@ -988,6 +989,15 @@ function ajustarmodelo(){
 	if (iForma==1){sMuestra='block';}
 	document.getElementById('div_saiu03modelo').style.display=sMuestra;
 	}
+function consultalider(iEtapa){
+	var params=new Array();
+	params[99]=window.document.frmedita.debug.value;
+	params[100]=<?php echo $idTercero; ?>;
+	params[101]=iEtapa;
+	params[102]=document.getElementById('saiu03idequiporesp'+iEtapa).value;
+	//document.getElementById('div_f3003detalle').innerHTML='<div class="GrupoCamposAyuda"><div class="MarquesinaMedia">Procesando datos, por favor espere.</div></div><input id="paginaf3003" name="paginaf3003" type="hidden" value="'+params[101]+'" /><input id="lppf3003" name="lppf3003" type="hidden" value="'+params[102]+'" />';
+	xajax_f3003_saiu03idliderrespon(params);
+}
 // -->
 </script>
 <?php

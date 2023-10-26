@@ -652,6 +652,36 @@ if (isset($_REQUEST['sTabla3005']) == 0) {
 if (isset($_REQUEST['opcion']) == 0) {
 	$_REQUEST['opcion'] = 0;
 }
+if (isset($_REQUEST['aceptaterminos']) == 0) {
+	$objDB->CerrarConexion();
+	require $APP->rutacomun . 'unad_forma_v2.php';
+	forma_cabeceraV3($xajax, $ETI['titulo_3005']);
+	echo $et_menu;
+	forma_mitad();
+	?>
+	<script language="javascript" src="<?php echo $APP->rutacomun; ?>js/jquery-3.3.1.min.js"></script>
+	<script language="javascript" src="<?php echo $APP->rutacomun; ?>js/popper.min.js"></script>
+	<script language="javascript" src="<?php echo $APP->rutacomun; ?>js/bootstrap.min.js"></script>
+	<link rel="stylesheet" href="<?php echo $APP->rutacomun; ?>js/bootstrap.min.css" type="text/css" />
+	<link rel="stylesheet" href="<?php echo $APP->rutacomun; ?>css/criticalPath.css" type="text/css" />
+	<link rel="stylesheet" href="<?php echo $APP->rutacomun; ?>css/principal.css" type="text/css" />
+	<link rel="stylesheet" href="<?php echo $APP->rutacomun; ?>unad_estilos2018.css" type="text/css" />
+	<form id="frmterminos" name="frmterminos" method="post" action="" autocomplete="off">
+	<h1 class="TituloAzul1"><?php echo $ETI['bt_tratadatos']; ?></h1>
+	<div class="GrupoCampos700 container float-none mx-auto">
+	<p><?php echo $ETI['msg_tratadatos']; ?></p>
+	</div>
+	<div class="salto1px"></div>
+	<input id="aceptaterminos" name="aceptaterminos" type="hidden" value="1" />
+	<input id="cmdAceptar" name="cmdAceptar" type="submit" value="Aceptar y continuar" class="BotonAzul200">
+	</form>
+	<?php
+	if ($bDebug) {
+		echo $sDebug;
+	}
+	forma_piedepagina();
+	die();
+}
 if ((int)$_REQUEST['paso'] > 0) {
 	//Anotaciones
 	if (isset($_REQUEST['bnombre3006']) == 0) {
@@ -1026,6 +1056,7 @@ if ($_REQUEST['paso'] == -1) {
 	$_REQUEST['boculta3005']=0;
 	$_REQUEST['boculta3006_Campos']=1;
 	$_REQUEST['sTabla3005']='';
+	$_REQUEST['aceptaterminos']=1;
 	$_REQUEST['paso'] = 0;
 }
 if ($bLimpiaHijos) {
@@ -1136,7 +1167,7 @@ $html_saiu05costogenera = $objCombos->html('', $objDB);
 
 $objCombos->nuevo('saiu05rptaforma', $_REQUEST['saiu05rptaforma'], false, '{' . $ETI['msg_seleccione'] . '}');
 $objCombos->sAccion = 'ajustarformarpta()';
-$sSQL = 'SELECT saiu12id AS id, saiu12nombre AS nombre FROM saiu12formarespuesta WHERE saiu12id IN (0,1) ORDER BY saiu12nombre';
+$sSQL = 'SELECT saiu12id AS id, saiu12nombre AS nombre FROM saiu12formarespuesta ORDER BY saiu12nombre';
 $html_saiu05rptaforma = $objCombos->html($sSQL, $objDB);
 list($saiu05idresponsable_rs, $_REQUEST['saiu05idresponsable'], $_REQUEST['saiu05idresponsable_td'], $_REQUEST['saiu05idresponsable_doc']) = html_tercero($_REQUEST['saiu05idresponsable_td'], $_REQUEST['saiu05idresponsable_doc'], $_REQUEST['saiu05idresponsable'], 0, $objDB);
 $objCombos->nuevo('saiu05idcategoria', $_REQUEST['saiu05idcategoria'], true, '{' . $ETI['msg_seleccione'] . '}');
@@ -1298,7 +1329,7 @@ if (false) {
 	}
 
 	function enviacerrar() {
-		ModalConfirm('Se proceder&aacute; a radicar y dar cierre a la PQRS, esta seguro de continuar?');
+		ModalConfirm('<?php echo $ETI['msg_cerrar']; ?>');
 		ModalDialogConfirm(function(confirm) {
 			if (confirm) {
 				ejecuta_enviacerrar();
@@ -1707,13 +1738,12 @@ if ($iNumFormatosImprime>0) {
 	}
 
 	function mod_tratadatos() {
-		ModalConfirmV2('<?php echo $ETI['msg_tratadatos']; ?>', () => {
-			ejecuta_tratadatos();
+		ModalConfirmV2('<?php echo $ETI['msg_tratadatos']; ?>');
+		ModalDialogConfirm(function(confirm) {
+			if (confirm) {
+				document.getElementById("modal-btn-si").click();
+			}
 		});
-	}
-
-	function ejecuta_tratadatos() {
-		return true;
 	}
 </script>
 <?php
@@ -1770,6 +1800,7 @@ if ($_REQUEST['paso'] != 0) {
 <input id="seg_5" name="seg_5" type="hidden" value="<?php echo $seg_5; ?>" />
 <input id="seg_6" name="seg_6" type="hidden" value="<?php echo $seg_6; ?>" />
 <input id="opcion" name="opcion" type="hidden" value="<?php echo $_REQUEST['opcion'] ?>" />
+<input id="aceptaterminos" name="aceptaterminos" type="hidden" value="<?php echo $_REQUEST['aceptaterminos'] ?>" />
 <div id="div_sector1">
 <div class="titulos">
 <div class="titulosD">
@@ -1865,6 +1896,7 @@ echo $ETI['advertencia'] . $ETI['msg_anonimo'];
 ?>
 <div class="salto1px"></div>
 </div>
+<div class="salto5px"></div>
 <?php
 }
 ?>
@@ -2031,14 +2063,9 @@ echo $ETI['saiu05idmedio'] . ' ' . $html_saiu05idmedio;
 <div class="salto1px"></div>
 <?php
 if ($_SESSION['unad_id_tercero'] > 0) {
-	$sHref = 'https://aurea2.unad.edu.co/c2/miperfil.php';
-	$sOnclick = '';	
-	$sTarget =  '_blank';
-	if ($_SESSION['unad_id_tercero'] == 1) {
-		$sHref = 'javascript:;';
-		$sOnclick = 'mod_tratadatos();';
-		$sTarget =  '';
-	}
+	$sHref = 'javascript:;';
+	$sOnclick = 'mod_tratadatos();';
+	$sTarget =  '';
 ?>
 <a id="cmdTrataDatos" name="cmdTrataDatos" class="BotonAzul200" title="<?php echo $ETI['bt_tratadatos']; ?>" href="<?php echo $sHref; ?>" target="<?php echo $sTarget; ?>" onclick="<?php echo $sOnclick; ?>" style="width:420px; padding:7px 10px;"><?php echo $ETI['bt_tratadatos']; ?></a>
 <div class="salto1px"></div>

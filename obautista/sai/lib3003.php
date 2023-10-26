@@ -39,6 +39,7 @@ function f3003_HTMLComboV2_saiu03idequiporesp1($objDB, $objCombos, $valor, $vrsa
 		$objCombos->iAncho=300;
 		$sSQL='SELECT bita27id AS id, bita27nombre AS nombre FROM bita27equipotrabajo WHERE bita27idunidadfunc="'.$vrsaiu03idunidadresp1.'" ORDER BY bita27nombre';
 		}
+	$objCombos->sAccion='consultalider(1);';
 	$res=$objCombos->html($sSQL, $objDB);
 	return $res;
 	}
@@ -53,6 +54,7 @@ function f3003_HTMLComboV2_saiu03idequiporesp2($objDB, $objCombos, $valor, $vrsa
 		$objCombos->iAncho=300;
 		$sSQL='SELECT bita27id AS id, bita27nombre AS nombre FROM bita27equipotrabajo WHERE bita27idunidadfunc="'.$vrsaiu03idunidadresp2.'" ORDER BY bita27nombre';
 		}
+	$objCombos->sAccion='consultalider(2);';
 	$res=$objCombos->html($sSQL, $objDB);
 	return $res;
 	}
@@ -67,6 +69,7 @@ function f3003_HTMLComboV2_saiu03idequiporesp3($objDB, $objCombos, $valor, $vrsa
 		$objCombos->iAncho=300;
 		$sSQL='SELECT bita27id AS id, bita27nombre AS nombre FROM bita27equipotrabajo WHERE bita27idunidadfunc="'.$vrsaiu03idunidadresp3.'" ORDER BY bita27nombre';
 		}
+	$objCombos->sAccion='consultalider(3);';
 	$res=$objCombos->html($sSQL, $objDB);
 	return $res;
 	}
@@ -1209,4 +1212,39 @@ ORDER BY TB.saiu03tiposol, TB.saiu03consec';
 // -----------------------------------
 // ---- Funciones personalizadas  ----
 // -----------------------------------
+function f3003_saiu03idliderrespon($aParametros){
+	$_SESSION['u_ultimominuto']=iminutoavance();
+	if(!is_array($aParametros)){$aParametros=json_decode(str_replace('\"','"',$aParametros),true);}
+	require './app.php';
+	$objDB=new clsdbadmin($APP->dbhost, $APP->dbuser, $APP->dbpass, $APP->dbname);
+	if ($APP->dbpuerto!=''){$objDB->dbPuerto=$APP->dbpuerto;}
+	if(!is_array($aParametros)){$aParametros=json_decode(str_replace('\"','"',$aParametros),true);}
+	if (isset($aParametros[99])==0){$aParametros[99]=false;}
+	if (isset($aParametros[100])==0){$aParametros[100]=$_SESSION['unad_id_tercero'];}
+	if (isset($aParametros[101])==0){$aParametros[101]='';}
+	if (isset($aParametros[102])==0){$aParametros[102]=0;}
+	$sDebug='';
+	$idTercero=$aParametros[100];
+	$iEtapa=0;
+	$saiu03idequiporesp=0;
+	if ($aParametros[101]!=''){$iEtapa=$aParametros[101];}
+	if ($aParametros[102]!=''){$saiu03idequiporesp=$aParametros[102];}
+	$objDB->xajax();
+	$objResponse=new xajaxResponse();
+	if ($iEtapa > 0) {
+		$sDocumento = '';
+		if ($saiu03idequiporesp>0){
+			$sSQL='SELECT T1.unad11doc FROM bita27equipotrabajo AS TB, unad11terceros AS T1 WHERE TB.bita27idlider=T1.unad11id AND bita27id=' . $saiu03idequiporesp . '';
+			$res=$objDB->ejecutasql($sSQL);
+			if ($objDB->nf($res)>0){
+				$fila=$objDB->sf($res);
+				if ($fila['unad11doc']>0){$sDocumento=$fila['unad11doc'];}
+			}
+		}
+		$objResponse->assign('saiu03idliderrespon' . $iEtapa . '_doc', 'value', $sDocumento);
+		$objResponse->script('ter_muestra("saiu03idliderrespon' . $iEtapa . '",0);');
+	}
+	$objDB->CerrarConexion();
+	return $objResponse;
+}
 ?>
