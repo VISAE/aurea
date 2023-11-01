@@ -19,6 +19,7 @@ $ETI['cara49idescuela']='Escuela';
 $ETI['cara49idprograma']='Programa';
 $ETI['cara49tipopoblacion']='Poblaci&oacute;n';
 $ETI['cara49periodomat']='Periodo matricula';
+$ETI['cara49tipoestudiante']='Condici&oacute;n';
 
 $ERR['cara49idperaca']='Necesita el dato '.$ETI['cara49idperaca'];
 $ERR['cara49idzona']='Necesita el dato '.$ETI['cara49idzona'];
@@ -27,6 +28,7 @@ $ERR['cara49idescuela']='Necesita el dato '.$ETI['cara49idescuela'];
 $ERR['cara49idprograma']='Necesita el dato '.$ETI['cara49idprograma'];
 $ERR['cara49tipopoblacion']='Necesita el dato '.$ETI['cara49tipopoblacion'];
 $ERR['cara49periodomat']='Necesita el dato '.$ETI['cara49periodomat'];
+$ERR['cara49tipoestudiante']='Necesita el dato '.$ETI['cara49tipoestudiante'];
 $acara49tipopoblacion=array('', '');
 $icara49tipopoblacion=0;
 ?>

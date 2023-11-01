@@ -187,6 +187,7 @@ if (isset($_REQUEST['cara49idescuela'])==0){$_REQUEST['cara49idescuela']='';}
 if (isset($_REQUEST['cara49idprograma'])==0){$_REQUEST['cara49idprograma']='';}
 if (isset($_REQUEST['cara49tipopoblacion'])==0){$_REQUEST['cara49tipopoblacion']='';}
 if (isset($_REQUEST['cara49periodomat'])==0){$_REQUEST['cara49periodomat']='';}
+if (isset($_REQUEST['cara49tipoestudiante'])==0){$_REQUEST['cara49tipoestudiante']='';}
 // Espacio para inicializar otras variables
 if (isset($_REQUEST['csv_separa'])==0){$_REQUEST['csv_separa']=';';}
 if (isset($_REQUEST['bnombre'])==0){$_REQUEST['bnombre']='';}
@@ -256,6 +257,11 @@ if ($bGeneral){
 	$objCombos->addItem(9, 'Todos');
 	}
 $html_cara49tipopoblacion=$objCombos->html('', $objDB);
+$objCombos->nuevo('cara49tipoestudiante', $_REQUEST['cara49tipoestudiante'], true, '{'.$ETI['msg_todos'].'}');
+$objCombos->addItem('0', 'Antiguos');
+$objCombos->addItem(1, 'Nuevos');
+$objCombos->addItem(2, 'Reintegro');
+$html_cara49tipoestudiante=$objCombos->html('', $objDB);
 $objCombos->nuevo('cara49periodomat', $_REQUEST['cara49periodomat'], true, '{'.$ETI['msg_seleccione'].'}');
 $sSQL=f146_ConsultaCombo('exte02id>0', $objDB);
 $html_cara49periodomat=$objCombos->html($sSQL, $objDB);
@@ -299,6 +305,7 @@ $aParametros[106]=$_REQUEST['cara49idescuela'];
 $aParametros[107]=$_REQUEST['cara49idprograma'];
 $aParametros[108]=$_REQUEST['cara49tipopoblacion'];
 $aParametros[109]=$_REQUEST['cara49periodomat'];
+$aParametros[110]=$_REQUEST['cara49tipoestudiante'];
 list($sTabla2349, $sDebugTabla)=f2349_TablaDetalleV2($aParametros, $objDB, $bDebug);
 $sDebug=$sDebug.$sDebugTabla;
 	}
@@ -389,6 +396,7 @@ function asignarvariables(){
 	window.document.frmimpp.v7.value=window.document.frmedita.cara49idprograma.value;
 	window.document.frmimpp.v8.value=window.document.frmedita.cara49tipopoblacion.value;
 	window.document.frmimpp.v9.value=window.document.frmedita.cara49periodomat.value;
+	window.document.frmimpp.v10.value=window.document.frmedita.cara49tipoestudiante.value;
 	window.document.frmimpp.separa.value=window.document.frmedita.csv_separa.value.trim();
 	}
 function imprimeexcel(){
@@ -455,6 +463,7 @@ function paginarf2349(){
 	params[107]=window.document.frmedita.cara49idprograma.value;
 	params[108]=window.document.frmedita.cara49tipopoblacion.value;
 	params[109]=window.document.frmedita.cara49periodomat.value;
+	params[110]=window.document.frmedita.cara49tipoestudiante.value;
 	//document.getElementById('div_f2349detalle').innerHTML='<div class="GrupoCamposAyuda"><div class="MarquesinaMedia">Procesando datos, por favor espere.</div></div><input id="paginaf2349" name="paginaf2349" type="hidden" value="'+params[101]+'" /><input id="lppf2349" name="lppf2349" type="hidden" value="'+params[102]+'" />';
 	xajax_f2349_HtmlTabla(params);
 	}
@@ -504,6 +513,7 @@ function cierraDiv96(ref){
 <input id="v7" name="v7" type="hidden" value="" />
 <input id="v8" name="v8" type="hidden" value="" />
 <input id="v9" name="v9" type="hidden" value="" />
+<input id="v10" name="v10" type="hidden" value="" />
 <input id="iformato94" name="iformato94" type="hidden" value="0" />
 <input id="separa" name="separa" type="hidden" value="," />
 <input id="rdebug" name="rdebug" type="hidden" value="<?php echo $_REQUEST['debug']; ?>"/>
@@ -638,6 +648,17 @@ echo $ETI['cara49tipopoblacion'];
 <label>
 <?php
 echo $html_cara49tipopoblacion;
+?>
+</label>
+<div class="salto1px"></div>
+<label class="Label160">
+<?php
+echo $ETI['cara49tipoestudiante'];
+?>
+</label>
+<label>
+<?php
+echo $html_cara49tipoestudiante;
 ?>
 </label>
 <div class="salto1px"></div>

@@ -45,6 +45,7 @@ if (isset($_REQUEST['v6'])==0){$_REQUEST['v6']='';}
 if (isset($_REQUEST['v7'])==0){$_REQUEST['v7']='';}
 if (isset($_REQUEST['v8'])==0){$_REQUEST['v8']='';}
 if (isset($_REQUEST['v9'])==0){$_REQUEST['v9']='';}
+if (isset($_REQUEST['v10'])==0){$_REQUEST['v10']='';}
 if (isset($_REQUEST['rdebug'])==0){$_REQUEST['rdebug']=0;}
 if ($sError!=''){$bEntra=false;}
 if ($bEntra){
@@ -79,6 +80,7 @@ if ($bEntra){
 	$cara49idprograma=$_REQUEST['v7'];
 	$cara49tipopoblacion=$_REQUEST['v8'];
 	$cara49periodomat=$_REQUEST['v9'];
+	$cara49tipoestudiante=$_REQUEST['v10'];
 	$sCondi='';
 	$sPath=dirname(__FILE__);
 	$sSeparador=archivos_separador($sPath);
@@ -123,6 +125,21 @@ if ($bEntra){
 				$sTituloRpt=$sTituloRpt.'_E'.$cara49idzona.'';
 				}
 			}
+		switch ($cara49tipoestudiante){
+			case 1:
+				$sCondi01=$sCondi01.' AND cara01tipocaracterizacion<>3 '.'';
+				$sNomTipoEstudiante='Nuevo';
+				$sDetalleReporte=$sDetalleReporte.' Estudiantes Nuevos';
+				$sTituloRpt=$sTituloRpt.'_Nuevos'.'';
+				break;
+			case '0':
+			case 2:
+				$sCondi01=$sCondi01.' AND cara01tipocaracterizacion=3 '.'';
+				$sNomTipoEstudiante='Antiguo';
+				$sDetalleReporte=$sDetalleReporte.' Estudiantes Antiguos';
+				$sTituloRpt=$sTituloRpt.'_Antiguos'.'';
+				break;
+			}
 		}else{
 		$sTituloRpt='Necesidades_especiales_Mat_'.$cara49periodomat.'';
 		list($sNomPeriodo, $sDebugP)=f146_TituloPeriodo($cara49periodomat, $objDB, $bDebug);
@@ -153,6 +170,21 @@ if ($bEntra){
 				$sDetalleReporte=$sDetalleReporte.' Zona '.$sNomZona;
 				$sTituloRpt=$sTituloRpt.'_E'.$cara49idzona.'';
 				}
+			}
+		switch ($cara49tipoestudiante){
+			case 1:
+				$sCondi16=$sCondi16.' AND core16nuevo=1 '.'';
+				$sNomTipoEstudiante='Nuevo';
+				$sDetalleReporte=$sDetalleReporte.' Estudiantes Nuevos';
+				$sTituloRpt=$sTituloRpt.'_Nuevos'.'';
+				break;
+			case '0':
+			case 2:
+				$sCondi16=$sCondi16.' AND core16nuevo=0 '.'';
+				$sNomTipoEstudiante='Antiguo';
+				$sDetalleReporte=$sDetalleReporte.' Estudiantes Antiguos';
+				$sTituloRpt=$sTituloRpt.'_Antiguos'.'';
+				break;
 			}
 		}
 	$bConConsejero=true;
@@ -243,7 +275,7 @@ if ($bEntra){
 			}
 		}
 	$sTitulo1='Datos generales';
-	for ($l=1;$l<=7;$l++){
+	for ($l=1;$l<=8;$l++){
 		$sTitulo1=$sTitulo1.$cSepara;
 		}
 	if ($bConVersion1){
@@ -266,7 +298,7 @@ if ($bEntra){
 	while($fila=$objDB->sf($tabla)){
 		$aEscuela[$fila['core12id']]=$fila['core12sigla'];
 		}
-	$sBloque1='Zona'.$cSepara.'Centro'.$cSepara.'Escuela'.$cSepara.'Programa'.$cSepara.'Tipo documento'.$cSepara.'Documento'.$cSepara.'Razon social'.
+	$sBloque1='Zona'.$cSepara.'Centro'.$cSepara.'Escuela'.$cSepara.'Programa'.$cSepara.'Tipo documento'.$cSepara.'Documento'.$cSepara.'Razon social'.$cSepara.'Tipo estudiante'.
 	$cSepara.'Versión'.$cSepara.'Confirmada';
 	$sBloque2='';
 	$sBloque3='';
@@ -288,7 +320,7 @@ if ($bEntra){
 	TB.cara02discv2fisica, TB.cara02discv2psico, TB.cara02discv2sistemica, TB.cara02discv2sistemicaotro, TB.cara02discv2multiple, 
 	TB.cara02discv2multipleotro, TB.cara02talentoexcepcional, TB.cara01discv2tiene, TB.cara01discv2trastaprende, TB.cara01discv2soporteorigen, 
 	TB.cara01discv2archivoorigen, TB.cara01discv2trastornos, TB.cara01discv2contalento, TB.cara01discv2condicionmedica, TB.cara01discv2condmeddet, 
-	TB.cara01discv2pruebacoeficiente, TB.cara01idprograma, TB.cara01idescuela, TB.cara01idperaca 
+	TB.cara01discv2pruebacoeficiente, TB.cara01idprograma, TB.cara01idescuela, TB.cara01idperaca, TB.cara01tipocaracterizacion 
 	FROM cara01encuesta AS TB 
 	WHERE TB.cara01id IN ('.$sIds01.')';
 	if ($bDebug){$objplano->AdicionarLinea($sSQL);}
@@ -325,6 +357,7 @@ if ($bEntra){
 		$lin_cara01discv2condicionmedica=$cSepara;
 		$lin_cara01discv2condmeddet=$cSepara;
 		$lin_cara01discv2pruebacoeficiente=$cSepara;
+		$lin_cara01tipocaracterizacion=$cSepara;
 
 		$i_cara49idzona=$fila['cara01idzona'];
 		if (isset($acara49idzona[$i_cara49idzona])==0){
@@ -543,7 +576,27 @@ if ($bEntra){
 				}
 			$lin_cara01periodo=$cSepara.$aPeriodo[$idPeriodoEnc];
 			}
-		$sBloque1=$lin_cara01idzona.$lin_cara01idcead.$lin_cara01idescuela.$lin_cara01idprograma.$lin_cara01idtercero.$lin_cara01discversion.$lin_cara01fechaconfirmadisc;
+		if ((int)$cara49periodomat==0){
+			if ($fila['cara01tipocaracterizacion']==3){
+				$lin_cara01tipocaracterizacion=$cSepara.'Antiguo';
+				} else {
+					$lin_cara01tipocaracterizacion=$cSepara.'Nuevo';
+				}
+			} else {
+			$sSQL='SELECT core16nuevo FROM core16actamatricula WHERE core16tercero='.$fila['cara01idtercero'].' AND core16peraca='.$cara49periodomat.'';
+			// if ($bDebug){$objplano->AdicionarLinea($sSQL);}
+			$tablae=$objDB->ejecutasql($sSQL);
+			if ($filae=$objDB->sf($tablae)){				
+				if ($filae['core16nuevo']==1){
+					$lin_cara01tipocaracterizacion=$cSepara.'Nuevo';
+					} else {
+					$lin_cara01tipocaracterizacion=$cSepara.'Antiguo';
+					}
+				}else{
+				$lin_cara01tipocaracterizacion=$cSepara.'';
+				}
+			}
+		$sBloque1=$lin_cara01idzona.$lin_cara01idcead.$lin_cara01idescuela.$lin_cara01idprograma.$lin_cara01idtercero.$lin_cara01tipocaracterizacion.$lin_cara01discversion.$lin_cara01fechaconfirmadisc;
 		$sBloque2='';
 		$sBloque3='';
 		if ($bConVersion1){
