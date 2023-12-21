@@ -1,0 +1,271 @@
+:root, body.light-theme {
+  --sys-tertiary-container: var(--ref-tertiary-90);
+}
+
+.dashboard {
+  display: grid;
+  grid-template-columns: auto auto repeat(6, 1fr);
+  gap: 2rem;
+}
+.dashboard .container {
+  padding: 0 0 1rem 0;
+  display: grid;
+  align-items: flex-start;
+  background-color: var(--sys-surface);
+  color: var(--sys-on-surface);
+  border-radius: 2rem;
+  box-shadow: none;
+}
+.dashboard section:nth-child(1) {
+  display: grid;
+  grid-column: 2 span;
+  grid-row: 2 span;
+  padding: 0.5rem 2rem 2rem 2rem;
+  width: 40rem;
+}
+.dashboard section:nth-child(1) div label {
+  color: unset;
+  font-weight: 600;
+  margin-bottom: 0.5rem;
+  width: 100%;
+}
+.dashboard section:nth-child(1) div select {
+  font-size: 1.75rem;
+  width: 35.5rem !important;
+  height: 5rem;
+  border-radius: 0.5rem 0.5rem 0 0;
+  border: none;
+  border-bottom: 0.3rem solid var(--sys-primary);
+  box-shadow: var(--elevation-2);
+}
+.dashboard section:nth-child(1) div select:hover {
+  box-shadow: var(--elevation-3);
+}
+.dashboard section:nth-child(1) div select option {
+  font-size: 2rem;
+  border-radius: 1rem;
+}
+.dashboard section:nth-child(1) div .chosen-container {
+  width: 35.5rem !important;
+}
+.dashboard section:nth-child(1) div.vigencia {
+  display: grid;
+}
+.dashboard section:nth-child(1) div.vigencia .botones-fecha {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  border-radius: 1rem;
+  box-shadow: var(--elevation-2);
+  overflow: hidden;
+  width: 35.5rem;
+  height: 5rem;
+}
+.dashboard section:nth-child(1) div.vigencia .botones-fecha div {
+  position: relative;
+}
+.dashboard section:nth-child(1) div.vigencia .botones-fecha div button {
+  width: 100%;
+  height: 5rem;
+  border: 0.25rem solid var(--sys-primary);
+  border-right: 0;
+  border-radius: 0;
+  background-color: var(--sys-secondary-container);
+  color: var(--sys-on-secondary-container);
+  transition: 0.1s all ease-in-out;
+  cursor: pointer;
+}
+.dashboard section:nth-child(1) div.vigencia .botones-fecha div button.button-checked {
+  font-size: 2.125rem;
+  background-color: var(--sys-primary);
+  color: var(--sys-on-primary);
+}
+.dashboard section:nth-child(1) div.vigencia .botones-fecha div input {
+  display: none;
+  position: absolute;
+  top: 0;
+  left: 0;
+}
+.dashboard section:nth-child(1) div.vigencia .botones-fecha #button-2023 {
+  border-radius: 1rem 0 0 1rem;
+}
+.dashboard section:nth-child(1) div.vigencia .botones-fecha #button-2026 {
+  border-radius: 0 1rem 1rem 0;
+  border-right: 0.25rem solid var(--sys-primary);
+}
+.dashboard #torta {
+  grid-column: 3 span;
+  grid-row: 2 span;
+  justify-content: center;
+  align-items: center;
+  padding: 1rem 2rem 2rem 2rem;
+}
+.dashboard #torta div {
+  padding: 0.5rem 1rem;
+}
+.dashboard section:nth-child(3) {
+  grid-column: 3 span;
+  grid-row: 2 span;
+  align-items: center;
+  justify-content: flex-stasrt;
+  padding: 2rem;
+  gap: 1rem;
+}
+.dashboard section:nth-child(3) .card__header {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  -moz-column-gap: 2rem;
+       column-gap: 2rem;
+  row-gap: 0;
+  justify-content: flex-start;
+  align-self: flex-end;
+  width: 100%;
+}
+.dashboard section:nth-child(3) .card__header .porcentaje {
+  align-self: center;
+  grid-column: 1 span;
+  grid-row: 2 span;
+  font-size: 3rem;
+  font-weight: bold;
+  background-color: var(--sys-tertiary-container);
+  color: var(--sys-on-tertiary-container);
+  padding: 0.5rem 1rem;
+  border-radius: 1rem;
+}
+.dashboard section:nth-child(3) .card__header b {
+  grid-row: 2 span;
+  align-self: center;
+}
+.dashboard section:nth-child(3) .card__body {
+  grid-column: 1 span;
+  width: 100%;
+  align-self: flex-start;
+}
+.dashboard #vigencia-2023, .dashboard #vigencia-2024, .dashboard #vigencia-2025, .dashboard #vigencia-2026 {
+  grid-column: 8 span;
+  display: none;
+}
+.dashboard .titulo-barra {
+  grid-column: 8 span;
+  display: flex;
+  align-items: center;
+  margin-top: 1rem;
+  margin-bottom: 2rem;
+}
+.dashboard .titulo-barra hr {
+  flex-grow: 2;
+  height: 0.125rem;
+  border: none;
+  background-color: var(--sys-outline);
+}
+.dashboard .titulo-barra b {
+  text-align: center;
+  font-size: 2.5rem;
+  padding: 0 4rem;
+}
+.dashboard .container-chart {
+  padding: 1rem;
+  width: 100%;
+}
+.dashboard #barras-2023, .dashboard #barras-2024, .dashboard #barras-2025, .dashboard #barras-2026 {
+  padding: 1rem;
+  width: 100%;
+}
+
+/* Mobile */
+@media only screen and (max-width: 767px) {
+  .dashboard {
+    display: flex;
+    flex-direction: column;
+  }
+  .dashboard > section {
+    height: auto;
+  }
+  .dashboard section:nth-child(1) {
+    background-color: var(--sys-background);
+    border: none;
+    padding-top: 0;
+  }
+  .dashboard .titulo-barra b {
+    padding: 0 1rem;
+  }
+}
+/* Tablet */
+@media only screen and (min-width: 768px) and (max-width: 1024px) {
+  .dashboard section:nth-child(1) {
+    grid-column: 8 span;
+    background-color: var(--sys-background);
+    border: none;
+    padding-top: 0;
+  }
+  .dashboard #torta {
+    grid-column: 4 span;
+  }
+  .dashboard .card-porcentajes {
+    grid-column: 4 span;
+    text-align: center;
+    gap: 2rem;
+  }
+  .dashboard .card-porcentajes .card__header {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+  }
+}
+/* Desktop */
+@media only screen and (min-width: 1025px) {
+  .botones-fecha div button:hover {
+    font-size: 2.125rem;
+    background-color: var(--sys-primary) !important;
+    color: var(--sys-on-primary) !important;
+  }
+}
+@media print {
+  @page {
+    margin: 0;
+  }
+  * {
+    box-shadow: none !important;
+  }
+  body {
+    -webkit-print-color-adjust: exact;
+  }
+  body header, body footer, body nav {
+    display: none;
+  }
+  body main {
+    margin-left: 0;
+    padding: 4rem;
+  }
+  .dashboard section:first-child {
+    grid-column: 8 span;
+    order: 1;
+  }
+  .dashboard #torta {
+    grid-column: 8 span;
+    order: 3;
+  }
+  .dashboard #cumplido, .dashboard #gestionado {
+    grid-column: 4 span;
+    justify-content: center;
+    text-align: center;
+    height: 22rem;
+    order: 2;
+  }
+  .dashboard #cumplido .card__header, .dashboard #gestionado .card__header {
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+  }
+  .dashboard #cumplido .card__body p, .dashboard #gestionado .card__body p {
+    padding-bottom: 2rem !important;
+  }
+  #vigencia-2023, #vigencia-2024, #vigencia-2025, #vigencia-2026 {
+    page-break-before: auto;
+    page-break-inside: avoid;
+    order: 4;
+    padding-top: 1rem;
+  }
+  #barras-2023 canvas, #barras-2024 canvas, #barras-2025 canvas, #barras-2026 canvas {
+    margin-top: -1.5rem;
+  }
+}

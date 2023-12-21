@@ -98,7 +98,7 @@ function f2349_Combocara49idprograma($aParametros){
 	$objDB->CerrarConexion();
 	$objResponse=new xajaxResponse();
 	$objResponse->assign('div_cara49idprograma', 'innerHTML', $html_cara49idprograma);
-	$objResponse->call('$("#cara49idprograma").chosen()');
+	$objResponse->call('$("#cara49idprograma").chosen({width:"100%"})');
 	$objResponse->call('paginarf2349()');
 	return $objResponse;
 	}

@@ -194,6 +194,20 @@ if (isset($_REQUEST['bnombre'])==0){$_REQUEST['bnombre']='';}
 //if (isset($_REQUEST['blistar'])==0){$_REQUEST['blistar']='';}
 //limpiar la pantalla
 if ($_REQUEST['paso']==-1){
+	$_REQUEST['iscroll']=0;
+	$_REQUEST['paginaf2349']=1;
+	$_REQUEST['lppf2349']=20;
+	$_REQUEST['boculta2349']=0;
+	$_REQUEST['cara49idperaca']='';
+	$_REQUEST['cara49idzona']='';
+	$_REQUEST['cara49idcentro']='';
+	$_REQUEST['cara49idescuela']='';
+	$_REQUEST['cara49idprograma']='';
+	$_REQUEST['cara49tipopoblacion']='';
+	$_REQUEST['cara49periodomat']='';
+	$_REQUEST['cara49tipoestudiante']='';
+	$_REQUEST['csv_separa']=';';
+	$_REQUEST['bnombre']='';
 	$_REQUEST['paso']=0;
 	}
 if ($bLimpiaHijos){
@@ -805,8 +819,8 @@ if ($bMueveScroll){
 <link rel="stylesheet" href="<?php echo $APP->rutacomun; ?>js/chosen.css" type="text/css"/>
 <script language="javascript">
 $().ready(function(){
-$("#cara49idperaca").chosen();
-$("#cara49periodomat").chosen();
+$("#cara49idperaca").chosen({width:'100%'});
+$("#cara49periodomat").chosen({width:'100%'});
 });
 </script>
 <script language="javascript" src="<?php echo $APP->rutacomun; ?>unad_todas.js?ver=8"></script>
