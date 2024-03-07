@@ -229,7 +229,8 @@ $objCombos=new clsHtmlCombos();
 $html_core50idperaca=f2350_HTMLComboV2_core50idperaca($objDB, $objCombos, $_REQUEST['core50idperaca']);
 
 $objCombos->nuevo('cara50periodoacomp', $_REQUEST['cara50periodoacomp'], true, '{'.$ETI['msg_todos'].'}');
-//Solo los peracas donde haya encuestas.
+$objCombos->iAncho = 600;
+//Solo los periodos donde haya encuestas.
 $sIds='-99';
 $sSQL='SELECT cara01idperiodoacompana FROM cara01encuesta GROUP BY cara01idperiodoacompana';
 $tabla=$objDB->ejecutasql($sSQL);
@@ -279,13 +280,13 @@ if ($bGeneral){
 	}
 $html_cara50poblacion=$objCombos->html('', $objDB);
 $objCombos->nuevo('cara50convenio', $_REQUEST['cara50convenio'], true, '{'.$ETI['msg_todos'].'}');
-// $objCombos->sAccion='paginarf2216()';
 $objCombos->iAncho = 600;
+$objCombos->sAccion='paginarf2216()';
 $sSQL='SELECT core50id AS id, core50nombre AS nombre FROM core50convenios ORDER BY core50estado DESC, core50nombre';
 $html_cara50convenio=$objCombos->html($sSQL, $objDB);
 $objCombos->nuevo('cara50periodomatricula', $_REQUEST['cara50periodomatricula'], true, '{'.$ETI['msg_todos'].'}');
 $objCombos->iAncho = 600;
-$sSQL='SELECT exte02id AS id, exte02nombre AS nombre FROM exte02per_aca ORDER BY exte02nombre';
+$sSQL=f146_ConsultaCombo('exte02id>0');
 $html_cara50periodomatricula=$objCombos->html($sSQL, $objDB);
 $objCombos->nuevo('cara50tipomatricula', $_REQUEST['cara50tipomatricula'], true, '{'.$ETI['msg_todos'].'}', '');
 $objCombos->addItem('0', $acara50tipomatricula[0]);

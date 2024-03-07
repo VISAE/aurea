@@ -3,10 +3,10 @@
 --- © Angel Mauro Avellaneda Barreto - UNAD - 2018 ---
 --- angel.avellaneda@unad.edu.co - http://www.unad.edu.co
 --- Modelo Version 2.21.0 viernes, 22 de junio de 2018
---- Modelo Version 2.28.1 sabado, 23 de abril de 2022
+--- Modelo Version 2.28.1 sábado, 23 de abril de 2022
 ---
 --- Cambios 22 de mayo de 2020
---- 1. interpretacion cualitativa de los campos de pais, ciudad, puntaje factores y pruebas
+--- 1. interpretación cualitativa de los campos de país, ciudad, puntaje factores y pruebas
 --- 2. Ajustes en encabezados
 --- Omar Augusto Bautista Mora - UNAD - 2020
 --- omar.bautista@unad.edu.co
