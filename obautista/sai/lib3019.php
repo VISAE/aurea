@@ -430,7 +430,7 @@ ORDER BY TB.saiu19agno DESC, TB.saiu19mes DESC, TB.saiu19dia DESC, TB.saiu19tipo
 			}
 		*/
 		if ($bAbierta){
-			$sLink='<a href="javascript:cargaridf3019('.$filadet['saiu19id'].')" class="lnkresalte">'.$ETI['lnk_cargar'].'</a>';
+			$sLink='<a href="javascript:cargaridf3019('.$filadet['saiu19agno'].','.$filadet['saiu19id'].')" class="lnkresalte">'.$ETI['lnk_cargar'].'</a>';
 			}
 		$et_fecha=fecha_armar($filadet['saiu19dia'], $filadet['saiu19mes'], $filadet['saiu19agno']);
 		$res=$res.'<tr'.$sClass.'>

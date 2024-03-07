@@ -73,6 +73,18 @@ function f3006_db_Guardar($iContenedor, $valores, $objDB, $bDebug = false)
 	}
 	if ($sError == '') {
 		$sTabla06 = 'saiu06solanotacion' . $iContenedor;
+		$bPermiso = false;
+		$sSQL='SELECT bita27id FROM bita27equipotrabajo WHERE bita27activo=1 AND bita27idlider=' . $saiu06idusuario . '';
+		$tabla= $objDB->ejecutasql($sSQL);
+		if ($objDB->nf($tabla)>0) {
+			$bPermiso = true;
+		} else {
+			$sSQL='SELECT bita28idequipotrab FROM bita28eqipoparte WHERE bita28activo="S" AND bita28idtercero=' . $saiu06idusuario . '';
+			$tabla= $objDB->ejecutasql($sSQL);
+			if ($objDB->nf($tabla)>0) {
+				$bPermiso = true;
+			}
+		}
 		if ((int)$saiu06id == 0) {
 			if ((int)$saiu06consec == 0) {
 				$saiu06consec = tabla_consecutivo($sTabla06, 'saiu06consec', 'saiu06idsolicitud=' . $saiu06idsolicitud . '', $objDB);
@@ -90,7 +102,10 @@ function f3006_db_Guardar($iContenedor, $valores, $objDB, $bDebug = false)
 				if ($objDB->nf($result) != 0) {
 					$sError = $ERR['existe'];
 				} else {
-					if (!seg_revisa_permiso($iCodModulo, 2, $objDB)) {
+					if (seg_revisa_permiso($iCodModulo, 2, $objDB)) {
+						$bPermiso = true;
+					}
+					if (!$bPermiso) {
 						$sError = $ERR['2'];
 					}
 				}
@@ -104,7 +119,10 @@ function f3006_db_Guardar($iContenedor, $valores, $objDB, $bDebug = false)
 				$iAccion = 2;
 			}
 		} else {
-			if (!seg_revisa_permiso($iCodModulo, 3, $objDB)) {
+			if (seg_revisa_permiso($iCodModulo, 3, $objDB)) {
+				$bPermiso = true;
+			}
+			if (!$bPermiso) {
 				$sError = $ERR['3'];
 			}
 		}

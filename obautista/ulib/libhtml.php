@@ -384,6 +384,7 @@ class clsHtmlForma
 {
 	var $iPiel = 0;
 	var $sAddEstiloTitulo = '';
+	var $sAddEstiloBoton = '';
 	var $aBotones = array();
 	var $iBotones = 0;
 	function addBoton($sNombre, $sClase, $sAccion, $sTitulo)
@@ -395,27 +396,259 @@ class clsHtmlForma
 		$this->aBotones[$k]['accion'] = $sAccion;
 		$this->aBotones[$k]['titulo'] = $sTitulo;
 	}
-	function htmlBotonSolo($sNombre, $sClase, $sAccion, $sTitulo, $iLabel = 0, $sAdicional = '')
+	function htmlBotonSolo($sNombre, $sClase, $sAccion, $sTitulo, $iLabel = 0, $sAdicional = '', $sTexto = '')
 	{
 		$res = '';
 		$sImgNombre = '';
 		$sAddB = '';
-		if ($sAdicional != '') {
-			$sAddB = ' ' . $sAdicional;
-		}
+		$sImg = '';
 		switch ($this->iPiel) {
+			case 2:
+				if ($this->sAddEstiloBoton != '') {
+					$sAddB = '' . $this->sAddEstiloBoton . '';
+				}
+				$sClaseFin = 'btn-tertiary';
+				$sClaseMini = 'btn-tertiary btMini';
+				if ($sTexto != '') {
+					$sAddB = $sAddB . 'padding-right: 1rem;';
+				}
+				if ($sAdicional != '') {
+					$sAdicional = str_replace('style', '', $sAdicional);
+					$sAdicional = str_replace('"', '', $sAdicional);
+					$sAdicional = str_replace('=', '', $sAdicional);
+					$sAdicional = str_replace('block', 'inline-block', $sAdicional);
+					$sAddB = $sAdicional;
+				}
+				if ($sTexto == '') {
+					$sTexto = $sTitulo;
+				}
+				switch ($sClase) {
+					case '':
+					case 'botonL':
+					case 'botonM':
+					case 'botonS':
+						break;
+					case 'botonActualizar':
+						$sImg = '<i class="iSync"></i>';
+						break;
+					case 'botonAnexar':
+						$sClaseFin = $sClaseMini;
+						$sTexto = '';
+						$sImg = '<i class="iAttach"></i>';
+						break;
+					case 'btAnexarS':
+						$sImg = '<i class="iAttach"></i>';
+						break;
+					case 'botonAprobado':
+					case 'btUpAprobado':
+					case 'btUpVisto':
+						$sImg = '<i class="iCheck"></i>';
+						break;
+					case 'botonAzul':
+						$sClaseFin = 'btn-primary';
+						break;
+					case 'botonBuscar':
+					case 'botonSearch':
+						$sImg = '<i class="iSearch"></i>';
+						break;
+					case 'botonMoney':
+						$sImg = '<i class="iHelp"></i>';
+						break;
+					case 'botonPrint':
+						$sImg = '<i class="iPrint"></i>';
+						break;
+					case 'botonProceso':
+						// $sImg = '<i class="iSettings"></i>';
+						break;
+					case 'botonVerde':
+						$sClaseFin = 'btn-success';
+						break;
+					case 'btActualizaS':
+						$sImg = '<i class="iSync"></i>';
+						break;
+					case 'btMiniActualizar':
+						$sClaseFin = $sClaseMini;
+						$sTexto = '';
+						$sImg = '<i class="iSync"></i>';
+						break;
+					case 'btAgregarS':
+						$sClaseFin = $sClaseMini;
+						$sTexto = '';
+						$sImg = '<i class="iAdd"></i>';
+						break;
+					case 'btEnviarExcel':
+						$sImg = '<i class="iExcel"></i>';
+						break;
+					case 'btEnviarPDF':
+						$sImg = '<i class="iPdf"></i>';
+						break;
+					case 'btGuardarS':
+						$sImg = '<i class="iSaveFill"></i>';
+						break;
+					case 'btMiniGuardar':
+						$sClaseFin = $sClaseMini;
+						$sTexto = '';
+						$sImg = '<i class="iSaveFill"></i>';
+						break;
+					case 'btMiniAyuda':
+						$sClaseFin = $sClaseMini;
+						$sTexto = '';
+						$sImg = '<i class="iHelp"></i>';
+						break;
+					case 'btSupAyuda':
+						$sImg = '<i class="iHelp"></i>';
+						break;
+					case 'btMiniBalancear':
+						$sClaseFin = $sClaseMini;
+						$sTexto = '';
+						$sImg = '<i class="iHelp"></i>';
+						break;
+					case 'btMiniBuscar':
+						$sClaseFin = $sClaseMini;
+						$sTexto = '';
+						$sImg = '<i class="iSearch"></i>';
+						break;
+					case 'btMiniHoy':
+						$sClaseFin = $sClaseMini;
+						$sTexto = '';
+						$sImg = '<i class="iHoy"></i>';
+						break;
+					case 'btMiniClonar':
+					case 'btMiniProceso':
+						$sClaseFin = $sClaseMini;
+						$sTexto = '';
+						$sImg = '<i class="iSettings"></i>';
+						break;
+					case 'btMiniEliminar':
+						$sClaseFin = $sClaseMini;
+						$sTexto = '';
+						$sImg = '<i class="iDelete"></i>';
+						break;
+					case 'btUpEliminar':
+						$sImg = '<i class="iDelete"></i>';
+						break;
+					case 'btMiniExcel':
+						$sClaseFin = $sClaseMini;
+						$sTexto = '';
+						$sImg = '<i class="iExcel"></i>';
+						break;
+					case 'btMiniExpande':
+						$sClaseFin = $sClaseMini;
+						$sTexto = '';
+						$sImg = '<i id="i_expande' . $sNombre . '"  class="iExpandLess"></i>';
+						$sNombre = 'btexpande' . $sNombre;
+						break;
+					case 'btMiniLimpiar':
+						$sClaseFin = $sClaseMini;
+						$sTexto = '';
+						$sImg = '<i class="iCopy"></i>';
+						break;
+					case 'btUpLimpiar':
+						$sImg = '<i class="iCopy"></i>';
+						break;
+					case 'btMiniMail':
+						$sClaseFin = $sClaseMini;
+						$sTexto = '';
+						$sImg = '<i class="iEmail"></i>';
+						break;
+					case 'btMiniMas':
+						$sClaseFin = $sClaseMini;
+						$sTexto = '';
+						$sImg = '<i class="iAdd"></i>';
+						break;
+					case 'btMiniMenos':
+						$sClaseFin = $sClaseMini;
+						$sTexto = '';
+						$sImg = '<i class="iRemove"></i>';
+						break;
+					case 'btMiniPersona':
+						$sClaseFin = $sClaseMini;
+						$sTexto = '';
+						$sImg = '<i class="iPerson"></i>';
+						break;
+					case 'btMiniRecoge':
+						$sClaseFin = $sClaseMini;
+						$sTexto = '';
+						$sImg = '<i id="i_expande' . $sNombre . '"  class="iExpand"></i>';
+						$sNombre = 'btexpande' . $sNombre;
+						break;
+					case 'btMiniTxt':
+						$sClaseFin = $sClaseMini;
+						$sTexto = '';
+						$sImg = '<i class="iText"></i>';
+						break;
+					case 'btMiniZip':
+						$sClaseFin = $sClaseMini;
+						$sTexto = '';
+						$sImg = '<i class="iZip"></i>';
+						break;
+					case 'btSubirS':
+						$sImg = '<i class="iUpload"></i>';
+						break;
+					case 'btSupAnular':
+						$sImg = '<i class="iNull"></i>';
+						break;
+					case 'btSupArchivar':
+					case 'btSupResponder':
+						$sImg = '<i class="iHelp"></i>';
+						break;
+					case 'btSupAnotaciones':
+					case 'btSupAbrir':
+						$sImg = '<i class="iOpen"></i>';
+						break;
+					case 'btSupClonar':
+					case 'btSupVolver':
+						$sImg = '<i class="iArrowBack"></i>';
+						break;
+					case 'btSupDenegado':
+						$sImg = '<i class="iHelp"></i>';
+						break;
+					case 'btSupDocumento':
+						$sImg = '<i class="iCopy"></i>';
+						break;
+					case 'btSupGuardar':
+						$sImg = '<i class="iSaveFill"></i>';
+						break;
+					case 'btSupReasignar':
+						$sImg = '<i class="iExcel"></i>';
+						break;
+					case 'btUpCerrar':
+					case 'btSupCerrar':
+						$sImg = '<i class="iClosed"></i>';
+						break;
+					case 'btUpDenegado':
+						$sImg = '<i class="iHelp"></i>';
+						break;
+					case 'btUpGuardar':
+						$sImg = '<i class="iSaveFill"></i>';
+						break;
+					case 'btUpMail':
+						$sImg = '<i class="iHelp"></i>';
+						break;
+					case 'btUpRadicar':
+						$sImg = '<i class="iUpload"></i>';
+						break;
+					case 'btUpVolver':
+						$sImg = '<i class="iArrowBack"></i>';
+						break;
+					default:
+						$sImg = '<i class="iHelp"></i>';
+						break;
+				}
+				$res = '<button id="' . $sNombre . '" name="' . $sNombre . '" type="button" class="' . $sClaseFin . '" onclick="' . $sAccion . '" title="' . $sTitulo . '" style="' . $sAddB . '">'  . $sImg . $sTexto . '</button>';
+				break;
 			case 0:
 				$sClaseFin = $sClase;
 				switch ($sClase) {
 					case 'botonProceso':
-						if ($iLabel){
-							$sAddB = ' style="width: '.$iLabel.'px !important"';
+						if ($iLabel) {
+							$sAddB = ' style="width: ' . $iLabel . 'px !important"';
 						}
 					case 'btSoloReasignar':
 						$sClaseFin = 'BotonAzul';
 						break;
 				}
-				$res = '<input id="' . $sNombre . '" name="' . $sNombre . '" type="button" value="' . $sTitulo . '" class="' . $sClaseFin . '" onclick="' . $sAccion . '" title="' . $sTitulo . '"' . $sAddB . '/>';
+				$res = '<input id="' . $sNombre . '" name="' . $sNombre . '" type="button" value="' . $sTitulo . '" class="' . $sClaseFin . '" onclick="' . $sAccion . '" title="' . $sTitulo . '"/>';
 				break;
 			default:
 				$bEntra = true;
@@ -477,6 +710,10 @@ class clsHtmlForma
 					case 'btUpLimpiar':
 						$sImgLnk = '../ulib/img/hoja.png';
 						break;
+					case 'btSupAyuda':
+						$sImgLnk = '../ulib/img/btUpAyuda.jpg';
+						$sClaseFin = 'btUpAyuda';
+						break;
 				}
 				if ($bLargo) {
 					$res = '<input id="' . $sNombre . '" name="' . $sNombre . '" type="button" value="' . $sTitulo . '" class="image" onclick="' . $sAccion . '" title="' . $sTitulo . '" data-icono="' . $sImgNombre . '" style="background-image: url(\'' . $sImgLnk . '\');"' . $sAddB . '/>';
@@ -507,14 +744,31 @@ class clsHtmlForma
 		}
 		return $res;
 	}
-	function htmlInicioMarco($sTitulo = '')
+	function htmlInicioMarco($sTitulo = '', $sId = '')
 	{
 		$res = '';
 		$sHtmlTitulo = '';
 		switch ($this->iPiel) {
+			case 2:
+				if ($sTitulo) {
+					$sHtmlTitulo = '<div class="areatitulo"><h3>' . $sTitulo . '</h3></div>';
+				}
+				$res = '<div class="areaform">' . $sHtmlTitulo;
+				$res = $res . '<div class="areatrabajo">';
+				if ($sId != '') {
+					$res .= '<div id="' . $sId . '"></div>';
+				}
+				if ($this->iBotones) {
+					$res .= '<div class="breadcrumb__buttons">';
+					for ($k = 1; $k <= $this->iBotones; $k++) {
+						$sBoton = $this->htmlBotonSolo($this->aBotones[$k]['nombre'], $this->aBotones[$k]['clase'], $this->aBotones[$k]['accion'], $this->aBotones[$k]['titulo']);
+						$res = $res . $sBoton;
+					}
+					$res .= '</div><hr>';
+				}
+				break;
 			default:
-				if ($sTitulo != '') {
-					//$sHtmlTitulo = '<div id="titulo"><h3>' . $sTitulo . '</h3></div>';
+				if ($sTitulo) {
 					$sHtmlTitulo = '<div class="areatitulo"><h3>' . $sTitulo . '</h3></div>';
 				}
 				$res = '<div class="areaform">' . $sHtmlTitulo;
@@ -559,21 +813,46 @@ class clsHtmlForma
 		}
 		return $res;
 	}
-	function htmlEspere($sMsgEspere = 'Este proceso puede tomar algunos momentos, por favor espere...')
+	function htmlEspere($sMsgEspere = 'Este proceso puede tomar algunos momentos, por favor espere...', $bSpinner = true)
 	{
-		$res = '<div class="MarquesinaMedia">' . $sMsgEspere . '</div>';
-		return $res;
+		require './app.php';
+		$iPiel = iDefinirPiel($APP, 2);
+		$sRes = '';
+		$sSpinner = '';
+		$sStyle = '';
+		if ($bSpinner) {
+			$sSpinner = '<div class="spinner"></div>';
+			if ($iPiel != 2) {
+				$sStyle = 'style="padding-top: 1rem"';
+			}
+		}
+		$sClass = 'MarquesinaMedia';
+		if ($iPiel == 2) {
+			$sClass = 'MarquesinaMedia flex gap-2';
+		}
+		$sRes = $sRes . '<div class="' . $sClass . '">';
+		$sRes = $sRes . $sSpinner;
+		$sRes = $sRes . '<div ' . $sStyle . '>' . $sMsgEspere . '</div>';
+		$sRes = $sRes . '</div>';
+		return $sRes;
 	}
 	function htmlExpande($sCodigo, $iValor, $sTituloMostrar = 'Mostrar', $sTituloOcultar = 'Ocultar')
 	{
 		$res = '<input id="boculta' . $sCodigo . '" name="boculta' . $sCodigo . '" type="hidden" value="' . $iValor . '" />';
 		$sEstado1 = 'none';
 		$sEstado2 = 'block';
+		$sTitulo = $sTituloOcultar;
+		$sClassBtn = 'btMiniExpande';
 		if ($iValor != 0) {
 			$sEstado1 = 'block';
 			$sEstado2 = 'none';
+			$sTitulo = $sTituloMostrar;
+			$sClassBtn = 'btMiniRecoge';
 		}
 		switch ($this->iPiel) {
+			case 2:
+				$res = $res . $this->htmlBotonSolo($sCodigo, $sClassBtn, 'expandepanel(' . $sCodigo . ',\'' . $sEstado1 . '\',0);', $sTitulo);
+				break;
 			case 0:
 				$res = $res . '<label class="Label30">
 		<input id="btexpande' . $sCodigo . '" name="btexpande' . $sCodigo . '" type="button" value="Mostrar" class="btMiniExpandir" onclick="expandepanel(' . $sCodigo . ',\'block\',0);" title="' . $sTituloMostrar . '" style="display:' . $sEstado1 . ';"/>
@@ -638,8 +917,7 @@ class clsHtmlForma
 	}
 	function __construct($iPiel)
 	{
-		//$this->iPiel = $iPiel;
-		$this->iPiel = 0;
+		$this->iPiel = $iPiel;
 	}
 }
 class clsHTMLGrafica
@@ -999,13 +1277,14 @@ function html_BotonRojo($sNombreCampo, $sValor, $sAccion = '', $sEtiqueta = '')
 	return $res;
 }
 // Una caja, es decir, un grupo campos
-function html_Caja($sTitulo, $sCuerpo, $iAncho=450, $iPiel=1, $aDatos=NULL, $iFilas=0, $iColumnas=0){
+function html_Caja($sTitulo, $sCuerpo, $iAncho = 450, $iPiel = 1, $aDatos = NULL, $iFilas = 0, $iColumnas = 0)
+{
 	$sRes = '';
 	if ($sTitulo != '') {
 		$sRes = '<label class="TituloGrupo">' . $sTitulo . '</label>' . html_salto();
 	}
-	$sRes = $sRes. $sCuerpo;
-	switch($iAncho) {
+	$sRes = $sRes . $sCuerpo;
+	switch ($iAncho) {
 		case 0:
 			$sRes = '<div class="GrupoCampos">' . $sRes . html_salto() . '</div>';
 			break;
@@ -1078,7 +1357,8 @@ function html_DivTerceroV2($sNombreCampo, $sTipoDoc, $sDoc, $bOculto, $idAccion 
 {
 	return html_DivTerceroV3($sNombreCampo, $sTipoDoc, $sDoc, $bOculto, 0, $idAccion, $sPlaceHolder, $iBotones);
 }
-function html_DivTerceroV4($sNombreCampo, $sTipoDoc, $sDoc, $bOculto, $iPiel, $objDB, $idAccion, $sPlaceHolder){
+function html_DivTerceroV4($sNombreCampo, $sTipoDoc, $sDoc, $bOculto, $iPiel, $objDB, $idAccion, $sPlaceHolder)
+{
 	return html_DivTerceroV3($sNombreCampo, $sTipoDoc, $sDoc, $bOculto, 0, $idAccion, $sPlaceHolder, 3);
 }
 function html_DivTerceroV3($sNombreCampo, $sTipoDoc, $sDoc, $bOculto, $iPiel, $idAccion = 0, $sPlaceHolder = '', $iBotones = 3)
@@ -1091,8 +1371,8 @@ function html_DivTerceroV3($sNombreCampo, $sTipoDoc, $sDoc, $bOculto, $iPiel, $i
 		if ($sPlaceHolder != '') {
 			$sAdd = ' placeholder="' . $sPlaceHolder . '"';
 		}
-		$sRes = html_tipodocV2($sNombreCampo . '_td', $sTipoDoc, "ter_muestra('" . $sNombreCampo . "', " . $idAccion . ")", false) . '
-		<input id="' . $sNombreCampo . '_doc" name="' . $sNombreCampo . '_doc" type="text" value="' . $sDoc . '" onchange="ter_muestra(\'' . $sNombreCampo . '\',' . $idAccion . ')" maxlength="20" onclick="revfoco(this);"' . $sAdd . '/>';
+		$sRes = html_tipodocV2($sNombreCampo . '_td', $sTipoDoc, "ter_muestra('" . $sNombreCampo . "', " . $idAccion . ")", false);
+		$sRes = $sRes . '<input id="' . $sNombreCampo . '_doc" name="' . $sNombreCampo . '_doc" type="text" value="' . $sDoc . '" onchange="ter_muestra(\'' . $sNombreCampo . '\',' . $idAccion . ')" maxlength="20" onclick="revfoco(this);"' . $sAdd . '/>';
 		$bConbuscar = false;
 		$bConCrear = false;
 		switch ($iBotones) {
@@ -1104,14 +1384,14 @@ function html_DivTerceroV3($sNombreCampo, $sTipoDoc, $sDoc, $bOculto, $iPiel, $i
 				break;
 		}
 		if ($bConbuscar) {
-			$sRes = $sRes . '</label>
-			<label class="Label30">
-			<input type="button" name="b' . $sNombreCampo . '" value="Buscar" class="btMiniBuscar" onclick="buscarV2016(\'' . $sNombreCampo . '\')" title="Buscar Tercero"/>';
+			$sRes = $sRes . '</label>';
+			$sRes = $sRes . '<label class="Label30">';
+			$sRes = $sRes . '<input type="button" name="b' . $sNombreCampo . '" value="Buscar" class="btMiniBuscar" onclick="buscarV2016(\'' . $sNombreCampo . '\')" title="Buscar Tercero"/>';
 		}
 		if ($bConCrear) {
-			$sRes = $sRes . '</label>
-			<label class="Label30">
-			<input type="button" name="c' . $sNombreCampo . '" value="Crear" class="btMiniPersona" onclick="ter_crea(\'' . $sNombreCampo . '\',' . $idAccion . ')" title="Crear Tercero"/>';
+			$sRes = $sRes . '</label>';
+			$sRes = $sRes . '<label class="Label30">';
+			$sRes = $sRes . '<input type="button" name="c' . $sNombreCampo . '" value="Crear" class="btMiniPersona" onclick="ter_crea(\'' . $sNombreCampo . '\',' . $idAccion . ')" title="Crear Tercero"/>';
 		}
 	}
 	return '<label class="Label350">' . $sRes . '</label>';
@@ -1147,6 +1427,97 @@ function html_DivTerceroV7($sNombreCampo, $sTipoDoc, $sDoc, $bOculto, $idAccion 
 		}
 	}
 	return '<div>' . $sRes . '</div>';
+}
+//En este el tipo doc se toma de la tabla unad45tipodoc
+function html_Combo145($sNombreCampo, $sTipoDoc, $objDB, $objCombos, $idAccion = 0, $iEspecial = 0)
+{
+	$sRes = '';
+	$sCondi = 'unad45id>=0';
+	switch ($iEspecial) {
+		case 16: // Proveedores
+			$sCondi = 'unad45aplicaproveed>0';
+			break;
+	}
+	$objCombos->nuevo($sNombreCampo . '_td', $sTipoDoc, false);
+	if ($idAccion >= 0) {
+		$objCombos->sAccion = "ter_muestra('" . $sNombreCampo . "', " . $idAccion . ")";
+	}
+	$objCombos->iAncho = 60;
+	$sSQL = 'SELECT unad45codigo AS id, CONCAT(unad45codigo, " - ", unad45nombre) AS nombre 
+	FROM unad45tipodoc WHERE ' . $sCondi . ' 
+	ORDER BY unad45activo DESC, unad45orden, unad45codigo';
+	$sRes = $objCombos->html($sSQL, $objDB);
+	return $sRes;
+}
+function html_DivTerceroV8($sNombreCampo, $sTipoDoc, $sDoc, $bOculto, $objDB, $objCombos, $idAccion = 0, $sPlaceHolder = '', $iBotones = 1, $iEspecial = 0)
+{
+	require './app.php';
+	$iPiel = iDefinirPiel($APP, 2);
+	$sRes = '';
+	if ($bOculto) {
+		$sRes = '' . html_oculto($sNombreCampo . '_td', $sTipoDoc) . ' ' . html_oculto($sNombreCampo . '_doc', $sDoc) . '';
+	} else {
+		$sAdd = '';
+		if ($sPlaceHolder != '') {
+			$sAdd = ' placeholder="' . $sPlaceHolder . '"';
+		}
+		$sClassTipoDoc = 'Label60';
+		if ($iPiel == 2) {
+			$sClassTipoDoc = 'w-8';
+		}
+		// TipoDoc
+		$sRes = '<label class="' . $sClassTipoDoc . '">' . html_Combo145($sNombreCampo, $sTipoDoc, $objDB, $objCombos, $idAccion, $iEspecial) . '</label>';
+		// Documento
+		$sClassDocumento = 'Label220';
+		if ($iPiel == 2) {
+			$sClassDocumento = 'w-35';
+		}
+		$sRes = $sRes . '<label class="' . $sClassDocumento . '">';
+		$sRes = $sRes . '<input id="' . $sNombreCampo . '_doc" name="' . $sNombreCampo . '_doc" type="text" value="' . $sDoc . '" onchange="ter_muestra(\'' . $sNombreCampo . '\',' . $idAccion . ')" maxlength="20" class="' . $sClassDocumento . '" onclick="revfoco(this);"' . $sAdd . '/>';
+		$sRes = $sRes . '</label>';
+		$bConbuscar = false;
+		$bConCrear = false;
+		switch ($iBotones) {
+			case 1:
+				$bConbuscar = true;
+				break;
+			case 3:
+				$bConbuscar = true;
+				break;
+		}
+		if ($bConbuscar || $bConCrear) {
+			switch ($iPiel) {
+				case 2:
+					$objForma = new clsHtmlForma($iPiel);
+					$sRes .= '<div class="flex" style="gap: 1rem">';
+					if ($bConbuscar) {
+						$sRes .= $objForma->htmlBotonSolo('b' . $sNombreCampo, 'btMiniBuscar', 'buscarV2016(\'' . $sNombreCampo . '\')', 'Buscar Tercero');
+					}
+					if ($bConCrear) {
+						$sRes .= $objForma->htmlBotonSolo('c' . $sNombreCampo, 'btMiniPersona', 'ter_crea(\'' . $sNombreCampo . '\',' . $idAccion . ')', 'Crear Tercero');
+					}
+					$sRes .= '</div>';
+					break;
+				default:
+					if ($bConbuscar) {
+						$sRes = $sRes . '<label class="Label30">';
+						$sRes = $sRes . '<input type="button" name="b' . $sNombreCampo . '" value="Buscar" class="btMiniBuscar" onclick="buscarV2016(\'' . $sNombreCampo . '\')" title="Buscar Tercero"/>';
+						$sRes = $sRes . '</label>';
+					}
+					if ($bConCrear) {
+						$sRes = $sRes . '<label class="Label30">';
+						$sRes = $sRes . '<input type="button" name="c' . $sNombreCampo . '" value="Crear" class="btMiniPersona" onclick="ter_crea(\'' . $sNombreCampo . '\',' . $idAccion . ')" title="Crear Tercero"/>';
+						$sRes = $sRes . '</label>';
+					}
+					break;
+			}
+		}
+	}
+	$sClassFin = '';
+	if ($iPiel == 2) {
+		$sClassFin = ' class="flex"';
+	}
+	return '<div' . $sClassFin . '>' . $sRes . '</div>';
 }
 //Mensaje de espere.
 function htmlEspereV2($sMsgEspere = 'Procesando datos, por favor espere...', $bSpinner = true)
@@ -1307,7 +1678,7 @@ function html_menuCampus($idsistema, $objDB, $iPiel = 0, $bDebug = false, $idTer
 	$et_emprendimiento = 'Emprendimiento';
 	$et_soporte = 'Soporte';
 	$et_banner = 'Banner';
-	$et_erp = 'ERP';
+	$et_erp = 'SIGAF';
 	$et_gestion = 'Gesti&oacute;n';
 	$et_modulos = 'Acad&eacute;mico';
 	$et_ayuda = 'Ayuda';
@@ -1365,7 +1736,6 @@ function html_menuCampus($idsistema, $objDB, $iPiel = 0, $bDebug = false, $idTer
 			if (f107_PerfilPertenece($idTercero, 1, $objDB)) {
 				$bEspeciales = true;
 			} else {
-				
 			}
 		}
 		$sHTML = $sHTML . $sInicioItem . '<a href="miperfil.php"' . $sClaseLinkItem . $sSalto . '><span>' . $et_miperfil . '</span></a>' . $sFinItem;
@@ -1386,7 +1756,7 @@ function html_menuCampus($idsistema, $objDB, $iPiel = 0, $bDebug = false, $idTer
 		$sHTML = $sHTML . $sInicioItem . '<a href="ofertaabierta.php"' . $sClaseLinkItem . $sSalto . '><span>' . $et_oferabierta . '</span></a>' . $sFinItem;
 		$sHTML = $sHTML . $sInicioItem . '<a href="emprendedor.php"' . $sClaseLinkItem . $sSalto . '><span>' . $et_emprendimiento . '</span></a>' . $sFinItem;
 		if ($bEspeciales) {
-			$sHTML = $sHTML . $sInicioItem . '<a href="proveedores.php"' . $sClaseLinkItem . $sSalto . '><span>' . $et_proveedores . '</span></a>' . $sFinItem;
+			$sHTML = $sHTML . $sInicioItem . '<a href="https://erp.unad.edu.co/proveedor/" target="_blank"' . $sClaseLinkItem . $sSalto . '><span>' . $et_proveedores . '</span></a>' . $sFinItem;
 		}
 	}
 	$sHTML = $sHTML . $sFinBloque . '';
@@ -1421,10 +1791,10 @@ function html_menuCampus($idsistema, $objDB, $iPiel = 0, $bDebug = false, $idTer
 			GROUP BY T1.unad02idsistema, TS.unad01orden';
 			$tabla = $objDB->ejecutasql($sSQL);
 			while ($fila = $objDB->sf($tabla)) {
-				if ($fila['unad01orden']<70) {
+				if ($fila['unad01orden'] < 70) {
 					$bConModulos = true;
 				} else {
-					if ($fila['unad01orden']<100) {
+					if ($fila['unad01orden'] < 100) {
 						$bConERP = true;
 					} else {
 						$bConGestion = true;
@@ -1540,7 +1910,7 @@ function html_menuCampusV2($objDB, $iPiel = 2, $bDebug = false, $idTercero = 0, 
 	$et_emprendimiento = 'Emprendimiento';
 	$et_soporte = 'Soporte';
 	$et_banner = 'Banner';
-	$et_erp = 'ERP';
+	$et_erp = 'SIGAF';
 	$et_gestion = 'Gesti&oacute;n';
 	$et_modulos = 'Acad&eacute;mico';
 	$et_ayuda = 'Ayuda';
@@ -1587,7 +1957,6 @@ function html_menuCampusV2($objDB, $iPiel = 2, $bDebug = false, $idTercero = 0, 
 			if (f107_PerfilPertenece($idTercero, 1, $objDB)) {
 				$bEspeciales = true;
 			} else {
-				
 			}
 		}
 		if ((int)$idTercero > 0) {
@@ -1645,10 +2014,10 @@ function html_menuCampusV2($objDB, $iPiel = 2, $bDebug = false, $idTercero = 0, 
 			GROUP BY T1.unad02idsistema, TS.unad01orden';
 			$tabla = $objDB->ejecutasql($sSQL);
 			while ($fila = $objDB->sf($tabla)) {
-				if ($fila['unad01orden']<70) {
+				if ($fila['unad01orden'] < 70) {
 					$bConModulos = true;
 				} else {
-					if ($fila['unad01orden']<100) {
+					if ($fila['unad01orden'] < 100) {
 						$bConERP = true;
 					} else {
 						$bConGestion = true;
@@ -1919,7 +2288,7 @@ function html_Menu2023($idsistema, $objDB, $iPiel = 2, $bDebug = false, $idTerce
 	$et_inisesion = 'Iniciar Sesi&oacute;n';
 	$et_ayuda = 'Ayuda';
 	$et_acerca = 'Acerca de...';
-	$et_erp = 'ERP';
+	$et_erp = 'SIGAF';
 	$et_gestion = 'Gesti&oacute;n';
 	$et_manuales = 'Manuales';
 	$et_miperfil = 'Mi perfil';
@@ -2061,10 +2430,10 @@ function html_Menu2023($idsistema, $objDB, $iPiel = 2, $bDebug = false, $idTerce
 	GROUP BY T1.unad02idsistema, TS.unad01orden';
 	$tabla = $objDB->ejecutasql($sSQL);
 	while ($fila = $objDB->sf($tabla)) {
-		if ($fila['unad01orden']<70) {
+		if ($fila['unad01orden'] < 70) {
 			$bConModulos = true;
 		} else {
-			if ($fila['unad01orden']<100) {
+			if ($fila['unad01orden'] < 100) {
 				$bConERP = true;
 			} else {
 				$bConGestion = true;
@@ -2182,9 +2551,9 @@ function f101_PanelSistema($idSistema, $objDB, $bDebug = false)
 			$sProcesos = $sProcesos . '<div>';
 			while ($fila = $objDB->sf($tabla52)) {
 				$sProcesos = $sProcesos . '<details>';
-				$sProcesos = $sProcesos . '<summary>' . cadena_notildes($fila['aurf52titulo']). '</summary>';
+				$sProcesos = $sProcesos . '<summary>' . cadena_notildes($fila['aurf52titulo']) . '</summary>';
 				$sProcesos = $sProcesos . '<div>';
-				$sProcesos = $sProcesos . '' . cadena_notildes($fila['aurf52descripcion']). '';
+				$sProcesos = $sProcesos . '' . cadena_notildes($fila['aurf52descripcion']) . '';
 				if ($fila['aurf52linkmanual'] != '') {
 					$sProcesos = $sProcesos . html_salto() . 'Para mayores detalles, por favor consulte el siguiente <a href="./verarchivo.php?u=' . $fila['aurf52linkmanual'] . '" target="_blank" class="lnkresalto" title="Manual asociado al proceso">manual</a>';
 				}
@@ -2205,7 +2574,8 @@ function f101_PanelSistema($idSistema, $objDB, $bDebug = false)
 }
 
 // STAGE - ETAPAS
-function html_EtapaInicio($sTitulo, $iEstado = 0, $bPrimero = false, $sClase = '') {
+function html_EtapaInicio($sTitulo, $iEstado = 0, $bPrimero = false, $sClase = '')
+{
 	$sEstadoEtapa = '';
 	$sEstadoAcordeon = '';
 	switch ($iEstado) {
@@ -2222,7 +2592,7 @@ function html_EtapaInicio($sTitulo, $iEstado = 0, $bPrimero = false, $sClase = '
 	$sRes = '';
 	if ($bPrimero) {
 		$sClaseProyecto = '';
-		switch($sClase) {
+		switch ($sClase) {
 			case '':
 				break;
 			default:
@@ -2237,9 +2607,10 @@ function html_EtapaInicio($sTitulo, $iEstado = 0, $bPrimero = false, $sClase = '
 <div class="accordion-content">';
 	return $sRes;
 }
-function html_EtapaItem($sTitulo, $sCuerpo, $sClase) {
+function html_EtapaItem($sTitulo, $sCuerpo, $sClase)
+{
 	$sClaseItem = 'cola';
-	switch($sClase) {
+	switch ($sClase) {
 		case 'disponible':
 		case 'proceso':
 		case 'devuelta':
@@ -2260,7 +2631,8 @@ function html_EtapaItem($sTitulo, $sCuerpo, $sClase) {
 	}
 	$sRes = '<div class="item ' . $sClaseItem . '">';
 	$sRes = $sRes . '<div class="item-body">';
-	if ($sTitulo != '') {}
+	if ($sTitulo != '') {
+	}
 	if (true) {
 		$sRes = $sRes . '<b class="item-title">' . $sTitulo . '</b>';
 	} else {
@@ -2271,7 +2643,8 @@ function html_EtapaItem($sTitulo, $sCuerpo, $sClase) {
 	$sRes = $sRes . '</div>';
 	return $sRes;
 }
-function html_EtapaFinal($bUltimo = false) {
+function html_EtapaFinal($bUltimo = false)
+{
 	$sRes = '</div></details></div>';
 	if ($bUltimo) {
 		$sRes = $sRes . '</div>';
@@ -2279,11 +2652,45 @@ function html_EtapaFinal($bUltimo = false) {
 	return $sRes;
 }
 
-function html_GrupoBotones($iCodigo, $iClase, $iSel = 0) {
+function html_GrupoBotones($iCodigo, $iClase, $iSel = 0)
+{
 	$sClase = '';
 	if ($iSel == 1) {
 		$sClase = ' class="button-checked"';
 	}
 	$sRes = '<div><button id="button-' . $iClase . '" onclick="javascript:marca_boton(' . $iCodigo . ')"' . $sClase . '>' . $iCodigo . '</button></div>';
 	return $sRes;
+}
+
+function html_Tercero1l($id, $objDB, $bHtml = false)
+{
+	$sHTML = '';
+	$sCondi = '';
+	$sSQL = 'SELECT unad11razonsocial, unad11direccion, unad11telefono, unad11id, unad11tipodoc, unad11doc, unad11bloqueado 
+	FROM unad11terceros 
+	WHERE unad11id=' . $id . '';
+	$tablater = $objDB->ejecutasql($sSQL);
+	if ($objDB->nf($tablater) > 0) {
+		$filater = $objDB->sf($tablater);
+		$sPrev = '';
+		$sPost = '';
+		if ($bHtml) {
+			$sPrev = '<b>';
+			$sPost = '</b>';
+		}
+		$sHTML = $sPrev . $filater['unad11tipodoc'] . $filater['unad11doc'] . ' ' . cadena_notildes($filater['unad11razonsocial']) . $sPost;
+		/*
+		if ($filater['unad11bloqueado'] == 'S') {
+			//Esta bloqueado informar la causal..
+			$bSimple = true;
+			$sSQL = 'SELECT sys75fechabloqueo, sys75motivo FROM sys75tercerobloqueo WHERE sys75idtercero=' . $id . ' AND sys75fechalibera="00/00/0000" ORDER BY sys75consec DESC';
+			$tablabloq = $objDB->ejecutasql($sSQL);
+			if ($objDB->nf($tablabloq) > 0) {
+				$filabloq = $objDB->sf($tablabloq);
+				$sHTML = $sHTML . '<br><span class="rojo"><b>Bloqueado desde ' . $filabloq['sys75fechabloqueo'] . '</b>: ' . cadena_notildes($filabloq['sys75motivo']) . '</span>';
+			}
+		}
+		*/
+	}
+	return $sHTML;
 }

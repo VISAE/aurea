@@ -191,6 +191,7 @@ if (isset($_REQUEST['cara50periodoacomp'])==0){$_REQUEST['cara50periodoacomp']='
 if (isset($_REQUEST['cara50convenio'])==0){$_REQUEST['cara50convenio']='';}
 if (isset($_REQUEST['cara50periodomatricula'])==0){$_REQUEST['cara50periodomatricula']='';}
 if (isset($_REQUEST['cara50tipomatricula'])==0){$_REQUEST['cara50tipomatricula']='';}
+if (isset($_REQUEST['cara50listadoc'])==0){$_REQUEST['cara50listadoc']='';}
 // Espacio para inicializar otras variables
 if (isset($_REQUEST['csv_separa'])==0){$_REQUEST['csv_separa']=';';}
 //if (isset($_REQUEST['bnombre'])==0){$_REQUEST['bnombre']='';}
@@ -208,6 +209,7 @@ if ($_REQUEST['paso']==-1){
 	$_REQUEST['cara50convenio']='';
 	$_REQUEST['cara50periodomatricula']='';
 	$_REQUEST['cara50tipomatricula']=0;
+	$_REQUEST['cara50listadoc']='';
 	$_REQUEST['paso']=0;
 	}
 //AQUI SE DEBEN CARGAR TODOS LOS DATOS QUE LA FORMA NECESITE.
@@ -277,10 +279,12 @@ if ($bGeneral){
 	}
 $html_cara50poblacion=$objCombos->html('', $objDB);
 $objCombos->nuevo('cara50convenio', $_REQUEST['cara50convenio'], true, '{'.$ETI['msg_todos'].'}');
-$objCombos->sAccion='paginarf2216()';
+// $objCombos->sAccion='paginarf2216()';
+$objCombos->iAncho = 600;
 $sSQL='SELECT core50id AS id, core50nombre AS nombre FROM core50convenios ORDER BY core50estado DESC, core50nombre';
 $html_cara50convenio=$objCombos->html($sSQL, $objDB);
 $objCombos->nuevo('cara50periodomatricula', $_REQUEST['cara50periodomatricula'], true, '{'.$ETI['msg_todos'].'}');
+$objCombos->iAncho = 600;
 $sSQL='SELECT exte02id AS id, exte02nombre AS nombre FROM exte02per_aca ORDER BY exte02nombre';
 $html_cara50periodomatricula=$objCombos->html($sSQL, $objDB);
 $objCombos->nuevo('cara50tipomatricula', $_REQUEST['cara50tipomatricula'], true, '{'.$ETI['msg_todos'].'}', '');
@@ -331,6 +335,7 @@ $aParametros[110]=$_REQUEST['cara50periodoacomp'];
 $aParametros[111]=$_REQUEST['cara50convenio'];
 $aParametros[112]=$_REQUEST['cara50periodomatricula'];
 $aParametros[113]=$_REQUEST['cara50tipomatricula'];
+$aParametros[114]=$_REQUEST['cara50listadoc'];
 list($sTabla2350, $sDebugTabla)=f2350_TablaDetalleV2($aParametros, $objDB, $bDebug);
 $sDebug=$sDebug.$sDebugTabla;
 	}
@@ -426,6 +431,7 @@ function asignarvariables(){
 	window.document.frmimpp.v8.value=window.document.frmedita.cara50convenio.value;
 	window.document.frmimpp.v12.value=window.document.frmedita.cara50periodomatricula.value;
 	window.document.frmimpp.v13.value=window.document.frmedita.cara50tipomatricula.value;
+	window.document.frmimpp.v14.value=window.document.frmedita.cara50listadoc.value;
 	window.document.frmimpp.separa.value=window.document.frmedita.csv_separa.value.trim();
 	}
 function imprimeexcel(){
@@ -492,6 +498,7 @@ function paginarf2350(){
 	params[111]=window.document.frmedita.cara50convenio.value;
 	params[112]=window.document.frmedita.cara50periodomatricula.value;
 	params[113]=window.document.frmedita.cara50tipomatricula.value;
+	params[114]=window.document.frmedita.cara50listadoc.value;
 	//document.getElementById('div_f2350detalle').innerHTML='<div class="GrupoCamposAyuda"><div class="MarquesinaMedia">Procesando datos, por favor espere.</div></div><input id="paginaf2350" name="paginaf2350" type="hidden" value="'+params[101]+'" /><input id="lppf2350" name="lppf2350" type="hidden" value="'+params[102]+'" />';
 	xajax_f2350_HtmlTabla(params);
 	}
@@ -545,6 +552,7 @@ function cierraDiv96(ref){
 <input id="v11" name="v11" type="hidden" value="" />
 <input id="v12" name="v12" type="hidden" value="" />
 <input id="v13" name="v13" type="hidden" value="" />
+<input id="v14" name="v14" type="hidden" value="" />
 <input id="iformato94" name="iformato94" type="hidden" value="0" />
 <input id="separa" name="separa" type="hidden" value="," />
 <input id="rdebug" name="rdebug" type="hidden" value="<?php echo $_REQUEST['debug']; ?>"/>
@@ -744,6 +752,15 @@ echo $ETI['cara50tipomatricula'];
 <?php
 echo $html_cara50tipomatricula;
 ?>
+</label>
+<div class="salto1px"></div>
+<label class="Label200">
+<?php
+echo $ETI['cara50listadoc'];
+?>
+</label>
+<label>
+<textarea id="cara50listadoc" name="cara50listadoc" placeholder="<?php echo $ETI['ing_campo'] . $ETI['cara50listadoc']; ?>"><?php echo $_REQUEST['cara50listadoc']; ?></textarea>
 </label>
 <?php
 if (false){

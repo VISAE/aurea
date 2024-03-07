@@ -154,10 +154,12 @@ function cadena_codificar($sCadena)
 	if (cadena_esISO($sCadena)) {
 		return $sCadena;
 	} else {
-		return iconv('UTF-8', 'ISO-8859-1', $sCadena);
+		//return $sCadena;
+		$sResultado = iconv('UTF-8', 'ISO-8859-1', $sCadena);
+		return $sResultado;
 	}
 }
-function cadena_decodificar($sCadena) 
+function cadena_decodificar($sCadena)
 {
 	//return utf8_decode($sCadena);
 	if (cadena_esISO($sCadena)) {
@@ -194,7 +196,8 @@ function cadena_esutf8($string)
         |  \xF4[\x80-\x8F][\x80-\xBF]{2}
     )*$%xs', $sBase);
 }
-function cadena_esISO($sCadena) {
+function cadena_esISO($sCadena)
+{
 	return mb_detect_encoding($sCadena, "ISO-8859-1", true) == "ISO-8859-1" ? true : false;
 }
 function cadena_letras($semilla, $adicionales = '')
@@ -312,10 +315,19 @@ function cadena_LimpiarNombreArchivo($semilla, $adicionales = '')
 	}
 	return $cf;
 }
+function cadena_LetrasEspeciales($bSensibles = false)
+{
+	$sRes = '._-/*+=()%&$#[]{}@!|°,;:" ';
+	if ($bSensibles) {
+		$sRes = $sRes . '<>' . "'";
+	}
+	return $sRes;
+}
 // 18 de Abril de 2023 -- Cuando no queda de otra, toca quitar las tildes.
 function cadena_LimpiarTildes($semilla, $adicionales = '', $sComodin = '?')
 {
-	$permitidos = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890._-/*+()%$#[]{}@!|° ' . $adicionales;
+	$sEspeciales = cadena_LetrasEspeciales(true);
+	$permitidos = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890' . $sEspeciales . $adicionales;
 	$cf = '';
 	if (strlen($permitidos) > 0) {
 		$largo = strlen($semilla);
@@ -358,12 +370,69 @@ function cadena_LimpiarTildes($semilla, $adicionales = '', $sComodin = '?')
 				case 'Ñ':
 					$una = 'N';
 					break;
+				case '–': //U + 2013
+					$una = '-';
+					break;
+				case "\r":
+				case chr(13):
+				case chr(7):
+				case '	':
+				case '
+':
+					$una = ' ';
+					break;
+				case "\n":
+				case chr(10):
+					$una = '';
+					break;
 			}
-			$lugar = strpos($permitidos, $una);
-			if ($lugar === false) {
-				$cf = $cf . $sComodin;
-			} else {
-				$cf = $cf . $una;
+			if ($una != '') {
+				$lugar = strpos($permitidos, $una);
+				if ($lugar === false) {
+					$cf = $cf . $sComodin;
+				} else {
+					$cf = $cf . $una;
+				}
+			}
+		}
+	}
+	return $cf;
+}
+//Limpiar UTF8
+function cadena_LimpiarEspecial($semilla, $adicionales = '', $sComodin = '?')
+{
+	return cadena_LimpiarXAJAX($semilla, $adicionales, $sComodin);
+}
+function cadena_LimpiarXAJAX($semilla, $adicionales = '', $sComodin = '?')
+{
+	$permitidos = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890._-/*+=()%&$#[]{}@!|°,;:" ' . $adicionales;
+	$permitidos = $permitidos . 'áéíóúñüÁÉÍÓÚÑÜ';
+	$cf = '';
+	if (strlen($permitidos) > 0) {
+		$largo = strlen($semilla);
+		for ($k = 0; $k < $largo; $k++) {
+			$una = substr($semilla, $k, 1);
+			switch ($una) {
+				case "\r":
+				case chr(13):
+				case chr(7):
+				case '	':
+				case '
+':
+					$una = ' ';
+					break;
+				case "\n":
+				case chr(10):
+					$una = '';
+					break;
+			}
+			if ($una != '') {
+				$lugar = strpos($permitidos, $una);
+				if ($lugar === false) {
+					$cf = $cf . $sComodin;
+				} else {
+					$cf = $cf . $una;
+				}
 			}
 		}
 	}
@@ -396,7 +465,10 @@ function cadena_notildes($origen, $butf8 = false)
 	for ($k = 0; $k <= $iTotal; $k++) {
 		$nuevo = str_replace($sT[$k], $sH[$k], $nuevo);
 	}
-	return $nuevo;
+	//$sResultado = $nuevo;
+	//Junio 5 de 2023 - hubo un problema con la db y lo que vamos a hacer es forzar en este lugar que no vayan tildes.
+	$sResultado = cadena_LimpiarTildes($nuevo, ' ');
+	return $sResultado;
 }
 //La inversa a cadena_notildes
 function cadena_tildes($origen, $butf8 = false)
@@ -512,10 +584,10 @@ function cadena_ResuelveParaHTML($sBase)
 }
 function cadena_Validar($semilla, $bTolerante = false)
 {
-	$sSignos = '.,;()!¡$=+-_$?¿|°*[]{}~"@:' . "'";
+	$sSignos = '.,;()!¡$=+-_$?¿|°*[]{}~"@:%' . "'";
 	$permitidos = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890ñáéíóúüÑÁÉÍÓÚÜ ' . $sSignos;
 	if ($bTolerante) {
-		$permitidos = $permitidos . '-/';
+		$permitidos = $permitidos . '-<>/';
 	}
 	$cf = '';
 	if (strlen($permitidos) > 0) {
@@ -592,7 +664,8 @@ function correo_VerificarV2($email, $bDebug = false)
 	return array($mail_correcto, $sDebug);
 }
 //Este es un resago evolutimo del ERP
-function dato_SistemaInstalado($idSistema, $objDB) {
+function dato_SistemaInstalado($idSistema, $objDB)
+{
 	$bRes = true;
 	return $bRes;
 }
@@ -1219,6 +1292,47 @@ function fecha_SegundoMod()
 {
 	return (date('H') * 60 * 60) + (date('i') * 60) + date('s');
 }
+// Devuelve la cantidad de tiempo que son una cantidad x de segundos
+function fecha_TiempoDesdeSegundos($iSegundos)
+{
+	$sRes = '';
+	if (is_numeric($iSegundos)) {
+		$sHoras = '';
+		$sMinutos = '';
+		$sSeg = '';
+		$iHoraEnSegundos = 60 * 60;
+		if ($iSegundos > ($iHoraEnSegundos - 1)) {
+			$iHoras = (int)($iSegundos / $iHoraEnSegundos);
+			$iReduce = $iHoras * $iHoraEnSegundos;
+			$iSegundos = $iSegundos - $iReduce;
+			if ($iHoras == 1) {
+				$sHoras = '1 Hora';
+			} else {
+				$sHoras = formato_numero($iHoras) . ' Horas';
+			}
+		}
+		if ($iSegundos > 59) {
+			$iMinutos = (int)($iSegundos / 60);
+			$iReduce = $iMinutos * 60;
+			$iSegundos = $iSegundos - $iReduce;
+			if ($iMinutos == 1) {
+				$sMinutos = ' 1 Minuto';
+			} else {
+				$sMinutos = ' ' . formato_numero($iMinutos) . ' Minutos';
+			}
+		}
+		if ($iSegundos > 0) {
+			if ($iSegundos == 1) {
+				$sSeg = ' 1 Segundo';
+			} else {
+				$sSeg = ' ' . formato_numero($iSegundos) . ' Segundos';
+			}
+		}
+		$sRes = $sHoras . $sMinutos . $sSeg;
+	}
+	return $sRes;
+}
+//
 function fecha_numdiasentrefechas($sfechaini, $sfechafin)
 {
 	$fecha = explode("/", $sfechaini);
@@ -1425,6 +1539,7 @@ function formato_numero($dValor, $iDecimales = 0, $bVacio = false)
 
 function formato_porcentaje($dValor, $iDecimales = 2, $bVacio = false)
 {
+	$dValor2 = 1 / 3;
 	$dValor2 = numeros_validar($dValor, true, $iDecimales);
 	if ($dValor2 == '') {
 		if ($bVacio) {
@@ -1485,12 +1600,12 @@ function html_DivTercero($sNombreCampo, $sTipoDoc, $sDoc, $bOculto, $idAccion = 
 		if ($sPlaceHolder != '') {
 			$sAdd = ' placeholder="' . $sPlaceHolder . '"';
 		}
-		$sRes = html_tipodocV2($sNombreCampo . '_td', $sTipoDoc, "ter_muestra('" . $sNombreCampo . "', " . $idAccion . ")", false) . '
-		<input id="' . $sNombreCampo . '_doc" name="' . $sNombreCampo . '_doc" type="text" value="' . $sDoc . '" onchange="ter_muestra(\'' . $sNombreCampo . '\',' . $idAccion . ')" maxlength="20" onclick="revfoco(this);"' . $sAdd . '/>
-		</label>';
+		$sRes = html_tipodocV2($sNombreCampo . '_td', $sTipoDoc, "ter_muestra('" . $sNombreCampo . "', " . $idAccion . ")", false);
+		$sRes = $sRes . '<input id="' . $sNombreCampo . '_doc" name="' . $sNombreCampo . '_doc" type="text" value="' . $sDoc . '" onchange="ter_muestra(\'' . $sNombreCampo . '\',' . $idAccion . ')" maxlength="20" onclick="revfoco(this);"' . $sAdd . '/>';
+		$sRes = $sRes . '</label>';
 		if ($bConBotones) {
-			$sRes = $sRes . '<label class="Label30">
-			<input type="button" name="b' . $sNombreCampo . '" value="Buscar" class="btMiniBuscar" onclick="ter_busca(\'' . $sNombreCampo . '\',' . $idAccion . ')" title="Buscar Tercero"/>';
+			$sRes = $sRes . '<label class="Label30">';
+			$sRes = $sRes . '<input type="button" name="b' . $sNombreCampo . '" value="Buscar" class="btMiniBuscar" onclick="ter_busca(\'' . $sNombreCampo . '\',' . $idAccion . ')" title="Buscar Tercero"/>';
 		}
 	}
 	return '<label class="Label350">' . $sRes . '</label>';
@@ -1567,12 +1682,12 @@ function html_combo($nombre, $cod_, $nom_, $tab_, $cond_, $ord_, $valor_, $objDB
 			if ($fila[$cod_] == $valor_) {
 				$ssel = ' Selected';
 			}
-			$res = $res . '<option value="' . $fila[$cod_] . '"' . $ssel . '>' . cadena_notildes($fila[$sNombreCampo]) . '</option>
-';
+			$sNombreOpcion = cadena_notildes($fila[$sNombreCampo]);
+			//$sNombreOpcion = cadena_LimpiarTildes($sNombreOpcion, ' ');
+			$res = $res . '<option value="' . $fila[$cod_] . '"' . $ssel . '>' . $sNombreOpcion . '</option>';
 		}
 	}
-	$res = $res . '</select>
-';
+	$res = $res . '</select>';
 	if ($result == false) {
 		if ($bConDebug) {
 			$res = $sSQL . '<br>' . $res;
@@ -1888,6 +2003,70 @@ function html_HoraMin($sNomCampoHora, $iHora, $sNomCampoMin, $iMin, $bOculto = f
 	}
 	return $res;
 }
+function html_HoraMinV2($sNomCampoHora, $iHora, $sNomCampoMin, $iMin, $bOculto = false, $iFormato = 1)
+{
+	$sVN = (int)$iHora;
+	$iMin = (int)$iMin;
+	$sVC = 'A';
+	$res = '';
+	$sAdd = '';
+	if ($bOculto) {
+		$res = '<input id="' . $sNomCampoHora . '" name="' . $sNomCampoHora . '" type="hidden" value="' . $iHora . '"/>
+<input id="' . $sNomCampoMin . '" name="' . $sNomCampoMin . '" type="hidden" value="' . $iMin . '"/>';
+		if (((int)$iHora + (int)$iMin) == 0) {
+			$iFormato = 0;
+		}
+		if ($iFormato == 1) {
+			$sVC = 'AM';
+			if ($iHora > 11) {
+				$sVN = $iHora - 12;
+				$sVC = 'PM';
+			}
+			if (($sVN > 12) || ($sVN < 1)) {
+				$sVN = 12;
+			}
+			$res = $res . '<b>' . formato_hora($sVN) . ':' . formato_hora($iMin) . ' ' . $sVC . '</b>';
+		} else {
+			if (((int)$iHora + (int)$iMin) == 0) {
+				$res = $res . '&nbsp;';
+			} else {
+				$res = $res . '<b>' . formato_hora($iHora) . ':' . formato_hora($iMin) . '</b>';
+			}
+		}
+	} else {
+		$sSelA = ' Selected';
+		$sSelP = '';
+		if ($iFormato == 1) {
+			if ($iHora > 11) {
+				$sVN = $iHora - 12;
+				$sVC = 'P';
+				$sSelA = '';
+				$sSelP = ' Selected';
+			}
+			if (($sVN > 12) || ($sVN < 1)) {
+				$sVN = 12;
+			}
+			if (((int)$iHora + (int)$iMin) == 0) {
+				$sVN = '';
+			}
+			$sAdd = '<select class="w-8" id="' . $sNomCampoHora . '_Ciclo" name="' . $sNomCampoHora . '_Ciclo" onchange="javascript:hora_ajusta(\'' . $sNomCampoHora . '\');">
+<option value="A"' . $sSelA . '>AM</option>
+<option value="P"' . $sSelP . '>PM</option>
+</select>
+<input id="' . $sNomCampoHora . '" name="' . $sNomCampoHora . '" type="hidden" value="' . $iHora . '"/>';
+			$res = '<input id="' . $sNomCampoHora . '_Num" name="' . $sNomCampoHora . '_Num" type="text" value="' . $sVN . '" class="dos" maxlength="2" placeholder="00" onchange="javascript:hora_ajusta(\'' . $sNomCampoHora . '\');"/>';
+		} else {
+			//Hora militar
+			$res = '<input id="' . $sNomCampoHora . '" name="' . $sNomCampoHora . '" type="text" value="' . $iHora . '" class="dos" maxlength="2" placeholder="00"/>';
+		}
+		$sValorMin = $iMin;
+		if (((int)$iHora + (int)$iMin) == 0) {
+			$sValorMin = '';
+		}
+		$res = $res . '<b>:</b><input id="' . $sNomCampoMin . '" name="' . $sNomCampoMin . '" type="text" value="' . $sValorMin . '" class="dos" maxlength="2" placeholder="00"/>' . $sAdd;
+	}
+	return $res;
+}
 function html_HoraMinSeg($sNomCampoHora, $iHora, $sNomCampoMin, $iMin, $sNomCampoSeg, $iSeg, $bOculto = false, $iFormato = 1)
 {
 	$sVN = (int)$iHora;
@@ -1993,6 +2172,8 @@ function html_lnkarchivo($origen, $id, $titulo = 'Descargar')
 // -- Combos ...
 function html_lpp($nombre, $iactual, $saccion, $iTope = 50)
 {
+	require './app.php';
+	$iPiel = iDefinirPiel($APP, 2);
 	$res = '<select name="' . $nombre . '" id="' . $nombre . '" onChange="' . $saccion . '">';
 	$iPaso = 4;
 	switch ($iTope) {
@@ -2043,6 +2224,11 @@ function html_lpp($nombre, $iactual, $saccion, $iTope = 50)
 		$res = $res . '<option' . $ssel . ' value="' . $fila . '">' . $fila . '</option>';
 	}
 	$res = $res . '</select>';
+	$sClass = 'Label60';
+	if ($iPiel == 2) {
+		$sClass = 'w-10';
+	}
+	$res = '<label class="' . $sClass . '">' . $res . '</label>';
 	return $res;
 }
 function html_menu_grupo($grupo, $idsistema, $objDB, $completo = true)
@@ -2088,7 +2274,11 @@ function html_MenuGrupoV3($grupo, $idsistema, $iPiel, $objDB, $completo = true, 
 	$sId09 = '-99';
 	$sSQL = 'SELECT T6.unad06idmodulo 
 	FROM unad07usuarios as T7, unad06perfilmodpermiso AS T6, unad09modulomenu AS T9, unad02modulos AS T2 
-	WHERE T7.unad07idtercero=' . $idTercero . ' AND T7.unad07vigente="S" AND T7.unad07idperfil=T6.unad06idperfil AND T6.unad06vigente="S" AND T6.unad06idpermiso=1 AND T6.unad06idmodulo=T9.unad09idmodulo AND T9.unad09grupo=' . $grupo . ' AND T6.unad06idmodulo=T2.unad02id AND T2.unad02idsistema IN (0,' . $sadd . $idsistema . ') 
+	WHERE T7.unad07idtercero=' . $idTercero . ' AND T7.unad07vigente="S" 
+	AND T7.unad07idperfil=T6.unad06idperfil 
+	AND T6.unad06vigente="S" AND T6.unad06idpermiso=1 
+	AND T6.unad06idmodulo=T9.unad09idmodulo AND T9.unad09grupo=' . $grupo . ' 
+	AND T6.unad06idmodulo=T2.unad02id AND T2.unad02idsistema IN (0,' . $sadd . $idsistema . ') 
 	GROUP BY T6.unad06idmodulo ';
 	if ($bDebug) {
 		$sDebug = $sDebug . fecha_microtiempo() . ' Consulta id modulos grupo ' . $grupo . ' App ' . $idsistema . ' ' . $sSQL . '<br>';
@@ -2135,7 +2325,7 @@ function html_MenuGrupoV3($grupo, $idsistema, $iPiel, $objDB, $completo = true, 
 			}
 		}
 		$bPielTipoUno = false;
-		switch($iPiel) {
+		switch ($iPiel) {
 			case 1:
 			case 2:
 				$bPielTipoUno = true;
@@ -2154,7 +2344,7 @@ function html_MenuGrupoV3($grupo, $idsistema, $iPiel, $objDB, $completo = true, 
 				if ($filamenu['unad09nombre'] == '-') {
 					$res = $res . $slin1 . '<hr>' . $slin2;
 				} else {
-					$eti = $filamenu['unad09nombre'];
+					$eti = cadena_notildes($filamenu['unad09nombre']);
 					switch ($_SESSION['unad_idioma']) {
 						case 'en':
 							if (trim($filamenu['unad09nombre_en']) != '') {
@@ -2163,7 +2353,7 @@ function html_MenuGrupoV3($grupo, $idsistema, $iPiel, $objDB, $completo = true, 
 							break;
 						case 'pt':
 							if (trim($filamenu['unad09nombre_pt']) != '') {
-								$eti = $filamenu['unad09nombre_pt'];
+								$eti = cadena_notildes($filamenu['unad09nombre_pt']);
 							}
 							break;
 					}
@@ -2171,14 +2361,6 @@ function html_MenuGrupoV3($grupo, $idsistema, $iPiel, $objDB, $completo = true, 
 				}
 			}
 		}
-		//cargar los externos...
-		/*
-		while ($rown=$objDB->sf($resultm2)){
-			$res=$res.$slin1.'<a href="'.$rown['sys44url'].'"'.$sClaseLinkBase;
-			if ($rown['sys44target']!=''){$res=$res.' target="'.$rown['sys44target'].'"';}
-			$res=$res.'><b>'.$rown['sys44etiqueta'].'</b></a>'.$slin2;
-			}
-		*/
 		if ($completo) {
 			$res = $res . $sFinBloque;
 		}
@@ -2216,10 +2398,12 @@ function html_menuV2($idsistema, $objDB, $iPiel = 1, $bDebug = false, $idTercero
 	$et_inisesion = 'Iniciar Sesi&oacute;n';
 	$et_ayuda = 'Ayuda';
 	$et_acerca = 'Acerca de...';
-	$et_erp = 'ERP';
+	$et_erp = 'SIGAF';
+	$et_gestion = 'Gesti&oacute;n';
 	$et_manuales = 'Manuales';
 	$et_miperfil = 'Mi perfil';
-	$et_modulos = 'M&oacute;dulos';
+	// (M&oacute;dulos)
+	$et_modulos = 'Acad&eacute;mico';
 	$et_salir = 'Salir';
 	switch ($_SESSION['unad_idioma']) {
 		case 'en':
@@ -2266,7 +2450,7 @@ function html_menuV2($idsistema, $objDB, $iPiel = 1, $bDebug = false, $idTercero
 		$sFinItem = '</li>';
 	}
 	$bPielTipoUno = false;
-	switch($iPiel) {
+	switch ($iPiel) {
 		case 1:
 		case 2:
 			$bPielTipoUno = true;
@@ -2288,11 +2472,16 @@ function html_menuV2($idsistema, $objDB, $iPiel = 1, $bDebug = false, $idTercero
 		if ($bpasa) {
 			$sHTML = $sHTML . $sInicioBloque;
 			$sHTML = $sHTML . $sInicioItem . '<a href="index.php"' . $sClaseLinkItem . '><span>' . $et_ini . '</span></a>' . $sFinItem;
-			if ($idsistema != 51) {
+			$bEntraGrupoCero = false;
+			if ($idsistema > 0) {
+				if ($idsistema != 51) {
+					$bEntraGrupoCero = true;
+				}
+			}
+			if ($bEntraGrupoCero) {
 				list($sgrupo, $sDebugG) = html_MenuGrupoV3(0, $idsistema, $iPiel, $objDB, false, $bDebug, $idTercero);
 				$sDebug = $sDebug . $sDebugG;
-			} else {
-				$sgrupo = '';
+				$sHTML = $sHTML . $sgrupo;
 			}
 			$sHTML = $sHTML . $sInicioItem . '<a href="miperfil.php"' . $sClaseLinkItem . '><span>' . $et_miperfil . '</span></a>' . $sFinItem;
 			$sHTML = $sHTML . $sInicioItem . '<a href="unadentorno.php"' . $sClaseLinkItem . '><span>' . $et_entorno . '</span></a>' . $sFinItem;
@@ -2300,21 +2489,17 @@ function html_menuV2($idsistema, $objDB, $iPiel = 1, $bDebug = false, $idTercero
 				$sHTML = $sHTML . $sInicioItem . '<a href="salir.php"' . $sClaseLinkItem . '><span>' . $et_salir . '</span></a>' . $sFinItem;
 			}
 			//if ($_SESSION['ent_chat']=='S')
-			$sHTML = $sHTML . $sgrupo;
 			$sHTML = $sHTML . $sFinBloque;
 		}
 		$sHTML = $sHTML . '</li>';
 		//traer los encabezados que estan disponible para ese sistema.
-		/*
-		$sSQL="SELECT unad08nombre, unad08pagina, unad08id, unad08nombre_en, unad08nombre_pt FROM unad08grupomenu, sys44menus WHERE sys44grupomenu=unad08id AND sys44idsistema IN (0, ".$idsistema.") GROUP BY unad08nombre, unad08pagina, unad08id, unad08nombre_en, unad08nombre_pt UNION ";
-		*/
 		$sIds = '-99';
 		$sSQL = 'SELECT T9.unad09grupo 
 		FROM unad07usuarios AS T7, unad06perfilmodpermiso AS T6, unad02modulos AS T2, unad09modulomenu AS T9 
 		WHERE T7.unad07idtercero=' . $idTercero . ' AND T7.unad07vigente="S" 
 		AND T7.unad07idperfil=T6.unad06idperfil AND T6.unad06idpermiso=1 AND T6.unad06vigente="S" 
 		AND T6.unad06idmodulo=T2.unad02id AND T2.unad02idsistema IN (0,' . $idsistema . ') 
-		AND T6.unad06idmodulo=T9.unad09idmodulo  AND T9.unad09grupo NOT IN (0, 99) 
+		AND T6.unad06idmodulo=T9.unad09idmodulo AND T9.unad09grupo>0 AND T9.unad09grupo NOT IN (99) 
 		GROUP BY T9.unad09grupo ';
 		if ($bDebug) {
 			$sDebug = $sDebug . fecha_microtiempo() . ' Grupos del menu: ' . $sSQL . '<br>';
@@ -2343,7 +2528,7 @@ function html_menuV2($idsistema, $objDB, $iPiel = 1, $bDebug = false, $idTercero
 							break;
 						case 'pt':
 							if (trim($row['unad08nombre_pt']) != '') {
-								$eti = $row['unad08nombre_pt'];
+								$eti = cadena_notildes($row['unad08nombre_pt']);
 							}
 							break;
 					}
@@ -2367,6 +2552,8 @@ function html_menuV2($idsistema, $objDB, $iPiel = 1, $bDebug = false, $idTercero
 	}
 	//Acceso a los modulos en los que tiene permiso.
 	$bConModulos = false;
+	$bConERP = false;
+	$bConGestion = false;
 	$sPerfiles = '-99';
 	$sSQL = 'SELECT unad07idperfil FROM unad07usuarios WHERE unad07idtercero=' . $idTercero . ' AND unad07vigente="S"';
 	$tabla = $objDB->ejecutasql($sSQL);
@@ -2374,45 +2561,70 @@ function html_menuV2($idsistema, $objDB, $iPiel = 1, $bDebug = false, $idTercero
 		$sPerfiles = $sPerfiles . ',' . $fila['unad07idperfil'];
 	}
 	$sSistema = '-99';
-	$sSQL = 'SELECT T1.unad02idsistema 
-	FROM unad06perfilmodpermiso AS TB, unad02modulos AS T1 
-	WHERE TB.unad06idperfil IN (' . $sPerfiles . ') AND TB.unad06idpermiso=1 AND TB.unad06vigente="S" AND TB.unad06idmodulo=T1.unad02id AND T1.unad02idsistema NOT IN (99, ' . $idsistema . ') 
-	GROUP BY T1.unad02idsistema';
+	//, unad01orden
+	$sSQL = 'SELECT T1.unad02idsistema, TS.unad01orden 
+	FROM unad06perfilmodpermiso AS TB, unad02modulos AS T1, unad01sistema AS TS 
+	WHERE TB.unad06idperfil IN (' . $sPerfiles . ') AND TB.unad06idpermiso=1 AND TB.unad06vigente="S" AND TB.unad06idmodulo=T1.unad02id AND T1.unad02idsistema NOT IN (99, ' . $idsistema . ')
+	AND T1.unad02idsistema=TS.unad01id 
+	GROUP BY T1.unad02idsistema, TS.unad01orden';
 	$tabla = $objDB->ejecutasql($sSQL);
 	while ($fila = $objDB->sf($tabla)) {
+		if ($fila['unad01orden'] < 70) {
+			$bConModulos = true;
+		} else {
+			if ($fila['unad01orden'] < 100) {
+				$bConERP = true;
+			} else {
+				$bConGestion = true;
+			}
+		}
 		$sSistema = $sSistema . ',' . $fila['unad02idsistema'];
 	}
-	//Vemos los temas asociados a modulos academicos y eventos.
-	$sSQL = 'SELECT unad01nombre, unad01descripcion, unad01ruta 
-	FROM unad01sistema 
-	WHERE unad01id IN (' . $sSistema . ') AND unad01publico="S" AND unad01instalado="S" AND unad01orden<70 
-	ORDER BY unad01orden, unad01nombre';
-	$tabla = $objDB->ejecutasql($sSQL);
-	if ($objDB->nf($tabla) > 0) {
-		$bConModulos = true;
-		$sHTML = $sHTML . '<li' . $sClaseLiBase . '><a href="#"' . $sClaseLinkBase . '><span>' . $et_modulos . '</span></a>' . $sInicioBloque;
-	}
-	while ($fila = $objDB->sf($tabla)) {
-		$sHTML = $sHTML . $sInicioItem . '<a href="' . $fila['unad01ruta'] . '"' . $sClaseLinkItem . ' title="' . cadena_notildes($fila['unad01descripcion']) . '" target="_blank"><span>' . strtoupper($fila['unad01nombre']) . '</span></a>' . $sFinItem;
-	}
 	if ($bConModulos) {
+		//Vemos los temas asociados a modulos academicos y eventos.
+		$sSQL = 'SELECT unad01nombre, unad01descripcion, unad01ruta 
+		FROM unad01sistema 
+		WHERE unad01id IN (' . $sSistema . ') AND unad01publico="S" AND unad01instalado="S" AND unad01orden<70 
+		ORDER BY unad01orden, unad01nombre';
+		$tabla = $objDB->ejecutasql($sSQL);
+		if ($objDB->nf($tabla) > 0) {
+			$sHTML = $sHTML . '<li' . $sClaseLiBase . '><a href="#"' . $sClaseLinkBase . '><span>' . $et_modulos . '</span></a>' . $sInicioBloque;
+		}
+		while ($fila = $objDB->sf($tabla)) {
+			$sHTML = $sHTML . $sInicioItem . '<a href="' . $fila['unad01ruta'] . '"' . $sClaseLinkItem . ' title="' . cadena_notildes($fila['unad01descripcion']) . '" target="_blank"><span>' . strtoupper($fila['unad01nombre']) . '</span></a>' . $sFinItem;
+		}
 		$sHTML = $sHTML . $sFinBloque . '</li>';
 	}
-	//ERP
-	$bConModulos = false;
-	$sSQL = 'SELECT unad01nombre, unad01descripcion, unad01ruta 
-	FROM unad01sistema 
-	WHERE unad01id IN (' . $sSistema . ') AND unad01publico="S" AND unad01instalado="S" AND unad01orden>69  
-	ORDER BY unad01orden, unad01nombre';
-	$tabla = $objDB->ejecutasql($sSQL);
-	if ($objDB->nf($tabla) > 0) {
-		$bConModulos = true;
-		$sHTML = $sHTML . '<li' . $sClaseLiBase . '><a href="#"' . $sClaseLinkBase . '><span>' . $et_erp . '</span></a>' . $sInicioBloque;
+	if ($bConERP) {
+		//ERP
+		$sSQL = 'SELECT unad01nombre, unad01descripcion, unad01ruta 
+		FROM unad01sistema 
+		WHERE unad01id IN (' . $sSistema . ') AND unad01publico="S" AND unad01instalado="S" AND unad01orden>69 AND unad01orden<100  
+		ORDER BY unad01orden, unad01nombre';
+		$tabla = $objDB->ejecutasql($sSQL);
+		if ($objDB->nf($tabla) > 0) {
+			$bConERP = true;
+			$sHTML = $sHTML . '<li' . $sClaseLiBase . '><a href="#"' . $sClaseLinkBase . '><span>' . $et_erp . '</span></a>' . $sInicioBloque;
+		}
+		while ($fila = $objDB->sf($tabla)) {
+			$sHTML = $sHTML . $sInicioItem . '<a href="' . $fila['unad01ruta'] . '"' . $sClaseLinkItem . ' title="' . cadena_notildes($fila['unad01descripcion']) . '" target="_blank"><span>' . strtoupper($fila['unad01nombre']) . '</span></a>' . $sFinItem;
+		}
+		$sHTML = $sHTML . $sFinBloque . '</li>';
 	}
-	while ($fila = $objDB->sf($tabla)) {
-		$sHTML = $sHTML . $sInicioItem . '<a href="' . $fila['unad01ruta'] . '"' . $sClaseLinkItem . ' title="' . cadena_notildes($fila['unad01descripcion']) . '" target="_blank"><span>' . strtoupper($fila['unad01nombre']) . '</span></a>' . $sFinItem;
-	}
-	if ($bConModulos) {
+	if ($bConGestion) {
+		//Modulos de gestion.
+		$sSQL = 'SELECT unad01nombre, unad01descripcion, unad01ruta 
+		FROM unad01sistema 
+		WHERE unad01id IN (' . $sSistema . ') AND unad01publico="S" AND unad01instalado="S" AND unad01orden>99  
+		ORDER BY unad01orden, unad01nombre';
+		$tabla = $objDB->ejecutasql($sSQL);
+		if ($objDB->nf($tabla) > 0) {
+			$bConGestion = true;
+			$sHTML = $sHTML . '<li' . $sClaseLiBase . '><a href="#"' . $sClaseLinkBase . '><span>' . $et_gestion . '</span></a>' . $sInicioBloque;
+		}
+		while ($fila = $objDB->sf($tabla)) {
+			$sHTML = $sHTML . $sInicioItem . '<a href="' . $fila['unad01ruta'] . '"' . $sClaseLinkItem . ' title="' . cadena_notildes($fila['unad01descripcion']) . '" target="_blank"><span>' . strtoupper($fila['unad01nombre']) . '</span></a>' . $sFinItem;
+		}
 		$sHTML = $sHTML . $sFinBloque . '</li>';
 	}
 	//Termina de revisar el acceso.
@@ -2477,6 +2689,8 @@ function html_paginadorV1($nombre, $iregistros, $filasxpag, $ipagactual, $saccio
 }
 function html_paginador($nombre, $iregistros, $filasxpag, $ipagactual, $saccion)
 {
+	require './app.php';
+	$iPiel = iDefinirPiel($APP, 2);
 	$pendientes = $iregistros;
 	$filasxpag = numeros_validar($filasxpag);
 	if ($filasxpag == '') {
@@ -2543,8 +2757,13 @@ function html_paginador($nombre, $iregistros, $filasxpag, $ipagactual, $saccion)
 		if ($iregistros == 0) {
 			$ini_ = 0;
 		}
-		$res = '<input name="' . $nombre . '" type="hidden" id="' . $nombre . '" value="1"/>{<b>' . $ini_ . ' - ' . $iregistros . '</b>}';
+		$res = '<input name="' . $nombre . '" type="hidden" id="' . $nombre . '" value="1"/><b>{' . $ini_ . ' - ' . $iregistros . '}</b>';
 	}
+	$sClass = 'Label60';
+	if ($iPiel == 2) {
+		$sClass = 'w-10';
+	}
+	$res = '<label class="' . $sClass . '">' . $res . '</label>';
 	return $res;
 }
 function html_pregunta($sNombre, $sValor, $sAccion, $iTipo, $bOculto = false, $iValorTope = 10)
@@ -2791,13 +3010,31 @@ function html_tercero($sTipoDoc, $sDoc, $id, $iModelo, $objDB, $iEspecial = 0)
 			$bConNecesidadesEsp = true;
 			break;
 	}
-	$sSQL = 'SELECT unad11razonsocial, unad11direccion, unad11telefono, unad11id, unad11tipodoc, unad11doc, unad11necesidadesp 
+	$sSQL = 'SELECT unad11razonsocial, unad11direccion, unad11telefono, unad11id, unad11tipodoc, 
+	unad11doc, unad11necesidadesp, unad11estado 
 	FROM unad11terceros 
 	WHERE ' . $sCondi . ' AND unad11id>0';
 	$tablater = $objDB->ejecutasql($sSQL);
 	if ($objDB->nf($tablater) > 0) {
 		$filater = $objDB->sf($tablater);
-		$sHTML = '<b>' . cadena_notildes($filater['unad11razonsocial']) . '</b>';
+		$sPrefijo = '<b>';
+		$sSufijo = '</b>';
+		$sNombre = cadena_notildes($filater['unad11razonsocial']);
+		switch ($filater['unad11estado']) {
+			case 0:
+				break;
+			case 3:
+				$sNombre = '[Derecho al olvido]';
+				$sPrefijo = '<span class="rojo">';
+				$sSufijo = '</span>';
+				$bConNecesidadesEsp = false;
+				break;
+			default:
+				$sPrefijo = '<span class="rojo">';
+				$sSufijo = '</span> [Inactivo]';
+				break;
+		}
+		$sHTML = $sPrefijo . $sNombre . $sSufijo;
 		if ($bConNecesidadesEsp) {
 			if ($filater['unad11necesidadesp'] != '') {
 				$sHTML = $sHTML . '<br>' . cadena_notildes($filater['unad11necesidadesp']);
@@ -2828,8 +3065,8 @@ function html_tipodocV2($nombre, $valor, $accion = '', $con_nulo = false, $bConE
 		$saccion = ' onChange="' . $accion . '"';
 	}
 	$ssel = '';
-	$res = '<select name="' . $nombre . '" id="' . $nombre . '"' . $saccion . '>
-';
+	$res = '<label class="Label60">';
+	$res = $res . '<select name="' . $nombre . '" id="' . $nombre . '"' . $saccion . '>';
 	if ($con_nulo) {
 		$res = $res . html_combo_opcion('', $valor, '');
 	}
@@ -2863,8 +3100,7 @@ function html_tipodocV2($nombre, $valor, $accion = '', $con_nulo = false, $bConE
 	if ($bConEspeciales) {
 		$res = $res . html_combo_opcion('FL', $valor, 'FL');
 	}
-	$res = $res . '</select>
-';
+	$res = $res . '</select></label>';
 	return $res;
 }
 // Tema de licencia
@@ -2949,6 +3185,9 @@ function login_iniciarsesion($objDB, $bDebug = false)
 		$_SESSION['unad_id_sesion'] = 0;
 		$_SESSION['u_ipusuario'] = '';
 		$_SESSION['u_visual'] = 0;
+	}
+	if (isset($_SESSION['unad_idcentro']) == 0) {
+		$_SESSION['unad_idcentro'] = 0;
 	}
 	$iAgnoMes = fecha_AgnoMes();
 	if ($bDebug) {
@@ -3728,8 +3967,16 @@ function tercero_Bloqueado($idTercero, $objDB)
 {
 	$sError = '';
 	$sInfo = '';
-	require 'app.php';
-	$sSQL = 'SELECT unad11bloqueado, unad11tipodoc, unad11doc, unad11razonsocial FROM unad11terceros WHERE unad11id=' . $idTercero . '';
+	require './app.php';
+	$mensajes_todas = $APP->rutacomun . 'lg/lg_todas_' . $_SESSION['unad_idioma'] . '.php';
+	if (!file_exists($mensajes_todas)) {
+		$mensajes_todas = $APP->rutacomun . 'lg/lg_todas_es.php';
+	}
+	require $mensajes_todas;
+	//13 de Julio de 2023 -- Si esta en LEY DE OLVIDO el tercero estará bloqueado - unad11estado en 3
+	$sSQL = 'SELECT unad11bloqueado, unad11tipodoc, unad11doc, unad11razonsocial, unad11estado 
+	FROM unad11terceros 
+	WHERE unad11id=' . $idTercero . '';
 	$tabla11 = $objDB->ejecutasql($sSQL);
 	if ($objDB->nf($tabla11) > 0) {
 		$fila11 = $objDB->sf($tabla11);
@@ -3741,13 +3988,18 @@ function tercero_Bloqueado($idTercero, $objDB)
 			*/
 			$sError = $ERR['tercero_bloqueado1'] . ' ' . $fila11['unad11tipodoc'] . $fila11['unad11doc'] . ' ' . $fila11['unad11razonsocial'] . ' ' . $ERR['tercero_bloqueado2'];
 			//$sInfo=f1075_InfoBloqueo($idTercero, $objDB);
+		} else {
+			switch ($fila11['unad11estado']) {
+				case 0:
+					break;
+				case 3:
+					$sError = $ERR['err_leydeolvido'] . ' ' . $fila11['unad11tipodoc'] . $fila11['unad11doc'];
+					break;
+				default:
+					break;
+			}
 		}
 	} else {
-		$mensajes_todas = $APP->rutacomun . 'lg/lg_todas_' . $_SESSION['unad_idioma'] . '.php';
-		if (!file_exists($mensajes_todas)) {
-			$mensajes_todas = $APP->rutacomun . 'lg/lg_todas_es.php';
-		}
-		require $mensajes_todas;
 		$sError = $ERR['no_tercero'] . ' Ref{' . $idTercero . '}';
 	}
 	return array($sError, $sInfo);
@@ -3840,8 +4092,35 @@ function usuario_OpcionLeer($cod_modulo, $cod_opcion, $svalordefecto, $objDB)
 	}
 	return $res;
 }
-
+function version_upd($objDB)
+{
+	$iVer = 0;
+	$sSQL = "SELECT unad00valor FROM unad00config WHERE unad00codigo='dbversion';";
+	$tabla = $objDB->ejecutasql($sSQL);
+	if ($objDB->nf($tabla) > 0) {
+		$fila = $objDB->sf($tabla);
+		$iVer = $fila['unad00valor'];
+	}
+	return $iVer;
+}
 //--- Funciones Adicionales del ERP
-function f3403_TablaDetalle($aParametros, $objDB){
+function f3403_TablaDetalle($aParametros, $objDB)
+{
 	return '';
+}
+function entidad_Opcion($idEntidad, $sOpcion, $objDB)
+{
+	$res = '';
+	$sSQL = 'SELECT ' . $sOpcion . ' FROM aure99config WHERE aure99id=' . $idEntidad;
+	$tabla = $objDB->ejecutasql($sSQL);
+	if ($objDB->nf($tabla) > 0) {
+		$fila = $objDB->sf($tabla);
+		$res = $fila[$sOpcion];
+	}
+	return $res;
+}
+function reportes_id($idtipo, $objDB)
+{
+	$res = 0;
+	return $res;
 }

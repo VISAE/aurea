@@ -12,7 +12,6 @@
  * @param debug=1 (Opcional), bandera para indicar si se generan datos de depuración
  * @date domingo, 23 de febrero de 2020
  */
-header('Content-Type: text/html; charset=ISO-8859-1');
 if (file_exists('./err_control.php')) {
 	require './err_control.php';
 }
@@ -281,6 +280,7 @@ $xajax->register(XAJAX_FUNCTION, 'f3007_PintarLlaves');
 $xajax->register(XAJAX_FUNCTION, 'f3007_AprobarDocumento');
 $xajax->register(XAJAX_FUNCTION, 'f236_TraerInfoPersonal');
 $xajax->register(XAJAX_FUNCTION, 'elimina_archivo_saiu05idarchivo');
+$xajax->register(XAJAX_FUNCTION, 'f3005_Combobtema');
 $xajax->processRequest();
 if ($bPeticionXAJAX) {
 	die(); // Esto hace que las llamadas por xajax terminen aquí.
@@ -690,6 +690,18 @@ if (isset($_REQUEST['bestado']) == 0) {
 }
 if (isset($_REQUEST['blistar']) == 0) {
 	$_REQUEST['blistar'] = 1;
+}
+if (isset($_REQUEST['bdoc']) == 0) {
+	$_REQUEST['bdoc'] = '';
+}
+if (isset($_REQUEST['btipo']) == 0) {
+	$_REQUEST['btipo'] = '';
+}
+if (isset($_REQUEST['bcategoria']) == 0) {
+	$_REQUEST['bcategoria'] = '';
+}
+if (isset($_REQUEST['btema']) == 0) {
+	$_REQUEST['btema'] = '';
 }
 if ((int)$_REQUEST['paso'] > 0) {
 	//Anotaciones
@@ -1143,6 +1155,14 @@ if ($_REQUEST['saiu05estado'] == -1) {
 	list($saiu05estado_nombre, $sErrorDet) = tabla_campoxid('saiu11estadosol', 'saiu11nombre', 'saiu11id', $_REQUEST['saiu05estado'], '{' . $ETI['msg_sindato'] . '}', $objDB);
 }
 $html_saiu05estado = html_oculto('saiu05estado', $_REQUEST['saiu05estado'], $saiu05estado_nombre);
+list($saiu05idzona_nombre, $sErrorDet) = tabla_campoxid('unad23zona', 'unad23nombre', 'unad23id', $_REQUEST['saiu05idzona'], '{' . $ETI['msg_sindato'] . '}', $objDB);
+$html_saiu05idzona = html_oculto('saiu05idzona', $_REQUEST['saiu05idzona'], $saiu05idzona_nombre);
+list($saiu05cead_nombre, $sErrorDet) = tabla_campoxid('unad24sede', 'unad24nombre', 'unad24id', $_REQUEST['saiu05cead'], '{' . $ETI['msg_sindato'] . '}', $objDB);
+$html_saiu05cead = html_oculto('saiu05cead', $_REQUEST['saiu05cead'], $saiu05cead_nombre);
+list($saiu05idescuela_nombre, $sErrorDet) = tabla_campoxid('core12escuela', 'core12nombre', 'core12id', $_REQUEST['saiu05idescuela'], '{' . $ETI['msg_sindato'] . '}', $objDB);
+$html_saiu05idescuela = html_oculto('saiu05idescuela', $_REQUEST['saiu05idescuela'], $saiu05idescuela_nombre);
+list($saiu05idprograma_nombre, $sErrorDet) = tabla_campoxid('core09programa', 'core09nombre', 'core09id', $_REQUEST['saiu05idprograma'], '{' . $ETI['msg_sindato'] . '}', $objDB);
+$html_saiu05idprograma = html_oculto('saiu05idprograma', $_REQUEST['saiu05idprograma'], $saiu05idprograma_nombre);
 if ($bConMedio) {
 	//list($saiu05idmedio_nombre, $sErrorDet) = tabla_campoxid('bita01tiposolicitud', 'bita01nombre', 'bita01id', $_REQUEST['saiu05idmedio'], '{' . $ETI['msg_sindato'] . '}', $objDB);
 	//$html_saiu05idmedio = html_oculto('saiu05idmedio', $_REQUEST['saiu05idmedio'], $saiu05idmedio_nombre);
@@ -1150,7 +1170,7 @@ if ($bConMedio) {
 	$sSQL = 'SELECT bita01id AS id, bita01nombre AS nombre FROM bita01tiposolicitud ORDER BY bita01nombre';
 	$html_saiu05idmedio = $objCombos->html($sSQL, $objDB);
 }
-if ($bEditable) {
+if ($bEditable || $seg_1707) {
 	$objCombos->nuevo('saiu05idtiposolorigen', $_REQUEST['saiu05idtiposolorigen'], true, '{' . $ETI['msg_seleccione'] . '}');
 	$objCombos->sAccion = 'carga_combo_saiu05idtemaorigen();';
 	$objCombos->iAncho = 370;
@@ -1203,7 +1223,7 @@ if ($saiu05idresponsable_rs == '') {
 }
 $html_saiu05idresponsablecombo = '<b>' . $saiu05idresponsable_rs . '</b>';
 if ($_REQUEST['saiu05estado'] < 7) {
-	if ($idTercero == $_REQUEST['saiu05idsupervisor']) {
+	if ($idTercero == $_REQUEST['saiu05idsupervisor'] || $seg_1707) {
 		$objCombos->nuevo('saiu05idresponsablefin', $_REQUEST['saiu05idresponsable'], true, '{' . $ETI['msg_seleccione'] . '}');
 		$sSQL = 'SELECT TB.bita28idtercero AS id, T2.unad11razonsocial AS nombre
 			FROM bita28eqipoparte AS TB, unad11terceros AS T2 
@@ -1283,6 +1303,16 @@ $objCombos->addItem('1', 'Mis asignaciones');
 $objCombos->addItem('2', 'Asignado a mi equipo');
 $objCombos->sAccion = 'paginarf3005()';
 $html_blistar = $objCombos->html('', $objDB);
+$objCombos->nuevo('btipo', $_REQUEST['btipo'], true, '{' . $ETI['msg_todos'] . '}');
+$objCombos->sAccion='paginarf3005()';
+$sSQL = 'SELECT saiu68id AS id, saiu68nombre AS nombre FROM saiu68categoria WHERE saiu68publica = 1 ORDER BY saiu68nombre';
+$html_btipo = $objCombos->html($sSQL, $objDB);
+$objCombos->nuevo('bcategoria', $_REQUEST['bcategoria'], true, '{' . $ETI['msg_todos'] . '}');
+$objCombos->sAccion = 'carga_combo_btema()';
+$sSQL = 'SELECT saiu02id AS id, saiu02titulo AS nombre FROM saiu02tiposol WHERE saiu02id>0 ORDER BY saiu02titulo';
+$html_bcategoria = $objCombos->html($sSQL, $objDB);
+$objCombos->nuevo('btema', $_REQUEST['btema'], true, '{' . $ETI['msg_todos'] . '}');
+$html_btema = $objCombos->html('', $objDB);
 /*
 $objCombos->nuevo('blistar3006', $_REQUEST['blistar3006'], true, '{'.$ETI['msg_todos'].'}');
 $html_blistar3006=$objCombos->comboSistema(3006, 1, $objDB, 'paginarf3006()');
@@ -1322,6 +1352,10 @@ $aParametros[103] = $_REQUEST['bnombre'];
 $aParametros[104] = $_REQUEST['bagno'];
 $aParametros[105] = $_REQUEST['bestado'];
 $aParametros[106] = $_REQUEST['blistar'];
+$aParametros[107] = $_REQUEST['bdoc'];
+$aParametros[108] = $_REQUEST['btipo'];
+$aParametros[109] = $_REQUEST['bcategoria'];
+$aParametros[110] = $_REQUEST['btema'];
 list($sTabla3005, $sDebugTabla) = f3005_TablaDetalleV2($aParametros, $objDB, $bDebug);
 $sDebug = $sDebug . $sDebugTabla;
 $sTabla3000 = '';
@@ -1415,11 +1449,8 @@ if ($_REQUEST['saiu05estado'] == -1) {
 if ($_REQUEST['saiu05numref'] != '') {
 ?>
 	function enviacerrar() {
-		ModalConfirm('Se proceder&aacute; a radicar la PQRS, esta seguro de continuar?');
-		ModalDialogConfirm(function(confirm) {
-			if (confirm) {
-				ejecuta_enviacerrar();
-			}
+		ModalConfirmV2('Se proceder&aacute; a radicar la PQRS, esta seguro de continuar?', () => {
+			ejecuta_enviacerrar();
 		});
 	}
 
@@ -1431,14 +1462,28 @@ if ($_REQUEST['saiu05numref'] != '') {
 	}
 <?php
 }
-} else if ($_REQUEST['saiu05estado'] == 0) {
+} else if ($_REQUEST['saiu05estado'] >= 0) {
+if ($seg_1707) {
+?>
+	function enviaguardar(iValor=1) {
+		window.document.frmedita.iscroll.value = window.pageYOffset;
+		window.document.frmedita.bCambiaEst.value = iValor;
+		expandesector(98);
+		var dpaso = window.document.frmedita.paso;
+		if (dpaso.value == 0) {
+			dpaso.value = 10;
+		} else {
+			dpaso.value = 12;
+		}
+		window.document.frmedita.submit();
+	}
+<?php
+}
+if ($_REQUEST['saiu05estado'] == 0) {
 ?>
 	function enviatramitar() {
-		ModalConfirm('Se proceder&aacute; a dar inicio del tr&aacute;mite de la PQRS, esta seguro de continuar?');
-		ModalDialogConfirm(function(confirm) {
-			if (confirm) {
-				ejecuta_enviatramitar();
-			}
+		ModalConfirmV2('Se proceder&aacute; a dar inicio del tr&aacute;mite de la PQRS, esta seguro de continuar?', () => {
+			ejecuta_enviatramitar();
 		});
 	}
 
@@ -1457,11 +1502,8 @@ if ($_REQUEST['saiu05numref'] != '') {
 } else if ($_REQUEST['saiu05estado'] == 2) {
 ?>
 	function enviaresolver() {
-		ModalConfirm('Se proceder&aacute; a dar respuesta y dar cierre de la PQRS, esta seguro de continuar?');
-		ModalDialogConfirm(function(confirm) {
-			if (confirm) {
-				ejecuta_enviaresolver();
-			}
+		ModalConfirmV2('Se proceder&aacute; a dar respuesta y dar cierre de la PQRS, esta seguro de continuar?', () => {
+			ejecuta_enviaresolver();
 		});
 	}
 
@@ -1477,6 +1519,7 @@ if ($_REQUEST['saiu05numref'] != '') {
 		window.document.frmedita.submit();
 	}
 <?php
+}
 }
 ?>
 	function cambiapagina() {
@@ -1634,11 +1677,8 @@ if ($_REQUEST['paso'] == 2 && $_REQUEST['saiu05estado'] == -1) {
 if ($seg_4 == 1) {
 ?>
 	function eliminadato() {
-		ModalConfirm('<?php echo $ETI['msg_confirmaeliminar']; ?>');
-		ModalDialogConfirm(function(confirm) {
-			if (confirm) {
-				ejecuta_eliminadato();
-			}
+		ModalConfirmV2('<?php echo $ETI['msg_confirmaeliminar']; ?>', () => {
+			ejecuta_eliminadato();
 		});
 	}
 
@@ -1711,6 +1751,10 @@ if ($seg_4 == 1) {
 		params[104] = window.document.frmedita.bagno.value;
 		params[105] = window.document.frmedita.bestado.value;
 		params[106] = window.document.frmedita.blistar.value;
+		params[107] = window.document.frmedita.bdoc.value;
+		params[108] = window.document.frmedita.btipo.value;
+		params[109] = window.document.frmedita.bcategoria.value;
+		params[110] = window.document.frmedita.btema.value;
 		document.getElementById('div_f3005detalle').innerHTML = '<div class="GrupoCamposAyuda"><div class="MarquesinaMedia">Procesando datos, por favor espere.</div></div><input id="paginaf3005" name="paginaf3005" type="hidden" value="' + params[101] + '" /><input id="lppf3005" name="lppf3005" type="hidden" value="' + params[102] + '" />';
 		xajax_f3005_HtmlTabla(params);
 	}
@@ -1899,20 +1943,14 @@ if ($seg_4 == 1) {
 if ($_REQUEST['saiu05estado'] == 2) {
 ?>
 	function apruebaidf3007(id07) {
-		ModalConfirm('El documento ser&aacute; aprobado,<br>Esta seguro de continuar?');
-		ModalDialogConfirm(function(confirm) {
-			if (confirm) {
-				ejecuta_apruebaidf3007(id07, 1);
-			}
+		ModalConfirmV2('El documento ser&aacute; aprobado,<br>Esta seguro de continuar?', () => {
+			ejecuta_apruebaidf3007(id07, 1);
 		});
 	}
 
 	function retiraidf3007(id07) {
-		ModalConfirm('El documento ser&aacute; desaprobado,<br>Esta seguro de continuar?');
-		ModalDialogConfirm(function(confirm) {
-			if (confirm) {
-				ejecuta_apruebaidf3007(id07, 0);
-			}
+		ModalConfirmV2('El documento ser&aacute; desaprobado,<br>Esta seguro de continuar?', () => {
+			ejecuta_apruebaidf3007(id07, 0);
 		});
 	}
 
@@ -1938,15 +1976,12 @@ if ($_REQUEST['saiu05estado'] == 2) {
 ?>
 <?php
 if ($_REQUEST['saiu05estado'] < 7) {
-	if ($idTercero == $_REQUEST['saiu05idsupervisor']) {
+	if ($idTercero == $_REQUEST['saiu05idsupervisor'] || $seg_1707) {
 ?>
 	function enviareasignar() {
 		window.document.frmedita.iscroll.value = window.pageYOffset;
-		ModalConfirm('¿Esta seguro de hacer la reasignación?');
-		ModalDialogConfirm(function(confirm) {
-			if (confirm) {
-				ejecuta_enviareasignar();
-			}
+		ModalConfirmV2('¿Esta seguro de hacer la reasignaci&oacute;n?', () => {
+			ejecuta_enviareasignar();
 		});
 	}
 
@@ -2019,6 +2054,12 @@ function actualizaratiende() {
 		window.document.frmedita.submit();
 	}
 }
+function carga_combo_btema() {
+	var params = new Array();
+	params[0] = window.document.frmedita.bcategoria.value;
+	document.getElementById('div_btema').innerHTML = '<b>Procesando datos, por favor espere...</b><input id="btema" name="btema" type="hidden" value="" />';
+	xajax_f3005_Combobtema(params);
+}
 </script>
 <?php
 if ($_REQUEST['paso'] != 0) {
@@ -2058,6 +2099,7 @@ if ($_REQUEST['paso'] != 0) {
 <input id="ipiel" name="ipiel" type="hidden" value="<?php echo $iPiel; ?>" />
 <input id="seg_5" name="seg_5" type="hidden" value="<?php echo $seg_5; ?>" />
 <input id="seg_6" name="seg_6" type="hidden" value="<?php echo $seg_6; ?>" />
+<input id="bCambiaEst" name="bCambiaEst" type="hidden" value="" />
 <div id="div_sector1">
 <div class="titulos">
 <div class="titulosD">
@@ -2245,11 +2287,10 @@ echo $html_saiu05idcategoria;
 <div class="salto1px"></div>
 
 
-<div>
 <?php
 // Inicio caja - solicitante
 ?>
-<div class="GrupoCampos450">
+<div class="GrupoCampos520">
 <label class="TituloGrupo">
 <?php
 echo $ETI['saiu05idsolicitante'];
@@ -2309,6 +2350,59 @@ echo $html_InfoContacto;
 </div>
 <?php
 // Fin caja - solicitante
+?>
+<div>
+<?php
+// inicio caja - datos académicos
+?>
+<div class="GrupoCampos520">
+<label class="Label130">
+<?php
+echo $ETI['saiu05idzona'];
+?>
+</label>
+<label class="Label350">
+<?php
+echo $html_saiu05idzona;
+?>
+</label>
+<div class="salto1px"></div>
+<label class="Label130">
+<?php
+echo $ETI['saiu05cead'];
+?>
+</label>
+<label class="Label350">
+<?php
+echo $html_saiu05cead;
+?>
+</label>
+<div class="salto1px"></div>
+<label class="Label130">
+<?php
+echo $ETI['saiu05idescuela'];
+?>
+</label>
+<label class="Label350">
+<?php
+echo $html_saiu05idescuela;
+?>
+</label>
+<div class="salto1px"></div>
+<label class="Label130">
+<?php
+echo $ETI['saiu05idprograma'];
+?>
+</label>
+<label class="Label350">
+<?php
+echo $html_saiu05idprograma;
+?>
+</label>
+<div class="salto1px"></div>
+</div>
+<?php
+// Fin caja - datos académicos
 ?>
 <?php
 // Inicio caja - numero de referencia
@@ -2385,7 +2479,6 @@ echo html_oculto('saiu05numradicado', $_REQUEST['saiu05numradicado']);
 <?php
 // Fin caja - numero de referencia
 ?>
-</div>
 <?php
 // inicio caja - categoría, tema, medio, costos
 ?>
@@ -2526,6 +2619,7 @@ echo $ETI['saiu05costovalor'];
 <?php
 // fin caja - categoría, tema, medio, costos
 ?>
+</div>
 <div class="salto1px"></div>
 <div class="GrupoCampos">
 <label class="TituloGrupo">
@@ -2577,8 +2671,6 @@ echo html_DivTerceroV2('saiu05idinteresado', $_REQUEST['saiu05idinteresado_td'],
 }
 ?>
 <input id="saiu05prioridad" name="saiu05prioridad" type="hidden" value="<?php echo $_REQUEST['saiu05prioridad']; ?>" />
-<input id="saiu05idzona" name="saiu05idzona" type="hidden" value="<?php echo $_REQUEST['saiu05idzona']; ?>" />
-<input id="saiu05cead" name="saiu05cead" type="hidden" value="<?php echo $_REQUEST['saiu05cead']; ?>" />
 <div class="salto1px"></div>
 <?php
 if ($bEditable) {
@@ -2607,8 +2699,6 @@ echo $ETI['saiu05detalle'];
 }
 ?>
 <input id="saiu05infocomplemento" name="saiu05infocomplemento" type="hidden" value="<?php echo $_REQUEST['saiu05infocomplemento']; ?>" />
-<input id="saiu05idescuela" name="saiu05idescuela" type="hidden" value="<?php echo $_REQUEST['saiu05idescuela']; ?>" />
-<input id="saiu05idprograma" name="saiu05idprograma" type="hidden" value="<?php echo $_REQUEST['saiu05idprograma']; ?>" />
 <div class="salto1px"></div>
 <?php
 if (false) {
@@ -2711,15 +2801,24 @@ if ($_REQUEST['saiu05estado'] == -1) {
 <input id="cmdGuardar" name="cmdGuardar" type="button" class="BotonAzul160" value="<?php echo $ETI['bt_guardar']; ?>" onclick="enviaguardar();" title="<?php echo $ETI['bt_guardar']; ?>" />
 </label>
 <?php
-if ($_REQUEST['saiu05numref'] != '') {
+	if ($_REQUEST['saiu05numref'] != '') {
 ?>
 <label class="Label60"></label>
 <label class="Label160">
 <input id="cmdSolicitar" name="cmdSolicitar" type="button" class="BotonAzul160" value="<?php echo $ETI['bt_solicitar']; ?>" onclick="enviacerrar();" title="<?php echo $ETI['bt_solicitar']; ?>" />
 </label>
 <?php
-}
-} else if ($_REQUEST['saiu05estado'] == 0) {
+	}
+} else if ($_REQUEST['saiu05estado'] >= 0) {
+	if ($_REQUEST['saiu05estado'] < 7 && $seg_1707) {
+?>
+<label class="Label160"></label>
+<label class="Label160">
+<input id="cmdGuardar" name="cmdGuardar" type="button" class="BotonAzul160" value="<?php echo $ETI['bt_guardar']; ?>" onclick="enviaguardar(0);" title="<?php echo $ETI['bt_guardar']; ?>" />
+</label>
+<?php
+	}
+	if ($_REQUEST['saiu05estado'] == 0) {
 ?>
 <label class="Label320"></label>
 <label class="Label60"></label>
@@ -2727,7 +2826,7 @@ if ($_REQUEST['saiu05numref'] != '') {
 <input id="cmdTramitar" name="cmdTramitar" type="button" class="BotonAzul160" value="<?php echo $ETI['bt_tramitar']; ?>" onclick="enviatramitar();" title="<?php echo $ETI['bt_tramitar']; ?>" />
 </label>
 <?php
-} else if ($_REQUEST['saiu05estado'] == 2) {
+	} else if ($_REQUEST['saiu05estado'] == 2) {
 ?>
 <label class="Label320"></label>
 <label class="Label60"></label>
@@ -2735,6 +2834,7 @@ if ($_REQUEST['saiu05numref'] != '') {
 <input id="cmdResolver" name="cmdResolver" type="button" class="BotonAzul160" value="<?php echo $ETI['bt_resolver']; ?>" onclick="enviaresolver();" title="<?php echo $ETI['bt_resolver']; ?>" />
 </label>
 <?php
+	}
 }
 ?>
 <div class="salto1px"></div>
@@ -3222,6 +3322,10 @@ if ((int)$_REQUEST['paso'] != 0) {
 <?php
 echo $ETI['saiu05atiende'];
 ?>
+<?php
+if ($_REQUEST['saiu05estado'] < 7) {
+if ($idTercero == $_REQUEST['saiu05idsupervisor'] || $seg_1707) {
+?>
 <div class="ir_derecha" style="width:62px;">
 <input id="bRevAtiende" name="bRevAtiende" type="button" value="Actualizar atiende" class="btMiniActualizar" onclick="actualizaratiende()" title="Actualizar atiende" style="display:<?php if ((int)$_REQUEST['saiu05id'] != 0) {
 echo 'block';
@@ -3229,6 +3333,10 @@ echo 'block';
 echo 'none';
 } ?>;" />
 </div>
+<?php
+}
+}
+?>
 </label>
 <div class="salto1px"></div>
 <input id="saiu05idsupervisor" name="saiu05idsupervisor" type="hidden" value="<?php echo $_REQUEST['saiu05idsupervisor']; ?>" />
@@ -3263,7 +3371,7 @@ echo 'none';
 <div class="salto1px"></div>
 <?php
 if ($_REQUEST['saiu05estado'] < 7) {
-if ($idTercero == $_REQUEST['saiu05idsupervisor']) {
+if ($idTercero == $_REQUEST['saiu05idsupervisor'] || $seg_1707) {
 ?>
 <label class="Label160">
 <input id="cmdReasignar" name="cmdReasignar" type="button" class="BotonAzul160" value="Reasignar" onclick="expandesector(2);" title="Realizar Reasignaci&oacute;n" />
@@ -3303,24 +3411,58 @@ echo '<h3>' . $ETI['bloque1'] . '</h3>';
 </div>
 <div class="areatrabajo">
 <div class="ir_derecha">
+<label class="Label90">
 <?php
-if (false) {
+echo $ETI['msg_bdoc'];
 ?>
+</label>
+<label class="Label200">
+<input id="bdoc" name="bdoc" type="text" value="<?php echo $_REQUEST['bdoc']; ?>" onchange="paginarf3005()" autocomplete="off" />
+</label>
 <label class="Label90">
 <?php
 echo $ETI['msg_bnombre'];
 ?>
 </label>
-<label>
+<label class="Label200">
 <input id="bnombre" name="bnombre" type="text" value="<?php echo $_REQUEST['bnombre']; ?>" onchange="paginarf3005()" autocomplete="off" />
 </label>
+<div class="salto1px"></div>
+<label class="Label90">
 <?php
-} else {
+echo $ETI['saiu05idcategoria'];
 ?>
-<input id="bnombre" name="bnombre" type="hidden" value="<?php echo $_REQUEST['bnombre']; ?>" />
+</label>
+<label class="Label350">
 <?php
-}
+echo $html_btipo;
 ?>
+</label>
+<div class="salto1px"></div>
+<label class="Label90">
+<?php
+echo $ETI['saiu05idtiposolorigen'];
+?>
+</label>
+<label class="Label350">
+<?php
+echo $html_bcategoria;
+?>
+</label>
+<div class="salto1px"></div>
+<label class="Label90">
+<?php
+echo $ETI['saiu05idtemaorigen'];
+?>
+</label>
+<label class="Label350">
+<div id="div_btema">
+<?php
+echo $html_btema;
+?>
+</div>
+</label>
+<div class="salto1px"></div>
 <label class="Label60">
 <?php
 echo $ETI['msg_blistar'];
@@ -3385,7 +3527,7 @@ echo '<h2>' . $ETI['titulo_sector2_PQRS'] . '</h2>';
 <div id="area">
 <?php
 if ($_REQUEST['saiu05estado'] < 7) {
-if ($idTercero == $_REQUEST['saiu05idsupervisor']) {
+if ($idTercero == $_REQUEST['saiu05idsupervisor'] || $seg_1707) {
 	$sEstiloDiv = ' style="display:block;"';
 } else {
 	$sEstiloDiv = ' style="display:none;"';
@@ -3432,7 +3574,7 @@ echo $html_saiu05idresponsablecombo;
 </label>
 <?php
 if ($_REQUEST['saiu05estado'] < 7) {
-if ($idTercero == $_REQUEST['saiu05idsupervisor']) {
+if ($idTercero == $_REQUEST['saiu05idsupervisor'] || $seg_1707) {
 ?>
 <div class="salto1px"></div>
 <label class="Label160">
@@ -3610,11 +3752,11 @@ if ($bMueveScroll) {
 <script language="javascript" src="<?php echo $APP->rutacomun; ?>js/chosen.jquery.js"></script>
 <link rel="stylesheet" href="<?php echo $APP->rutacomun; ?>js/chosen.css" type="text/css" />
 <?php
-if ($bEditable) {
+if ($bEditable || $seg_1707) {
 ?>
 <script language="javascript">
 $().ready(function() {
-$("#saiu05idtiposolorigen, #saiu05idtemaorigen").chosen({
+$("#saiu05idtiposolorigen, #saiu05idtemaorigen, #bcategoria, #btema").chosen({
 no_results_text: "No existen coincidencias: ",
 width: "100%"});
 });
@@ -3626,4 +3768,4 @@ width: "100%"});
 <script language="javascript" src="<?php echo $APP->rutacomun; ?>unad_todas.js?ver=8"></script>
 <?php
 forma_piedepagina();
-?>
+

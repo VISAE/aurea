@@ -13,12 +13,18 @@
 if (file_exists('./err_control.php')){require './err_control.php';}
 $bDebug=false;
 $sDebug='';
-if (isset($_REQUEST['deb_doc'])!=0){
-	$bDebug=true;
+if (isset($_REQUEST['deb_doc']) != 0) {
+	if (trim($_REQUEST['deb_doc']) != '') {
+		$bDebug = true;
 	}
-if (isset($_REQUEST['debug'])!=0){
-	if ($_REQUEST['debug']==1){$bDebug=true;}
+} else {
+	$_REQUEST['deb_doc'] = '';
+}
+if (isset($_REQUEST['debug']) != 0) {
+	if ($_REQUEST['debug'] == 1) {
+		$bDebug = true;
 	}
+}
 if ($bDebug){
 	$iSegIni=microtime(true);
 	$iSegundos=floor($iSegIni);

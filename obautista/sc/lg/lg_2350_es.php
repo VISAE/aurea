@@ -22,6 +22,7 @@ $ETI['msg_periodoacomp']='Periodo acompa&ntilde;amiento';
 $ETI['cara50convenio']='Convenio';
 $ETI['cara50periodomatricula']='Periodo matricula';
 $ETI['cara50tipomatricula']='Condici&oacute;n';
+$ETI['cara50listadoc']='Lista de documentos';
 
 $ERR['core50idperaca']='Necesita el dato Peraca';
 $ERR['core50idzona']='Necesita el dato Zona';

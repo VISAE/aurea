@@ -29,6 +29,7 @@ $ETI['saiu20hora']='Hora';
 $ETI['saiu20minuto']='Minuto';
 $ETI['saiu20estado']='Estado';
 $ETI['saiu20idcorreo']='Correo';
+$ETI['saiu20numcorreo']='Numcorreo';
 $ETI['saiu20correoorigen']='Correo de origen';
 $ETI['saiu20idsolicitante']='Solicitante';
 $ETI['saiu20tipointeresado']='Tipo de interesado';

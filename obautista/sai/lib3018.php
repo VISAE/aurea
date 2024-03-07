@@ -261,7 +261,7 @@ function f3018_Combosaiu18idprograma($aParametros){
 	$objDB->CerrarConexion();
 	$objResponse=new xajaxResponse();
 	$objResponse->assign('div_saiu18idprograma', 'innerHTML', $html_saiu18idprograma);
-	$objResponse->call('$("#saiu18idprograma").chosen()');
+	$objResponse->call('$("#saiu18idprograma").chosen({width:"100%"})');
 	return $objResponse;
 	}
 function f3018_ExisteDato($datos){
@@ -527,7 +527,7 @@ ORDER BY TB.saiu18agno DESC, TB.saiu18mes DESC, TB.saiu18dia DESC, TB.saiu18tipo
 			}
 		*/
 		if ($bAbierta){
-			$sLink='<a href="javascript:cargaridf3018('.$filadet['saiu18id'].')" class="lnkresalte">'.$ETI['lnk_cargar'].'</a>';
+			$sLink='<a href="javascript:cargaridf3018('.$filadet['saiu18agno'].','.$filadet['saiu18id'].')" class="lnkresalte">'.$ETI['lnk_cargar'].'</a>';
 			}
 		$et_fecha=fecha_armar($filadet['saiu18dia'], $filadet['saiu18mes'], $filadet['saiu18agno']);
 		$res=$res.'<tr'.$sClass.'>

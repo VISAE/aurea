@@ -57,5 +57,5 @@ $ETI['tiempos_verde_0'] = 'Menor o igual a 5 d&iacute;as';
 $ETI['tiempos_rojo_1'] = 'Mayor a 4 d&iacute;as';
 $ETI['tiempos_naranja_1'] = 'Entre 2 y 3 d&iacute;as';
 $ETI['tiempos_verde_1'] = 'Menor o igual a 1 d&iacute;a';
-$ETI['indice_satisf'] = 'Su calificaci&oacute;n de satisfacci&oacute;n es:';
+$ETI['indice_satisf'] = 'Calificaci&oacute;n de satisfacci&oacute;n';
 ?>

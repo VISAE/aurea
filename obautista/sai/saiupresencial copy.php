@@ -10,6 +10,70 @@
  * @param debug = 1  (Opcional), bandera para indicar si se generan datos de depuración
  * @date lunes, 31 de julio de 2023
  */
+if (file_exists('./err_control.php')){require './err_control.php';}
+$bDebug=false;
+$sDebug='';
+if (isset($_REQUEST['deb_doc']) != 0) {
+	if (trim($_REQUEST['deb_doc']) != '') {
+		$bDebug = true;
+	}
+} else {
+	$_REQUEST['deb_doc'] = '';
+}
+if (isset($_REQUEST['debug']) != 0) {
+	if ($_REQUEST['debug'] == 1) {
+		$bDebug = true;
+	}
+}
+if ($bDebug){
+	$iSegIni=microtime(true);
+	$iSegundos=floor($iSegIni);
+	$sMili=floor(($iSegIni-$iSegundos)*1000);
+	if ($sMili<100){if ($sMili<10){$sMili=':00'.$sMili;}else{$sMili=':0'.$sMili;}}else{$sMili=':'.$sMili;}
+	$sDebug=$sDebug.''.date('H:i:s').$sMili.' Inicia pagina <br>';
+	}
+if (!file_exists('./app.php')){
+	echo '<b>Error N 1 de instalaci&oacute;n</b><br>No se ha establecido un archivo de configuraci&oacute;n, por favor comuniquese con el administrador del sistema.';
+	die();
+	}
+mb_internal_encoding('UTF-8');
+require './app.php';
+require $APP->rutacomun.'unad_sesion.php';
+if (isset($APP->https)==0){$APP->https=0;}
+if ($APP->https==2){
+	$bObliga=false;
+	if (isset($_SERVER['HTTPS'])==0){
+		$bObliga=true;
+		}else{
+		if ($_SERVER['HTTPS']!='on'){$bObliga=true;}
+		}
+	if ($bObliga){
+		$pageURL='https://'.$_SERVER['SERVER_NAME'].$_SERVER['REQUEST_URI'];
+		header('Location:'.$pageURL);
+		die();
+		}
+	}
+//if (!file_exists('./opts.php')){require './opts.php';if ($OPT->opcion==1){$bOpcion=true;}}
+$bPeticionXAJAX=false;
+if ($_SERVER['REQUEST_METHOD']=='POST'){if (isset($_POST['xjxfun'])){$bPeticionXAJAX=true;}}
+if (!$bPeticionXAJAX){$_SESSION['u_ultimominuto']=(date('W')*1440)+(date('H')*60)+date('i');}
+require $APP->rutacomun.'unad_todas.php';
+require $APP->rutacomun.'libs/clsdbadmin.php';
+require $APP->rutacomun.'unad_librerias.php';
+require $APP->rutacomun.'libdatos.php';
+require $APP->rutacomun.'libhtml.php';
+require $APP->rutacomun.'xajax/xajax_core/xajax.inc.php';
+require $APP->rutacomun.'unad_xajax.php';
+require $APP->rutacomun.'libsai.php';
+require $APP->rutacomun.'libtiempo.php';
+if (($bPeticionXAJAX)&&($_SESSION['unad_id_tercero']==0)){
+	// viene por xajax.
+	$xajax=new xajax();
+	$xajax->configure('javascript URI', $APP->rutacomun.'xajax/');
+	$xajax->register(XAJAX_FUNCTION,'sesion_abandona_V2');
+	$xajax->processRequest();
+	die();
+	}
 $bEnSesion = false;
 if ((int)$_SESSION['unad_id_tercero'] > 0) {
 	$bEnSesion = true;
@@ -23,6 +87,7 @@ if (!$bEnSesion) {
 	header('Location:index.php');
 	die();
 }
+$grupo_id=1;//Necesita ajustarlo...
 $iCodModulo=3021;
 $audita[1]=false;
 $audita[2]=true;
@@ -198,10 +263,10 @@ if (isset($_REQUEST['saiu21tiporadicado'])==0){$_REQUEST['saiu21tiporadicado']=1
 if (isset($_REQUEST['saiu21consec'])==0){$_REQUEST['saiu21consec']='';}
 if (isset($_REQUEST['saiu21consec_nuevo'])==0){$_REQUEST['saiu21consec_nuevo']='';}
 if (isset($_REQUEST['saiu21id'])==0){$_REQUEST['saiu21id']='';}
-if (isset($_REQUEST['saiu21dia'])==0){$_REQUEST['saiu21dia']=fecha_dia();}
+if (isset($_REQUEST['saiu21dia'])==0){$_REQUEST['saiu21dia']='';}
 if (isset($_REQUEST['saiu21hora'])==0){$_REQUEST['saiu21hora']=fecha_hora();}
 if (isset($_REQUEST['saiu21minuto'])==0){$_REQUEST['saiu21minuto']=fecha_minuto();}
-if (isset($_REQUEST['saiu21estado'])==0){$_REQUEST['saiu21estado']=-1;}
+if (isset($_REQUEST['saiu21estado'])==0){$_REQUEST['saiu21estado']=4;}
 if (isset($_REQUEST['saiu21idsolicitante'])==0){$_REQUEST['saiu21idsolicitante']=0;}// {$_SESSION['unad_id_tercero'];}
 if (isset($_REQUEST['saiu21idsolicitante_td'])==0){$_REQUEST['saiu21idsolicitante_td']=$APP->tipo_doc;}
 if (isset($_REQUEST['saiu21idsolicitante_doc'])==0){$_REQUEST['saiu21idsolicitante_doc']='';}
@@ -221,7 +286,7 @@ if (isset($_REQUEST['saiu21idpqrs'])==0){$_REQUEST['saiu21idpqrs']=0;}
 if (isset($_REQUEST['saiu21detalle'])==0){$_REQUEST['saiu21detalle']='';}
 if (isset($_REQUEST['saiu21horafin'])==0){$_REQUEST['saiu21horafin']='';}
 if (isset($_REQUEST['saiu21minutofin'])==0){$_REQUEST['saiu21minutofin']='';}
-if (isset($_REQUEST['saiu21paramercadeo'])==0){$_REQUEST['saiu21paramercadeo']=0;}
+if (isset($_REQUEST['saiu21paramercadeo'])==0){$_REQUEST['saiu21paramercadeo']='';}
 if (isset($_REQUEST['saiu21idresponsable'])==0){$_REQUEST['saiu21idresponsable']=0;}// {$_SESSION['unad_id_tercero'];}
 if (isset($_REQUEST['saiu21idresponsable_td'])==0){$_REQUEST['saiu21idresponsable_td']=$APP->tipo_doc;}
 if (isset($_REQUEST['saiu21idresponsable_doc'])==0){$_REQUEST['saiu21idresponsable_doc']='';}
@@ -427,7 +492,7 @@ if ($_REQUEST['paso']==-1){
 	$_REQUEST['saiu21dia']=fecha_dia();
 	$_REQUEST['saiu21hora']='';
 	$_REQUEST['saiu21minuto']='';
-	$_REQUEST['saiu21estado']=-1;
+	$_REQUEST['saiu21estado']=4;
 	$_REQUEST['saiu21idsolicitante']=0;//$idTercero;
 	$_REQUEST['saiu21idsolicitante_td']=$APP->tipo_doc;
 	$_REQUEST['saiu21idsolicitante_doc']='';
@@ -465,7 +530,7 @@ if ($bLimpiaHijos){
 $bPuedeAbrir = false;
 $bPuedeEliminar = false;
 $bPuedeGuardar = false;
-$bPuedeCerrar = false;
+$bPuedePostular = false;
 $bHayImprimir = false;
 //DATOS PARA COMPLETAR EL FORMULARIO
 $iAgno=fecha_agno();
@@ -490,22 +555,6 @@ $seg_8=0;
 //list($bDevuelve, $sDebugP)=seg_revisa_permisoV3($iCodModulo, 6, $idTercero, $objDB);
 //if ($bDevuelve){$seg_6=1;}
 //if ($seg_6==1){}
-if ((int)$_REQUEST['paso'] 	== 0) {
-	$bPuedeGuardar = true;
-} else {
-	switch ($_REQUEST['saiu21estado']) {
-		case 2: // En tramite
-			$bPuedeEliminar = true;
-			$bPuedeGuardar = true;
-			$bPuedeCerrar = true;
-			break;
-		case 7: // Radicada
-			break;
-		default:
-			break;
-
-	}
-}
 //Crear los controles que requieran llamado a base de datos
 $objCombos=new clsHtmlCombos();
 $objTercero=new clsHtmlTercero();
@@ -612,12 +661,6 @@ if (false){
 $iNumFormatosImprime=0;
 $iModeloReporte=3021;
 $html_iFormatoImprime='<input id="iformatoimprime" name="iformatoimprime" type="hidden" value="0" />';
-// TODO
-$objCombos->nuevo('canales', $_REQUEST['saiucanal'], false, '{'.$ETI['msg_todas'].'}');
-$objCombos->sAccion='cambiacanal()';
-$objCombos->addArreglo($aCanal, $iCanal);
-$html_saiucanal=$objCombos->html('', $objDB);
-// TODO
 if ($_REQUEST['paso']>0){
 	$bDevuelve=false;
 	//list($bDevuelve, $sDebugP)=seg_revisa_permisoV3($iCodModulo, 5, $idTercero, $objDB);
@@ -689,7 +732,7 @@ switch ($iPiel) {
 	case 2:
 		$aRutas = array(
 			array('', 'SAI'), 
-			array('./saiusolicitudesgral.php', 'Registro de Atenciones'), 
+			array('./saiupresencial.php', 'Atenci&oacute;n presencial'), 
 			array('', $ETI['titulo_3021'])
 		);
 		$iNumBoton = 0;
@@ -707,10 +750,6 @@ switch ($iPiel) {
 		$iNumBoton++;
 		if ($bPuedeGuardar) {
 			$aBotones[$iNumBoton] = array('enviaguardar()', $ETI['bt_guardar'], 'iSaveFill');
-			$iNumBoton++;
-		}
-		if ($bPuedeCerrar) {
-			$aBotones[$iNumBoton] = array('enviacerrar()', $ETI['bt_cerrar'], 'iTask');
 			$iNumBoton++;
 		}
 		forma_cabeceraV4($aRutas, $aBotones, true, $bDebug);
@@ -770,6 +809,7 @@ function expandesector(codigo){
 	document.getElementById('div_sector97').style.display='none';
 	document.getElementById('div_sector98').style.display='none';
 	document.getElementById('div_sector'+codigo).style.display='block';
+	console.log("limpia");
 	let sEst = 'none';
 	if (codigo == 1) {
 		sEst = 'block';
@@ -1064,13 +1104,6 @@ function paginarf3000(){
 	document.getElementById('div_f3000detalle').innerHTML='<div class="GrupoCamposAyuda"><div class="MarquesinaMedia">Procesando datos, por favor espere.</div></div><input id="paginaf3000" name="paginaf3000" type="hidden" value="'+params[101]+'" /><input id="lppf3000" name="lppf3000" type="hidden" value="'+params[102]+'" />';
 	xajax_f3000_HtmlTabla(params);
 	}
-// TODO
-function cambiacanal(){
-	window.document.frmedita.saiucanal.value = document.getElementById('canales').value;
-	window.document.frmedita.paso.value=0;
-	window.document.frmedita.submit();
-}
-// TODO
 </script>
 <?php
 if ($_REQUEST['paso']!=0){
@@ -1110,27 +1143,6 @@ if ($_REQUEST['paso']!=0){
 <input id="vdtipointeresado" name="vdtipointeresado" type="hidden" value="<?php echo $_REQUEST['vdtipointeresado']; ?>" />
 <input id="vdidtelefono" name="vdidtelefono" type="hidden" value="<?php echo $_REQUEST['vdidtelefono']; ?>" />
 <div id="div_sector1">
-<!-- TODO -->
-<div class="areaform"> 
-<div class="areatrabajo">
-<div class="GrupoCamposAyuda">
-<div class="salto5px"></div>
-<label class="Label160">
-<?php
-echo $ETI['saiucanal'];
-?>
-</label>
-<label class="Label160">
-<?php
-echo $html_saiucanal;
-?>
-<input id="saiucanal" name="saiucanal" type="hidden" value="<?php echo $_REQUEST['saiucanal']; ?>" />
-</label>
-<div class="salto5px"></div>
-</div>
-</div>
-</div>
-<!-- TODO -->
 <?php 
 switch ($iPiel) {
 	case 2:
@@ -1568,9 +1580,6 @@ echo $html_saiu21solucion;
 ?>
 </label>
 <div class="salto1px"></div>
-<?php
-if (false) {
-?>
 <label class="Label250">
 <?php
 echo $ETI['saiu21paramercadeo'];
@@ -1582,13 +1591,6 @@ echo $html_saiu21paramercadeo;
 ?>
 </label>
 <div class="salto1px"></div>
-<?php
-} else {
-?>
-<input id="saiu21paramercadeo" name="saiu21paramercadeo" type="hidden" value="<?php echo $_REQUEST['saiu21paramercadeo']; ?>"/>
-<?php
-}
-?>
 <label class="Labe250">
 <?php
 echo $ETI['saiu21idcaso'];

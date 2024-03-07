@@ -23,7 +23,8 @@ function f2350_HTMLComboV2_core50idperaca($objDB, $objCombos, $valor){
 	if (!file_exists($mensajes_todas)){$mensajes_todas=$APP->rutacomun.'lg/lg_todas_es.php';}
 	require $mensajes_todas;
 	$objCombos->nuevo('core50idperaca', $valor, true, '{'.$ETI['msg_todos'].'}');
-	$objCombos->sAccion='RevisaLlave();';
+	$objCombos->iAncho = 600;
+	// $objCombos->sAccion='RevisaLlave();';
 	//Solo los peracas donde haya encuestas.
 	$sIds='-99';
 	$sSQL='SELECT cara01idperaca FROM cara01encuesta GROUP BY cara01idperaca';

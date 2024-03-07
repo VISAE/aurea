@@ -5,6 +5,7 @@ $APP->tipo_doc='CC';
 $APP->idserver=4;
 $APP->tiempolimite=120;
 $APP->utf8=0;
+$APP->piel=2;
 $APP->rutacomun='../ulib/';
 $APP->rutaconfig='';
 $APP->urltablero='miscursos.php';

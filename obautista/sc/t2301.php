@@ -144,6 +144,7 @@ if (isset($_REQUEST['v10'])==0){$_REQUEST['v10']='';}
 if (isset($_REQUEST['v11'])==0){$_REQUEST['v11']='';}
 if (isset($_REQUEST['v12'])==0){$_REQUEST['v12']='';}
 if (isset($_REQUEST['v13'])==0){$_REQUEST['v13']='';}
+if (isset($_REQUEST['v14'])==0){$_REQUEST['v14']='';}
 if (isset($_REQUEST['rdebug'])==0){$_REQUEST['rdebug']=0;}
 $bEntra=true;
 $bDebug=false;
@@ -194,6 +195,7 @@ if ($bEntra){
 	$sDato='UNIVERSIDAD NACIONAL ABIERTA Y A DISTANCIA - UNAD';
 	$objplano->AdicionarLinea($sDato);
 	$sWhere='';
+	$sWhereAdd='';
 	$sSQLadd='';
 	$sSQLadd1='';
 	if ($cara50idperiodo!=''){
@@ -365,6 +367,25 @@ if ($bEntra){
 			$sWhere=''.$sWhere.'TB.cara01idperiodoacompana='.$cara50periodoacomp.' AND ';
 		}
 	}
+	if ($_REQUEST['v14']!='') {
+		$sdatos='';
+		$cara50listadoc='';
+		$sListaDoc=cadena_limpiar($_REQUEST['v14'],"0123456789\n");
+		$cara50listadoc=$cara50listadoc . implode('","', array_filter(explode("\n",$sListaDoc)));
+		if ($cara50listadoc!='') {
+			$sSQL = 'SELECT unad11id FROM unad11terceros WHERE unad11doc IN ("' . $cara50listadoc . '")';
+			$tabla=$objDB->ejecutasql($sSQL);
+			while ($fila=$objDB->sf($tabla)){
+				if ($sdatos != '') {
+					$sdatos = $sdatos . ', ';
+				}
+				$sdatos = $sdatos . $fila['unad11id'];
+			}
+			if ($sdatos!='') {
+				$sWhereAdd = $sWhereAdd . 'cara01idtercero IN (' .$sdatos . ') AND ';
+			}
+		}
+	}	
 	$sNombrePlanoFinal=$sTituloRpt.'.csv';
 	/* Alistar los arreglos para las tablas hijas */
 	$acara01idperaca=array();
@@ -522,7 +543,7 @@ if ($bEntra){
 		}
 	$sSQL='SELECT TB.* 
 	FROM cara01encuesta AS TB'.$sTablaConvenio.' 
-	WHERE '.$sSQLadd1.$sWhere.' TB.cara01completa="S"';
+	WHERE '.$sSQLadd1.$sWhere.$sWhereAdd.' TB.cara01completa="S"';
 	if ($bDebug){
 		//$objplano->AdicionarLinea($sSQL);
 	}

@@ -4,12 +4,25 @@
 --- angel.avellaneda@unad.edu.co - http://www.unad.edu.co
 --- Modelo Versión 2.25.4 domingo, 19 de julio de 2020
 */
-/** Archivo saiuchat.php.
-* Modulo 3020 saiu20chat.
+/** Archivo saiucorreo.php.
+* Modulo 3020 saiu20correo.
 * @author Angel Mauro Avellaneda Barreto - angel.avellaneda@unad.edu.co
 * @param debug=1 (Opcional), bandera para indicar si se generan datos de depuración
 * @date domingo, 19 de julio de 2020
 */
+$bEnSesion = false;
+if ((int)$_SESSION['unad_id_tercero'] > 0) {
+	$bEnSesion = true;
+}
+if (!$bEnSesion) {
+	if ($bDebug) {
+		echo 'No se encuentra una sesi&oacute;n. [' . $APP->rutacomun . ']-[' . $_SESSION['unad_id_tercero'] . ']';
+		die();
+	}
+	$_SESSION['unad_redir'] = 'saiucorreo.php';
+	header('Location:index.php');
+	die();
+}
 $iCodModulo=3020;
 $audita[1]=false;
 $audita[2]=true;

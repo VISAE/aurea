@@ -181,7 +181,7 @@ function f3021_Combosaiu21temasolicitud($aParametros){
 	$objDB->CerrarConexion();
 	$objResponse=new xajaxResponse();
 	$objResponse->assign('div_saiu21temasolicitud', 'innerHTML', $html_saiu21temasolicitud);
-	$objResponse->call('$("#saiu21temasolicitud").chosen()');
+	$objResponse->call('$("#saiu21temasolicitud").chosen({width:"100%"})');
 	return $objResponse;
 	}
 function f3021_HTMLComboV2_saiu21idprograma($objDB, $objCombos, $valor, $vrsaiu21idescuela){
@@ -261,7 +261,7 @@ function f3021_Combosaiu21idprograma($aParametros){
 	$objDB->CerrarConexion();
 	$objResponse=new xajaxResponse();
 	$objResponse->assign('div_saiu21idprograma', 'innerHTML', $html_saiu21idprograma);
-	$objResponse->call('$("#saiu21idprograma").chosen()');
+	$objResponse->call('$("#saiu21idprograma").chosen({width:"100%"})');
 	return $objResponse;
 	}
 function f3021_ExisteDato($datos){
@@ -527,7 +527,7 @@ ORDER BY TB.saiu21agno DESC, TB.saiu21mes DESC, TB.saiu21dia DESC, TB.saiu21tipo
 			}
 		*/
 		if ($bAbierta){
-			$sLink='<a href="javascript:cargaridf3021('.$filadet['saiu21id'].')" class="lnkresalte">'.$ETI['lnk_cargar'].'</a>';
+			$sLink='<a href="javascript:cargaridf3021('.$filadet['saiu21agno'].','.$filadet['saiu21id'].')" class="lnkresalte">'.$ETI['lnk_cargar'].'</a>';
 			}
 		$et_fecha=fecha_armar($filadet['saiu21dia'], $filadet['saiu21mes'], $filadet['saiu21agno']);
 		$res=$res.'<tr'.$sClass.'>

@@ -2902,7 +2902,9 @@ function f12206_CambiarDeCentro($core01id, $idZonaDest, $idCentroDest, $sNota, $
 	$DATA['corf06estado'] = 1;
 	$corf06id = 0;
 	//Revisar la matricula para el periodo.
-	$sSQL = 'SELECT core01idtercero, core01idprograma, core01idescuela, core01idzona, core011idcead FROM core01estprograma WHERE core01id=' . $core01id;
+	$sSQL = 'SELECT core01idtercero, core01idprograma, core01idescuela, core01idzona, core011idcead 
+	FROM core01estprograma AS TB
+	WHERE core01id=' . $core01id;
 	$tabla16 = $objDB->ejecutasql($sSQL);
 	if ($objDB->nf($tabla16) > 0) {
 		$fila16 = $objDB->sf($tabla16);
@@ -2935,8 +2937,24 @@ function f12206_CambiarDeCentro($core01id, $idZonaDest, $idCentroDest, $sNota, $
 			$sEstadoNov = $acorf06estado[$fila['corf06estado']];
 			$sError = 'Ya existe una solicitud de cambio de centro por favor espere a que la solicitud inicial sea resuelta. [Estado: <b>' . $sEstadoNov . '</b>]';
 		}
+		$iHoy = fecha_DiaMod();
+		if ($sError != '') {
+			$iHace6Meses = fecha_NumSumarDias($iHoy, 180);
+			$sSQL = 'SELECT TB.corf06fecha 
+			FROM corf06novedad AS TB 
+			WHERE TB.corf06idestudiante=' . $idEstudiante . ' AND TB.corf06tiponov=6 AND TB.corf06fecha>' . $iHace6Meses .'
+			ORDER BY TB.corf06fecha DESC';
+			$tabla = $objDB->ejecutasql($sSQL);
+			if ($objDB->nf($tabla) > 0) {
+				$fila = $objDB->sf($tabla);
+				$sError = 'Registramos una solicitud de cambio de centro en la fecha ' . formato_FechaLargaDesdeNumero($fila['corf06fecha'], true). ', se permite radicar una solicitud de cambio de centro una &uacute;nica vez cada seis meses.';
+			}
+		}
 	} else {
 		$sError = 'No se encuentra registro de la matricula.';
+	}
+	if ($sError == '') {
+		//@@@@ --- Condiciones adicionales que puedan surgir.
 	}
 	if ($sError == '') {
 		list($DATA, $sError, $iTipoError, $bCerrando, $sErrorCerrando, $sDebugG) = f12206_RegistrarNovedad($DATA, $objDB, $bDebug);
@@ -2944,19 +2962,6 @@ function f12206_CambiarDeCentro($core01id, $idZonaDest, $idCentroDest, $sNota, $
 	}
 	if ($sError == '') {
 		$corf06id = $DATA['corf06id'];
-		/*
-		$sCampos12207='corf07idnovedad, corf07idcurso, corf07id, corf07tipo';
-		$corf07tipo=2;
-		$corf07id=tabla_consecutivo('corf07novedadcurso', 'corf07id', '', $objDB);
-		//Agregarle el curso
-		$sValores12207=''.$corf06id.', '.$idCurso.', '.$corf07id.', '.$corf07tipo.'';
-		$sSQL='INSERT INTO corf07novedadcurso ('.$sCampos12207.') VALUES ('.$sValores12207.');';
-		if ($bDebug){$sDebug=$sDebug.fecha_microtiempo().' Guardar 12207 '.$sSQL.'<br>';}
-		$result=$objDB->ejecutasql($sSQL);
-		if ($result==false){
-			//@@@ Fallo... que haremos... reversar???
-			}
-		*/
 		if (trim($sNota) != '') {
 			f12206_AdicionarNota($corf06id, $sNota, $objDB, $bDebug);
 		}
@@ -3054,6 +3059,8 @@ function f3000_TablaDetallePQRS($aParametros, $objDB, $bDebug=false){
 	if (isset($aParametros[107])==0){$aParametros[107]='';}
 	//$aParametros[103]=numeros_validar($aParametros[103]);
 	$sDebug='';
+	$pagina = 1;
+	$lineastabla = 20;
 	$idTercero=$aParametros[100];
 	$idUnidad=numeros_validar($aParametros[103]);
 	$idEquipo=numeros_validar($aParametros[104]);
@@ -3070,13 +3077,14 @@ function f3000_TablaDetallePQRS($aParametros, $objDB, $bDebug=false){
 		//}
 	$sLeyenda='';
 	//if ((int)$idUnidad==0){$sLeyenda='No ha seleccionado una unidad funcional';}
+	$sBotones = '<input id="paginaf3000" name="paginaf3000" type="hidden" value="'.$pagina.'"/><input id="lppf3000" name="lppf3000" type="hidden" value="'.$lineastabla.'"/>';
 	if ($sLeyenda!=''){
 		$sLeyenda='<div class="salto1px"></div>
 <div class="GrupoCamposAyuda">
 '.$sLeyenda.'
 <div class="salto1px"></div>
 </div>';
-		return array(utf8_encode($sLeyenda.'<input id="paginaf3000" name="paginaf3000" type="hidden" value="'.$pagina.'"/><input id="lppf3000" name="lppf3000" type="hidden" value="'.$lineastabla.'"/>'), $sDebug);
+		return array($sLeyenda . $sBotones, $sDebug);
 		die();
 		}
 	$sSQLadd='';
@@ -3183,7 +3191,11 @@ function f3000_TablaDetallePQRS($aParametros, $objDB, $bDebug=false){
 		WHERE saiu05tiporadicado=1 ' . $sWhere . '';
 	}
 	if ($bDebug){$sDebug=$sDebug.fecha_microtiempo().' Tabla detalle SQL: ' . $sSQL.'<br>';}
-	if ($sSQL != '') {
+	if ($sSQL == '') {
+		//return array($sBotones, $sDebug);
+		$sSQL = 'SELECT 1 FROM unad11terceros WHERE unad11id=-99';
+		$tabladetalle=$objDB->ejecutasql($sSQL);
+	} else {
 		$sSQLlista=str_replace("'","|",$sSQL);
 		$sSQLlista=str_replace('"',"|",$sSQLlista);
 		$sErrConsulta='<input id="consulta_3000" name="consulta_3000" type="hidden" value="'.$sSQLlista.'"/>
@@ -3356,10 +3368,12 @@ function f3000_HtmlTablaPQRS($aParametros){
 	$objResponse->assign('div_f3000tiemponaranja_1', 'innerHTML', $aTiempoNaranja[1]);
 	$objResponse->assign('div_f3000tiempoverde_1', 'innerHTML', $aTiempoVerde[1]);
 	if ($iIndiceSatisf == 0) {
-		$objResponse->assign('div_f3000indicesatisf', 'innerHTML', '_');
+		$objResponse->assign('div_f3000indicesatisf_0', 'innerHTML', '_');
+		$objResponse->assign('div_f3000indicesatisf_1', 'innerHTML', '_');
 	} else {
 		$iIndiceSatisf = number_format($iIndiceSatisf,2,',','');
-		$objResponse->assign('div_f3000indicesatisf', 'innerHTML', $iIndiceSatisf . '%');
+		$objResponse->assign('div_f3000indicesatisf_0', 'innerHTML', $iIndiceSatisf);
+		$objResponse->assign('div_f3000indicesatisf_1', 'innerHTML', $iIndiceSatisf);
 	}
 	if ($bDebug){
 		$objResponse->assign('div_debug', 'innerHTML', $sDebug);
