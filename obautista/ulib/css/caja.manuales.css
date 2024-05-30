@@ -1,0 +1,120 @@
+html{
+    font-size: 8px;
+}
+
+.mogu-a{
+    display: inline-flex;
+    justify-content: center;
+    align-items: center;
+    gap: 5px;
+    font-family: "Open Sans", sans-serif;
+    padding: 0px;
+    border-radius: 5px;
+    transition: transform .3s;
+    padding: 8px 16px;
+    text-decoration: none !important;
+    transition: transform .3s;
+}
+
+.mogu-a:hover{  
+    transform: translate(-2.5px, -2.5px);
+    box-shadow: 4px 4px 4px rgb(0 0 0 / 60%);
+}
+
+.cajas-manuales{
+    display: inline-grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    width: 100%;
+    gap: 16px;
+    padding: 8px 8px 16px 8px;
+}
+
+.manual{
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    padding: 16px;
+    border-radius: 8px;
+    border-style: solid;
+    border-width: 2px 5px 2px 2px;
+    background-color: #f2f2f2;
+    transition: transform .3s;
+    overflow: hidden;
+    word-break: break-word;
+}
+
+.manual:hover{
+    transform: translate(-2.4px, -2.4px);
+    box-shadow: 4px 4px 4px rgb(0 0 0 / 40%);
+}
+
+.manual.blue{
+    border-color: #007390;
+}
+.manual-title.blue div h2{
+    color:#007390;
+}
+.manual.blue .mogu-a{
+    background: #007390;
+    color: #ffffff;
+}
+
+.manual.orange{
+    border-color: #f47920;
+}
+.manual.orange div h2{
+    color: #f47920;
+}
+.manual.orange .mogu-a{
+    background: #f47920;
+    color: #000000;
+}
+
+.manual-title p{
+    margin: 0;
+}
+
+.manual-title div h2{
+    margin: 0;
+    font-weight: bold;
+}
+
+.manual-content p{
+    margin: 8px 0 16px 0;
+}
+
+.manual-credits{
+    font-weight: bold;
+}
+
+.manual-title{
+    display: grid;
+    grid-template-columns: 1fr 70px;
+    align-items: center;
+}
+
+.manual svg{
+    width: 64px;
+}
+
+@media screen and (max-width: 1000px) {
+    .cajas-manuales{
+        grid-template-columns: 1fr;
+    }
+}
+
+.manual-title .izquierda{
+    grid-column: span 1 / span 1;
+}
+
+.manual-title svg{
+    grid-column: span 1 / span 1;
+}
+
+.manual-content{
+    grid-column: span 2 / span 2;
+}
+
+.dropdown-menu{
+    font-size: unset;
+}

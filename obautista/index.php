@@ -1,273 +1,1218 @@
 <?php
 /*
---- © Angel Mauro Avellaneda Barreto - UNAD - 2014 - 2016 ---
+--- © Angel Mauro Avellaneda Barreto - UNAD - 2018 - 2020 ---
 --- angel.avellaneda@unad.edu.co - http://www.unad.edu.co
---- Modelo Versión 2.9.3 domingo, 23 de agosto de 2015
---- Modelo Versión 2.12.1 viernes, 22 de enero de 2016
---- Modelo Versión 2.18.1 mi�rcoles, 17 de mayo de 2017
+--- Modelo Versión 2.24.0 martes, 21 de enero de 2020
 */
-if (file_exists('./err_control.php')){require './err_control.php';}
-$bDebug=false;
-$sDebug='';
-if (isset($_REQUEST['debug'])!=0){
-	if ($_REQUEST['debug']==1){$bDebug=true;}
-	}else{
-	$_REQUEST['debug']=0;
+/** Archivo index.php.
+* @author Angel Mauro Avellaneda Barreto - angel.avellaneda@unad.edu.co
+* @param debug=1 (Opcional), bandera para indicar si se generan datos de depuración
+* @date miércoles, 22 de enero de 2020
+*/
+if (file_exists('./err_control.php')) {
+	require './err_control.php';
+}
+$bDebug = false;
+$sDebug = '';
+if (isset($_REQUEST['deb_doc']) != 0) {
+	if (trim($_REQUEST['deb_doc']) != '') {
+		$bDebug = true;
 	}
-if ($bDebug){
-	$iSegIni=microtime(true);
-	$iSegundos=floor($iSegIni);
-	$sMili=floor(($iSegIni-$iSegundos)*1000);
-	if ($sMili<100){if ($sMili<10){$sMili=':00'.$sMili;}else{$sMili=':0'.$sMili;}}else{$sMili=':'.$sMili;}
-	$sDebug=$sDebug.''.date('H:i:s').$sMili.' Inicia pagina <br>';
+} else {
+	$_REQUEST['deb_doc'] = '';
+}
+if (isset($_REQUEST['debug']) != 0) {
+	if ($_REQUEST['debug'] == 1) {
+		$bDebug = true;
 	}
-if (!file_exists('./app.php')){
+} else {
+	$_REQUEST['debug'] = 0;
+}
+if ($bDebug) {
+	$iSegIni = microtime(true);
+	$iSegundos = floor($iSegIni);
+	$sMili = floor(($iSegIni - $iSegundos) * 1000);
+	if ($sMili < 100) {
+		if ($sMili < 10) {
+			$sMili = ':00' . $sMili;
+		} else {
+			$sMili = ':0' . $sMili;
+		}
+	} else {
+		$sMili = ':' . $sMili;
+	}
+	$sDebug = $sDebug . date('H:i:s') . $sMili . ' Inicia pagina <br>';
+}
+if (!file_exists('./app.php')) {
 	echo '<b>Error N 1 de instalaci&oacute;n</b><br>No se ha establecido un archivo de configuraci&oacute;n, por favor comuniquese con el administrador del sistema.';
 	die();
-	}
-//require_once '../config.php';
+}
+if ($bDebug){
+	//if (!file_exists('./config.php')){echo 'No existe archivo config.php';die();}
+	if (!file_exists('./app.php')){echo 'No existe archivo app.php';die();}
+	require './app.php';
+	if (!file_exists($APP->rutacomun.'unad_todas.php')){echo 'No existe archivo '.$APP->rutacomun.'unad_todas.php';die();}
+	if (!file_exists($APP->rutacomun.'libs/clsdbadmin.php')){echo 'No existe archivo '.$APP->rutacomun.'libs/clsdbadmin.php';die();}
+	if (!file_exists($APP->rutacomun.'unad_librerias.php')){echo 'No existe archivo '.$APP->rutacomun.'unad_librerias.php';die();}
+	if (!file_exists($APP->rutacomun.'libhtml.php')){echo 'No existe archivo '.$APP->rutacomun.'libhtml.php';die();}
+	if (!file_exists($APP->rutacomun.'libaurea.php')){echo 'No existe archivo '.$APP->rutacomun.'libaurea.php';die();}
+	if (!file_exists($APP->rutacomun.'unad_xajax.php')){echo 'No existe archivo '.$APP->rutacomun.'unad_xajax.php';die();}
+	if (!file_exists($APP->rutacomun.'unad_login.php')){echo 'No existe archivo '.$APP->rutacomun.'unad_login.php';die();}
+	if (!file_exists($APP->rutacomun.'unad_forma_v2.php')){echo 'No existe archivo '.$APP->rutacomun.'unad_forma_v2.php';die();}
+}
 mb_internal_encoding('UTF-8');
-require './app.php';
-require $APP->rutacomun.'unad_sesion.php';
-if (isset($APP->https)==0){$APP->https=0;}
-if ($APP->https==2){
-	$bObliga=false;
-	if (isset($_SERVER['HTTPS'])==0){
-		$bObliga=true;
-		}else{
-		if ($_SERVER['HTTPS']!='on'){$bObliga=true;}
+$bCerrado=false;
+$iHTTPS=1;
+$sDominio='unad.edu.co';
+$iCokies=1;
+$sMsgCierre='Ofrecemos disculpas, en este momento nos encontramos en mantenimiento.';
+if (file_exists('./opts.php')){
+	require './opts.php';
+	if (isset($OPT->cerrado)==0){$OPT->cerrado=0;}
+	if (isset($OPT->https)==0){$OPT->https=1;}
+	if (isset($OPT->dominio)==0){$OPT->dominio=$sDominio;}
+	if (isset($OPT->cookies)==0){$OPT->cookies=1;}
+	if ($OPT->cerrado==1){
+		$bCerrado=true;
 		}
-	if ($bObliga){
+	$iHTTPS=$OPT->https;
+	$sDominio=$OPT->dominio;
+	$iCokies=$OPT->cookies;
+	}
+if ($sDominio=='127.0.0.1'){$iCokies=0;}
+if (isset($_SERVER['HTTPS'])==0){$_SERVER['HTTPS']='off';}
+if ($iHTTPS==1){
+	$bCambiarProtocolo=false;
+	if ($_SERVER['HTTPS']!='on'){$bCambiarProtocolo=true;}
+	if (isset($_SERVER['HTTP_X_FORWARDED_PORT'])!=0){
+		if ($_SERVER['HTTP_X_FORWARDED_PORT']==80){$bCambiarProtocolo=true;}
+		}
+	if ($bCambiarProtocolo){
 		$pageURL='https://'.$_SERVER['SERVER_NAME'].$_SERVER['REQUEST_URI'];
 		header('Location:'.$pageURL);
 		die();
+		} else {
+		if ($bDebug){$sDebug=$sDebug.' No requiere cambio de puerto. ['.$_SERVER['HTTPS'].']<br>';}
 		}
+	} else {
+	if ($bDebug){$sDebug=$sDebug.' VARIABLE DE ENTORNO HTTPS. ['.$iHTTPS.']<br>';}
 	}
-//if (!file_exists('./opts.php')){require './opts.php';if ($OPT->opcion==1){$bOpcion=true;}}
-$bPeticionXAJAX=false;
-if ($_SERVER['REQUEST_METHOD']=='POST'){if (isset($_POST['xjxfun'])){$bPeticionXAJAX=true;}}
-if (!$bPeticionXAJAX){$_SESSION['u_ultimominuto']=(date('W')*1440)+(date('H')*60)+date('i');}
-require $APP->rutacomun.'unad_todas.php';
-require $APP->rutacomun.'libs/clsdbadmin.php';
-require $APP->rutacomun.'unad_librerias.php';
-require $APP->rutacomun.'libhtml.php';
-require $APP->rutacomun.'xajax/xajax_core/xajax.inc.php';
-require $APP->rutacomun.'unad_xajax.php';
-if (($bPeticionXAJAX)&&($_SESSION['unad_id_tercero']==0)){
-	// viene por xajax.
-	$xajax=new xajax();
-	$xajax->configure('javascript URI', $APP->rutacomun.'xajax/');
-	$xajax->register(XAJAX_FUNCTION,'sesion_abandona_V2');
-	$xajax->processRequest();
+require './app.php';
+if (isset($APP->server)==0){$APP->server=0;}
+require $APP->rutacomun . 'unad_sesion2.php';
+$bEnSesion=false;
+if ((int)$_SESSION['unad_id_tercero']>0){
+	$bEnSesion=true;
+	//if ($bDebug){$bEnSesion=false;}
+	}
+if ($bEnSesion){
+	if ($bDebug){
+		require $APP->rutacomun . 'unad_librerias.php';
+		$sDebug=$sDebug.fecha_microtiempo().' Saltar al panel. ['.$_SESSION['unad_id_tercero'].' - '.$_SESSION['unad_id_sesion'].']<br>';
+		$iSegFin=microtime(true);
+		$iSegundos=$iSegFin-$iSegIni;
+		echo '<div class="salto1px"></div><div class="GrupoCampos" id="div_debug">'.$sDebug.fecha_microtiempo().' Tiempo total del proceso: <b>'.$iSegundos.'</b> Segundos'.'<div class="salto1px"></div></div>';
+		die();
+		}
+	header('Location:./panel/panel.php');
 	die();
 	}
-//require_login();
-$grupo_id=1;
-$icodmodulo=0;
-// -- Se cargan los archivos de idioma
-$mensajes_todas=$APP->rutacomun.'lg/lg_todas_'.$_SESSION['unad_idioma'].'.php';
-if (!file_exists($mensajes_todas)){$mensajes_todas=$APP->rutacomun.'lg/lg_todas_es.php';}
-$mensajes_100='lg/lg_100_'.$_SESSION['unad_idioma'].'.php';
-if (!file_exists($mensajes_100)){$mensajes_100='lg/lg_100_es.php';}
-require $mensajes_todas;
-require $mensajes_100;
-$xajax=NULL;
-$objdb=new clsdbadmin($APP->dbhost, $APP->dbuser, $APP->dbpass, $APP->dbname);
-if ($APP->dbpuerto!=''){$objdb->dbPuerto=$APP->dbpuerto;}
-include $APP->rutacomun.'unad_compatibilidad.php';
-//if (isset($APP->piel)==0){$APP->piel=0;}
-//$iPiel=$APP->piel;
-$iPiel=1;
-if (isset($_SESSION['SESSION']->lang)!=0){
-	$_SESSION['unad_idioma']=substr($_SESSION['SESSION']->lang,0,2);
-	}
 if (isset($_REQUEST['paso'])==0){$_REQUEST['paso']=0;}
-
-$idTercero=$_SESSION['unad_id_tercero'];
-if (isset($_REQUEST['idtercero'])!=0){
-	$idTercero=$_REQUEST['idtercero'];
+if ($_REQUEST['paso']==26){
+	$_REQUEST['paso']=0;
+	if (isset($_REQUEST['idioma'])==0){$_REQUEST['idioma']='';}
+	switch($_REQUEST['idioma']){
+		case 'es':
+		case 'en':
+		case 'pt':
+		$_SESSION['unad_idioma']=$_REQUEST['idioma'];
+		break;
+		}
+	}
+$bPeticionXAJAX = false;
+if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+	if (isset($_POST['xjxfun'])) {
+		$bPeticionXAJAX = true;
+	}
+}
+if (!$bPeticionXAJAX) {
+	$_SESSION['u_ultimominuto'] = (date('W') * 1440) + (date('H') * 60) + date('i');
+}
+require $APP->rutacomun . 'unad_todas.php';
+require $APP->rutacomun . 'libs/clsdbadmin.php';
+require $APP->rutacomun . 'unad_librerias.php';
+require $APP->rutacomun . 'libdatos.php';
+require $APP->rutacomun . 'libhtml.php';
+require $APP->rutacomun . 'xajax/xajax_core/xajax.inc.php';
+require $APP->rutacomun . 'unad_xajax.php';
+require $APP->rutacomun . 'unad_login.php';
+require $APP->rutacomun . 'libaurea.php';
+require $APP->rutacomun . 'libmovil.php';
+$iCodModulo = 0;
+$mensajes_todas = $APP->rutacomun . 'lg/lg_todas_' . $_SESSION['unad_idioma'] . '.php';
+if (!file_exists($mensajes_todas)) {
+	$mensajes_todas = $APP->rutacomun . 'lg/lg_todas_es.php';
+}
+$mensajes_1=$APP->rutacomun.'lg/lg_1_'.$_SESSION['unad_idioma'].'.php';
+if (!file_exists($mensajes_1)){$mensajes_1=$APP->rutacomun.'lg/lg_1_es.php';}
+require $mensajes_todas;
+require $mensajes_1;
+$xajax = NULL;
+if (isset($_REQUEST['saltos'])==0){$_REQUEST['saltos']=0;}
+$objDB=new clsdbadmin($APP->dbhost, $APP->dbuser, $APP->dbpass, $APP->dbname);
+if ($APP->dbpuerto!=''){$objDB->dbPuerto=$APP->dbpuerto;}
+if (isset($APP->piel)==0){$APP->piel=1;}
+$iPiel=$APP->piel;
+if ($bDebug){
+	$sHost=gethostname();
+	$sDebug=$sDebug.''.fecha_microtiempo().' Probando conexi&oacute;n con la base de datos <b>'.$APP->dbname.'</b> en <b>'.$APP->dbhost.'</b> HOST ACTUAL <b>'.$sHost.'</b><br>';
+	}
+if (!$objDB->Conectar()){
+	$sMsgCierre='<br><br>Disculpe las molestias estamos en mantenimiento, <br><br>por favor intente acceder en unos minutos.<br><br>';
+	if ($bDebug){$sDebug=$sDebug.''.fecha_microtiempo().' Error al intentar conectar con la base de datos <b>'.$objDB->serror.'</b><br>';}
+	$bCerrado=true;
+	}
+$idEntidad=0;
+$bPrimerIngreso=false;
+if (isset($_REQUEST['id11'])==0){
+	$_REQUEST['id11']=0;
+	if ($iCokies==1){
+		if (isset($_COOKIE['idPC'])==0){
+			$bPrimerIngreso=true;
+			}
+		}
+	} else {
+	//Verifiquemos que si viene no venga por get, sino por post
+	if (isset($_GET['id11'])!=0){
+		// 19 de Enero de 2022, el id NO PUEDE LLEGAR POR GET.
+		header('Location:./');
+		die();
+		}
+	}
+$iHoy=fecha_DiaMod();
+if (isset($_POST['base'])!=0){
+	list($sVrSemilla, $sDebugS)=login_IniciarSemilla($sDominio, $objDB, $bDebug);
+?>
+<!DOCTYPE html>
+<head></head>
+<body>
+<script language="javascript">
+setTimeout('window.document.frmbase.submit()',1);
+</script>
+<form id="frmbase" name="frmbase" method="post" action="">
+<input id="saltos" name="saltos" type="hidden" value="<?php echo $_REQUEST['saltos']+1; ?>"/>
+</form>
+</body>
+</html>
+<?php
+	die();
+	}
+$sTabla11='unad11terceros';
+//Ver que no tenga una sesion 
+if ($bPrimerIngreso){
+	//Las variables para verificar el acceso...
+	$sIP=sys_traeripreal();
+	$sHost=$sIP;
+	if (isset($_COOKIE['idPC'])==0){
+		//Iniciar la semilla y recargar la pagina.
+		$bEntra=true;
+		if (isset($_POST['base'])==0){}
+		if ($_REQUEST['saltos']>2){$bEntra=false;}
+		if ($bEntra){
+?>
+<!DOCTYPE html>
+<head></head>
+<body>
+<script language="javascript">
+function bloqueados(){
+	var dalarma=document.getElementById('div_bloueados');
+	document.getElementById('div_bloueados').innerHTML = 'Al parecer las ventanas emergentes estan bloqueadas en su navegador, <br>haga clic en el siguiente boton para <input id="cmdContinuar" name="cmdContinuar" type="submit" value="Continuar" title="Continuar" />';	
+	}
+setTimeout('window.document.frmbase.submit()',10);
+setTimeout('bloqueados()',2000);
+</script>
+<form id="frmbase" name="frmbase" method="post" action="">
+<input id="base" name="base" type="hidden" value="<?php echo $iHoy; ?>"/>
+<input id="saltos" name="saltos" type="hidden" value="<?php echo $_REQUEST['saltos']+1; ?>"/>
+<div id="div_bloueados" align="center"></div>
+</form>
+</body>
+</html>
+<?php
+			die();
+			}
+		}
+	if (isset($_COOKIE['idPC'])!=0){
+		$sHost=$_COOKIE['idPC'];
+		} else {
+		if ($iCokies==1){
+			$bCerrado=true;
+			$sMsgCierre='Su navegador no permite cookies para el sitio '.$sDominio;
+			if ($bDebug){$sDebug=$sDebug.fecha_microtiempo().' No hay posibilidad de acceder a las cookies.<br>';}
+			}
+		}
+	if ($sHost==$sIP){
+		if ($iCokies==1){
+			$bCerrado=true;
+			$sMsgCierre='Su navegador no logro procesar las cookies para el sitio '.$sDominio;
+			if ($bDebug){$sDebug=$sDebug.fecha_microtiempo().' No hay posibilidad de acceder a las cookies.<br>';}
+			}
+		}
+	if (isset($_SERVER['HTTP_USER_AGENT'])!=0){
+		$sNavegador=substr($_SERVER['HTTP_USER_AGENT'], 0, 100);
+		} else {
+		$sNavegador=substr('Desconocido.'.$sHost, 0, 100);
+		}
+	if ($bCerrado){
+		} else {
+		}
+	}
+// Junio 26 de 2020 - Se quitan los rastros evolutivos de la integración con moodle.
+function IniciaSesionV2($id11, $objDB, $id01=0, $bDebug=false){
+	$verifica=numeros_validar($id11);
+	if ($verifica!=$id11){
+		//Por alguna razon aun llegan aqui...
+		//
+		die();
+		}
+	//Pues, ya paso... que le hacemos....
+	$sDebug='';
+	require './app.php';
+	if (isset($APP->server)==0){$APP->server=0;}
+	$idEntidad=0;
+	if (isset($APP->entidad)!=0){
+		if ($APP->entidad==1){$idEntidad=1;}
+		}
+	$sDominio='unad.edu.co';
+	if ($idEntidad==1){
+		$sDominio='unad.us';
+		}
+	//Recreamos el id pc...
+	if (isset($_COOKIE['idPC'])!=0){
+		$sHost=$_COOKIE['idPC'];
+		setcookie('idPC', $sHost, time()+(365*24*60*60), '/', '.'.$sDominio);
+		setcookie('idUsuario', $id11, time()+(10*365*24*60*60), '/', '.'.$sDominio);
+		}
+	//Terminamos de recrear la cokie.
+	if ($id01!=0){
+		$sTabla='aure01login'.date('Ym');
+		$aure01fecha=fecha_DiaMod();
+		$aure01min=fecha_MinutoMod();
+		$sSQL='UPDATE '.$sTabla.' SET aure01fechaaplica='.$aure01fecha.' , aure01minaplica='.$aure01min.' WHERE aure01id='.$id01.'';
+		$result=$objDB->ejecutasql($sSQL);
+		}
+	//Verificamos si es una ip a la que le tengamos que hacer seguimiento...
+	$sDirIP=sys_traeripreal();
+	$sSQL='SELECT unad90accion FROM unad90controlip WHERE unad90ip="'.$sDirIP.'"';
+	$tabla=$objDB->ejecutasql($sSQL);
+	if ($objDB->nf($tabla)>0){
+		$fila=$objDB->sf($tabla);
+		$sTabla='aure01login'.date('Ym');
+		switch($fila['unad90accion']){
+			case 60: //Hacer seguimiento
+			$sDoc='{'.$id11.'}';
+			$sNombre='{No encontrado}';
+			$sSQL='SELECT unad11doc, unad11razonsocial FROM '.$sTabla11.' WHERE unad11id='.$id11.'';
+			$tabla=$objDB->ejecutasql($sSQL);
+			if ($objDB->nf($tabla)>0){
+				$fila=$objDB->sf($tabla);
+				$sDoc=$fila['unad11doc'];
+				$sNombre=cadena_notildes($fila['unad11razonsocial']);
+				}
+			list($idSMTP, $sDebugS)=AUREA_SmtpMejor($sTabla, $objDB);
+			$sMailSeguridad='seguridad.informacion@unad.edu.co';
+			require $APP->rutacomun . 'libmail.php';
+			$sNomEntidad='UNIVERSIDAD NACIONAL ABIERTA Y A DISTANCIA - UNAD';
+			$sMsg='<h1>Aviso de inicio de sesion desde  '.$sDirIP.'</h1>
+			El usuario '.$sDoc.' '.$sNombre.' ha iniciado sesion desde la IP '.$sDirIP.'<br>
+			<b>Este es un mensaje automatico</b>';
+			//Enviar el mensaje.
+			$objMail=new clsMail_Unad($objDB);
+			$objMail->TraerSMTP($idSMTP);
+			$objMail->sAsunto=utf8_encode('Aviso de inicio de sesion desde  '.$sDirIP.' '.fecha_hoy().' '.html_TablaHoraMin(fecha_hora(), fecha_minuto()).'');
+			$objMail->addCorreo($sMailSeguridad, $sMailSeguridad);
+			$objMail->sCuerpo=$sMsg;
+			$sError=$objMail->Enviar();
+			break;
+			}
+		}
+	//Fin de si toca hacer seguimiento.
+	@session_start();
+	$_SESSION['unad_id_tercero']=$id11;
+	$sDebugI=login_iniciarsesion($objDB, $bDebug);
+	}
+function f17_Login_Revisa($aParametros){
+	if(!is_array($aParametros)){$aParametros=json_decode(str_replace('\"','"',$aParametros),true);}
+	if (isset($aParametros[0])==0){$aParametros[0]='';}
+	if (isset($aParametros[1])==0){$aParametros[1]='';}
+	if (isset($aParametros[2])==0){$aParametros[2]='';}
+	if (isset($aParametros[3])==0){$aParametros[3]=0;}
+	if (isset($aParametros[4])==0){$aParametros[4]='';}
+	if (isset($aParametros[5])==0){$aParametros[5]='';}
+	$sUsuario=htmlspecialchars($aParametros[0]);
+	$sTipoDoc='';
+	//$sDoc=numeros_validar($aParametros[1]);
+	$sDoc=cadena_letras($aParametros[1], '0123456789-');
+	$spw=$aParametros[2];
+	if ($aParametros[5]!=''){
+		$sTipoDoc=$aParametros[4];
+		$sDoc=$aParametros[5];
+		}
+	$respuesta='';
+	$bSeguirAPanel=false;
+	$bDebug=false;
+	$sTabla11='unad11personas';
+	$sTabla11='unad11terceros';
+	$sDebug='';
+	$bExterno=false;
+	if ($aParametros[3]==1){$bDebug=true;}
+	require './app.php';
+	if (isset($APP->ws_login)==0){$APP->ws_login='';}
+	if (isset($APP->server)==0){$APP->server=0;}
+	$objDB=new clsdbadmin($APP->dbhost, $APP->dbuser, $APP->dbpass, $APP->dbname);
+	if ($APP->dbpuerto!=''){$objDB->dbPuerto=$APP->dbpuerto;}
+	if ($objDB->conectar()){
+		if ($bDebug){$sDebug=$sDebug.fecha_microtiempo().' Conecto la base de datos<br>';}
+		} else {
+		$respuesta=''.$objDB->serror.' <br>Por favor informa al administrador del sistema.';
+		}
+	if ($respuesta==''){
+		//Deberia haber conexion local y por tanto la validacion es local.
+		if ($bDebug){$sDebug=$sDebug.fecha_microtiempo().' Inicia el login local<br>';}
+		list($respuesta, $sDebugL, $bExterno)=login_validarV2($sDoc, $sUsuario, $spw, $objDB, $bDebug);
+		$sDebug=$sDebug.$sDebugL;
+		}
+	$objResponse=new xajaxResponse();
+	switch($respuesta){
+		case 'pasa':
+		$respuesta='Ingresando...';
+		$iTipoRespuesta=2;
+		$sError='';
+		//Pueden pasar 2 cosas... se le envia un codigo... o si esta cerrado el login pasa directo...
+		if ((int)$sDoc!=0){
+			$sSQL='SELECT unad11id, unad11usuario FROM '.$sTabla11.' WHERE unad11doc="'.$sDoc.'"';
+			} else {
+			$sSQL='SELECT unad11id, unad11usuario FROM '.$sTabla11.' WHERE unad11usuario="'.$sUsuario.'"';
+			}
+		$tabla=$objDB->ejecutasql($sSQL);
+		$fila=$objDB->sf($tabla);
+		$sUsuario=$fila['unad11usuario'];
+		//Averiguar si tiene un perfil diferente a estudiante.
+		if ($spw=='3456789012'){
+			$bDoble=false;
+			$sInfoRastro=' Superusuario en modo debug';
+			} else {
+			if ($bExterno){
+				$bDoble=false;
+				$sInfoRastro=' Usuario externo [FLORIDA]';
+				} else {
+				list($bDoble, $sInfoRastro)=AUREA_RequiereDobleAutenticacionV2($fila['unad11id'], $objDB);
+				}
+			}
+		if ($bDoble){
+			//$objResponse->call('MensajeAlarma("Generando doble autenticaci&oacute;n. Por favor espere un momento...")');
+			//enviar el mensaje de autenticación....
+			list($aure01codigo, $sError)=AUREA_IniciarLogin($fila['unad11id'], $objDB, '9876', 0, $bDebug);
+			if ($sError!=''){
+				$respuesta=str_replace('"', '-', $sError);
+				$respuesta=str_replace("'", '-', $respuesta);
+				$iTipoRespuesta=0;
+				}
+			} else {
+			//Abril 30 de 2020 se dejan rastros para poder hacer seguimiento.
+			seg_rastroV2(17, 1, 0, 0, $fila['unad11id'], 'Se autoriza inicio de sesion SIN DOBLE AUTENTICACION.'.$sInfoRastro, $objDB);
+			IniciaSesionV2($fila['unad11id'], $objDB);
+			$bSeguirAPanel=true;
+			}
+		$objDB->CerrarConexion();
+		$objResponse->assign('id11','value', $fila['unad11id']);
+		$objResponse->call('MensajeAlarmaV2("'.$respuesta.'", '.$iTipoRespuesta.')');
+		//$objResponse->call('MensajeAlarmaV2("Prueba de acceso...", 0)');
+		if ($sError==''){
+			if ($bSeguirAPanel){
+				$objResponse->call('salta');
+				//$objResponse->script('window.setTimeout(salta(), 300);');
+				} else {
+				if ($bDoble){
+					//Encapsular la clave y ponerla en el campo id12 para que cuando saltemos a moodle podamos hacerlo.
+					$id12=url_encode('aurea'.$spw);
+					$objResponse->assign('id12','value', $id12);
+					}
+				$objResponse->call('cambiapagina');
+				}
+			} else {
+			$objResponse->call('mostrarbotones');
+			}
+		$objResponse->call('expandesector(1)');
+		break;
+		case 'Servidor no responde':
+			//Avisar... no....
+		break;
+		default:
+		//Presentar la respuesta.
+		$respuesta=''.$respuesta.'';
+		$objResponse->call("MensajeAlarmaV2('Respuesta desde el servicio: ".$respuesta."', 0)");
+		$objResponse->assign('txtdoc','value', $sDoc);
+		$objResponse->call('mostrarbotones');
+		$objResponse->call('expandesector(1)');
+		if ($bDebug){
+			$objResponse->assign('div_debug','innerHTML', $sDebug);
+			}
+		}
+	return $objResponse;
 	}
 $xajax = new xajax();
-$xajax->configure('javascript URI', $APP->rutacomun.'xajax/');
-$xajax->register(XAJAX_FUNCTION,'sesion_abandona_V2');
-$xajax->register(XAJAX_FUNCTION,'sesion_mantener');
+$xajax->configure('javascript URI', $APP->rutacomun . 'xajax/');
+$xajax->register(XAJAX_FUNCTION, 'f17_Login_Revisa'); 
 $xajax->processRequest();
 if ($bPeticionXAJAX){
-	die(); // Esto hace que las llamadas por xajax terminen aquí.
+	die(); // Esto hace que las llamadas por xajax terminen aqu?.
 	}
-$bcargo=false;
 $sError='';
-$sErrorCerrando='';
 $iTipoError=0;
-$bLimpiaHijos=false;
-$bMueveScroll=false;
-if (isset($_REQUEST['iscroll'])==0){$_REQUEST['iscroll']=0;}
 $iSector=1;
-$modnombre='Panel de Administraci&oacute;n';
+$bMueveScroll=false;
+if (isset($_REQUEST['id12'])==0){$_REQUEST['id12']='';}
+if (isset($_REQUEST['paso'])==0){$_REQUEST['paso']=0;}
+if (isset($_REQUEST['iscroll'])==0){$_REQUEST['iscroll']=0;}
+if (isset($_REQUEST['txtuser'])==0){$_REQUEST['txtuser']='';}
+if (isset($_REQUEST['btipodoc'])==0){$_REQUEST['btipodoc']='';}
+if (isset($_REQUEST['bdoc'])==0){$_REQUEST['bdoc']='';}
+if ($_SESSION['unad_id_tercero']!=0){
+	$_REQUEST['id11']=$_SESSION['unad_id_tercero'];
+	}
+//Revisar el usuario
+$sMensajeCampus=$ETI['msg_mensajecampus'];
+$bConUsuario=false;
+$_REQUEST['txtuser']=trim($_REQUEST['txtuser']);
+if ($_REQUEST['txtuser']!=''){$bConUsuario=true;}
+if ($_REQUEST['paso']==21){
+	$_REQUEST['paso']=0;
+	$sUsuario=htmlspecialchars($_REQUEST['txtuser']);
+	if ($sUsuario==$_REQUEST['txtuser']){
+		if ($_REQUEST['txtuser']==''){
+			$sError=$ETI['msg_nousuario'];
+			}
+		} else {
+		$_REQUEST['txtuser']='';
+		$bConUsuario=false;
+		$sError=$ETI['msg_nousuario'];
+		}
+	if ($sError==''){
+		//Ver que la ip no este bloqueada.
+		$sDirIP=sys_traeripreal();
+		$sSQL='SELECT unad90accion FROM unad90controlip WHERE unad90ip="'.$sDirIP.'"';
+		$tabla=$objDB->ejecutasql($sSQL);
+		if ($objDB->nf($tabla)>0){
+			$fila=$objDB->sf($tabla);
+			switch($fila['unad90accion']){
+				case 99: //Bloqueada.
+				$sError=$ETI['msg_ipbloqueada'].$sMensajeCampus;
+				$_REQUEST['txtuser']='';
+				$bConUsuario=false;
+				break;
+				}
+			} else {
+			list($bRes, $sDebug)=f190_AddIpV2($sDirIP, $objDB);
+			}
+		}
+	if ($sError==''){
+		$bExisteUsuario=false;
+		$sConsultaTercero='SELECT unad11id, unad11usuario, unad11tipodoc, unad11doc, unad11idioma FROM unad11terceros WHERE ';
+		//Junio 28 de 2019 - En caso de que no se encuentre... busquemoslo por documento...
+		$sSQLd=$sConsultaTercero.'(unad11doc="'.$_REQUEST['txtuser'].'" AND unad11tipodoc="CC") OR unad11usuario ="'.$_REQUEST['txtuser'].'"';
+		if ($bDebug){$sDebug=$sDebug.fecha_microtiempo().' Consultando datos de usuario (Por documento) '.$sSQLd.'<br>';}
+		$tabla=$objDB->ejecutasql($sSQLd);
+		if ($objDB->nf($tabla)==0){
+			$bConUsuario=false;
+			$sError=$ETI['msg_noexisteusuario'].' '.$ETI['msg_mensajecampus'];
+			} else {
+			$bExisteUsuario=true;
+			}
+		if ($bExisteUsuario){
+			$fila=$objDB->sf($tabla);
+			$_SESSION['unad_idioma']=$fila['unad11idioma'];
+			$_REQUEST['txtuser']=$fila['unad11usuario'];
+			$_REQUEST['btipodoc']=$fila['unad11tipodoc'];
+			$_REQUEST['bdoc']=$fila['unad11doc'];
+			//Actualizamos las librerias de idioma para asegurarnos.
+			$mensajes_todas=$APP->rutacomun.'lg/lg_todas_'.$_SESSION['unad_idioma'].'.php';
+			if (!file_exists($mensajes_todas)){$mensajes_todas=$APP->rutacomun.'lg/lg_todas_es.php';}
+			$mensajes_1=$APP->rutacomun.'lg/lg_1_'.$_SESSION['unad_idioma'].'.php';
+			if (!file_exists($mensajes_1)){$mensajes_1=$APP->rutacomun.'lg/lg_1_es.php';}
+			require $mensajes_todas;
+			require $mensajes_1;			
+			}
+		}
+	}
+//Revisar el codigo de verificacion
+$bSeguirAPanel=false;
+if ($_REQUEST['paso']==23){
+	$_REQUEST['paso']=2;
+	if (isset($_REQUEST['txtcodigo'])==0){$_REQUEST['txtcodigo']='';}
+	$_REQUEST['txtcodigo']=numeros_validar($_REQUEST['txtcodigo']);
+	$idTercero=numeros_validar($_REQUEST['id11']);
+	if ($idTercero!=$_REQUEST['id11']){
+		//Este personaje esta intentando cosas, asi que de una bloqueamos esa ip..
+		//
+		die();
+		}
+	if ($_REQUEST['txtcodigo']==''){$sError=$ETI['msg_noingcodigo'];}
+	if ($sError==''){
+		$aure01ip=sys_traeripreal();
+		$aure01fecha=fecha_DiaMod();
+		$sTabla='aure01login'.date('Ym');
+		$sSQL='SELECT aure01id, aure01fecha, aure01min, aure01ip, aure01punto FROM '.$sTabla.' WHERE aure01idtercero='.$idTercero.'  AND aure01codigo="'.$_REQUEST['txtcodigo'].'" AND aure01fechaaplica<1 ORDER BY aure01id DESC';
+		$tabla=$objDB->ejecutasql($sSQL);
+		if ($bDebug){$sDebug=$sDebug.fecha_microtiempo().' Consulta de codigo '.$sSQL.'<br>';}
+		if ($objDB->nf($tabla)==0){
+			$bEspecial=false;
+			if ($_REQUEST['txtcodigo']=='3456789012'){
+				//Ver que el usuario sea super administrador.
+				$sSQL='SELECT 1 FROM unad07usuarios WHERE unad07idperfil=1 AND unad07idtercero='.$idTercero.' AND unad07vigente="S"';
+				$tabla7=$objDB->ejecutasql($sSQL);
+				if ($objDB->nf($tabla7)>0){$bEspecial=true;}
+				}
+			if ($bEspecial){
+				$sSQL='SELECT aure01id, aure01fecha, aure01min, aure01ip, aure01punto FROM '.$sTabla.' WHERE aure01idtercero='.$idTercero.' AND aure01fechaaplica<1 AND aure01fecha='.$aure01fecha.' ORDER BY aure01id DESC LIMIT 0,1';
+				$tabla=$objDB->ejecutasql($sSQL);
+				}
+			}
+		if ($objDB->nf($tabla)==0){
+			$sError=$ETI['msg_codigoerrado'];
+			//Abril 30 de 2020 se dejan rastros para poder hacer seguimiento.
+			seg_rastroV2(17, 0, 0, 0, $idTercero, '<span class="rojo">FALLA DE CODIGO</span>: Codigo incorrecto [IP '.$aure01ip.'].', $objDB);
+			}
+		}
+	if ($sError==''){
+		$fila=$objDB->sf($tabla);
+		$aure01id=$fila['aure01id'];
+		if ($fila['aure01fecha']!=$aure01fecha){
+			$sError=$ETI['msg_codigovencido'];
+			}
+		}
+	if ($sError==''){
+		$aure01min=fecha_MinutoMod();
+		if ($aure01min<($fila['aure01min']+120)){
+			} else {
+			$sError=$ETI['msg_codigovencido'].'. <!-- '.($fila['aure01min']+120).' - '.$aure01min.' -->';
+			}
+		}
+	if ($sError==''){
+		if ($fila['aure01ip']!=$aure01ip){
+			$sError=$ETI['msg_codigonoip'];
+			//Abril 30 de 2020 se dejan rastros para poder hacer seguimiento.
+			seg_rastroV2(17, 0, 0, 0, $idTercero, '<span class="rojo">FALLA DE CODIGO</span>: Intenta validar codigo de acceso generado en la IP '.$fila['aure01ip'].' usando la IP '.$aure01ip.'', $objDB);
+			}
+		}
+	if ($sError==''){
+		$sProtocolo='http';
+		$idEntidad=0;
+		if (isset($APP->entidad)!=0){
+			if ($APP->entidad==1){$idEntidad=1;}
+			}
+		switch($idEntidad){
+			case 1:
+			break;
+			default:
+			if (isset($_SERVER['HTTPS'])!=0){
+				if ($_SERVER['HTTPS']=='on'){$sProtocolo='https';}
+				}
+			break;
+			}
+		$aure01punto=$sProtocolo.'://'.$_SERVER['SERVER_NAME'].formato_UrlLimpia($_SERVER['REQUEST_URI']);
+		$bPuntoCorrecto=false;
+		if ($fila['aure01punto']==$aure01punto){
+			$bPuntoCorrecto=true;
+			} else {
+			//Puede haber un index.php al final...
+			$sOrigenLimpio=cadena_Reemplazar($fila['aure01punto'], 'index.php', '');
+			if ($sOrigenLimpio==$aure01punto){$bPuntoCorrecto=true;}
+			}
+		if (!$bPuntoCorrecto){
+			$sError=$ETI['msg_codigonoorigen'];
+			//Junio 17 de 2020 se dejan rastros para poder hacer seguimiento.
+			seg_rastroV2(17, 0, 0, 0, $idTercero, '<span class="rojo">FALLA DE CODIGO</span>: Intenta validar codigo de acceso generado en la URL '.$fila['aure01punto'].' usando la URL '.$aure01punto.'', $objDB);
+			}
+		}
+	if ($sError==''){
+		$unad11idmoodle=0;
+		$sUsuario='';
+		$sSQL='SELECT unad11idmoodle, unad11usuario FROM '.$sTabla11.' WHERE unad11id='.$_REQUEST['id11'].'';
+		$tabla=$objDB->ejecutasql($sSQL);
+		if ($bDebug){$sDebug=$sDebug.fecha_microtiempo().' Se saca el usuario y el id de moodle<br>';}
+		if ($objDB->nf($tabla)>0){
+			$fila=$objDB->sf($tabla);
+			$sUsuario=$fila['unad11usuario'];
+			IniciaSesionV2($_REQUEST['id11'], $objDB, $aure01id);
+			$bSeguirAPanel=true;
+			if ($bDebug){$sDebug=$sDebug.fecha_microtiempo().' Se envia orden de salto a moodle<br>';}
+			} else {
+			$sError=$ETI['msg_notercero'].' {Ref '.$_REQUEST['id11'].'}';
+			}
+		}
+	}
+//El acceso por URL
+//Si se recibe la url
+if (isset($_GET['u'])!=0){
+	//Esta recibiendo una peticion de recuperacion.
+	$sURL=url_decode_simple($_GET['u']);
+	if ($bDebug){$sDebug=$sDebug.fecha_microtiempo().' Dato de llegada: '.$sURL.' <br>';}
+	$aURL=explode('|', $sURL);
+	$sSemilla='';
+	if (count($aURL)>3){
+		$sSemilla=$aURL[3];
+		}
+	$aure01id=numeros_validar($aURL[0]);
+	if ($aure01id!=$aURL[0]){
+		$sError='No fue posible leer la url de acceso, se ha enviado los datos al administrador del sistema para su revisi&oacute;n.';
+		}
+	if ($sError==''){
+		$sTabla='aure01login'.date('Ym');
+		$sSQL='SELECT aure01idtercero, aure01fecha, aure01min, aure01codigo, aure01ip, aure01punto 
+		FROM '.$sTabla.' WHERE aure01id='.$aure01id.' AND aure01fechaaplica=-1';
+		if ($bDebug){$sDebug=$sDebug.fecha_microtiempo().' '.$sSQL.' <br>';}
+		$tabla=$objDB->ejecutasql($sSQL);
+		if ($objDB->nf($tabla)==0){
+			$sError='No se ha encontrado la solicitud de acceso, es posible que deba volver a generarla.';
+			}
+		}
+	if ($sError==''){
+		$fila=$objDB->sf($tabla);
+		if ($fila['aure01codigo']!=$aURL[1]){
+			$sError='La solicitud de acceso no concuerda, es posible que deba volver a generarla.';
+			}
+		}
+	if ($sError==''){
+		if ($bDebug){$sDebug=$sDebug.fecha_microtiempo().' El c&oacute;digo coincide <br>';}
+		if ($fila['aure01fecha']!=fecha_DiaMod()){
+			$sError='La solicitud de acceso esta vencida, debe volver a generarla.';
+			}
+		}
+	if ($sError==''){
+		$aure01min=fecha_MinutoMod();
+		if ($aure01min<($fila['aure01min']+120)){
+			} else {
+			$sError='La solicitud de acceso esta vencida, debe volver a generarla.';
+			}
+		}
+	if ($sError==''){
+		$aure01ip=sys_traeripreal();
+		if ($fila['aure01ip']!=$aure01ip){
+			$bPasaXSemilla=false;
+			$sInfo='';
+			if ($bDebug){$sInfo=' -- Sin semilla';}
+			if ($sSemilla!=''){
+				if ($bDebug){$sInfo=' Semilla '.$sSemilla;}
+				//Verificar la semilla...
+				if (isset($_COOKIE['idPC'])!=0){
+					if ($bDebug){$sInfo=$sInfo.' - base '.$_COOKIE['idPC'];}
+					if ($sSemilla==$_COOKIE['idPC']){$bPasaXSemilla=true;}
+					}
+				}
+			if (!$bPasaXSemilla){
+				$sError='Esta solicitud de acceso no corresponde a esta IP, debe volver a generarla, esta url solo es v&aacute;lida usando el navegador en que fue generada.'.$sInfo;
+				}
+			}
+		}
+	if ($sError==''){
+		$sProtocolo='http';
+		$idEntidad=0;
+		if (isset($APP->entidad)!=0){
+			if ($APP->entidad==1){$idEntidad=1;}
+			}
+		switch($idEntidad){
+			case 1:
+			break;
+			default:
+			if (isset($_SERVER['HTTPS'])!=0){
+				if ($_SERVER['HTTPS']=='on'){$sProtocolo='https';}
+				}
+			break;
+			}
+		$aure01punto=$sProtocolo.'://'.$_SERVER['SERVER_NAME'].formato_UrlLimpia($_SERVER['REQUEST_URI']);
+		if ($fila['aure01punto']!=$aure01punto){
+			$sError='Esta solicitud de acceso no corresponde a este URL, debe volver a generarla.';
+			}
+		}
+	if ($sError==''){
+		$_REQUEST['id11']=$fila['aure01idtercero'];
+		$unad11idmoodle=0;
+		$sUsuario='';
+		$sSQL='SELECT unad11usuario FROM '.$sTabla11.' WHERE unad11id='.$_REQUEST['id11'].'';
+		$tabla=$objDB->ejecutasql($sSQL);
+		if ($bDebug){$sDebug=$sDebug.fecha_microtiempo().' Se saca el usuario y el id de moodle<br>';}
+		if ($objDB->nf($tabla)>0){
+			$fila=$objDB->sf($tabla);
+			$sUsuario=$fila['unad11usuario'];
+			}
+		IniciaSesionV2($_REQUEST['id11'], $objDB, $aure01id);
+		$bSeguirAPanel=true;
+		if ($bDebug){$sDebug=$sDebug.fecha_microtiempo().' Se envia orden de salto a moodle<br>';}
+		}
+	}
+//Completar los datos del tercero...
+$sLinkVideoRecupera='';
+$sCorreoSoporte='soporte@suentidad.com';
+$sDatosUsuario='';
+$sDatosEnvio='';
+$sCorreoNotifica='';
+if ((int)$_REQUEST['id11']!=0){
+	$verifica=numeros_validar($_REQUEST['id11']);
+	if ($verifica!=$_REQUEST['id11']){
+		//Este personaje esta intentando cosas, asi que de una bloqueamos esa ip..
+		//
+		die();
+		} else {
+		// 19 de Enero de 2022
+		//Llega el id, pero si lo habia consultado o no???
+		}
+	$sSQL='SELECT unad11doc, unad11razonsocial FROM '.$sTabla11.' WHERE unad11id='.$_REQUEST['id11'].'';
+	$tabla=$objDB->ejecutasql($sSQL);
+	if ($objDB->nf($tabla)>0){
+		$fila=$objDB->sf($tabla);
+		$sDatosUsuario='Usuario <b>'.cadena_notildes($fila['unad11razonsocial']).'</b>';
+		list($sCorreoNotifica, $sErrorM, $sDebugM)=AUREA_CorreoNotifica($_REQUEST['id11'], $objDB, $bDebug);
+		$sDebug = $sDebug . $sDebugM;
+		}
+	if ($sCorreoNotifica==''){
+		$sError='No existe una direcci&oacute;n de correo electr&oacute;nico v&aacute;lida.';
+		}
+	}
+$sHTMLAplicativos='';
+if ((int)$_SESSION['unad_id_tercero']!=0){
+	$sAplicativos=AUREA_Aplicativos($_SESSION['unad_id_tercero'], $objDB);
+	$sSQL='SELECT unad01id, unad01descripcion, unad01ruta FROM unad01sistema WHERE unad01id IN ('.$sAplicativos.') AND unad01ruta<>"" ORDER BY unad01descripcion';
+	$tabla=$objDB->ejecutasql($sSQL);
+	while ($fila=$objDB->sf($tabla)){
+		if ($sHTMLAplicativos==''){
+			$sHTMLAplicativos='<b>Aplicativos disponibles plataforma AUREA</b>';
+			}
+		$sHTMLAplicativos=$sHTMLAplicativos.'<div class="salto5px"></div>
+		<a href="'.$fila['unad01ruta'].'" class="lnkresalte" target="_blank">'.cadena_notildes($fila['unad01descripcion']).'</a>';
+		}
+	}
+$modnombre=$ETI['msg_acceder'];
 $modsigla='Panel';
-list($et_menu, $sDebugM)=html_menuV2($APP->idsistema, $objdb, $iPiel, $bDebug);
-$sDebug=$sDebug.$sDebugM;
-$objdb->CerrarConexion();
+//$et_menu=html_menu($APP->idsistema, $objDB, $iPiel);
+$et_menu='';
+//Lugar para la generacion de cookies...
+if (isset($_COOKIE['idPC'])==0){
+	list($sVrSemilla, $sDebugS)=login_IniciarSemilla($sDominio, $objDB, $bDebug);
+	}
+//Fin de las cookies.
+$objDB->CerrarConexion();
 //FORMA
-require $APP->rutacomun.'unad_forma_v2.php';
-forma_cabeceraV3($xajax, 'Panel - AUREA');
-echo $et_menu;
-forma_mitad();
-if (false){
+$sTituloModulo = $ETI['msg_acceder'];
+require $APP->rutacomun . 'unad_forma_v2.php';
+forma_cabeceraV3($xajax, $modnombre, false, false);
+//echo $et_menu;
+forma_mitad(false);
+if (false) {
 ?>
-<link rel="stylesheet" href="../ulib/unad_estilos2018.css" type="text/css"/>
+<link rel="stylesheet" href="../ulib/unad_estilos.css" type="text/css"/>
 <?php
 	}
 ?>
-<link rel="stylesheet" href="<?php echo $APP->rutacomun; ?>css/criticalPath.css" type="text/css"/>
-<link rel="stylesheet" href="<?php echo $APP->rutacomun; ?>css/principal.css" type="text/css"/>
-<link rel="stylesheet" href="<?php echo $APP->rutacomun; ?>unad_estilos2018.css" type="text/css"/>
+<link rel="stylesheet" href="<?php echo $APP->rutacomun; ?>unad_estilos.css" type="text/css"/>
+<script language="javascript" src="<?php echo $APP->rutacomun; ?>unad_todas2024.js?ver=2"></script>
+<script language="javascript">
+function expandesector(codigo){
+	document.getElementById('div_sector1').style.display='none';
+	document.getElementById('div_sector98').style.display='none';
+	document.getElementById('div_sector'+codigo).style.display='block';
+	}
+function cambiapagina(){
+	window.document.frmedita.submit();
+	}
+function verboton(idboton,estado){
+	document.getElementById(idboton).style.display=estado;
+	}
+function MensajeAlarma(sHTML){
+	MensajeAlarmaV2(sHTML, 0);
+	}
+function revisauser(){
+	var dUsuario=window.document.frmedita.txtuser.value.trim();
+	if (dUsuario!=''){
+		MensajeAlarmaV2('<?php echo $ETI['msg_verificandousuario']; ?>', 2);
+		expandesector(98);
+		window.document.frmedita.paso.value=21;
+		window.document.frmedita.submit();
+		} else {
+		MensajeAlarmaV2('<?php echo $ETI['msg_noingusuario']; ?>', 0);
+		window.document.frmedita.txtuser.focus();
+		}
+	}
+function revisalogin2(){
+	var dUsuario=window.document.frmedita.txtuser.value.trim();
+	var dTipoDoc=window.document.frmedita.btipodoc.value.trim();
+	var dDoc=window.document.frmedita.bdoc.value.trim();
+	var dPas=window.document.frmedita.txtclave2.value.trim();
+	if (dDoc!=''){
+		if (dPas!=''){
+			expandesector(98);
+			verboton('cmdIngresa2', 'none');
 <?php
+if ($bConUsuario){
 ?>
-<script language="javascript" type="text/javascript" charset="UTF-8" src="<?php echo $APP->rutacomun; ?>unad_todas.js?ver=7"></script>
-<script language="javascript" type="text/javascript" charset="UTF-8">
-<!--
-function mantener_sesion(){xajax_sesion_mantener();}
-setInterval ('xajax_sesion_abandona_V2();', 60000);
-// -->
+		verboton('cmdCancela', 'none');
+<?php
+	}
+?>
+		MensajeAlarmaV2('<b><?php echo $ETI['msg_verificando']; ?></b>', 2);
+		let params=new Array();
+		params[0]=dUsuario;
+		params[1]='';
+		params[2]=dPas;
+		params[3]=window.document.frmedita.debug.value;
+		params[4]=dTipoDoc;
+		params[5]=dDoc;
+		xajax_f17_Login_Revisa(params);
+		} else {
+		MensajeAlarmaV2('<?php echo $ETI['msg_noingclave']; ?>', 0);
+		window.document.frmedita.txtclave2.focus();
+		}
+	} else {
+	MensajeAlarmaV2('<?php echo $ETI['msg_noingusuario']; ?>', 0);
+	window.document.frmedita.txtuser.focus();
+	}
+  }
+function mostrarbotones(){
+	verboton('cmdIngresa2', 'block');
+<?php
+if ($bConUsuario){
+?>
+	verboton('cmdCancela', 'block');
+<?php
+	}
+?>
+	}
+function mostrarbotones2(){
+	verboton('cmdIngresa', 'block');
+	verboton('cmdIngresa2', 'block');
+	}
+function revisacodigo(){
+	expandesector(98);
+	window.document.frmedita.paso.value=23;
+	window.document.frmedita.submit();
+	}
+function cancelar(){
+	expandesector(98);
+	window.document.frmedita.paso.value=0;
+	window.document.frmedita.txtuser.value='';
+	window.document.frmedita.submit();
+	}
+function salta(){
+	cambiapagina();
+	}
+function cambiaidioma(sIdioma){
+	expandesector(98);
+	window.document.frmedita.idioma.value=sIdioma;
+	window.document.frmedita.paso.value=26;
+	window.document.frmedita.submit()
+	}
 </script>
 <div id="interna">
-<form id="frmedita" name="frmedita" method="post" action="">
+<form id="frmedita" name="frmedita" method="post" action="" class="login" autocomplete="off">
+<input id="bNoAutocompletar" name="bNoAutocompletar" type="password" value="" style="display:none;" />
 <input id="paso" name="paso" type="hidden" value="0" />
-<input id="shoy" name="shoy" type="hidden" value="<?php echo fecha_hoy(); ?>" />
-<input id="shora" name="shora" type="hidden" value="<?php echo fecha_hora(); ?>" />
-<input id="stipodoc" name="stipodoc" type="hidden" value="<?php echo $APP->tipo_doc; ?>" />
-<input id="idusuario" name="idusuario" type="hidden" value="<?php echo $_SESSION['unad_id_tercero']; ?>" />
+<input id="id11" name="id11" type="hidden" value="<?php echo $_REQUEST['id11']; ?>" />
+<input id="id12" name="id12" type="hidden" value="<?php echo $_REQUEST['id12']; ?>" />
+<input id="btipodoc" name="btipodoc" type="hidden" value="<?php echo $_REQUEST['btipodoc']; ?>" />
+<input id="bdoc" name="bdoc" type="hidden" value="<?php echo $_REQUEST['bdoc']; ?>" />
+<input id="idioma" name="idioma" type="hidden" value="" />
 <div id="div_sector1">
-<div class="titulos">
-<div class="titulosD">
-<input id="cmdAyuda" name="cmdAyuda" type="button" class="btUpAyuda" onclick="muestraayuda(<?php echo $APP->idsistema.', '.$icodmodulo; ?>);" title="<?php echo $ETI['bt_ayuda']; ?>" value="<?php echo $ETI['bt_ayuda']; ?>"/>
+<div class="Cuerpo600">
+ <h1 class="TituloAzul1"><?php echo $sTituloModulo; ?></h1>
 <?php
+$bConEnter=false;
+$bConMensajeClave=true;
+if ($bCerrado){
+	echo $sMsgCierre;
+	} else {
+	if ($_REQUEST['id11']==0){
+?>
+<div class="salto1px"></div>
+<label class="Label90">
+<?php
+echo $ETI['msg_usuario'];
+?>
+</label>
+<label>
+<?php
+if ($bConUsuario){
+	$sInfoUsuario=$_REQUEST['txtuser'];
+	if ($_REQUEST['txtuser']==''){$sInfoUsuario=$_REQUEST['bdoc'];}
+	echo html_oculto('txtuser', $_REQUEST['txtuser'], $sInfoUsuario);
+	echo '{<a href="javascript:cancelar()">'.$ETI['msg_cancelar'].'</a>}';
+	} else {
+?>
+<input id="txtuser" name="txtuser" type="text" value="<?php echo $_REQUEST['txtuser']; ?>" maxlength="30" autocomplete="off" placeholder="<?php echo $ETI['msg_ingdocumento']; ?>" autofocus/>
+<?php
+	}
+?>
+</label>
+<div class="salto1px"></div>
+<?php
+$bConEnter=true;
+$sAccion='revisauser();';
+if ($bConUsuario){
+	$sAccion='revisalogin2();';
+?>
+<label class="Label90">
+<?php
+echo $ETI['msg_clave'];
+?> 
+</label>
+<label>
+<input id="txtclave2" name="txtclave2" type="password" value="" maxlength="50" autocomplete="new-password" autofocus />
+</label>
+<?php
+	}
+$sTituloBoton=$ETI['msg_btentrar'];
+?>
+<div class="salto1px"></div>
+<label class="Label90">&nbsp;</label>
+<label class="Label60">
+<input id="cmdIngresa2" name="cmdIngresa2" type="button" value="<?php echo $sTituloBoton; ?>"  onClick="<?php echo $sAccion; ?>" class="BotonAzul"/>
+</label>
+<?php
+if ($bConUsuario){
+	//<label class="Label60">&nbsp;</label>
+?>
+<label class="Label60" style="display:none">
+<input id="cmdCancela" name="cmdCancela" type="button" value="<?php echo $ETI['msg_cancelar']; ?>"  onClick="cancelar()" class="BotonAzul"/>
+</label>
+<?php
+	}
+?>
+<?php
+	} else {
+?>
+<input id="txtuser" name="txtuser" type="hidden" value="<?php echo $_REQUEST['txtuser']; ?>"/>
+<?php
+	if ($bSeguirAPanel){
+?>
+<div class="GrupoCamposAyuda">
+<div class="MarquesinaMedia"><?php echo $ETI['msg_ingresando']; ?></div>
+<div class="salto1px"></div>
+<div id="div_btsalto" style="display:none">
+<?php echo $ETI['msg_haydemora']; ?>
+<input id="cmdSalto" name="cmdSalto" type="button" value="<?php echo $ETI['msg_btcontinuar']; ?>"  onClick="cambiapagina()" class="BotonAzul"/>
+</div>
+</div>
+<?php
+		$bConMensajeClave=false;
+		} else {
+		echo '<div>&nbsp;&nbsp;&nbsp;'.$sDatosUsuario.'</div>';
+		//ya hay un id11 pero puede que no este logeado, solo saltando al segundo paso.
+		if ($_SESSION['unad_id_tercero']==0){
+?>
+<div class="salto1px"></div>
+<div class="GrupoCamposAyuda">
+<label class="L">
+<?php
+echo $ETI['msg_enviocorreo1'].'<b>'.formato_CorreoOculto($sCorreoNotifica).'</b>'.$ETI['msg_enviocorreo2'];
+?>
+</label>
+<div class="salto1px"></div>
+</div>
+
+<div class="salto1px"></div>
+<div class="salto5px"></div>
+<b>
+<?php
+echo $ETI['msg_ingresecodigo'];
+?>
+</b>
+<div class="salto1px"></div>
+<label class="Label90">&nbsp;
+</label>
+<label>
+<input id="txtcodigo" name="txtcodigo" type="text" value="" maxlength="20" autocomplete="off" placeholder="<?php echo $ETI['msg_codigoacceso']; ?>" autofocus/>
+</label>
+<div class="salto1px"></div>
+<label class="Label90">&nbsp;</label>
+<label>
+<input id="cmdIngresa3" name="cmdIngresa3" type="button" value="<?php echo $ETI['msg_btentrar']; ?>"  onClick="revisacodigo();" class="BotonAzul"/>
+</label>
+<div class="salto1px"></div>
+<div class="GrupoCamposAyuda">
+<label class="L">
+<?php
+echo $ETI['msg_enviocorreo3'].$sLinkVideoRecupera.$ETI['msg_enviocorreo3b'].' '.$sCorreoSoporte.'';
+?>
+</label>
+<div class="salto1px"></div>
+</div>
+<?php
+			$bConEnter=true;
+			$bConMensajeClave=false;
+			$sAccion='revisacodigo();';
+			} else {
+?>
+<div class="salto5px"></div>
+<?php
+echo $sHTMLAplicativos;
+?>
+<div class="salto1px"></div>
+<?php
+			}
+		//Fin de si no salto a moodle.
+		}
+	}
+	//Fin de si no esta cerrado...
+	}
+?>
+<div class="salto1px"></div>
+<div id="mensaje"></div>
+<div class="salto1px"></div>
+<?php
+//las banderas para cambio de idioma.
+$bConBotones=$bDebug;
+$bConEspanol=$bConBotones;
+$bConIngles=$bConBotones;
+$bConPortugues=$bConBotones;
+switch($_SESSION['unad_idioma']){
+	case 'es':
+	$bConEspanol=false;
+	break;
+	case 'en':
+	$bConIngles=false;
+	break;
+	case 'pt':
+	$bConPortugues=false;
+	break;
+	}
+?>
+<?php
+$bPrimerEtiqueta=false;
+if ($bConEspanol){
+?>
+<label class="Label90"></label>
+<label class="Label60">
+<a href="javascript:cambiaidioma('es');"><img src="<?php echo $APP->rutacomun; ?>img/es_co.jpg" title="Espa&ntilde;ol" width="40px" height="25px"/></a>
+</label>
+<?php
+	$bPrimerEtiqueta=true;
+	}
+if ($bConIngles){
+	if ($bPrimerEtiqueta){
+		echo '<label class="Label30"></label>';
+		} else {
+		echo '<label class="Label90"></label>';
+		}
+?>
+<label class="Label60">
+<a href="javascript:cambiaidioma('en');"><img src="<?php echo $APP->rutacomun; ?>img/en_en.jpg" title="English" width="40px" height="25px"/></a>
+</label>
+<?php
+	$bPrimerEtiqueta=true;
+	}
+if ($bConPortugues){
+	if ($bPrimerEtiqueta){
+		echo '<label class="Label30"></label>';
+		} else {
+		echo '<label class="Label90"></label>';
+		}
+?>
+<label class="Label60">
+<a href="javascript:cambiaidioma('pt');"><img src="<?php echo $APP->rutacomun; ?>img/pt_br.jpg" title="Portugu&ecirc;s" width="40px" height="25px"/></a>
+</label>
+<?php
+	}
+?>
+<div class="salto1px"></div>
+<?php
+$bEntra=!$bCerrado;
+if (!$bConMensajeClave){$bEntra=false;}
+if ($bEntra){
+	$sRutaBase='';
+?>
+<ul class="enlacesLogin">
+<li><a target="_blank" href="<?php echo $sRutaBase; ?>recuperar.php" ><?php echo $ETI['msg_recuperaclave']; ?></a></li>
+<li><a target="_blank" href="<?php echo $sRutaBase; ?>ayuda.php" ><?php echo $ETI['msg_ayudaingreso']; ?></a></li>
+</ul>
+<?php
+	}
 ?>
 </div>
-<div class="titulosI">
-<h1>Panel de administraci&oacute;n plataforma UNAD</h1>
 </div>
-</div>
-<div class="areaform">
-<div class="areatrabajo">
-Aqui se gestionan los parametros y funcionalidades comunes de la plataforma UNAD.
-<br />
-<?php
-echo 'Su id de aplicaci&oacute;n es: '.$_SESSION['unad_id_tercero'].'';// '.$_SESSION['USER']->idnumber.'';
-//, su id moodle es: '.$_SESSION['USER']->id.'
-?>
-</div><!-- CIERRA EL DIV areatrabajo -->
-</div><!-- CIERRA EL DIV areaform -->
-</div><!-- /DIV_Sector1 -->
-
-
-<div id="div_sector2" style="display:none">
-<div class="titulos">
-<div class="titulosD">
-<input id="cmdAyuda2" name="cmdAyuda2" type="button" class="btSupAyuda" onclick="muestraayuda(<?php echo $icodmodulo; ?>);" title="<?php echo $ETI['bt_ayuda']; ?>" value="<?php echo $ETI['bt_ayuda']; ?>"/>
-<input id="cmdVolverSec2" name="cmdVolverSec2" type="button" class="btSupVolver" onclick="expandesector(1);" title="<?php echo $ETI['bt_volver']; ?>" value="<?php echo $ETI['bt_volver']; ?>"/>
-</div>
-<div class="titulosI">
-<?php
-echo '<h2>'.$ETI['titulo_sector2'].'</h2>';
-?>
-</div>
-</div>
-<div id="cargaForm">
-<div id="area">
-</div><!-- /div_area -->
-</div><!-- /DIV_cargaForm -->
-</div><!-- /DIV_Sector2 -->
-
-
-<div id="div_sector95" style="display:none">
-<div id="cargaForm">
-<div id="div_95cuerpo"></div>
-</div><!-- /DIV_cargaForm -->
-</div><!-- /DIV_Sector95 -->
-
-
-<div id="div_sector96" style="display:none">
-<div class="titulos">
-<div class="titulosD">
-<input id="cmdAyuda96" name="cmdAyuda96" type="button" class="btSupAyuda" onclick="muestraayuda(<?php echo $icodmodulo; ?>);" title="<?php echo $ETI['bt_ayuda']; ?>" value="<?php echo $ETI['bt_ayuda']; ?>"/>
-</div>
-<input id="titulo_200" name="titulo_200" type="hidden" value="<?php echo $ETI['titulo_200']; ?>" />
-<div class="titulosI" id="div_96titulo"></div>
-</div>
-<div id="cargaForm">
-<input id="div96v1" name="div96v1" type="hidden" value="" />
-<input id="div96v2" name="div96v2" type="hidden" value="" />
-<input id="div96v3" name="div96v3" type="hidden" value="" />
-<input id="div96campo" name="div96campo" type="hidden" value="" />
-<input id="div96llave" name="div96llave" type="hidden" value="" />
-<div id="div_96cuerpo"></div>
-</div><!-- /DIV_cargaForm -->
-</div><!-- /DIV_Sector96 -->
-
 
 <div id="div_sector98" style="display:none">
-<div class="titulos">
-<div class="titulosD">
-<input id="cmdAyuda2" name="cmdAyuda2" type="button" class="btSupAyuda" onclick="muestraayuda(<?php echo $icodmodulo; ?>);" title="<?php echo $ETI['bt_ayuda']; ?>" value="<?php echo $ETI['bt_ayuda']; ?>"/>
-</div>
-<div class="titulosI">
 <?php
-echo '<h2>'.$ETI['titulo_200'].'</h2>';
+echo '<h2>'.$sTituloModulo.'</h2>';
 ?>
-</div>
-</div>
-<div id="cargaForm">
-<div id="area">
 <div class="MarquesinaMedia">
 <?php
 echo $ETI['msg_espere'];
 ?>
-</div><!-- /Termina la marquesina -->
-</div><!-- /div_area -->
-</div><!-- /DIV_cargaForm -->
-</div><!-- /DIV_Sector98 -->
+</div>
+<?php
+//Termina la marquesina
+?>
+</div>
 
 
 <?php
-if ($sDebug!=''){
-	$iSegFin=microtime(true);
-	$iSegundos=$iSegFin-$iSegIni;
-	echo '<div class="salto1px"></div><div class="GrupoCampos" id="div_debug">'.$sDebug.fecha_microtiempo().' Tiempo total del proceso: <b>'.$iSegundos.'</b> Segundos'.'<div class="salto1px"></div></div>';
+if ($sDebug != '') {
+	$iSegFin = microtime(true);
+	if (isset($iSegIni) == 0) {
+		$iSegIni = $iSegFin;
 	}
+	$iSegundos = $iSegFin-$iSegIni;
+	echo '<div class="salto1px"></div><div class="GrupoCampos" id="div_debug">' . $sDebug . fecha_microtiempo() . ' Tiempo total del proceso: <b>' . $iSegundos . '</b> Segundos' . '<div class="salto1px"></div></div>';
+}
 ?>
-<input id="scampobusca" name="scampobusca" type="hidden" value=""/>
-<input id="iscroll" name="iscroll" type="hidden" value="<?php echo $_REQUEST['iscroll']; ?>"/>
-<input id="itipoerror" name="itipoerror" type="hidden" value="<?php echo $iTipoError; ?>"/>
-<input id="debug" name="debug" type="hidden" value="<?php echo $_REQUEST['debug']; ?>"/>
+<input id="scampobusca" name="scampobusca" type="hidden" value="" />
+<input id="iscroll" name="iscroll" type="hidden" value="<?php echo $_REQUEST['iscroll']; ?>" />
+<input id="itipoerror" name="itipoerror" type="hidden" value="<?php echo $iTipoError; ?>" />
+<input id="debug" name="debug" type="hidden" value="<?php echo $_REQUEST['debug']; ?>" />
 </form>
-</div><!-- /DIV_interna -->
-<div class="flotante">
+<?php
+// Termina el bloque div_interna
+?>
 </div>
 <?php
 echo html_DivAlarmaV2($sError, $iTipoError);
-	//El script que cambia el sector que se muestra
+//El script que cambia el sector que se muestra
 ?>
 
-<script language="javascript" type="text/javascript" charset="UTF-8">
-<!--
+<script language="javascript">
 <?php
 if ($iSector!=1){
-	echo 'setTimeout(function(){expandesector('.$iSector.');}, 10);
+	echo 'expandesector('.$iSector.');
 ';
 	}
 if ($bMueveScroll){
-	echo 'setTimeout(function(){retornacontrol();}, 2);
+	echo 'retornacontrol();
+';
+	}
+if ($bConEnter){
+	echo 'function siguienteobjeto(){'.$sAccion.'};
+';
+?>
+document.onkeydown=function(e){
+	if (document.all){
+		if (event.keyCode==13){siguienteobjeto();}
+		} else {
+		if (e.which==13){siguienteobjeto();}
+		}
+	}
+<?php
+	}
+if ($bSeguirAPanel){
+?>
+function versalto(){
+	document.getElementById('div_btsalto').style.display='block';
+	}
+<?php
+	echo 'setTimeout(function(){salta();}, 300);
+setTimeout(function(){versalto();}, 1000);
 ';
 	}
 ?>
--->
 </script>
-<script language="javascript" type="text/javascript" charset="UTF-8" src="<?php echo $APP->rutacomun; ?>js/jquery-3.3.1.min.js"></script>
-<script language="javascript" type="text/javascript" charset="UTF-8" src="<?php echo $APP->rutacomun; ?>js/popper.min.js"></script>
-<script language="javascript" type="text/javascript" charset="UTF-8" src="<?php echo $APP->rutacomun; ?>js/bootstrap.min.js"></script>
-<link rel="stylesheet" href="<?php echo $APP->rutacomun; ?>js/bootstrap.min.css" type="text/css"/>
 <?php
-forma_piedepagina();
+forma_piedepagina(false);
 ?>

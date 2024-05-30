@@ -330,8 +330,9 @@ if ($bEstudiante) {
 			$_REQUEST['cara01idperaca'] = $fila['core01peracainicial'];
 			//Ver si ya tiene una caracterizacion.
 			$sSQL = 'SELECT TB.cara01id, TB.cara01idperaca, TB.cara01completa, T2.exte02titulo 
-			FROM cara01encuesta AS TB, exte02per_aca AS T2 
-			WHERE TB.cara01idtercero=' . $idTercero . ' AND TB.cara01idperaca=T2.exte02id
+			FROM cara01encuesta AS TB, exte02per_aca AS T2, cara11tipocaract AS T11 
+			WHERE TB.cara01idtercero=' . $idTercero . ' AND TB.cara01idperaca=T2.exte02id AND TB.cara01completa="S" 
+			AND TB.cara01tipocaracterizacion=T11.cara11id AND T11.cara11resultadovisible=1 
 			ORDER BY TB.cara01completa, TB.cara01idperaca DESC';
 			$tabla = $objDB->ejecutasql($sSQL);
 			$iNumFilas = $objDB->nf($tabla);
@@ -662,8 +663,9 @@ if ($bEstudiante) {
 	}
 	//2022 - 08 - 19 - Le armamos el historial
 	$sSQL = 'SELECT TB.cara01id, TB.cara01idperaca, TB.cara01completa, T2.exte02titulo 
-	FROM cara01encuesta AS TB, exte02per_aca AS T2 
-	WHERE TB.cara01idtercero=' . $idTercero . ' AND TB.cara01idperaca=T2.exte02id AND TB.cara01completa="S"
+	FROM cara01encuesta AS TB, exte02per_aca AS T2, cara11tipocaract AS T11 
+	WHERE TB.cara01idtercero=' . $idTercero . ' AND TB.cara01idperaca=T2.exte02id AND TB.cara01completa="S" 
+	AND TB.cara01tipocaracterizacion=T11.cara11id AND T11.cara11resultadovisible=1 
 	ORDER BY TB.cara01idperaca DESC';
 	$tabla = $objDB->ejecutasql($sSQL);
 	$iNumFilas = $objDB->nf($tabla);
@@ -1065,12 +1067,14 @@ switch ($iPiel) {
 <script language="javascript" src="<?php echo $APP->rutacomun; ?>js/jquery-3.3.1.min.js"></script>
 <script language="javascript" src="<?php echo $APP->rutacomun; ?>js/popper.min.js"></script>
 <script language="javascript" src="<?php echo $APP->rutacomun; ?>js/bootstrap.min.js"></script>
+<script language="javascript" src="<?php echo $APP->rutacomun; ?>js/jquery.qtip.min.js"></script>
 <link rel="stylesheet" href="<?php echo $APP->rutacomun; ?>js/bootstrap.min.css" type="text/css" />
 <link rel="stylesheet" href="<?php echo $APP->rutacomun; ?>css/criticalPath.css" type="text/css" />
 <link rel="stylesheet" href="<?php echo $APP->rutacomun; ?>css/principal.css" type="text/css" />
 <link rel="stylesheet" href="<?php echo $APP->rutacomun; ?>unad_estilos2018.css" type="text/css" />
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.0.1/css/font-awesome.min.css">
-<link rel="stylesheet" href="<?php echo $APP->rutacomun; ?>css/botones_resultado.css?v=2">
+<link rel="stylesheet" href="<?php echo $APP->rutacomun; ?>css/botones_resultado.css?v=3">
+<link rel="stylesheet" href="<?php echo $APP->rutacomun; ?>js/jquery.qtip.min.css">
 <?php
 switch ($iPiel) {
 	case 2:
@@ -1095,6 +1099,8 @@ switch ($iPiel) {
 			$aBotones[$iNumBoton] = array('enviaguardar()', $ETI['bt_guardar'], 'iSaveFill');
 			$iNumBoton++;
 		}
+		$aBotones[$iNumBoton] = array('volver()', $ETI['bt_volver'], 'iArrowBack');
+		$iNumBoton++;
 		forma_cabeceraV4($aRutas, $aBotones, true, $bDebug);
 		echo $et_menu;
 		forma_mitad($idTercero);
@@ -1384,6 +1390,10 @@ switch($iPiel) {
 		MensajeAlarmaV2('', 0);
 		retornacontrol();
 	}
+
+	function volver() {
+		window.document.frmvolver.submit();
+	}
 </script>
 <script type="text/x-mathjax-config">
 	MathJax.Hub.Config({
@@ -1394,13 +1404,13 @@ switch($iPiel) {
 <?php
 if ($bEstudiante) {
 ?>
-<form id="frmtablero" name="frmtablero" method="post" action="<?php echo $sUrlTablero; ?>">
+<form id="frmtablero" name="frmtablero" method="post" action="<?php echo $sUrlTablero; ?>" style="display:none;">
 </form>
 <?php
 }
 if ($_REQUEST['paso'] != 0) {
 ?>
-<form id="frmimpp" name="frmimpp" method="post" action="p2301.php" target="_blank">
+<form id="frmimpp" name="frmimpp" method="post" action="p2301.php" target="_blank" style="display:none;">
 <input id="r" name="r" type="hidden" value="2301" />
 <input id="id2301" name="id2301" type="hidden" value="<?php echo $_REQUEST['cara01id']; ?>" />
 <input id="v3" name="v3" type="hidden" value="" />
@@ -1414,10 +1424,12 @@ if ($_REQUEST['paso'] != 0) {
 <?php
 }
 ?>
-<form id="frmlista" name="frmlista" method="post" action="listados.php" target="_blank">
+<form id="frmlista" name="frmlista" method="post" action="listados.php" target="_blank" style="display:none;">
 <input id="titulos" name="titulos" type="hidden" value="" />
 <input id="consulta" name="consulta" type="hidden" value="" />
 <input id="nombrearchivo" name="nombrearchivo" type="hidden" value="" />
+</form>
+<form id="frmvolver" name="frmvolver" method="post" action="miscursos.php" style="display:none;">
 </form>
 <div id="interna">
 <?php
@@ -1443,6 +1455,7 @@ if ($bBloqueTitulo) {
 <div class="titulos">
 <div class="titulosD">
 <input id="cmdAyuda" name="cmdAyuda" type="button" class="btUpAyuda" onclick="muestraayuda(<?php echo $APP->idsistema . ', ' . $iCodModulo; ?>);" title="<?php echo $ETI['bt_ayuda']; ?>" value="<?php echo $ETI['bt_ayuda']; ?>" />
+<input id="cmdVolverSec2" name="cmdVolverSec2" type="button" class="btSupVolver" onclick="volver();" title="<?php echo $ETI['bt_volver']; ?>" value="<?php echo $ETI['bt_volver']; ?>" />
 </div>
 <div class="titulosI">
 <?php
@@ -1696,7 +1709,6 @@ $bInvitaPAPC = true;
 
 
 <div class="GrupoCampos450">
-<div class="btn-group dropright">
 <div style="min-width:400px">
 <label class="Label220">
 <?php
@@ -1714,24 +1726,25 @@ list($sValor, $sEstilo, $dPorcentaje, $sNota, $iPuntajeMax)=f2301_NombrePuntaje(
 echo html_oculto('cara01niveldigital', $_REQUEST['cara01niveldigital'], $sValor);
 ?>
 </label>
-
-
 <div class="salto1px"></div>
-<div class="progress">
+<div class="progress" id="div_cara01fichadigital">
 <div class="progress-bar progress-bar-striped progress-bar-animated" role="progressbar" aria-valuenow="<?php echo $dPorcentaje; ?>" aria-valuemin="0" aria-valuemax="100" style="width: <?php echo $dPorcentaje; ?>%"><?php echo $dPorcentaje; ?>%</div>
 </div>
 </div>
-<button type="button" class="btn btn-danger dropdown-toggle dropdown-toggle-split" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"></button>
-<div class="dropdown-menu bg-<?php echo $sEstilo; ?>">
-<div class="card text-white bg-<?php echo $sEstilo; ?> mb-3" style="max-width: 25rem;">
-<div class="card-header"><?php echo $ETI['msg_puntaje'].': '.$_REQUEST['cara01niveldigital'].'/'.$iPuntajeMax; ?></div>
-<div class="card-body">
-<h5 class="card-title"><?php echo $ETI['msg_nivel'].': <b>'.$sValor.'</b>'; ?></h5>
-<p class="card-text"><?php echo $sNota; ?></p>
-</div>
-</div>
-</div>
-</div>
+<script>
+$('#div_cara01fichadigital').qtip({
+	content: '<div class="card text-white bg-<?php echo $sEstilo; ?> mb-3"><div class="card-header"><?php echo $ETI['msg_puntaje'].': '.$_REQUEST['cara01niveldigital'].'/'.$iPuntajeMax; ?></div><div class="card-body"><h5 class="card-title"><?php echo $ETI['msg_nivel'].': <b>'.$sValor.'</b>'; ?></h5><p class="card-text"><?php echo $sNota; ?></p></div></div>',
+	position: {
+      viewport: true,
+      my: 'bottom center',
+      at: 'top center',
+      target: 'mouse',
+    },
+    style: {
+      classes: 'qtip-dark qtip-personaliza'
+    }
+});
+</script>
 <div class="salto5px"></div>
 </div>
 
@@ -1748,7 +1761,6 @@ $bInvitaPAPC = true;
 ?>
 
 <div class="GrupoCampos450">
-<div class="btn-group dropright">
 <div style="min-width:400px">
 <label class="Label220">
 <?php
@@ -1766,23 +1778,25 @@ list($sValor, $sEstilo, $dPorcentaje, $sNota, $iPuntajeMax)=f2301_NombrePuntaje(
 echo html_oculto('cara01nivellectura', $_REQUEST['cara01nivellectura'], $sValor);
 ?>
 </label>
-
 <div class="salto1px"></div>
-<div class="progress">
+<div class="progress" id="div_cara01fichalectura">
 <div class="progress-bar progress-bar-striped progress-bar-animated" role="progressbar" aria-valuenow="<?php echo $dPorcentaje; ?>" aria-valuemin="0" aria-valuemax="100" style="width: <?php echo $dPorcentaje; ?>%"><?php echo $dPorcentaje; ?>%</div>
 </div>
 </div>
-<button type="button" class="btn btn-danger dropdown-toggle dropdown-toggle-split" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"></button>
-<div class="dropdown-menu bg-<?php echo $sEstilo; ?>">
-<div class="card text-white bg-<?php echo $sEstilo; ?> mb-3" style="max-width: 25rem;">
-<div class="card-header"><?php echo $ETI['msg_puntaje'].': '.$_REQUEST['cara01nivellectura'].'/'.$iPuntajeMax; ?></div>
-<div class="card-body">
-<h5 class="card-title"><?php echo $ETI['msg_nivel'].': <b>'.$sValor.'</b>'; ?></h5>
-<p class="card-text"><?php echo $sNota; ?></p>
-</div>
-</div>
-</div>
-</div>
+<script>
+$('#div_cara01fichalectura').qtip({
+	content: '<div class="card text-white bg-<?php echo $sEstilo; ?> mb-3"><div class="card-header"><?php echo $ETI['msg_puntaje'].': '.$_REQUEST['cara01nivellectura'].'/'.$iPuntajeMax; ?></div><div class="card-body"><h5 class="card-title"><?php echo $ETI['msg_nivel'].': <b>'.$sValor.'</b>'; ?></h5><p class="card-text"><?php echo $sNota; ?></p></div></div>',
+	position: {
+      viewport: true,
+      my: 'bottom center',
+      at: 'top center',
+      target: 'mouse',
+    },
+    style: {
+      classes: 'qtip-dark qtip-personaliza'
+    }
+});
+</script>
 <div class="salto5px"></div>
 </div>
 
@@ -1798,7 +1812,6 @@ $bInvitaPAPC = true;
 <div class="salto1px"></div>
 
 <div class="GrupoCampos450">
-<div class="btn-group dropright">
 <div style="min-width:400px">
 <label class="Label220">
 <?php
@@ -1816,23 +1829,25 @@ list($sValor, $sEstilo, $dPorcentaje, $sNota, $iPuntajeMax)=f2301_NombrePuntaje(
 echo html_oculto('cara01nivelrazona', $_REQUEST['cara01nivelrazona'], $sValor);
 ?>
 </label>
-
 <div class="salto1px"></div>
-<div class="progress">
+<div class="progress" id="div_cara01ficharazona">
 <div class="progress-bar progress-bar-striped progress-bar-animated" role="progressbar" aria-valuenow="<?php echo $dPorcentaje; ?>" aria-valuemin="0" aria-valuemax="100" style="width: <?php echo $dPorcentaje; ?>%"><?php echo $dPorcentaje; ?>%</div>
 </div>
 </div>
-<button type="button" class="btn btn-danger dropdown-toggle dropdown-toggle-split" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"></button>
-<div class="dropdown-menu bg-<?php echo $sEstilo; ?>">
-<div class="card text-white bg-<?php echo $sEstilo; ?> mb-3" style="max-width: 25rem;">
-<div class="card-header"><?php echo $ETI['msg_puntaje'].': '.$_REQUEST['cara01nivelrazona'].'/'.$iPuntajeMax; ?></div>
-<div class="card-body">
-<h5 class="card-title"><?php echo $ETI['msg_nivel'].': <b>'.$sValor.'</b>'; ?></h5>
-<p class="card-text"><?php echo $sNota; ?></p>
-</div>
-</div>
-</div>
-</div>
+<script>
+$('#div_cara01ficharazona').qtip({
+	content: '<div class="card text-white bg-<?php echo $sEstilo; ?> mb-3"><div class="card-header"><?php echo $ETI['msg_puntaje'].': '.$_REQUEST['cara01nivelrazona'].'/'.$iPuntajeMax; ?></div><div class="card-body"><h5 class="card-title"><?php echo $ETI['msg_nivel'].': <b>'.$sValor.'</b>'; ?></h5><p class="card-text"><?php echo $sNota; ?></p></div></div>',
+	position: {
+      viewport: true,
+      my: 'bottom center',
+      at: 'top center',
+      target: 'mouse',
+    },
+    style: {
+      classes: 'qtip-dark qtip-personaliza'
+    }
+});
+</script>
 <div class="salto5px"></div>
 </div>
 
@@ -1847,7 +1862,6 @@ $bInvitaPAPC = true;
 ?>
 
 <div class="GrupoCampos450">
-<div class="btn-group dropright">
 <div style="min-width:400px">
 <label class="Label220">
 <?php
@@ -1865,23 +1879,25 @@ list($sValor, $sEstilo, $dPorcentaje, $sNota, $iPuntajeMax)=f2301_NombrePuntaje(
 echo html_oculto('cara01nivelingles', $_REQUEST['cara01nivelingles'], $sValor);
 ?>
 </label>
-
 <div class="salto1px"></div>
-<div class="progress">
+<div class="progress" id="div_cara01fichaingles">
 <div class="progress-bar progress-bar-striped progress-bar-animated" role="progressbar" aria-valuenow="<?php echo $dPorcentaje; ?>" aria-valuemin="0" aria-valuemax="100" style="width: <?php echo $dPorcentaje; ?>%"><?php echo $dPorcentaje; ?>%</div>
 </div>
 </div>
-<button type="button" class="btn btn-danger dropdown-toggle dropdown-toggle-split" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"></button>
-<div class="dropdown-menu bg-<?php echo $sEstilo; ?>">
-<div class="card text-white bg-<?php echo $sEstilo; ?> mb-3" style="max-width: 25rem;">
-<div class="card-header"><?php echo $ETI['msg_puntaje'].': '.$_REQUEST['cara01nivelingles'].'/'.$iPuntajeMax; ?></div>
-<div class="card-body">
-<h5 class="card-title"><?php echo $ETI['msg_nivel'].': <b>'.$sValor.'</b>'; ?></h5>
-<p class="card-text"><?php echo $sNota; ?></p>
-</div>
-</div>
-</div>
-</div>
+<script>
+$('#div_cara01fichaingles').qtip({
+	content: '<div class="card text-white bg-<?php echo $sEstilo; ?> mb-3"><div class="card-header"><?php echo $ETI['msg_puntaje'].': '.$_REQUEST['cara01nivelingles'].'/'.$iPuntajeMax; ?></div><div class="card-body"><h5 class="card-title"><?php echo $ETI['msg_nivel'].': <b>'.$sValor.'</b>'; ?></h5><p class="card-text"><?php echo $sNota; ?></p></div></div>',
+	position: {
+      viewport: true,
+      my: 'bottom center',
+      at: 'top center',
+      target: 'mouse',
+    },
+    style: {
+      classes: 'qtip-dark qtip-personaliza'
+    }
+});
+</script>
 <div class="salto5px"></div>
 </div>
 
@@ -1897,7 +1913,6 @@ $bInvitaPAPC = true;
 <div class="salto1px"></div>
 
 <div class="GrupoCampos450">
-<div class="btn-group dropright">
 <div style="min-width:400px">
 <label class="Label220">
 <?php
@@ -1915,23 +1930,25 @@ list($sValor, $sEstilo, $dPorcentaje, $sNota, $iPuntajeMax)=f2301_NombrePuntaje(
 echo html_oculto('cara01nivelbiolog', $_REQUEST['cara01nivelbiolog'], $sValor);
 ?>
 </label>
-
 <div class="salto1px"></div>
-<div class="progress">
+<div class="progress" id="div_cara01fichabiolog">
 <div class="progress-bar progress-bar-striped progress-bar-animated" role="progressbar" aria-valuenow="<?php echo $dPorcentaje; ?>" aria-valuemin="0" aria-valuemax="100" style="width: <?php echo $dPorcentaje; ?>%"><?php echo $dPorcentaje; ?>%</div>
 </div>
 </div>
-<button type="button" class="btn btn-danger dropdown-toggle dropdown-toggle-split" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"></button>
-<div class="dropdown-menu bg-<?php echo $sEstilo; ?>">
-<div class="card text-white bg-<?php echo $sEstilo; ?> mb-3" style="max-width: 25rem;">
-<div class="card-header"><?php echo $ETI['msg_puntaje'].': '.$_REQUEST['cara01nivelbiolog'].'/'.$iPuntajeMax; ?></div>
-<div class="card-body">
-<h5 class="card-title"><?php echo $ETI['msg_nivel'].': <b>'.$sValor.'</b>'; ?></h5>
-<p class="card-text"><?php echo $sNota; ?></p>
-</div>
-</div>
-</div>
-</div>
+<script>
+$('#div_cara01fichabiolog').qtip({
+	content: '<div class="card text-white bg-<?php echo $sEstilo; ?> mb-3"><div class="card-header"><?php echo $ETI['msg_puntaje'].': '.$_REQUEST['cara01nivelbiolog'].'/'.$iPuntajeMax; ?></div><div class="card-body"><h5 class="card-title"><?php echo $ETI['msg_nivel'].': <b>'.$sValor.'</b>'; ?></h5><p class="card-text"><?php echo $sNota; ?></p></div></div>',
+	position: {
+      viewport: true,
+      my: 'bottom center',
+      at: 'top center',
+      target: 'mouse',
+    },
+    style: {
+      classes: 'qtip-dark qtip-personaliza'
+    }
+});
+</script>
 <div class="salto5px"></div>
 </div>
 
@@ -1946,7 +1963,6 @@ $bInvitaPAPC = true;
 ?>
 
 <div class="GrupoCampos450">
-<div class="btn-group dropright">
 <div style="min-width:400px">
 <label class="Label220">
 <?php
@@ -1964,23 +1980,25 @@ list($sValor, $sEstilo, $dPorcentaje, $sNota, $iPuntajeMax)=f2301_NombrePuntaje(
 echo html_oculto('cara01nivelfisica', $_REQUEST['cara01nivelfisica'], $sValor);
 ?>
 </label>
-
 <div class="salto1px"></div>
-<div class="progress">
+<div class="progress" id="div_cara01fichafisica">
 <div class="progress-bar progress-bar-striped progress-bar-animated" role="progressbar" aria-valuenow="<?php echo $dPorcentaje; ?>" aria-valuemin="0" aria-valuemax="100" style="width: <?php echo $dPorcentaje; ?>%"><?php echo $dPorcentaje; ?>%</div>
 </div>
 </div>
-<button type="button" class="btn btn-danger dropdown-toggle dropdown-toggle-split" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"></button>
-<div class="dropdown-menu bg-<?php echo $sEstilo; ?>">
-<div class="card text-white bg-<?php echo $sEstilo; ?> mb-3" style="max-width: 25rem;">
-<div class="card-header"><?php echo $ETI['msg_puntaje'].': '.$_REQUEST['cara01nivelfisica'].'/'.$iPuntajeMax; ?></div>
-<div class="card-body">
-<h5 class="card-title"><?php echo $ETI['msg_nivel'].': <b>'.$sValor.'</b>'; ?></h5>
-<p class="card-text"><?php echo $sNota; ?></p>
-</div>
-</div>
-</div>
-</div>
+<script>
+$('#div_cara01fichafisica').qtip({
+	content: '<div class="card text-white bg-<?php echo $sEstilo; ?> mb-3"><div class="card-header"><?php echo $ETI['msg_puntaje'].': '.$_REQUEST['cara01nivelfisica'].'/'.$iPuntajeMax; ?></div><div class="card-body"><h5 class="card-title"><?php echo $ETI['msg_nivel'].': <b>'.$sValor.'</b>'; ?></h5><p class="card-text"><?php echo $sNota; ?></p></div></div>',
+	position: {
+      viewport: true,
+      my: 'bottom center',
+      at: 'top center',
+      target: 'mouse',
+    },
+    style: {
+      classes: 'qtip-dark qtip-personaliza'
+    }
+});
+</script>
 <div class="salto5px"></div>
 </div>
 
@@ -1996,7 +2014,6 @@ $bInvitaPAPC = true;
 <div class="salto1px"></div>
 
 <div class="GrupoCampos450">
-<div class="btn-group dropright">
 <div style="min-width:400px">
 <label class="Label220">
 <?php
@@ -2014,23 +2031,25 @@ list($sValor, $sEstilo, $dPorcentaje, $sNota, $iPuntajeMax)=f2301_NombrePuntaje(
 echo html_oculto('cara01nivelquimica', $_REQUEST['cara01nivelquimica'], $sValor);
 ?>
 </label>
-
 <div class="salto1px"></div>
-<div class="progress">
+<div class="progress" id="div_cara01fichaquimica">
 <div class="progress-bar progress-bar-striped progress-bar-animated" role="progressbar" aria-valuenow="<?php echo $dPorcentaje; ?>" aria-valuemin="0" aria-valuemax="100" style="width: <?php echo $dPorcentaje; ?>%"><?php echo $dPorcentaje; ?>%</div>
 </div>
 </div>
-<button type="button" class="btn btn-danger dropdown-toggle dropdown-toggle-split" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"></button>
-<div class="dropdown-menu bg-<?php echo $sEstilo; ?>">
-<div class="card text-white bg-<?php echo $sEstilo; ?> mb-3" style="max-width: 25rem;">
-<div class="card-header"><?php echo $ETI['msg_puntaje'].': '.$_REQUEST['cara01nivelquimica'].'/'.$iPuntajeMax; ?></div>
-<div class="card-body">
-<h5 class="card-title"><?php echo $ETI['msg_nivel'].': <b>'.$sValor.'</b>'; ?></h5>
-<p class="card-text"><?php echo $sNota; ?></p>
-</div>
-</div>
-</div>
-</div>
+<script>
+$('#div_cara01fichaquimica').qtip({
+	content: '<div class="card text-white bg-<?php echo $sEstilo; ?> mb-3"><div class="card-header"><?php echo $ETI['msg_puntaje'].': '.$_REQUEST['cara01nivelquimica'].'/'.$iPuntajeMax; ?></div><div class="card-body"><h5 class="card-title"><?php echo $ETI['msg_nivel'].': <b>'.$sValor.'</b>'; ?></h5><p class="card-text"><?php echo $sNota; ?></p></div></div>',
+	position: {
+      viewport: true,
+      my: 'bottom center',
+      at: 'top center',
+      target: 'mouse',
+    },
+    style: {
+      classes: 'qtip-dark qtip-personaliza'
+    }
+});
+</script>
 <div class="salto5px"></div>
 </div>
 
@@ -2053,7 +2072,7 @@ if (false) {
 <?php
 }
 ?>
-<img src="https://i.ibb.co/z5x9X40/invita-talleres-papc.png" alt="<?php echo $ETI['bt_invita_papc']; ?>" title="<?php echo $ETI['bt_invita_papc']; ?>" style="width:100%;" />
+<img src="./img/banner_encuestares.png" alt="<?php echo $ETI['bt_invita_papc']; ?>" title="<?php echo $ETI['bt_invita_papc']; ?>" style="width:100%;" />
 <?php
 if (false) {
 ?>

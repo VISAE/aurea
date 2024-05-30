@@ -3,12 +3,18 @@
 --- © Omar Augusto Bautista Mora - UNAD - 2022 ---
 --- omar.bautista@unad.edu.co - http://www.unad.edu.co
 --- Modelo Versión 1.0 lunes, 29 de marzo de 2023
+--- Modelo Versión 2.0 miércoles, 15 de mayo de 2024
 */
 if (file_exists('./err_control.php')) {
 	require './err_control.php';
 }
 $bDebug = false;
 $sDebug = '';
+$sError = '';
+$html_encuesta = '';
+$saiuid = '05';
+$saiulib = '05';
+
 if (isset($_REQUEST['debug']) != 0) {
 	if ($_REQUEST['debug'] == 1) {
 		$bDebug = true;
@@ -37,6 +43,53 @@ require $APP->rutacomun . 'libdatos.php';
 require $APP->rutacomun . 'libhtml.php';
 require $APP->rutacomun . 'xajax/xajax_core/xajax.inc.php';
 require $APP->rutacomun . 'unad_xajax.php';
+
+if (isset($_REQUEST['paso']) == 0) {
+	$_REQUEST['paso'] = 0;
+}
+
+if ($bDebug) {
+	$sDebug = $sDebug . fecha_microtiempo() . ' Paso ' . $_REQUEST['paso'] . '<br>';
+}
+
+if ($_REQUEST['paso'] == 0) {
+	$sURL = '';
+	if (isset($_GET['u']) != 0) {
+		$sURL = url_decode_simple($_GET['u']);
+	} else if (isset($_GET['n']) != 0) {
+		$sURL = url_decode_simple($_GET['n']);
+	}
+	if ($sURL != '') {
+		if ($bDebug) {
+			$sDebug = $sDebug . fecha_microtiempo() . ' Dato de llegada: ' . $sURL . ' <br>';
+		}
+		$aURL = explode('-', $sURL);
+		if (count($aURL) < 3) {
+			$sError = $sError . 'Codigo incorrecto.';
+		} else {
+			$sContenedor = $aURL[0];
+			$saiuNNid = $aURL[1];
+			$idRespuesta = $aURL[2];
+		}
+		if ($sError=='') {
+			switch ($idRespuesta) {
+				case '18':
+				case '19':
+				case '20':
+				case '21':
+					$saiuid = $idRespuesta;
+					$saiulib = '00';
+					break;
+				default:
+					$saiuid = '05';
+					$saiulib = '05';
+					$idRespuesta = 0;
+					break;
+			}
+		}
+	}
+}
+
 // -- Se cargan los archivos de idioma
 if (isset($_SESSION['unad_idioma']) == 0) {
 	$_SESSION['unad_idioma'] = 'es';
@@ -45,79 +98,64 @@ $mensajes_todas = $APP->rutacomun . 'lg/lg_todas_' . $_SESSION['unad_idioma'] . 
 if (!file_exists($mensajes_todas)) {
 	$mensajes_todas = $APP->rutacomun . 'lg/lg_todas_es.php';
 }
-$mensajes_3005 = $APP->rutacomun . 'lg/lg_3005_' . $_SESSION['unad_idioma'] . '.php';
-if (!file_exists($mensajes_3005)) {
-	$mensajes_3005 = $APP->rutacomun . 'lg/lg_3005_es.php';
+$mensajes_30NN = $APP->rutacomun . 'lg/lg_30'.$saiulib.'_' . $_SESSION['unad_idioma'] . '.php';
+if (!file_exists($mensajes_30NN)) {
+	$mensajes_30NN = $APP->rutacomun . 'lg/lg_30'.$saiulib.'_es.php';
 }
 require $mensajes_todas;
-require $mensajes_3005;
+require $mensajes_30NN;
 $xajax = NULL;
 $objDB = new clsdbadmin($APP->dbhost, $APP->dbuser, $APP->dbpass, $APP->dbname);
 if ($APP->dbpuerto != '') {
 	$objDB->dbPuerto = $APP->dbpuerto;
 }
 //PROCESOS DE LA PAGINA
-require $APP->rutacomun . 'lib3005.php';
+require $APP->rutacomun . 'lib30'.$saiulib.'.php';
 $xajax = new xajax();
 $xajax->configure('javascript URI', $APP->rutacomun . 'xajax/');
-$xajax->register(XAJAX_FUNCTION, 'f3005_BuscaCodigoEncuesta');
-$xajax->register(XAJAX_FUNCTION, 'f3005_GuardaEncuesta');
+$xajax->register(XAJAX_FUNCTION, 'f30'.$saiulib.'_BuscaCodigoEncuesta');
+$xajax->register(XAJAX_FUNCTION, 'f30'.$saiulib.'_GuardaEncuesta');
 $xajax->processRequest();
 $xajax->printJavascript($APP->rutacomun . 'xajax/');
-
-$sError = '';
-$html_encuesta = '';
 
 if (isset($_REQUEST['saui05numref']) == 0) {
 	$_REQUEST['saui05numref'] = '';
 }
-if (isset($_REQUEST['paso']) == 0) {
-	$_REQUEST['paso'] = 0;
-}
 
 $_REQUEST['saui05numref'] = trim(cadena_Validar($_REQUEST['saui05numref'], true));
-if ($bDebug) {
-	$sDebug = $sDebug . fecha_microtiempo() . ' Paso ' . $_REQUEST['paso'] . '<br>';
-}
-if ($_REQUEST['paso'] == 0) {
-	if (isset($_GET['u']) != 0) {
-		//Esta recibiendo una peticion de recuperacion.
-		$sURL = url_decode_simple($_GET['u']);
-		if ($bDebug) {
-			$sDebug = $sDebug . fecha_microtiempo() . ' Dato de llegada: ' . $sURL . ' <br>';
-		}
-		$aURL = explode('-', $sURL);
-		if (count($aURL) < 3) {
-			$sError = 'Codigo incorrecto.';
-		} else {
-			$idRespuesta = 0;
-			$sContenedor = $aURL[0];
-			$saiu05id = $aURL[1];
-			// if (isset($aURL[3]) != 0) {
-			// 	$idRespuesta = $aURL[3];
-			// }
+
+if ($sError == '') {
+	if ($saiuid == '05') {
+		if (isset($_GET['u']) != 0) {
 			if ($bDebug) {
-				$sDebug = $sDebug . fecha_microtiempo() . ' Trayendo encuesta ' . $sContenedor . ' - ' . $saiu05id . ' - ' . $idRespuesta . '<br>';
+				$sDebug = $sDebug . fecha_microtiempo() . ' Trayendo encuesta ' . $sContenedor . ' - ' . $saiuNNid . ' - ' . $idRespuesta . '<br>';
 			}
-			list($html_encuesta, $sError) = f3005_HTMLForm_Encuesta($sContenedor, $saiu05id, $idRespuesta, $objDB);
+			list($html_encuesta, $sErrorE) = f3005_HTMLForm_Encuesta($sContenedor, $saiuNNid, $idRespuesta, $objDB);
+			$sError = $sError . $sErrorE;
+		} else if (isset($_GET['n']) != 0) {
+			$html_encuesta = f3005_HTMLNoRespondeEncuesta($sContenedor, $saiuNNid, $objDB, $bDebug);
 		}
-	}
-	if (isset($_GET['n']) != 0) {
-		//Esta recibiendo una peticion de recuperacion.
-		$sURL = url_decode_simple($_GET['n']);
-		if ($bDebug) {
-			$sDebug = $sDebug . fecha_microtiempo() . ' Dato de llegada: ' . $sURL . ' <br>';
-		}
-		$aURL = explode('-', $sURL);
-		if (count($aURL) < 3) {
-			$sError = 'Codigo incorrecto.';
-		} else {
-			$sContenedor = $aURL[0];
-			$saiu05id = $aURL[1];
-			$html_encuesta = f3005_HTMLNoRespondeEncuesta($sContenedor, $saiu05id, $objDB, $bDebug);
+	} else {
+		if (isset($_GET['u']) != 0) {
+			if ($bDebug) {
+				$sDebug = $sDebug . fecha_microtiempo() . ' Trayendo encuesta ' . $sContenedor . ' - ' . $saiuNNid . ' - ' . $saiuid . '<br>';
+			}
+			list($sTabla, $sErrorE) = f3000_ValidaTablasAtencion($sContenedor, $saiuid, $objDB);
+			$sError = $sError . $sErrorE;
+			if ($sError == '') {
+				list($html_encuesta, $sErrorE) = f3000_HTMLForm_Encuesta($sTabla, $saiuid, $saiuNNid, $objDB);
+				$sError = $sError . $sErrorE;
+			}
+		} else if (isset($_GET['n']) != 0) {
+			list($sTabla, $sErrorE) = f3000_ValidaTablasAtencion($sContenedor, $saiuid, $objDB);
+			$sError = $sError . $sErrorE;
+			if ($sError == '') {
+				$html_encuesta = f3000_HTMLNoRespondeEncuesta($sTabla, $saiuid, $saiuNNid, $objDB, $bDebug);
+			}
 		}
 	}
 }
+
 //Crear los controles que requieran llamado a base de datos
 // $objCombos = new clsHtmlCombos();
 // $objCombos->nuevo('aure73tipodoc', $_REQUEST['aure73tipodoc'], true, '{' . $ETI['msg_seleccione'] . '}');
@@ -158,29 +196,47 @@ if ($_REQUEST['paso'] == 0) {
     <script>window.jQuery || document.write('<script src="assets/js/vendor/jquery-slim.min.js"><\/script>')</script>
     -->
 	<script>
+		<?php
+		if ($saiuid == '05') {
+		?>
 		function enviacodigo() {
 			let $aParametros = new Array();
 			$aParametros[100] = window.document.frmcodigo.saui05numref.value;
 			xajax_f3005_BuscaCodigoEncuesta($aParametros);
 		}
+		<?php
+		}
+		?>
 
 		function enviaencuesta() {
 			let $aParametros = new Array();
 			$aParametros[100] = window.document.frmencuesta.sContenedor.value;
-			$aParametros[101] = window.document.frmencuesta.saiu05id.value;
-			$aParametros[102] = window.document.frmencuesta.saiu05evalamabilidad.value;
-			$aParametros[103] = window.document.frmencuesta.saiu05evalamabmotivo.value;
-			$aParametros[104] = window.document.frmencuesta.saiu05evalrapidez.value;
-			$aParametros[105] = window.document.frmencuesta.saiu05evalrapidmotivo.value;
-			$aParametros[106] = window.document.frmencuesta.saiu05evalclaridad.value;
-			$aParametros[107] = window.document.frmencuesta.saiu05evalcalridmotivo.value;
-			$aParametros[108] = window.document.frmencuesta.saiu05evalresolvio.value;
-			$aParametros[109] = window.document.frmencuesta.saiu05evalsugerencias.value;
-			$aParametros[110] = window.document.frmencuesta.saiu05evalconocimiento.value;
-			$aParametros[111] = window.document.frmencuesta.saiu05evalconocmotivo.value;
-			$aParametros[112] = window.document.frmencuesta.saiu05evalutilidad.value;
-			$aParametros[113] = window.document.frmencuesta.saiu05evalutilmotivo.value;			
+			$aParametros[101] = window.document.frmencuesta['saiu<?php echo $saiuid; ?>id'].value;
+			$aParametros[102] = window.document.frmencuesta['saiu<?php echo $saiuid; ?>evalamabilidad'].value;
+			$aParametros[103] = window.document.frmencuesta['saiu<?php echo $saiuid; ?>evalamabmotivo'].value;
+			$aParametros[104] = window.document.frmencuesta['saiu<?php echo $saiuid; ?>evalrapidez'].value;
+			$aParametros[105] = window.document.frmencuesta['saiu<?php echo $saiuid; ?>evalrapidmotivo'].value;
+			$aParametros[106] = window.document.frmencuesta['saiu<?php echo $saiuid; ?>evalclaridad'].value;
+			$aParametros[107] = window.document.frmencuesta['saiu<?php echo $saiuid; ?>evalcalridmotivo'].value;
+			$aParametros[108] = window.document.frmencuesta['saiu<?php echo $saiuid; ?>evalresolvio'].value;
+			$aParametros[109] = window.document.frmencuesta['saiu<?php echo $saiuid; ?>evalsugerencias'].value;
+			$aParametros[110] = window.document.frmencuesta['saiu<?php echo $saiuid; ?>evalconocimiento'].value;
+			$aParametros[111] = window.document.frmencuesta['saiu<?php echo $saiuid; ?>evalconocmotivo'].value;
+			$aParametros[112] = window.document.frmencuesta['saiu<?php echo $saiuid; ?>evalutilidad'].value;
+			$aParametros[113] = window.document.frmencuesta['saiu<?php echo $saiuid; ?>evalutilmotivo'].value;
+		<?php
+		if ($saiuid == '05') {
+		?>
 			xajax_f3005_GuardaEncuesta($aParametros);
+		<?php
+		} else {
+		?>
+			$aParametros[114] = window.document.frmencuesta.sTabla.value;
+			$aParametros[115] = window.document.frmencuesta.saiuid.value;
+			xajax_f3000_GuardaEncuesta($aParametros);
+		<?php
+		}
+		?>
 		}
 
 		function muestramensajes(tipo, texto) {
@@ -282,7 +338,7 @@ if ($_REQUEST['paso'] == 0) {
 						$sStyleFormCodigo = 'style="display:none;"';
 						$sStyleFormEncuesta = 'style="display:none;"';
 						if ($sError == '') {
-							if (isset($saiu05id)) {
+							if (isset($saiuNNid)) {
 								$sStyleFormEncuesta = 'style="display:block;"';
 							} else {
 								$sStyleFormCodigo = 'style="display:block;"';
@@ -311,7 +367,7 @@ if ($_REQUEST['paso'] == 0) {
 						<?php
 						?>
 						<hr>
-						<div id="div_saiu05formencuesta" <?php echo $sStyleFormEncuesta; ?>>
+						<div id="div_saiu<?php echo $saiuid; ?>formencuesta" <?php echo $sStyleFormEncuesta; ?>>
 							<?php echo $html_encuesta; ?>
 						</div>
 					</div>

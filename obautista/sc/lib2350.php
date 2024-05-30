@@ -349,5 +349,6 @@ function f2350_Combocore50idprograma($aParametros)
 	$objDB->CerrarConexion();
 	$objResponse = new xajaxResponse();
 	$objResponse->assign('div_core50idprograma', 'innerHTML', $html_core50idprograma);
+	$objResponse->call('jQuery("#core50idprograma").chosen({no_results_text: "No existen coincidencias: ",width: "600px"})');
 	return $objResponse;
 }

@@ -4935,6 +4935,183 @@ function f3005_RevisarTabla($sContenedor, $objDB, $bDebug = false)
 	}
 	return array($sError, $sDebug);
 }
+function f3018_RevisarTabla($sContenedor, $objDB, $bDebug = false)
+{
+	$sError = '';
+	$sDebug = '';
+	$sTabla18='saiu18telefonico_'.$sContenedor;
+	$sSQL = "SELECT saiu18fecharespcaso FROM " . $sTabla18 . " LIMIT 0, 1;";
+	$result = $objDB->ejecutasql($sSQL);
+	if ($result == false) {
+		$sSQL = "ALTER TABLE " . $sTabla18 . " 
+		ADD saiu18fecharespcaso INT NULL DEFAULT 0 AFTER saiu18respuesta,
+		ADD saiu18horarespcaso INT NULL DEFAULT 0 AFTER saiu18fecharespcaso,
+		ADD saiu18minrespcaso INT NULL DEFAULT 0 AFTER saiu18horarespcaso,
+		ADD saiu18idunidadcaso INT NULL DEFAULT 0 AFTER saiu18minrespcaso,
+		ADD saiu18idequipocaso INT NULL DEFAULT 0 AFTER saiu18idunidadcaso,
+		ADD saiu18idsupervisorcaso INT NULL DEFAULT 0 AFTER saiu18idequipocaso,
+		ADD saiu18idresponsablecaso INT NULL DEFAULT 0 AFTER saiu18idsupervisorcaso,
+		ADD saiu18numref VARCHAR(20) NULL AFTER saiu18idresponsablecaso,
+		ADD saiu18evalacepta INT NULL DEFAULT 0 AFTER saiu18numref,
+		ADD saiu18evalfecha INT NULL DEFAULT 0 AFTER saiu18evalacepta,
+		ADD saiu18evalamabilidad INT NULL DEFAULT 0 AFTER saiu18evalfecha,
+		ADD saiu18evalamabmotivo TEXT AFTER saiu18evalamabilidad,
+		ADD saiu18evalrapidez INT NULL DEFAULT 0 AFTER saiu18evalamabmotivo,
+		ADD saiu18evalrapidmotivo TEXT AFTER saiu18evalrapidez,
+		ADD saiu18evalclaridad INT NULL DEFAULT 0 AFTER saiu18evalrapidmotivo,
+		ADD saiu18evalcalridmotivo TEXT AFTER saiu18evalclaridad,
+		ADD saiu18evalresolvio INT NULL DEFAULT 0 AFTER saiu18evalcalridmotivo,
+		ADD saiu18evalsugerencias TEXT AFTER saiu18evalresolvio,
+		ADD saiu18evalconocimiento INT NULL DEFAULT 0 AFTER saiu18evalsugerencias,
+		ADD saiu18evalconocmotivo TEXT AFTER saiu18evalconocimiento,
+		ADD saiu18evalutilidad INT NULL DEFAULT 0 AFTER saiu18evalconocmotivo,
+		ADD saiu18evalutilmotivo TEXT AFTER saiu18evalutilidad,
+		ADD saiu18idorigen INT NULL DEFAULT 0 AFTER saiu18detalle,
+		ADD saiu18idarchivo INT NULL DEFAULT 0 AFTER saiu18idorigen,
+		ADD saiu18idorigenrta INT NULL DEFAULT 0 AFTER saiu18respuesta,
+		ADD saiu18idarchivorta INT NULL DEFAULT 0 AFTER saiu18idorigenrta,
+		ADD saiu18fechafin INT NULL DEFAULT 0 AFTER saiu18idarchivo";
+		$result = $objDB->ejecutasql($sSQL);
+		if ($result == false) {
+			$sError = $sError . ' Falla al intentar agregar campos de encuesta';
+		}
+	}
+	return array($sError, $sDebug);
+}
+function f3019_RevisarTabla($sContenedor, $objDB, $bDebug = false)
+{
+	$sError = '';
+	$sDebug = '';
+	$sTabla19='saiu19chat_'.$sContenedor;
+	$sSQL = "SELECT saiu19fecharespcaso FROM " . $sTabla19 . " LIMIT 0, 1;";
+	$result = $objDB->ejecutasql($sSQL);
+	if ($result == false) {
+		$sSQL = "ALTER TABLE " . $sTabla19 . " 
+		ADD saiu19respuesta TEXT AFTER saiu19numsesionchat,
+		ADD saiu19fecharespcaso INT NULL DEFAULT 0 AFTER saiu19respuesta,
+		ADD saiu19horarespcaso INT NULL DEFAULT 0 AFTER saiu19fecharespcaso,
+		ADD saiu19minrespcaso INT NULL DEFAULT 0 AFTER saiu19horarespcaso,
+		ADD saiu19idunidadcaso INT NULL DEFAULT 0 AFTER saiu19minrespcaso,
+		ADD saiu19idequipocaso INT NULL DEFAULT 0 AFTER saiu19idunidadcaso,
+		ADD saiu19idsupervisorcaso INT NULL DEFAULT 0 AFTER saiu19idequipocaso,
+		ADD saiu19idresponsablecaso INT NULL DEFAULT 0 AFTER saiu19idsupervisorcaso,
+		ADD saiu19numref VARCHAR(20) NULL AFTER saiu19idresponsablecaso,
+		ADD saiu19evalacepta INT NULL DEFAULT 0 AFTER saiu19numref,
+		ADD saiu19evalfecha INT NULL DEFAULT 0 AFTER saiu19evalacepta,
+		ADD saiu19evalamabilidad INT NULL DEFAULT 0 AFTER saiu19evalfecha,
+		ADD saiu19evalamabmotivo TEXT AFTER saiu19evalamabilidad,
+		ADD saiu19evalrapidez INT NULL DEFAULT 0 AFTER saiu19evalamabmotivo,
+		ADD saiu19evalrapidmotivo TEXT AFTER saiu19evalrapidez,
+		ADD saiu19evalclaridad INT NULL DEFAULT 0 AFTER saiu19evalrapidmotivo,
+		ADD saiu19evalcalridmotivo TEXT AFTER saiu19evalclaridad,
+		ADD saiu19evalresolvio INT NULL DEFAULT 0 AFTER saiu19evalcalridmotivo,
+		ADD saiu19evalsugerencias TEXT AFTER saiu19evalresolvio,
+		ADD saiu19evalconocimiento INT NULL DEFAULT 0 AFTER saiu19evalsugerencias,
+		ADD saiu19evalconocmotivo TEXT AFTER saiu19evalconocimiento,
+		ADD saiu19evalutilidad INT NULL DEFAULT 0 AFTER saiu19evalconocmotivo,
+		ADD saiu19evalutilmotivo TEXT AFTER saiu19evalutilidad,
+		ADD saiu19idorigen INT NULL DEFAULT 0 AFTER saiu19detalle,
+		ADD saiu19idarchivo INT NULL DEFAULT 0 AFTER saiu19idorigen,
+		ADD saiu19idorigenrta INT NULL DEFAULT 0 AFTER saiu19respuesta,
+		ADD saiu19idarchivorta INT NULL DEFAULT 0 AFTER saiu19idorigenrta,
+		ADD saiu19fechafin INT NULL DEFAULT 0 AFTER saiu19idarchivo";
+		$result = $objDB->ejecutasql($sSQL);
+		if ($bDebug) {
+			$sDebug = $sDebug . fecha_microtiempo() . ' Consulta f3019_RevisarTabla: ' . $sSQL . '<br>';
+		}
+		if ($result == false) {
+			$sError = $sError . ' Falla al intentar agregar campos de encuesta';
+		}
+	}
+	return array($sError, $sDebug);
+}
+function f3020_RevisarTabla($sContenedor, $objDB, $bDebug = false)
+{
+	$sError = '';
+	$sDebug = '';
+	$sTabla20='saiu20correo_'.$sContenedor;
+	$sSQL = "SELECT saiu20fecharespcaso FROM " . $sTabla20 . " LIMIT 0, 1;";
+	$result = $objDB->ejecutasql($sSQL);
+	if ($result == false) {
+		$sSQL = "ALTER TABLE " . $sTabla20 . " 
+		ADD saiu20idcorreootro varchar(50) NULL AFTER saiu20idcorreo,
+		ADD saiu20fecharespcaso INT NULL DEFAULT 0 AFTER saiu20respuesta,
+		ADD saiu20horarespcaso INT NULL DEFAULT 0 AFTER saiu20fecharespcaso,
+		ADD saiu20minrespcaso INT NULL DEFAULT 0 AFTER saiu20horarespcaso,
+		ADD saiu20idunidadcaso INT NULL DEFAULT 0 AFTER saiu20minrespcaso,
+		ADD saiu20idequipocaso INT NULL DEFAULT 0 AFTER saiu20idunidadcaso,
+		ADD saiu20idsupervisorcaso INT NULL DEFAULT 0 AFTER saiu20idequipocaso,
+		ADD saiu20idresponsablecaso INT NULL DEFAULT 0 AFTER saiu20idsupervisorcaso,
+		ADD saiu20numref VARCHAR(20) NULL AFTER saiu20idresponsablecaso,
+		ADD saiu20evalacepta INT NULL DEFAULT 0 AFTER saiu20numref,
+		ADD saiu20evalfecha INT NULL DEFAULT 0 AFTER saiu20evalacepta,
+		ADD saiu20evalamabilidad INT NULL DEFAULT 0 AFTER saiu20evalfecha,
+		ADD saiu20evalamabmotivo TEXT AFTER saiu20evalamabilidad,
+		ADD saiu20evalrapidez INT NULL DEFAULT 0 AFTER saiu20evalamabmotivo,
+		ADD saiu20evalrapidmotivo TEXT AFTER saiu20evalrapidez,
+		ADD saiu20evalclaridad INT NULL DEFAULT 0 AFTER saiu20evalrapidmotivo,
+		ADD saiu20evalcalridmotivo TEXT AFTER saiu20evalclaridad,
+		ADD saiu20evalresolvio INT NULL DEFAULT 0 AFTER saiu20evalcalridmotivo,
+		ADD saiu20evalsugerencias TEXT AFTER saiu20evalresolvio,
+		ADD saiu20evalconocimiento INT NULL DEFAULT 0 AFTER saiu20evalsugerencias,
+		ADD saiu20evalconocmotivo TEXT AFTER saiu20evalconocimiento,
+		ADD saiu20evalutilidad INT NULL DEFAULT 0 AFTER saiu20evalconocmotivo,
+		ADD saiu20evalutilmotivo TEXT AFTER saiu20evalutilidad,
+		ADD saiu20idorigen INT NULL DEFAULT 0 AFTER saiu20detalle,
+		ADD saiu20idarchivo INT NULL DEFAULT 0 AFTER saiu20idorigen,
+		ADD saiu20idorigenrta INT NULL DEFAULT 0 AFTER saiu20respuesta,
+		ADD saiu20idarchivorta INT NULL DEFAULT 0 AFTER saiu20idorigenrta,
+		ADD saiu20fechafin INT NULL DEFAULT 0 AFTER saiu20idarchivo";
+		$result = $objDB->ejecutasql($sSQL);
+		if ($result == false) {
+			$sError = $sError . ' Falla al intentar agregar campos de encuesta';
+		}
+	}
+	return array($sError, $sDebug);
+}
+function f3021_RevisarTabla($sContenedor, $objDB, $bDebug = false)
+{
+	$sError = '';
+	$sDebug = '';
+	$sTabla21='saiu21directa_'.$sContenedor;
+	$sSQL = "SELECT saiu21fecharespcaso FROM " . $sTabla21 . " LIMIT 0, 1;";
+	$result = $objDB->ejecutasql($sSQL);
+	if ($result == false) {
+		$sSQL = "ALTER TABLE " . $sTabla21 . " 
+		ADD saiu21fecharespcaso INT NULL DEFAULT 0 AFTER saiu21respuesta,
+		ADD saiu21horarespcaso INT NULL DEFAULT 0 AFTER saiu21fecharespcaso,
+		ADD saiu21minrespcaso INT NULL DEFAULT 0 AFTER saiu21horarespcaso,
+		ADD saiu21idunidadcaso INT NULL DEFAULT 0 AFTER saiu21minrespcaso,
+		ADD saiu21idequipocaso INT NULL DEFAULT 0 AFTER saiu21idunidadcaso,
+		ADD saiu21idsupervisorcaso INT NULL DEFAULT 0 AFTER saiu21idequipocaso,
+		ADD saiu21idresponsablecaso INT NULL DEFAULT 0 AFTER saiu21idsupervisorcaso,
+		ADD saiu21numref VARCHAR(21) NULL AFTER saiu21idresponsablecaso,
+		ADD saiu21evalacepta INT NULL DEFAULT 0 AFTER saiu21numref,
+		ADD saiu21evalfecha INT NULL DEFAULT 0 AFTER saiu21evalacepta,
+		ADD saiu21evalamabilidad INT NULL DEFAULT 0 AFTER saiu21evalfecha,
+		ADD saiu21evalamabmotivo TEXT AFTER saiu21evalamabilidad,
+		ADD saiu21evalrapidez INT NULL DEFAULT 0 AFTER saiu21evalamabmotivo,
+		ADD saiu21evalrapidmotivo TEXT AFTER saiu21evalrapidez,
+		ADD saiu21evalclaridad INT NULL DEFAULT 0 AFTER saiu21evalrapidmotivo,
+		ADD saiu21evalcalridmotivo TEXT AFTER saiu21evalclaridad,
+		ADD saiu21evalresolvio INT NULL DEFAULT 0 AFTER saiu21evalcalridmotivo,
+		ADD saiu21evalsugerencias TEXT AFTER saiu21evalresolvio,
+		ADD saiu21evalconocimiento INT NULL DEFAULT 0 AFTER saiu21evalsugerencias,
+		ADD saiu21evalconocmotivo TEXT AFTER saiu21evalconocimiento,
+		ADD saiu21evalutilidad INT NULL DEFAULT 0 AFTER saiu21evalconocmotivo,
+		ADD saiu21evalutilmotivo TEXT AFTER saiu21evalutilidad,
+		ADD saiu21idorigen INT NULL DEFAULT 0 AFTER saiu21detalle,
+		ADD saiu21idarchivo INT NULL DEFAULT 0 AFTER saiu21idorigen,
+		ADD saiu21idorigenrta INT NULL DEFAULT 0 AFTER saiu21respuesta,
+		ADD saiu21idarchivorta INT NULL DEFAULT 0 AFTER saiu21idorigenrta,
+		ADD saiu21fechafin INT NULL DEFAULT 0 AFTER saiu21idarchivo";
+		$result = $objDB->ejecutasql($sSQL);
+		if ($result == false) {
+			$sError = $sError . ' Falla al intentar agregar campos de encuesta';
+		}
+	}
+	return array($sError, $sDebug);
+}
 function f3000_TablasMes($iAgno, $iMes, $objDB, $bDebug = false)
 {
 	$sError = '';
@@ -5062,34 +5239,121 @@ function f3000_TablasMes($iAgno, $iMes, $objDB, $bDebug = false)
 			saiu18tiemprespdias int NULL DEFAULT 0, saiu18tiempresphoras int NULL DEFAULT 0, saiu18tiemprespminutos int NULL DEFAULT 0, 
 			saiu18solucion int NULL DEFAULT 0, saiu18idcaso int NULL DEFAULT 0, saiu18respuesta Text NULL)";
 			$bResultado = $objDB->ejecutasql($sSQL);
-			$sSQL = "ALTER TABLE " . $sTabla . " ADD PRIMARY KEY(saiu18id)";
-			$bResultado = $objDB->ejecutasql($sSQL);
-			$sSQL = "ALTER TABLE " . $sTabla . " ADD UNIQUE INDEX saiu18telefonico_id(saiu18agno, saiu18mes, saiu18tiporadicado, saiu18consec)";
-			$bResultado = $objDB->ejecutasql($sSQL);
-			//Indice por solicitante
-			$sSQL = "ALTER TABLE " . $sTabla . " ADD INDEX saiu18telefonico_solicitante(saiu18idsolicitante)";
-			$bResultado = $objDB->ejecutasql($sSQL);
-			//Indice por tipo de solicitud.
-			$sSQL = "ALTER TABLE " . $sTabla . " ADD INDEX saiu18telefonico_tema(saiu18temasolicitud)";
-			$bResultado = $objDB->ejecutasql($sSQL);
+			if ($bResultado == false) {
+				$sError = 'No ha sido posible iniciar la creaci&oacute;n de los contenedores para ' . $sTabla . ', Por favor informe al administrador del sistema';
+			} else {
+				list ($sError, $sDebugT) = f3018_RevisarTabla($iAgno, $objDB, $bDebug);
+			}
+			if ($sError == '') {
+				$sSQL = "ALTER TABLE " . $sTabla . " ADD PRIMARY KEY(saiu18id)";
+				$bResultado = $objDB->ejecutasql($sSQL);
+				$sSQL = "ALTER TABLE " . $sTabla . " ADD UNIQUE INDEX saiu18telefonico_id(saiu18agno, saiu18mes, saiu18tiporadicado, saiu18consec)";
+				$bResultado = $objDB->ejecutasql($sSQL);
+				//Indice por solicitante
+				$sSQL = "ALTER TABLE " . $sTabla . " ADD INDEX saiu18telefonico_solicitante(saiu18idsolicitante)";
+				$bResultado = $objDB->ejecutasql($sSQL);
+				//Indice por tipo de solicitud.
+				$sSQL = "ALTER TABLE " . $sTabla . " ADD INDEX saiu18telefonico_tema(saiu18temasolicitud)";
+				$bResultado = $objDB->ejecutasql($sSQL);
+			}
 		}
 	}
 	if ($sError == '') {
 		$sTabla = 'saiu19chat_' . $iAgno;
 		$bIniciarContenedor = !$objDB->bexistetabla($sTabla);
 		if ($bIniciarContenedor) {
-			$sSQL = "CREATE TABLE " . $sTabla . " (saiu19agno int NOT NULL, saiu19mes int NOT NULL, saiu19tiporadicado int NOT NULL, saiu19consec int NOT NULL, saiu19id int NULL DEFAULT 0, saiu19dia int NULL DEFAULT 0, saiu19hora int NULL DEFAULT 0, saiu19minuto int NULL DEFAULT 0, saiu19estado int NULL DEFAULT 0, saiu19idchat int NULL DEFAULT 0, saiu19idsolicitante int NULL DEFAULT 0, saiu19tipointeresado int NULL DEFAULT 0, saiu19clasesolicitud int NULL DEFAULT 0, saiu19tiposolicitud int NULL DEFAULT 0, saiu19temasolicitud int NULL DEFAULT 0, saiu19idzona int NULL DEFAULT 0, saiu19idcentro int NULL DEFAULT 0, saiu19codpais varchar(3) NULL, saiu19coddepto varchar(5) NULL, saiu19codciudad varchar(8) NULL, saiu19idescuela int NULL DEFAULT 0, saiu19idprograma int NULL DEFAULT 0, saiu19idperiodo int NULL DEFAULT 0, saiu19numorigen varchar(20) NULL, saiu19idpqrs int NULL DEFAULT 0, saiu19detalle Text NULL, saiu19horafin int NULL DEFAULT 0, saiu19minutofin int NULL DEFAULT 0, saiu19paramercadeo int NULL DEFAULT 0, saiu19idresponsable int NULL DEFAULT 0, saiu19tiemprespdias int NULL DEFAULT 0, saiu19tiempresphoras int NULL DEFAULT 0, saiu19tiemprespminutos int NULL DEFAULT 0, saiu19solucion int NULL DEFAULT 0, saiu19idcaso int NULL DEFAULT 0, saiu19numsesionchat varchar(20) NULL)";
+			$sSQL = "CREATE TABLE " . $sTabla . " (saiu19agno int NOT NULL, saiu19mes int NOT NULL, saiu19tiporadicado int NOT NULL, 
+			saiu19consec int NOT NULL, saiu19id int NULL DEFAULT 0, saiu19dia int NULL DEFAULT 0, saiu19hora int NULL DEFAULT 0, 
+			saiu19minuto int NULL DEFAULT 0, saiu19estado int NULL DEFAULT 0, saiu19idchat int NULL DEFAULT 0, 
+			saiu19idsolicitante int NULL DEFAULT 0, saiu19tipointeresado int NULL DEFAULT 0, saiu19clasesolicitud int NULL DEFAULT 0, 
+			saiu19tiposolicitud int NULL DEFAULT 0, saiu19temasolicitud int NULL DEFAULT 0, saiu19idzona int NULL DEFAULT 0, 
+			saiu19idcentro int NULL DEFAULT 0, saiu19codpais varchar(3) NULL, saiu19coddepto varchar(5) NULL, saiu19codciudad varchar(8) NULL, 
+			saiu19idescuela int NULL DEFAULT 0, saiu19idprograma int NULL DEFAULT 0, saiu19idperiodo int NULL DEFAULT 0, 
+			saiu19numorigen varchar(20) NULL, saiu19idpqrs int NULL DEFAULT 0, saiu19detalle Text NULL, saiu19horafin int NULL DEFAULT 0, 
+			saiu19minutofin int NULL DEFAULT 0, saiu19paramercadeo int NULL DEFAULT 0, saiu19idresponsable int NULL DEFAULT 0, 
+			saiu19tiemprespdias int NULL DEFAULT 0, saiu19tiempresphoras int NULL DEFAULT 0, saiu19tiemprespminutos int NULL DEFAULT 0, 
+			saiu19solucion int NULL DEFAULT 0, saiu19idcaso int NULL DEFAULT 0, saiu19numsesionchat varchar(20) NULL)";
 			$bResultado = $objDB->ejecutasql($sSQL);
-			$sSQL = "ALTER TABLE " . $sTabla . " ADD PRIMARY KEY(saiu19id)";
+			if ($bResultado == false) {
+				$sError = 'No ha sido posible iniciar la creaci&oacute;n de los contenedores para ' . $sTabla . ', Por favor informe al administrador del sistema';
+			} else {
+				list ($sError, $sDebugT) = f3019_RevisarTabla($iAgno, $objDB, $bDebug);
+			}
+			if ($sError == '') {
+				$sSQL = "ALTER TABLE " . $sTabla . " ADD PRIMARY KEY(saiu19id)";
+				$bResultado = $objDB->ejecutasql($sSQL);
+				$sSQL = "ALTER TABLE " . $sTabla . " ADD UNIQUE INDEX saiu19chat_id(saiu19agno, saiu19mes, saiu19tiporadicado, saiu19consec)";
+				$bResultado = $objDB->ejecutasql($sSQL);
+				//Indice por solicitante
+				$sSQL = "ALTER TABLE " . $sTabla . " ADD INDEX saiu19chat_solicitante(saiu19idsolicitante)";
+				$bResultado = $objDB->ejecutasql($sSQL);
+				//Indice por tipo de solicitud.
+				$sSQL = "ALTER TABLE " . $sTabla . " ADD INDEX saiu19chat_tema(saiu19temasolicitud)";
+				$bResultado = $objDB->ejecutasql($sSQL);
+			}
+		}
+	}
+	if ($sError == '') {
+		$sTabla = 'saiu20correo_' . $iAgno;
+		$bIniciarContenedor = !$objDB->bexistetabla($sTabla);
+		if ($bIniciarContenedor) {
+			$sSQL = "CREATE TABLE " . $sTabla . " (saiu20agno int NOT NULL, saiu20mes int NOT NULL, saiu20tiporadicado int NOT NULL, saiu20consec int NOT NULL, saiu20id int NULL DEFAULT 0, 
+			saiu20origenagno int NULL, saiu20origenmes int NULL, saiu20origenid int NULL, saiu20dia int NULL DEFAULT 0, saiu20hora int NULL DEFAULT 0, saiu20minuto int NULL DEFAULT 0, 
+			saiu20estado int NULL DEFAULT 0, saiu20idcorreo int NULL DEFAULT 0, saiu20numcorreo varchar(50) NULL, saiu20idsolicitante int NULL DEFAULT 0, saiu20tipointeresado int NULL DEFAULT 0, 
+			saiu20clasesolicitud int NULL DEFAULT 0, saiu20tiposolicitud int NULL DEFAULT 0, saiu20temasolicitud int NULL DEFAULT 0, saiu20idzona int NULL DEFAULT 0, saiu20idcentro int NULL DEFAULT 0, 
+			saiu20codpais varchar(3) NULL, saiu20coddepto varchar(5) NULL, saiu20codciudad varchar(8) NULL, saiu20idescuela int NULL DEFAULT 0, saiu20idprograma int NULL DEFAULT 0, 
+			saiu20idperiodo int NULL DEFAULT 0, saiu20numorigen varchar(20) NULL, saiu20idpqrs int NULL DEFAULT 0, saiu20detalle Text NULL, saiu20horafin int NULL DEFAULT 0, saiu20minutofin int NULL DEFAULT 0, 
+			saiu20paramercadeo int NULL DEFAULT 0, saiu20idresponsable int NULL DEFAULT 0, saiu20tiemprespdias int NULL DEFAULT 0, saiu20tiempresphoras int NULL DEFAULT 0, saiu20tiemprespminutos int NULL DEFAULT 0, 
+			saiu20solucion int NULL DEFAULT 0, saiu20idcaso int NULL DEFAULT 0, saiu20respuesta Text NULL, saiu20correoorigen varchar(50) NULL)";
 			$bResultado = $objDB->ejecutasql($sSQL);
-			$sSQL = "ALTER TABLE " . $sTabla . " ADD UNIQUE INDEX saiu19chat_id(saiu19agno, saiu19mes, saiu19tiporadicado, saiu19consec)";
+			if ($bResultado == false) {
+				$sError = 'No ha sido posible iniciar la creaci&oacute;n de los contenedores para ' . $sTabla . ', Por favor informe al administrador del sistema';
+			} else {
+				list ($sError, $sDebugT) = f3020_RevisarTabla($iAgno, $objDB, $bDebug);
+			}
+			if ($sError == '') {
+				$sSQL = "ALTER TABLE " . $sTabla . " ADD PRIMARY KEY(saiu20id)";
+				$bResultado = $objDB->ejecutasql($sSQL);
+				$sSQL = "ALTER TABLE " . $sTabla . " ADD UNIQUE INDEX saiu20correo_id(saiu20agno, saiu20mes, saiu20tiporadicado, saiu20consec)";
+				$bResultado = $objDB->ejecutasql($sSQL);
+				//Indice por solicitante
+				$sSQL = "ALTER TABLE " . $sTabla . " ADD INDEX saiu20correo_solicitante(saiu20idsolicitante)";
+				$bResultado = $objDB->ejecutasql($sSQL);
+				//Indice por tipo de solicitud.
+				$sSQL = "ALTER TABLE " . $sTabla . " ADD INDEX saiu20correo_tema(saiu20temasolicitud)";
+				$bResultado = $objDB->ejecutasql($sSQL);
+			}
+		}
+	}
+	if ($sError == '') {
+		$sTabla = 'saiu21directa_' . $iAgno;
+		$bIniciarContenedor = !$objDB->bexistetabla($sTabla);
+		if ($bIniciarContenedor) {
+			$sSQL = "CREATE TABLE " . $sTabla . " (saiu21agno int NOT NULL, saiu21mes int NOT NULL, saiu21tiporadicado int NOT NULL, saiu21consec int NOT NULL, saiu21id int NULL DEFAULT 0, 
+			saiu21origenagno int NULL DEFAULT 0, saiu21origenmes int NULL DEFAULT 0, saiu21origenid int NULL DEFAULT 0, saiu21dia int NULL DEFAULT 0, saiu21hora int NULL DEFAULT 0, saiu21minuto int NULL DEFAULT 0, 
+			saiu21estado int NULL DEFAULT 0, saiu21idsolicitante int NULL DEFAULT 0, saiu21tipointeresado int NULL DEFAULT 0, saiu21clasesolicitud int NULL DEFAULT 0, saiu21tiposolicitud int NULL DEFAULT 0, 
+			saiu21temasolicitud int NULL DEFAULT 0, saiu21idzona int NULL DEFAULT 0, saiu21idcentro int NULL DEFAULT 0, saiu21codpais varchar(3) NULL, saiu21coddepto varchar(5) NULL, saiu21codciudad varchar(8) NULL, 
+			saiu21idescuela int NULL DEFAULT 0, saiu21idprograma int NULL DEFAULT 0, saiu21idperiodo int NULL DEFAULT 0, saiu21idpqrs int NULL DEFAULT 0, saiu21detalle Text NULL, saiu21horafin int NULL DEFAULT 0, 
+			saiu21minutofin int NULL DEFAULT 0, saiu21paramercadeo int NULL DEFAULT 0, saiu21idresponsable int NULL DEFAULT 0, saiu21tiemprespdias int NULL DEFAULT 0, saiu21tiempresphoras int NULL DEFAULT 0, 
+			saiu21tiemprespminutos int NULL DEFAULT 0, saiu21solucion int NULL DEFAULT 0, saiu21idcaso int NULL DEFAULT 0, saiu21respuesta Text NULL)";
 			$bResultado = $objDB->ejecutasql($sSQL);
-			//Indice por solicitante
-			$sSQL = "ALTER TABLE " . $sTabla . " ADD INDEX saiu19chat_solicitante(saiu19idsolicitante)";
-			$bResultado = $objDB->ejecutasql($sSQL);
-			//Indice por tipo de solicitud.
-			$sSQL = "ALTER TABLE " . $sTabla . " ADD INDEX saiu19chat_tema(saiu19temasolicitud)";
-			$bResultado = $objDB->ejecutasql($sSQL);
+			if ($bResultado == false) {
+				$sError = 'No ha sido posible iniciar la creaci&oacute;n de los contenedores para ' . $sTabla . ', Por favor informe al administrador del sistema';
+			} else {
+				list ($sError, $sDebugT) = f3021_RevisarTabla($iAgno, $objDB, $bDebug);
+			}
+			if ($sError == '') {
+				$sSQL = "ALTER TABLE " . $sTabla . " ADD PRIMARY KEY(saiu21id)";
+				$bResultado = $objDB->ejecutasql($sSQL);
+				$sSQL = "ALTER TABLE " . $sTabla . " ADD UNIQUE INDEX saiu21directa_id(saiu21agno, saiu21mes, saiu21tiporadicado, saiu21consec)";
+				$bResultado = $objDB->ejecutasql($sSQL);
+				//Indice por solicitante
+				$sSQL = "ALTER TABLE " . $sTabla . " ADD INDEX saiu21directa_solicitante(saiu21idsolicitante)";
+				$bResultado = $objDB->ejecutasql($sSQL);
+				//Indice por tipo de solicitud.
+				$sSQL = "ALTER TABLE " . $sTabla . " ADD INDEX saiu21directa_tema(saiu21temasolicitud)";
+				$bResultado = $objDB->ejecutasql($sSQL);
+			}
 		}
 	}
 	if ($sError == '') {

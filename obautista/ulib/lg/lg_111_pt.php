@@ -215,7 +215,7 @@ Columna L: Ciudad de origen {Opcional}';
 $aunad11tipodoc=array('', 'CC', 'CE', 'TI', 'DN', 'RC', 'PA', 'NI', 'SS', '__');
 $dunad11tipodoc=array('', 'CC', 'CE', 'TI', 'DNI', 'RC', 'PA', 'NIT', 'SS', '__');
 
-$aunad01estrato=array('[Sin estrado]', 'Uno', 'Dos', 'Tres', 'Cuatro', 'Cinco', 'Seis');
+$aunad01estrato=array('[Sin estrato]', 'Uno', 'Dos', 'Tres', 'Cuatro', 'Cinco', 'Seis');
 $iunad01estrato=6;
 
 $aunad01zonares=array('', 'Urbana', 'Rural');

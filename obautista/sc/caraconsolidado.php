@@ -208,7 +208,7 @@ if ($_REQUEST['paso']==-1){
 	$_REQUEST['cara50periodoacomp']='';
 	$_REQUEST['cara50convenio']='';
 	$_REQUEST['cara50periodomatricula']='';
-	$_REQUEST['cara50tipomatricula']=0;
+	$_REQUEST['cara50tipomatricula']='';
 	$_REQUEST['cara50listadoc']='';
 	$_REQUEST['paso']=0;
 	}

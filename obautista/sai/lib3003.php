@@ -755,15 +755,15 @@ function f3003_db_GuardarV2($DATA, $objDB, $bDebug=false){
 			}
 		}
 	if ($sError==''){
-		if (get_magic_quotes_gpc()==1){$DATA['saiu03descripcion']=stripslashes($DATA['saiu03descripcion']);}
+		$DATA['saiu03descripcion']=stripslashes($DATA['saiu03descripcion']);
 		//Si el campo saiu03descripcion permite html quite la linea htmlspecialchars para el campo y habilite la siguiente linea:
 		//$saiu03descripcion=addslashes($DATA['saiu03descripcion']);
 		$saiu03descripcion=str_replace('"', '\"', $DATA['saiu03descripcion']);
-		if (get_magic_quotes_gpc()==1){$DATA['saiu03ayuda']=stripslashes($DATA['saiu03ayuda']);}
+		$DATA['saiu03ayuda']=stripslashes($DATA['saiu03ayuda']);
 		//Si el campo saiu03ayuda permite html quite la linea htmlspecialchars para el campo y habilite la siguiente linea:
 		//$saiu03ayuda=addslashes($DATA['saiu03ayuda']);
 		$saiu03ayuda=str_replace('"', '\"', $DATA['saiu03ayuda']);
-		if (get_magic_quotes_gpc()==1){$DATA['saiu03modelo']=stripslashes($DATA['saiu03modelo']);}
+		$DATA['saiu03modelo']=stripslashes($DATA['saiu03modelo']);
 		//Si el campo saiu03modelo permite html quite la linea htmlspecialchars para el campo y habilite la siguiente linea:
 		$saiu03modelo=addslashes($DATA['saiu03modelo']);
 		//$saiu03modelo=str_replace('"', '\"', $DATA['saiu03modelo']);

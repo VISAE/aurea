@@ -23,7 +23,7 @@
                 "host": "172.21.0.80",
 				"port": 22,
 				"user": "omarbautista",
-				"privateKey": "/home/oabm77/PTI/omarbautista.ppk",
+				"privateKey": "/home/oabm77/VISAE/aurea_server_key/vscode.ppk",
 
                 "checkBeforeDeploy": true,
 

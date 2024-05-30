@@ -382,6 +382,9 @@ function f3005_TablaDetalleV2($aParametros, $objDB, $bDebug = false)
 	if (isset($aParametros[110]) == 0) {
 		$aParametros[110] = '';
 	}
+	if (isset($aParametros[111]) == 0) {
+		$aParametros[111] = '';
+	}
 	//$aParametros[103]=numeros_validar($aParametros[103]);
 	$idTercero = $aParametros[100];
 	$sDebug = '';
@@ -395,6 +398,7 @@ function f3005_TablaDetalleV2($aParametros, $objDB, $bDebug = false)
 	$btipo = $aParametros[108];
 	$bcategoria = $aParametros[109];
 	$btema = $aParametros[110];
+	$bref = $aParametros[111];
 	$bAbierta = true;
 	//$sSQL='SELECT Campo FROM Tabla WHERE Id='.$sValorId;
 	//$tabla=$objDB->ejecutasql($sSQL);
@@ -533,6 +537,9 @@ function f3005_TablaDetalleV2($aParametros, $objDB, $bDebug = false)
 	}
 	if ($btema !== '') {
 		$sWhere = $sWhere . ' AND TB.saiu05idtemaorigen=' . $btema . '';
+	}
+	if ($bref !== '') {
+		$sWhere = $sWhere . ' AND TB.saiu05numref="' . $bref . '"';
 	}
 	$sSQL = '';
 	$aTemas = array();
@@ -790,6 +797,11 @@ function f3005_db_GuardarV2($DATA, $objDB, $bDebug = false, $idTercero = 0)
 	*/
 	if (isset($DATA['bCambiaEst']) == 0) {
 		$DATA['bCambiaEst'] = 1;
+	}
+	if (isset($DATA['iCodModulo']) == 0) {
+		$iCodModulo = 3005;
+	} else {
+		$iCodModulo = $DATA['iCodModulo'];
 	}
 	$DATA['saiu05consec'] = numeros_validar($DATA['saiu05consec']);
 	$DATA['saiu05hora'] = numeros_validar($DATA['saiu05hora']);
@@ -1133,21 +1145,15 @@ function f3005_db_GuardarV2($DATA, $objDB, $bDebug = false, $idTercero = 0)
 	}
 	$bCalularTotales = false;
 	if ($sError == '') {
-		if (get_magic_quotes_gpc() == 1) {
-			$DATA['saiu05detalle'] = stripslashes($DATA['saiu05detalle']);
-		}
+		$DATA['saiu05detalle'] = stripslashes($DATA['saiu05detalle']);
 		//Si el campo saiu05detalle permite html quite la linea htmlspecialchars para el campo y habilite la siguiente linea:
 		//$saiu05detalle=addslashes($DATA['saiu05detalle']);
 		$saiu05detalle = str_replace('"', '\"', $DATA['saiu05detalle']);
-		if (get_magic_quotes_gpc() == 1) {
-			$DATA['saiu05infocomplemento'] = stripslashes($DATA['saiu05infocomplemento']);
-		}
+		$DATA['saiu05infocomplemento'] = stripslashes($DATA['saiu05infocomplemento']);
 		//Si el campo saiu05infocomplemento permite html quite la linea htmlspecialchars para el campo y habilite la siguiente linea:
 		//$saiu05infocomplemento=addslashes($DATA['saiu05infocomplemento']);
 		$saiu05infocomplemento = str_replace('"', '\"', $DATA['saiu05infocomplemento']);
-		if (get_magic_quotes_gpc() == 1) {
-			$DATA['saiu05respuesta'] = stripslashes($DATA['saiu05respuesta']);
-		}
+		$DATA['saiu05respuesta'] = stripslashes($DATA['saiu05respuesta']);
 		//Si el campo saiu05respuesta permite html quite la linea htmlspecialchars para el campo y habilite la siguiente linea:
 		//$saiu05respuesta=addslashes($DATA['saiu05respuesta']);
 		$saiu05respuesta = str_replace('"', '\"', $DATA['saiu05respuesta']);
@@ -2273,26 +2279,6 @@ function f3005_HTMLNoRespondeEncuesta($sContenedor, $saiu05id, $objDB, $bDebug =
 	}
 	return $sHTML;
 }
-function htmlAlertas($sColor, $sTexto)
-{
-	$sHTML = '';
-	$sTipo = '';
-	switch ($sColor) {
-		case 'verde':
-			$sTipo = 'success';
-			break;
-		case 'naranja':
-			$sTipo = 'warning';
-			break;
-		case 'rojo':
-			$sTipo = 'danger';
-			break;
-		default:
-			$sTipo = 'info';
-	}
-	$sHTML = $sHTML . '<div class="alert alert-' . $sTipo . '" role="alert"><strong>' . $sTexto . '</strong></div>';
-	return $sHTML;
-}
 function f3005_EnviaCorreosSolicitud($DATA, $sContenedor, $objDB, $bDebug = false, $bResponsable = false, $bForzar = false)
 {
 	require './app.php';
@@ -2384,7 +2370,7 @@ function f3005_EnviaCorreosSolicitud($DATA, $sContenedor, $objDB, $bDebug = fals
 						break;
 				}
 				$sCorreoCopia = '';
-				$iFechaServicio = $sContenedor . $DATA['saiu05dia'];
+				$iFechaServicio = fecha_ArmarNumero($DATA['saiu05dia'],$DATA['saiu05mes'],$DATA['saiu05agno']);
 				$sFechaLarga = formato_FechaLargaDesdeNumero($iFechaServicio, true);
 				$sRutaImg = 'https://datateca.unad.edu.co/img/';
 				$sURLDestino = 'https://aurea.unad.edu.co/sai';
@@ -2400,11 +2386,10 @@ function f3005_EnviaCorreosSolicitud($DATA, $sContenedor, $objDB, $bDebug = fals
 				list($unad11razonsocial, $sErrorDet) = tabla_campoxid('unad11terceros', 'unad11razonsocial', 'unad11id', $idTercero, '{' . 'An&oacute;nimo' . '}', $objDB);
 				if ($bResponsable) {
 					$sTituloMensaje = $ETI['mail_asig_titulo'] . ' ' . $sNomEntidad . '';
-					$et_NumSol = f3000_NumSolicitud($DATA['saiu05agno'], $DATA['saiu05mes'], $DATA['saiu05consec']);
 					$sCuerpo = 'Cordial saludo.<br>
 					Estimado(a) <b>' . $unad11razonsocial . '</b><br><br>
 					El Sistema de Atenci&oacute;n Integral (SAI) le informa que le ha sido asignada una PQRS radicada el d&iacute;a ' . $sFechaLarga . '; 
-					con el n&uacute;mero de solicitud: <span style="color: rgb(255, 0, 0); font-size: 16px;"><strong>' . $et_NumSol . '</strong></span>.<br><br>
+					con referencia de consulta: <span style="color: rgb(255, 0, 0); font-size: 16px;"><strong>' . $DATA['saiu05numref'] . '</strong></span>.<br><br>
 					Le invitamos a ingresar al m&oacute;dulo de Peticiones, Quejas, Reclamos y Sugerencias para iniciar el tr&aacute;mite de la solicitud.<br><br>';
 				} else {
 					if ($DATA['saiu05estado'] == 0) {

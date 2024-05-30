@@ -265,6 +265,7 @@ $xajax->register(XAJAX_FUNCTION, 'f3005_ExisteDato');
 $xajax->register(XAJAX_FUNCTION, 'f3005_Busquedas');
 $xajax->register(XAJAX_FUNCTION, 'f3005_HtmlBusqueda');
 $xajax->register(XAJAX_FUNCTION, 'f3000_HtmlTabla');
+$xajax->register(XAJAX_FUNCTION, 'f3000pqrs_HtmlTabla');
 $xajax->register(XAJAX_FUNCTION, 'elimina_archivo_saiu06idarchivo');
 $xajax->register(XAJAX_FUNCTION, 'f3006_Guardar');
 $xajax->register(XAJAX_FUNCTION, 'f3006_Traer');
@@ -302,6 +303,12 @@ if (isset($_REQUEST['paginaf3000']) == 0) {
 }
 if (isset($_REQUEST['lppf3000']) == 0) {
 	$_REQUEST['lppf3000'] = 10;
+}
+if (isset($_REQUEST['paginaf3000pqrs']) == 0) {
+	$_REQUEST['paginaf3000pqrs'] = 1;
+}
+if (isset($_REQUEST['lppf3000pqrs']) == 0) {
+	$_REQUEST['lppf3000pqrs'] = 10;
 }
 if (isset($_REQUEST['boculta3000']) == 0) {
 	$_REQUEST['boculta3000'] = 0;
@@ -703,6 +710,12 @@ if (isset($_REQUEST['bcategoria']) == 0) {
 if (isset($_REQUEST['btema']) == 0) {
 	$_REQUEST['btema'] = '';
 }
+if (isset($_REQUEST['bref']) == 0) {
+	$_REQUEST['bref'] = '';
+}
+if (isset($_REQUEST['bagnopqrs']) == 0) {
+	$_REQUEST['bagnopqrs'] = fecha_agno();
+}
 if ((int)$_REQUEST['paso'] > 0) {
 	//Anotaciones
 	if (isset($_REQUEST['bnombre3006']) == 0) {
@@ -921,12 +934,36 @@ if ($_REQUEST['paso'] == 17) {
 		$sError = $sError . 'No ha sido posible acceder al contenedor de datos de cambio responsable '. $sTabla05;
 	}
 	if ($sError == '') {
-		$sSQL = 'UPDATE ' . $sTabla05 . ' SET saiu05idresponsable=' . $_REQUEST['saiu05idresponsablefin'] . ' WHERE saiu05id=' . $_REQUEST['saiu05id'] . '';
+		$bCambiaLider = false;
+		$saiu05idunidadresp = $_REQUEST['saiu05idunidadresp'];
+		$saiu05idequiporesp = $_REQUEST['saiu05idequiporesp'];
+		$saiu05idsupervisor = $_REQUEST['saiu05idsupervisor'];
+		$sSQL = 'SELECT bita27id, bita27idlider, bita27idunidadfunc FROM bita27equipotrabajo WHERE bita27idlider=' . $_REQUEST['saiu05idresponsablefin'] . ' AND bita27activo=1 ';
+		$tabla = $objDB->ejecutasql($sSQL);
+		if ($objDB->nf($tabla) > 0) {
+			$fila = $objDB->sf($tabla);
+			$sSQL = 'UPDATE ' . $sTabla05 . ' SET saiu05idunidadresp=' . $fila['bita27idunidadfunc'] . ', saiu05idequiporesp=' . $fila['bita27id'] . ', 
+saiu05idsupervisor=' . $fila['bita27idlider'] . ', saiu05idresponsable=' . $_REQUEST['saiu05idresponsablefin'] . ' WHERE saiu05id=' . $_REQUEST['saiu05id'] . '';
+			$bCambiaLider = true;
+			$saiu05idunidadresp = $fila['bita27idunidadfunc'];
+			$saiu05idequiporesp = $fila['bita27id'];
+			$saiu05idsupervisor = $fila['bita27idlider'];
+		} else {
+			$sSQL = 'UPDATE ' . $sTabla05 . ' SET saiu05idresponsable=' . $_REQUEST['saiu05idresponsablefin'] . ' WHERE saiu05id=' . $_REQUEST['saiu05id'] . '';
+		}
+		if ($bDebug) {
+			$sDebug = $sDebug . fecha_microtiempo() . ' Consulta reasignación: '.$sSQL.'<br>';
+		}
 		$result = $objDB->ejecutasql($sSQL);
 		if ($result==false){
 			$sError=$sError.$ERR['saiu05idresponsablefin'].'';
 		} else {
 			seg_auditar($iCodModulo, $_SESSION['unad_id_tercero'], 3, $_REQUEST['saiu05id'], 'Reasigna el responsable ', $objDB);
+			if ($bCambiaLider) {
+				$_REQUEST['saiu05idunidadresp']=$saiu05idunidadresp;
+				$_REQUEST['saiu05idequiporesp']=$saiu05idequiporesp;
+				$_REQUEST['saiu05idsupervisor']=$saiu05idsupervisor;
+			}
 			$_REQUEST['saiu05idresponsable']=$_REQUEST['saiu05idresponsablefin'];
 		}
 	}
@@ -1210,11 +1247,8 @@ if ($_REQUEST['saiu05idequiporesp'] != '') {
 }
 $html_saiu05idequiporesp = html_oculto('saiu05idequiporesp', $_REQUEST['saiu05idequiporesp'], $saiu05idequiporesp_nombre);
 $saiu05idsupervisor_rs='&nbsp;';
-$sSQL = 'SELECT T11.unad11razonsocial FROM saiu03temasol AS TB, unad11terceros AS T11 WHERE TB.saiu03idliderrespon1=T11.unad11id AND TB.saiu03id = ' . $_REQUEST['saiu05idtemaorigen'] . ' AND TB.saiu03idliderrespon1 = ' . $_REQUEST['saiu05idsupervisor'] . '';
-$tabla = $objDB->ejecutasql($sSQL);
-if ($fila = $objDB->sf($tabla)) {
-	$saiu05idsupervisor_rs=$fila['unad11razonsocial'];
-} else {
+list($saiu05idsupervisor_rs, $_REQUEST['saiu05idsupervisor'], $_REQUEST['saiu05idsupervisor_td'], $_REQUEST['saiu05idsupervisor_doc']) = html_tercero($_REQUEST['saiu05idsupervisor_td'], $_REQUEST['saiu05idsupervisor_doc'], $_REQUEST['saiu05idsupervisor'], 0, $objDB);
+if ($saiu05idsupervisor_rs == '') {
 	$saiu05idsupervisor_rs = '{' . $ETI['msg_sindato'] . '}';
 }
 list($saiu05idresponsable_rs, $_REQUEST['saiu05idresponsable'], $_REQUEST['saiu05idresponsable_td'], $_REQUEST['saiu05idresponsable_doc']) = html_tercero($_REQUEST['saiu05idresponsable_td'], $_REQUEST['saiu05idresponsable_doc'], $_REQUEST['saiu05idresponsable'], 0, $objDB);
@@ -1313,6 +1347,10 @@ $sSQL = 'SELECT saiu02id AS id, saiu02titulo AS nombre FROM saiu02tiposol WHERE 
 $html_bcategoria = $objCombos->html($sSQL, $objDB);
 $objCombos->nuevo('btema', $_REQUEST['btema'], true, '{' . $ETI['msg_todos'] . '}');
 $html_btema = $objCombos->html('', $objDB);
+$objCombos->nuevo('bagnopqrs', $_REQUEST['bagnopqrs'], false, '{' . $ETI['msg_todos'] . '}');
+$objCombos->sAccion = 'paginarf3000pqrs()';
+$objCombos->numeros(2020, $iAgnoFin, 1);
+$html_bagnopqrs = $objCombos->html('', $objDB);
 /*
 $objCombos->nuevo('blistar3006', $_REQUEST['blistar3006'], true, '{'.$ETI['msg_todos'].'}');
 $html_blistar3006=$objCombos->comboSistema(3006, 1, $objDB, 'paginarf3006()');
@@ -1356,6 +1394,7 @@ $aParametros[107] = $_REQUEST['bdoc'];
 $aParametros[108] = $_REQUEST['btipo'];
 $aParametros[109] = $_REQUEST['bcategoria'];
 $aParametros[110] = $_REQUEST['btema'];
+$aParametros[111] = $_REQUEST['bref'];
 list($sTabla3005, $sDebugTabla) = f3005_TablaDetalleV2($aParametros, $objDB, $bDebug);
 $sDebug = $sDebug . $sDebugTabla;
 $sTabla3000 = '';
@@ -1373,6 +1412,13 @@ $aParametros3000[102] = $_REQUEST['lppf3000'];
 //$aParametros3000[104]=$_REQUEST['blistar3000'];
 list($sTabla3000, $sDebugTabla) = f3000_TablaDetalleV2($aParametros3000, $objDB, $bDebug);
 $sDebug = $sDebug . $sDebugTabla;
+$sTabla3000pqrs='';
+$aParametros3000[101]=$_REQUEST['paginaf3000pqrs'];
+$aParametros3000[102]=$_REQUEST['lppf3000pqrs'];
+$aParametros3000[103]=$_REQUEST['bagnopqrs'];
+//$aParametros3000[104]=$_REQUEST['blistar3000'];
+list($sTabla3000pqrs, $sDebugTabla)=f3000pqrs_TablaDetalleV2($aParametros3000, $objDB, $bDebug);
+$sDebug=$sDebug.$sDebugTabla;
 if ($_REQUEST['paso'] != 0) {
 	//Anotaciones
 	$sNumSol = f3000_NumSolicitud($_REQUEST['saiu05agno'], $_REQUEST['saiu05mes'], $_REQUEST['saiu05consec']);
@@ -1415,6 +1461,7 @@ forma_mitad();
 <link rel="stylesheet" href="<?php echo $APP->rutacomun; ?>css/criticalPath.css" type="text/css" />
 <link rel="stylesheet" href="<?php echo $APP->rutacomun; ?>css/principal.css" type="text/css" />
 <link rel="stylesheet" href="<?php echo $APP->rutacomun; ?>unad_estilos2018.css" type="text/css" />
+<link rel="stylesheet" href="<?php echo $APP->rutacomun; ?>css/css_tabs.css" type="text/css" />
 <?php
 if ($iPiel == 2) {
 ?>
@@ -1605,6 +1652,7 @@ if ($_REQUEST['saiu05estado'] == 0) {
 			document.getElementById(idcampo).value = 0;
 			document.getElementById('div_' + idcampo).innerHTML = '&nbsp;';
 			paginarf3000();
+			paginarf3000pqrs();
 		}
 	}
 
@@ -1755,6 +1803,7 @@ if ($seg_4 == 1) {
 		params[108] = window.document.frmedita.btipo.value;
 		params[109] = window.document.frmedita.bcategoria.value;
 		params[110] = window.document.frmedita.btema.value;
+		params[111] = window.document.frmedita.bref.value;
 		document.getElementById('div_f3005detalle').innerHTML = '<div class="GrupoCamposAyuda"><div class="MarquesinaMedia">Procesando datos, por favor espere.</div></div><input id="paginaf3005" name="paginaf3005" type="hidden" value="' + params[101] + '" /><input id="lppf3005" name="lppf3005" type="hidden" value="' + params[102] + '" />';
 		xajax_f3005_HtmlTabla(params);
 	}
@@ -1932,6 +1981,22 @@ if ($seg_4 == 1) {
 		xajax_f3000_HtmlTabla(params);
 	}
 
+	function paginarf3000pqrs(){
+		var params=new Array();
+		params[0]=window.document.frmedita.id11.value;
+		params[1]=3021;
+		params[2]=window.document.frmedita.saiu05agno.value;
+		params[3]=window.document.frmedita.saiu05id.value;
+		params[99]=window.document.frmedita.debug.value;
+		params[100]=window.document.frmedita.saiu05idsolicitante.value;
+		params[101]=window.document.frmedita.paginaf3000pqrs.value;
+		params[102]=window.document.frmedita.lppf3000pqrs.value;
+		params[103]=window.document.frmedita.bagnopqrs.value;
+		//params[104]=window.document.frmedita.blistar3000.value;
+		document.getElementById('div_f3000pqrsdetalle').innerHTML='<div class="GrupoCamposAyuda"><div class="MarquesinaMedia">Procesando datos, por favor espere.</div></div><input id="paginaf3000pqrs" name="paginaf3000pqrs" type="hidden" value="'+params[101]+'" /><input id="lppf3000pqrs" name="lppf3000pqrs" type="hidden" value="'+params[102]+'" />';
+		xajax_f3000pqrs_HtmlTabla(params);
+	}
+
 	function verinfopersonal(id) {
 		var params = new Array();
 		params[1] = id;
@@ -2059,6 +2124,21 @@ function carga_combo_btema() {
 	params[0] = window.document.frmedita.bcategoria.value;
 	document.getElementById('div_btema').innerHTML = '<b>Procesando datos, por favor espere...</b><input id="btema" name="btema" type="hidden" value="" />';
 	xajax_f3005_Combobtema(params);
+}
+function abrir_tab(evt, sId) {
+	evt.preventDefault();
+	var i, tabcontent, tablinks;
+	tabcontent = document.getElementsByClassName("tabcontent");
+	for (i = 0; i < tabcontent.length; i++) {
+		tabcontent[i].style.display = "none";
+	}
+	tablinks = document.getElementsByClassName("tablinks");
+	for (i = 0; i < tablinks.length; i++) {
+		tablinks[i].className = tablinks[i].className.replace(" active", "");
+	}
+	document.getElementById(sId).style.display = "flex";
+	document.getElementById(sId).style.flexWrap = "wrap";
+	evt.currentTarget.className += " active";
 }
 </script>
 <?php
@@ -2622,17 +2702,37 @@ echo $ETI['saiu05costovalor'];
 </div>
 <div class="salto1px"></div>
 <div class="GrupoCampos">
-<label class="TituloGrupo">
-<?php
-echo $ETI['titulo_3000'];
-?>
-</label>
+<div class="tab">
+<button class="tablinks" onclick="abrir_tab(event, 'solicitudes')" id="tab_inicial"><?php echo $ETI['titulo_3000']; ?></button>
+<button class="tablinks" onclick="abrir_tab(event, 'pqrs')"><?php echo $ETI['titulo_3005_pqrs']; ?></button>
+</div>
 <input id="boculta3000" name="boculta3000" type="hidden" value="<?php echo $_REQUEST['boculta3000']; ?>" />
-<div class="salto1px"></div>
+<div id="solicitudes" class="tabcontent">
 <div id="div_f3000detalle">
 <?php
 echo $sTabla3000;
 ?>
+</div>
+</div>
+<div id="pqrs" class="tabcontent">
+<div>
+<label class="Label60">
+<?php
+echo $ETI['saiu05agno'];
+?>
+</label>
+<label class="Label90">
+<?php
+echo $html_bagnopqrs;
+?>
+</label>
+</div>
+<div class="salto1px"></div>
+<div id="div_f3000pqrsdetalle">
+<?php
+echo $sTabla3000pqrs;
+?>
+</div>
 </div>
 <div class="salto1px"></div>
 </div>
@@ -3428,6 +3528,15 @@ echo $ETI['msg_bnombre'];
 <input id="bnombre" name="bnombre" type="text" value="<?php echo $_REQUEST['bnombre']; ?>" onchange="paginarf3005()" autocomplete="off" />
 </label>
 <div class="salto1px"></div>
+<label class="Label220">
+<?php
+echo $ETI['saiu05numref'];
+?>
+</label>
+<label class="Label200">
+<input id="bref" name="bref" type="text" value="<?php echo $_REQUEST['bref']; ?>" onchange="paginarf3005()" autocomplete="off" />
+</label>
+<div class="salto1px"></div>
 <label class="Label90">
 <?php
 echo $ETI['saiu05idcategoria'];
@@ -3751,19 +3860,20 @@ if ($bMueveScroll) {
 <script language="javascript" src="<?php echo $APP->rutacomun; ?>js/jquery.autocomplete.js"></script>
 <script language="javascript" src="<?php echo $APP->rutacomun; ?>js/chosen.jquery.js"></script>
 <link rel="stylesheet" href="<?php echo $APP->rutacomun; ?>js/chosen.css" type="text/css" />
+<script language="javascript">
+document.getElementById("tab_inicial").click();
 <?php
 if ($bEditable || $seg_1707) {
 ?>
-<script language="javascript">
 $().ready(function() {
 $("#saiu05idtiposolorigen, #saiu05idtemaorigen, #bcategoria, #btema").chosen({
 no_results_text: "No existen coincidencias: ",
 width: "100%"});
 });
-</script>
 <?php
 }
 ?>
+</script>
 <script language="javascript" src="ac_3005.js?v=1"></script>
 <script language="javascript" src="<?php echo $APP->rutacomun; ?>unad_todas.js?ver=8"></script>
 <?php

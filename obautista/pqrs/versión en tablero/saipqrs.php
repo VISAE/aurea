@@ -1328,11 +1328,8 @@ if (false) {
 	}
 
 	function enviacerrar() {
-		ModalConfirm('<?php echo $ETI['msg_cerrar']; ?>');
-		ModalDialogConfirm(function(confirm) {
-			if (confirm) {
+		ModalConfirmV2('<?php echo $ETI['msg_cerrar']; ?>', () => {
 				ejecuta_enviacerrar();
-			}
 		});
 	}
 
@@ -1737,12 +1734,13 @@ if ($iNumFormatosImprime>0) {
 	}
 
 	function mod_tratadatos() {
-		ModalConfirmV2('<?php echo $ETI['msg_tratadatos']; ?>');
-		ModalDialogConfirm(function(confirm) {
-			if (confirm) {
-				document.getElementById("modal-btn-si").click();
-			}
+		ModalConfirmV2('<?php echo $ETI['msg_tratadatos']; ?>', () => {
+			ejecuta_tratadatos();
 		});
+	}
+
+	function ejecuta_tratadatos() {
+		document.getElementById("modal-btn-si").click();
 	}
 </script>
 <?php

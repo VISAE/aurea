@@ -6,12 +6,12 @@
 */
 $ETI['app_nombre'] = 'APP';
 $ETI['grupo_nombre'] = 'Grupo';
-$ETI['titulo'] = 'Atención presencial';
-$ETI['titulo_sector2'] = 'Atención presencial';
+$ETI['titulo'] = 'Atenci&oacute;n presencial';
+$ETI['titulo_sector2'] = 'Atenci&oacute;n presencial';
 $ETI['titulo_sector93'] = 'Cambio de consecutivo';
-$ETI['titulo_3021'] = 'Atención presencial';
-$ETI['titulo_busca_3021'] = 'Busqueda de Atención presencial';
-$ETI['sigla_3021'] = 'Atención presencial';
+$ETI['titulo_3021'] = 'Atenci&oacute;n presencial';
+$ETI['titulo_busca_3021'] = 'Busqueda de Atenci&oacute;n presencial';
+$ETI['sigla_3021'] = 'Atenci&oacute;n presencial';
 $ETI['bt_ter_buscar'] = 'Buscar tercero';
 $ETI['bt_ter_crear'] = 'Crear tercero';
 $ETI['lnk_cargar'] = 'Editar';
@@ -59,6 +59,19 @@ $ETI['saiu21solucion']='Resultado';
 $ETI['saiu21idcaso']='N&deg; de Caso';
 $ETI['saiu21respuesta']='Respuesta';
 $ETI['saiu21cerrar']='Cerrar atenci&oacute;n';
+$ETI['saiu21noexiste']='El registro no existe';
+$ETI['saiu21cerrada']='El registro de atenci&oacute;n se encuentra cerrado';
+$ETI['saiu21atiendecaso']='Atenci&oacute;n de Caso';
+$ETI['saiu21actatiendecaso']='Actualizar atiende caso';
+$ETI['saiu21reasignacaso']='Realizar Reasignaci&oacute;n';
+$ETI['saiu21idunidadcaso']='Unidad';
+$ETI['saiu21idequipocaso']='Equipo';
+$ETI['saiu21idsupervisorcaso']='Supervisor';
+$ETI['saiu21idresponsablecaso']='Responsable';
+$ETI['titulo_sector2_reasigna']='Reasignaci&oacute;n de responsable';
+$ETI['pregunta_reasigna']='¿Est&aacute; seguro de hacer la reasignaci&oacute;n&quest;';
+$ETI['guarda_reasigna']='Guardar Reasignaci&oacute;n';
+$ETI['saiu21regsolicitante']='Registrar Solicitante';
 
 $ERR['saiu21agno'] = 'Necesita el dato ' . $ETI['saiu21agno'];
 $ERR['saiu21mes'] = 'Necesita el dato ' . $ETI['saiu21mes'];
@@ -99,13 +112,19 @@ $ERR['saiu21tiemprespminutos'] = 'Necesita el dato ' . $ETI['saiu21tiemprespminu
 $ERR['saiu21solucion'] = 'Necesita el dato ' . $ETI['saiu21solucion'];
 $ERR['saiu21idcaso'] = 'Necesita el dato ' . $ETI['saiu21idcaso'];
 $ERR['saiu21respuesta'] = 'Necesita el dato ' . $ETI['saiu21respuesta'];
+$ERR['configtemas'] = '<br>Falta configurar el tema de solicitud, informe al administrador';
+$ERR['saiu21idunidadcaso'] = 'Necesita el dato ' . $ETI['saiu21idunidadcaso'] . $ERR['configtemas'];
+$ERR['saiu21idequipocaso'] = 'Necesita el dato ' . $ETI['saiu21idequipocaso'] . $ERR['configtemas'];
+$ERR['saiu21idsupervisorcaso'] = 'Necesita el dato ' . $ETI['saiu21idsupervisorcaso'] . $ERR['configtemas'];
+$ERR['saiu21idresponsablecaso'] = 'Necesita el dato ' . $ETI['saiu21idresponsablecaso'] . $ERR['configtemas'];
 
 $ERR['saiu21solucion_proceso']='Debe indicar el resultado de la atenci&oacute;n presencial';
+$ERR['saiu21idresponsablecasofin']='No ha seleccionado un integrante del equipo de trabajo';
 
 $asaiu21paramercadeo=array('', '');
 $isaiu21paramercadeo=0;
 
-$asaiu21solucion=array('En proceso', 'Resuelto en la atenci&oacute;n', '', 'Se inicia Caso', '', 'Se inicia PQRS', '', '', 'Sin resolver');
+$asaiu21solucion=array('En proceso', 'Resuelto en la atenci&oacute;n', '', 'Se inicia Caso', '', 'Se inicia PQRS');
 $isaiu21solucion=8;
 
 $ETI['msg_fecha']='Fecha';

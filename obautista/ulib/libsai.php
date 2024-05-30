@@ -4,29 +4,29 @@
 --- angel.avellaneda@unad.edu.co - http://www.unad.edu.co
 --- Modelo Versión 2.24.1 viernes, 21 de febrero de 2020
 */
-function unad11_Mostrar_v2SAI($params)
+function unad11_Mostrar_v2SAI($aParametros)
 {
 	$_SESSION['u_ultimominuto'] = iminutoavance();
 	//if ($tipodoc!='CE'){$doc=solonumeros($doc);}
 	$respuesta = '';
 	$idTercero = 0;
-	if (!is_array($params)) {
-		$params = json_decode(str_replace('\"', '"', $params), true);
+	if (!is_array($aParametros)) {
+		$aParametros = json_decode(str_replace('\"', '"', $aParametros), true);
 	}
-	if (isset($params[4]) == 0) {
-		$params[4] = '';
+	if (isset($aParametros[4]) == 0) {
+		$aParametros[4] = '';
 	}
-	if (isset($params[5]) == 0) {
-		$params[5] = '';
+	if (isset($aParametros[5]) == 0) {
+		$aParametros[5] = '';
 	}
-	if (isset($params[6]) == 0) {
-		$params[6] = '';
+	if (isset($aParametros[6]) == 0) {
+		$aParametros[6] = '';
 	}
-	$tipodoc = $params[0];
-	$doc = trim($params[1]);
-	$objid = $params[2];
-	$sdiv = $params[3];
-	$idModulo = $params[6];
+	$tipodoc = $aParametros[0];
+	$doc = trim($aParametros[1]);
+	$objid = $aParametros[2];
+	$sdiv = $aParametros[3];
+	$idModulo = $aParametros[6];
 	$bXajax = true;
 	$bExiste = false;
 	$bHayDB = false;
@@ -304,12 +304,12 @@ function unad11_Mostrar_v2SAI($params)
 		$objResponse->call('$("#' . $sCampoCentro . '").chosen()');
 	}
 	if ($idTercero == 0) {
-		if ($params[5] != '') {
-			$objResponse->call($params[5]);
+		if ($aParametros[5] != '') {
+			$objResponse->call($aParametros[5]);
 		}
 	} else {
-		if ($params[4] != '') {
-			$objResponse->call($params[4]);
+		if ($aParametros[4] != '') {
+			$objResponse->call($aParametros[4]);
 		}
 	}
 	if ($bEnviarCorreo) {
@@ -317,30 +317,31 @@ function unad11_Mostrar_v2SAI($params)
 		$objResponse->assign($sCampoDireccion, 'value', $sDireccion);
 	}
 	$objResponse->call('paginarf3000()');
+	$objResponse->call('paginarf3000pqrs()');
 	return $objResponse;
 }
-function unad11_TraerXidSAI($params)
+function unad11_TraerXidSAI($aParametros)
 {
 	$_SESSION['u_ultimominuto'] = iminutoavance();
 	$respuesta = '';
-	if (!is_array($params)) {
-		$params = json_decode(str_replace('\"', '"', $params), true);
+	if (!is_array($aParametros)) {
+		$aParametros = json_decode(str_replace('\"', '"', $aParametros), true);
 	}
-	$idTercero = $params[0];
+	$idTercero = $aParametros[0];
 	$tipodoc = 'CC';
 	$doc = '';
-	$objid = $params[1];
+	$objid = $aParametros[1];
 	// El parametro 4 es la funciona que se llamará si esta el tercero y la 5 la se llamara en caso de que no.
-	if (isset($params[4]) == 0) {
-		$params[4] = '';
+	if (isset($aParametros[4]) == 0) {
+		$aParametros[4] = '';
 	}
-	if (isset($params[5]) == 0) {
-		$params[5] = '';
+	if (isset($aParametros[5]) == 0) {
+		$aParametros[5] = '';
 	}
-	if (isset($params[6]) == 0) {
-		$params[6] = '';
+	if (isset($aParametros[6]) == 0) {
+		$aParametros[6] = '';
 	}
-	$idModulo = $params[6];
+	$idModulo = $aParametros[6];
 	switch ($idModulo) {
 		case 3005:
 		case 3018:
@@ -375,12 +376,12 @@ function unad11_TraerXidSAI($params)
 	$objResponse->assign($objid . '_doc', 'value', $doc);
 	$objResponse->assign('div_' . $objid, 'innerHTML', $respuesta);
 	if ($id == 0) {
-		if ($params[5] != '') {
-			$objResponse->call($params[5]);
+		if ($aParametros[5] != '') {
+			$objResponse->call($aParametros[5]);
 		}
 	} else {
-		if ($params[4] != '') {
-			$objResponse->call($params[4]);
+		if ($aParametros[4] != '') {
+			$objResponse->call($aParametros[4]);
 		}
 	}
 	return $objResponse;
@@ -1654,12 +1655,12 @@ function f12206_db_GuardarV2_Depreciar($DATA, $objDB, $bDebug = false)
 		}
 	}
 	if ($sError == '') {
-		$bpasa = false;
+		$bPasa = false;
 		if ($DATA['paso'] == 10) {
 			$DATA['corf06estado'] = 0;
 			$corf06fecha = fecha_DiaMod();
-			//$DATA['corf06autoriza1']=0; //$_SESSION['u_idtercero'];
-			//$DATA['corf06autoriza2']=0; //$_SESSION['u_idtercero'];
+			//$DATA['corf06autoriza1']=0; //$_SESSION['unad_id_tercero'];
+			//$DATA['corf06autoriza2']=0; //$_SESSION['unad_id_tercero'];
 			$DATA['corf06fechaplica'] = 0;
 			$DATA['corf06horaaplica'] = 0;
 			$DATA['corf06minaplica'] = 0;
@@ -1682,7 +1683,7 @@ function f12206_db_GuardarV2_Depreciar($DATA, $objDB, $bDebug = false)
 				$sdetalle = $sCampos12206 . '[' . $sValores12206 . ']';
 			}
 			$idAccion = 2;
-			$bpasa = true;
+			$bPasa = true;
 		} else {
 			$scampo[1] = 'corf06estado';
 			$scampo[2] = 'corf06idestudiante';
@@ -1710,7 +1711,7 @@ function f12206_db_GuardarV2_Depreciar($DATA, $objDB, $bDebug = false)
 			$sdato[11] = $DATA['corf06idcentro'];
 			$sdato[12] = $DATA['corf06idzonadest'];
 			$sdato[13] = $DATA['corf06idcentrodest'];
-			$numcmod = 13;
+			$iNumCamposMod = 13;
 			$sWhere = 'corf06id=' . $DATA['corf06id'] . '';
 			$sSQL = 'SELECT * FROM corf06novedad WHERE ' . $sWhere;
 			$sdatos = '';
@@ -1719,7 +1720,7 @@ function f12206_db_GuardarV2_Depreciar($DATA, $objDB, $bDebug = false)
 			if ($objDB->nf($result) > 0) {
 				$filabase = $objDB->sf($result);
 				if ($bDebug && $bPrimera) {
-					for ($k = 1; $k <= $numcmod; $k++) {
+					for ($k = 1; $k <= $iNumCamposMod; $k++) {
 						if (isset($filabase[$scampo[$k]]) == 0) {
 							$sDebug = $sDebug . fecha_microtiempo() . ' FALLA CODIGO: Falta el campo ' . $k . ' ' . $scampo[$k] . '<br>';
 						}
@@ -1727,17 +1728,17 @@ function f12206_db_GuardarV2_Depreciar($DATA, $objDB, $bDebug = false)
 					$bPrimera = false;
 				}
 				$bsepara = false;
-				for ($k = 1; $k <= $numcmod; $k++) {
+				for ($k = 1; $k <= $iNumCamposMod; $k++) {
 					if ($filabase[$scampo[$k]] != $sdato[$k]) {
 						if ($sdatos != '') {
 							$sdatos = $sdatos . ', ';
 						}
 						$sdatos = $sdatos . $scampo[$k] . '="' . $sdato[$k] . '"';
-						$bpasa = true;
+						$bPasa = true;
 					}
 				}
 			}
-			if ($bpasa) {
+			if ($bPasa) {
 				if ($APP->utf8 == 1) {
 					$sdetalle = utf8_encode($sdatos) . '[' . $sWhere . ']';
 					$sSQL = 'UPDATE corf06novedad SET ' . utf8_encode($sdatos) . ' WHERE ' . $sWhere . ';';
@@ -1748,7 +1749,7 @@ function f12206_db_GuardarV2_Depreciar($DATA, $objDB, $bDebug = false)
 				$idAccion = 3;
 			}
 		}
-		if ($bpasa) {
+		if ($bPasa) {
 			if ($bDebug) {
 				$sDebug = $sDebug . fecha_microtiempo() . ' Guardar 12206 ' . $sSQL . '<br>';
 			}
@@ -2012,7 +2013,7 @@ function f12206_RegistrarNovedad($DATA, $objDB, $bDebug = false)
 		}
 	}
 	if ($sError == '') {
-		$bpasa = false;
+		$bPasa = false;
 		if ($DATA['paso'] == 10) {
 			switch ($DATA['corf06tiponov']) {
 				case 1: //Aplazamiento de semestre.
@@ -2048,9 +2049,9 @@ function f12206_RegistrarNovedad($DATA, $objDB, $bDebug = false)
 				$sdetalle = $sCampos12206 . '[' . $sValores12206 . ']';
 			}
 			$idAccion = 2;
-			$bpasa = true;
+			$bPasa = true;
 		}
-		if ($bpasa) {
+		if ($bPasa) {
 			if ($bDebug) {
 				$sDebug = $sDebug . fecha_microtiempo() . ' Guardar 12206 ' . $sSQL . '<br>';
 			}
@@ -2099,8 +2100,17 @@ function f12206_AplazarSemestre($id16, $sNota, $objDB, $bDebug = false)
 		$DATA['corf06min'] = fecha_minuto();
 	}
 	if ($sError == '') {
-		list($DATA, $sError, $iTipoError, $bCerrando, $sErrorCerrando, $sDebugG) = f12206_RegistrarNovedad($DATA, $objDB, $bDebug);
-		$sDebug = $sDebug . $sDebugG;
+		// Abril 1 de 2024, se puede dar que estemos reintentanto registrar la novedad, por tanto se verifica primero
+		$sSQL = 'SELECT corf06id FROM corf06novedad WHERE corf06tiponov=1 AND corf06estado=7 AND corf06idestudiante=' . $DATA['corf06idestudiante'] . ' AND corf06idperiodo=' . $DATA['corf06idperiodo'] . '';
+		$tabla7 = $objDB->ejecutasql($sSQL);
+		if ($objDB->nf($tabla7) > 0) {
+			$fila7 = $objDB->sf($tabla7);
+			$DATA['corf06id'] = $fila7['corf06id'];
+			$sNota = '';
+		} else {
+			list($DATA, $sError, $iTipoError, $bCerrando, $sErrorCerrando, $sDebugG) = f12206_RegistrarNovedad($DATA, $objDB, $bDebug);
+			$sDebug = $sDebug . $sDebugG;
+		}
 	}
 	if ($sError == '') {
 		$corf06id = $DATA['corf06id'];

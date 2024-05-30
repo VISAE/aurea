@@ -24,7 +24,7 @@ function f3018_HTMLComboV2_saiu18agno($objDB, $objCombos, $valor){
 	while($filac=$objDB->sf($tablac)){
 		$sAgno=substr($filac[0], 17);
 		$objCombos->addItem($sAgno, $sAgno);
-		}
+	}
 	$res=$objCombos->html('', $objDB);
 	return $res;
 	}
@@ -181,7 +181,7 @@ function f3018_Combosaiu18temasolicitud($aParametros){
 	$objDB->CerrarConexion();
 	$objResponse=new xajaxResponse();
 	$objResponse->assign('div_saiu18temasolicitud', 'innerHTML', $html_saiu18temasolicitud);
-	$objResponse->call('$("#saiu18temasolicitud").chosen()');
+	$objResponse->call('$("#saiu18temasolicitud").chosen({width:"100%"})');
 	return $objResponse;
 	}
 function f3018_HTMLComboV2_saiu18idprograma($objDB, $objCombos, $valor, $vrsaiu18idescuela){
@@ -216,7 +216,7 @@ function f3018_Combosaiu18idcentro($aParametros){
 	$objDB->CerrarConexion();
 	$objResponse=new xajaxResponse();
 	$objResponse->assign('div_saiu18idcentro', 'innerHTML', $html_saiu18idcentro);
-	$objResponse->call('$("#saiu18idcentro").chosen()');
+	$objResponse->call('$("#saiu18idcentro").chosen({width:"100%"})');
 	return $objResponse;
 	}
 function f3018_Combosaiu18coddepto($aParametros){
@@ -228,10 +228,13 @@ function f3018_Combosaiu18coddepto($aParametros){
 	$objDB->xajax();
 	$objCombos=new clsHtmlCombos();
 	$html_saiu18coddepto=f3018_HTMLComboV2_saiu18coddepto($objDB, $objCombos, '', $aParametros[0]);
+	$html_saiu18codciudad=f3018_HTMLComboV2_saiu18codciudad($objDB, $objCombos, '', $aParametros[0]);
 	$objDB->CerrarConexion();
 	$objResponse=new xajaxResponse();
 	$objResponse->assign('div_saiu18coddepto', 'innerHTML', $html_saiu18coddepto);
-	$objResponse->call('$("#saiu18coddepto").chosen()');
+	$objResponse->call('$("#saiu18coddepto").chosen({width:"100%"})');
+	$objResponse->assign('div_saiu18codciudad', 'innerHTML', $html_saiu18codciudad);
+	$objResponse->call('$("#saiu18codciudad").chosen({width:"100%"})');
 	return $objResponse;
 	}
 function f3018_Combosaiu18codciudad($aParametros){
@@ -246,7 +249,7 @@ function f3018_Combosaiu18codciudad($aParametros){
 	$objDB->CerrarConexion();
 	$objResponse=new xajaxResponse();
 	$objResponse->assign('div_saiu18codciudad', 'innerHTML', $html_saiu18codciudad);
-	$objResponse->call('$("#saiu18codciudad").chosen()');
+	$objResponse->call('$("#saiu18codciudad").chosen({width:"100%"})');
 	return $objResponse;
 	}
 function f3018_Combosaiu18idprograma($aParametros){
@@ -374,16 +377,25 @@ function f3018_TablaDetalleV2($aParametros, $objDB, $bDebug=false){
 	if (isset($aParametros[100])==0){$aParametros[100]=$_SESSION['unad_id_tercero'];}
 	if (isset($aParametros[101])==0){$aParametros[101]=1;}
 	if (isset($aParametros[102])==0){$aParametros[102]=20;}
-	//if (isset($aParametros[103])==0){$aParametros[103]='';}
+	if (isset($aParametros[103])==0){$aParametros[103]='';}
 	if (isset($aParametros[104])==0){$aParametros[104]='';}
 	if (isset($aParametros[105])==0){$aParametros[105]='';}
+	if (isset($aParametros[106])==0){$aParametros[106]='';}
+	if (isset($aParametros[107])==0){$aParametros[107]='';}
+	if (isset($aParametros[108])==0){$aParametros[108]='';}
+	if (isset($aParametros[109])==0){$aParametros[109]='';}
 	//$aParametros[103]=numeros_validar($aParametros[103]);
 	$idTercero=$aParametros[100];
 	$sDebug='';
 	$pagina=$aParametros[101];
 	$lineastabla=$aParametros[102];
-	$iVigencia=$aParametros[104];
-	$iTipo=$aParametros[105];
+	$sNombre = $aParametros[103];
+	$iAgno=$aParametros[104];
+	$iEstado = $aParametros[105];
+	$bListar = $aParametros[106];
+	$bdoc = $aParametros[107];
+	$bcategoria = $aParametros[108];
+	$btema = $aParametros[109];
 	$bAbierta=true;
 	//$sSQL='SELECT Campo FROM Tabla WHERE Id='.$sValorId;
 	//$tabla=$objDB->ejecutasql($sSQL);
@@ -393,7 +405,9 @@ function f3018_TablaDetalleV2($aParametros, $objDB, $bDebug=false){
 		//}
 	$sLeyenda='';
 	//Verificamos que exista la tabla.
-	if ((int)$iVigencia==0){$iVigencia=fecha_agno();}
+	if ($iAgno == '') {
+		$sLeyenda = 'No ha seleccionado un a&ntilde;o a consultar';
+	}
 	if ($sLeyenda!=''){
 		$sLeyenda='<div class="salto1px"></div>
 <div class="GrupoCamposAyuda">
@@ -410,19 +424,78 @@ function f3018_TablaDetalleV2($aParametros, $objDB, $bDebug=false){
 	while($fila=$objDB->sf($tabla)){
 		$aEstado[$fila['saiu11id']]=cadena_notildes($fila['saiu11nombre']);
 		}
-	$aTipoRad=array();
-	$sSQL='SELECT saiu16id, saiu16nombre FROM saiu16tiporadicado';
+	$aCategoria=array();
+	$sSQL = 'SELECT saiu02id AS id, saiu02titulo AS nombre FROM saiu02tiposol';
 	$tabla=$objDB->ejecutasql($sSQL);
 	while($fila=$objDB->sf($tabla)){
-		$aTipoRad[$fila['saiu16id']]=cadena_notildes($fila['saiu16nombre']);
+		$aCategoria[$fila['id']]=cadena_notildes($fila['nombre']);
+		}
+	$aTema=array();
+	$sSQL = 'SELECT saiu03id AS id, saiu03titulo AS nombre FROM saiu03temasol';
+	$tabla=$objDB->ejecutasql($sSQL);
+	while($fila=$objDB->sf($tabla)){
+		$aTema[$fila['id']]=cadena_notildes($fila['nombre']);
 		}
 	$sSQLadd='';
 	$sSQLadd1='';
-	switch($aParametros[105]){
+	if ($iEstado !== '') {
+		$sSQLadd = $sSQLadd . ' AND TB.saiu18estado=' . $iEstado . '';
+	}
+	switch($bListar){
 		case 1:
-		$sSQLadd1=$sSQLadd1.'TB.saiu18idresponsable='.$idTercero.' AND ';
-		break;
+			$sSQLadd=$sSQLadd.' AND TB.saiu18idresponsable=' . $idTercero. '';		
+			break;
+		case 2:
+			$sSQLadd=$sSQLadd.' AND TB.saiu18idresponsablecaso=' . $idTercero. '';		
+			break;
+		case 3:
+			$aEquipos = array();
+			$sEquipos = '';
+			$sSQL = 'SELECT bita27id FROM bita27equipotrabajo WHERE bita27activo=1 AND bita27idlider=' . $idTercero . '';
+			$tabla = $objDB->ejecutasql($sSQL);
+			if ($objDB->nf($tabla) > 0) {
+				while ($fila = $objDB->sf($tabla)) {
+					$aEquipos[] = $fila['bita27id'];
+				}
+			} else {
+				$sSQL = 'SELECT bita28idequipotrab FROM bita28eqipoparte WHERE bita28activo="S" AND bita28idtercero=' . $idTercero . '';
+				$tabla = $objDB->ejecutasql($sSQL);
+				if ($objDB->nf($tabla) > 0) {
+					while ($fila = $objDB->sf($tabla)) {
+						$aEquipos[] = $fila['bita28idequipotrab'];
+					}
+				}
+			}
+			$sEquipos = implode(',', $aEquipos);
+			if ($sEquipos != '') {
+				$sSQLadd = $sSQLadd . ' AND TB.saiu18idequipocaso IN (' . $sEquipos . ')';
+			} else {
+				$sSQLadd = $sSQLadd . ' AND TB.saiu18idresponsablecaso=' . $idTercero . '';
+			}
+			if ($bDebug) {
+				$sDebug = $sDebug . fecha_microtiempo() . ' Lider o Colaborador: ' . $sSQL . '<br>';
+			}
+			break;
+	}
+	if ($sNombre !== '') {
+		$sBase = mb_strtoupper($sNombre);
+		$aNoms = explode(' ', $sBase);
+		for ($k = 1; $k <= count($aNoms); $k++) {
+			$sCadena = $aNoms[$k - 1];
+			if ($sCadena != '') {
+				$sSQLadd = $sSQLadd . ' AND T11.unad11razonsocial LIKE "%' . $sCadena . '%"';
+			}
 		}
+	}
+	if ($bdoc !== '') {
+		$sSQLadd = $sSQLadd . ' AND T11.unad11doc LIKE "%' . $bdoc . '%"';
+	}	
+	if ($bcategoria !== '') {
+		$sSQLadd = $sSQLadd . ' AND TB.saiu18tiposolicitud=' . $bcategoria . '';
+	}
+	if ($btema !== '') {
+		$sSQLadd = $sSQLadd . ' AND TB.saiu18temasolicitud=' . $btema . '';
+	}
 	//if ((int)$aParametros[103]!=-1){$sSQLadd=$sSQLadd.' AND TB.campo='.$aParametros[103];}
 	/*
 	if ($aParametros[103]!=''){
@@ -443,8 +516,8 @@ function f3018_TablaDetalleV2($aParametros, $objDB, $bDebug=false){
 	$sLimite='';
 	if ($bGigante){
 		$sSQL='SELECT COUNT(1) AS Total 
-FROM saiu18telefonico_'.$iVigencia.' AS TB, unad11terceros AS T12, saiu03temasol AS T16 
-WHERE '.$sSQLadd1.' TB.saiu18idsolicitante=T12.unad11id AND TB.saiu18temasolicitud=T16.saiu03id '.$sSQLadd.'';
+FROM saiu18telefonico_'.$iAgno.' AS TB, unad11terceros AS T12
+WHERE '.$sSQLadd1.' TB.saiu18idsolicitante=T12.unad11id '.$sSQLadd.'';
 		$tabladetalle=$objDB->ejecutasql($sSQL);
 		if ($objDB->nf($tabladetalle)>0){
 			$fila=$objDB->sf($tabladetalle);
@@ -456,10 +529,12 @@ WHERE '.$sSQLadd1.' TB.saiu18idsolicitante=T12.unad11id AND TB.saiu18temasolicit
 			$sLimite=' LIMIT '.$rbase.', '.$lineastabla;
 			}
 		}
-	//, TB.saiu18numtelefono, TB.saiu18numorigen, TB.saiu18idpqrs, TB.saiu18detalle, TB.saiu18horafin, TB.saiu18minutofin, TB.saiu18paramercadeo, TB.saiu18tiemprespdias, TB.saiu18tiempresphoras, TB.saiu18tiemprespminutos, TB.saiu18idtelefono, TB.saiu18tipointeresado, TB.saiu18clasesolicitud, TB.saiu18tiposolicitud, TB.saiu18temasolicitud, TB.saiu18idzona, TB.saiu18idcentro, TB.saiu18codpais, TB.saiu18coddepto, TB.saiu18codciudad, TB.saiu18idescuela, TB.saiu18idprograma, TB.saiu18idperiodo, TB.saiu18idresponsable
-	$sSQL='SELECT TB.saiu18agno, TB.saiu18mes, TB.saiu18consec, TB.saiu18id, TB.saiu18dia, TB.saiu18hora, TB.saiu18minuto, T12.unad11razonsocial AS C12_nombre, T16.saiu03titulo, TB.saiu18estado, T12.unad11tipodoc AS C12_td, T12.unad11doc AS C12_doc, TB.saiu18idsolicitante, TB.saiu18tiporadicado 
-FROM saiu18telefonico_'.$iVigencia.' AS TB, unad11terceros AS T12, saiu03temasol AS T16 
-WHERE '.$sSQLadd1.' TB.saiu18idsolicitante=T12.unad11id AND TB.saiu18temasolicitud=T16.saiu03id '.$sSQLadd.'
+	//, TB.saiu18idpqrs, TB.saiu18detalle, TB.saiu18horafin, TB.saiu18minutofin, TB.saiu18paramercadeo, TB.saiu18tiemprespdias, TB.saiu18tiempresphoras, TB.saiu18tiemprespminutos, TB.saiu18tipointeresado, TB.saiu18clasesolicitud, TB.saiu18tiposolicitud, TB.saiu18temasolicitud, TB.saiu18idzona, TB.saiu18idcentro, TB.saiu18codpais, TB.saiu18coddepto, TB.saiu18codciudad, TB.saiu18idescuela, TB.saiu18idprograma, TB.saiu18idperiodo, TB.saiu18idresponsable
+	$sSQL='SELECT TB.saiu18agno, TB.saiu18mes, TB.saiu18consec, TB.saiu18id, TB.saiu18dia, TB.saiu18hora, TB.saiu18minuto, 
+T12.unad11razonsocial AS C12_nombre, TB.saiu18tiposolicitud, saiu18temasolicitud, TB.saiu18estado, T12.unad11tipodoc AS C12_td, 
+T12.unad11doc AS C12_doc, TB.saiu18idsolicitante, TB.saiu18tiporadicado, TB.saiu18solucion 
+FROM saiu18telefonico_'.$iAgno.' AS TB, unad11terceros AS T12
+WHERE '.$sSQLadd1.' TB.saiu18idsolicitante=T12.unad11id '.$sSQLadd.'
 ORDER BY TB.saiu18agno DESC, TB.saiu18mes DESC, TB.saiu18dia DESC, TB.saiu18tiporadicado, TB.saiu18consec DESC';
 	$sSQLlista=str_replace("'","|",$sSQL);
 	$sSQLlista=str_replace('"',"|",$sSQLlista);
@@ -475,7 +550,7 @@ ORDER BY TB.saiu18agno DESC, TB.saiu18mes DESC, TB.saiu18dia DESC, TB.saiu18tipo
 		if (!$bGigante){
 			$registros=$objDB->nf($tabladetalle);
 			if ($registros==0){
-				//return array(utf8_encode($sErrConsulta.'<input id="paginaf3018" name="paginaf3018" type="hidden" value="'.$pagina.'"/><input id="lppf3018" name="lppf3018" type="hidden" value="'.$lineastabla.'"/>'), $sDebug);
+				//return array(cadena_codificar($sErrConsulta.'<input id="paginaf3018" name="paginaf3018" type="hidden" value="'.$pagina.'"/><input id="lppf3018" name="lppf3018" type="hidden" value="'.$lineastabla.'"/>'), $sDebug);
 				}
 			if ((($registros-1)/$lineastabla)<($pagina-1)){$pagina=(int)(($registros-1)/$lineastabla)+1;}
 			if ($registros>$lineastabla){
@@ -488,11 +563,12 @@ ORDER BY TB.saiu18agno DESC, TB.saiu18mes DESC, TB.saiu18dia DESC, TB.saiu18tipo
 	$res=$sErrConsulta.$sLeyenda.'<table border="0" align="center" cellpadding="0" cellspacing="2" class="tablaapp">
 <thead class="fondoazul"><tr>
 <td colspan="2"><b>'.$ETI['msg_fecha'].'</b></td>
-<td><b>'.$ETI['saiu18tiporadicado'].'</b></td>
 <td><b>'.$ETI['saiu18consec'].'</b></td>
 <td><b>'.$ETI['saiu18estado'].'</b></td>
 <td colspan="2"><b>'.$ETI['saiu18idsolicitante'].'</b></td>
+<td><b>'.$ETI['saiu18tiposolicitud'].'</b></td>
 <td><b>'.$ETI['saiu18temasolicitud'].'</b></td>
+<td><b>'.$ETI['saiu18solucion'].'</b></td>
 <td align="right">
 '.html_paginador('paginaf3018', $registros, $lineastabla, $pagina, 'paginarf3018()').'
 '.html_lpp('lppf3018', $lineastabla, 'paginarf3018()').'
@@ -517,6 +593,30 @@ ORDER BY TB.saiu18agno DESC, TB.saiu18mes DESC, TB.saiu18dia DESC, TB.saiu18tipo
 			$et_saiu18idsolicitante_doc=$sPrefijo.$filadet['C12_td'].' '.$filadet['C12_doc'].$sSufijo;
 			$et_saiu18idsolicitante_nombre=$sPrefijo.cadena_notildes($filadet['C12_nombre']).$sSufijo;
 			}
+		$sEstado = '';
+		if (isset($aEstado[$filadet['saiu18estado']])==0) {
+			$sEstado = $ETI['definir'];
+		} else {
+			$sEstado = $aEstado[$filadet['saiu18estado']];
+		}
+		$sCategoria = '';
+		if (isset($aCategoria[$filadet['saiu18tiposolicitud']])==0) {
+			$sCategoria = $ETI['definir'];
+		} else {
+			$sCategoria = $aCategoria[$filadet['saiu18tiposolicitud']];
+		}
+		$sTema = '';
+		if (isset($aTema[$filadet['saiu18temasolicitud']])==0) {
+			$sTema = $ETI['definir'];
+		} else {
+			$sTema = $aTema[$filadet['saiu18temasolicitud']];
+		}
+		$sSolucion = '';
+		if (isset($asaiu18solucion[$filadet['saiu18solucion']])==0) {
+			$sSolucion = $ETI['definir'];
+		} else {
+			$sSolucion = $asaiu18solucion[$filadet['saiu18solucion']];
+		}
 		/*
 		$et_saiu18horafin=html_TablaHoraMin($filadet['saiu18horafin'], $filadet['saiu18minutofin']);
 		$et_saiu18idresponsable_doc='';
@@ -533,18 +633,19 @@ ORDER BY TB.saiu18agno DESC, TB.saiu18mes DESC, TB.saiu18dia DESC, TB.saiu18tipo
 		$res=$res.'<tr'.$sClass.'>
 <td>'.$sPrefijo.$et_fecha.$sSufijo.'</td>
 <td>'.$sPrefijo.$et_saiu18hora.$sSufijo.'</td>
-<td>'.$sPrefijo.$aTipoRad[$filadet['saiu18tiporadicado']].$sSufijo.'</td>
 <td>'.$sPrefijo.$filadet['saiu18consec'].$sSufijo.'</td>
-<td>'.$sPrefijo.$aEstado[$filadet['saiu18estado']].$sSufijo.'</td>
+<td>'.$sPrefijo.$sEstado.$sSufijo.'</td>
 <td>'.$et_saiu18idsolicitante_doc.'</td>
 <td>'.$et_saiu18idsolicitante_nombre.'</td>
-<td>'.$sPrefijo.cadena_notildes($filadet['saiu03titulo']).$sSufijo.'</td>
+<td>'.$sPrefijo.$sCategoria.$sSufijo.'</td>
+<td>'.$sPrefijo.$sTema.$sSufijo.'</td>
+<td>'.$sPrefijo.$sSolucion.$sSufijo.'</td>
 <td>'.$sLink.'</td>
 </tr>';
 		}
 	$res=$res.'</table>';
 	$objDB->liberar($tabladetalle);
-	return array(utf8_encode($res), $sDebug);
+	return array(cadena_codificar($res), $sDebug);
 	}
 function f3018_HtmlTabla($aParametros){
 	$_SESSION['u_ultimominuto']=iminutoavance();
@@ -687,6 +788,7 @@ function f3018_db_GuardarV2($DATA, $objDB, $bDebug=false){
 	if (isset($DATA['saiu18solucion'])==0){$DATA['saiu18solucion']='';}
 	if (isset($DATA['saiu18respuesta'])==0){$DATA['saiu18respuesta']='';}
 	*/
+	$DATA['saiuid']=18;
 	$DATA['saiu18agno']=numeros_validar($DATA['saiu18agno']);
 	$DATA['saiu18mes']=numeros_validar($DATA['saiu18mes']);
 	$DATA['saiu18tiporadicado']=numeros_validar($DATA['saiu18tiporadicado']);
@@ -710,17 +812,28 @@ function f3018_db_GuardarV2($DATA, $objDB, $bDebug=false){
 	$DATA['saiu18idperiodo']=numeros_validar($DATA['saiu18idperiodo']);
 	$DATA['saiu18numorigen']=htmlspecialchars(trim($DATA['saiu18numorigen']));
 	$DATA['saiu18detalle']=htmlspecialchars(trim($DATA['saiu18detalle']));
+	$DATA['saiu18fechafin']=numeros_validar($DATA['saiu18fechafin']);
 	$DATA['saiu18horafin']=numeros_validar($DATA['saiu18horafin']);
 	$DATA['saiu18minutofin']=numeros_validar($DATA['saiu18minutofin']);
 	$DATA['saiu18paramercadeo']=numeros_validar($DATA['saiu18paramercadeo']);
 	$DATA['saiu18solucion']=numeros_validar($DATA['saiu18solucion']);
 	$DATA['saiu18respuesta']=htmlspecialchars(trim($DATA['saiu18respuesta']));
+	$DATA['saiu18idcaso']=numeros_validar($DATA['saiu18idcaso']);
+	$DATA['saiu18fecharespcaso']=numeros_validar($DATA['saiu18fecharespcaso']);
+	$DATA['saiu18horarespcaso']=numeros_validar($DATA['saiu18horarespcaso']);
+	$DATA['saiu18minrespcaso']=numeros_validar($DATA['saiu18minrespcaso']);
+	$DATA['saiu18idunidadcaso']=numeros_validar($DATA['saiu18idunidadcaso']);
+	$DATA['saiu18idequipocaso']=numeros_validar($DATA['saiu18idequipocaso']);
+	$DATA['saiu18idsupervisorcaso']=numeros_validar($DATA['saiu18idsupervisorcaso']);
+	$DATA['saiu18idresponsablecaso']=numeros_validar($DATA['saiu18idresponsablecaso']);
+	$DATA['saiu18numref']=htmlspecialchars(trim($DATA['saiu18numref']));
 	// -- Se inicializan las variables que puedan pasar vacias {Especialmente números}.
 	//if ($DATA['saiu18dia']==''){$DATA['saiu18dia']=0;}
 	//if ($DATA['saiu18hora']==''){$DATA['saiu18hora']=0;}
 	//if ($DATA['saiu18minuto']==''){$DATA['saiu18minuto']=0;}
 	if ($DATA['saiu18estado']==''){$DATA['saiu18estado']=0;}
-	//if ($DATA['saiu18idtelefono']==''){$DATA['saiu18idtelefono']=0;}
+	if ($DATA['saiu18estadoorigen']==''){$DATA['saiu18estadoorigen']=0;}
+	//if ($DATA['saiu18idtelefono']==''){$DATA['saiu18idtelefono']=0;}	
 	//if ($DATA['saiu18tipointeresado']==''){$DATA['saiu18tipointeresado']=0;}
 	if ($DATA['saiu18idpqrs']==''){$DATA['saiu18idpqrs']=0;}
 	//if ($DATA['saiu18paramercadeo']==''){$DATA['saiu18paramercadeo']=0;}
@@ -728,21 +841,38 @@ function f3018_db_GuardarV2($DATA, $objDB, $bDebug=false){
 	// -- Seccion para validar los posibles causales de error.
 	$sSepara=', ';
 	$bConCierre=false;
-	if ($DATA['saiu18estado']==7){
-		$bConCierre=true;
-		if ($DATA['saiu18solucion']==''){
+	$bEnviaEncuesta=false;
+	$bEnviaCaso=false;
+	if ($DATA['saiu18temasolicitud']==''){$sError=$ERR['saiu18temasolicitud'].$sSepara.$sError;}
+	if ($DATA['saiu18tiposolicitud']==''){$sError=$ERR['saiu18tiposolicitud'].$sSepara.$sError;}
+	// if ($DATA['saiu18clasesolicitud']==''){$sError=$ERR['saiu18clasesolicitud'].$sSepara.$sError;}
+	if ($DATA['saiu18tipointeresado']==''){$sError=$ERR['saiu18tipointeresado'].$sSepara.$sError;}
+	if ($DATA['saiu18idsolicitante']==0){$sError=$ERR['saiu18idsolicitante'].$sSepara.$sError;}
+	if ($DATA['saiu18minuto']==''){$sError=$ERR['saiu18minuto'].$sSepara.$sError;}
+	if ($DATA['saiu18hora']==''){$sError=$ERR['saiu18hora'].$sSepara.$sError;}
+	if ($DATA['saiu18dia']==''){$sError=$ERR['saiu18dia'].$sSepara.$sError;}
+	if ($DATA['saiu18mes']==''){$sError=$ERR['saiu18mes'].$sSepara.$sError;}
+	if ($DATA['saiu18agno']==''){$sError=$ERR['saiu18agno'].$sSepara.$sError;}
+	if ($DATA['saiu18idcentro']==''){$sError=$ERR['saiu18idcentro'].$sSepara.$sError;}
+	if ($DATA['saiu18idzona']==''){$sError=$ERR['saiu18idzona'].$sSepara.$sError;}
+	if ($DATA['saiu18detalle']==''){$sError=$ERR['saiu18detalle'].$sSepara.$sError;}
+	if ($DATA['saiu18fecharespcaso']==''){$DATA['saiu18fecharespcaso']=0;}
+	if ($DATA['saiu18estado']==1 || $DATA['saiu18estado']==7){
+		if ($DATA['saiu18estado']==7) {
+			$bConCierre=true;
+		}
+		if ($DATA['saiu18solucion']=='') {
 			$sError=$ERR['saiu18solucion'].$sSepara.$sError;
 			}else{
 			if ((int)$DATA['saiu18solucion']==0){
 				$sError=$ERR['saiu18solucion_proceso'].$sSepara.$sError;
 				}
 			}
-		if ($DATA['saiu18respuesta']==''){$sError=$ERR['saiu18respuesta'].$sSepara.$sError;}
+		if ($bDebug){$sDebug=$sDebug.fecha_microtiempo().' Estado: '.$DATA['saiu18estado']. ' - Solución: '. $DATA['saiu18solucion'] .'<br>';}
 		if ($DATA['saiu18idresponsable']==0){$sError=$ERR['saiu18idresponsable'].$sSepara.$sError;}
 		if ($DATA['saiu18paramercadeo']==''){$sError=$ERR['saiu18paramercadeo'].$sSepara.$sError;}
 		//if ($DATA['saiu18minutofin']==''){$sError=$ERR['saiu18minutofin'].$sSepara.$sError;}
 		//if ($DATA['saiu18horafin']==''){$sError=$ERR['saiu18horafin'].$sSepara.$sError;}
-		if ($DATA['saiu18detalle']==''){$sError=$ERR['saiu18detalle'].$sSepara.$sError;}
 		//if ($DATA['saiu18numorigen']==''){$sError=$ERR['saiu18numorigen'].$sSepara.$sError;}
 		if ($DATA['saiu18idperiodo']==''){$sError=$ERR['saiu18idperiodo'].$sSepara.$sError;}
 		if ($DATA['saiu18idprograma']==''){$sError=$ERR['saiu18idprograma'].$sSepara.$sError;}
@@ -750,34 +880,149 @@ function f3018_db_GuardarV2($DATA, $objDB, $bDebug=false){
 		if ($DATA['saiu18codciudad']==''){$sError=$ERR['saiu18codciudad'].$sSepara.$sError;}
 		if ($DATA['saiu18coddepto']==''){$sError=$ERR['saiu18coddepto'].$sSepara.$sError;}
 		if ($DATA['saiu18codpais']==''){$sError=$ERR['saiu18codpais'].$sSepara.$sError;}
-		if ($DATA['saiu18idcentro']==''){$sError=$ERR['saiu18idcentro'].$sSepara.$sError;}
-		if ($DATA['saiu18idzona']==''){$sError=$ERR['saiu18idzona'].$sSepara.$sError;}
-		if ($DATA['saiu18temasolicitud']==''){$sError=$ERR['saiu18temasolicitud'].$sSepara.$sError;}
-		if ($DATA['saiu18tiposolicitud']==''){$sError=$ERR['saiu18tiposolicitud'].$sSepara.$sError;}
-		if ($DATA['saiu18clasesolicitud']==''){$sError=$ERR['saiu18clasesolicitud'].$sSepara.$sError;}
-		if ($DATA['saiu18tipointeresado']==''){$sError=$ERR['saiu18tipointeresado'].$sSepara.$sError;}
-		if ($DATA['saiu18idsolicitante']==0){$sError=$ERR['saiu18idsolicitante'].$sSepara.$sError;}
+		//if ($DATA['saiu18hora']==''){$DATA['saiu18hora']=fecha_hora();}
+		if ($DATA['saiu18solucion']==1){ // Resuelto en la atención
+			if ($DATA['saiu18respuesta']==''){$sError=$ERR['saiu18respuesta'].$sSepara.$sError;}
+		}
+		if ($DATA['saiu18solucion']==3) { // Se inicia caso
+			if ($DATA['saiu18temasolicitud'] != $DATA['saiu18temasolicitudorigen']) {
+				$DATA['saiu18idresponsablecaso']=0;
+			}
+			if ($DATA['saiu18idresponsablecaso']==0) {
+				list($DATA['saiu18idunidadcaso'], $DATA['saiu18idequipocaso'], $DATA['saiu18idsupervisorcaso'], $DATA['saiu18idresponsablecaso'], $saiu18tiemprespdias, $saiu18tiempresphoras, $sErrorF, $iTipoError, $sDebugF) = f3018_ConsultaResponsable($DATA, $objDB, $bDebug);
+				if ($sErrorF!=''){$sError=$sError.'<br>'.$sErrorF;}
+				if ($bDebug){$sDebug=$sDebug.fecha_microtiempo().' Consulta Responsable: '.$sDebugF.'<br>';}
+				if ($DATA['saiu18idunidadcaso']==0){$sError=$ERR['saiu18idunidadcaso'].$sSepara.$sError;}
+				if ($DATA['saiu18idequipocaso']==0){$sError=$ERR['saiu18idequipocaso'].$sSepara.$sError;}
+				if ($DATA['saiu18idsupervisorcaso']==0){$sError=$ERR['saiu18idsupervisorcaso'].$sSepara.$sError;}
+				if ($DATA['saiu18idresponsablecaso']==0){$sError=$ERR['saiu18idresponsablecaso'].$sSepara.$sError;}
+				if ($sError!='') {
+					$DATA['saiu18idunidadcaso']=0;
+					$DATA['saiu18idequipocaso']=0;
+					$DATA['saiu18idsupervisorcaso']=0;
+					$DATA['saiu18idresponsablecaso']=0;
+				}
+			}
+		}
 		if ($DATA['saiu18idtelefono']==''){
 			$sError=$ERR['saiu18idtelefono'].$sSepara.$sError;
-			}else{
+		}else{
 			if ($DATA['saiu18idtelefono']=='-1'){
 				if ($DATA['saiu18numtelefono']==''){$sError=$ERR['saiu18numtelefono'].$sSepara.$sError;}
+			}
+		}	
+		if ($sError=='') {
+			if ($DATA['saiu18solucion']==5) { // Se inicia PQRS
+				require $APP->rutacomun . 'lib3005.php';
+				require $APP->rutacomun . 'lib3007.php';
+				$aParams=array();
+				$aParams['iCodModulo']=$iCodModulo;
+				$aParams['paso']=10;
+				$aParams['saiu05estado']=-1;
+				$aParams['saiu05agno']=fecha_agno();
+				$aParams['saiu05mes']=fecha_mes();
+				$aParams['saiu05dia']=fecha_dia();
+				$aParams['saiu05hora']=fecha_hora();
+				$aParams['saiu05minuto']=fecha_minuto();
+				$aParams['saiu05origenid']='';
+				$aParams['saiu05idmedio']='0';
+				$aParams['saiu05rptaforma']='';
+				$aParams['saiu05idmoduloproc']='';
+				$aParams['saiu05identificadormod']='';
+				$aParams['bCambiaEst']=0;
+				$aParams['saiu05idsolicitante']=$DATA['saiu18idsolicitante'];
+				$aParams['saiu05tipointeresado']=$DATA['saiu18tipointeresado'];
+				$aParams['saiu05detalle']=$DATA['saiu18detalle'];
+				$aParams['saiu05idtiposolorigen']=$DATA['saiu18tiposolicitud'];
+				$aParams['saiu05idtemaorigen']=$DATA['saiu18temasolicitud'];
+				$aParams['saiu05idcategoria']=1;
+				$aParams['saiu05idunidadresp']=0;
+				$aParams['saiu05idequiporesp']=0;
+				$aParams['saiu05idsupervisor']=0;
+				$aParams['saiu05idresponsable']=0;
+				$aParams['saiu05idresponsable_doc']='';
+				$aParams['saiu05idinteresado_doc']='';
+				$aParams['saiu05idsolicitante_doc']='';
+				$aParams['saiu05tiporadicado']=1;
+				$aParams['saiu05infocomplemento']='';
+				$aParams['saiu05respuesta']='';
+				$aParams['saiu05consec']='';
+				$aParams['saiu05rptacorreo']='';
+				$aParams['saiu05rptadireccion']='';
+				$aParams['saiu05costogenera']='';
+				$aParams['saiu05costovalor']=0;
+				$aParams['saiu05costorefpago']='';
+				$aParams['saiu05numradicado']='';
+				$aParams['saiu05numref']='';
+				$aParams['saiu05idinteresado']=0;
+				list($aParams, $sErrorF, $iTipoError, $sDebugF)=f3005_db_GuardarV2($aParams, $objDB, $bDebug);
+				if ($bDebug){$sDebug=$sDebug.fecha_microtiempo().' Crea PQRS: '.$sDebugF.'<br>';}
+				if ($sErrorF!=''){$sError=$sError.'<br>Errores creando PQRS: '.$sErrorF;}
+				if ($sError == '') {
+					$DATA['saiu18idpqrs']=$aParams['saiu05id'];
+					$DATA['saiu18numref']=$aParams['saiu05numref'];
+					if ($DATA['saiu18idpqrs']==-1){$sError=$ERR['saiu18idpqrs'].$sSepara.$sError;}
+					if ($DATA['saiu18numref']==''){$sError=$ERR['saiu18numref'].$sSepara.$sError;}
 				}
-			}	
-		if ($DATA['saiu18minuto']==''){$sError=$ERR['saiu18minuto'].$sSepara.$sError;}
-		if ($DATA['saiu18hora']==''){$sError=$ERR['saiu18hora'].$sSepara.$sError;}
-		if ($DATA['saiu18dia']==''){$sError=$ERR['saiu18dia'].$sSepara.$sError;}
-		//if ($DATA['saiu18hora']==''){$DATA['saiu18hora']=fecha_hora();}
-		if ($sError!=''){$DATA['saiu18estado']=2;}
+			}
+		}
+		if ($sError!=''){
+			if ($DATA['saiu18estado']!=1) {	// Asignado
+				$DATA['saiu18estado']=2;	// En tramite
+			}
+		}
 		$sErrorCerrando=$sError;
-		$sError='';
 		//Fin de las valiaciones NO LLAVE.
 		}
-	if (true){
+	if ($sError==''){
 		switch($DATA['saiu18estado']){
-			case 7: //Logra cerrar
+			case 1: //Caso Asignado
+			break;
+			case 7: //Logra cerrar			
+			switch($DATA['saiu18solucion']){
+				case 1: // Resuelto en la atención
+				case 5: // Se inicia PQRS
+				$DATA['saiu18fecharespcaso']=0;
+				$DATA['saiu18fechafin']=fecha_DiaMod();
+				$DATA['saiu18horafin']=fecha_hora();
+				$DATA['saiu18minutofin']=fecha_minuto();
+				$bEnviaEncuesta=true;
+				break;
+				case 3: // Se inicia caso
+				if ($DATA['saiu18estadoorigen']==1) {
+					if ($DATA['saiu18respuesta']==''){
+						$sError=$ERR['saiu18respuesta'].$sSepara.$sError;
+					} else {
+						$DATA['saiu18fecharespcaso']=fecha_DiaMod();
+						$DATA['saiu18horarespcaso']=fecha_hora();
+						$DATA['saiu18minrespcaso']=fecha_minuto();
+						$bEnviaEncuesta=true;
+					}
+				} else {
+					$DATA['saiu18fecharespcaso']=0;
+					$DATA['saiu18fechafin']=fecha_DiaMod();
+					$DATA['saiu18horafin']=fecha_hora();
+					$DATA['saiu18minutofin']=fecha_minuto();
+					$iDiaIni=($DATA['saiu18agno']*10000)+($DATA['saiu18mes']*100)+$DATA['saiu18dia'];
+					list($DATA['saiu18tiemprespdias'], $DATA['saiu18tiempresphoras'], $DATA['saiu18tiemprespminutos'])=Tiempo_MinutosCalendario($iDiaIni, $DATA['saiu18hora'], $DATA['saiu18minuto'], $DATA['saiu18fechafin'], $DATA['saiu18horafin'], $DATA['saiu18minutofin']);
+					$DATA['saiu18idcaso']=(int)(fecha_DiaMod().$DATA['saiu18id'].'');
+					$DATA['saiu18respuesta']='';
+					$DATA['saiu18estado']=1;
+					$bEnviaCaso=true;
+				}
+				break;
+				case 8: //Solicitud abandonada
+				case 9: //Cancelada por el usuario
+				$DATA['saiu18respuesta']='';
+				break;
+				default:
+				$sError=$ERR['saiu18solucion'].$sSepara.$sError;
+				break;
+			}
+			break;
 			case 8: //Solicitud abandonada
 			case 9: //Cancelada por el usuario
+			if (trim($DATA['saiu18fechafin'])==''){$DATA['saiu18fechafin']=fecha_DiaMod();}
 			if (trim($DATA['saiu18minutofin'])==''){$DATA['saiu18minutofin']=fecha_minuto();}
 			if (trim($DATA['saiu18horafin'])==''){$DATA['saiu18horafin']=fecha_hora();}
 			//$DATA['saiu18minutofin']=fecha_minuto();
@@ -787,10 +1032,11 @@ function f3018_db_GuardarV2($DATA, $objDB, $bDebug=false){
 			$DATA['saiu18estado']=2;
 			if ($DATA['saiu18hora']==''){$DATA['saiu18hora']=fecha_hora();}
 			if ($DATA['saiu18minuto']==''){$DATA['saiu18minuto']=fecha_minuto();}
+			if ($DATA['saiu18fechafin']==''){$DATA['saiu18fechafin']=0;}
 			if ($DATA['saiu18horafin']==''){$DATA['saiu18horafin']=0;}
 			if ($DATA['saiu18minutofin']==''){$DATA['saiu18minutofin']=0;}
 			break;
-			}
+		}
 		if ($DATA['saiu18clasesolicitud']==''){$DATA['saiu18clasesolicitud']=0;}
 		if ($DATA['saiu18tiposolicitud']==''){$DATA['saiu18tiposolicitud']=0;}
 		if ($DATA['saiu18temasolicitud']==''){$DATA['saiu18temasolicitud']=0;}
@@ -799,28 +1045,36 @@ function f3018_db_GuardarV2($DATA, $objDB, $bDebug=false){
 		if ($DATA['saiu18idescuela']==''){$DATA['saiu18idescuela']=0;}
 		if ($DATA['saiu18idprograma']==''){$DATA['saiu18idprograma']=0;}
 		if ($DATA['saiu18idperiodo']==''){$DATA['saiu18idperiodo']=0;}
-		}
+	}
 	//Valiaciones de campos obligatorios en todo guardar.
 	if ($DATA['saiu18tiporadicado']==''){$sError=$ERR['saiu18tiporadicado'];}
 	if ($DATA['saiu18mes']==''){$sError=$ERR['saiu18mes'];}
 	if ($DATA['saiu18agno']==''){$sError=$ERR['saiu18agno'];}
 	// -- Tiene un cerrado.
-	$iDiaIni=($DATA['saiu18agno']*10000)+($DATA['saiu18mes']*100)+$DATA['saiu18dia'];
-	if ($bConCierre){
+	$iDiaIni=fecha_ArmarNumero($DATA['saiu18dia'],$DATA['saiu18mes'],$DATA['saiu18agno']);
+	if ($bConCierre && $sError==''){
 		//Validaciones previas a cerrar
 		if ($DATA['saiu18estado']==7){
-			list($DATA['saiu18tiemprespdias'], $DATA['saiu18tiempresphoras'], $DATA['saiu18tiemprespminutos'])=Tiempo_MinutosCalendario($iDiaIni, $DATA['saiu18hora'], $DATA['saiu18minuto'], $iDiaIni, $DATA['saiu18horafin'], $DATA['saiu18minutofin']);
-			}
-		//Aprobó las Validaciones al cerrar
-		if ($sError.$sErrorCerrando!=''){
-			$DATA['saiu18estado']=2;
-			$sErrorCerrando=$sError.' '.$sErrorCerrando;
-			$sError='';
-			}else{
-			$bCerrando=true;
-			//Acciones del cierre
+			switch($DATA['saiu18solucion']){
+				case 1: // Resuelto en la atención
+				case 5: // Se inicia PQRS
+				list($DATA['saiu18tiemprespdias'], $DATA['saiu18tiempresphoras'], $DATA['saiu18tiemprespminutos'])=Tiempo_MinutosCalendario($iDiaIni, $DATA['saiu18hora'], $DATA['saiu18minuto'], $DATA['saiu18fechafin'], $DATA['saiu18horafin'], $DATA['saiu18minutofin']);
+				break;
 			}
 		}
+		//Aprobó las Validaciones al cerrar
+		if ($sError.$sErrorCerrando!=''){
+			if ($DATA['saiu18estado']==7) {
+				$DATA['saiu18estado'] = $DATA['saiu18estadoorigen'];
+			} else if ($DATA['saiu18estado']!=1) {
+				$DATA['saiu18estado']=2;
+			}
+			$sErrorCerrando=$sError.' '.$sErrorCerrando;
+		}else{
+			$bCerrando=true;
+			//Acciones del cierre
+		}
+	}
 	// -- Fin del cerrado.
 	// -- Se verifican los valores de campos de otras tablas.
 	$sTabla18='saiu18telefonico_'.$DATA['saiu18agno'];
@@ -838,6 +1092,10 @@ function f3018_db_GuardarV2($DATA, $objDB, $bDebug=false){
 			if ($sInfo!=''){$sError=$sError.'<br>'.$sInfo;}
 			}
 		}
+	if ($sError == '') {
+		list($sErrorR, $sDebugR) = f3018_RevTabla_saiu18telefonico($DATA['saiu18agno'], $objDB);
+		$sError = $sError . $sErrorR;
+	}
 	$bQuitarCodigo=false;
 	$sCampoCodigo='';
 	if ($sError==''){
@@ -884,11 +1142,11 @@ function f3018_db_GuardarV2($DATA, $objDB, $bDebug=false){
 		}
 	$idSolicitantePrevio=0;
 	if ($sError==''){
-		if (get_magic_quotes_gpc()==1){$DATA['saiu18detalle']=stripslashes($DATA['saiu18detalle']);}
+		$DATA['saiu18detalle']=stripslashes($DATA['saiu18detalle']);
 		//Si el campo saiu18detalle permite html quite la linea htmlspecialchars para el campo y habilite la siguiente linea:
 		//$saiu18detalle=addslashes($DATA['saiu18detalle']);
 		$saiu18detalle=str_replace('"', '\"', $DATA['saiu18detalle']);
-		if (get_magic_quotes_gpc()==1){$DATA['saiu18respuesta']=stripslashes($DATA['saiu18respuesta']);}
+		$DATA['saiu18respuesta']=stripslashes($DATA['saiu18respuesta']);
 		//$saiu18respuesta=addslashes($DATA['saiu18respuesta']);
 		$saiu18respuesta=str_replace('"', '\"', $DATA['saiu18respuesta']);
 		$bpasa=false;
@@ -897,26 +1155,29 @@ function f3018_db_GuardarV2($DATA, $objDB, $bDebug=false){
 			$DATA['saiu18tiemprespdias']=0;
 			$DATA['saiu18tiempresphoras']=0;
 			$DATA['saiu18tiemprespminutos']=0;
+			$DATA['saiu18agno']=fecha_agno();
+			$DATA['saiu18mes']=fecha_mes();
+			$DATA['saiu18dia']=fecha_dia();
+			$DATA['saiu18hora']=fecha_hora();
+			$DATA['saiu18minuto']=fecha_minuto();
 			$DATA['saiu18idcaso']=0;
 			$sCampos3018='saiu18agno, saiu18mes, saiu18tiporadicado, saiu18consec, saiu18id, 
-			saiu18dia, saiu18hora, saiu18minuto, saiu18estado, saiu18idtelefono, 
-			saiu18numtelefono, saiu18idsolicitante, saiu18tipointeresado, saiu18clasesolicitud, saiu18tiposolicitud, 
-			saiu18temasolicitud, saiu18idzona, saiu18idcentro, saiu18codpais, saiu18coddepto, 
-			saiu18codciudad, saiu18idescuela, saiu18idprograma, saiu18idperiodo, saiu18numorigen, 
-			saiu18idpqrs, saiu18detalle, saiu18horafin, saiu18minutofin, saiu18paramercadeo, 
-			saiu18idresponsable, saiu18tiemprespdias, saiu18tiempresphoras, saiu18tiemprespminutos, saiu18solucion, 
-			saiu18idcaso, saiu18respuesta';
+			saiu18dia, saiu18hora, saiu18minuto, saiu18estado, saiu18idtelefono, saiu18numtelefono, saiu18idsolicitante, 
+			saiu18tipointeresado, saiu18clasesolicitud, saiu18tiposolicitud, saiu18temasolicitud, saiu18idzona, 
+			saiu18idcentro, saiu18codpais, saiu18coddepto, saiu18codciudad, saiu18idescuela, 
+			saiu18idprograma, saiu18idperiodo, saiu18numorigen, saiu18idpqrs, saiu18detalle, saiu18fechafin,
+			saiu18horafin, saiu18minutofin, saiu18paramercadeo, saiu18idresponsable, saiu18tiemprespdias, 
+			saiu18tiempresphoras, saiu18tiemprespminutos, saiu18solucion, saiu18idcaso, saiu18respuesta';
 			$sValores3018=''.$DATA['saiu18agno'].', '.$DATA['saiu18mes'].', '.$DATA['saiu18tiporadicado'].', '.$DATA['saiu18consec'].', '.$DATA['saiu18id'].', 
-			'.$DATA['saiu18dia'].', '.$DATA['saiu18hora'].', '.$DATA['saiu18minuto'].', '.$DATA['saiu18estado'].', '.$DATA['saiu18idtelefono'].', 
-			"'.$DATA['saiu18numtelefono'].'", '.$DATA['saiu18idsolicitante'].', '.$DATA['saiu18tipointeresado'].', '.$DATA['saiu18clasesolicitud'].', '.$DATA['saiu18tiposolicitud'].', 
-			'.$DATA['saiu18temasolicitud'].', '.$DATA['saiu18idzona'].', '.$DATA['saiu18idcentro'].', "'.$DATA['saiu18codpais'].'", "'.$DATA['saiu18coddepto'].'", 
-			"'.$DATA['saiu18codciudad'].'", '.$DATA['saiu18idescuela'].', '.$DATA['saiu18idprograma'].', '.$DATA['saiu18idperiodo'].', "'.$DATA['saiu18numorigen'].'", 
-			'.$DATA['saiu18idpqrs'].', "'.$saiu18detalle.'", '.$DATA['saiu18horafin'].', '.$DATA['saiu18minutofin'].', '.$DATA['saiu18paramercadeo'].', 
-			'.$DATA['saiu18idresponsable'].', '.$DATA['saiu18tiemprespdias'].', '.$DATA['saiu18tiempresphoras'].', '.$DATA['saiu18tiemprespminutos'].', '.$DATA['saiu18solucion'].', 
-			'.$DATA['saiu18idcaso'].', "'.$saiu18respuesta.'"';
+			'.$DATA['saiu18dia'].', '.$DATA['saiu18hora'].', '.$DATA['saiu18minuto'].', '.$DATA['saiu18estado'].', '.$DATA['saiu18idtelefono'].', "'.$DATA['saiu18numtelefono'].'", '.$DATA['saiu18idsolicitante'].', 
+			'.$DATA['saiu18tipointeresado'].', '.$DATA['saiu18clasesolicitud'].', '.$DATA['saiu18tiposolicitud'].', '.$DATA['saiu18temasolicitud'].', '.$DATA['saiu18idzona'].', 
+			'.$DATA['saiu18idcentro'].', "'.$DATA['saiu18codpais'].'", "'.$DATA['saiu18coddepto'].'", "'.$DATA['saiu18codciudad'].'", '.$DATA['saiu18idescuela'].', 
+			'.$DATA['saiu18idprograma'].', '.$DATA['saiu18idperiodo'].', "'.$DATA['saiu18numorigen'].'", '.$DATA['saiu18idpqrs'].', "'.$saiu18detalle.'", '.$DATA['saiu18fechafin'].', 
+			'.$DATA['saiu18horafin'].', '.$DATA['saiu18minutofin'].', '.$DATA['saiu18paramercadeo'].', '.$DATA['saiu18idresponsable'].', '.$DATA['saiu18tiemprespdias'].', 
+			'.$DATA['saiu18tiempresphoras'].', '.$DATA['saiu18tiemprespminutos'].', '.$DATA['saiu18solucion'].', '.$DATA['saiu18idcaso'].', "'.$saiu18respuesta.'"';
 			if ($APP->utf8==1){
-				$sSQL='INSERT INTO '.$sTabla18.' ('.$sCampos3018.') VALUES ('.utf8_encode($sValores3018).');';
-				$sdetalle=$sCampos3018.'['.utf8_encode($sValores3018).']';
+				$sSQL='INSERT INTO '.$sTabla18.' ('.$sCampos3018.') VALUES ('.cadena_codificar($sValores3018).');';
+				$sdetalle=$sCampos3018.'['.cadena_codificar($sValores3018).']';
 				}else{
 				$sSQL='INSERT INTO '.$sTabla18.' ('.$sCampos3018.') VALUES ('.$sValores3018.');';
 				$sdetalle=$sCampos3018.'['.$sValores3018.']';
@@ -954,6 +1215,17 @@ function f3018_db_GuardarV2($DATA, $objDB, $bDebug=false){
 			$scampo[28]='saiu18tiempresphoras';
 			$scampo[29]='saiu18tiemprespminutos';
 			$scampo[30]='saiu18respuesta';
+			$scampo[31]='saiu18idcaso';
+			$scampo[32]='saiu18fecharespcaso';
+			$scampo[33]='saiu18horarespcaso';
+			$scampo[34]='saiu18minrespcaso';
+			$scampo[35]='saiu18idunidadcaso';
+			$scampo[36]='saiu18idequipocaso';
+			$scampo[37]='saiu18idsupervisorcaso';
+			$scampo[38]='saiu18idresponsablecaso';
+			$scampo[39]='saiu18idpqrs';
+			$scampo[40]='saiu18numref';
+			$scampo[41]='saiu18fechafin';
 			$sdato[1]=$DATA['saiu18dia'];
 			$sdato[2]=$DATA['saiu18hora'];
 			$sdato[3]=$DATA['saiu18minuto'];
@@ -984,7 +1256,18 @@ function f3018_db_GuardarV2($DATA, $objDB, $bDebug=false){
 			$sdato[28]=$DATA['saiu18tiempresphoras'];
 			$sdato[29]=$DATA['saiu18tiemprespminutos'];
 			$sdato[30]=$saiu18respuesta;
-			$numcmod=30;
+			$sdato[31]=$DATA['saiu18idcaso'];
+			$sdato[32]=$DATA['saiu18fecharespcaso'];
+			$sdato[33]=$DATA['saiu18horarespcaso'];
+			$sdato[34]=$DATA['saiu18minrespcaso'];
+			$sdato[35]=$DATA['saiu18idunidadcaso'];
+			$sdato[36]=$DATA['saiu18idequipocaso'];
+			$sdato[37]=$DATA['saiu18idsupervisorcaso'];
+			$sdato[38]=$DATA['saiu18idresponsablecaso'];
+			$sdato[39]=$DATA['saiu18idpqrs'];
+			$sdato[40]=$DATA['saiu18numref'];
+			$sdato[41]=$DATA['saiu18fechafin'];
+			$numcmod=41;
 			$sWhere='saiu18id='.$DATA['saiu18id'].'';
 			$sSQL='SELECT * FROM '.$sTabla18.' WHERE '.$sWhere;
 			$sdatos='';
@@ -1014,8 +1297,8 @@ function f3018_db_GuardarV2($DATA, $objDB, $bDebug=false){
 				}
 			if ($bpasa){
 				if ($APP->utf8==1){
-					$sdetalle=utf8_encode($sdatos).'['.$sWhere.']';
-					$sSQL='UPDATE '.$sTabla18.' SET '.utf8_encode($sdatos).' WHERE '.$sWhere.';';
+					$sdetalle=cadena_codificar($sdatos).'['.$sWhere.']';
+					$sSQL='UPDATE '.$sTabla18.' SET '.cadena_codificar($sdatos).' WHERE '.$sWhere.';';
 					}else{
 					$sdetalle=$sdatos.'['.$sWhere.']';
 					$sSQL='UPDATE '.$sTabla18.' SET '.$sdatos.' WHERE '.$sWhere.';';
@@ -1055,6 +1338,16 @@ function f3018_db_GuardarV2($DATA, $objDB, $bDebug=false){
 					$valores3000[7]=$DATA['saiu18temasolicitud'];
 					$valores3000[8]=$DATA['saiu18estado'];
 					f3000_Registrar($valores3000, $objDB, $bDebug);
+					}
+				if ($bEnviaCaso) {
+					list($sMensaje, $sErrorE, $sDebugE) = f3000_EnviaCorreosAtencion($DATA, $DATA['saiu18agno'], $objDB, $bDebug, true);
+					$sError = $sError . $sErrorE;
+					$sDebug = $sDebug . $sDebugE;
+					}
+				if ($bEnviaEncuesta) {
+					list($sMensaje, $sErrorE, $sDebugE) = f3000_EnviaCorreosAtencion($DATA, $DATA['saiu18agno'], $objDB, $bDebug);
+					$sError = $sError . $sErrorE;
+					$sDebug = $sDebug . $sDebugE;
 					}
 				}
 			}else{
@@ -1146,7 +1439,7 @@ function f3018_db_Eliminar($saiu18agno, $saiu18id, $objDB, $bDebug=false){
 	return array($sError, $iTipoError, $sDebug);
 	}
 function f3018_TituloBusqueda(){
-	return 'Busqueda de Registro de llamadas';
+	return 'B&uacute;squeda de Registro de llamadas';
 	}
 function f3018_ParametrosBusqueda(){
 	require './app.php';
@@ -1244,7 +1537,7 @@ ORDER BY TB.saiu18agno, TB.saiu18mes, TB.saiu18tiporadicado, TB.saiu18consec';
 		}else{
 		$registros=$objDB->nf($tabladetalle);
 		if ($registros==0){
-			//return array(utf8_encode($sErrConsulta.'<input id="paginaf3018" name="paginaf3018" type="hidden" value="'.$pagina.'"/><input id="lppf3018" name="lppf3018" type="hidden" value="'.$lineastabla.'"/>'), $sDebug);
+			//return array(cadena_codificar($sErrConsulta.'<input id="paginaf3018" name="paginaf3018" type="hidden" value="'.$pagina.'"/><input id="lppf3018" name="lppf3018" type="hidden" value="'.$lineastabla.'"/>'), $sDebug);
 			}
 		if ((($registros-1)/$lineastabla)<($pagina-1)){$pagina=(int)(($registros-1)/$lineastabla)+1;}
 		if ($registros>$lineastabla){
@@ -1337,9 +1630,188 @@ ORDER BY TB.saiu18agno, TB.saiu18mes, TB.saiu18tiporadicado, TB.saiu18consec';
 		}
 	$res=$res.'</table>';
 	$objDB->liberar($tabladetalle);
-	return utf8_encode($res);
+	return cadena_codificar($res);
 	}
 // -----------------------------------
 // ---- Funciones personalizadas  ----
 // -----------------------------------
-?>
+function f3018_RevTabla_saiu18telefonico($sContenedor, $objDB, $bDebug = false)
+{
+	list($sError, $sDebug) = f3018_RevisarTabla($sContenedor, $objDB, $bDebug);
+	return array($sError, $sDebug);
+}
+function f3018_ConsultaResponsable($DATA, $objDB, $bDebug = false)
+{
+	require './app.php';
+	$mensajes_todas = $APP->rutacomun . 'lg/lg_todas_' . $_SESSION['unad_idioma'] . '.php';
+	if (!file_exists($mensajes_todas)) {
+		$mensajes_todas = $APP->rutacomun . 'lg/lg_todas_es.php';
+	}
+	$mensajes_3018 = 'lg/lg_3018_' . $_SESSION['unad_idioma'] . '.php';
+	if (!file_exists($mensajes_3018)) {
+		$mensajes_3018 = 'lg/lg_3018_es.php';
+	}
+	require $mensajes_todas;
+	require $mensajes_3018;
+	$sError = '';
+	$iTipoError = 0;
+	$sDebug = '';
+	$saiu18idunidadcaso = 0;
+	$saiu18idequipocaso = 0;
+	$saiu18idsupervisorcaso = 0;
+	$saiu18idresponsablecaso = 0;
+	$saiu18tiemprespdias = 0;
+	$saiu18tiempresphoras = 0;
+	if (isset($DATA['saiu18temasolicitud']) == 0) {
+		$DATA['saiu18temasolicitud'] = '';
+	}
+	if ($DATA['saiu18temasolicitud'] == '') {
+		$sError = $ERR['saiu18temasolicitud'] . $sSepara . $sError;
+	}
+	if ($sError == '') {
+		$sSQL = 'SELECT saiu03idunidadresp1, saiu03idequiporesp1, saiu03idliderrespon1, saiu03tiemprespdias1, saiu03tiempresphoras1
+		FROM saiu03temasol
+		WHERE saiu03id = ' . $DATA['saiu18temasolicitud'] . '';
+		if ($bDebug) {
+			$sDebug = $sDebug . fecha_microtiempo() . ' Consulta responsable solicitud ' . $sSQL . '<br>';
+		}
+		$tabla = $objDB->ejecutasql($sSQL);
+		if ($objDB->nf($tabla) > 0) {
+			$fila = $objDB->sf($tabla);
+			$saiu18idunidadcaso = $fila['saiu03idunidadresp1'];
+			$saiu18idequipocaso = $fila['saiu03idequiporesp1'];
+			$saiu18idsupervisorcaso = $fila['saiu03idliderrespon1'];
+			$saiu18idresponsablecaso = $saiu18idsupervisorcaso;
+			$saiu18tiemprespdias = $fila['saiu03tiemprespdias1'];
+			$saiu18tiempresphoras = $fila['saiu03tiempresphoras1'];
+		} else {
+			$sError = $sError . 'No se ha configurado el tema de solicitud.';
+		}
+	}
+	return array($saiu18idunidadcaso, $saiu18idequipocaso, $saiu18idsupervisorcaso, $saiu18idresponsablecaso, $saiu18tiemprespdias, $saiu18tiempresphoras, $sError, $iTipoError, $sDebug);
+}
+function f3018_ActualizarAtiende($DATA, $objDB, $bDebug = false, $idTercero)
+{
+	require './app.php';
+	$mensajes_todas = $APP->rutacomun . 'lg/lg_todas_' . $_SESSION['unad_idioma'] . '.php';
+	if (!file_exists($mensajes_todas)) {
+		$mensajes_todas = $APP->rutacomun . 'lg/lg_todas_es.php';
+	}
+	$mensajes_3018 = 'lg/lg_3018_' . $_SESSION['unad_idioma'] . '.php';
+	if (!file_exists($mensajes_3018)) {
+		$mensajes_3018 = 'lg/lg_3018_es.php';
+	}
+	require $mensajes_todas;
+	require $mensajes_3018;
+	$sTabla18 = 'saiu18telefonico_' . $DATA['saiu18agno'];
+	$sResultado = '';
+	$sError = '';
+	$sDebug = '';
+	$iTipoError = 0;
+	if (!$objDB->bexistetabla($sTabla18)) {
+		$sError = $sError . 'No ha sido posible acceder al contenedor de datos';
+	}
+	if ($sError == '') {
+		$sSQL = 'SELECT saiu18agno, saiu18mes, saiu18estado, saiu18temasolicitud FROM ' . $sTabla18 . ' WHERE saiu18id=' . $DATA['saiu18id'] . '';
+		$tabla = $objDB->ejecutasql($sSQL);
+		if ($objDB->nf($tabla) > 0) {
+			$fila = $objDB->sf($tabla);
+			list($DATA['saiu18idunidadcaso'], $DATA['saiu18idequipocaso'], $DATA['saiu18idsupervisorcaso'], $DATA['saiu18idresponsablecaso'], $saiu18tiemprespdias, $saiu18tiempresphoras, $sErrorF, $iTipoError, $sDebugF) = f3018_ConsultaResponsable($fila, $objDB, $bDebug);
+			$sError = $sError . $sErrorF;
+			if ($bDebug) {
+				$sDebug = $sDebug . $sDebugF;
+			}
+		} else {
+			$sError = $sError . $ETI['saiu18noexiste'];
+		}
+	}
+	if ($sError == '') {
+		if ($saiu18tiemprespdias > 0) { // Cálculo fecha probable de respuesta
+			$iFechaBase = fecha_DiaMod();
+			$saiu18fecharespprob = fecha_NumSumarDias($iFechaBase, $saiu18tiemprespdias);
+		}
+		list($DATA, $sErrorE, $iTipoError, $sDebugGuardar) = f3018_db_GuardarV2($DATA, $objDB, $bDebug, $idTercero);
+		$sError = $sError . $sErrorE;
+		$sDebug = $sDebug . $sDebugGuardar;
+		if ($sError == '') {
+			$sError = '<b>' . $ETI['msg_itemguardado'] . '</b>';
+			$iTipoError = 1;
+		}
+	}
+	return array($DATA, $sError, $iTipoError, $sDebug);
+}
+function elimina_archivo_saiu18idarchivo($idpadre, $iAgno)
+{
+	$_SESSION['u_ultimominuto'] = iminutoavance();
+	require './app.php';
+	$objDB = new clsdbadmin($APP->dbhost, $APP->dbuser, $APP->dbpass, $APP->dbname);
+	if ($APP->dbpuerto != '') {
+		$objDB->dbPuerto = $APP->dbpuerto;
+	}
+	$objDB->xajax();
+	$sTabla18 = 'saiu18telefonico_' . $iAgno;
+	archivo_eliminar($sTabla18, 'saiu18id', 'saiu18idorigen', 'saiu18idarchivo', $idpadre, $objDB);
+	$objDB->CerrarConexion();
+	$objResponse = new xajaxResponse();
+	$objResponse->call("limpia_saiu18idarchivo");
+	return $objResponse;
+}
+function elimina_archivo_saiu18idarchivorta($idpadre, $iAgno)
+{
+	$_SESSION['u_ultimominuto'] = iminutoavance();
+	require './app.php';
+	$objDB = new clsdbadmin($APP->dbhost, $APP->dbuser, $APP->dbpass, $APP->dbname);
+	if ($APP->dbpuerto != '') {
+		$objDB->dbPuerto = $APP->dbpuerto;
+	}
+	$objDB->xajax();
+	$sTabla18 = 'saiu18telefonico_' . $iAgno;
+	archivo_eliminar($sTabla18, 'saiu18id', 'saiu18idorigenrta', 'saiu18idarchivorta', $idpadre, $objDB);
+	$objDB->CerrarConexion();
+	$objResponse = new xajaxResponse();
+	$objResponse->call("limpia_saiu18idarchivorta");
+	return $objResponse;
+}
+function f3018_HTMLComboV2_btema($objDB, $objCombos, $valor, $vrbtipo)
+{
+	require './app.php';
+	$mensajes_todas = $APP->rutacomun . 'lg/lg_todas_' . $_SESSION['unad_idioma'] . '.php';
+	if (!file_exists($mensajes_todas)) {
+		$mensajes_todas = $APP->rutacomun . 'lg/lg_todas_es.php';
+	}
+	require $mensajes_todas;
+	$objCombos->nuevo('btema', $valor, true, '{' . $ETI['msg_todos'] . '}');
+	$sSQL = '';
+	if ((int)$vrbtipo != 0) {
+		$objCombos->sAccion = 'paginarf3018()';
+		$objCombos->iAncho = 450;
+		$sCondi = 'saiu03tiposol="' . $vrbtipo . '"';
+		if ($sCondi != '') {
+			$sCondi = ' WHERE ' . $sCondi;
+		}
+		$sSQL = 'SELECT saiu03id AS id, saiu03titulo AS nombre FROM saiu03temasol' . $sCondi;
+	}
+	$res = $objCombos->html($sSQL, $objDB);
+	return $res;
+}
+function f3018_Combobtema($aParametros)
+{
+	$_SESSION['u_ultimominuto'] = iminutoavance();
+	if (!is_array($aParametros)) {
+		$aParametros = json_decode(str_replace('\"', '"', $aParametros), true);
+	}
+	require './app.php';
+	$objDB = new clsdbadmin($APP->dbhost, $APP->dbuser, $APP->dbpass, $APP->dbname);
+	if ($APP->dbpuerto != '') {
+		$objDB->dbPuerto = $APP->dbpuerto;
+	}
+	$objDB->xajax();
+	$objCombos = new clsHtmlCombos('n');
+	$html_btema = f3018_HTMLComboV2_btema($objDB, $objCombos, '', $aParametros[0]);
+	$objDB->CerrarConexion();
+	$objResponse = new xajaxResponse();
+	$objResponse->assign('div_btema', 'innerHTML', $html_btema);
+	$objResponse->call('jQuery("#btema").chosen({no_results_text: "No existen coincidencias: ",width: "100%"})');
+	$objResponse->call('paginarf3018');
+	return $objResponse;
+}

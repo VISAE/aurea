@@ -9,6 +9,8 @@
 --- Modelo Version 2.21.0 jueves, 14 de junio de 2018
 --- Modelo 2.28.4b miércoles, 5 de octubre de 2022
 */
+$ETI['app_nombre_111'] = 'AUREA';
+$ETI['grupo_nombre_111'] = 'Administrar';
 $ETI['app_nombre']='UNAD';
 $ETI['grupo_nombre']='Inicio';
 $ETI['titulo']='Terceros';
@@ -92,19 +94,39 @@ $ETI['unad11fechaactualiza']='Fecha actualiza';
 $ETI['unad11fechaclave']='Fecha cambio de clave';
 $ETI['unad11fechaultingreso']='Fecha &uacute;ltimo ingreso';
 $ETI['unad11correofuncionario']='Correo funcionario';
+$ETI['unad11debeactualizarclave'] = 'Debeactualizarclave';
+$ETI['unad11necesidadesp']='Grupo de interes priorizado: ';
+$ETI['unad11carariesgo'] = 'Carariesgo';
+$ETI['unad11idioma'] = 'Ioma';
+$ETI['unad11formapresenta'] = 'Formapresenta';
+$ETI['unad11formaclave'] = 'Formaclave';
+$ETI['unad11tester'] = 'Tester';
+$ETI['unad11accesomovil'] = 'Accesomovil';
+$ETI['unad11padrinos'] = 'Padrinos';
+$ETI['unad11idpadrino'] = 'Padrino';
+$ETI['unad11idpadrino_busca'] = 'Busqueda de Padrino';
+$ETI['unad11autenticador'] = 'Autenticador';
 $ETI['unad11fechadoc']='Fecha de expedici&oacute;n del documento de identidad';
 $ETI['unad01estrato']='Estrato socioecon&oacute;mico';
 $ETI['unad01zonares']='Zona de residencia';
-$ETI['unad11necesidadesp']='Grupo de interes priorizado: ';
-
-$ETI['unae23idexterno']='Id Externo';
-$ETI['unae23hashexterno']='Hash';
+$ETI['unad11idrca'] = 'Rca';
+$ETI['unad11paisnace'] = 'Paisnace';
+$ETI['unad11fecharca'] = 'Fecharca';
 $ETI['unad11idflorida']='Registrado en unad.us';
+$ETI['unad11vencecorreoinst'] = 'Vence correo institucional';
 $ETI['unad01autoriza_tel'] = 'Autoriza contacto a tel&eacute;fono por parte de los tutores y directores de curso.';
 $ETI['unad01autoriza_bol'] = 'Autoriza recibir boletines informativos al correo de notificaciones';
 $ETI['unad01oir_ruv'] = 'Oir RUV';
 $ETI['unad01autoriza_mat'] = 'Autoriza contacto por personal de consejeria y personal de apoyo en los procesos de matricula y mercadeo';
 $ETI['unad01autoriza_bien'] = 'Autoriza contacto por personal de bienestar y personal de apoyo para actividades complementarias ofrecidas por la UNAD';
+$ETI['unad11idgrupocorreo'] = 'Grupocorreo';
+$ETI['unad11idvisual'] = 'Visual';
+$ETI['unad11fechavisual'] = 'Fechavisual';
+$ETI['unad11estado'] = 'Estado';
+$ETI['unad11idgrupocorreo'] = 'Grupo de correo';
+
+$ETI['unae23idexterno']='Id Externo';
+$ETI['unae23hashexterno']='Hash';
 
 $ERR['unad11tipodoc']='Necesita el dato Tipodoc';
 $ERR['unad11doc']='Necesita el dato Doc';
@@ -173,12 +195,36 @@ $ERR['unad11fechaactualiza']='Necesita el dato Fechaactualiza';
 $ERR['unad11fechaclave']='Necesita el dato Fechaclave';
 $ERR['unad11fechaultingreso']='Necesita el dato Fechaultingreso';
 $ERR['unad11correofuncionario']='Necesita el dato '.$ETI['unad11correofuncionario'];
+$ERR['unad11debeactualizarclave'] = 'Necesita el dato ' . $ETI['unad11debeactualizarclave'];
+$ERR['unad11necesidadesp'] = 'Necesita el dato ' . $ETI['unad11necesidadesp'];
+$ERR['unad11carariesgo'] = 'Necesita el dato ' . $ETI['unad11carariesgo'];
+$ERR['unad11idioma'] = 'Necesita el dato ' . $ETI['unad11idioma'];
+$ERR['unad11formapresenta'] = 'Necesita el dato ' . $ETI['unad11formapresenta'];
+$ERR['unad11formaclave'] = 'Necesita el dato ' . $ETI['unad11formaclave'];
+$ERR['unad11tester'] = 'Necesita el dato ' . $ETI['unad11tester'];
+$ERR['unad11accesomovil'] = 'Necesita el dato ' . $ETI['unad11accesomovil'];
+$ERR['unad11padrinos'] = 'Necesita el dato ' . $ETI['unad11padrinos'];
+$ERR['unad11idpadrino'] = 'Necesita el dato ' . $ETI['unad11idpadrino'];
+$ERR['unad11autenticador'] = 'Necesita el dato ' . $ETI['unad11autenticador'];
+$ERR['unad11fechadoc'] = $ETI['unad11fechadoc'] . ' incorrecta';
+$ERR['unad01estrato'] = 'Necesita el dato ' . $ETI['unad01estrato'];
+$ERR['unad01zonares'] = 'Necesita el dato ' . $ETI['unad01zonares'];
+$ERR['unad11idrca'] = 'Necesita el dato ' . $ETI['unad11idrca'];
+$ERR['unad11paisnace'] = 'Necesita el dato ' . $ETI['unad11paisnace'];
+$ERR['unad11fecharca'] = 'Necesita el dato ' . $ETI['unad11fecharca'];
 $ERR['unad11idflorida']='Necesita el dato '.$ETI['unad11idflorida'];
+$ERR['unad11vencecorreoinst'] = $ETI['unad11vencecorreoinst'] . ' incorrecta';
 $ERR['unad01autoriza_tel'] = 'Necesita el dato ' . $ETI['unad01autoriza_tel'];
 $ERR['unad01autoriza_bol'] = 'Necesita el dato ' . $ETI['unad01autoriza_bol'];
 $ERR['unad01oir_ruv'] = 'Necesita el dato ' . $ETI['unad01oir_ruv'];
 $ERR['unad01autoriza_mat'] = 'Necesita el dato ' . $ETI['unad01autoriza_mat'];
 $ERR['unad01autoriza_bien'] = 'Necesita el dato ' . $ETI['unad01autoriza_bien'];
+$ERR['unad11idgrupocorreo'] = 'Necesita el dato ' . $ETI['unad11idgrupocorreo'];
+$ERR['unad11idvisual'] = 'Necesita el dato ' . $ETI['unad11idvisual'];
+$ERR['unad11fechavisual'] = 'Necesita el dato ' . $ETI['unad11fechavisual'];
+$ERR['unad11estado'] = 'Necesita el dato ' . $ETI['unad11estado'];
+$ERR['unad11idgrupocorreo'] = 'Necesita el dato ' . $ETI['unad11idgrupocorreo'];
+
 $aunad11rolunad=array('', '');
 $iunad11rolunad=0;
 
@@ -215,9 +261,9 @@ Columna L: Ciudad de origen {Opcional}';
 $aunad11tipodoc=array('', 'CC', 'CE', 'TI', 'DN', 'RC', 'PA', 'NI', 'SS', '__');
 $dunad11tipodoc=array('', 'CC', 'CE', 'TI', 'DNI', 'RC', 'PA', 'NIT', 'SS', '__');
 
-$aunad01estrato=array('[Sin estrado]', 'Uno', 'Dos', 'Tres', 'Cuatro', 'Cinco', 'Seis');
+$aunad01estrato=array('[Sin estrato]', 'Uno', 'Dos', 'Tres', 'Cuatro', 'Cinco', 'Seis');
 $iunad01estrato=6;
 
 $aunad01zonares=array('', 'Urbana', 'Rural');
 $iunad01zonares=2;
-?>
+

@@ -632,7 +632,7 @@ function terminar(){
 		window.parent.document.frmedita.div96v2.value=window.document.frmarchivo.unad51id.value;
 		window.parent.document.frmedita.div96v3.value=window.document.frmarchivo.unad51detalle.value;
 		}
-	window.parent.cierraDiv96(<?php echo $_REQUEST['ref']; ?>);
+	window.parent.cierraDiv96('<?php echo $_REQUEST['ref']; ?>');
 	}
 // -->
 </script>

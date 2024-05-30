@@ -2694,3 +2694,24 @@ function html_Tercero1l($id, $objDB, $bHtml = false)
 	}
 	return $sHTML;
 }
+
+function htmlAlertas($sColor, $sTexto)
+{
+	$sHTML = '';
+	$sTipo = '';
+	switch ($sColor) {
+		case 'verde':
+			$sTipo = 'success';
+			break;
+		case 'naranja':
+			$sTipo = 'warning';
+			break;
+		case 'rojo':
+			$sTipo = 'danger';
+			break;
+		default:
+			$sTipo = 'info';
+	}
+	$sHTML = $sHTML . '<div class="alert alert-' . $sTipo . '" role="alert"><strong>' . $sTexto . '</strong></div>';
+	return $sHTML;
+}

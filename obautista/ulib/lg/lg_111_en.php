@@ -103,7 +103,7 @@ $ETI['unad11idflorida']='Registrado en unad.us';
 $ETI['unad01autoriza_tel'] = 'Autoriza contacto a tel&eacute;fono por parte de los tutores y directores de curso.';
 $ETI['unad01autoriza_bol'] = 'Autoriza recibir boletines informativos al correo de notificaciones';
 $ETI['unad01oir_ruv'] = 'Oir RUV';
-$ETI['unad01autoriza_mat'] = 'Autoriza contacto por personal de consejeria y personal de apoyo en los procesos de matricula y mercadeo';
+$ETI['unad01autoriza_mat'] = 'Autoriza contacto por personal de Consejer&iacute;a acad&eacute;mica y personal de apoyo en los procesos de matr&iacute;cula y mercadeo';
 $ETI['unad01autoriza_bien'] = 'Autoriza contacto por personal de bienestar y personal de apoyo para actividades complementarias ofrecidas por la UNAD';
 
 $ERR['unad11tipodoc']='Is necessary the data Tipodoc';
@@ -215,7 +215,7 @@ Columna L: Ciudad de origen {Opcional}';
 $aunad11tipodoc=array('', 'CC', 'CE', 'TI', 'DN', 'RC', 'PA', 'NI', 'SS', '__');
 $dunad11tipodoc=array('', 'CC', 'CE', 'TI', 'DNI', 'RC', 'PA', 'NIT', 'SS', '__');
 
-$aunad01estrato=array('[Sin estrado]', 'Uno', 'Dos', 'Tres', 'Cuatro', 'Cinco', 'Seis');
+$aunad01estrato=array('[Sin estrato]', 'Uno', 'Dos', 'Tres', 'Cuatro', 'Cinco', 'Seis');
 $iunad01estrato=6;
 
 $aunad01zonares=array('', 'Urbana', 'Rural');
