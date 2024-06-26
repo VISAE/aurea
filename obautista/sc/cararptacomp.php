@@ -8,7 +8,7 @@
 * Modulo 2333 cara33rptconsolacom.
 * @author Angel Mauro Avellaneda Barreto - angel.avellaneda@unad.edu.co
 * @param debug=1 (Opcional), bandera para indicar si se generan datos de depuración
-* @date Wednesday, October 30, 2019*
+* @date Wednesday, October 30, 2019
  *
  * Cambios 20 de mayo de 2020
  * 1. Adición de combos de Escuela y Programa
@@ -176,17 +176,30 @@ if (isset($_REQUEST['paginaf2333'])==0){$_REQUEST['paginaf2333']=1;}
 if (isset($_REQUEST['lppf2333'])==0){$_REQUEST['lppf2333']=20;}
 if (isset($_REQUEST['boculta2333'])==0){$_REQUEST['boculta2333']=0;}
 // -- Inicializar variables de datos.
-if (isset($_REQUEST['cara33idperaca'])==0){$_REQUEST['cara33idperaca']='';}
-if (isset($_REQUEST['cara33idzona'])==0){$_REQUEST['cara33idzona']='';}
-if (isset($_REQUEST['cara33idcentro'])==0){$_REQUEST['cara33idcentro']='';}
-if (isset($_REQUEST['cara33idescuela'])==0){$_REQUEST['cara33idescuela']='';}
-if (isset($_REQUEST['cara33idprograma'])==0){$_REQUEST['cara33idprograma']='';}
+$bTraerEntorno=false;
+if (isset($_REQUEST['cara33idperaca'])==0){$_REQUEST['cara33idperaca']='';$bTraerEntorno=true;}
+if (isset($_REQUEST['cara33idzona'])==0){$_REQUEST['cara33idzona']='';$bTraerEntorno=true;}
+if (isset($_REQUEST['cara33idcentro'])==0){$_REQUEST['cara33idcentro']='';$bTraerEntorno=true;}
+if (isset($_REQUEST['cara33idescuela'])==0){$_REQUEST['cara33idescuela']='';$bTraerEntorno=true;}
+if (isset($_REQUEST['cara33idprograma'])==0){$_REQUEST['cara33idprograma']='';$bTraerEntorno=true;}
 if (isset($_REQUEST['cara33tipo'])==0){$_REQUEST['cara33tipo']='';}
 if (isset($_REQUEST['cara33poblacion'])==0){$_REQUEST['cara33poblacion']=1;}
 // Espacio para inicializar otras variables
-if (isset($_REQUEST['csv_separa'])==0){$_REQUEST['csv_separa']=',';}
+if (isset($_REQUEST['csv_separa'])==0){$_REQUEST['csv_separa']=';';}
 if (isset($_REQUEST['bnombre'])==0){$_REQUEST['bnombre']='';}
-//if (isset($_REQUEST['blistar'])==0){$_REQUEST['blistar']='';}
+if ($bTraerEntorno){
+	$sSQL='SELECT * FROM unad95entorno WHERE unad95id='.$idTercero.'';
+	$tabla=$objDB->ejecutasql($sSQL);
+	if ($objDB->nf($tabla)>0){
+		$fila=$objDB->sf($tabla);
+		if ($fila['unad95periodo']!=0){$_REQUEST['cara33idperaca']=$fila['unad95periodo'];}
+		if ($fila['unad95escuela']!=0){$_REQUEST['cara33idescuela']=$fila['unad95escuela'];}
+		if ($fila['unad95programa']!=0){$_REQUEST['cara33idprograma']=$fila['unad95programa'];}
+		if ($fila['unad95zona']!=0){$_REQUEST['cara33idzona']=$fila['unad95zona'];}
+		if ($fila['unad95centro']!=0){$_REQUEST['cara33idcentro']=$fila['unad95centro'];}
+		$_REQUEST['paso']=0;
+		}
+	}
 //limpiar la pantalla
 if ($_REQUEST['paso']==-1){
 	$_REQUEST['cara33idperaca']='';
@@ -214,7 +227,7 @@ if ($devuelve){$seg_6=1;}
 $objCombos=new clsHtmlCombos();
 $objPermisoDatos=new clsUNADPermisosZonaEscuela($iCodModulo,$idTercero);
 list($sDebugR, $sErrorR)=$objPermisoDatos->cargarPermisos($objDB,$bDebug);
-$sDebug = $sDebug . $sDebugR;
+$sDebug=$sDebug.$sDebugR;
 $objCombos->nuevo('cara33idperaca', $_REQUEST['cara33idperaca'], true, '{'.$ETI['msg_seleccione'].'}');
 $sSQL=f146_ConsultaCombo(2301, $objDB);
 $html_cara33idperaca=$objCombos->html($sSQL, $objDB);
@@ -765,7 +778,6 @@ echo html_DivAlarmaV2($sError, $iTipoError);
 <link rel="stylesheet" href="<?php echo $APP->rutacomun; ?>js/chosen.css" type="text/css"/>
 <script language="javascript" src="<?php echo $APP->rutacomun; ?>js/chosen.jquery.js"></script>
 <script language="javascript">
-<!--
 <?php
 if ($iSector!=1){
 	echo 'setTimeout(function(){expandesector('.$iSector.');}, 10);
@@ -778,8 +790,8 @@ if ($bMueveScroll){
 ?>
 $().ready(function(){
 $("#cara33idperaca").chosen();
+$("#cara33idprograma").chosen();
 });
--->
 </script>
 <script language="javascript" src="<?php echo $APP->rutacomun; ?>unad_todas.js?ver=8"></script>
 <?php

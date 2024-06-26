@@ -37,6 +37,7 @@ function f2307_HTMLComboV2_cara00idconsejero($objDB, $objCombos, $valor, $vrcara
 		if ($vrcara00zona==-1){
 			$sCondi='TB.cara01idzona=0 AND ';
 			}else{
+			$objCombos->addItem('-1', '{Todos}');
 			$sCondi='TB.cara01idzona='.$vrcara00zona.' AND ';
 			}
 		}
@@ -202,7 +203,7 @@ ORDER BY TB.cara00id';
 		}else{
 		$registros=$objDB->nf($tabladetalle);
 		if ($registros==0){
-			//return array(utf8_encode($sErrConsulta.'<input id="paginaf2300" name="paginaf2300" type="hidden" value="'.$pagina.'"/><input id="lppf2300" name="lppf2300" type="hidden" value="'.$lineastabla.'"/>'), $sDebug);
+			//return array(cadena_codificar($sErrConsulta.'<input id="paginaf2300" name="paginaf2300" type="hidden" value="'.$pagina.'"/><input id="lppf2300" name="lppf2300" type="hidden" value="'.$lineastabla.'"/>'), $sDebug);
 			}
 		if ((($registros-1)/$lineastabla)<($pagina-1)){$pagina=(int)(($registros-1)/$lineastabla)+1;}
 		if ($registros>$lineastabla){
@@ -243,7 +244,7 @@ ORDER BY TB.cara00id';
 		}
 	$res=$res.'</table>';
 	$objDB->liberar($tabladetalle);
-	return array(utf8_encode($res), $sDebug);
+	return array(cadena_codificar($res), $sDebug);
 	}
 function f2300_HtmlTabla($aParametros){
 	$_SESSION['u_ultimominuto']=iminutoavance();
@@ -348,8 +349,8 @@ function f2300_db_GuardarV2($DATA, $objDB, $bDebug=false){
 			$sCampos2300='cara00id, cara00idperfilconsejero, cara00idperfillider';
 			$sValores2300=''.$DATA['cara00id'].', '.$DATA['cara00idperfilconsejero'].', '.$DATA['cara00idperfillider'].'';
 			if ($APP->utf8==1){
-				$sSQL='INSERT INTO cara00config ('.$sCampos2300.') VALUES ('.utf8_encode($sValores2300).');';
-				$sdetalle=$sCampos2300.'['.utf8_encode($sValores2300).']';
+				$sSQL='INSERT INTO cara00config ('.$sCampos2300.') VALUES ('.cadena_codificar($sValores2300).');';
+				$sdetalle=$sCampos2300.'['.cadena_codificar($sValores2300).']';
 				}else{
 				$sSQL='INSERT INTO cara00config ('.$sCampos2300.') VALUES ('.$sValores2300.');';
 				$sdetalle=$sCampos2300.'['.$sValores2300.']';
@@ -388,8 +389,8 @@ function f2300_db_GuardarV2($DATA, $objDB, $bDebug=false){
 				}
 			if ($bpasa){
 				if ($APP->utf8==1){
-					$sdetalle=utf8_encode($sdatos).'['.$sWhere.']';
-					$sSQL='UPDATE cara00config SET '.utf8_encode($sdatos).' WHERE '.$sWhere.';';
+					$sdetalle=cadena_codificar($sdatos).'['.$sWhere.']';
+					$sSQL='UPDATE cara00config SET '.cadena_codificar($sdatos).' WHERE '.$sWhere.';';
 					}else{
 					$sdetalle=$sdatos.'['.$sWhere.']';
 					$sSQL='UPDATE cara00config SET '.$sdatos.' WHERE '.$sWhere.';';
@@ -547,7 +548,7 @@ ORDER BY TB.cara00id';
 		}else{
 		$registros=$objDB->nf($tabladetalle);
 		if ($registros==0){
-			//return array(utf8_encode($sErrConsulta.'<input id="paginaf2300" name="paginaf2300" type="hidden" value="'.$pagina.'"/><input id="lppf2300" name="lppf2300" type="hidden" value="'.$lineastabla.'"/>'), $sDebug);
+			//return array(cadena_codificar($sErrConsulta.'<input id="paginaf2300" name="paginaf2300" type="hidden" value="'.$pagina.'"/><input id="lppf2300" name="lppf2300" type="hidden" value="'.$lineastabla.'"/>'), $sDebug);
 			}
 		if ((($registros-1)/$lineastabla)<($pagina-1)){$pagina=(int)(($registros-1)/$lineastabla)+1;}
 		if ($registros>$lineastabla){
@@ -578,7 +579,7 @@ ORDER BY TB.cara00id';
 		}
 	$res=$res.'</table>';
 	$objDB->liberar($tabladetalle);
-	return utf8_encode($res);
+	return cadena_codificar($res);
 	}
 // -----------------------------------
 // ---- Funciones personalizadas  ----
@@ -590,25 +591,24 @@ function f2300_ProcesarEdades($objDB, $bDebug=false){
 	$iProcesados=0;
 	require './app.php';
 	$bHayDBRyC=false;
-	if (isset($APP->dbhostryc)!=0){
-		$objDBRyC=new clsdbadmin($APP->dbhostryc, $APP->dbuserryc, $APP->dbpassryc, $APP->dbnameryc);
-		if ($APP->dbpuertoryc!=''){$objDBRyC->dbPuerto=$APP->dbpuertoryc;}
-		if ($objDBRyC->Conectar()){
-			if ($bDebug){$sDebug=$sDebug.fecha_microtiempo().' Conectado con la db de Registro y control<br>';}
-			$bHayDBRyC=true;
-			}else{
-			$sError=' Error al intentar conectar con la base de datos de RyC <b>'.$objDBRyC->serror.'</b>';
-			}
+	list($objDBRyC, $sDebug)=TraerDBRyCV2();
+	if ($objDBRyC->Conectar()){
+		if ($bDebug){$sDebug=$sDebug.fecha_microtiempo().' Conectado con la db de Registro y control<br>';}
+		$bHayDBRyC=true;
+		}else{
+		if ($bDebug){$sDebug=$sDebug.fecha_microtiempo().' <b>Procesar Edades</b> Falla al conectar con RCONT: '.$objDBRyC->serror.'<br>';}
+		//$sError=' Error al intentar conectar con la base de datos de RyC <b>'.$objDBRyC->serror.'</b>';
 		}
 	if ($sError==''){
-		$sSQL='SELECT TB.cara01id, TB.cara01idtercero, T11.unad11doc, TB.cara01agnos, T11.unad11fechanace, TB.cara01fechaencuesta 
-FROM cara01encuesta AS TB, unad11terceros AS T11 
-WHERE TB.cara01agnos=0 AND TB.cara01idtercero=T11.unad11id
-LIMIT 0, 5000';
+		//Primero quitamos las edades que no tienen sentido.
+		$sSQL='UPDATE cara01encuesta SET cara01agnos=0 WHERE cara01agnos>80';
 		$tabla=$objDB->ejecutasql($sSQL);
-		if ($objDB->nf($tabla)>499){
-			$bContinua=false;
-			}
+		//ahora las reconstruimos.
+		$sSQL='SELECT TB.cara01id, TB.cara01idtercero, T11.unad11doc, TB.cara01agnos, T11.unad11fechanace, TB.cara01fechaencuesta 
+		FROM cara01encuesta AS TB, unad11terceros AS T11 
+		WHERE TB.cara01agnos=0 AND TB.cara01fechaencuesta>0 AND TB.cara01idtercero=T11.unad11id';
+		if ($bDebug){$sDebug=$sDebug.fecha_microtiempo().' <b>Procesar Edades</b> Datos a revisar '.$sSQL.'<br>';}
+		$tabla=$objDB->ejecutasql($sSQL);
 		while($fila=$objDB->sf($tabla)){
 			$cara01agnos=0;
 			$sFechaEncuesta=fecha_desdenumero($fila['cara01fechaencuesta']);
@@ -659,12 +659,16 @@ function f2307_TablaDetalleV2($aParametros, $objDB, $bDebug=false){
 	if (isset($aParametros[101])==0){$aParametros[101]=1;}
 	if (isset($aParametros[102])==0){$aParametros[102]=20;}
 	if (isset($aParametros[103])==0){$aParametros[103]='';}
+	if (isset($aParametros[104])==0){$aParametros[104]='';}
+	if (isset($aParametros[105])==0){$aParametros[105]='';}
 	//$aParametros[103]=numeros_validar($aParametros[103]);
 	$sDebug='';
 	$idTercero=$aParametros[100];
 	$pagina=$aParametros[101];
 	$lineastabla=$aParametros[102];
 	$idConsejero=numeros_validar($aParametros[103]);
+	$idZona=numeros_validar($aParametros[104]);
+	$idPeriodo=numeros_validar($aParametros[105]);
 	$babierta=true;
 	//$sSQL='SELECT Campo FROM Tabla WHERE Id='.$sValorId;
 	//$tabla=$objDB->ejecutasql($sSQL);
@@ -680,7 +684,7 @@ function f2307_TablaDetalleV2($aParametros, $objDB, $bDebug=false){
 '.$sLeyenda.'
 <div class="salto1px"></div>
 </div>';
-		return array(utf8_encode($sLeyenda.'<input id="paginaf2307" name="paginaf2307" type="hidden" value="'.$pagina.'"/><input id="lppf2307" name="lppf2307" type="hidden" value="'.$lineastabla.'"/>'), $sDebug);
+		return array(cadena_codificar($sLeyenda.'<input id="paginaf2307" name="paginaf2307" type="hidden" value="'.$pagina.'"/><input id="lppf2307" name="lppf2307" type="hidden" value="'.$lineastabla.'"/>'), $sDebug);
 		die();
 		}
 	$sSQLadd='';
@@ -700,17 +704,41 @@ function f2307_TablaDetalleV2($aParametros, $objDB, $bDebug=false){
 			}
 		}
 	*/
+	$sIdsCursosCatedra='-99';
+	$sSQL='SELECT unad40id FROM unad40curso WHERE unad40catedraunadista=1';
+	$tabla1=$objDB->ejecutasql($sSQL);
+	while($fila1=$objDB->sf($tabla1)){
+		$sIdsCursosCatedra=$sIdsCursosCatedra.','.$fila1['unad40id'];
+		}
 	$sBotones='<input id="paginaf2300" name="paginaf2300" type="hidden" value="'.$pagina.'"/><input id="lppf2300" name="lppf2300" type="hidden" value="'.$lineastabla.'"/>';
 	$sTitulos='Id, Perfilconsejero';
-	$sSQL='SELECT TB.core16peraca, T2.exte02nombre, COUNT(TB.core16id) AS Total 
-FROM core16actamatricula AS TB, exte02per_aca AS T2 
-WHERE TB.core16idconsejero='.$idConsejero.' AND TB.core16peraca=T2.exte02id 
-GROUP BY TB.core16peraca, T2.exte02nombre
-ORDER BY TB.core16peraca DESC';
+	$sCondi='';
+	if ($idZona!=''){
+		if ($idZona==-1){
+			$sCondi='TB.cara01idzona=0 AND ';
+			}else{
+			$sCondi='TB.cara01idzona='.$idZona.' AND ';
+			}
+		}
+	$bXPeriodo=true;
+	if ($idPeriodo!=''){
+		$bXPeriodo=false;
+		$sCondi='TB.cara13peraca='.$idPeriodo.' AND '.$sCondi;
+		}
+	$bMostrarConsejero=false;
+	if ($idConsejero=='-1'){
+		$bMostrarConsejero=$bXPeriodo;
+		}else{
+		$sCondi='TB.cara13idconsejero='.$idConsejero.' AND '.$sCondi;
+		}
+	$sSQL='SELECT TB.cara13idconsejero, TB.cara13peraca, T2.exte02nombre, TB.cara01cargaasignada, TB.cara01cargafinal 
+	FROM cara13consejeros AS TB, exte02per_aca AS T2 
+	WHERE '.$sCondi.'TB.cara13peraca=T2.exte02id 
+	ORDER BY TB.cara13idconsejero, TB.cara13peraca DESC';
 	$sSQLlista=str_replace("'","|",$sSQL);
 	$sSQLlista=str_replace('"',"|",$sSQLlista);
 	$sErrConsulta='<input id="consulta_2300" name="consulta_2300" type="hidden" value="'.$sSQLlista.'"/>
-<input id="titulos_2300" name="titulos_2300" type="hidden" value="'.$sTitulos.'"/>';
+	<input id="titulos_2300" name="titulos_2300" type="hidden" value="'.$sTitulos.'"/>';
 	if ($bDebug){$sDebug=$sDebug.fecha_microtiempo().' Consulta 2300: '.$sSQL.'<br>';}
 	$tabladetalle=$objDB->ejecutasql($sSQL);
 	if ($tabladetalle==false){
@@ -721,62 +749,210 @@ ORDER BY TB.core16peraca DESC';
 		$registros=$objDB->nf($tabladetalle);
 		if ($registros==0){
 			$sTabla='<table border="0" align="center" cellpadding="0" cellspacing="2" class="tablaapp">
-<tr class="fondoazul">
-<td align="center"><b>'.'No se registra asignaci&oacute;n de estudiantes para acompa&ntilde;amiento'.'</b></td>
-</tr>
-</table>';
-			return array(utf8_encode($sErrConsulta.$sBotones).$sTabla, $sDebug);
+			<tr class="fondoazul">
+			<td align="center"><b>'.'No se registra asignaci&oacute;n de estudiantes para acompa&ntilde;amiento'.'</b></td>
+			</tr>
+			</table>';
+			return array(cadena_codificar($sErrConsulta.$sBotones).$sTabla, $sDebug);
 			}
+		/*
 		if ((($registros-1)/$lineastabla)<($pagina-1)){$pagina=(int)(($registros-1)/$lineastabla)+1;}
 		if ($registros>$lineastabla){
 			$rbase=($pagina-1)*$lineastabla;
 			$limite=' LIMIT '.$rbase.', '.$lineastabla;
 			$tabladetalle=$objDB->ejecutasql($sSQL.$limite);
 			}
+		*/
+		}
+	if ($bXPeriodo){
+		$sTitulo1='Periodo';
+		}else{
+		$sTitulo1='Consejero';
 		}
 	$res=$sErrConsulta.$sLeyenda.$sBotones.'<table border="0" align="center" cellpadding="0" cellspacing="2" class="tablaapp">
 <tr class="fondoazul">
-<td colspan="4" align="center"><b>'.'Estudiantes asignados para acompa&ntilde;amiento'.'</b></td>
+<td colspan="3" align="center"><b>'.'Estudiantes asignados'.'</b></td>
+<td colspan="3" align="center"><b>'.'Acompa&ntilde;amientos'.'</b> [Abierto -] <b>Cerrados</b> / Estudiantes</td>
 </tr>
 <tr class="fondoazul">
-<td><b>'.'Periodo'.'</b></td>
-<td align="center"><b>'.'Asignados'.'</b></td>
-<td align="center"><b>'.'Aplicados'.'</b></td>
-<td><b>'.''.'</b></td>
+<td><b>'.$sTitulo1.'</b></td>
+<td align="center" title="Estudiantes que fueron asignados para hacerles acompa&ntilde;miento."><b>'.'Aplicados'.'</b></td>
+<td align="center" title="Estudiantes que le han sido asignados en cursos de catedra unadista."><b>'.'Est. Catedra'.'</b></td>
+<td align="center"><b>'.'Momento Inicial'.'</b></td>
+<td align="center"><b>'.'Momento Intermedio'.'</b></td>
+<td align="center"><b>'.'Momento Final'.'</b></td>
 </tr>';
 	$tlinea=1;
+	$idMuestra=-99;
+	$idPeriodo=-99;
+	$idContenedor=0;
 	while($filadet=$objDB->sf($tabladetalle)){
+		if ($bMostrarConsejero){
+			if ($idMuestra!=$filadet['cara13idconsejero']){
+				$idMuestra=$filadet['cara13idconsejero'];
+				$sNomConsejero='{'.$idMuestra.'}';
+				$sSQL='SELECT unad11razonsocial FROM unad11terceros WHERE unad11id='.$idMuestra.'';
+				$tabla11=$objDB->ejecutasql($sSQL);
+				if ($objDB->nf($tabla11)>0){
+					$fila11=$objDB->sf($tabla11);
+					$sNomConsejero='Consejero: <b>'.cadena_notildes($fila11['unad11razonsocial']).'</b>';
+					}
+				$res=$res.'<tr class="fondoazul">
+<td colspan="6" align="center">'.$sNomConsejero.'</td>
+</tr>';
+				}
+			}
+		$idConsejero=$filadet['cara13idconsejero'];
+		if ($idPeriodo!=$filadet['cara13peraca']){
+			$idPeriodo=$filadet['cara13peraca'];
+			/*
+			if ($idPeriodo>760){
+				$idContenedor=f146_Contenedor($idPeriodo, $objDB);
+				}else{
+				$idContenedor=0;
+				}
+			*/
+			}
 		$sPrefijo='';
 		$sSufijo='';
 		$sClass='';
 		$sLink='';
+		$sRevisa='';
 		if (false){
 			$sPrefijo='<b>';
 			$sSufijo='</b>';
 			}
 		if(($tlinea%2)==0){$sClass=' class="resaltetabla"';}
 		$tlinea++;
-		$iAplicados='';
-		$sDetalle='';
-		$sSQL='SELECT COUNT(cara01id) AS Aplicados FROM cara01encuesta AS TB WHERE TB.cara01idconsejero='.$idTercero.' AND TB.cara01idperiodoacompana='.$filadet['core16peraca'].'';
+		$sIds='-99';
+		$iEstudiantesCatedra=0;
+		$sInfoCatedra='{No Registra}';
+		//if ($idContenedor>0){}
+		$sSQL='SELECT core20idcurso, core20numestudiantes, core20numestaplicados 
+FROM core20asignacion
+WHERE core20idtutor='.$idConsejero.' AND core20idperaca='.$idPeriodo.' AND core20idcurso IN ('.$sIdsCursosCatedra.')';
 		$tabla1=$objDB->ejecutasql($sSQL);
 		if ($objDB->nf($tabla1)>0){
-			$fila1=$objDB->sf($tabla1);
-			$iAplicados=$fila1['Aplicados'];
+			$sInfoCatedra='';
+			while($fila1=$objDB->sf($tabla1)){
+				$sInfoCatedra=$sInfoCatedra.' '.$fila1['core20idcurso'].' [ '.$fila1['core20numestaplicados'].' / '.$fila1['core20numestudiantes'].' ]';
+				}
 			}
-		if ($babierta){
-			//$sLink='<a href="javascript:cargadato('."'".$filadet['cara00id']."'".')" class="lnkresalte">'.$ETI['lnk_cargar'].'</a>';
+		$iM1='';
+		$iM2='';
+		$iM3='';
+		$aCont=array();
+		for ($k=11;$k<=33;$k++){
+			$aCont[$k]=0;
+			}
+		$sDetalle='';
+		$sSQL='SELECT TB.cara01id FROM cara01encuesta AS TB WHERE TB.cara01idconsejero='.$idConsejero.' AND (TB.cara01idperiodoacompana='.$filadet['cara13peraca'].' OR TB.cara01idperaca='.$filadet['cara13peraca'].')';
+		if ($bDebug){$sDebug=$sDebug.fecha_microtiempo().' Consulta ENCUESTAS: '.$sSQL.'<br>';}
+		$tabla1=$objDB->ejecutasql($sSQL);
+		//$iAplicados=$objDB->nf($tabla1);
+		while($fila1=$objDB->sf($tabla1)){
+			$sIds=$sIds.','.$fila1['cara01id'];
+			}
+		if ($sIds!='-99'){
+			//Numero de estudiantes por momento
+			$sSQL='SELECT cara23idtipo, COUNT(DISTINCT(cara23idtercero)) AS Estudiantes
+FROM cara23acompanamento
+WHERE cara23idencuesta IN ('.$sIds.')
+GROUP BY cara23idtipo';
+if ($bDebug){$sDebug=$sDebug.fecha_microtiempo().' Consulta ESTUDIANTES: '.$sSQL.'<br>';}
+			//$sRevisa=$sSQL;
+			$tabla1=$objDB->ejecutasql($sSQL);
+			while($fila1=$objDB->sf($tabla1)){
+				switch($fila1['cara23idtipo']){
+					case 1:
+					$aCont[11]=$fila1['Estudiantes'];
+					break;
+					case 2:
+					$aCont[21]=$fila1['Estudiantes'];
+					break;
+					case 3:
+					$aCont[31]=$fila1['Estudiantes'];
+					break;
+					}
+				}
+			//Numero de eventos
+			$sSQL='SELECT cara23idtipo, cara23estado, COUNT(1) AS Eventos
+FROM cara23acompanamento
+WHERE cara23idencuesta IN ('.$sIds.')
+GROUP BY cara23idtipo, cara23estado';
+if ($bDebug){$sDebug=$sDebug.fecha_microtiempo().' Consulta EVENTOS: '.$sSQL.'<br>';}
+			//$iM3=$sSQL;
+			$tabla1=$objDB->ejecutasql($sSQL);
+			while($fila1=$objDB->sf($tabla1)){
+				switch($fila1['cara23idtipo']){
+					case 1:
+					if ($fila1['cara23estado']==7){
+						$aCont[12]=$fila1['Eventos'];
+						}else{
+						$aCont[13]=$fila1['Eventos'];
+						}
+					break;
+					case 2:
+					if ($fila1['cara23estado']==7){
+						$aCont[22]=$fila1['Eventos'];
+						}else{
+						$aCont[23]=$fila1['Eventos'];
+						}
+					break;
+					case 3:
+					if ($fila1['cara23estado']==7){
+						$aCont[32]=$fila1['Eventos'];
+						}else{
+						$aCont[33]=$fila1['Eventos'];
+						}
+					break;
+					}
+				}
+			if ($aCont[11]>0){
+				$iM1='<b>'.$aCont[12].'</b> / '.$aCont[11];
+				if ($aCont[13]>0){
+					$iM1=$aCont[13].' - '.$iM1;
+					}
+				}
+			if ($aCont[21]>0){
+				$iM2='<b>'.$aCont[22].'</b> / '.$aCont[21];
+				if ($aCont[23]>0){
+					$iM2=$aCont[23].' - '.$iM2;
+					}
+				}
+			if ($aCont[31]>0){
+				$iM3='<b>'.$aCont[32].'</b> / '.$aCont[31];
+				if ($aCont[33]>0){
+					$iM3=$aCont[33].' - '.$iM3;
+					}
+				}
+			}
+		//cara01cargaasignada, TB.cara01cargafinal
+		if ($bXPeriodo){
+			$sDatoCol1=cadena_notildes($filadet['exte02nombre']);
+			}else{
+			$idMuestra=$filadet['cara13idconsejero'];
+			$sDatoCol1='{'.$idMuestra.'}';
+			$sSQL='SELECT unad11razonsocial FROM unad11terceros WHERE unad11id='.$idMuestra.'';
+			$tabla11=$objDB->ejecutasql($sSQL);
+			if ($objDB->nf($tabla11)>0){
+				$fila11=$objDB->sf($tabla11);
+				$sDatoCol1=''.cadena_notildes($fila11['unad11razonsocial']).'';
+				}
 			}
 		$res=$res.'<tr'.$sClass.'>
-<td>'.$sPrefijo.cadena_notildes($filadet['exte02nombre']).$sSufijo.'</td>
-<td align="center">'.$sPrefijo.$filadet['Total'].$sSufijo.'</td>
-<td align="center">'.$sPrefijo.$iAplicados.$sSufijo.'</td>
-<td>'.$sPrefijo.$sDetalle.$sSufijo.'</td>
+<td>'.$sPrefijo.$sDatoCol1.$sSufijo.'</td>
+<td align="center">'.$sPrefijo.$filadet['cara01cargafinal'].' / '.$filadet['cara01cargaasignada'].$sSufijo.'</td>
+<td align="center">'.$sPrefijo.$sInfoCatedra.$sSufijo.'</td>
+<td align="center">'.$sPrefijo.$iM1.$sSufijo.'</td>
+<td align="center">'.$sPrefijo.$iM2.$sSufijo.'</td>
+<td align="center">'.$sPrefijo.$iM3.$sSufijo.'</td>
 </tr>';
+//<tr><td colspan="6">'.$sRevisa.'</td></tr>
 		}
 	$res=$res.'</table>';
 	$objDB->liberar($tabladetalle);
-	return array(utf8_encode($res), $sDebug);
+	return array(cadena_codificar($res), $sDebug);
 	}
 function f2307_HtmlTabla($aParametros){
 	$_SESSION['u_ultimominuto']=iminutoavance();

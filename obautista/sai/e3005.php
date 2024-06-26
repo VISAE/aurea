@@ -109,7 +109,7 @@ if ($bEntra) {
 		$objPHPExcel->getProperties()->setDescription('Reporte de PQRS ' . $sServerRpt . ' creado en ' . fecha_hoy() . ' ' . formato_horaminuto(fecha_hora(), fecha_minuto()));
 		$objHoja = $objPHPExcel->getActiveSheet();
 		$objHoja->setTitle($sTituloRpt);
-		$sColTope = 'Q';
+		$sColTope = 'S';
 		//Imagen del encabezado
 		PHPExcel_Justificar_Celda_HorizontalCentro($objPHPExcel, 'A1');
 		PHPExcel_Agrega_Dibujo($objPHPExcel, 'Logo', 'Logo', $APP->rutacomun . 'imagenes/rpt_cabeza.jpg', '161', 'A1', '0', false, '0');
@@ -139,13 +139,13 @@ if ($bEntra) {
 		$iFila++;
 		$iFilaBase = $iFila;
 		$aTitulos = array(
-			cadena_tildes($ETI['msg_numsolicitud']), cadena_tildes($ETI['saiu05dia']), cadena_tildes($ETI['saiu05hora']), cadena_tildes($ETI['saiu05estado']), cadena_tildes($ETI['saiu05idcategoria']),
+			cadena_tildes($ETI['msg_numsolicitud']), cadena_tildes($ETI['saiu05dia']), cadena_tildes($ETI['saiu05hora']), cadena_tildes($ETI['saiu05estado']),cadena_tildes($ETI['saiu05fecharespdef']), cadena_tildes($ETI['saiu05horarespdef']), cadena_tildes($ETI['saiu05idcategoria']),
 			cadena_tildes($ETI['saiu05idtiposolorigen']), cadena_tildes($ETI['saiu05idtemaorigen']), cadena_tildes($ETI['saiu05idunidadresp']), cadena_tildes($ETI['saiu05idequiporesp']), cadena_tildes($ETI['saiu05idsupervisor']),
 			cadena_tildes($ETI['saiu05idresponsable']), cadena_tildes($ETI['saiu05idsolicitante']), cadena_tildes($ETI['saiu05razonsocial']), cadena_tildes($ETI['saiu05idzona']),
 			cadena_tildes($ETI['saiu05cead']), cadena_tildes($ETI['saiu05idescuela']), cadena_tildes($ETI['saiu05idprograma'])
 		);
 		$iTitulos = count($aTitulos);
-		for ($k = 0; $k <= 16; $k++) {
+		for ($k = 0; $k <= 18; $k++) {
 			$objHoja->setCellValueByColumnAndRow($k, $iFila, $aTitulos[$k]);
 			$sColumna = columna_Letra($k);
 			$objPHPExcel->getActiveSheet()->getColumnDimension($sColumna)->setWidth(13);
@@ -255,7 +255,8 @@ if ($bEntra) {
 			TB.saiu05idtiposolorigen, TB.saiu05idtemaorigen, TB.saiu05idunidadresp, TB.saiu05idequiporesp, TB.saiu05idsupervisor, 
 			TB.saiu05idresponsable, TB.saiu05evalfecha, TB.saiu05evalamabilidad, TB.saiu05evalamabmotivo, TB.saiu05evalrapidez,
 			TB.saiu05evalrapidmotivo, TB.saiu05evalclaridad, TB.saiu05evalcalridmotivo, TB.saiu05evalresolvio, TB.saiu05evalsugerencias,
-			TB.saiu05evalconocimiento,TB.saiu05evalconocmotivo,TB.saiu05evalutilidad,TB.saiu05evalutilmotivo
+			TB.saiu05evalconocimiento,TB.saiu05evalconocmotivo,TB.saiu05evalutilidad,TB.saiu05evalutilmotivo,
+			TB.saiu05fecharespdef,TB.saiu05horarespdef,TB.saiu05minrespdef
 			FROM saiu05solicitud_' . $sContenedor . ' AS TB, unad11terceros AS T11
 			WHERE TB.saiu05tiporadicado=1 AND TB.saiu05idsolicitante=T11.unad11id ' . $sCondi . '';
 		}
@@ -286,6 +287,8 @@ if ($bEntra) {
 					$saiu05dia = fecha_armar($fila['saiu05dia'], $fila['saiu05mes'], $fila['saiu05agno']);
 					$saiu05hora = html_TablaHoraMin($fila['saiu05hora'], $fila['saiu05minuto']);
 					$i_saiu05estado = $fila['saiu05estado'];
+					$saiu05fecharespdef = fecha_desdenumero($fila['saiu05fecharespdef']);
+					$saiu05horarespdef = html_TablaHoraMin($fila['saiu05horarespdef'], $fila['saiu05minrespdef']);
 					$saiu05evalfecha = fecha_desdenumero($fila['saiu05evalfecha']);
 					if (isset($asaiu05estado[$i_saiu05estado]) == 0) {
 						$sSQL = 'SELECT saiu11nombre FROM saiu11estadosol WHERE saiu11id=' . $i_saiu05estado . '';
@@ -439,19 +442,21 @@ if ($bEntra) {
 					$objHoja->setCellValueByColumnAndRow(1, $iFila, $saiu05dia);
 					$objHoja->setCellValueByColumnAndRow(2, $iFila, $saiu05hora);
 					$objHoja->setCellValueByColumnAndRow(3, $iFila, cadena_decodificar($saiu05estado));
-					$objHoja->setCellValueByColumnAndRow(4, $iFila, cadena_decodificar($saiu05idcategoria));
-					$objHoja->setCellValueByColumnAndRow(5, $iFila, cadena_decodificar($saiu05idtiposolorigen));
-					$objHoja->setCellValueByColumnAndRow(6, $iFila, cadena_decodificar($saiu05idtemaorigen));
-					$objHoja->setCellValueByColumnAndRow(7, $iFila, cadena_decodificar($saiu05idunidadresp));
-					$objHoja->setCellValueByColumnAndRow(8, $iFila, cadena_decodificar($saiu05idequiporesp));
-					$objHoja->setCellValueByColumnAndRow(9, $iFila, $saiu05idsupervisor);
-					$objHoja->setCellValueByColumnAndRow(10, $iFila, $saiu05idresponsable);
-					$objHoja->setCellValueByColumnAndRow(11, $iFila, $sDoc);
-					$objHoja->setCellValueByColumnAndRow(12, $iFila, $sRazonSocial);
-					$objHoja->setCellValueByColumnAndRow(13, $iFila, $saiu05idzona);
-					$objHoja->setCellValueByColumnAndRow(14, $iFila, $saiu05cead);
-					$objHoja->setCellValueByColumnAndRow(15, $iFila, $saiu05idescuela);
-					$objHoja->setCellValueByColumnAndRow(16, $iFila, $saiu05idprograma);
+					$objHoja->setCellValueByColumnAndRow(4, $iFila, $saiu05fecharespdef);
+					$objHoja->setCellValueByColumnAndRow(5, $iFila, $saiu05horarespdef);
+					$objHoja->setCellValueByColumnAndRow(6, $iFila, cadena_decodificar($saiu05idcategoria));
+					$objHoja->setCellValueByColumnAndRow(7, $iFila, cadena_decodificar($saiu05idtiposolorigen));
+					$objHoja->setCellValueByColumnAndRow(8, $iFila, cadena_decodificar($saiu05idtemaorigen));
+					$objHoja->setCellValueByColumnAndRow(9, $iFila, cadena_decodificar($saiu05idunidadresp));
+					$objHoja->setCellValueByColumnAndRow(10, $iFila, cadena_decodificar($saiu05idequiporesp));
+					$objHoja->setCellValueByColumnAndRow(11, $iFila, $saiu05idsupervisor);
+					$objHoja->setCellValueByColumnAndRow(12, $iFila, $saiu05idresponsable);
+					$objHoja->setCellValueByColumnAndRow(13, $iFila, $sDoc);
+					$objHoja->setCellValueByColumnAndRow(14, $iFila, $sRazonSocial);
+					$objHoja->setCellValueByColumnAndRow(15, $iFila, $saiu05idzona);
+					$objHoja->setCellValueByColumnAndRow(16, $iFila, $saiu05cead);
+					$objHoja->setCellValueByColumnAndRow(17, $iFila, $saiu05idescuela);
+					$objHoja->setCellValueByColumnAndRow(18, $iFila, $saiu05idprograma);
 					$iFila++;
 					if ($i_saiu05estado == 7) {
 						$objPHPExcel->setActiveSheetIndex(1);
