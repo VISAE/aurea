@@ -617,21 +617,15 @@ function f3005_db_Guardar($DATA, $objDB, $bDebug = false)
 	}
 	$bCalularTotales = false;
 	if ($sError == '') {
-		if (get_magic_quotes_gpc() == 1) {
-			$DATA['saiu05detalle'] = stripslashes($DATA['saiu05detalle']);
-		}
+		$DATA['saiu05detalle'] = stripslashes($DATA['saiu05detalle']);
 		//Si el campo saiu05detalle permite html quite la linea htmlspecialchars para el campo y habilite la siguiente linea:
 		//$saiu05detalle=addslashes($DATA['saiu05detalle']);
 		$saiu05detalle = str_replace('"', '\"', $DATA['saiu05detalle']);
-		if (get_magic_quotes_gpc() == 1) {
-			$DATA['saiu05infocomplemento'] = stripslashes($DATA['saiu05infocomplemento']);
-		}
+		$DATA['saiu05infocomplemento'] = stripslashes($DATA['saiu05infocomplemento']);
 		//Si el campo saiu05infocomplemento permite html quite la linea htmlspecialchars para el campo y habilite la siguiente linea:
 		//$saiu05infocomplemento=addslashes($DATA['saiu05infocomplemento']);
 		$saiu05infocomplemento = str_replace('"', '\"', $DATA['saiu05infocomplemento']);
-		if (get_magic_quotes_gpc() == 1) {
-			$DATA['saiu05respuesta'] = stripslashes($DATA['saiu05respuesta']);
-		}
+		$DATA['saiu05respuesta'] = stripslashes($DATA['saiu05respuesta']);
 		//Si el campo saiu05respuesta permite html quite la linea htmlspecialchars para el campo y habilite la siguiente linea:
 		//$saiu05respuesta=addslashes($DATA['saiu05respuesta']);
 		$saiu05respuesta = str_replace('"', '\"', $DATA['saiu05respuesta']);

@@ -1330,7 +1330,7 @@ if (false) {
 
 	function enviacerrar() {
 		ModalConfirmV2('<?php echo $ETI['msg_cerrar']; ?>', () => {
-				ejecuta_enviacerrar();
+			ejecuta_enviacerrar();
 		});
 	}
 
@@ -1831,7 +1831,7 @@ if ($bHayImprimir) {
 <?php
 if ($_REQUEST['opcion'] == 2 && $_REQUEST['saiu05estado'] == -1) {
 ?>
-<input id="cmdGuardar" name="cmdGuardar" type="button" class="btUpGuardar" onclick="enviaguardar();" title="<?php echo $ETI['bt_guardar']; ?>" value="<?php echo $ETI['bt_guardar']; ?>" />
+<input id="cmdGuardar" name="cmdGuardar" type="button" class="btUpGuardar" onclick="enviaguardar();" title="<?php echo $ETI['bt_guardarb']; ?>" value="<?php echo $ETI['bt_guardarb']; ?>" />
 <?php
 }
 ?>
@@ -2630,13 +2630,20 @@ echo $sTabla3007;
 // -- Termina Grupo campos 3007 Anexos
 ?>
 <div class="salto5px"></div>
+<div class="GrupoCamposAyuda">
+<?php
+echo $ETI['msg_alerta_solicitar'];
+?>
+</div>
+<div class="salto1px"></div>
+<div class="salto5px"></div>
 <?php
 if ($_REQUEST['paso'] == 0) {
 ?>
 <label class="Label320"></label>
 <label class="Label60"></label>
 <label class="Label160">
-<input id="cmdGuardar" name="cmdGuardar" type="button" class="BotonAzul160" value="<?php echo $ETI['bt_guardar']; ?>" onclick="enviaguardar();" title="<?php echo $ETI['bt_guardar']; ?>" />
+<input id="cmdGuardar" name="cmdGuardar" type="button" class="BotonAzul160" value="<?php echo $ETI['bt_guardarb']; ?>" onclick="enviaguardar();" title="<?php echo $ETI['bt_guardarb']; ?>" />
 </label>
 <div class="salto1px"></div>
 <?php
@@ -3005,7 +3012,7 @@ if ($sDebug != '') {
 <?php
 if ($_REQUEST['opcion'] == 2 && $_REQUEST['saiu05estado'] == -1) {
 ?>
-<input id="cmdGuardarf" name="cmdGuardarf" type="button" class="btSoloGuardar" onClick="enviaguardar();" value="<?php echo $ETI['bt_guardar']; ?>" />
+<input id="cmdGuardarf" name="cmdGuardarf" type="button" class="btSoloGuardar" onClick="enviaguardar();" value="<?php echo $ETI['bt_guardarb']; ?>" />
 <?php
 }
 ?>

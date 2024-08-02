@@ -247,6 +247,7 @@ function f3007_TablaDetalleV2($aParametros, $objDB, $bDebug=false){
 	if (isset($aParametros[0])==0){$aParametros[0]=-1;}
 	if (isset($aParametros[97])==0){$aParametros[97]=fecha_agno();}
 	if (isset($aParametros[98])==0){$aParametros[98]=fecha_mes();}
+	if (isset($aParametros[99])==0){$aParametros[99]=false;}
 	if (isset($aParametros[100])==0){$aParametros[100]=$_SESSION['unad_id_tercero'];}
 	if (isset($aParametros[101])==0){$aParametros[101]=1;}
 	if (isset($aParametros[102])==0){$aParametros[102]=20;}
@@ -259,6 +260,7 @@ function f3007_TablaDetalleV2($aParametros, $objDB, $bDebug=false){
 	$saiu05id=$aParametros[0];
 	$sTabla5='saiu05solicitud'.f3000_Contenedor($aParametros[97], $aParametros[98]);
 	$sTabla7='saiu07anexos'.f3000_Contenedor($aParametros[97], $aParametros[98]);
+	$bVistaUsr = $aParametros[99];
 	$idTercero=$aParametros[100];
 	$pagina=$aParametros[101];
 	$lineastabla=$aParametros[102];
@@ -362,10 +364,13 @@ function f3007_TablaDetalleV2($aParametros, $objDB, $bDebug=false){
 	<td><b>'.$ETI['saiu07idtipoanexo'].'</b></td>
 	<td><b>'.$ETI['saiu04obligatorio'].'</b></td>
 	<td colspan="2"><b>'.$ETI['saiu07idarchivo'].'</b></td>
-	<td><b>'.$ETI['saiu07fecha'].'</b></td>
-	<td><b>'.$ETI['saiu07estado'].'</b></td>
-	<td><b>'.$ETI['saiu07fechavalida'].'</b></td>
-	<td align="right" colspan="2">
+	<td><b>'.$ETI['saiu07fecha'].'</b></td>';
+	if ($bVistaUsr) {
+	} else {
+		$res=$res.'<td><b>'.$ETI['saiu07estado'].'</b></td>
+		<td><b>'.$ETI['saiu07fechavalida'].'</b></td>';
+	}
+	$res=$res.'<td align="right" colspan="2">
 	'.html_paginador('paginaf3007', $registros, $lineastabla, $pagina, 'paginarf3007()').'
 	'.html_lpp('lppf3007', $lineastabla, 'paginarf3007()').'
 	</td>
@@ -434,10 +439,15 @@ function f3007_TablaDetalleV2($aParametros, $objDB, $bDebug=false){
 		<td>'.$et_saiu04obligatorio.'</td>
 		<td>'.$sBotonAnexa.'</td>
 		<td>'.$et_saiu07idarchivo.'</td>
-		<td>'.$et_saiu07fecha.' '.$et_saiu07hora.'</td>
-		<td>'.$et_saiu07estado.'</td>
-		<td>'.$et_saiu07fechavalida.' '.$et_saiu07horavalida.'</td>
-		<td>'.$sLink.'</td>
+		<td>'.$et_saiu07fecha.' '.$et_saiu07hora.'</td>';
+		if ($bVistaUsr) {
+			$sLink='';
+			$sLink2='';
+		} else {
+			$res=$res.'<td>'.$et_saiu07estado.'</td>
+			<td>'.$et_saiu07fechavalida.' '.$et_saiu07horavalida.'</td>';
+		}
+		$res=$res.'<td>'.$sLink.'</td>
 		<td>'.$sLink2.'</td>
 		</tr>';
 		}
