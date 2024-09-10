@@ -21,6 +21,19 @@ function AUREA_DatosPersonales($objDB, $bDebug = false)
 		$objCampus->CerrarConexion();
 	}
 	*/
+	//Marzo 18 de 2023 - Pilas con los que consiguen confirmar el correo mas de una vez.
+	$sSQL = 'SELECT unad11correonotifica,COUNT(1) AS Total
+	FROM unad11terceros
+	WHERE unad11fechaconfmail<>0
+	GROUP BY unad11correonotifica
+	HAVING COUNT(1)>1';
+	$tablar = $objDB->ejecutasql($sSQL);
+	while ($filar = $objDB->sf($tablar)) {
+		$sSQL = 'UPDATE unad11terceros
+		SET unad11fechaconfmail=0
+		WHERE unad11fechaconfmail<>0 AND unad11correonotifica="' . $filar['unad11correonotifica'] . '"';
+		$result = $objDB->ejecutasql($sSQL);
+	}
 }
 function AUREA_ActualizarPerfilMoodle($idTercero, $objDB, $bDebug = false)
 {
@@ -277,6 +290,7 @@ function AUREA_ConfirmarCorreoNotifica($idTercero, $objDB, $sFrase = '', $bDebug
 	$sDebug = '';
 	$aure01codigo = '';
 	$unad11idgrupocorreo = -1;
+	$sCorreoDestino = '';
 	require __DIR__ . '/app.php';
 	$sMes = date('Ym');
 	$sTabla = 'aure01login' . $sMes;
@@ -361,7 +375,7 @@ function AUREA_ConfirmarCorreoNotifica($idTercero, $objDB, $sFrase = '', $bDebug
 			$svalores = '' . $idTercero . ', ' . $aure01consec . ', ' . $aure01id . ', ' . $aure01fecha . ', 
 			' . $aure01min . ', "' . $aure01codigo . '", -1, 0, "' . $aure01ip . '", "' . $aure01punto . '", ' . $idSMTP . '';
 			if ($APP->utf8 == 1) {
-				$sSQL = 'INSERT INTO ' . $sTabla . ' (' . $scampos . ') VALUES (' . utf8_encode($svalores) . ');';
+				$sSQL = 'INSERT INTO ' . $sTabla . ' (' . $scampos . ') VALUES (' . cadena_codificar($svalores) . ');';
 			} else {
 				$sSQL = 'INSERT INTO ' . $sTabla . ' (' . $scampos . ') VALUES (' . $svalores . ');';
 			}
@@ -406,7 +420,7 @@ function AUREA_ConfirmarCorreoNotifica($idTercero, $objDB, $sFrase = '', $bDebug
 		//Enviar el mensaje.
 		$objMail = new clsMail_Unad($objDB);
 		$objMail->TraerSMTP($idSMTP);
-		$objMail->sAsunto = utf8_encode('Confirmación de correo de notificaciones en ' . $sNomEntidad . ' ' . fecha_hoy() . ' ' . html_TablaHoraMin(fecha_hora(), fecha_minuto()) . '');
+		$objMail->sAsunto = cadena_codificar('Confirmación de correo de notificaciones en ' . $sNomEntidad . ' ' . fecha_hoy() . ' ' . html_TablaHoraMin(fecha_hora(), fecha_minuto()) . '');
 		$objMail->addCorreo($sCorreoUsuario, $sCorreoUsuario);
 		if ($sError == '') {
 			$objMail->sCuerpo = $sMsg;
@@ -414,10 +428,11 @@ function AUREA_ConfirmarCorreoNotifica($idTercero, $objDB, $sFrase = '', $bDebug
 		}
 		if ($sError != '') {
 		} else {
+			$sCorreoDestino = $sCorreoUsuario;
 		}
 		//Termina el envio del codigo...
 	}
-	return array($aure01codigo, $sError, $sDebug);
+	return array($aure01codigo, $sError, $sDebug, $sCorreoDestino);
 }
 // Octubre 31 de 2022 - Se crea la versión 2
 function AUREA_CorreoNotifica($idTercero, $objDB, $bDebug = false)
@@ -451,7 +466,7 @@ function AUREA_CorreoNotificaV2($idTercero, $objDB, $bDebug = false)
 	$sDebug = '';
 	$unad11idgrupocorreo = -1;
 	$sSQL = 'SELECT unad11correo, unad11aceptanotificacion, unad11correonotifica, unad11correoinstitucional, unad11fechaconfmail, 
-	unad11correofuncionario, unad11idgrupocorreo 
+	unad11rolunad, unad11correofuncionario, unad11idgrupocorreo 
 	FROM unad11terceros 
 	WHERE unad11id=' . $idTercero . '';
 	if ($bDebug) {
@@ -475,7 +490,7 @@ function AUREA_CorreoNotificaV2($idTercero, $objDB, $bDebug = false)
 		if (!$bHayCorreo) {
 			$sBase = trim($fila['unad11correofuncionario']);
 			$sOrigen = 'del funcionario';
-			if (true) {
+			if ($fila['unad11rolunad'] == 0) {
 				if ($bDebug) {
 					$sDebug = $sDebug . fecha_microtiempo() . ' Iniciar verificacion<br>';
 				}
@@ -738,6 +753,33 @@ function AUREA_CrearTabla_aure01login($sMes, $objDB, $bDebug = false)
 			$result = $objDB->ejecutasql($sSQL);
 			$sSQL = "ALTER TABLE " . $sTabla . " ADD INDEX aure01login_smtp(aure01idsmtp)";
 			$result = $objDB->ejecutasql($sSQL);
+			//la tabla hija...
+			list($sErrorH, $sDebugH) = AUREA_CrearTabla_aure02intentos($sMes, $objDB, $bDebug);
+			$sDebug = $sDebug . $sDebugH;
+		}
+	}
+	return array($sError, $sDebug);
+}
+// LA aure02intentos
+function AUREA_CrearTabla_aure02intentos($sMes, $objDB, $bDebug = false)
+{
+	// Diciembre 10 de 2022 - Se agrega el id de origen que se usará para firmar documentos.
+	$sError = '';
+	$sDebug = '';
+	$sTabla = 'aure02intentos' . $sMes;
+	$bExiste = $objDB->bexistetabla($sTabla);
+	if (!$bExiste) {
+		$sSQL = "CREATE TABLE " . $sTabla . " (aure02idtercero int NOT NULL, aure02fecha int NOT NULL, aure02consec int NOT NULL, 
+		aure02id int NOT NULL DEFAULT 0, aure02hora int NOT NULL DEFAULT 0, aure02min int NOT NULL DEFAULT 0, 
+		aure02seg int NOT NULL DEFAULT 0, aure02ip varchar(50) NULL, aure02punto varchar(100) NULL)";
+		$result = $objDB->ejecutasql($sSQL);
+		if ($result == false) {
+			$sError = 'No es posible iniciar el codigo de acceso para  ' . $sMes;
+		} else {
+			$sSQL = "ALTER TABLE " . $sTabla . " ADD PRIMARY KEY(aure02id)";
+			$result = $objDB->ejecutasql($sSQL);
+			$sSQL=$objDB->sSQLCrearIndice($sTabla, 'aure02intentos_id', 'aure02idtercero, aure02fecha, aure02consec', true);
+			$result = $objDB->ejecutasql($sSQL);
 		}
 	}
 	return array($sError, $sDebug);
@@ -807,6 +849,8 @@ function AUREA_RevTabla_aure01login($sMes, $objDB, $bDebug = false)
 		$sSQL = "ALTER TABLE " . $sTabla . " ADD aure01idorigen int NULL DEFAULT 0";
 		$result = $objDB->ejecutasql($sSQL);
 	}
+	list($sErrorH, $sDebugH) = AUREA_CrearTabla_aure02intentos($sMes, $objDB, $bDebug);
+	$sDebug = $sDebug . $sDebugH;
 	return array($sError, $sDebug);
 }
 //Funciones html_de notificaciones
@@ -815,21 +859,35 @@ function AUREA_HTML_EncabezadoCorreo($sTituloCorreo)
 	require __DIR__ . '/app.php';
 	$idEntidad = 0;
 	if (isset($APP->entidad) != 0) {
-		if ($APP->entidad == 1) {
-			$idEntidad = 1;
+		switch ($APP->entidad) {
+			case 1: // Unad Florida
+			case 2: // Union Europea
+			$idEntidad = $APP->entidad;
+			break;
 		}
 	}
+	$sProtocolo = 'https://';
 	$sDominio = 'unad.edu.co';
 	$sNomEntidad = 'Universidad Nacional Abierta y a Distancia - UNAD';
 	$sRutaImg = 'https://datateca.unad.edu.co/img/';
-	$sImgCabeza = '/correo2022/unad-acreditada-v.png';
-	$sImgCabeza2 = '/correo2022/unad-acreditada.png';
-	if ($idEntidad == 1) {
-		$sDominio = 'unad.us';
-		$sNomEntidad = 'UNAD - Florida';
-		$sRutaImg = 'https://datateca.unad.edu.co/img/fl/';
-		$sImgCabeza = '/correo2022/unad-florida-v.png';
-		$sImgCabeza2 = '/correo2022/unad-florida.png';
+	$sImgCabeza = 'correo2022/unad-acreditada-v.png';
+	$sImgCabeza2 = 'correo2022/unad-acreditada.png';
+	switch ($idEntidad) {
+		case 1: // Unad Florida
+			$sDominio = 'unad.us';
+			$sNomEntidad = 'UNAD - Florida';
+			$sRutaImg = 'https://datateca.unad.edu.co/img/fl/';
+			$sImgCabeza = 'correo2022/unad-florida-v.png';
+			$sImgCabeza2 = 'correo2022/unad-florida.png';
+			break;
+		case 2: // Union Europea
+			$sProtocolo = 'http://';
+			$sDominio = 'www.unad-ue.es';
+			$sNomEntidad = 'UNAD - Union Europea';
+			$sRutaImg = 'http://campus.unad-ue.es/img/';
+			$sImgCabeza = 'correo/unad-ue-v.png';
+			$sImgCabeza2 = 'correo/unad-ue.png';
+			break;
 	}
 	$sRes = '<!DOCTYPE html>
 	<html xmlns:v="urn:schemas-microsoft-com:vml" xmlns="http://www.w3.org/148/xhtml">
@@ -957,44 +1015,35 @@ function AUREA_HTML_EncabezadoCorreo($sTituloCorreo)
 	@media only screen and (max-width: 470px) {}
 	</style>
 	</head>
-
 	<body bgcolor="#e5e5e5" leftmargin="0" marginwidth="0" topmargin="0" marginheight="0" offset="0">
-
 	<center style="background-color:#e5e5e5;">
 	<table border="0" cellpadding="0" cellspacing="0" height="100%" width="100%" id="bodyTable" style="table-layout: fixed;max-width:100% !important;width: 100% !important;min-width: 100% !important; background-color:#e5e5e5;">
 	<tr>
 	<td align="center" valign="top" id="bodyCell">
-
 	<table bgcolor="#e5e5e5" border="0" cellpadding="0" cellspacing="0" width="600" id="emailBody">
-
 	<tr>
 	<td align="center">
-
 	<table border="0" cellpadding="0" cellspacing="0" width="100%" bgcolor="#ffffff">
 	<tr>
 	<td align="center" valign="top">
-
-
 	<table class="hidden-lg" border="0" cellpadding="0" cellspacing="0" width="100%" style="width: 100%; max-width: 100%; min-width: 100%;" bgcolor="#ffffff">
 	<tbody>
 	<tr>
 	<td class="hidden-lg col-sm-12 text-center" align="center" style="text-align:center; margin: 15px 0 15px 0;">
-	<a target="_blank" href="https://' . $sDominio . '/"><img width="197" src="' . $sRutaImg . $sImgCabeza . '"  alt="UNAD"></a>
+	<a target="_blank" href="' . $sProtocolo . $sDominio . '/"><img width="197" src="' . $sRutaImg . $sImgCabeza . '"  alt="UNAD"></a>
 	</td>
 	</tr>
 	</tbody>
 	</table>
-
 	<table border="0" class="hidden-sm" cellpadding="30" cellspacing="0" width="100%" style="width: 100%; max-width: 100%; min-width: 100%;">
 	<tbody>
 	<tr>
 	<td valign="bottom" class="hidden-sm" align="center" style="width: 600px;">
-	<a target="_blank" href="https://' . $sDominio . '/"><img class="hidden-sm" width="540" src="' . $sRutaImg . $sImgCabeza2 . '"  alt="UNAD"></a>
+	<a target="_blank" href="' . $sProtocolo . $sDominio . '/"><img class="hidden-sm" width="540" src="' . $sRutaImg . $sImgCabeza2 . '"  alt="UNAD"></a>
 	</td>
 	</tr>
 	</tbody>
 	</table>
-
 	<table border="0" cellpadding="10" cellspacing="0" width="100%" style="width: 100%; max-width: 100%; min-width: 100%;">
 	<tbody>
 	<tr>
@@ -1027,6 +1076,9 @@ function AUREA_HTML_CodigoConfirma($sCodigo)
 	switch ($idEntidad) {
 		case 1:
 			$sRutaImg = 'https://datateca.unad.edu.co/img/fl/';
+			break;
+		case 2: // UNION EUROPEA
+			$sRutaImg = 'https://campus.unad-ue.es/img/correo/';
 			break;
 	}
 	$sNumImage = '';
@@ -1081,11 +1133,14 @@ function AUREA_HTML_CodigoCorreo($sCodigo, $sURL)
 		$mensajes_17 = $sRutaComun . 'lg/lg_17_es.php';
 	}
 	require $mensajes_17;
-	$sRutaImg = 'https://datateca.unad.edu.co/img/';
+	$sRutaImg = 'https://datateca.unad.edu.co/img/correo2022/';
 	$idEntidad = Traer_Entidad();
 	switch ($idEntidad) {
 		case 1:
-			$sRutaImg = 'https://datateca.unad.edu.co/img/fl/';
+			$sRutaImg = 'https://datateca.unad.edu.co/img/fl/correo2022/';
+			break;
+		case 2: // UNION EUROPEA
+			$sRutaImg = 'http://campus.unad-ue.es/img/correo/';
 			break;
 	}
 	$sNumImage = '';
@@ -1108,7 +1163,7 @@ function AUREA_HTML_CodigoCorreo($sCodigo, $sURL)
 	<tbody>
 	<tr>
 	<td align="right" bgcolor="#F1F1F1" valign="bottom" width="268" height="290" class="hidden-sm">
-	<img class="text-center" style="max-width: 100%; display: block;" width="260" src="' . $sRutaImg . 'correo2022/estudiante' . $sNumImage . '.jpg">
+	<img class="text-center" style="max-width: 100%; display: block;" width="260" src="' . $sRutaImg . 'estudiante' . $sNumImage . '.jpg">
 	</td>
 	<td align="center" bgcolor="#F1F1F1">
 	<font face="Arial, Helvetica, sans-serif" color="#333333">
@@ -1218,6 +1273,9 @@ function AUREA_HTML_CuerpoCorreoEncuesta($sCodigo, $idImagen, $sURL, $iFechaServ
 		case 1:
 			$sRutaImg = 'https://datateca.unad.edu.co/img/fl/';
 			break;
+		case 2: // UNION EUROPEA
+			$sRutaImg = 'https://campus.unad-ue.es/img/correo/';
+			break;
 	}
 	$sNumImage = '';
 	switch ($idImagen) {
@@ -1319,6 +1377,9 @@ function AUREA_HTML_CuerpoCorreoDesercion($sCodigo, $idImagen, $sMes, $aure73id,
 	switch ($idEntidad) {
 		case 1:
 			$sRutaImg = 'https://datateca.unad.edu.co/img/fl/';
+			break;
+		case 2: // UNION EUROPEA
+			$sRutaImg = 'https://campus.unad-ue.es/img/correo/';
 			break;
 	}
 	$sNumImage = '';
@@ -1513,18 +1574,25 @@ function AUREA_HTML_FirmaDocumento($sCodigo, $idModulo, $iSubProceso, $idRegistr
 //
 function AUREA_HTML_NoResponder()
 {
-	return 'Por favor no responder este mensaje, esta es una notificaci&oacute;n del Sistema de Atenci&oacute;n Integral - SAI<br>';
+	return 'Por favor no responder este mensaje, esta es una notificaci&oacute;n del Sistema de Atenci&oacute;n Integral - SII<br>';
 }
 //
 function AUREA_HTML_PieCorreo()
 {
 	$sIdioma = 'es';
-	if (isset($_SESSION['unad_idioma']) != 0) {$sIdioma = $_SESSION['unad_idioma'];}
+	if (isset($_SESSION['unad_idioma']) != 0) {
+		$sIdioma = $_SESSION['unad_idioma'];
+	}
+	$sRutaBase = __DIR__ . '/';
 	require './app.php';
-	$mensajes_17 = $APP->rutacomun . 'lg/lg_17_' . $sIdioma . '.php';
-	if (!file_exists($mensajes_17)) {$mensajes_17 = $APP->rutacomun . 'lg/lg_17_es.php';}
+	$sRutaComun = $APP->rutacomun;
+	$mensajes_17 = $sRutaComun . 'lg/lg_17_' . $sIdioma . '.php';
+	if (!file_exists($mensajes_17)) {
+		$mensajes_17 = $sRutaComun . 'lg/lg_17_es.php';
+	}
 	require $mensajes_17;
 	$idEntidad = Traer_Entidad();
+	$sProtocolo = 'https://';
 	$sDominio = 'unad.edu.co';
 	$sNomEntidad = 'Universidad Nacional Abierta y a Distancia - UNAD';
 	$sRutaImg = 'https://datateca.unad.edu.co/img/';
@@ -1540,6 +1608,13 @@ function AUREA_HTML_PieCorreo()
 			Tallahassee, FL, 32399
 			Phone Number : (850) 245-3200
 			call free: (888) 224-6684 <a style="color: #005883;" href="http://www.fldoe.org/policy/cie">www.fldoe.org/policy/cie</a>';
+			$sDato2 = '';
+			break;
+		case 2: // Union Europea
+			$sDominio = 'unad-ue.es';
+			$sNomEntidad = 'UNAD - Union Europea';
+			$sRutaImg = 'https://datateca.unad.edu.co/img/ue/';
+			$sDato1 = 'UNAD Union Europea ';
 			$sDato2 = '';
 			break;
 		default:
@@ -1565,8 +1640,8 @@ function AUREA_HTML_PieCorreo()
 	</p>
 	<p>' . $sDato2 . '</p>
 	</font>
-	<a target="_blank" href="https://' . $sDominio . '/">
-	</a>														
+	<a target="_blank" href="' . $sProtocolo . $sDominio . '/">
+	</a>
 	</td>
 	</tr>
 	</table>
@@ -1628,17 +1703,17 @@ function AUREA_IniciarLogin($idTercero, $objDB, $sFrase = '', $iUso = 0, $bDebug
 			list($sError, $sDebugT) = AUREA_RevTabla_aure01login($sMes, $objDB, $bDebug);
 		}
 	}
-	$idEntidad = 0;
-	if (isset($APP->entidad) != 0) {
-		if ($APP->entidad == 1) {
-			$idEntidad = 1;
-		}
-	}
+	$idEntidad = Traer_Entidad();
 	switch ($idEntidad) {
 		case 1: // UNAD FLORIDA
 			$sNomEntidad = 'UNAD FLORIDA INC';
 			$sMailSeguridad = 'aluna@unad.us';
 			$sURLCampus = 'http://unad.us/campus/';
+			break;
+		case 2: // UNAD UNION EUROPEA
+			$sNomEntidad = 'UNAD UNION EUROPEA';
+			$sMailSeguridad = 'informacion@unad-ue.es';
+			$sURLCampus = 'http://campus.unad-ue.es/';
 			break;
 		default: // UNAD Colombia
 			$sNomEntidad = 'UNIVERSIDAD NACIONAL ABIERTA Y A DISTANCIA - UNAD';
@@ -1767,6 +1842,7 @@ function AUREA_IniciarLogin($idTercero, $objDB, $sFrase = '', $iUso = 0, $bDebug
 			list($sError, $sDebugM, $sCodSMTP) = $objMail->EnviarV2($bDebug);
 			$sDebug = $sDebug . $sDebugM;
 			if ($sError == '') {
+				$sInfoRastro = $sInfoRastro . ' [SMTP: ' . $sCodSMTP . ']';
 				if ($bDesdeSoporte) {
 					list($bRes, $sDebugR) = seg_rastro(17, $iCodigoRastro, 0, $_SESSION['unad_id_tercero'], $sInfoRastro, $objDB, $bDebug, $idTercero);
 				} else {
@@ -1790,12 +1866,12 @@ function AUREA_NotificaPieDePagina()
 	$idEntidad = Traer_Entidad();
 	switch ($idEntidad) {
 		case 1: // Unad Florida
-			$sRes = 'Comedidamente:<br>
-			<img src="http://datateca.unad.edu.co/unad_fl.png" alt="UNAD FLORIDA INC" width="191" height="79" />';
+			$sRes = 'Comedidamente:<br>';
+			$sRes = $sRes . '<img src="http://datateca.unad.edu.co/unad_fl.png" alt="UNAD FLORIDA INC" width="191" height="79" />';
 			break;
 		default:
-			$sRes = 'Comedidamente:<br>
-		<img src="http://datateca.unad.edu.co/unad_40.png" alt="Universidad Nacional Abierta y a Distancia - UNAD" width="191" height="79" />';
+			$sRes = 'Comedidamente:<br>';
+			$sRes = $sRes . '<img src="http://datateca.unad.edu.co/unad_40.png" alt="Universidad Nacional Abierta y a Distancia - UNAD" width="191" height="79" />';
 			break;
 	}
 	return $sRes;
@@ -1807,6 +1883,22 @@ function AUREA_RequiereDobleAutenticacion($idTercero, $objDB)
 }
 function AUREA_RequiereDobleAutenticacionV2($idTercero, $objDB)
 {
+	require './app.php';
+	if (isset($APP->idserver) != 0) {
+		if ($APP->idserver == 1) {
+			$bDepurador = false;
+			switch ($idTercero) {
+				case 4:
+				case 6: //
+				$bDepurador = true;
+			}
+			if ($bDepurador) {
+				$bRes = true;
+				$sInfoRastro = 'Modo depurador';
+				return array($bRes, $sInfoRastro);
+			}
+		}
+	}
 	$bRes = false;
 	$bConAlumnos = false;
 	$sInfoRastro = '';
@@ -2400,7 +2492,7 @@ function AUREA_IniciarFirma($idTercero, $idModulo, $iSubProceso, $idRegistro, $o
 			"' . $aure01codigo . '", -1, 0, "' . $aure01ip . '", "' . $aure01punto . '", 
 			' . $idSMTP . ', ' . $idModulo . ', ' . $idRegistro . '';
 			if ($APP->utf8 == 1) {
-				$sSQL = 'INSERT INTO ' . $sTabla . ' (' . $scampos . ') VALUES (' . utf8_encode($svalores) . ');';
+				$sSQL = 'INSERT INTO ' . $sTabla . ' (' . $scampos . ') VALUES (' . cadena_codificar($svalores) . ');';
 			} else {
 				$sSQL = 'INSERT INTO ' . $sTabla . ' (' . $scampos . ') VALUES (' . $svalores . ');';
 			}
@@ -2432,7 +2524,7 @@ function AUREA_IniciarFirma($idTercero, $idModulo, $iSubProceso, $idRegistro, $o
 		//Enviar el mensaje.
 		$objMail = new clsMail_Unad($objDB);
 		$objMail->TraerSMTP($idSMTP);
-		$objMail->sAsunto = utf8_encode($sTituloCorreo . ' ' . fecha_hoy() . ' ' . html_TablaHoraMin(fecha_hora(), fecha_minuto()) . '');
+		$objMail->sAsunto = cadena_codificar($sTituloCorreo . ' ' . fecha_hoy() . ' ' . html_TablaHoraMin(fecha_hora(), fecha_minuto()) . '');
 		$objMail->addCorreo($sCorreoUsuario, $sCorreoUsuario);
 		//$objMail->addCorreo('angel.avellaneda@unad.edu.co', 'angel.avellaneda@unad.edu.co');
 		if ($sError == '') {
@@ -2451,23 +2543,88 @@ function f2202_EnviarEncuestaDesercion($objDB, $bDebug = false, $sCorreoCopia = 
 	$sError = '';
 	$sDebug = '';
 	$iEnvios = 0;
-	// Los convenios de generacion E de 2019 y 2020
-	$sSQL = 'SELECT TB.core01id, TB.core01idtercero
-	FROM core01estprograma AS TB, core51convenioest AS T51 
-	WHERE TB.core01idestado IN (2, 3) AND TB.core01desc_id_encuesta=0 
-	AND TB.core01idtercero=T51.core51idtercero AND T51.core51idconvenio IN (1, 2, 3, 4, 5) AND T51.core51activo="S"
-	LIMIT 0, 50';
+	// --- 
+	$sIds = '-99';
+	$sSQL = 'SELECT TB.core01idtercero
+	FROM core01estprograma AS TB, core09programa AS T9 
+	WHERE TB.core01idestado IN (2, 3, 9) AND TB.core01desc_id_encuesta=0  AND TB.core01peracainicial>470
+	AND TB.core01idprograma=T9.core09id AND T9.core09aplicacontinuidad=1 
+	GROUP BY TB.core01idtercero';
 	$tabla = $objDB->ejecutasql($sSQL);
 	while ($fila = $objDB->sf($tabla)){
-		list($aure73codigo, $sError, $sDebugE, $aure73idtabla, $aure73id) = AUREA_IniciarEncuestaPublica($fila['core01idtercero'], 2, 2202, 22, $fila['core01id'], $objDB, false, $sCorreoCopia);
-		if ($sError == '') {
-			$sSQL = 'UPDATE core01estprograma SET core01desc_cont_encuesta=' . $aure73idtabla . ', core01desc_id_encuesta=' . $aure73id . ' WHERE core01id=' . $fila['core01id'] . '';
+		$sIds = $sIds . ',' . $fila['core01idtercero'];
+	}
+	$sSQL = 'SELECT TB.core01idtercero
+	FROM core01estprograma AS TB, core09programa AS T9 
+	WHERE TB.core01idtercero IN (' . $sIds . ') AND TB.core01idprograma=T9.core09id AND T9.core09aplicacontinuidad=1
+	GROUP BY TB.core01idtercero
+	HAVING SUM(1)>1';
+	$sIds = '-99';
+	if ($bDebug) {
+		$sDebug = $sDebug . fecha_microtiempo() . ' <b>ENCUESTAS DESERCION</b>: Alistando tercero con mas de un PEI ' . $sSQL . '<br>';
+	}
+	$tabla = $objDB->ejecutasql($sSQL);
+	while ($fila = $objDB->sf($tabla)){
+		$sIds = $sIds . ',' . $fila['core01idtercero'];
+	}
+	if ($sIds != '-99') {
+		$sSQL = 'UPDATE core01estprograma SET core01desc_id_encuesta=-1
+		WHERE core01idestado IN (2, 3, 9) AND core01desc_id_encuesta=0 
+		AND core01idtercero IN (' . $sIds . ')';
+		if ($bDebug) {
+			$sDebug = $sDebug . fecha_microtiempo() . ' <b>ENCUESTAS DESERCION</b>: Retirando terceros con mas de un PEI ' . $sSQL . '<br>';
+		}
+		$result = $objDB->ejecutasql($sSQL);
+	}
+	//Ahora los que nos reporten que murieron
+	$sSQL = 'UPDATE core01estprograma SET core01desc_id_encuesta=-99
+	WHERE core01factordeserta=15 AND core01desc_id_encuesta=0 ';
+	$result = $objDB->ejecutasql($sSQL);
+	/* 
+	2	Inactivo
+	3	Sin Matricula Por 2 Años o Más
+	9	Retirado -- SE EVITA LOS CASOS DE MUERTE DEL ESTUDIANTE.
+	*/
+	// Los convenios de generacion E de 2019 y 2020
+	// , core51convenioest AS T51  ----- AND TB.core01idtercero=T51.core51idtercero AND T51.core51idconvenio IN (1, 2, 3, 4, 5) AND T51.core51activo="S"
+	list($objDBGrados, $sDebug) = TraerDBGrados();
+	$sSQL = 'SELECT TB.core01id, TB.core01idtercero, T11.unad11doc 
+	FROM core01estprograma AS TB, core09programa AS T9, unad11terceros AS T11
+	WHERE TB.core01idestado IN (2, 3, 9) AND TB.core01desc_id_encuesta=0  AND TB.core01peracainicial>470 
+	AND TB.core01idprograma=T9.core09id AND T9.core09aplicacontinuidad=1 
+	AND TB.core01idtercero=T11.unad11id
+	ORDER BY TB.core01peracainicial, T11.unad11doc
+	LIMIT 0, 200';
+	if ($bDebug) {
+		$sDebug = $sDebug . fecha_microtiempo() . ' <b>ENCUESTAS DESERCION</b>: Datos a procesar ' . $sSQL . '<br>';
+	}
+	$tabla = $objDB->ejecutasql($sSQL);
+	while ($fila = $objDB->sf($tabla)){
+		$bPosibleGraduado = false;
+		$sSQL = 'SELECT 1 FROM graduados WHERE documento="' . $fila['unad11doc'] . '"';
+		$tablag = $objDBGrados->ejecutasql($sSQL);
+		if ($objDBGrados->nf($tablag) > 0) {
+			$bPosibleGraduado = true;
+			if ($bDebug) {
+				$sDebug = $sDebug . fecha_microtiempo() . ' <b>ENCUESTAS DESERCION</b>: Posible Graduado ' . $fila['unad11doc'] . '<br>';
+			}
+		}
+		if ($bPosibleGraduado) {
+			$sSQL = 'UPDATE core01estprograma SET core01desc_id_encuesta=-2 WHERE core01id=' . $fila['core01id'] . '';
 			$result = $objDB->ejecutasql($sSQL);
-			$iEnvios++;
-			if ($iEnvios > 4) {
-				$sCorreoCopia = '';
+		} else {
+			list($aure73codigo, $sError, $sDebugE, $aure73idtabla, $aure73id) = AUREA_IniciarEncuestaPublica($fila['core01idtercero'], 2, 2202, 22, $fila['core01id'], $objDB, false, $sCorreoCopia);
+			$sDebug = $sDebug . $sDebugE;
+			if ($sError == '') {
+				$sSQL = 'UPDATE core01estprograma SET core01desc_cont_encuesta=' . $aure73idtabla . ', core01desc_id_encuesta=' . $aure73id . ' WHERE core01id=' . $fila['core01id'] . '';
+				$result = $objDB->ejecutasql($sSQL);
+				$iEnvios++;
+				if ($iEnvios > 4) {
+					$sCorreoCopia = '';
+				}
 			}
 		}
 	}
+	$objDBGrados->CerrarConexion();
 	return array($iEnvios, $sError, $sDebug);
 }

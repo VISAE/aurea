@@ -216,37 +216,6 @@ function MensajeAlarmaV2(sHTML, sClase) {
 		objte.value = sClase;
 	}
 }
-function ModalMensaje(sHTML) {
-	let objCuerpo = document.getElementById('ModalCuerpoAdv');
-	jQuery.noConflict();
-	jQuery('#ModalAdvertencia').modal();
-	// Cargo el mensaje
-	objCuerpo.innerHTML = sHTML;
-}
-function ModalConfirm(sHTML) {
-	let objCuerpo = document.getElementById('ModalCuerpoCon');
-	jQuery.noConflict();
-	jQuery('#ModalConfirm').modal('show');
-	// Cargo el mensaje
-	objCuerpo.innerHTML = sHTML;
-	// Focus
-	setTimeout(function () {
-		jQuery("#modal-btn-si").focus();
-	}, 500);
-}
-function ModalConfirmV2(sHTML, callback) {
-	let objCuerpo = document.getElementById('ModalCuerpoCon');
-	let btnSi = document.getElementById('modal-btn-si');
-	jQuery.noConflict();
-	jQuery('#ModalConfirm').modal('show');
-	btnSi.onclick = callback;
-	// Cargo el mensaje
-	objCuerpo.innerHTML = sHTML;
-	// Focus
-	setTimeout(function () {
-		jQuery("#modal-btn-si").focus();
-	}, 500);
-}
 
 function retornacontrol() {
 	expandesector(1);
@@ -263,3 +232,64 @@ function verboton(idboton, estado) {
 	let objbt = document.getElementById(idboton);
 	objbt.style.display = estado;
 }
+
+function ModalMensaje(sHTML) {
+	ModalMensajeV2(sHTML);
+}
+
+// Funcion depreciada
+function ModalConfirm(sHTML) {
+	let objCuerpo = document.getElementById('ModalCuerpoCon');
+	jQuery.noConflict();
+	jQuery('#ModalConfirm').modal('show');
+	// Cargo el mensaje
+	objCuerpo.innerHTML = sHTML;
+	// Focus
+	setTimeout(function () {
+		jQuery("#modal-btn-si").focus();
+	}, 500);
+}
+
+function ModalConfirmV2(sHTML, callback) {
+	ModalMensajeV2(sHTML, callback);
+}
+
+// Nueva función para el modal
+function ModalMensajeV2(texto, callback = null, { tituloModal = '', botonAceptar = '', botonCancelar = '' } = {}) {
+	const modalBody = document.getElementById('modal__body');
+	const btnCancelar = document.getElementById('boton__cancelar');
+	// Cargo el mensaje
+	modalBody.innerHTML = texto;
+	// Verificar si debo usar o no callback
+	let estadoCancelar = 'none';
+	if (typeof callback === 'function') {
+		// Aca incruste el callback
+		const btnAceptar = document.getElementById('boton__aceptar');
+		btnAceptar.onclick = callback;
+		// Mostrar el boton cancelar
+		estadoCancelar = 'flex';
+	} else {
+		modal.onclick = () => {
+			modal.style.display = 'none';
+		};
+	}
+	// Definir el estado del boton cancelar
+	btnCancelar.style.display = estadoCancelar;
+	// Modificar el titulo del modal
+	if (tituloModal) {
+		const modalTitle = document.getElementById('modal__title');
+		modalTitle.innerHTML = tituloModal;
+	}
+	// Cambiar texto del boton aceptar
+	if (botonAceptar) {
+		const btnAceptarTitulo = document.getElementById('boton__aceptar__title');
+		btnAceptarTitulo.innerHTML = botonAceptar;
+	}
+	if (botonCancelar) {
+		const btnCancelarTitulo = document.getElementById('boton__cancelar__title');
+		btnCancelarTitulo.innerHTML = botonCancelar;
+	}
+	//
+	abrirModal();
+}
+

@@ -50,20 +50,25 @@ class clsHtmlCombos
 		$this->aItem[$i]['e'] = $sEtiqueta;
 		$this->aItem[$i]['c'] = $sEstilo;
 	}
-	function comboSistema($idModulo, $iConsec, $objdb, $sAccion = '')
+	function comboSistema($idModulo, $iConsec, $objDB, $sAccion = '')
 	{
 		$this->sAccion = $sAccion;
 		$sSQL = 'SELECT unad22codopcion, unad22nombre FROM unad22combos WHERE unad22idmodulo=' . $idModulo . ' AND unad22consec=' . $iConsec . ' AND unad22activa="S" ORDER BY unad22orden, unad22nombre';
-		$tablac = $objdb->ejecutasql($sSQL);
-		while ($fila = $objdb->sf($tablac)) {
+		$tablac = $objDB->ejecutasql($sSQL);
+		while ($fila = $objDB->sf($tablac)) {
 			$this->addItem($fila['unad22codopcion'], $fila['unad22nombre']);
 		}
 		return $this->html('');
 	}
-	function comun($idTabla, $objdb)
+	function comun($idTabla, $objDB)
 	{
 		$sSQL = '';
 		switch ($idTabla) {
+			case 145:
+				$sSQL = 'SELECT unad45codigo AS id, CONCAT(unad45titulo, " - ", unad45nombre) AS nombre 
+				FROM unad45tipodoc WHERE unad45id>=0 
+				ORDER BY unad45activo DESC, unad45orden, unad45titulo';
+				break;
 			case 1101:
 				$sSQL = 'SELECT unad24id AS id, CONCAT(CASE unad24activa WHEN "S" THEN "" ELSE "[INACTIVA] " END, unad24nombre) AS nombre 
 				FROM unad24sede 
@@ -78,8 +83,8 @@ class clsHtmlCombos
 				break;
 		}
 		if ($sSQL != '') {
-			$tablac = $objdb->ejecutasql($sSQL);
-			while ($fila = $objdb->sf($tablac)) {
+			$tablac = $objDB->ejecutasql($sSQL);
+			while ($fila = $objDB->sf($tablac)) {
 				$this->addItem($fila['id'], $fila['nombre']);
 			}
 		}
@@ -88,10 +93,10 @@ class clsHtmlCombos
 	{
 		$this->bConDebug = $bDebug;
 	}
-	function html($sConsulta = '', $objdb = NULL, $iComun = 0)
+	function html($sConsulta = '', $objDB = NULL, $iComun = 0)
 	{
 		if ($iComun != 0) {
-			$this->comun($iComun, $objdb);
+			$this->comun($iComun, $objDB);
 			$sConsulta = '';
 		}
 		$sDebug = '';
@@ -136,13 +141,13 @@ class clsHtmlCombos
 		}
 		if ($sConsulta != '') {
 			$sEstilo = '';
-			$tablac = $objdb->ejecutasql($sConsulta);
+			$tablac = $objDB->ejecutasql($sConsulta);
 			if ($this->bConDebug) {
 				if ($tablac == false) {
 					$sDebug = $sConsulta;
 				}
 			}
-			while ($fila = $objdb->sf($tablac)) {
+			while ($fila = $objDB->sf($tablac)) {
 				$sSel = '';
 				if ($fila['id'] == $this->sValorCombo) {
 					$sSel = ' selected';
@@ -396,21 +401,77 @@ class clsHtmlForma
 		$this->aBotones[$k]['accion'] = $sAccion;
 		$this->aBotones[$k]['titulo'] = $sTitulo;
 	}
-	function htmlBotonSolo($sNombre, $sClase, $sAccion, $sTitulo, $iLabel = 0, $sAdicional = '', $sTexto = '')
+	/**
+	 * Html de un boton.
+	 *
+	 * Esta función permite crear un boton con o sin icono dependiendo
+	 * de la piel seleccionada.
+	 *
+	 * @param string $sNombre Nombre del boton
+	 * @param string $sClase Clase del boton - Define que icono usar
+	 * @param string $sAccion Acción que debe ejecutar el boton
+	 * @param string $sTitulo Titulo del boton
+	 * @param int $iLabel (Opcional) Valor para encapsular el boton en un label (Por defecto: 0)
+	 * @param string $sAdicional (Opcional) Estilos adicionales al boton (Por defecto: '')
+	 * @param string $sTexto (Opcional) Texto del boton (Por defecto: '')
+	 * @param boolean $bIcono (Opcional) Mostrar icono (Por defecto: true)
+	 * @return string HTML generado para el botón
+	 */
+	function htmlBotonSolo($sNombre, $sClase, $sAccion, $sTitulo, $iLabel = 0, $sAdicional = '', $sTexto = '', $bIcono = true)
 	{
 		$res = '';
 		$sImgNombre = '';
 		$sAddB = '';
 		$sImg = '';
+		$sTituloBtn = '';
+		if ($sAdicional != '') {
+			$sAddB = ' ' . $sAdicional;
+		}
 		switch ($this->iPiel) {
 			case 2:
 				if ($this->sAddEstiloBoton != '') {
 					$sAddB = '' . $this->sAddEstiloBoton . '';
 				}
+				$bBotonMini = false;
 				$sClaseFin = 'btn-tertiary';
-				$sClaseMini = 'btn-tertiary btMini';
-				if ($sTexto != '') {
-					$sAddB = $sAddB . 'padding-right: 1rem;';
+				$sClaseMini = ' btMini';
+				$aClase = explode(' ', $sClase);
+				if (count($aClase) > 1) {
+					$sClase = $aClase[0]; // Clase real
+					$sColor = $aClase[1]; // Color
+					switch ($sColor) {
+						case 'az':
+						case 'blue':
+						case 'azul':
+							$sClaseFin = 'btn-primary';
+							break;
+						case 'ama':
+						case 'ye':
+						case 'yellow':
+						case 'amarillo':
+							$sClaseFin = 'btn-tertiary';
+							break;
+						case 're':
+						case 'red':
+						case 'rojo':
+							$sClaseFin = 'btn-red';
+							break;
+						case 'verde':
+						case 've':
+						case 'green':
+							$sClaseFin = 'btn-success';
+							break;
+						case 'blanco':
+						case 'bl':
+						case 'white':
+							$sClaseFin = 'btn-container';
+							break;
+						case 'gray':
+						case 'gr':
+						case 'gris':
+							$sClaseFin = 'btn-secondary';
+							break;
+					}
 				}
 				if ($sAdicional != '') {
 					$sAdicional = str_replace('style', '', $sAdicional);
@@ -432,18 +493,23 @@ class clsHtmlForma
 						$sImg = '<i class="iSync"></i>';
 						break;
 					case 'botonAnexar':
-						$sClaseFin = $sClaseMini;
-						$sTexto = '';
+						$bBotonMini = true;
 						$sImg = '<i class="iAttach"></i>';
 						break;
+					case 'btSoloAnexar':
 					case 'btAnexarS':
 						$sImg = '<i class="iAttach"></i>';
+						break;
+					case 'btMiniAprobar':
+						$bBotonMini = true;
+						$sImg = '<i class="iCheck"></i>';
 						break;
 					case 'botonAprobado':
 					case 'btUpAprobado':
 					case 'btUpVisto':
 						$sImg = '<i class="iCheck"></i>';
 						break;
+					case 'BotonAzul':
 					case 'botonAzul':
 						$sClaseFin = 'btn-primary';
 						break;
@@ -458,22 +524,34 @@ class clsHtmlForma
 						$sImg = '<i class="iPrint"></i>';
 						break;
 					case 'botonProceso':
-						// $sImg = '<i class="iSettings"></i>';
+						$sImg = '<i class="iSettings"></i>';
 						break;
 					case 'botonVerde':
 						$sClaseFin = 'btn-success';
 						break;
+					case 'btBorrarS':
+						$sImg = '<i class="iDelete"></i>';
+						break;
 					case 'btActualizaS':
 						$sImg = '<i class="iSync"></i>';
 						break;
+					case 'btMiniAnexar':
+						$bBotonMini = true;
+						$sImg = '<i class="iAttach"></i>';
+						break;
+					case 'btMiniAprobar':
+						$bBotonMini = true;
+						$sImg = '<i class="iCheck"></i>';
+						break;
 					case 'btMiniActualizar':
-						$sClaseFin = $sClaseMini;
-						$sTexto = '';
+						$bBotonMini = true;
 						$sImg = '<i class="iSync"></i>';
 						break;
+					case 'btMas':
+						$sImg = '<i class="iAdd"></i>';
+						break;
 					case 'btAgregarS':
-						$sClaseFin = $sClaseMini;
-						$sTexto = '';
+						$bBotonMini = true;
 						$sImg = '<i class="iAdd"></i>';
 						break;
 					case 'btEnviarExcel':
@@ -486,100 +564,97 @@ class clsHtmlForma
 						$sImg = '<i class="iSaveFill"></i>';
 						break;
 					case 'btMiniGuardar':
-						$sClaseFin = $sClaseMini;
-						$sTexto = '';
-						$sImg = '<i class="iSaveFill"></i>';
+						$bBotonMini = true;
+						$sImg = '<i class="icon-save-fill"></i>';
 						break;
 					case 'btMiniAyuda':
-						$sClaseFin = $sClaseMini;
-						$sTexto = '';
+						$bBotonMini = true;
 						$sImg = '<i class="iHelp"></i>';
 						break;
 					case 'btSupAyuda':
 						$sImg = '<i class="iHelp"></i>';
 						break;
 					case 'btMiniBalancear':
-						$sClaseFin = $sClaseMini;
-						$sTexto = '';
+						$bBotonMini = true;
 						$sImg = '<i class="iHelp"></i>';
 						break;
 					case 'btMiniBuscar':
-						$sClaseFin = $sClaseMini;
-						$sTexto = '';
+						$bBotonMini = true;
 						$sImg = '<i class="iSearch"></i>';
 						break;
 					case 'btMiniHoy':
-						$sClaseFin = $sClaseMini;
-						$sTexto = '';
+						$bBotonMini = true;
 						$sImg = '<i class="iHoy"></i>';
 						break;
 					case 'btMiniClonar':
 					case 'btMiniProceso':
-						$sClaseFin = $sClaseMini;
-						$sTexto = '';
+						$bBotonMini = true;
 						$sImg = '<i class="iSettings"></i>';
 						break;
+					case 'btMiniBorrar':
 					case 'btMiniEliminar':
-						$sClaseFin = $sClaseMini;
-						$sTexto = '';
-						$sImg = '<i class="iDelete"></i>';
+						$bBotonMini = true;
+						$sImg = '<i class="icon-delete"></i>';
 						break;
 					case 'btUpEliminar':
-						$sImg = '<i class="iDelete"></i>';
+						$sImg = '<i class="icon-delete"></i>';
 						break;
 					case 'btMiniExcel':
-						$sClaseFin = $sClaseMini;
-						$sTexto = '';
+						$bBotonMini = true;
 						$sImg = '<i class="iExcel"></i>';
 						break;
 					case 'btMiniExpande':
-						$sClaseFin = $sClaseMini;
-						$sTexto = '';
+						$bBotonMini = true;
 						$sImg = '<i id="i_expande' . $sNombre . '"  class="iExpandLess"></i>';
 						$sNombre = 'btexpande' . $sNombre;
 						break;
 					case 'btMiniLimpiar':
-						$sClaseFin = $sClaseMini;
-						$sTexto = '';
-						$sImg = '<i class="iCopy"></i>';
+						$bBotonMini = true;
+						$sImg = '<i class="icon-copy"></i>';
 						break;
 					case 'btUpLimpiar':
-						$sImg = '<i class="iCopy"></i>';
+						$sImg = '<i class="icon-copy"></i>';
 						break;
 					case 'btMiniMail':
-						$sClaseFin = $sClaseMini;
-						$sTexto = '';
+						$bBotonMini = true;
 						$sImg = '<i class="iEmail"></i>';
 						break;
 					case 'btMiniMas':
-						$sClaseFin = $sClaseMini;
-						$sTexto = '';
+						$bBotonMini = true;
 						$sImg = '<i class="iAdd"></i>';
 						break;
 					case 'btMiniMenos':
-						$sClaseFin = $sClaseMini;
-						$sTexto = '';
+						$bBotonMini = true;
 						$sImg = '<i class="iRemove"></i>';
 						break;
+					case 'btMiniNotificar':
+						$bBotonMini = true;
+						$sImg = '<i class="icon-send"></i>';
+						break;
 					case 'btMiniPersona':
-						$sClaseFin = $sClaseMini;
-						$sTexto = '';
+						$bBotonMini = true;
 						$sImg = '<i class="iPerson"></i>';
 						break;
+					case 'btPersonaAprobar':
+						$sImg = '<i class="iPersonAdd"></i>';
+						break;
+					case 'btPersonaRechazar':
+						$sImg = '<i class="iPersonCancel"></i>';
+						break;
+					case 'btPersonaLista':
+						$sImg = '<i class="iPersonList"></i>';
+						break;
 					case 'btMiniRecoge':
-						$sClaseFin = $sClaseMini;
-						$sTexto = '';
+						$bBotonMini = true;
 						$sImg = '<i id="i_expande' . $sNombre . '"  class="iExpand"></i>';
 						$sNombre = 'btexpande' . $sNombre;
 						break;
 					case 'btMiniTxt':
-						$sClaseFin = $sClaseMini;
-						$sTexto = '';
+						$bBotonMini = true;
 						$sImg = '<i class="iText"></i>';
 						break;
 					case 'btMiniZip':
-						$sClaseFin = $sClaseMini;
-						$sTexto = '';
+						$bBotonMini = true;
 						$sImg = '<i class="iZip"></i>';
 						break;
 					case 'btSubirS':
@@ -619,10 +694,34 @@ class clsHtmlForma
 					case 'btUpDenegado':
 						$sImg = '<i class="iHelp"></i>';
 						break;
+					case 'botonTerminar':
+					case 'btUpPublicar':
+						$sImg = '<i class="iTask"></i>';
+						break;
+					case 'botonCancelar':
+					case 'btUpCancelar':
+						$sImg = '<i class="iCancel"></i>'; // Hojita con una X
+						break;
+					case 'botonContinuar':
+					case 'btUpContinuar':
+						$sImg = '<i class="iArrowRight"></i>';
+						break;
 					case 'btUpGuardar':
 						$sImg = '<i class="iSaveFill"></i>';
 						break;
 					case 'btUpMail':
+						$sImg = '<i class="iHelp"></i>';
+						break;
+					case 'btSupDenegado':
+						$sImg = '<i class="iHelp"></i>';
+						break;
+					case 'btSupDocumento':
+						$sImg = '<i class="iCopy"></i>';
+						break;
+					case 'btSupReasignar':
+						$sImg = '<i class="iExcel"></i>';
+						break;
+					case 'btUpDenegado':
 						$sImg = '<i class="iHelp"></i>';
 						break;
 					case 'btUpRadicar':
@@ -632,8 +731,18 @@ class clsHtmlForma
 						$sImg = '<i class="iArrowBack"></i>';
 						break;
 					default:
-						$sImg = '<i class="iHelp"></i>';
+						$bIcono = false;
 						break;
+				}
+				if ($bBotonMini) {
+					$sTexto = '';
+					$sClaseFin = $sClaseFin . $sClaseMini;
+				} else {
+					$sAddB = $sAddB . 'padding-right: 1rem;';
+				}
+				if (!$bIcono) {
+					$sImg = '';
+					$sAddB = '';
 				}
 				$res = '<button id="' . $sNombre . '" name="' . $sNombre . '" type="button" class="' . $sClaseFin . '" onclick="' . $sAccion . '" title="' . $sTitulo . '" style="' . $sAddB . '">'  . $sImg . $sTexto . '</button>';
 				break;
@@ -654,7 +763,7 @@ class clsHtmlForma
 				$bEntra = true;
 				$bLargo = false;
 				$sImgLnk = '../ulib/img/btUpAyuda.jpg';
-				$sClaseFin = 'BotonAzul';
+				$sClaseFin = $sClase;
 				$sAdd = '';
 				switch ($sClase) {
 					case 'botonProceso':
@@ -664,7 +773,10 @@ class clsHtmlForma
 						break;
 					case 'btEnviarExcel':
 					case 'btMiniExcel':
-						$sImgLnk = '../ulib/img/excel.png';
+						$sImgLnk = '../ulib/img/btSupExcel.jpg';
+						break;
+					case 'btMiniAnexar':
+						$sImgLnk = '../ulib/img/btMiniAnexar.jpg';
 						break;
 					case 'btEnviarPDF':
 						$sImgLnk = '../ulib/img/pdf.png';
@@ -677,7 +789,7 @@ class clsHtmlForma
 						$sImgLnk = '../ulib/img/guardar18.png';
 						break;
 					case 'btMiniActualizar':
-						$sImgLnk = '../ulib/img/recarga18.png';
+						$sImgLnk = '../ulib/img/btMiniActualizar.jpg';
 						break;
 					case 'btMiniBuscar':
 						$sImgLnk = '../ulib/img/lupa18.png';
@@ -709,14 +821,21 @@ class clsHtmlForma
 						break;
 					case 'btUpLimpiar':
 						$sImgLnk = '../ulib/img/hoja.png';
+						$sClaseFin = 'btUpLimpiar';
 						break;
 					case 'btSupAyuda':
 						$sImgLnk = '../ulib/img/btUpAyuda.jpg';
 						$sClaseFin = 'btUpAyuda';
 						break;
+					case 'btMiniAyuda':
+						$sImgLnk = '../ulib/img/btUpAyuda.png';
+						break;
+					default:
+						$sClaseFin = 'BotonAzul';
+						break;
 				}
 				if ($bLargo) {
-					$res = '<input id="' . $sNombre . '" name="' . $sNombre . '" type="button" value="' . $sTitulo . '" class="image" onclick="' . $sAccion . '" title="' . $sTitulo . '" data-icono="' . $sImgNombre . '" style="background-image: url(\'' . $sImgLnk . '\');"' . $sAddB . '/>';
+					$res = '<input id="' . $sNombre . '" name="' . $sNombre . '" type="button" value="' . $sTitulo . '" class="image" onclick="' . $sAccion . '" title="' . $sTitulo . '" data-icono="' . $sImgNombre . '" style="background-image: url(\'' . $sImgLnk . '\'); ' . $sAddB . '"/>';
 				} else {
 					$res = '<input id="' . $sNombre . '" name="' . $sNombre . '" type="button" value="' . $sTitulo . '"  onClick="' . $sAccion . '" class="' . $sClaseFin . '" title="' . $sTitulo . '"' . $sAddB . '/>';
 				}
@@ -725,6 +844,9 @@ class clsHtmlForma
 		switch ($iLabel) {
 			case 30:
 				$res = '<label class="Label30">' . $res . '</label>';
+				break;
+			case 60:
+				$res = '<label class="Label60">' . $res . '</label>';
 				break;
 			case 90:
 				$res = '<label class="Label90">' . $res . '</label>';
@@ -738,8 +860,14 @@ class clsHtmlForma
 			case 200:
 				$res = '<label class="Label200">' . $res . '</label>';
 				break;
+			case 220:
+				$res = '<label class="Label220">' . $res . '</label>';
+				break;
 			case 250:
 				$res = '<label class="Label250">' . $res . '</label>';
+				break;
+			case 300:
+				$res = '<label class="Label300">' . $res . '</label>';
 				break;
 		}
 		return $res;
@@ -756,7 +884,7 @@ class clsHtmlForma
 				$res = '<div class="areaform">' . $sHtmlTitulo;
 				$res = $res . '<div class="areatrabajo">';
 				if ($sId != '') {
-					$res .= '<div id="' . $sId . '"></div>';
+					$res .= '<div id="' . $sId . '"></div><hr>';
 				}
 				if ($this->iBotones) {
 					$res .= '<div class="breadcrumb__buttons">';
@@ -781,6 +909,7 @@ class clsHtmlForma
 	{
 		$res = '';
 		switch ($this->iPiel) {
+			case 2:
 			case 0:
 				$res = '<div id="cargaForm">';
 				break;
@@ -804,6 +933,7 @@ class clsHtmlForma
 	{
 		$res = '';
 		switch ($this->iPiel) {
+			case 2:
 			case 0:
 				$res = '</div>';
 				break;
@@ -822,9 +952,6 @@ class clsHtmlForma
 		$sStyle = '';
 		if ($bSpinner) {
 			$sSpinner = '<div class="spinner"></div>';
-			if ($iPiel != 2) {
-				$sStyle = 'style="padding-top: 1rem"';
-			}
 		}
 		$sClass = 'MarquesinaMedia';
 		if ($iPiel == 2) {
@@ -853,21 +980,13 @@ class clsHtmlForma
 			case 2:
 				$res = $res . $this->htmlBotonSolo($sCodigo, $sClassBtn, 'expandepanel(' . $sCodigo . ',\'' . $sEstado1 . '\',0);', $sTitulo);
 				break;
-			case 0:
-				$res = $res . '<label class="Label30">
-		<input id="btexpande' . $sCodigo . '" name="btexpande' . $sCodigo . '" type="button" value="Mostrar" class="btMiniExpandir" onclick="expandepanel(' . $sCodigo . ',\'block\',0);" title="' . $sTituloMostrar . '" style="display:' . $sEstado1 . ';"/>
-		</label>
-		<label class="Label30">
-		<input id="btrecoge' . $sCodigo . '" name="btrecoge' . $sCodigo . '" type="button" value="Ocultar" class="btMiniRecoger" onclick="expandepanel(' . $sCodigo . ',\'none\',1);" title="' . $sTituloOcultar . '" style="display:' . $sEstado2 . ';"/>
-		</label>';
-				break;
 			default:
-				$res = $res . '<label class="Label30">
-		<button id="btexpande' . $sCodigo . '" name="btexpande' . $sCodigo . '" type="button" onClick="javascript:expandepanel(' . $sCodigo . ',\'block\',0);" title="' . $sTituloMostrar . '" style="display:' . $sEstado1 . ';"><img src="../ulib/img/fl-abajo18.png"/></button>
-		</label>
-		<label class="Label30">
-		<button id="btrecoge' . $sCodigo . '" name="btrecoge' . $sCodigo . '" type="button" onClick="javascript:expandepanel(' . $sCodigo . ',\'none\',1);" title="' . $sTituloOcultar . '" style="display:' . $sEstado2 . ';"><img src="../ulib/img/fl-arriba18.png"/></button>
-		</label>';
+				$res = $res . '<label class="Label30">';
+				$res = $res . '<input id="btexpande' . $sCodigo . '" name="btexpande' . $sCodigo . '" type="button" value="Mostrar" class="btMiniExpandir" onclick="expandepanel(' . $sCodigo . ',\'block\',0);" title="' . $sTituloMostrar . '" style="display:' . $sEstado1 . ';"/>';
+				$res = $res . '</label>';
+				$res = $res . '<label class="Label30">';
+				$res = $res . '<input id="btrecoge' . $sCodigo . '" name="btrecoge' . $sCodigo . '" type="button" value="Ocultar" class="btMiniRecoger" onclick="expandepanel(' . $sCodigo . ',\'none\',1);" title="' . $sTituloOcultar . '" style="display:' . $sEstado2 . ';"/>';
+				$res = $res . '</label>';
 				break;
 		}
 		return $res;
@@ -1114,10 +1233,10 @@ class clsHtmlTercero
 			$sPref = '';
 			$sSuf = '';
 		}
-		$sRes = '<input id="' . $this->sNombreCampo . '" name="' . $this->sNombreCampo . '" type="hidden" value="' . $this->idTercero . '"/>
-	<div id="div_' . $this->sNombreCampo . '_llaves">' . html_DivTerceroV3($this->sNombreCampo, $this->sTipoDoc, $this->sDoc, $this->bOculto, $this->iPiel, $this->iMarcador, $this->ETI_INGDOC) . '</div>'
-			. html_salto() . '
-	<div id="div_' . $this->sNombreCampo . '" class="L">' . $sPref . cadena_notildes($this->sRazonSocial) . $sSuf . '</div>';
+		$sRes = '<input id="' . $this->sNombreCampo . '" name="' . $this->sNombreCampo . '" type="hidden" value="' . $this->idTercero . '"/>';
+		$sRes = $sRes . '<div id="div_' . $this->sNombreCampo . '_llaves">' . html_DivTerceroV3($this->sNombreCampo, $this->sTipoDoc, $this->sDoc, $this->bOculto, $this->iPiel, $this->iMarcador, $this->ETI_INGDOC) . '</div>';
+		$sRes = $sRes . html_salto();
+		$sRes = $sRes . '<div id="div_' . $this->sNombreCampo . '" class="L">' . $sPref . cadena_notildes($this->sRazonSocial) . $sSuf . '</div>';
 		if ($this->bConDireccion) {
 			$sRes = $sRes . html_salto() . $this->HtmlDireccion();
 		}
@@ -1146,9 +1265,9 @@ class clsHtmlTercero
 	}
 	function HtmlDatos()
 	{
-		$sRes = '<label class="Label350"><b>' . $this->sTipoDoc . ' ' . $this->sDoc . '</b></label>'
-			. html_salto() . '
-	<label class="L"><b>' . cadena_notildes($this->sRazonSocial) . '</b></label>';
+		$sRes = '<label class="Label350"><b>' . $this->sTipoDoc . ' ' . $this->sDoc . '</b></label>';
+		$sRes = $sRes . html_salto();
+		$sRes = $sRes . '<label class="L"><b>' . cadena_notildes($this->sRazonSocial) . '</b></label>';
 		if ($this->bConDireccion) {
 			$sRes = $sRes . html_salto() . $this->HtmlDireccion();
 		}
@@ -1182,7 +1301,9 @@ class clsHtmlTercero
 			}
 		}
 		if ($sError == '') {
-			$sSQL = 'SELECT unad11id, unad11tipodoc, unad11doc, unad11razonsocial, unad11telefono, unad11direccion, unad11correo, unad11correonotifica, unad11correoinstitucional, unad11correofuncionario FROM unad11terceros WHERE ' . $sCondi;
+			$sSQL = 'SELECT unad11id, unad11tipodoc, unad11doc, unad11razonsocial, unad11telefono, unad11direccion, 
+			unad11correo, unad11correonotifica, unad11correoinstitucional, unad11correofuncionario 
+			FROM unad11terceros WHERE ' . $sCondi;
 			$tabla = $objDB->ejecutasql($sSQL);
 			if ($objDB->nf($tabla) > 0) {
 				$fila = $objDB->sf($tabla);
@@ -1237,10 +1358,10 @@ function html_BotonAyudaV2($sNombreCampo, $sTituloCampo = 'Informaci&oacute;n re
 }
 function html_BotonAyuda($sNombreCampo, $sTituloCampo = 'Informaci&oacute;n relevante')
 {
-	$res = '<label class="Label30">
-	<input id="cmdAyuda_' . $sNombreCampo . '" name="cmdAyuda_' . $sNombreCampo . '" type="button" class="btMiniAyuda" onclick="AyudaLocal(\'' . $sNombreCampo . '\');" title="' . $sTituloCampo . '" />
-	</label>';
-	return $res;
+	$sRes = '<label class="Label30">';
+	$sRes = $sRes . '<input id="cmdAyuda_' . $sNombreCampo . '" name="cmdAyuda_' . $sNombreCampo . '" type="button" class="btMiniAyuda" onclick="AyudaLocal(\'' . $sNombreCampo . '\');" title="' . $sTituloCampo . '" />';
+	$sRes = $sRes . '</label>';
+	return $sRes;
 }
 function html_BotonVerde($sNombreCampo, $sValor, $sAccion = '', $sEtiqueta = '')
 {
@@ -1297,6 +1418,17 @@ function html_Caja($sTitulo, $sCuerpo, $iAncho = 450, $iPiel = 1, $aDatos = NULL
 	}
 	return $sRes;
 }
+// Caja de informacion importante
+function html_CajaInfoImportante($sTitulo, $sCuerpo) {
+	$sRes = '<div class="container bg--tertiary max-w-100per grid gap-1" style="border: none; padding: 2rem;">';
+	if ($sTitulo != '') {
+		$sRes = $sRes . '<h2 class="subtitle text-on-tertiary" style="border-color: var(--sys-on-tertiary); padding-bottom: 1rem;"><b>' . $sTitulo . '</b></h2>';
+	}
+	$sRes = $sRes . '<div class="container--lower grid gap-1">';
+	$sRes = $sRes . $sCuerpo;
+	$sRes = $sRes . '</div></div>';
+	return $sRes;
+}
 //El div alarma
 function html_DivAlarmaV2($sError, $iTipoError, $bDebug = false)
 {
@@ -1348,10 +1480,10 @@ function html_DivAlarmaV2($sError, $iTipoError, $bDebug = false)
 }
 function html_DivAyudaLocal($sNombreCampo)
 {
-	$res = '<div class="salto1px"></div>
-	<div id="div_ayuda_' . $sNombreCampo . '" style="display:none" class="GrupoCamposAyuda"></div>
-	<div class="salto1px"></div>';
-	return $res;
+	$sRes = '<div class="salto1px"></div>';
+	$sRes = $sRes . '<div id="div_ayuda_' . $sNombreCampo . '" style="display:none" class="GrupoCamposAyuda"></div>';
+	$sRes = $sRes . '<div class="salto1px"></div>';
+	return $sRes;
 }
 function html_DivTerceroV2($sNombreCampo, $sTipoDoc, $sDoc, $bOculto, $idAccion = 0, $sPlaceHolder = '', $iBotones = 3)
 {
@@ -1443,9 +1575,9 @@ function html_Combo145($sNombreCampo, $sTipoDoc, $objDB, $objCombos, $idAccion =
 		$objCombos->sAccion = "ter_muestra('" . $sNombreCampo . "', " . $idAccion . ")";
 	}
 	$objCombos->iAncho = 60;
-	$sSQL = 'SELECT unad45codigo AS id, CONCAT(unad45codigo, " - ", unad45nombre) AS nombre 
+	$sSQL = 'SELECT unad45codigo AS id, CONCAT(unad45titulo, " - ", unad45nombre) AS nombre 
 	FROM unad45tipodoc WHERE ' . $sCondi . ' 
-	ORDER BY unad45activo DESC, unad45orden, unad45codigo';
+	ORDER BY unad45activo DESC, unad45orden, unad45titulo';
 	$sRes = $objCombos->html($sSQL, $objDB);
 	return $sRes;
 }
@@ -1455,7 +1587,7 @@ function html_DivTerceroV8($sNombreCampo, $sTipoDoc, $sDoc, $bOculto, $objDB, $o
 	$iPiel = iDefinirPiel($APP, 2);
 	$sRes = '';
 	if ($bOculto) {
-		$sRes = '' . html_oculto($sNombreCampo . '_td', $sTipoDoc) . ' ' . html_oculto($sNombreCampo . '_doc', $sDoc) . '';
+		$sRes = '' . html_oculto($sNombreCampo . '_td', $sTipoDoc) . '&nbsp;' . html_oculto($sNombreCampo . '_doc', $sDoc) . '';
 	} else {
 		$sAdd = '';
 		if ($sPlaceHolder != '') {
@@ -1646,6 +1778,7 @@ function html_menuCampus($idsistema, $objDB, $iPiel = 0, $bDebug = false, $idTer
 {
 	$sDebug = '';
 	require './app.php';
+	$idEntidad = Traer_Entidad();
 	$_SESSION['u_ultimominuto'] = iminutoavance();
 	if ($idTercero == 0) {
 		$idTercero = $_SESSION['unad_id_tercero'];
@@ -1666,6 +1799,7 @@ function html_menuCampus($idsistema, $objDB, $iPiel = 0, $bDebug = false, $idTer
 	$et_miperfil = 'Mi perfil';
 	$et_salir = 'Salir';
 	$et_miscursos = 'Mis cursos';
+	$et_misinscripciones = 'Mis inscripciones';
 	$et_misprogramas = 'Mis programas';
 	$et_proveedores = 'Proveedores';
 	$et_vida = 'Vida acad&eacute;mica';
@@ -1673,6 +1807,7 @@ function html_menuCampus($idsistema, $objDB, $iPiel = 0, $bDebug = false, $idTer
 	$et_cipas = 'CIPAS';
 	$et_servicios = 'Servicios';
 	$et_mooc = 'Cursos MOOC';
+	$et_admisiones = 'Admisiones';
 	$et_oferabierta = 'Cursos Abiertos';
 	$et_contacto = 'Datos de contacto';
 	$et_emprendimiento = 'Emprendimiento';
@@ -1730,33 +1865,47 @@ function html_menuCampus($idsistema, $objDB, $iPiel = 0, $bDebug = false, $idTer
 	}
 	$sHTML = $sHTML . '<li' . $sClaseLiBase . '><a href="#"' . $sClaseLinkBase . '><span>' . $et_inicio . '</span></a>' . $sInicioBloque;
 	$sHTML = $sHTML . $sInicioItem . '<a href="accesit.php"' . $sClaseLinkItem . '><span>' . $et_accesit . '</span></a>' . $sFinItem;
+	$bEspeciales = false;
+	$bRevisaEspeciales = false;
 	if ((int)$idTercero > 0) {
-		$bEspeciales = false;
-		if (function_exists('f107_PerfilPertenece')) {
-			if (f107_PerfilPertenece($idTercero, 1, $objDB)) {
-				$bEspeciales = true;
-			} else {
+		switch ($idEntidad) {
+			case 0: // Colombia
+				$bRevisaEspeciales = true;
+				break;
+		}
+		if ($bRevisaEspeciales) {
+			if (function_exists('f107_PerfilPertenece')) {
+				if (f107_PerfilPertenece($idTercero, 1, $objDB)) {
+					$bEspeciales = true;
+				} else {
+				}
 			}
 		}
 		$sHTML = $sHTML . $sInicioItem . '<a href="miperfil.php"' . $sClaseLinkItem . $sSalto . '><span>' . $et_miperfil . '</span></a>' . $sFinItem;
 		$sHTML = $sHTML . $sInicioItem . '<a href="contrasegna.php"' . $sClaseLinkItem . $sSalto . '><span>' . $et_clave . '</span></a>' . $sFinItem;
 		$sHTML = $sHTML . $sInicioItem . '<a href="contacto.php"' . $sClaseLinkItem . $sSalto . '><span>' . $et_contacto . '</span></a>' . $sFinItem;
-		$sHTML = $sHTML . $sInicioItem . '<a href="salir.php"' . $sClaseLinkItem . $sSalto . '><span>' . $et_salir . '</span></a>' . $sFinItem;
+		$sHTML = $sHTML . $sInicioItem . '<a href="salir.php"' . $sClaseLinkItem . '><span>' . $et_salir . '</span></a>' . $sFinItem;
 		$sHTML = $sHTML . $sFinBloque . '';
 		$sHTML = $sHTML . '<li' . $sClaseLiBase . '><a href="#"' . $sClaseLinkBase . '><span>' . $et_vida . '</span></a>' . $sInicioBloque;
 		$sHTML = $sHTML . $sInicioItem . '<a href="miscursos.php"' . $sClaseLinkItem . $sSalto . '><span>' . $et_miscursos . '</span></a>' . $sFinItem;
-		$sHTML = $sHTML . $sInicioItem . '<a href="cipas.php"' . $sClaseLinkItem . $sSalto . '><span>' . $et_cipas . '</span></a>' . $sFinItem;
-		$sHTML = $sHTML . $sInicioItem . '<a href="sai.php"' . $sClaseLinkItem . $sSalto . '><span>' . $et_sai . '</span></a>' . $sFinItem;
-		if ($bEspeciales) {
-			$sHTML = $sHTML . $sInicioItem . '<a href="misprogramas.php"' . $sClaseLinkItem . $sSalto . '><span>' . $et_misprogramas . '</span></a>' . $sFinItem;
+		$sHTML = $sHTML . $sInicioItem . '<a href="misinscripciones.php"' . $sClaseLinkItem . $sSalto . '><span>' . $et_misinscripciones . '</span></a>' . $sFinItem;
+		if ($idEntidad == 0) {
+			$sHTML = $sHTML . $sInicioItem . '<a href="cipas.php"' . $sClaseLinkItem . $sSalto . '><span>' . $et_cipas . '</span></a>' . $sFinItem;
+			$sHTML = $sHTML . $sInicioItem . '<a href="sai.php"' . $sClaseLinkItem . $sSalto . '><span>' . $et_sai . '</span></a>' . $sFinItem;
+			if ($bEspeciales) {
+				$sHTML = $sHTML . $sInicioItem . '<a href="misprogramas.php"' . $sClaseLinkItem . $sSalto . '><span>' . $et_misprogramas . '</span></a>' . $sFinItem;
+			}
 		}
 		$sHTML = $sHTML . $sFinBloque . '';
 		$sHTML = $sHTML . '<li' . $sClaseLiBase . '><a href="#"' . $sClaseLinkBase . '><span>' . $et_servicios . '</span></a>' . $sInicioBloque;
+		$sHTML = $sHTML . $sInicioItem . '<a href="admisiones.php"' . $sClaseLinkItem . $sSalto . '><span>' . $et_admisiones . '</span></a>' . $sFinItem;
 		$sHTML = $sHTML . $sInicioItem . '<a href="mooc.php"' . $sClaseLinkItem . $sSalto . '><span>' . $et_mooc . '</span></a>' . $sFinItem;
-		$sHTML = $sHTML . $sInicioItem . '<a href="ofertaabierta.php"' . $sClaseLinkItem . $sSalto . '><span>' . $et_oferabierta . '</span></a>' . $sFinItem;
-		$sHTML = $sHTML . $sInicioItem . '<a href="emprendedor.php"' . $sClaseLinkItem . $sSalto . '><span>' . $et_emprendimiento . '</span></a>' . $sFinItem;
-		if ($bEspeciales) {
-			$sHTML = $sHTML . $sInicioItem . '<a href="https://erp.unad.edu.co/proveedor/" target="_blank"' . $sClaseLinkItem . $sSalto . '><span>' . $et_proveedores . '</span></a>' . $sFinItem;
+		if ($idEntidad == 0) {
+			$sHTML = $sHTML . $sInicioItem . '<a href="ofertaabierta.php"' . $sClaseLinkItem . $sSalto . '><span>' . $et_oferabierta . '</span></a>' . $sFinItem;
+			$sHTML = $sHTML . $sInicioItem . '<a href="emprendedor.php"' . $sClaseLinkItem . $sSalto . '><span>' . $et_emprendimiento . '</span></a>' . $sFinItem;
+			if ($bEspeciales) {
+				$sHTML = $sHTML . $sInicioItem . '<a href="https://erp.unad.edu.co/proveedor/" target="_blank"' . $sClaseLinkItem . $sSalto . '><span>' . $et_proveedores . '</span></a>' . $sFinItem;
+			}
 		}
 	}
 	$sHTML = $sHTML . $sFinBloque . '';
@@ -1767,6 +1916,18 @@ function html_menuCampus($idsistema, $objDB, $iPiel = 0, $bDebug = false, $idTer
 		if (is_object($objDB)) {
 			$bInternos = true;
 			list($bConSoporte, $sDebugP) = seg_revisa_permisoV3(202, 1, $idTercero, $objDB);
+		}
+	}
+	if ($bInternos) {
+		$sSQL = 'SELECT unad88appsestado FROM unad88opciones WHERE unad88id=1';
+		$tabla = $objDB->ejecutasql($sSQL);
+		if ($objDB->nf($tabla) > 0) {
+			$fila = $objDB->sf($tabla);
+			if ($fila['unad88appsestado'] == 9) {
+				$bInternos = false;
+			}
+		} else {
+			$bInternos = false;
 		}
 	}
 	if ($bInternos) {
@@ -1804,6 +1965,13 @@ function html_menuCampus($idsistema, $objDB, $iPiel = 0, $bDebug = false, $idTer
 			}
 		}
 		$sRutaBase = 'https://aurea2.unad.edu.co/';
+		switch ($idEntidad) {
+			case 0: // Colombia
+				break;
+			default:
+				$sRutaBase = './';
+				break;
+		}
 		$sSalto = ' target="_blank"';
 		if ($bConModulos) {
 			//Vemos los temas asociados a modulos academicos y eventos.
@@ -1878,6 +2046,7 @@ function html_menuCampusV2($objDB, $iPiel = 2, $bDebug = false, $idTercero = 0, 
 {
 	require './app.php';
 	$sDebug = '';
+	$idEntidad = Traer_Entidad();
 	$_SESSION['u_ultimominuto'] = iminutoavance();
 	if ($idTercero == 0) {
 		$idTercero = $_SESSION['unad_id_tercero'];
@@ -1896,8 +2065,10 @@ function html_menuCampusV2($objDB, $iPiel = 2, $bDebug = false, $idTercero = 0, 
 	$et_accesit = 'ACCESIT';
 	$et_clave = 'Contrase&ntilde;a';
 	$et_miperfil = 'Mi perfil';
+	$et_inisesion = 'Iniciar Sesi&oacute;n';
 	$et_salir = 'Salir';
 	$et_miscursos = 'Mis cursos';
+	$et_misinscripciones = 'Mis inscripciones';
 	$et_misprogramas = 'Mis programas';
 	$et_proveedores = 'Proveedores';
 	$et_vida = 'Vida acad&eacute;mica';
@@ -1905,6 +2076,7 @@ function html_menuCampusV2($objDB, $iPiel = 2, $bDebug = false, $idTercero = 0, 
 	$et_cipas = 'CIPAS';
 	$et_servicios = 'Servicios';
 	$et_mooc = 'Cursos MOOC';
+	$et_admisiones = 'Admisiones';
 	$et_oferabierta = 'Cursos Abiertos';
 	$et_contacto = 'Datos de contacto';
 	$et_emprendimiento = 'Emprendimiento';
@@ -1949,7 +2121,6 @@ function html_menuCampusV2($objDB, $iPiel = 2, $bDebug = false, $idTercero = 0, 
 	$sHTML = $sHTML . '<li class="options__item">';
 	$sHTML = $sHTML . '<a class="option">' . $et_inicio . '<i class="iNavigateNext"></i></a>';
 	$sHTML = $sHTML . $sInicioBloque;
-
 	if ((int)$idTercero > 0) {
 		$bEspeciales = false;
 		$bConSoporte = false;
@@ -1977,24 +2148,43 @@ function html_menuCampusV2($objDB, $iPiel = 2, $bDebug = false, $idTercero = 0, 
 		$sHTML = $sHTML . '<a class="option">' . $et_vida . '<i class="iNavigateNext"></i></a>';
 		$sHTML = $sHTML . $sInicioBloque;
 		$sHTML = $sHTML . '<li><a href="miscursos.php" title="' . $et_miscursos . '">' . $et_miscursos . '</a></li>';
-		$sHTML = $sHTML . '<li><a href="cipas.php" title="' . $et_cipas . '">' . $et_cipas . '</a></li>';
-		$sHTML = $sHTML . '<li><a href="sai.php" title="' . $et_sai . '">' . $et_sai . '</a></li>';
-		if ($bEspeciales) {
-			$sHTML = $sHTML . '<li><a href="misprogramas.php" title="' . $et_misprogramas . '">' . $et_misprogramas . '</a></li>';
+		if ($idEntidad == 0) {
+			$sHTML = $sHTML . '<li><a href="cipas.php" title="' . $et_cipas . '">' . $et_cipas . '</a></li>';
+			$sHTML = $sHTML . '<li><a href="sai.php" title="' . $et_sai . '">' . $et_sai . '</a></li>';
+			if ($bEspeciales) {
+				$sHTML = $sHTML . '<li><a href="misprogramas.php" title="' . $et_misprogramas . '">' . $et_misprogramas . '</a></li>';
+			}
 		}
 		$sHTML = $sHTML . $sFinBloque;
 		$sHTML = $sHTML . '</li><li class="options__item">';
 		$sHTML = $sHTML . '<a class="option">' . $et_servicios . '<i class="iNavigateNext"></i></a>';
 		$sHTML = $sHTML . $sInicioBloque;
+		$sHTML = $sHTML . '<li><a href="admisiones.php" title="' . $et_admisiones . '">' . $et_admisiones . '</a></li>';
 		$sHTML = $sHTML . '<li><a href="mooc.php" title="' . $et_mooc . '">' . $et_mooc . '</a></li>';
-		$sHTML = $sHTML . '<li><a href="ofertaabierta.php" title="' . $et_oferabierta . '">' . $et_oferabierta . '</a></li>';
-		$sHTML = $sHTML . '<li><a href="emprendedor.php" title="' . $et_emprendimiento . '">' . $et_emprendimiento . '</a></li>';
-		if ($bEspeciales) {
-			$sHTML = $sHTML . '<li><a href="proveedores.php" title="' . $et_proveedores . '">' . $et_proveedores . '</a></li>';
+		if ($idEntidad == 0) {
+			$sHTML = $sHTML . '<li><a href="ofertaabierta.php" title="' . $et_oferabierta . '">' . $et_oferabierta . '</a></li>';
+			$sHTML = $sHTML . '<li><a href="emprendedor.php" title="' . $et_emprendimiento . '">' . $et_emprendimiento . '</a></li>';
+			if ($bEspeciales) {
+				$sHTML = $sHTML . '<li><a href="proveedores.php" title="' . $et_proveedores . '">' . $et_proveedores . '</a></li>';
+			}
 		}
+	} else {
+		$sHTML = $sHTML . '<li><a href="./" title="' . $et_inisesion . '">' . $et_inisesion . '</a></li>';
 	}
 	$sHTML = $sHTML . $sFinBloque;
 	//Ver si tiene funciones administrativas.
+	if ($bInternos) {
+		$sSQL = 'SELECT unad88appsestado FROM unad88opciones WHERE unad88id=1';
+		$tabla = $objDB->ejecutasql($sSQL);
+		if ($objDB->nf($tabla) > 0) {
+			$fila = $objDB->sf($tabla);
+			if ($fila['unad88appsestado'] == 9) {
+				$bInternos = false;
+			}
+		} else {
+			$bInternos = false;
+		}
+	}
 	if ($bInternos) {
 		//Acceso a los modulos en los que tiene permiso.
 		$sPerfiles = '-99';
@@ -2027,6 +2217,13 @@ function html_menuCampusV2($objDB, $iPiel = 2, $bDebug = false, $idTercero = 0, 
 			}
 		}
 		$sRutaBase = 'https://aurea2.unad.edu.co/';
+		switch ($idEntidad) {
+			case 0: // Colombia
+				break;
+			default:
+				$sRutaBase = './';
+				break;
+		}
 		$sSalto = ' target="_blank"';
 		if ($bConModulos) {
 			//Vemos los temas asociados a modulos academicos y eventos.
@@ -2282,6 +2479,7 @@ function html_Menu2023($idsistema, $objDB, $iPiel = 2, $bDebug = false, $idTerce
 	$et_ini = 'Inicio';
 	$et_entorno = 'Entorno de trabajo';
 	$et_panel = 'Panel';
+	$et_campus = 'Campus Virtual';
 	$et_chat = 'Chat';
 	$et_dp = 'Datos Personales';
 	$et_pwd = 'Contrase&ntilde;a';
@@ -2401,15 +2599,22 @@ function html_Menu2023($idsistema, $objDB, $iPiel = 2, $bDebug = false, $idTerce
 	} else {
 		//no hay tercero
 		$sRutaLogin = 'https://campus.unad.edu.co';
-		if ($idEntidad == 1) {
-			$sRutaLogin = 'https://aurea.unad.us/campus/';
+		$sRutaLocal = '../login/';
+		switch ($idEntidad) {
+			case 1:
+				$sRutaLocal = 'https://unad.us/campus/';
+				break;
+			case 2:
+				$sRutaLocal = 'https://campus.unad-ue.es/';
+				break;
 		}
-		/*
-		$sHTML = $sHTML . $sInicioBloque . $sInicioItem . '<a href="' . $sRutaLogin . '"' . $sClaseLinkItem . '><span>' . $et_inisesion . '</span></a>' . $sFinItem . $sFinBloque;
-		*/
-		$sHTML = $sHTML . '<a class="option" href="' . $sRutaLogin . '">' . $et_inisesion . '<i class="iNavigateNext"></i></a>';
-		//$sHTML = $sHTML . '<div class="option-drop"><ul>';
-		//$sHTML = $sHTML . '</ul></div>';
+		$sHTML = $sHTML . '<a class="option" href="./">' . $et_ini . '<i class="iNavigateNext"></i></a>';
+		$sHTML = $sHTML . $sInicioBloque;
+		if ($idEntidad == 0) {
+			$sHTML = $sHTML . '<li><a href="' . $sRutaLogin . '">' . $et_campus . '</a></li>';
+		}
+		$sHTML = $sHTML . '<li><a href="' . $sRutaLocal . '">' . $et_inisesion . '</a></li>';
+		$sHTML = $sHTML . $sFinBloque;
 	}
 	//Acceso a los modulos en los que tiene permiso.
 	$bConModulos = false;
@@ -2694,7 +2899,6 @@ function html_Tercero1l($id, $objDB, $bHtml = false)
 	}
 	return $sHTML;
 }
-
 function htmlAlertas($sColor, $sTexto)
 {
 	$sHTML = '';
@@ -2715,3 +2919,35 @@ function htmlAlertas($sColor, $sTexto)
 	$sHTML = $sHTML . '<div class="alert alert-' . $sTipo . '" role="alert"><strong>' . $sTexto . '</strong></div>';
 	return $sHTML;
 }
+
+function html_Alerta($sTexto, $sColor = '', $bConIcono = true)
+{
+	$sRes = '';
+	$sTipo = '';
+	$sIcono = '';
+	switch ($sColor) {
+		case 'verde':
+			$sTipo = 'success';
+			$sIcono = '';
+			break;
+		case 'naranja':
+			$sTipo = 'warning';
+			$sIcono = '';
+			break;
+		case 'rojo':
+			$sTipo = 'danger';
+			$sIcono = '';
+			break;
+		default:
+			$sTipo = 'info';
+			$sIcono = 'icon-info';
+	}
+	$sRes = '<div class="alert alert-' . $sTipo . '">';
+	if ($bConIcono) {
+		$sRes = $sRes . '<i class="' . $sIcono . '"></i>';
+	}
+	$sRes = $sRes . '<p>' . $sTexto . '</p>';
+	$sRes = $sRes . '</div>';
+	return $sRes;
+}
+

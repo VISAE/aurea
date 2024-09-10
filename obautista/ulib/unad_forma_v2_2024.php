@@ -124,7 +124,7 @@ function forma_mitad($bConMenu = true)
 	$sRes = $sRes . '<link rel="stylesheet" href="' . $APP->rutacomun . 'js/bootstrap.min.css" type="text/css" />';
 	$sRes = $sRes . '<link rel="stylesheet" href="' . $APP->rutacomun . 'css/criticalPath.css" type="text/css" />';
 	$sRes = $sRes . '<link rel="stylesheet" href="' . $APP->rutacomun . 'css/principal.css" type="text/css" />';
-	$sRes = $sRes . '<link rel="stylesheet" href="' . $APP->rutacomun . 'unad_estilos2018.css" type="text/css" />';
+	$sRes = $sRes . '<link rel="stylesheet" href="' . $APP->rutacomun . 'unad_estilos2018.css?v=3" type="text/css" />';
 	echo $sRes;
 }
 function forma_piedepagina($bConTiempo = true)
@@ -162,6 +162,7 @@ function forma_piedepagina($bConTiempo = true)
 	$sRes = $sRes . '});';
 	$sRes = $sRes . '};';
 	$sRes = $sRes . '</script>';
+	$sRes = $sRes . '<script src="' . $APP->rutacomun . 'js/modal2018.js?v=2"></script>';
 	$sRes = $sRes . '<script type="text/javascript">';
 	$sRes = $sRes . 'if (window.history.replaceState) {';
 	$sRes = $sRes . 'window.history.replaceState(null, null, window.location.href);';

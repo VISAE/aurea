@@ -1,18 +1,20 @@
 <?php
 /*
---- © Angel Mauro Avellaneda Barreto - UNAD - 2020 ---
+--- © Angel Mauro Avellaneda Barreto - UNAD - 2024 ---
 --- angel.avellaneda@unad.edu.co - http://www.unad.edu.co
---- Modelo Versión 2.25.4 domingo, 19 de julio de 2020
+--- Modelo Versión 3.0.11b miércoles, 14 de agosto de 2024
 */
 /** Archivo saiucorreo.php.
 * Modulo 3020 saiu20correo.
-* @author Angel Mauro Avellaneda Barreto - angel.avellaneda@unad.edu.co
-* @param debug=1 (Opcional), bandera para indicar si se generan datos de depuración
-* @date domingo, 19 de julio de 2020
-*/
-if (file_exists('./err_control.php')){require './err_control.php';}
-$bDebug=false;
-$sDebug='';
+ * @author Angel Mauro Avellaneda Barreto - angel.avellaneda@unad.edu.co
+ * @param debug = 1  (Opcional), bandera para indicar si se generan datos de depuración
+ * @date miércoles, 14 de agosto de 2024
+ */
+if (file_exists('./err_control.php')) {
+	require './err_control.php';
+}
+$bDebug = false;
+$sDebug = '';
 if (isset($_REQUEST['deb_doc']) != 0) {
 	if (trim($_REQUEST['deb_doc']) != '') {
 		$bDebug = true;
@@ -25,142 +27,229 @@ if (isset($_REQUEST['debug']) != 0) {
 		$bDebug = true;
 	}
 }
-if ($bDebug){
-	$iSegIni=microtime(true);
-	$iSegundos=floor($iSegIni);
-	$sMili=floor(($iSegIni-$iSegundos)*1000);
-	if ($sMili<100){if ($sMili<10){$sMili=':00'.$sMili;}else{$sMili=':0'.$sMili;}}else{$sMili=':'.$sMili;}
-	$sDebug=$sDebug.''.date('H:i:s').$sMili.' Inicia pagina <br>';
+if ($bDebug) {
+	$iSegIni = microtime(true);
+	$iSegundos = floor($iSegIni);
+	$sMili = floor(($iSegIni - $iSegundos) * 1000);
+	if ($sMili < 100) {
+		if ($sMili < 10) {
+			$sMili = ':00' . $sMili;
+		} else {
+			$sMili = ':0' . $sMili;
+		}
+	} else {
+		$sMili = ':' . $sMili;
 	}
-if (!file_exists('./app.php')){
+	$sDebug = $sDebug . date('H:i:s') . $sMili . ' Inicia pagina <br>';
+}
+if (!file_exists('./app.php')) {
 	echo '<b>Error N 1 de instalaci&oacute;n</b><br>No se ha establecido un archivo de configuraci&oacute;n, por favor comuniquese con el administrador del sistema.';
 	die();
-	}
+}
 mb_internal_encoding('UTF-8');
 require './app.php';
-require $APP->rutacomun.'unad_sesion.php';
-if (isset($APP->https)==0){$APP->https=0;}
-if ($APP->https==2){
-	$bObliga=false;
-	if (isset($_SERVER['HTTPS'])==0){
-		$bObliga=true;
-		}else{
-		if ($_SERVER['HTTPS']!='on'){$bObliga=true;}
-		}
-	if ($bObliga){
-		$pageURL='https://'.$_SERVER['SERVER_NAME'].$_SERVER['REQUEST_URI'];
-		header('Location:'.$pageURL);
-		die();
+require $APP->rutacomun . 'unad_sesion.php';
+if (isset($APP->https) == 0) {
+	$APP->https = 0;
+}
+if ($APP->https == 2) {
+	$bObliga = false;
+	if (isset($_SERVER['HTTPS']) == 0) {
+		$bObliga = true;
+	} else {
+		if ($_SERVER['HTTPS'] != 'on') {
+			$bObliga = true;
 		}
 	}
-//if (!file_exists('./opts.php')){require './opts.php';if ($OPT->opcion==1){$bOpcion=true;}}
-$bPeticionXAJAX=false;
-if ($_SERVER['REQUEST_METHOD']=='POST'){if (isset($_POST['xjxfun'])){$bPeticionXAJAX=true;}}
-if (!$bPeticionXAJAX){$_SESSION['u_ultimominuto']=(date('W')*1440)+(date('H')*60)+date('i');}
-require $APP->rutacomun.'unad_todas.php';
-require $APP->rutacomun.'libs/clsdbadmin.php';
-require $APP->rutacomun.'unad_librerias.php';
-require $APP->rutacomun.'libdatos.php';
-require $APP->rutacomun.'libhtml.php';
-require $APP->rutacomun.'xajax/xajax_core/xajax.inc.php';
-require $APP->rutacomun.'unad_xajax.php';
-require $APP->rutacomun.'libsai.php';
-require $APP->rutacomun.'libtiempo.php';
-require $APP->rutacomun.'libmail.php';
-require $APP->rutacomun.'libaurea.php';
-if (($bPeticionXAJAX)&&($_SESSION['unad_id_tercero']==0)){
+	if ($bObliga) {
+		$pageURL = 'https://' . $_SERVER['SERVER_NAME'] . $_SERVER['REQUEST_URI'];
+		header('Location:' . $pageURL);
+		die();
+	}
+}
+/*
+if (!file_exists('./opts.php')) {
+	require './opts.php';
+	if ($OPT->opcion == 1) {
+		$bOpcion = true;
+	}
+}
+*/
+$bPeticionXAJAX = false;
+if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+	if (isset($_POST['xjxfun'])) {
+		$bPeticionXAJAX = true;
+	}
+}
+if (!$bPeticionXAJAX) {
+	$_SESSION['u_ultimominuto'] = (date('W') * 1440) + (date('H') * 60) + date('i');
+}
+require $APP->rutacomun . 'unad_todas.php';
+require $APP->rutacomun . 'libs/clsdbadmin.php';
+require $APP->rutacomun . 'unad_librerias.php';
+require $APP->rutacomun . 'libdatos.php';
+require $APP->rutacomun . 'libhtml.php';
+require $APP->rutacomun . 'xajax/xajax_core/xajax.inc.php';
+require $APP->rutacomun . 'unad_xajax.php';
+require $APP->rutacomun . 'libsai.php';
+require $APP->rutacomun . 'libtiempo.php';
+require $APP->rutacomun . 'libmail.php';
+require $APP->rutacomun . 'libaurea.php';
+if (($bPeticionXAJAX) && ($_SESSION['unad_id_tercero'] == 0)) {
 	// viene por xajax.
-	$xajax=new xajax();
-	$xajax->configure('javascript URI', $APP->rutacomun.'xajax/');
-	$xajax->register(XAJAX_FUNCTION,'sesion_abandona_V2');
+	$xajax = new xajax();
+	$xajax->configure('javascript URI', $APP->rutacomun . 'xajax/');
+	$xajax->register(XAJAX_FUNCTION, 'sesion_abandona_V2');
 	$xajax->processRequest();
 	die();
-	}
-$bEnSesion = false;
-if ((int)$_SESSION['unad_id_tercero'] > 0) {
-	$bEnSesion = true;
 }
-if (!$bEnSesion) {
-	if ($bDebug) {
-		echo 'No se encuentra una sesi&oacute;n. [' . $APP->rutacomun . ']-[' . $_SESSION['unad_id_tercero'] . ']';
-		die();
-	}
-	$_SESSION['unad_redir'] = 'saiucorreo.php';
-	header('Location:index.php');
-	die();
-}
-$grupo_id=1;//Necesita ajustarlo...
-$iCodModulo=3020;
-$audita[1]=false;
-$audita[2]=true;
-$audita[3]=true;
-$audita[4]=true;
-$audita[5]=false;
+$iConsecutivoMenu = 2;
+$iMinVerDB = 7774;
+$iCodModulo = 3020;
+$iCodModuloConsulta = $iCodModulo;
+$audita[1] = false;
+$audita[2] = true;
+$audita[3] = true;
+$audita[4] = true;
+$audita[5] = false;
 // -- Se cargan los archivos de idioma
-$mensajes_todas=$APP->rutacomun.'lg/lg_todas_'.$_SESSION['unad_idioma'].'.php';
-if (!file_exists($mensajes_todas)){$mensajes_todas=$APP->rutacomun.'lg/lg_todas_es.php';}
-$mensajes_3020='lg/lg_3020_'.$_SESSION['unad_idioma'].'.php';
-if (!file_exists($mensajes_3020)){$mensajes_3020='lg/lg_3020_es.php';}
+$mensajes_todas = $APP->rutacomun . 'lg/lg_todas_' . $_SESSION['unad_idioma'] . '.php';
+if (!file_exists($mensajes_todas)) {
+	$mensajes_todas = $APP->rutacomun . 'lg/lg_todas_es.php';
+}
+/*
+$mensajes_000 = 'lg/lg_000_' . $_SESSION['unad_idioma'] . '.php';
+if (!file_exists($mensajes_000)) {
+	$mensajes_000 = 'lg/lg_000_es.php';
+}
+require $mensajes_000;
+*/
+$mensajes_3000=$APP->rutacomun.'lg/lg_3000_'.$_SESSION['unad_idioma'].'.php';
+if (!file_exists($mensajes_3000)) {
+	$mensajes_3000=$APP->rutacomun.'lg/lg_3000_es.php';
+}
+$mensajes_3020 = 'lg/lg_3020_' . $_SESSION['unad_idioma'] . '.php';
+if (!file_exists($mensajes_3020)) {
+	$mensajes_3020 = 'lg/lg_3020_es.php';
+}
 require $mensajes_todas;
+require $mensajes_3000;
 require $mensajes_3020;
-$xajax=NULL;
-$objDB=new clsdbadmin($APP->dbhost, $APP->dbuser, $APP->dbpass, $APP->dbname);
-if ($APP->dbpuerto!=''){$objDB->dbPuerto=$APP->dbpuerto;}
+$xajax = NULL;
+$objDB = new clsdbadmin($APP->dbhost, $APP->dbuser, $APP->dbpass, $APP->dbname);
+if ($APP->dbpuerto != '') {
+	$objDB->dbPuerto = $APP->dbpuerto;
+}
+// --- Variables para la forma
+$bBloqueTitulo = true;
+$bCerrado = false;
+$bDebugMenu = false;
+$bOtroUsuario = false;
+$et_menu = '';
+$idTercero = $_SESSION['unad_id_tercero'];
 $iPiel = iDefinirPiel($APP, 2);
 $sAnchoExpandeContrae = ' style="width:62px;"';
-$sOcultaId = ' style="display:none;"';
 $sOcultaConsec = ''; //' style="display:none;"';
-$bCerrado = false;
-$et_menu = '';
+list($sGrupoModulo, $sPaginaModulo) = f109_GrupoModulo($iCodModuloConsulta, $iConsecutivoMenu, $objDB);
+$sOcultaId = ' style="display:none;"';
+$sTituloApp = $APP->siglasistema; //f101_SiglaModulo($APP->idsistema, $objDB);
+$sTituloModulo = $ETI['titulo_3020'];
+switch ($iPiel) {
+	case 2:
+		$sAnchoExpandeContrae = '';
+		$bBloqueTitulo = false;
+		break;
+}
+// --- Final de las variables para la forma
 if ($bDebug) {
 	$sDebug = $sDebug . fecha_microtiempo() . ' Probando conexi&oacute;n con la base de datos <b>' . $APP->dbname . '</b> en <b>' . $APP->dbhost . '</b><br>';
 }
+$bCargaMenu = true;
 if (!$objDB->Conectar()) {
+	$bCargaMenu = false;
 	$bCerrado = true;
-	$sMsgCierre = '<div class="MarquesinaGrande">Disculpe las molestias estamos en este momento nuestros servicios no estas disponibles.<br>Por favor intente acceder mas tarde.<br>Si el problema persiste por favor informa al administrador del sistema.</div>';
+	$sMsgCierre = '<div class="MarquesinaGrande">Disculpe las molestias estamos en este momento nuestros servicios no estas disponibles.<br>Por favor intente acceder mas tarde.<br>Si el problema persiste por favor informe al administrador del sistema.</div>';
 	if ($bDebug) {
 		$sDebug = $sDebug . fecha_microtiempo() . ' Error al intentar conectar con la base de datos <b>' . $objDB->serror . '</b><br>';
 	}
 }
 if (!$bCerrado) {
-	$bDevuelve = true;
-	//list($bDevuelve, $sDebugP) = seg_revisa_permisoV3($iCodModulo, 1, $_SESSION['unad_id_tercero'], $objDB);
+	$iVerDB = version_upd($objDB);
+	if ($iMinVerDB > $iVerDB) {
+		$bCerrado = true;
+		$sMsgCierre = '<div class="MarquesinaGrande">La base de datos se encuentra desactualizada para este modulo.<br>Por favor informe al administrador del sistema.</div>';
+		if ($bDebug) {
+			$sDebug = $sDebug . fecha_microtiempo() . ' <b>DB DESACTUALIZADA [Requerida:' . $iMinVerDB . ' - Encontrada:' . $iVerDB . ']</b><br>';
+		}
+	} else {
+		if ($bDebug) {
+			$sDebug = $sDebug . fecha_microtiempo() . ' Versi&oacute;n DB <b>' . $iVerDB . '</b> [Requerida:' . $iMinVerDB . ']<br>';
+		}
+	}
+}
+if (!$bCerrado) {
+	list($bDevuelve, $sDebugP) = seg_revisa_permisoV3($iCodModuloConsulta, 1, $_SESSION['unad_id_tercero'], $objDB);
 	if (!$bDevuelve) {
 		$bCerrado = true;
-		$sMsgCierre = '<div class="MarquesinaGrande">No cuenta con permiso para acceder a este modulo [' . $iCodModulo . '].</div>';
-		list($et_menu, $sDebugM) = html_menuV2($APP->idsistema, $objDB, $iPiel, false, $_SESSION['unad_id_tercero']);
+		$sMsgCierre = '<div class="MarquesinaGrande">No cuenta con permiso para acceder a este modulo [' . $iCodModuloConsulta . '].</div>';
 	}
 }
 if ($bCerrado) {
+	if ($bCargaMenu) {
+		switch ($iPiel) {
+			case 2:
+				list($et_menu, $sDebugM) = html_Menu2023($APP->idsistema, $objDB, $iPiel, $bDebugMenu, $idTercero);
+				break;
+			default:
+				list($et_menu, $sDebugM) = html_menuV2($APP->idsistema, $objDB, $iPiel, $bDebugMenu, $idTercero);
+				break;
+		}
+	}
 	$objDB->CerrarConexion();
-	require $APP->rutacomun . 'unad_forma_v2.php';
-	forma_cabeceraV3($xajax, $ETI['titulo_3020']);
-	echo $et_menu;
-	forma_mitad();
-	?>
-	<script language="javascript" src="<?php echo $APP->rutacomun; ?>js/jquery-3.3.1.min.js"></script>
-	<script language="javascript" src="<?php echo $APP->rutacomun; ?>js/popper.min.js"></script>
-	<script language="javascript" src="<?php echo $APP->rutacomun; ?>js/bootstrap.min.js"></script>
-	<link rel="stylesheet" href="<?php echo $APP->rutacomun; ?>js/bootstrap.min.css" type="text/css" />
-	<link rel="stylesheet" href="<?php echo $APP->rutacomun; ?>css/criticalPath.css" type="text/css" />
-	<link rel="stylesheet" href="<?php echo $APP->rutacomun; ?>css/principal.css" type="text/css" />
-	<link rel="stylesheet" href="<?php echo $APP->rutacomun; ?>unad_estilos2018.css" type="text/css" />
-	<?php
+	switch ($iPiel) {
+		case 2:
+			require $APP->rutacomun . 'unad_forma2024.php';
+			forma_InicioV4($xajax, $sTituloModulo);
+			$aRutas = array(
+				array('./', $sTituloApp),
+				array('./' . $sPaginaModulo, $sGrupoModulo),
+				array('', $sTituloModulo)
+			);
+			$iNumBoton = 0;
+			$aBotones[$iNumBoton] = array('muestraayuda(' . $APP->idsistema . ', ' . $iCodModulo . ')', $ETI['bt_ayuda'], 'iHelp');
+			$iNumBoton++;
+			forma_cabeceraV4b($aRutas, $aBotones, true, 1);
+			echo $et_menu;
+			forma_mitad($idTercero);
+			break;
+		default:
+			require $APP->rutacomun . 'unad_forma_v2_2024.php';
+			forma_cabeceraV3($xajax, $sTituloModulo);
+			echo $et_menu;
+			forma_mitad();
+			break;
+	}
+	$objForma = new clsHtmlForma($iPiel);
+	if ($bBloqueTitulo) {
+		$objForma->addBoton('cmdAyuda98', 'btSupAyuda', 'muestraayuda('.$iCodModulo.');', $ETI['bt_ayuda']);
+		echo $objForma->htmlTitulo($sTituloModulo, $iCodModulo);
+	}
+	echo $objForma->htmlInicioMarco();
 	echo $sMsgCierre;
 	if ($bDebug) {
 		echo $sDebug;
 	}
+	echo $objForma->htmlFinMarco();
 	forma_piedepagina();
 	die();
 }
-if (!$bPeticionXAJAX){
-	if (noticias_pendientes($objDB)){
+if (!$bPeticionXAJAX) {
+	if (noticias_pendientes($objDB)) {
 		$objDB->CerrarConexion();
-		header('Location:noticia.php?ret=saiuchat.php');
+		header('Location:noticia.php?ret=saiucorreo.php');
 		die();
-		}
 	}
-$idTercero=$_SESSION['unad_id_tercero'];
+}
 $bOtroUsuario=false;
 $seg_1707 = 0;
 $bDevuelve = false;
@@ -204,24 +293,20 @@ if (isset($_REQUEST['debug']) != 0) {
 	$_REQUEST['debug'] = 0;
 }
 //PROCESOS DE LA PAGINA
-$idEntidad=0;
-if (isset($APP->entidad)!=0){
-	if ($APP->entidad==1){$idEntidad=1;}
-	}
-$mensajes_3000=$APP->rutacomun.'lg/lg_3000_'.$_SESSION['unad_idioma'].'.php';
-if (!file_exists($mensajes_3000)){$mensajes_3000=$APP->rutacomun.'lg/lg_3000_es.php';}
-require $mensajes_3000;
+$idEntidad = Traer_Entidad();
 // -- Si esta cargando la pagina por primer vez se revisa si requiere auditar y se manda a hacer un limpiar (paso -1)
-if (isset($_REQUEST['paso'])==0){
-	$_REQUEST['paso']=-1;
-	if ($audita[1]){seg_auditaingreso($iCodModulo, $_SESSION['unad_id_tercero'], $objDB);}
+if (isset($_REQUEST['paso']) == 0) {
+	$_REQUEST['paso'] = -1;
+	if ($audita[1]) {
+		seg_auditaingreso($iCodModulo, $_SESSION['unad_id_tercero'], $objDB);
 	}
+}
 // -- 3020 saiu20correos
 require 'lib3020.php';
 // -- 3000 Historial de solicitudes
 require $APP->rutacomun.'lib3000.php';
-$xajax=new xajax();
-$xajax->configure('javascript URI', $APP->rutacomun.'xajax/');
+$xajax = new xajax();
+$xajax->configure('javascript URI', $APP->rutacomun . 'xajax/');
 $xajax->register(XAJAX_FUNCTION,'unad11_Mostrar_v2');
 $xajax->register(XAJAX_FUNCTION,'unad11_Mostrar_v2SAI');
 $xajax->register(XAJAX_FUNCTION,'unad11_TraerXid');
@@ -232,10 +317,10 @@ $xajax->register(XAJAX_FUNCTION,'f3020_Combosaiu20idcentro');
 $xajax->register(XAJAX_FUNCTION,'f3020_Combosaiu20coddepto');
 $xajax->register(XAJAX_FUNCTION,'f3020_Combosaiu20codciudad');
 $xajax->register(XAJAX_FUNCTION,'f3020_Combosaiu20idprograma');
-$xajax->register(XAJAX_FUNCTION,'sesion_abandona_V2');
-$xajax->register(XAJAX_FUNCTION,'sesion_mantenerV4');
-$xajax->register(XAJAX_FUNCTION,'f3020_HtmlTabla');
-$xajax->register(XAJAX_FUNCTION,'f3020_ExisteDato');
+$xajax->register(XAJAX_FUNCTION, 'sesion_abandona_V2');
+$xajax->register(XAJAX_FUNCTION, 'sesion_mantenerV4');
+$xajax->register(XAJAX_FUNCTION, 'f3020_HtmlTabla');
+$xajax->register(XAJAX_FUNCTION, 'f3020_ExisteDato');
 $xajax->register(XAJAX_FUNCTION,'f3020_Busquedas');
 $xajax->register(XAJAX_FUNCTION,'f3020_HtmlBusqueda');
 $xajax->register(XAJAX_FUNCTION,'f3000_HtmlTabla');
@@ -244,16 +329,17 @@ $xajax->register(XAJAX_FUNCTION,'elimina_archivo_saiu20idarchivo');
 $xajax->register(XAJAX_FUNCTION,'elimina_archivo_saiu20idarchivorta');
 $xajax->register(XAJAX_FUNCTION,'f3020_Combobtema');
 $xajax->processRequest();
-if ($bPeticionXAJAX){
+if ($bPeticionXAJAX) {
 	die(); // Esto hace que las llamadas por xajax terminen aquí.
-	}
-$bcargo=false;
-$sError='';
-$sErrorCerrando='';
-$iTipoError=0;
-$bLimpiaHijos=false;
-$bMueveScroll=false;
-$iSector=1;
+}
+$bcargo = false;
+$sError = '';
+$sErrorCerrando = '';
+$iTipoError = 0;
+$bLimpiaHijos = false;
+$bMueveScroll = false;
+$iSector = 1;
+$iHoy = fecha_DiaMod();
 // -- Se inicializan las variables, primero las que controlan la visualización de la página.
 if (isset($_REQUEST['iscroll'])==0){$_REQUEST['iscroll']=0;}
 if (isset($_REQUEST['paginaf3020'])==0){$_REQUEST['paginaf3020']=1;}
@@ -572,16 +658,18 @@ if ($_REQUEST['paso']==93){
 		}
 	}
 //Eliminar un elemento
-if ($_REQUEST['paso']==13){
-	$_REQUEST['paso']=2;
-	list($sError, $iTipoError, $sDebugElimina)=f3020_db_Eliminar($_REQUEST['saiu20agno'], $_REQUEST['saiu20id'], $objDB, $bDebug);
-	$sDebug=$sDebug.$sDebugElimina;
-	if ($sError==''){
-		$_REQUEST['paso']=-1;
-		$sError=$ETI['msg_itemeliminado'];
-		$iTipoError=1;
-		}
+if ($_REQUEST['paso'] == 13) {
+	$_REQUEST['paso'] = 2;
+	if ($sError == '') {
+		list($sError, $iTipoError, $sDebugElimina)=f3020_db_Eliminar($_REQUEST['saiu20agno'], $_REQUEST['saiu20id'], $objDB, $bDebug);
+		$sDebug = $sDebug . $sDebugElimina;
 	}
+	if ($sError == '') {
+		$_REQUEST['paso'] = -1;
+		$sError = $ETI['msg_itemeliminado'];
+		$iTipoError = 1;
+	}
+}
 // Reasignar responsable.
 if ($_REQUEST['paso'] == 26) {
 	$_REQUEST['paso'] = 2;
@@ -650,7 +738,7 @@ if ($_REQUEST['paso'] == 27) {
 	}
 }
 //limpiar la pantalla
-if ($_REQUEST['paso']==-1){
+if ($_REQUEST['paso'] == -1) {
 	$_REQUEST['saiu20agno']=fecha_agno();
 	$_REQUEST['saiu20mes']=fecha_mes();
 	//$_REQUEST['saiu20tiporadicado']='';
@@ -726,16 +814,18 @@ if ($_REQUEST['paso']==-1){
 	$_REQUEST['saiu20evalutilmotivo']='';
 	$_REQUEST['saiu20idresponsablecaso_td']=$APP->tipo_doc;
 	$_REQUEST['saiu20idresponsablecaso_doc']='';
-	$_REQUEST['paso']=0;
-	}
-if ($bLimpiaHijos){
-	}
+	$_REQUEST['paso'] = 0;
+}
+if ($bLimpiaHijos) {
+}
 //AQUI SE DEBEN CARGAR TODOS LOS DATOS QUE LA FORMA NECESITE.
 $bPuedeAbrir = false;
 $bPuedeEliminar = false;
 $bPuedeGuardar = false;
 $bPuedeCerrar = false;
 $bHayImprimir = false;
+$sScriptImprime = 'imprimeexcel()';
+$sClaseImprime = 'iExcel';
 $bEditable = $_REQUEST['saiu20estado'] == -1 || $_REQUEST['saiu20estado'] == 2;
 $bPermisoSupv = $idTercero == $_REQUEST['saiu20idsupervisorcaso'];
 $bPermisoResp = $idTercero == $_REQUEST['saiu20idresponsablecaso'];
@@ -765,9 +855,9 @@ list($bDevuelve, $sDebugP) = seg_revisa_permisoV3($iCodModulo, 12, $idTercero, $
 if ($bDevuelve) {
 	$seg_12 = 1;
 }
-//list($bDevuelve, $sDebugP)=seg_revisa_permisoV3($iCodModulo, 6, $idTercero, $objDB);
-//if ($bDevuelve){$seg_6=1;}
-//if ($seg_6==1){}
+list($bDevuelve, $sDebugP)=seg_revisa_permisoV3($iCodModulo, 6, $idTercero, $objDB);
+if ($bDevuelve){$seg_6=1;}
+if ($seg_6==1){$bHayImprimir=true;}
 if ((int)$_REQUEST['paso'] == 0) {
 	$bPuedeGuardar = true;
 } else {
@@ -790,9 +880,23 @@ if ((int)$_REQUEST['paso'] == 0) {
 
 	}
 }
+//DATOS PARA COMPLETAR EL FORMULARIO
+$sNombreUsuario = '';
 //Crear los controles que requieran llamado a base de datos
-$objCombos=new clsHtmlCombos();
+$objCombos = new clsHtmlCombos();
+$objForma = new clsHtmlForma($iPiel);
 $objTercero=new clsHtmlTercero();
+if ($seg_1707 == 1) {
+	$sSQL = 'SELECT unad11razonsocial FROM unad11terceros WHERE unad11id=' . $idTercero . '';
+	$tabla = $objDB->ejecutasql($sSQL);
+	if ($objDB->nf($tabla) > 0) {
+		$fila = $objDB->sf($tabla);
+		$sNombreUsuario = cadena_notildes($fila['unad11razonsocial']);
+	}
+	$objCombos->nuevo('deb_tipodoc', $_REQUEST['deb_tipodoc'], false);
+	$objCombos->iAncho = 60;
+	$html_deb_tipodoc = $objCombos->html('', $objDB, 145);
+}
 $iAgnoFin = fecha_agno();
 list($saiu20estado_nombre, $sErrorDet)=tabla_campoxid('saiu11estadosol','saiu11nombre','saiu11id',$_REQUEST['saiu20estado'],'{'.$ETI['msg_sindato'].'}', $objDB);
 $html_saiu20estado=html_oculto('saiu20estado', $_REQUEST['saiu20estado'], $saiu20estado_nombre);
@@ -908,7 +1012,7 @@ if ($bEditable || $bPermisoSupv) {
 	$html_saiu20idperiodo = html_oculto('saiu20idperiodo', $_REQUEST['saiu20idperiodo'], $saiu20idperiodo_nombre);
 	$html_saiu20solucion = html_oculto('saiu20solucion', $_REQUEST['saiu20solucion'], $asaiu20solucion[$_REQUEST['saiu20solucion']]);
 }
-if ((int)$_REQUEST['paso']==0){
+if ((int)$_REQUEST['paso'] == 0) {
 	$html_saiu20agno=f3020_HTMLComboV2_saiu20agno($objDB, $objCombos, $_REQUEST['saiu20agno']);
 	$html_saiu20mes=f3020_HTMLComboV2_saiu20mes($objDB, $objCombos, $_REQUEST['saiu20mes']);
 	$html_saiu20dia=html_ComboDia('saiu20dia', $_REQUEST['saiu20dia'], false);
@@ -946,7 +1050,7 @@ if ($_REQUEST['paso']!=0){
 		}else{
 		}
 	}
-$id_rpt=0;
+$id_rpt = 0;
 //$id_rpt=reportes_id(_Identificador_Tipo_Reporte_, $objDB);
 $objCombos->nuevo('bagno', $_REQUEST['bagno'], false, '{'.$ETI['msg_todos'].'}');
 $objCombos->sAccion='paginarf3020()';
@@ -985,18 +1089,22 @@ $objCombos->nuevo('bagnopqrs', $_REQUEST['bagnopqrs'], false, '{' . $ETI['msg_to
 $objCombos->sAccion = 'paginarf3000pqrs()';
 $objCombos->numeros(2020, $iAgnoFin, 1);
 $html_bagnopqrs = $objCombos->html('', $objDB);
-//$html_blistar=$objCombos->comboSistema(3020, 1, $objDB, 'paginarf3020()');
-if (false){
+//$html_blistar = $objCombos->comboSistema(3020, 1, $objDB, 'paginarf3020()');
+if (false) {
 	$objCombos->nuevo('csv_separa', $_REQUEST['csv_separa'], false);
 	$objCombos->addItem(',', $ETI['msg_coma']);
 	$objCombos->addItem(';', $ETI['msg_puntoycoma']);
-	$csv_separa='<label class="Label90">'.$ETI['msg_separador'].'</label><label class="Label130">'.$objCombos->html('', $objDB).'</label>';
-	}else{
-	$csv_separa='<input id="csv_separa" name="csv_separa" type="hidden" value="," />';
+	$sClaseLabel = 'Label90';
+	if ($iPiel == 2) {
+		$sClaseLabel = 'w-15';
 	}
-$iNumFormatosImprime=0;
-$iModeloReporte=3020;
-$html_iFormatoImprime='<input id="iformatoimprime" name="iformatoimprime" type="hidden" value="0" />';
+	$csv_separa = '<label class="' . $sClaseLabel . '">' . $ETI['msg_separador'] . '</label><label class="' . $sClaseLabel . '">' . $objCombos->html('', $objDB) . '</label>';
+} else {
+	$csv_separa = '<input id="csv_separa" name="csv_separa" type="hidden" value="," />';
+}
+$iNumFormatosImprime = 0;
+$iModeloReporte = 3020;
+$html_iFormatoImprime = '<input id="iformatoimprime" name="iformatoimprime" type="hidden" value="0" />';
 // TODO
 $objCombos->nuevo('saiucanal', $_REQUEST['saiucanal'], false, '{'.$ETI['msg_todas'].'}');
 $objCombos->sAccion='cambiacanal()';
@@ -1018,10 +1126,10 @@ if ($_REQUEST['paso']>0){
 list($sErrorR, $sDebugR) = f3020_RevTabla_saiu20correo($_REQUEST['saiu20agno'], $objDB, $bDebug);
 $sError = $sError . $sErrorR;
 $sDebug = $sDebug . $sDebugR;
-$aParametros[0]='';//$_REQUEST['p1_3020'];
-$aParametros[100]=$idTercero;
-$aParametros[101]=$_REQUEST['paginaf3020'];
-$aParametros[102]=$_REQUEST['lppf3020'];
+$aParametros[0] = ''; //$_REQUEST['p1_3020'];
+$aParametros[100] = $idTercero;
+$aParametros[101] = $_REQUEST['paginaf3020'];
+$aParametros[102] = $_REQUEST['lppf3020'];
 $aParametros[103]=$_REQUEST['bnombre'];
 $aParametros[104]=$_REQUEST['bagno'];
 $aParametros[105] = $_REQUEST['bestado'];
@@ -1029,8 +1137,8 @@ $aParametros[106] = $_REQUEST['blistar'];
 $aParametros[107] = $_REQUEST['bdoc'];
 $aParametros[108] = $_REQUEST['bcategoria'];
 $aParametros[109] = $_REQUEST['btema'];
-list($sTabla3020, $sDebugTabla)=f3020_TablaDetalleV2($aParametros, $objDB, $bDebug);
-$sDebug=$sDebug.$sDebugTabla;
+list($sTabla3020, $sDebugTabla) = f3020_TablaDetalleV2($aParametros, $objDB, $bDebug);
+$sDebug = $sDebug . $sDebugTabla;
 $sTabla3000='';
 $aParametros3000[0]=$idTercero;
 $aParametros3000[1]=$iCodModulo;
@@ -1059,38 +1167,17 @@ switch ($iPiel) {
 		list($et_menu, $sDebugM) = html_menuV2($APP->idsistema, $objDB, $iPiel, $bDebugMenu, $idTercero);
 		break;
 }
-$sDebug=$sDebug.$sDebugM;
+$sDebug = $sDebug . $sDebugM;
 $objDB->CerrarConexion();
 //FORMA
 switch ($iPiel) {
 	case 2:
-		require $APP->rutacomun . 'unad_forma2023.php';
-		forma_InicioV4($xajax, $ETI['titulo_3020']);
-		break;
-	default:
-		require $APP->rutacomun . 'unad_forma_v2.php';
-		forma_cabeceraV3($xajax, $ETI['titulo_3020']);
-		echo $et_menu;
-		forma_mitad();
-		break;
-}
-?>
-<script language="javascript" src="<?php echo $APP->rutacomun; ?>js/jquery-3.3.1.min.js"></script>
-<script language="javascript" src="<?php echo $APP->rutacomun; ?>js/popper.min.js"></script>
-<script language="javascript" src="<?php echo $APP->rutacomun; ?>js/bootstrap.min.js"></script>
-<link rel="stylesheet" href="<?php echo $APP->rutacomun; ?>js/bootstrap.min.css" type="text/css"/>
-<link rel="stylesheet" href="<?php echo $APP->rutacomun; ?>css/criticalPath.css" type="text/css"/>
-<link rel="stylesheet" href="<?php echo $APP->rutacomun; ?>css/principal.css" type="text/css"/>
-<link rel="stylesheet" href="<?php echo $APP->rutacomun; ?>unad_estilos2018.css" type="text/css"/>
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.0.1/css/font-awesome.min.css">
-<link rel="stylesheet" href="<?php echo $APP->rutacomun; ?>css/css_tabs.css" type="text/css" />
-<?php
-switch ($iPiel) {
-	case 2:
+		require $APP->rutacomun . 'unad_forma2024.php';
+		forma_InicioV4($xajax, $sTituloModulo);
 		$aRutas = array(
-			array('', 'SAI'), 
-			array('./saiucorreo.php', 'Registro de Atenciones'), 
-			array('', $ETI['titulo_3020'])
+			array('./', $sTituloApp),
+			array('./' . $sPaginaModulo, $sGrupoModulo),
+			array('', $sTituloModulo)
 		);
 		$iNumBoton = 0;
 		$aBotones[$iNumBoton] = array('muestraayuda(' . $APP->idsistema . ', ' . $iCodModulo . ')', $ETI['bt_ayuda'], 'iHelp');
@@ -1100,7 +1187,7 @@ switch ($iPiel) {
 			$iNumBoton++;
 		}
 		if ($bHayImprimir) {
-			$aBotones[$iNumBoton] = array($sScriptImprime, $ETI['bt_imprimir'], 'iPrint');
+			$aBotones[$iNumBoton] = array($sScriptImprime, $ETI['bt_imprimir'], $sClaseImprime);
 			$iNumBoton++;
 		}
 		$aBotones[$iNumBoton] = array('limpiapagina()', $ETI['bt_limpiar'], 'iDocument');
@@ -1113,20 +1200,22 @@ switch ($iPiel) {
 			$aBotones[$iNumBoton] = array('enviacerrar()', $ETI['bt_cerrar'], 'iTask');
 			$iNumBoton++;
 		}
-		forma_cabeceraV4($aRutas, $aBotones, true, $bDebug);
+		$aBotones[$iNumBoton] = array('expandesector(1)', $ETI['bt_volver'], 'iArrowBack', 97);
+		$iNumBoton++;
+		forma_cabeceraV4b($aRutas, $aBotones, true, $iSector);
 		echo $et_menu;
 		forma_mitad($idTercero);
 		break;
 	default:
+		require $APP->rutacomun . 'unad_forma_v2_2024.php';
+		forma_cabeceraV3($xajax, $sTituloModulo);
+		echo $et_menu;
+		forma_mitad();
 		break;
 }
 ?>
+<link rel="stylesheet" href="<?php echo $APP->rutacomun; ?>css/css_tabs.css" type="text/css" />
 <script language="javascript">
-function limpiapagina(){
-	expandesector(98);
-	window.document.frmedita.paso.value=-1;
-	window.document.frmedita.submit();
-	}
 function enviaguardar(){
 	window.document.frmedita.iscroll.value=window.pageYOffset;
 	expandesector(98);
@@ -1148,46 +1237,68 @@ function cambiapaginaV2(){
 	window.document.frmedita.submit();
 	}
 function expandepanel(codigo,estado,valor){
-	var objdiv= document.getElementById('div_p'+codigo);
-	var objban= document.getElementById('boculta'+codigo);
-	var otroestado='none';
-	if (estado=='none'){otroestado='block';}
+	let objdiv= document.getElementById('div_p'+codigo);
+	let objban= document.getElementById('boculta'+codigo);
+	let otroestado='none';
+	if (estado=='none'){
+		otroestado='block';
+	}
 	objdiv.style.display=estado;
 	objban.value=valor;
 	verboton('btrecoge'+codigo,estado);
 	verboton('btexpande'+codigo,otroestado);
 	}
 function verboton(idboton,estado){
-	var objbt=document.getElementById(idboton);
+	let objbt=document.getElementById(idboton);
 	objbt.style.display=estado;
 	}
-function expandesector(codigo){
-	document.getElementById('div_sector1').style.display='none';
-	document.getElementById('div_sector2').style.display='none';
+function expandesector(codigo) {
+	document.getElementById('div_sector1').style.display = 'none';
+	document.getElementById('div_sector2').style.display = 'none';
 	document.getElementById('div_sector93').style.display='none';
-	document.getElementById('div_sector95').style.display='none';
-	document.getElementById('div_sector96').style.display='none';
+	document.getElementById('div_sector95').style.display = 'none';
+	document.getElementById('div_sector96').style.display = 'none';
 	document.getElementById('div_sector97').style.display='none';
-	document.getElementById('div_sector98').style.display='none';
-	document.getElementById('div_sector'+codigo).style.display='block';
-	let sEst = 'none';
-	if (codigo == 1) {
-		sEst = 'block';
-	}
+	document.getElementById('div_sector98').style.display = 'none';
+	document.getElementById('div_sector' + codigo).style.display = 'block';
 <?php
-switch($iPiel) {
+switch ($iPiel) {
 	case 2:
 ?>
-	document.getElementById('nav').style.display = sEst;
-	document.getElementById('botones_sup').style.display = sEst;
+		document.getElementById('botones_sector1').style.display = 'none';
+		document.getElementById('botones_sector97').style.display = 'none';
+		switch (codigo) {
+			case 1:
+				document.getElementById('botones_sector1').style.display = 'flex';
+				break;
+			case 2:
+				document.getElementById('botones_sector2').style.display = 'flex';
+				break;
+			case 97:
+				document.getElementById('botones_sector1').style.display = 'none';
+				document.getElementById('botones_sector' + codigo).style.display = 'flex';
+				break;
+			default:
+				//document.getElementById('botones_sector1').style.display = 'none';
+				break;
+		}
+		if (codigo == 1) {
+			document.getElementById('nav').removeAttribute('disabled');
+		} else {
+			document.getElementById('nav').setAttribute('disabled', '');
+		}
 <?php
 		break;
 	default:
-		if ($bPuedeGuardar) {
+		if ($bPuedeGuardar && $bBloqueTitulo) {
 ?>
-	if (window.document.frmedita.saiu20estado.value<7){
+		let sEst = 'none';
+		if (codigo == 1) {
+			sEst = 'block';
+		}
+		if (window.document.frmedita.saiu20estado.value<7){
 		document.getElementById('cmdGuardarf').style.display = sEst;
-	}
+		}
 <?php
 		}
 		break;
@@ -1197,11 +1308,11 @@ switch($iPiel) {
 function ter_retorna(){
 	var sRetorna=window.document.frmedita.div96v2.value;
 	if (sRetorna!=''){
-		var idcampo=window.document.frmedita.div96campo.value;
-		var illave=window.document.frmedita.div96llave.value;
-		var did=document.getElementById(idcampo);
-		var dtd=document.getElementById(idcampo+'_td');
-		var ddoc=document.getElementById(idcampo+'_doc');
+		let idcampo=window.document.frmedita.div96campo.value;
+		let illave=window.document.frmedita.div96llave.value;
+		let did=document.getElementById(idcampo);
+		let dtd=document.getElementById(idcampo+'_td');
+		let ddoc=document.getElementById(idcampo+'_doc');
 		dtd.value=window.document.frmedita.div96v1.value;
 		ddoc.value=sRetorna;
 		did.value=window.document.frmedita.div96v3.value;
@@ -1223,10 +1334,10 @@ function ter_muestra(idcampo, illave){
 		if (idcampo=='saiu20idsolicitante'){
 			params[6]=3020;
 			xajax_unad11_Mostrar_v2SAI(params);
-			}else{
-			xajax_unad11_Mostrar_v2(params);
-			}
 		}else{
+			xajax_unad11_Mostrar_v2(params);
+		}
+	}else{
 		document.getElementById(idcampo).value=0;
 		document.getElementById('div_'+idcampo).innerHTML='&nbsp;';
 		paginarf3000();
@@ -1240,7 +1351,7 @@ function ter_muestra(idcampo, illave){
 	}
 }
 function ter_traerxid(idcampo, vrcampo){
-	var params=new Array();
+	let params=new Array();
 	params[0]=vrcampo;
 	params[1]=idcampo;
 	if (params[0]!=0){
@@ -1266,7 +1377,7 @@ function asignarvariables(){
 	window.document.frmimpp.separa.value = window.document.frmedita.csv_separa.value.trim();
 }
 function imprimeexcel(){
-	var sError='';
+	let sError='';
 	if (window.document.frmedita.seg_6.value!=1){sError="<?php echo $ERR['6']; ?>";}
 	//if (sError==''){/*Agregar validaciones*/}
 	if (sError==''){
@@ -1307,7 +1418,7 @@ function ejecuta_eliminadato(){
 	window.document.frmedita.submit();
 	}
 function RevisaLlave(){
-	var datos= new Array();
+	let datos= new Array();
 	datos[1]=window.document.frmedita.saiu20agno.value;
 	datos[2]=window.document.frmedita.saiu20mes.value;
 	datos[3]=window.document.frmedita.saiu20tiporadicado.value;
@@ -1331,44 +1442,44 @@ function cargaridf3020(llave1, llave2){
 	window.document.frmedita.submit();
 	}
 function carga_combo_saiu20tiposolicitud(){
-	var params=new Array();
+	let params=new Array();
 	params[0]=window.document.frmedita.saiu20temasolicitud.value;
 	document.getElementById('div_saiu20tiposolicitud').innerHTML='<b>Procesando datos, por favor espere...</b><input id="saiu20tiposolicitud" name="saiu20tiposolicitud" type="hidden" value="" />';
 	document.getElementById('div_saiu20temasolicitud').innerHTML='<b>Procesando datos, por favor espere...</b><input id="saiu20temasolicitud" name="saiu20temasolicitud" type="hidden" value="" />';
 	xajax_f3020_Combosaiu20tiposolicitud(params);
 	}
 function carga_combo_saiu20temasolicitud(){
-	var params=new Array();
+	let params=new Array();
 	params[0]=window.document.frmedita.saiu20tiposolicitud.value;
 	document.getElementById('div_saiu20temasolicitud').innerHTML='<b>Procesando datos, por favor espere...</b><input id="saiu20temasolicitud" name="saiu20temasolicitud" type="hidden" value="" />';
 	xajax_f3020_Combosaiu20temasolicitud(params);
 	}
 function carga_combo_saiu20idcentro(){
-	var params=new Array();
+	let params=new Array();
 	params[0]=window.document.frmedita.saiu20idzona.value;
 	document.getElementById('div_saiu20idcentro').innerHTML='<b>Procesando datos, por favor espere...</b><input id="saiu20idcentro" name="saiu20idcentro" type="hidden" value="" />';
 	xajax_f3020_Combosaiu20idcentro(params);
 	}
 function carga_combo_saiu20coddepto(){
-	var params=new Array();
+	let params=new Array();
 	params[0]=window.document.frmedita.saiu20codpais.value;
 	document.getElementById('div_saiu20coddepto').innerHTML='<b>Procesando datos, por favor espere...</b><input id="saiu20coddepto" name="saiu20coddepto" type="hidden" value="" />';
 	xajax_f3020_Combosaiu20coddepto(params);
 	}
 function carga_combo_saiu20codciudad(){
-	var params=new Array();
+	let params=new Array();
 	params[0]=window.document.frmedita.saiu20coddepto.value;
 	document.getElementById('div_saiu20codciudad').innerHTML='<b>Procesando datos, por favor espere...</b><input id="saiu20codciudad" name="saiu20codciudad" type="hidden" value="" />';
 	xajax_f3020_Combosaiu20codciudad(params);
 	}
 function carga_combo_saiu20idprograma(){
-	var params=new Array();
+	let params=new Array();
 	params[0]=window.document.frmedita.saiu20idescuela.value;
 	document.getElementById('div_saiu20idprograma').innerHTML='<b>Procesando datos, por favor espere...</b><input id="saiu20idprograma" name="saiu20idprograma" type="hidden" value="" />';
 	xajax_f3020_Combosaiu20idprograma(params);
 	}
-function paginarf3020(){
-	var params=new Array();
+function paginarf3020() {
+	let params = new Array();
 	params[99]=window.document.frmedita.debug.value;
 	params[100]=<?php echo $idTercero; ?>;
 	params[101]=window.document.frmedita.paginaf3020.value;
@@ -1384,12 +1495,14 @@ function paginarf3020(){
 	xajax_f3020_HtmlTabla(params);
 	}
 function enviacerrar(){
-	if (confirm('Esta seguro de cerrar el registro?\nluego de cerrado no se permite modificar')){
+	ModalMensajeV2('<?php echo $ETI['msg_cerrar']; ?>', () => {
 		expandesector(98);
 		window.document.frmedita.paso.value=16;
 		window.document.frmedita.submit();
-		}
-	}
+	}, {
+		botonAceptar: 'Cerrar'
+	});
+}
 function enviaabrir(){
 	if (confirm('Esta seguro de abrir el registro?\nesto le permite volver a modificar')){
 		expandesector(98);
@@ -1412,7 +1525,7 @@ function objinicial(){
 	document.getElementById("saiu20agno").focus();
 	}
 function buscarV2016(sCampo){
-	window.document.frmedita.iscroll.value=window.pageYOffset;
+	window.document.frmedita.iscroll.value=window.scrollY;
 	expandesector(98);
 	window.document.frmedita.scampobusca.value=sCampo;
 	var params=new Array();
@@ -1426,7 +1539,7 @@ function retornacontrol(){
 	window.scrollTo(0, window.document.frmedita.iscroll.value);
 	}
 function Devuelve(sValor){
-	var sCampo=window.document.frmedita.scampobusca.value;
+	let sCampo=window.document.frmedita.scampobusca.value;
 	if (sCampo=='saiu20idsolicitante'){
 		ter_traerxid('saiu20idsolicitante', sValor);
 		}
@@ -1438,7 +1551,7 @@ function Devuelve(sValor){
 function mantener_sesion(){xajax_sesion_mantenerV4();}
 setInterval ('xajax_sesion_abandona_V2();', 60000);
 function AyudaLocal(sCampo){
-	var divAyuda=document.getElementById('div_ayuda_'+sCampo);
+	let divAyuda=document.getElementById('div_ayuda_'+sCampo);
 	if (typeof divAyuda==='undefined'){
 		}else{
 		verboton('cmdAyuda_'+sCampo, 'none');
@@ -1449,7 +1562,7 @@ function AyudaLocal(sCampo){
 		}
 	}
 function cierraDiv96(ref){
-	var sRetorna=window.document.frmedita.div96v2.value;
+	let sRetorna=window.document.frmedita.div96v2.value;
 	if (ref == '3020') {
 		if (sRetorna != '') {
 			window.document.frmedita.saiu20idorigen.value = window.document.frmedita.div96v1.value;
@@ -1479,7 +1592,7 @@ function ejecuta_modconsec(){
 	window.document.frmedita.submit();
 	}
 function paginarf3000(){
-	var params=new Array();
+	let params=new Array();
 	params[0]=window.document.frmedita.id11.value;
 	params[1]=3020;
 	params[2]=window.document.frmedita.saiu20agno.value;
@@ -1494,7 +1607,7 @@ function paginarf3000(){
 	xajax_f3000_HtmlTabla(params);
 	}
 function paginarf3000pqrs(){
-	var params=new Array();
+	let params=new Array();
 	params[0]=window.document.frmedita.id11.value;
 	params[1]=3020;
 	params[2]=window.document.frmedita.saiu20agno.value;
@@ -1546,7 +1659,7 @@ function valida_combo_saiu20solucion() {
 	}
 }
 function actualizaratiende() {
-	var sError = '';
+	let sError = '';
 	if (window.document.frmedita.saiu20id.value == '') {
 		sError = 'Por favor seleccione una solicitud.';
 	}
@@ -1581,7 +1694,7 @@ if ($_REQUEST['saiu20estado'] < 7) {
 ?>
 function abrir_tab(evt, sId) {
 	evt.preventDefault();
-	var i, tabcontent, tablinks;
+	let i, tabcontent, tablinks;
 	tabcontent = document.getElementsByClassName("tabcontent");
 	for (i = 0; i < tabcontent.length; i++) {
 		tabcontent[i].style.display = "none";
@@ -1665,7 +1778,7 @@ if (true) {
 }
 ?>
 function carga_combo_btema() {
-	var params = new Array();
+	let params = new Array();
 	params[0] = window.document.frmedita.bcategoria.value;
 	document.getElementById('div_btema').innerHTML = '<b>Procesando datos, por favor espere...</b><input id="btema" name="btema" type="hidden" value="" />';
 	xajax_f3020_Combobtema(params);
@@ -1680,11 +1793,12 @@ function carga_combo_btema() {
  }
 </script>
 <?php
-if ($_REQUEST['paso']!=0){
+// if ($_REQUEST['paso']!=0){
 ?>
-<form id="frmimpp" name="frmimpp" method="post" action="p3020.php" target="_blank">
+<form id="frmimpp" name="frmimpp" method="post" action="p3020.php" target="_blank" style="display:none;">
 <input id="r" name="r" type="hidden" value="3020" />
 <input id="id3020" name="id3020" type="hidden" value="<?php echo $_REQUEST['saiu20id']; ?>" />
+<input id="v0" name="v0" type="hidden" value="" />
 <input id="v3" name="v3" type="hidden" value="" />
 <input id="v4" name="v4" type="hidden" value="" />
 <input id="v5" name="v5" type="hidden" value="" />
@@ -1694,24 +1808,25 @@ if ($_REQUEST['paso']!=0){
 <input id="clave" name="clave" type="hidden" value="" />
 </form>
 <?php
-	}
+// }
 ?>
-<form id="frmlista" name="frmlista" method="post" action="listados.php" target="_blank">
+<form id="frmlista" name="frmlista" method="post" action="listados.php" target="_blank" style="display:none;">
 <input id="titulos" name="titulos" type="hidden" value="" />
 <input id="consulta" name="consulta" type="hidden" value="" />
 <input id="nombrearchivo" name="nombrearchivo" type="hidden" value="" />
 </form>
 <div id="interna">
 <form id="frmedita" name="frmedita" method="post" action="" autocomplete="off">
-<input id="bNoAutocompletar" name="bNoAutocompletar" type="password" value="" style="display:none;"/>
+<input id="bNoAutocompletar" name="bNoAutocompletar" type="password" value="" style="display:none;" />
 <input id="paso" name="paso" type="hidden" value="<?php echo $_REQUEST['paso']; ?>" />
 <input id="shoy" name="shoy" type="hidden" value="<?php echo fecha_hoy(); ?>" />
-<input id="ihoy" name="ihoy" type="hidden" value="<?php echo fecha_DiaMod(); ?>" />
+<input id="ihoy" name="ihoy" type="hidden" value="<?php echo $iHoy; ?>" />
 <input id="shora" name="shora" type="hidden" value="<?php echo fecha_hora(); ?>" />
 <input id="stipodoc" name="stipodoc" type="hidden" value="<?php echo $APP->tipo_doc; ?>" />
 <input id="idusuario" name="idusuario" type="hidden" value="<?php echo $_SESSION['unad_id_tercero']; ?>" />
 <input id="id11" name="id11" type="hidden" value="<?php echo $idTercero; ?>" />
 <input id="ipiel" name="ipiel" type="hidden" value="<?php echo $iPiel; ?>" />
+<input id="icodmodulo" name="icodmodulo" type="hidden" value="<?php echo $iCodModulo; ?>" />
 <input id="seg_5" name="seg_5" type="hidden" value="<?php echo $seg_5; ?>" />
 <input id="seg_6" name="seg_6" type="hidden" value="<?php echo $seg_6; ?>" />
 <input id="vdtipointeresado" name="vdtipointeresado" type="hidden" value="<?php echo $_REQUEST['vdtipointeresado']; ?>" />
@@ -1737,15 +1852,12 @@ echo $html_saiucanal;
 </div>
 </div>
 <!-- TODO -->
-<?php 
-switch ($iPiel) {
-	case 2:
-		break;
-	default:
+<?php
+if ($bBloqueTitulo) {
 ?>
 <div class="titulos">
 <div class="titulosD">
-<input id="cmdAyuda" name="cmdAyuda" type="button" class="btUpAyuda" onclick="muestraayuda(<?php echo $APP->idsistema.', '.$iCodModulo; ?>);" title="<?php echo $ETI['bt_ayuda']; ?>" value="<?php echo $ETI['bt_ayuda']; ?>"/>
+<input id="cmdAyuda" name="cmdAyuda" type="button" class="btUpAyuda" onclick="muestraayuda(<?php echo $APP->idsistema . ', ' . $iCodModulo; ?>);" title="<?php echo $ETI['bt_ayuda']; ?>" value="<?php echo $ETI['bt_ayuda']; ?>" />
 <?php
 if ($_REQUEST['paso']==2){
 	if ($_REQUEST['saiu20estado']<7 && $bPuedeEliminar){
@@ -1753,28 +1865,6 @@ if ($_REQUEST['paso']==2){
 <input id="cmdEliminar" name="cmdEliminar" type="button" class="btUpEliminar" onclick="eliminadato();" title="<?php echo $ETI['bt_eliminar']; ?>" value="<?php echo $ETI['bt_eliminar']; ?>"/>
 <?php
 		}
-	}
-$bHayImprimir=false;
-$sScript='imprimelista()';
-$sClaseBoton='btEnviarExcel';
-if ($seg_6==1){$bHayImprimir=true;}
-if ($_REQUEST['paso']!=0){
-	if ($seg_5==1){
-		if ($_REQUEST['saiu20estado']>6){
-			//$bHayImprimir=true;
-			//$sScript='imprimep()';
-			//if ($iNumFormatosImprime>0){
-				//$sScript='expandesector(94)';
-				//}
-			//$sClaseBoton='btEnviarPDF'; //btUpPrint
-			//if ($id_rpt!=0){$sScript='verrpt()';}
-			}
-		}
-	}
-if ($bHayImprimir){
-?>
-<input id="cmdImprimir" name="cmdImprimir" type="button" class="<?php echo $sClaseBoton; ?>" onclick="<?php echo $sScript; ?>" title="<?php echo $ETI['bt_imprimir']; ?>" value="<?php echo $ETI['bt_imprimir']; ?>"/>
-<?php
 	}
 ?>
 <input id="cmdLimpiar" name="cmdLimpiar" type="button" class="btUpLimpiar" onclick="limpiapagina();" title="<?php echo $ETI['bt_limpiar']; ?>" value="<?php echo $ETI['bt_limpiar']; ?>"/>
@@ -1806,12 +1896,12 @@ if (false){
 </div>
 <div class="titulosI">
 <?php
-echo '<h2>'.$ETI['titulo_3020'].'</h2>';
+echo '<h2>' . $sTituloModulo . '</h2>';
 ?>
 </div>
 </div>
 <?php
-break;
+	//Termina el bloque titulo
 }
 ?>
 <div class="areaform">
@@ -1826,7 +1916,7 @@ Documento
 </label>
 <label class="Label60">
 <?php
-echo html_tipodocV2('deb_tipodoc', $_REQUEST['deb_tipodoc']);
+echo $html_deb_tipodoc;
 ?>
 </label>
 <label class="Label160">
@@ -1837,7 +1927,7 @@ echo html_tipodocV2('deb_tipodoc', $_REQUEST['deb_tipodoc']);
 <label class="Label30">
 <input id="btRevisaDoc" name="btRevisaDoc" type="button" value="Actualizar" class="btMiniActualizar" onclick="limpiapagina()" title="Consultar documento" />
 </label>
-<label class="Label30"></label>
+<label class="Label30">&nbsp;</label>
 <b>
 <?php
 echo $sNombreUsuario;
@@ -1853,32 +1943,24 @@ echo $sNombreUsuario;
 <input id="deb_doc" name="deb_doc" type="hidden" value="<?php echo $_REQUEST['deb_doc']; ?>" />
 <?php
 }
+?>
+<?php
 //Div para ocultar
-$bConExpande=true;
-if ($bConExpande){
+$bConExpande = true;
+if ($bConExpande) {
 ?>
 <div class="ir_derecha"<?php echo $sAnchoExpandeContrae; ?>>
 <?php
-$sEstiloExpande = ' style="display:none;"';
-$sEstiloRecoje = '';
+echo $objForma->htmlExpande(3020, $_REQUEST['boculta3020'], $ETI['bt_mostrar'], $ETI['bt_ocultar']);
 $sEstiloDiv = '';
 if ($_REQUEST['boculta3020'] != 0) {
-	$sEstiloExpande = '';
-	$sEstiloRecoje = ' style="display:none;"';
 	$sEstiloDiv = ' style="display:none;"';
 }
 ?>
-<input id="boculta3020" name="boculta3020" type="hidden" value="<?php echo $_REQUEST['boculta3020']; ?>" />
-<label class="Label30">
-<input id="btexpande3020" name="btexpande3020" type="button" value="Mostrar" class="btMiniExpandir" onclick="expandepanel(3020,'block',0);" title="<?php echo $ETI['bt_mostrar']; ?>" style="display:<?php if ($_REQUEST['boculta3020']==0){echo 'none'; }else{echo 'block';} ?>;"/>
-</label>
-<label class="Label30">
-<input id="btrecoge3020" name="btrecoge3020" type="button" value="Ocultar" class="btMiniRecoger" onclick="expandepanel(3020,'none',1);" title="<?php echo $ETI['bt_ocultar']; ?>" style="display:<?php if ($_REQUEST['boculta3020']==0){echo 'block'; }else{echo 'none';} ?>;"/>
-</label>
 </div>
-<div id="div_p3020" style="display:<?php if ($_REQUEST['boculta3020']==0){echo 'block'; }else{echo 'none';} ?>;">
+<div id="div_p3020"<?php echo $sEstiloDiv; ?>>
 <?php
-	}
+}
 //Mostrar formulario para editar
 ?>
 <label class="Label130">
@@ -1995,7 +2077,7 @@ if ($_REQUEST['saiu20idcorreo'] == 3) {
 }
 ?>
 <label id="lbl_saiu20idcorreootro" <?php echo $sEstilo; ?>>
-<input id="saiu20idcorreootro" name="saiu20idcorreootro" type="text" value="<?php echo $_REQUEST['saiu20idcorreootro']; ?>" maxlength="20" placeholder="<?php echo $ETI['ing_campo'].$ETI['saiu20idcorreo']; ?>" class="L"/>
+<input id="saiu20idcorreootro" name="saiu20idcorreootro" type="text" value="<?php echo $_REQUEST['saiu20idcorreootro']; ?>" maxlength="50" placeholder="<?php echo $ETI['ing_campo'].$ETI['saiu20idcorreo']; ?>" class="L"/>
 </label>
 <div class="salto1px"></div>
 <div class="GrupoCampos450">
@@ -2030,7 +2112,7 @@ echo $html_saiu20tipointeresado;
 <?php
 echo $ETI['saiu20correoorigen'];
 ?>
-<input id="saiu20correoorigen" name="saiu20correoorigen" type="text" value="<?php echo $_REQUEST['saiu20correoorigen']; ?>" maxlength="20" placeholder="<?php echo $ETI['ing_campo'].$ETI['saiu20correoorigen']; ?>" class="L"/>
+<input id="saiu20correoorigen" name="saiu20correoorigen" type="text" value="<?php echo $_REQUEST['saiu20correoorigen']; ?>" maxlength="50" placeholder="<?php echo $ETI['ing_campo'].$ETI['saiu20correoorigen']; ?>" class="L"/>
 </label>
 <div class="salto1px"></div>
 <?php
@@ -2537,22 +2619,23 @@ if ($_REQUEST['saiu20estado'] < 7) {
 // Fin caja - responsable caso
 ?>
 <?php
-if (false){
+if (false) {
 	//Ejemplo de boton de ayuda
 	//echo html_BotonAyuda('NombreCampo');
 	//echo html_DivAyudaLocal('NombreCampo');
-	}
-if ($bConExpande){
+}
+if ($bConExpande) {
 	//Este es el cierre del div_p3020
 ?>
 <div class="salto1px"></div>
 </div>
 <?php
-	}
+}
 //Mostrar el contenido de la tabla
+// CIERRA EL DIV areatrabajo
 ?>
-</div><!-- CIERRA EL DIV areatrabajo -->
-</div><!-- CIERRA EL DIV areaform -->
+</div>
+</div>
 <div class="areaform">
 <div class="areatitulo">
 <?php
@@ -2644,10 +2727,13 @@ echo $sTabla3020;
 </div>
 </div><!-- /div_areatrabajo -->
 </div><!-- /DIV_areaform -->
-</div><!-- /DIV_Sector1 -->
+</div>
 
 
 <div id="div_sector2" style="display:none">
+<?php
+// if ($bBloqueTitulo) {
+?>
 <div class="titulos">
 <div class="titulosD">
 <input id="cmdAyuda2" name="cmdAyuda2" type="button" class="btSupAyuda" onclick="muestraayuda(<?php echo $iCodModulo; ?>);" title="<?php echo $ETI['bt_ayuda']; ?>" value="<?php echo $ETI['bt_ayuda']; ?>" />
@@ -2659,8 +2745,11 @@ echo '<h2>' . $ETI['titulo_sector2_reasigna'] . '</h2>';
 ?>
 </div>
 </div>
-<div id="cargaForm">
-<div id="area">
+<?php
+// }
+?>
+<div class="areaform">
+<div class="areatrabajo">
 <?php
 if ($_REQUEST['saiu20estado'] < 7) {
 if ($idTercero == $_REQUEST['saiu20idsupervisorcaso'] || $seg_1707) {
@@ -2765,13 +2854,11 @@ echo $objForma->htmlBotonSolo('cmdCambiaConsecFinal', 'botonProceso', 'mod_conse
 echo $objForma->htmlFinMarco();
 ?>
 </div><!-- /DIV_Sector93 -->
-
-
 <div id="div_sector95" style="display:none">
-<div id="cargaForm">
+<div class="areaform">
 <div id="div_95cuerpo"></div>
-</div><!-- /DIV_cargaForm -->
-</div><!-- /DIV_Sector95 -->
+</div>
+</div>
 
 
 <div id="div_sector96" style="display:none">
@@ -2780,110 +2867,126 @@ echo $objForma->htmlFinMarco();
 <input id="div96v3" name="div96v3" type="hidden" value="" />
 <input id="div96campo" name="div96campo" type="hidden" value="" />
 <input id="div96llave" name="div96llave" type="hidden" value="" />
-<input id="titulo_3020" name="titulo_3020" type="hidden" value="<?php echo $ETI['titulo_3020']; ?>" />
+<input id="titulo_3020" name="titulo_3020" type="hidden" value="<?php echo $sTituloModulo; ?>" />
+<?php
+if ($bBloqueTitulo) {
+?>
 <div class="titulos">
 <div class="titulosD">
-<input id="cmdAyuda96" name="cmdAyuda96" type="button" class="btSupAyuda" onclick="muestraayuda(<?php echo $iCodModulo; ?>);" title="<?php echo $ETI['bt_ayuda']; ?>" value="<?php echo $ETI['bt_ayuda']; ?>"/>
+<input id="cmdAyuda96" name="cmdAyuda96" type="button" class="btSupAyuda" onclick="muestraayuda(<?php echo $iCodModulo; ?>);" title="<?php echo $ETI['bt_ayuda']; ?>" value="<?php echo $ETI['bt_ayuda']; ?>" />
 </div>
 <div class="titulosI" id="div_96titulo"></div>
 </div>
-<div id="cargaForm">
+<?php
+} else {
+?>
+<div id="div_96titulo" style="display:none"></div>
+<?php
+}
+?>
+<div class="areaform">
 <div id="div_96cuerpo"></div>
-</div><!-- /DIV_cargaForm -->
-</div><!-- /DIV_Sector96 -->
-
+</div>
+</div>
 
 <div id="div_sector97" style="display:none">
-<div class="titulos">
-<div class="titulosD">
-<input id="cmdAyuda97" name="cmdAyuda97" type="button" class="btSupAyuda" onclick="muestraayuda(<?php echo $iCodModulo; ?>);" title="<?php echo $ETI['bt_ayuda']; ?>" value="<?php echo $ETI['bt_ayuda']; ?>"/>
-<input id="cmdVolverSec97" name="cmdVolverSec97" type="button" class="btSupVolver" onclick="retornacontrol();" title="<?php echo $ETI['bt_volver']; ?>" value="<?php echo $ETI['bt_volver']; ?>"/>
-</div>
-<div class="titulosI" id="div_97titulo">
 <?php
-echo '<h2>'.$ETI['titulo_3020'].'</h2>';
+$objForma = new clsHtmlForma($iPiel);
+if ($bBloqueTitulo) {
+	$objForma->addBoton('cmdAyuda97', 'btSupAyuda', 'muestraayuda(' . $iCodModulo . ');', $ETI['bt_ayuda']);
+	$objForma->addBoton('cmdVolverSec97', 'btSupVolver', 'retornacontrol();', $ETI['bt_volver']);
+	echo $objForma->htmlTitulo($sTituloModulo, $iCodModulo, 'div_97titulo');
+}
+echo $objForma->htmlInicioMarco();
 ?>
-</div>
-</div>
-<div id="cargaForm">
-<div id="area">
 <div id="div_97params"></div>
 <div class="salto1px"></div>
 <div id="div_97tabla"></div>
-</div><!-- /div_area -->
-</div><!-- /DIV_cargaForm -->
+<?php
+echo $objForma->htmlFinMarco();
+?>
 </div><!-- /DIV_Sector97 -->
 
-
 <div id="div_sector98" style="display:none">
+<?php
+if ($bBloqueTitulo) {
+?>
 <div class="titulos">
 <div class="titulosD">
-<input id="cmdAyuda98" name="cmdAyuda98" type="button" class="btSupAyuda" onclick="muestraayuda(<?php echo $iCodModulo; ?>);" title="<?php echo $ETI['bt_ayuda']; ?>" value="<?php echo $ETI['bt_ayuda']; ?>"/>
+<input id="cmdAyuda98" name="cmdAyuda98" type="button" class="btSupAyuda" onclick="muestraayuda(<?php echo $iCodModulo; ?>);" title="<?php echo $ETI['bt_ayuda']; ?>" value="<?php echo $ETI['bt_ayuda']; ?>" />
 </div>
 <div class="titulosI">
 <?php
-echo '<h2>'.$ETI['titulo_3020'].'</h2>';
+echo '<h2>' . $sTituloModulo . '</h2>';
 ?>
 </div>
 </div>
-<div id="cargaForm">
-<div id="area">
+<?php
+}
+?>
+<div class="areaform">
+<div class="areatrabajo">
 <div class="MarquesinaMedia">
 <?php
 echo $ETI['msg_espere'];
 ?>
-</div><!-- /Termina la marquesina -->
-</div><!-- /div_area -->
-</div><!-- /DIV_cargaForm -->
-</div><!-- /DIV_Sector98 -->
+</div>
+</div>
+</div>
+</div>
 
 
 <?php
-if ($sDebug!=''){
-	$iSegFin=microtime(true);
-	$iSegundos=$iSegFin-$iSegIni;
-	echo '<div class="salto1px"></div><div class="GrupoCampos" id="div_debug">'.$sDebug.fecha_microtiempo().' Tiempo total del proceso: <b>'.$iSegundos.'</b> Segundos'.'<div class="salto1px"></div></div>';
+if ($sDebug != '') {
+	$iSegFin = microtime(true);
+	if (isset($iSegIni) == 0) {
+		$iSegIni = $iSegFin;
 	}
+	$iSegundos = $iSegFin-$iSegIni;
+	echo '<div class="salto1px"></div><div class="GrupoCampos" id="div_debug">' . $sDebug . fecha_microtiempo() . ' Tiempo total del proceso: <b>' . $iSegundos . '</b> Segundos' . '<div class="salto1px"></div></div>';
+}
 ?>
-<input id="scampobusca" name="scampobusca" type="hidden" value=""/>
-<input id="iscroll" name="iscroll" type="hidden" value="<?php echo $_REQUEST['iscroll']; ?>"/>
-<input id="itipoerror" name="itipoerror" type="hidden" value="<?php echo $iTipoError; ?>"/>
-<input id="debug" name="debug" type="hidden" value="<?php echo $_REQUEST['debug']; ?>"/>
+<input id="scampobusca" name="scampobusca" type="hidden" value="" />
+<input id="iscroll" name="iscroll" type="hidden" value="<?php echo $_REQUEST['iscroll']; ?>" />
+<input id="itipoerror" name="itipoerror" type="hidden" value="<?php echo $iTipoError; ?>" />
+<input id="debug" name="debug" type="hidden" value="<?php echo $_REQUEST['debug']; ?>" />
 </form>
 <?php
 // Termina el bloque div_interna
 ?>
 </div>
 <?php
-switch ($iPiel) {
-	case 2:
-		break;
-	default:
-		if ($bPuedeGuardar) {
-			if ($_REQUEST['saiu20estado']<7){
+if ($bBloqueTitulo) {
+	if ($bPuedeGuardar) {
+		if ($_REQUEST['saiu20estado']<7) {
 ?>
 <div class="flotante">
 <input id="cmdGuardarf" name="cmdGuardarf" type="button" class="btSoloGuardar" onClick="enviaguardar();" value="<?php echo $ETI['bt_guardar']; ?>" />
 </div>
 <?php
-			}
 		}
-		break;
+	}
 }
+?>
+<?php
 echo html_DivAlarmaV2($sError, $iTipoError);
-	//El script que cambia el sector que se muestra
+//El script que cambia el sector que se muestra
 ?>
 
 <script language="javascript">
 <?php
-if ($iSector!=1){
-	echo 'setTimeout(function(){expandesector('.$iSector.');}, 10);
+if ($iSector != 1) {
+	echo 'setTimeout(function() {
+		expandesector(' . $iSector . ');
+	}, 10);
 ';
-	}
-if ($bMueveScroll){
-	echo 'setTimeout(function(){retornacontrol();}, 2);
+}
+if ($bMueveScroll) {
+	echo 'setTimeout(function() {
+		retornacontrol();
+	}, 2);
 ';
-	}
+}
 ?>
 </script>
 <link rel="stylesheet" href="<?php echo $APP->rutacomun; ?>js/jquery.autocomplete.css" type="text/css"/>
@@ -2917,7 +3020,7 @@ $("#btema").chosen({width:"100%"});
 });
 </script>
 <script language="javascript" src="ac_3020.js"></script>
-<script language="javascript" src="<?php echo $APP->rutacomun; ?>unad_todas.js?ver=8"></script>
+<script language="javascript" src="<?php echo $APP->rutacomun; ?>unad_todas2024v2.js"></script>
 <?php
 forma_piedepagina();
-?>
+

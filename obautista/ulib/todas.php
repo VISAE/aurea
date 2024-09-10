@@ -1,8 +1,7 @@
 <?php
 /*
---- © Angel Mauro Avellaneda Barreto - UNAD - 2014 - 2023 ---
+--- © Angel Mauro Avellaneda Barreto - UNAD - 2014 - 2018 ---
 --- angel.avellaneda@unad.edu.co - http://www.unad.edu.co
---- Modelo Versión 2.29.3 martes, 18 de abril de 2023
 */
 $dm_usergent = array(
 	'AvantGo' => 'AvantGo',
@@ -37,50 +36,14 @@ function obtenerNavegador($useragents, $useragent)
 }
 function iDefinirPiel($APP, $iMaxima = 2)
 {
-	$iPiel = 1;
+	$iPiel = 2;
 	if (isset($APP->piel) != 0) {
 		$iPiel = $APP->piel;
 	}
 	if ($iPiel > $iMaxima) {
-		$iPiel = $iMaxima;
-	}
-	if (isset($_SESSION['u_visual']) == 0) {
-		$_SESSION['u_visual'] = 0;
-	}
-	if ($_SESSION['u_visual'] != 0) {
-		$iPiel = $_SESSION['u_visual'];
+		$iPiel = 2;
 	}
 	return $iPiel;
-}
-/**
- * Define la clase de la tabla.
- *
- * Esta función permite definir la clase CSS que se aplicará a una tabla
- * según la piel seleccionada.
- *
- * @param int $iNivel La jerarquia
- * @param int $iVariante Cambios de color
- * @return string La clase de la tabla.
- */
-function DefinirClaseTabla($APP, $iNivel = 1, $iVariante = 0)
-{
-	$sClase = '';
-	switch ($APP->piel) {
-		case 2:
-			switch ($iNivel) {
-				case 1:
-					$sClase = 'table--primary'; // Padre
-					break;
-				case 2:
-					$sClase = 'table--secondary'; // Hija
-					break;
-			}
-			break;
-		default:
-			$sClase = 'tablaapp';
-			break;
-	}
-	return $sClase;
 }
 function iminutoavance()
 {
@@ -97,6 +60,10 @@ if (isset($_SESSION['u_ultimominuto']) == 0) {
 }
 if (isset($_SESSION['unad_id_tercero']) == 0) {
 	$_SESSION['unad_id_tercero'] = 0;
+}
+if (isset($_SESSION['unad_tipodoc']) == 0) {
+	$_SESSION['unad_tipodoc'] = '';
+	$_SESSION['unad_doc'] = '';
 }
 if ($_SESSION['unad_id_tercero'] != 0) {
 	//Esto hace que se salga de la sesion si lleva mucho tiempo inactivo e intentan acceder a la pagina.
@@ -118,31 +85,30 @@ if ($_SESSION['unad_id_tercero'] != 0) {
 if (isset($_SESSION['unad_sesion_id']) == 0) {
 	$_SESSION['unad_sesion_id'] = 0;
 }
-if (isset($_SESSION['unad_idcentro']) == 0) {
-	$_SESSION['unad_idcentro'] = 0;
-}
-if (isset($_SESSION['unad_centrocosto']) == 0) {
-	$_SESSION['unad_centrocosto'] = 0;
-}
-if (isset($_SESSION['unad_tipodoctercero']) == 0) {
-	$_SESSION['unad_tipodoctercero'] = 'CC';
-}
-if (isset($_SESSION['unad_doctercero']) == 0) {
-	$_SESSION['unad_doctercero'] = '';
-}
 $idEntidad = 0;
 if (isset($APP->entidad) != 0) {
-	if ($APP->entidad == 1) {
-		$idEntidad = 1;
+	switch ($APP->entidad) {
+		case 1:
+		case 2:
+			$idEntidad = $APP->entidad;
+			break;
 	}
 }
 switch ($idEntidad) {
-	case 1:
+	case 1: //UNAD FLORIDA
 		if (isset($_SESSION['unad_pais']) == 0) {
 			$_SESSION['unad_pais'] = '001';
 		}
 		if (isset($_SESSION['unad_idioma']) == 0) {
 			$_SESSION['unad_idioma'] = 'en';
+		}
+		break;
+	case 2: //UNION EUROPEA
+		if (isset($_SESSION['unad_pais']) == 0) {
+			$_SESSION['unad_pais'] = '034';
+		}
+		if (isset($_SESSION['unad_idioma']) == 0) {
+			$_SESSION['unad_idioma'] = 'es';
 		}
 		break;
 	default:
@@ -165,4 +131,8 @@ if (isset($_SESSION['cfg_movil']) == 0) {
 	} else {
 		$_SESSION['cfg_movil'] = 0;
 	}
+}
+
+function iDefinirLibExcel($APP) {
+	return 1;
 }

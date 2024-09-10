@@ -9,6 +9,13 @@ CSS Document
 ::-moz-placeholder{color: #FF0000;}
 ::-ms-input-placeholder{color: #FF0000;}
 
+.menuSuperior{
+	top: 0;
+	position: sticky;
+	z-index: 1000;
+	border-bottom: 2px solid #F4B945;
+}
+
 .alarma{
 	font-size:22px;
 	font-weight:300;
@@ -113,6 +120,9 @@ CSS Document
 	background-color:#F2F2F2;
 	border: 1px solid #999; 
 }
+.inline-flex {
+	display: inline-flex;
+}
 .areatrabajo input:hover{
 	background-position:0 -24px;
 }
@@ -142,6 +152,19 @@ CSS Document
 .campo_moneda{
 	width:164px;
 	text-align:right;
+	}
+.celda{
+	vertical-align: baseline;
+	padding: 5px;
+}
+.cbo_dia{
+	width:44px;
+	}
+.cbo_mes{
+	width:100px;
+	}
+.cbo_agno{
+	width:62px;
 	}
 .color_aguamarina{
 	color:#32B3FF;
@@ -340,6 +363,7 @@ CSS Document
 	}
 	
 input.btMiniActualizar,
+input.btAgregarS,
 input.btMiniAnexar,
 input.btMiniAprobar,
 input.btMiniAyuda,
@@ -370,6 +394,7 @@ input.btMiniZip{
 	border:none;
 	}
 input.btMiniActualizar{	background-image: url('../ulib/img/btMiniActualizar.jpg');}
+input.btAgregarS{	background-image: url('../ulib/img/btAgregarS.jpg');}
 input.btMiniAnexar{	background-image: url('../ulib/img/btMiniAnexar.jpg');}
 input.btMiniAprobar{	background-image: url('../ulib/img/btMiniAprobar.jpg');}
 input.btMiniAyuda{	background-image: url('../ulib/img/btMiniAyuda.jpg');}
@@ -378,8 +403,7 @@ input.btMiniDescargar{	background-image: url('../ulib/img/btMiniBajar.jpg');}
 input.btMiniEliminar{	background-image: url('../ulib/img/btMiniEliminar.jpg');}
 input.btMiniExcel{	background-image: url('../ulib/img/btMiniExcel.jpg');}
 input.btMiniExpandir{
-	background-image: url('../ulib/img2018/btMiniExpandirAzul.png');
-	background-size:22px 22px;
+	background-image: url('../ulib/img/btMiniExpandir.jpg');
 	}
 input.btMiniGuardar{	background-image: url('../ulib/img/btMiniGuardar.jpg');}
 input.btMiniHoy{	background-image: url('../ulib/img/btMiniHoy.jpg');}
@@ -389,8 +413,7 @@ input.btMiniMas{	background-image: url('../ulib/img/btMiniMas.jpg');}
 input.btMiniMenos{	background-image: url('../ulib/img/btMiniMenos.jpg');}
 input.btMiniPersona{	background-image: url('../ulib/img/btMiniPersona.jpg');}
 input.btMiniRecoger{
-	background-image: url('../ulib/img2018/btMiniRecogerAzul.png');
-	background-size:22px 22px;
+	background-image: url('../ulib/img/btMiniRecoger.jpg');
 	}
 input.btMiniTxt{	background-image: url('../ulib/img/btMiniTxt.jpg');}
 input.btMiniZip{	background-image: url('../ulib/img/btMiniZip.jpg');}
@@ -541,7 +564,7 @@ label{
 	height:auto;
 }
 .Label60{
-	width:60px;
+	width:70px;
 	height:auto;
 }
 .Label90{
@@ -681,17 +704,51 @@ label.txtAreaEXTRA textarea{	height:400px;}
 	color:#990000;
 	font-weight:bold;
 	}
-
+.subTitulo{
+background: linear-gradient(#007390,#004C64 );
+margin: 0;
+padding: 10px;
+border-radius: 10px 10px 0 0;
+text-align: center;
+/* color:#FFFFFF; */
+}
+.subTitulo2{
+background: linear-gradient(#007390,#004C64 );
+margin: 0;
+padding: 10px;
+border-radius: 10px 10px 0 0;
+text-align: center;
+color: #FFFFFF;
+}
+.subTituloBlanco{
+	background: linear-gradient(#007390,#004C64 );
+	margin: 0;
+	padding: 10px;
+	border-radius: 10px 10px 0 0;
+	text-align: center;
+	color:#FFFFFF;
+}
+/*
 td:hover{
-	padding: 5px 0 5px 0;
+	 padding: 5px 0 5px 0; 
 	}
+*/
 tr:hover {
     box-shadow: 
        inset 0 -3em 3em rgba(0,0,0,0.1), 
              0 0  0 2px rgb(255,255,255),
              0.3em 0.3em 1em rgba(0,0,0,0.3);
 	}
-
+/* Octubre 5 de 2022 - Se declara el no-hover */
+table.no-hover tr:hover {
+	box-shadow: none;
+}
+/* Mayo 13 de 2022 - Se ajustan los tipos radio. */
+input[type="checkbox"], input[type="radio"]{
+	height: 20px;
+	width: 20px;
+	margin: 5px;
+}
 ul#navmenu-h {
 	position: absolute;
 	z-index: 10;
@@ -898,6 +955,10 @@ ul#navmenu-h ul ul li.iehover ul {
 	color:#003300;
 	font-weight:bold;
 	}
+.azul{
+	color:#000033;
+	font-weight:bold;
+	}
 
 .lienzo{
 	padding:5px;
@@ -931,3 +992,4 @@ ul#navmenu-h ul ul li.iehover ul {
 	font-size:36px;
 	margin-left: 100%;
 }
+
