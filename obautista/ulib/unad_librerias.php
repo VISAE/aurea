@@ -160,23 +160,25 @@ function cadena_aletoria($iLargo = 8)
 // Abril 27 de 2023 - Se ajusta el modelo de codificacion para PHP 8
 function cadena_codificar($sCadena)
 {
-	//return utf8_encode($sCadena);
-	if (cadena_esISO($sCadena)) {
-		return $sCadena;
-	} else {
-		//return $sCadena;
-		$sResultado = iconv('UTF-8', 'ISO-8859-1', $sCadena);
-		return $sResultado;
+	return cadena_codificarV2($sCadena);
+}
+function cadena_codificarV2($sCadena)
+{
+	if (!cadena_esISO($sCadena)) {
+		return mb_convert_encoding($sCadena, 'UTF-8', 'ISO-8859-1');
 	}
+	return $sCadena;
 }
 function cadena_decodificar($sCadena)
 {
-	//return utf8_decode($sCadena);
+	return cadena_decodificarV2($sCadena);
+}
+function cadena_decodificarV2($sCadena)
+{
 	if (cadena_esISO($sCadena)) {
-		return iconv('ISO-8859-1', 'UTF-8', $sCadena);
-	} else {
-		return $sCadena;
+		return mb_convert_encoding($sCadena, 'ISO-8859-1', 'UTF-8');
 	}
+	return $sCadena;
 }
 function cadena_contiene($sBase, $sDato)
 {
@@ -2087,13 +2089,13 @@ function html_HoraMinV2($sNomCampoHora, $iHora, $sNomCampoMin, $iMin, $bOculto =
 			$res = '<input id="' . $sNomCampoHora . '_Num" name="' . $sNomCampoHora . '_Num" type="text" value="' . $sVN . '" class="cuatro" maxlength="2" placeholder="00" onchange="javascript:hora_ajusta(\'' . $sNomCampoHora . '\');"/>';
 		} else {
 			//Hora militar
-			$res = '<input id="' . $sNomCampoHora . '" name="' . $sNomCampoHora . '" type="text" value="' . $iHora . '" class="dos" maxlength="2" placeholder="00"/>';
+			$res = '<input id="' . $sNomCampoHora . '" name="' . $sNomCampoHora . '" type="text" value="' . $iHora . '" class="cuatro" maxlength="2" placeholder="00"/>';
 		}
 		$sValorMin = $iMin;
 		if (((int)$iHora + (int)$iMin) == 0) {
 			$sValorMin = '';
 		}
-		$res = $res . '<b>:</b><input id="' . $sNomCampoMin . '" name="' . $sNomCampoMin . '" type="text" value="' . $sValorMin . '" class="dos" maxlength="2" placeholder="00"/>' . $sAdd;
+		$res = $res . '<b>:</b><input id="' . $sNomCampoMin . '" name="' . $sNomCampoMin . '" type="text" value="' . $sValorMin . '" class="cuatro" maxlength="2" placeholder="00"/>' . $sAdd;
 	}
 	return $res;
 }
@@ -3620,6 +3622,12 @@ function seg_auditaingreso($idmodulo, $idtercero, $objDB)
 {
 	return seg_auditar($idmodulo, $idtercero, 1, 0, '', $objDB);
 }
+function seg_CodigoAnexo($idContenedor, $idArchivo) 
+{
+	$iCodigo = $idContenedor + ($idArchivo * 2);
+	$sCodigo = strtoupper(substr(md5($iCodigo), 5, 5));
+	return $sCodigo;
+}
 function seg_rastro($unad93codmodulo, $unad93codaccion, $unad93idcurso, $unad93idusuario, $unad93detalle, $objDB, $bDebug = false, $unad93idtercero = 0)
 {
 	list($res, $sDebug) = seg_rastroV2($unad93codmodulo, $unad93codaccion, 0, $unad93idcurso, $unad93idusuario, $unad93detalle, $objDB, $bDebug, $unad93idtercero);
@@ -3651,10 +3659,14 @@ function seg_rastroV2($unad93codmodulo, $unad93codaccion, $unad93peraca, $unad93
 	}
 	$unad93id = tabla_consecutivo($sTabla, 'unad93id', '', $objDB);
 	if ($unad93idtercero == 0) {
-		if ($_SESSION['unad_id_tercero'] == 0) {
+		if (isset($_SESSION['unad_id_tercero']) == 0) {
 			$unad93idtercero = $unad93idusuario;
 		} else {
-			$unad93idtercero = $_SESSION['unad_id_tercero'];
+			if ($_SESSION['unad_id_tercero'] == 0) {
+				$unad93idtercero = $unad93idusuario;
+			} else {
+				$unad93idtercero = $_SESSION['unad_id_tercero'];
+			}
 		}
 	}
 	$unad93fecha = fecha_DiaMod();
@@ -3672,6 +3684,11 @@ function seg_rastroV2($unad93codmodulo, $unad93codaccion, $unad93peraca, $unad93
 	}
 	if (cadena_contiene($unad93url, "servicios/wsrcb.php")) {
 		$unad93url = '[ChatBot]';
+	}
+	if (cadena_contiene($unad93url, 'auth/auth.php')) {
+		$iLargoCadena = strrpos($unad93url, '/');
+		$unad93url = '[Servicio de login]';
+		//$unad93url = substr($unad93url, 0, $iLargoCadena);
 	}
 	$unad93detalle_final = addslashes($unad93detalle);
 	$sSQL = 'INSERT INTO ' . $sTabla . ' 
@@ -3705,6 +3722,7 @@ function seg_revisa_permisoV3($idModulo, $idPermiso, $idTercero, $objDB, $bDebug
 {
 	$bDevuelve = false;
 	$sDebug = '';
+	$iVr = 0;
 	if (($idTercero != 0) && ($idModulo != 0)) {
 		$sSQL = 'SELECT 1 
 		FROM unad07usuarios AS TB, unad06perfilmodpermiso AS T6 
@@ -3715,13 +3733,14 @@ function seg_revisa_permisoV3($idModulo, $idPermiso, $idTercero, $objDB, $bDebug
 		$result = $objDB->ejecutasql($sSQL);
 		if ($objDB->nf($result) > 0) {
 			$bDevuelve = true;
+			$iVr = 1;
 		}
 	} else {
 		if ($bDebug) {
 			$sDebug = $sDebug . fecha_microtiempo() . ' No se ha recibido tercero [' . $idTercero . '] o modulo [' . $idModulo . '] al revisar el permiso ' . $idPermiso . '<br>';
 		}
 	}
-	return array($bDevuelve, $sDebug);
+	return array($bDevuelve, $sDebug, $iVr);
 }
 // -- Funciones para le manejo de sesiones.
 function sesion_actualizar_v2($objDB, $bDebug = false)

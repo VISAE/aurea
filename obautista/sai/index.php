@@ -4,10 +4,11 @@
 --- angel.avellaneda@unad.edu.co - http://www.unad.edu.co
 --- Modelo Version 2.27.5b viernes, 11 de febrero de 2022
 --- Modelo Versión 2.29.4 jueves, 11 de mayo de 2023
+--- Modelo Versión 3.0.11b miércoles, 14 de agosto de 2024
 */
 
 /** Archivo index.php.
- * Modulo 2200 .
+ * Modulo 3000 SAI Index.
  * @author Angel Mauro Avellaneda Barreto - angel.avellaneda@unad.edu.co
  * @param debug = 1  (Opcional), bandera para indicar si se generan datos de depuración
  * @date jueves, 11 de mayo de 2023
@@ -106,10 +107,16 @@ $bEnSesion = false;
 if ((int)$_SESSION['unad_id_tercero'] != 0) {
 	$bEnSesion = true;
 }
-$iPiel = 1;
 $grupo_id = 0;
-$iCodModulo = 2200;
-
+$iConsecutivoMenu = 1;
+$iMinVerDB = 7774;
+$iCodModulo = 3000;
+$iCodModuloConsulta = $iCodModulo;
+$audita[1] = false;
+$audita[2] = true;
+$audita[3] = true;
+$audita[4] = true;
+$audita[5] = false;
 // -- Se cargan los archivos de idioma
 $mensajes_todas = $APP->rutacomun . 'lg/lg_todas_' . $_SESSION['unad_idioma'] . '.php';
 if (!file_exists($mensajes_todas)) {
@@ -137,41 +144,106 @@ if (isset($_REQUEST['paso']) == 0) {
 	$sDebug = $sDebug . $sDebugC;
 	$_REQUEST['paso'] = 0;
 }
-$iPiel = iDefinirPiel($APP, 1);
-$sAnchoExpandeContrae = ' style="width:62px;"';
-$sOcultaId = ' style="display:none;"';
-$sOcultaConsec = ''; //' style="display:none;"';
+// --- Variables para la forma
+$bBloqueTitulo = true;
 $bCerrado = false;
+$bDebugMenu = false;
+$bOtroUsuario = false;
 $et_menu = '';
+$idTercero = $_SESSION['unad_id_tercero'];
+$iPiel = iDefinirPiel($APP, 2);
+$sAnchoExpandeContrae = ' style="width:62px;"';
+$sOcultaConsec = ''; //' style="display:none;"';
+list($sGrupoModulo, $sPaginaModulo) = f109_GrupoModulo($iCodModuloConsulta, $iConsecutivoMenu, $objDB);
+$sOcultaId = ' style="display:none;"';
+$sTituloApp = $APP->siglasistema; //f101_SiglaModulo($APP->idsistema, $objDB);
+$sTituloModulo = $ETI['titulo_3000'];
+switch ($iPiel) {
+	case 2:
+		$sAnchoExpandeContrae = '';
+		$bBloqueTitulo = false;
+		break;
+}
+// --- Final de las variables para la forma
 if ($bDebug) {
 	$sDebug = $sDebug . fecha_microtiempo() . ' Probando conexi&oacute;n con la base de datos <b>' . $APP->dbname . '</b> en <b>' . $APP->dbhost . '</b><br>';
 }
+$bCargaMenu = true;
 if (!$objDB->Conectar()) {
+	$bCargaMenu = false;
 	$bCerrado = true;
-	$sMsgCierre = '<div class="MarquesinaGrande">Disculpe las molestias estamos en este momento nuestros servicios no estas disponibles.<br>Por favor intente acceder mas tarde.<br>Si el problema persiste por favor informa al administrador del sistema.</div>';
+	$sMsgCierre = '<div class="MarquesinaGrande">Disculpe las molestias estamos en este momento nuestros servicios no estas disponibles.<br>Por favor intente acceder mas tarde.<br>Si el problema persiste por favor informe al administrador del sistema.</div>';
 	if ($bDebug) {
 		$sDebug = $sDebug . fecha_microtiempo() . ' Error al intentar conectar con la base de datos <b>' . $objDB->serror . '</b><br>';
 	}
 }
+if (!$bCerrado) {
+	$iVerDB = version_upd($objDB);
+	if ($iMinVerDB > $iVerDB) {
+		$bCerrado = true;
+		$sMsgCierre = '<div class="MarquesinaGrande">La base de datos se encuentra desactualizada para este modulo.<br>Por favor informe al administrador del sistema.</div>';
+		if ($bDebug) {
+			$sDebug = $sDebug . fecha_microtiempo() . ' <b>DB DESACTUALIZADA [Requerida:' . $iMinVerDB . ' - Encontrada:' . $iVerDB . ']</b><br>';
+		}
+	} else {
+		if ($bDebug) {
+			$sDebug = $sDebug . fecha_microtiempo() . ' Versi&oacute;n DB <b>' . $iVerDB . '</b> [Requerida:' . $iMinVerDB . ']<br>';
+		}
+	}
+}
+if (!$bCerrado) {
+	list($bDevuelve, $sDebugP) = seg_revisa_permisoV3($iCodModuloConsulta, 1, $_SESSION['unad_id_tercero'], $objDB);
+	if (!$bDevuelve) {
+		$bCerrado = true;
+		$sMsgCierre = '<div class="MarquesinaGrande">No cuenta con permiso para acceder a este modulo [' . $iCodModuloConsulta . '].</div>';
+	}
+}
 if ($bCerrado) {
+	if ($bCargaMenu) {
+		switch ($iPiel) {
+			case 2:
+				list($et_menu, $sDebugM) = html_Menu2023($APP->idsistema, $objDB, $iPiel, $bDebugMenu, $idTercero);
+				break;
+			default:
+				list($et_menu, $sDebugM) = html_menuV2($APP->idsistema, $objDB, $iPiel, $bDebugMenu, $idTercero);
+				break;
+		}
+	}
 	$objDB->CerrarConexion();
-	require $APP->rutacomun . 'unad_forma_v2.php';
-	forma_cabeceraV3($xajax, $ETI['titulo_2200']);
-	echo $et_menu;
-	forma_mitad();
-	?>
-	<script language="javascript" src="<?php echo $APP->rutacomun; ?>js/jquery-3.3.1.min.js"></script>
-	<script language="javascript" src="<?php echo $APP->rutacomun; ?>js/popper.min.js"></script>
-	<script language="javascript" src="<?php echo $APP->rutacomun; ?>js/bootstrap.min.js"></script>
-	<link rel="stylesheet" href="<?php echo $APP->rutacomun; ?>js/bootstrap.min.css" type="text/css" />
-	<link rel="stylesheet" href="<?php echo $APP->rutacomun; ?>css/criticalPath.css" type="text/css" />
-	<link rel="stylesheet" href="<?php echo $APP->rutacomun; ?>css/principal.css" type="text/css" />
-	<link rel="stylesheet" href="<?php echo $APP->rutacomun; ?>unad_estilos2018.css?v=3" type="text/css" />
-	<?php
+	switch ($iPiel) {
+		case 2:
+			require $APP->rutacomun . 'unad_forma2024.php';
+			forma_InicioV4($xajax, $sTituloModulo);
+			$aRutas = array(
+				array('./', $sTituloApp),
+				array('./' . $sPaginaModulo, $sGrupoModulo),
+				array('', $sTituloModulo)
+			);
+			$iNumBoton = 0;
+			$aBotones[$iNumBoton] = array('muestraayuda(' . $APP->idsistema . ', ' . $iCodModulo . ')', $ETI['bt_ayuda'], 'iHelp');
+			$iNumBoton++;
+			forma_cabeceraV4b($aRutas, $aBotones, true, 1);
+			echo $et_menu;
+			forma_mitad($idTercero);
+			break;
+		default:
+			require $APP->rutacomun . 'unad_forma_v2_2024.php';
+			forma_cabeceraV3($xajax, $sTituloModulo);
+			echo $et_menu;
+			forma_mitad();
+			break;
+	}
+	$objForma = new clsHtmlForma($iPiel);
+	if ($bBloqueTitulo) {
+		$objForma->addBoton('cmdAyuda98', 'btSupAyuda', 'muestraayuda('.$iCodModulo.');', $ETI['bt_ayuda']);
+		echo $objForma->htmlTitulo($sTituloModulo, $iCodModulo);
+	}
+	echo $objForma->htmlInicioMarco();
 	echo $sMsgCierre;
 	if ($bDebug) {
 		echo $sDebug;
 	}
+	echo $objForma->htmlFinMarco();
 	forma_piedepagina();
 	die();
 }
@@ -192,6 +264,7 @@ if ($_SESSION['unad_id_tercero'] == 0) {
 $idTercero = $_SESSION['unad_id_tercero'];
 $bOtroUsuario = false;
 $seg_1707 = 0;
+$bDevuelve = false;
 list($bDevuelve, $sDebugP) = seg_revisa_permisoV3($iCodModulo, 1707, $_SESSION['unad_id_tercero'], $objDB, $bDebug);
 //$sDebug = $sDebug . $sDebugP;
 if ($bDevuelve) {
@@ -235,7 +308,10 @@ if (isset($_REQUEST['debug']) != 0) {
 //$idEntidad = Traer_Entidad();
 // -- Si esta cargando la pagina por primer vez se revisa si requiere auditar y se manda a hacer un limpiar (paso -1)
 if (isset($_REQUEST['paso']) == 0) {
-	$_REQUEST['paso'] = 0;
+	$_REQUEST['paso'] = -1;
+	if ($audita[1]) {
+		seg_auditaingreso($iCodModulo, $_SESSION['unad_id_tercero'], $objDB);
+	}
 }
 // -- 269 aure69versionado
 require $APP->rutacomun . 'lib269.php';
@@ -259,6 +335,7 @@ $iTipoError = 0;
 $bLimpiaHijos = false;
 $bMueveScroll = false;
 $iSector = 1;
+$iHoy = fecha_DiaMod();
 $iAgnoFin = fecha_agno();
 // -- Se inicializan las variables, primero las que controlan la visualización de la página.
 if (isset($_REQUEST['iscroll']) == 0) {
@@ -274,9 +351,51 @@ if (isset($_REQUEST['lppf269']) == 0) {
 if (isset($_REQUEST['blistar']) == 0) {
 	$_REQUEST['blistar'] = 1;
 }
+//limpiar la pantalla
+if ($_REQUEST['paso'] == -1) {
+	$_REQUEST['paso'] = 0;
+}
+if ($bLimpiaHijos) {
+}
 //AQUI SE DEBEN CARGAR TODOS LOS DATOS QUE LA FORMA NECESITE.
+$bPuedeGuardar = false;
+$bConEliminar = false;
+$bHayImprimir = false;
+$bHayImprimir2 = false;
+$sScriptImprime = 'imprimelista()';
+$sScriptImprime2 = 'imprimep()';
+$sClaseImprime = 'iExcel';
+$sClaseImprime2 = 'iPdf';
+if ($iPiel == 0) {
+	$sClaseImprime = 'btEnviarExcel';
+	$sClaseImprime2 = 'btEnviarPdf';
+}
+//Permisos adicionales
+$seg_5 = 0;
+$seg_6 = 0;
+/*
+list($bDevuelve, $sDebugP) = seg_revisa_permisoV3($iCodModulo, 6, $idTercero, $objDB);
+if ($bDevuelve) {
+	$seg_6 = 1;
+	$bHayImprimir = true;
+}
+*/
+if ((int)$_REQUEST['paso'] != 0) {
+	$bDevuelve = false;
+	//list($bDevuelve, $sDebugP) = seg_revisa_permisoV3($iCodModulo, 5, $idTercero, $objDB);
+	if ($bDevuelve) {
+		$seg_5 = 1;
+	}
+	$bConEliminar = true;
+	if ($seg_5 == 1) {
+		$bHayImprimir2 = true;
+	}
+}
 //DATOS PARA COMPLETAR EL FORMULARIO
 $sNombreUsuario = '';
+//Crear los controles que requieran llamado a base de datos
+$objCombos = new clsHtmlCombos();
+$objForma = new clsHtmlForma($iPiel);
 if ($seg_1707 == 1) {
 	$sSQL = 'SELECT unad11razonsocial FROM unad11terceros WHERE unad11id=' . $idTercero . '';
 	$tabla = $objDB->ejecutasql($sSQL);
@@ -284,6 +403,12 @@ if ($seg_1707 == 1) {
 		$fila = $objDB->sf($tabla);
 		$sNombreUsuario = cadena_notildes($fila['unad11razonsocial']);
 	}
+	$objCombos->nuevo('deb_tipodoc', $_REQUEST['deb_tipodoc'], false);
+	$objCombos->iAncho = 60;
+	$html_deb_tipodoc = $objCombos->html('', $objDB, 145);
+}
+if ((int)$_REQUEST['paso'] == 0) {
+} else {
 }
 //Permisos adicionales
 $seg_5 = 0;
@@ -332,33 +457,62 @@ $aParametros[102] = $_REQUEST['lppf269'];
 list($sTabla269, $sDebugTabla) = f269_TablaDetalleV2Sistema($aParametros, $objDB, $bDebug);
 $sDebug = $sDebug . $sDebugTabla;
 $bDebugMenu = false;
-list($et_menu, $sDebugM) = html_menuV2($APP->idsistema, $objDB, $iPiel, $bDebugMenu, $idTercero);
+switch ($iPiel) {
+	case 2:
+		list($et_menu, $sDebugM) = html_Menu2023($APP->idsistema, $objDB, $iPiel, $bDebugMenu, $idTercero);
+		break;
+	default:
+		list($et_menu, $sDebugM) = html_menuV2($APP->idsistema, $objDB, $iPiel, $bDebugMenu, $idTercero);
+		break;
+}
 $sDebug = $sDebug . $sDebugM;
 $objDB->CerrarConexion();
 //FORMA
-require $APP->rutacomun . 'unad_forma_v2.php';
-forma_cabeceraV3($xajax, $ETI['titulo_3000']);
-echo $et_menu;
-forma_mitad();
-?>
-<script language="javascript" src="<?php echo $APP->rutacomun; ?>js/jquery-3.3.1.min.js"></script>
-<script language="javascript" src="<?php echo $APP->rutacomun; ?>js/popper.min.js"></script>
-<script language="javascript" src="<?php echo $APP->rutacomun; ?>js/bootstrap.min.js"></script>
-<link rel="stylesheet" href="<?php echo $APP->rutacomun; ?>js/bootstrap.min.css" type="text/css" />
-<link rel="stylesheet" href="<?php echo $APP->rutacomun; ?>css/criticalPath.css" type="text/css" />
-<link rel="stylesheet" href="<?php echo $APP->rutacomun; ?>css/principal.css" type="text/css" />
-<link rel="stylesheet" href="<?php echo $APP->rutacomun; ?>unad_estilos2018.css?v=3" type="text/css" />
-<link rel="stylesheet" href="<?php echo $APP->rutacomun; ?>css/css_tabs.css" type="text/css" />
-<?php
-if ($iPiel == 2) {
-?>
-<script language="javascript" src="<?php echo $APP->rutacomun; ?>js/access.js"></script>
-<script language="javascript" src="<?php echo $APP->rutacomun; ?>js/mogu-menu-access.js"></script>
-<link rel="stylesheet" href="<?php echo $APP->rutacomun; ?>style-2023.css?v=2" type="text/css" />
-<link rel="stylesheet" href="<?php echo $APP->rutacomun; ?>css/mogu-menu-access.css" type="text/css" />
-<?php
+switch ($iPiel) {
+	case 2:
+		require $APP->rutacomun . 'unad_forma2024.php';
+		forma_InicioV4($xajax, $sTituloModulo);
+		$aRutas = array(
+			array('./', $sTituloApp),
+			array('./' . $sPaginaModulo, $sGrupoModulo),
+			array('', $sTituloModulo)
+		);
+		$iNumBoton = 0;
+		$aBotones[$iNumBoton] = array('muestraayuda(' . $APP->idsistema . ', ' . $iCodModulo . ')', $ETI['bt_ayuda'], 'iHelp');
+		$iNumBoton++;
+		if ($bConEliminar) {
+			$aBotones[$iNumBoton] = array('eliminadato()', $ETI['bt_eliminar'], 'iDelete');
+			$iNumBoton++;
+		}
+		if ($bHayImprimir) {
+			$aBotones[$iNumBoton] = array($sScriptImprime, $ETI['bt_imprimir'], $sClaseImprime);
+			$iNumBoton++;
+		}
+		if ($bHayImprimir2) {
+			$aBotones[$iNumBoton] = array($sScriptImprime2, $ETI['bt_imprimir'], $sClaseImprime2);
+			$iNumBoton++;
+		}
+		$aBotones[$iNumBoton] = array('limpiapagina()', $ETI['bt_limpiar'], 'iDocument');
+		$iNumBoton++;
+		if ($bPuedeGuardar) {
+			$aBotones[$iNumBoton] = array('enviaguardar()', $ETI['bt_guardar'], 'iSaveFill');
+			$iNumBoton++;
+		}
+		$aBotones[$iNumBoton] = array('expandesector(1)', $ETI['bt_volver'], 'iArrowBack', 97);
+		$iNumBoton++;
+		forma_cabeceraV4b($aRutas, $aBotones, true, $iSector);
+		echo $et_menu;
+		forma_mitad($idTercero);
+		break;
+	default:
+		require $APP->rutacomun . 'unad_forma_v2_2024.php';
+		forma_cabeceraV3($xajax, $sTituloModulo);
+		echo $et_menu;
+		forma_mitad();
+		break;
 }
 ?>
+<link rel="stylesheet" href="<?php echo $APP->rutacomun; ?>css/css_tabs.css" type="text/css" />
 <script language="javascript">
 	function limpiapagina() {
 		expandesector(98);
@@ -396,6 +550,42 @@ if ($iPiel == 2) {
 		document.getElementById('div_sector96').style.display = 'none';
 		document.getElementById('div_sector98').style.display = 'none';
 		document.getElementById('div_sector' + codigo).style.display = 'block';
+<?php
+switch ($iPiel) {
+	case 2:
+?>
+		document.getElementById('botones_sector1').style.display = 'none';
+		switch (codigo) {
+			case 1:
+				document.getElementById('botones_sector1').style.display = 'flex';
+				break;
+			case 2:
+				document.getElementById('botones_sector2').style.display = 'flex';
+				break;
+			default:
+				//document.getElementById('botones_sector1').style.display = 'none';
+				break;
+		}
+		if (codigo == 1) {
+			document.getElementById('nav').removeAttribute('disabled');
+		} else {
+			document.getElementById('nav').setAttribute('disabled', '');
+		}
+<?php
+		break;
+	default:
+		if ($bPuedeGuardar && $bBloqueTitulo) {
+?>
+		let sEst = 'none';
+		if (codigo == 1) {
+			sEst = 'block';
+		}
+		document.getElementById('cmdGuardarf').style.display = sEst;
+<?php
+		}
+		break;
+}
+?>
 	}
 
 	function paginarf269(id68 = 0) {
@@ -516,23 +706,48 @@ if ($iPiel == 2) {
 <input id="bNoAutocompletar" name="bNoAutocompletar" type="password" value="" style="display:none;" />
 <input id="paso" name="paso" type="hidden" value="0" />
 <input id="shoy" name="shoy" type="hidden" value="<?php echo fecha_hoy(); ?>" />
+<input id="ihoy" name="ihoy" type="hidden" value="<?php echo $iHoy; ?>" />
 <input id="shora" name="shora" type="hidden" value="<?php echo fecha_hora(); ?>" />
 <input id="stipodoc" name="stipodoc" type="hidden" value="<?php echo $APP->tipo_doc; ?>" />
 <input id="idusuario" name="idusuario" type="hidden" value="<?php echo $_SESSION['unad_id_tercero']; ?>" />
+<input id="id11" name="id11" type="hidden" value="<?php echo $idTercero; ?>" />
 <input id="ipiel" name="ipiel" type="hidden" value="<?php echo $iPiel; ?>" />
+<input id="icodmodulo" name="icodmodulo" type="hidden" value="<?php echo $iCodModulo; ?>" />
+<input id="seg_5" name="seg_5" type="hidden" value="<?php echo $seg_5; ?>" />
+<input id="seg_6" name="seg_6" type="hidden" value="<?php echo $seg_6; ?>" />
 <div id="div_sector1">
+<?php
+if ($bBloqueTitulo) {
+?>
 <div class="titulos">
 <div class="titulosD">
-<input id="cmdAyuda" name="cmdAyuda" type="button" class="btUpAyuda" onclick="muestraayuda('','');" title="<?php echo $ETI['bt_ayuda']; ?>" value="<?php echo $ETI['bt_ayuda']; ?>" />
+<input id="cmdAyuda" name="cmdAyuda" type="button" class="btUpAyuda" onclick="muestraayuda(<?php echo $APP->idsistema . ', ' . $iCodModulo; ?>);" title="<?php echo $ETI['bt_ayuda']; ?>" value="<?php echo $ETI['bt_ayuda']; ?>" />
 <?php
+?>
+<input id="cmdLimpiar" name="cmdLimpiar" type="button" class="btUpLimpiar" onclick="limpiapagina();" title="<?php echo $ETI['bt_limpiar']; ?>" value="<?php echo $ETI['bt_limpiar']; ?>" />
+<?php
+if ($bPuedeGuardar) {
+?>
+<input id="cmdGuardar" name="cmdGuardar" type="button" class="btUpGuardar" onclick="enviaguardar();" title="<?php echo $ETI['bt_guardar']; ?>" value="<?php echo $ETI['bt_guardar']; ?>" />
+<?php
+}
+if (false) {
+?>
+<input id="cmdAnular" name="cmdAnular" type="button" class="btSupAnular" onclick="expandesector(2);" title="<?php echo $ETI['bt_anular']; ?>" value="<?php echo $ETI['bt_anular']; ?>" />
+<?php
+}
 ?>
 </div>
 <div class="titulosI">
 <?php
-echo '<h2>' . $ETI['titulo'] . '</h2>';
+echo '<h2>' . $sTituloModulo . '</h2>';
 ?>
 </div>
 </div>
+<?php
+	//Termina el bloque titulo
+}
+?>
 <div class="areaform">
 <div class="areatrabajo">
 <?php
@@ -679,12 +894,12 @@ echo $ETI['titulo_indicadores'];
 echo $ETI['vence_solicitud'];
 ?>
 </label>
-<label class="Label200 fondoRojo">
+<label class="Label200 tag--red bg--red">
 <?php
 echo $ETI['vence_rojo'];
 ?>
 </label>
-<label class="Label60 fondoRojo">
+<label class="Label60 tag--red bg--red">
 <div id="div_f3000vencerojo_0">
 <?php
 echo $aVenceRojo[0];
@@ -692,12 +907,12 @@ echo $aVenceRojo[0];
 </div>
 </label>
 <div class="salto1px"></div>
-<label class="Label200 fondoNaranja">
+<label class="Label200 tag--orange bg--orange">
 <?php
 echo $ETI['vence_naranja'];
 ?>
 </label>
-<label class="Label60 fondoNaranja">
+<label class="Label60 tag--orange bg--orange">
 <div id="div_f3000vencenaranja_0">
 <?php
 echo $aVenceNaranja[0];
@@ -705,12 +920,12 @@ echo $aVenceNaranja[0];
 </div>
 </label>
 <div class="salto1px"></div>
-<label class="Label200 fondoVerde">
+<label class="Label200 tag--green bg--green">
 <?php
 echo $ETI['vence_verde'];
 ?>
 </label>
-<label class="Label60 fondoVerde">
+<label class="Label60 tag--green bg--green">
 <div id="div_f3000venceverde_0">
 <?php
 echo $aVenceVerde[0];
@@ -725,12 +940,12 @@ echo $aVenceVerde[0];
 echo $ETI['tiempos_resp'];
 ?>
 </label>
-<label class="Label200 fondoRojo">
+<label class="Label200 tag--red bg--red">
 <?php
 echo $ETI['tiempos_rojo_0'];
 ?>
 </label>
-<label class="Label60 fondoRojo">
+<label class="Label60 tag--red bg--red">
 <div id="div_f3000tiemporojo_0">
 <?php
 echo $aTiempoRojo[0];
@@ -738,12 +953,12 @@ echo $aTiempoRojo[0];
 </div>
 </label>
 <div class="salto1px"></div>
-<label class="Label200 fondoNaranja">
+<label class="Label200 tag--orange bg--orange">
 <?php
 echo $ETI['tiempos_naranja_0'];
 ?>
 </label>
-<label class="Label60 fondoNaranja">
+<label class="Label60 tag--orange bg--orange">
 <div id="div_f3000tiemponaranja_0">
 <?php
 echo $aTiempoNaranja[0];
@@ -751,12 +966,12 @@ echo $aTiempoNaranja[0];
 </div>
 </label>
 <div class="salto1px"></div>
-<label class="Label200 fondoVerde">
+<label class="Label200 tag--green bg--green">
 <?php
 echo $ETI['tiempos_verde_0'];
 ?>
 </label>
-<label class="Label60 fondoVerde">
+<label class="Label60 tag--green bg--green">
 <div id="div_f3000tiempoverde_0">
 <?php
 echo $aTiempoVerde[0];
@@ -773,7 +988,7 @@ echo $ETI['indice_satisf'];
 </label>
 <div class="salto1px"></div>
 <label class="Label90">
-<div id="div_f3000indicesatisf_0" class="textoGrandeCentro">
+<div id="div_f3000indicesatisf_0" class="text-4xl pl-10">
 <?php
 if ($iIndiceSatisf == 0) {
 	echo '_';
@@ -793,12 +1008,12 @@ if ($iIndiceSatisf == 0) {
 echo $ETI['vence_solicitud'];
 ?>
 </label>
-<label class="Label200 fondoRojo">
+<label class="Label200 tag--red bg--red">
 <?php
 echo $ETI['vence_rojo'];
 ?>
 </label>
-<label class="Label60 fondoRojo">
+<label class="Label60 tag--red bg--red">
 <div id="div_f3000vencerojo_1">
 <?php
 echo $aVenceRojo[1];
@@ -806,12 +1021,12 @@ echo $aVenceRojo[1];
 </div>
 </label>
 <div class="salto1px"></div>
-<label class="Label200 fondoNaranja">
+<label class="Label200 tag--orange bg--orange">
 <?php
 echo $ETI['vence_naranja'];
 ?>
 </label>
-<label class="Label60 fondoNaranja">
+<label class="Label60 tag--orange bg--orange">
 <div id="div_f3000vencenaranja_1">
 <?php
 echo $aVenceNaranja[1];
@@ -819,12 +1034,12 @@ echo $aVenceNaranja[1];
 </div>
 </label>
 <div class="salto1px"></div>
-<label class="Label200 fondoVerde">
+<label class="Label200 tag--green bg--green">
 <?php
 echo $ETI['vence_verde'];
 ?>
 </label>
-<label class="Label60 fondoVerde">
+<label class="Label60 tag--green bg--green">
 <div id="div_f3000venceverde_1">
 <?php
 echo $aVenceVerde[1];
@@ -839,12 +1054,12 @@ echo $aVenceVerde[1];
 echo $ETI['tiempos_resp'];
 ?>
 </label>
-<label class="Label200 fondoRojo">
+<label class="Label200 tag--red bg--red">
 <?php
 echo $ETI['tiempos_rojo_1'];
 ?>
 </label>
-<label class="Label60 fondoRojo">
+<label class="Label60 tag--red bg--red">
 <div id="div_f3000tiemporojo_1">
 <?php
 echo $aTiempoRojo[1];
@@ -852,12 +1067,12 @@ echo $aTiempoRojo[1];
 </div>
 </label>
 <div class="salto1px"></div>
-<label class="Label200 fondoNaranja">
+<label class="Label200 tag--orange bg--orange">
 <?php
 echo $ETI['tiempos_naranja_1'];
 ?>
 </label>
-<label class="Label60 fondoNaranja">
+<label class="Label60 tag--orange bg--orange">
 <div id="div_f3000tiemponaranja_1">
 <?php
 echo $aTiempoNaranja[1];
@@ -865,12 +1080,12 @@ echo $aTiempoNaranja[1];
 </div>
 </label>
 <div class="salto1px"></div>
-<label class="Label200 fondoVerde">
+<label class="Label200 tag--green bg--green">
 <?php
 echo $ETI['tiempos_verde_1'];
 ?>
 </label>
-<label class="Label60 fondoVerde">
+<label class="Label60 tag--green bg--green">
 <div id="div_f3000tiempoverde_1">
 <?php
 echo $aTiempoVerde[1];
@@ -906,6 +1121,9 @@ if ($iIndiceSatisf == 0) {
 
 
 <div id="div_sector2" style="display:none">
+<?php
+if ($bBloqueTitulo) {
+?>
 <div class="titulos">
 <div class="titulosD">
 <input id="cmdAyuda2" name="cmdAyuda2" type="button" class="btSupAyuda" onclick="muestraayuda(<?php echo $iCodModulo; ?>);" title="<?php echo $ETI['bt_ayuda']; ?>" value="<?php echo $ETI['bt_ayuda']; ?>" />
@@ -917,8 +1135,11 @@ echo '<h2>' . $ETI['titulo_sector2'] . '</h2>';
 ?>
 </div>
 </div>
-<div id="cargaForm">
-<div id="area">
+<?php
+}
+?>
+<div class="areaform">
+<div class="areatrabajo">
 </div>
 </div>
 <?php
@@ -928,7 +1149,7 @@ echo '<h2>' . $ETI['titulo_sector2'] . '</h2>';
 
 
 <div id="div_sector95" style="display:none">
-<div id="cargaForm">
+<div class="areaform">
 <div id="div_95cuerpo"></div>
 </div>
 </div>
@@ -940,32 +1161,52 @@ echo '<h2>' . $ETI['titulo_sector2'] . '</h2>';
 <input id="div96v3" name="div96v3" type="hidden" value="" />
 <input id="div96campo" name="div96campo" type="hidden" value="" />
 <input id="div96llave" name="div96llave" type="hidden" value="" />
-<input id="titulo_3000" name="titulo_3000" type="hidden" value="<?php echo $ETI['titulo_3000']; ?>" />
+<input id="titulo_3000" name="titulo_3000" type="hidden" value="<?php echo $sTituloModulo; ?>" />
+<?php
+if ($bBloqueTitulo) {
+?>
 <div class="titulos">
 <div class="titulosD">
 <input id="cmdAyuda96" name="cmdAyuda96" type="button" class="btSupAyuda" onclick="muestraayuda(<?php echo $iCodModulo; ?>);" title="<?php echo $ETI['bt_ayuda']; ?>" value="<?php echo $ETI['bt_ayuda']; ?>" />
 </div>
 <div class="titulosI" id="div_96titulo"></div>
 </div>
-<div id="cargaForm">
+<?php
+} else {
+?>
+<div id="div_96titulo" style="display:none"></div>
+<?php
+}
+?>
+<div class="areaform">
 <div id="div_96cuerpo"></div>
 </div>
 </div>
 
 
+<div id="div_sector97" style="display:none">
+</div>
+
+
 <div id="div_sector98" style="display:none">
+<?php
+if ($bBloqueTitulo) {
+?>
 <div class="titulos">
 <div class="titulosD">
 <input id="cmdAyuda98" name="cmdAyuda98" type="button" class="btSupAyuda" onclick="muestraayuda(<?php echo $iCodModulo; ?>);" title="<?php echo $ETI['bt_ayuda']; ?>" value="<?php echo $ETI['bt_ayuda']; ?>" />
 </div>
 <div class="titulosI">
 <?php
-echo '<h2>' . $ETI['titulo_3000'] . '</h2>';
+echo '<h2>' . $sTituloModulo . '</h2>';
 ?>
 </div>
 </div>
-<div id="cargaForm">
-<div id="area">
+<?php
+}
+?>
+<div class="areaform">
+<div class="areatrabajo">
 <div class="MarquesinaMedia">
 <?php
 echo $ETI['msg_espere'];
@@ -995,8 +1236,17 @@ if ($sDebug != '') {
 // Termina el bloque div_interna
 ?>
 </div>
+<?php
+if ($bBloqueTitulo) {
+	if ($bPuedeGuardar) {
+?>
 <div class="flotante">
+<input id="cmdGuardarf" name="cmdGuardarf" type="button" class="btSoloGuardar" onClick="enviaguardar();" value="<?php echo $ETI['bt_guardar']; ?>" />
 </div>
+<?php
+	}
+}
+?>
 <?php
 echo html_DivAlarmaV2($sError, $iTipoError);
 //El script que cambia el sector que se muestra
@@ -1019,7 +1269,8 @@ if ($bMueveScroll) {
 }
 ?>
 </script>
-<script language="javascript" src="<?php echo $APP->rutacomun; ?>unad_todas.js?ver=8"></script>
+<script language="javascript" src="<?php echo $APP->rutacomun; ?>js/chosen.jquery.js"></script>
+<script language="javascript" src="<?php echo $APP->rutacomun; ?>unad_todas2024v2.js"></script>
 <?php
 forma_piedepagina();
 

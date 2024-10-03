@@ -490,24 +490,24 @@ class clsHtmlForma
 					case 'botonS':
 						break;
 					case 'botonActualizar':
-						$sImg = '<i class="iSync"></i>';
+						$sImg = '<i class="icon-sync"></i>';
 						break;
 					case 'botonAnexar':
 						$bBotonMini = true;
-						$sImg = '<i class="iAttach"></i>';
+						$sImg = '<i class="icon-attach"></i>';
 						break;
 					case 'btSoloAnexar':
 					case 'btAnexarS':
-						$sImg = '<i class="iAttach"></i>';
+						$sImg = '<i class="icon-attach"></i>';
 						break;
 					case 'btMiniAprobar':
 						$bBotonMini = true;
-						$sImg = '<i class="iCheck"></i>';
+						$sImg = '<i class="icon-check"></i>';
 						break;
 					case 'botonAprobado':
 					case 'btUpAprobado':
 					case 'btUpVisto':
-						$sImg = '<i class="iCheck"></i>';
+						$sImg = '<i class="icon-check"></i>';
 						break;
 					case 'BotonAzul':
 					case 'botonAzul':
@@ -515,53 +515,53 @@ class clsHtmlForma
 						break;
 					case 'botonBuscar':
 					case 'botonSearch':
-						$sImg = '<i class="iSearch"></i>';
+						$sImg = '<i class="icon-search"></i>';
 						break;
 					case 'botonMoney':
-						$sImg = '<i class="iHelp"></i>';
+						$sImg = '<i class="icon-help"></i>';
 						break;
 					case 'botonPrint':
-						$sImg = '<i class="iPrint"></i>';
+						$sImg = '<i class="icon-print"></i>';
 						break;
 					case 'botonProceso':
-						$sImg = '<i class="iSettings"></i>';
+						$sImg = '<i class="icon-settings"></i>';
 						break;
 					case 'botonVerde':
 						$sClaseFin = 'btn-success';
 						break;
 					case 'btBorrarS':
-						$sImg = '<i class="iDelete"></i>';
+						$sImg = '<i class="icon-delete"></i>';
 						break;
 					case 'btActualizaS':
-						$sImg = '<i class="iSync"></i>';
+						$sImg = '<i class="icon-sync"></i>';
 						break;
 					case 'btMiniAnexar':
 						$bBotonMini = true;
-						$sImg = '<i class="iAttach"></i>';
+						$sImg = '<i class="icon-attach"></i>';
 						break;
 					case 'btMiniAprobar':
 						$bBotonMini = true;
-						$sImg = '<i class="iCheck"></i>';
+						$sImg = '<i class="icon-check"></i>';
 						break;
 					case 'btMiniActualizar':
 						$bBotonMini = true;
-						$sImg = '<i class="iSync"></i>';
+						$sImg = '<i class="icon-sync"></i>';
 						break;
 					case 'btMas':
-						$sImg = '<i class="iAdd"></i>';
+						$sImg = '<i class="icon-add"></i>';
 						break;
 					case 'btAgregarS':
 						$bBotonMini = true;
-						$sImg = '<i class="iAdd"></i>';
+						$sImg = '<i class="icon-add"></i>';
 						break;
 					case 'btEnviarExcel':
-						$sImg = '<i class="iExcel"></i>';
+						$sImg = '<i class="icon-excel"></i>';
 						break;
 					case 'btEnviarPDF':
-						$sImg = '<i class="iPdf"></i>';
+						$sImg = '<i class="icon-pdf"></i>';
 						break;
 					case 'btGuardarS':
-						$sImg = '<i class="iSaveFill"></i>';
+						$sImg = '<i class="icon-save-fill"></i>';
 						break;
 					case 'btMiniGuardar':
 						$bBotonMini = true;
@@ -569,27 +569,27 @@ class clsHtmlForma
 						break;
 					case 'btMiniAyuda':
 						$bBotonMini = true;
-						$sImg = '<i class="iHelp"></i>';
+						$sImg = '<i class="icon-help"></i>';
 						break;
 					case 'btSupAyuda':
-						$sImg = '<i class="iHelp"></i>';
+						$sImg = '<i class="icon-help"></i>';
 						break;
 					case 'btMiniBalancear':
 						$bBotonMini = true;
-						$sImg = '<i class="iHelp"></i>';
+						$sImg = '<i class="icon-help"></i>';
 						break;
 					case 'btMiniBuscar':
 						$bBotonMini = true;
-						$sImg = '<i class="iSearch"></i>';
+						$sImg = '<i class="icon-search"></i>';
 						break;
 					case 'btMiniHoy':
 						$bBotonMini = true;
-						$sImg = '<i class="iHoy"></i>';
+						$sImg = '<i class="icon-hoy"></i>';
 						break;
 					case 'btMiniClonar':
 					case 'btMiniProceso':
 						$bBotonMini = true;
-						$sImg = '<i class="iSettings"></i>';
+						$sImg = '<i class="icon-settings"></i>';
 						break;
 					case 'btMiniBorrar':
 					case 'btMiniEliminar':
@@ -601,11 +601,11 @@ class clsHtmlForma
 						break;
 					case 'btMiniExcel':
 						$bBotonMini = true;
-						$sImg = '<i class="iExcel"></i>';
+						$sImg = '<i class="icon-excel"></i>';
 						break;
 					case 'btMiniExpande':
 						$bBotonMini = true;
-						$sImg = '<i id="i_expande' . $sNombre . '"  class="iExpandLess"></i>';
+						$sImg = '<i id="i_expande' . $sNombre . '"  class="icon-expand-less"></i>';
 						$sNombre = 'btexpande' . $sNombre;
 						break;
 					case 'btMiniLimpiar':
@@ -617,15 +617,15 @@ class clsHtmlForma
 						break;
 					case 'btMiniMail':
 						$bBotonMini = true;
-						$sImg = '<i class="iEmail"></i>';
+						$sImg = '<i class="icon-email"></i>';
 						break;
 					case 'btMiniMas':
 						$bBotonMini = true;
-						$sImg = '<i class="iAdd"></i>';
+						$sImg = '<i class="icon-add"></i>';
 						break;
 					case 'btMiniMenos':
 						$bBotonMini = true;
-						$sImg = '<i class="iRemove"></i>';
+						$sImg = '<i class="icon-remove"></i>';
 						break;
 					case 'btMiniNotificar':
 						$bBotonMini = true;
@@ -633,102 +633,106 @@ class clsHtmlForma
 						break;
 					case 'btMiniPersona':
 						$bBotonMini = true;
-						$sImg = '<i class="iPerson"></i>';
+						$sImg = '<i class="icon-person"></i>';
 						break;
 					case 'btPersonaAprobar':
-						$sImg = '<i class="iPersonAdd"></i>';
+						$sImg = '<i class="icon-person-add"></i>';
 						break;
 					case 'btPersonaRechazar':
-						$sImg = '<i class="iPersonCancel"></i>';
+						$sImg = '<i class="icon-person-cancel"></i>';
 						break;
 					case 'btPersonaLista':
-						$sImg = '<i class="iPersonList"></i>';
+						$sImg = '<i class="icon-person-list"></i>';
 						break;
 					case 'btMiniRecoge':
 						$bBotonMini = true;
-						$sImg = '<i id="i_expande' . $sNombre . '"  class="iExpand"></i>';
+						$sImg = '<i id="i_expande' . $sNombre . '"  class="icon-expand"></i>';
 						$sNombre = 'btexpande' . $sNombre;
 						break;
 					case 'btMiniTxt':
 						$bBotonMini = true;
-						$sImg = '<i class="iText"></i>';
+						$sImg = '<i class="icon-text"></i>';
 						break;
 					case 'btMiniZip':
 						$bBotonMini = true;
-						$sImg = '<i class="iZip"></i>';
+						$sImg = '<i class="icon-zip"></i>';
 						break;
 					case 'btSubirS':
-						$sImg = '<i class="iUpload"></i>';
+						$sImg = '<i class="icon-upload"></i>';
 						break;
 					case 'btSupAnular':
-						$sImg = '<i class="iNull"></i>';
+						$sImg = '<i class="icon-null"></i>';
 						break;
 					case 'btSupArchivar':
 					case 'btSupResponder':
-						$sImg = '<i class="iHelp"></i>';
+						$sImg = '<i class="icon-help"></i>';
 						break;
 					case 'btSupAnotaciones':
 					case 'btSupAbrir':
-						$sImg = '<i class="iOpen"></i>';
+						$sImg = '<i class="icon-open"></i>';
 						break;
 					case 'btSupClonar':
 					case 'btSupVolver':
-						$sImg = '<i class="iArrowBack"></i>';
+						$sImg = '<i class="icon-arrow-back"></i>';
 						break;
 					case 'btSupDenegado':
-						$sImg = '<i class="iHelp"></i>';
+						$sImg = '<i class="icon-help"></i>';
 						break;
 					case 'btSupDocumento':
-						$sImg = '<i class="iCopy"></i>';
+						$sImg = '<i class="icon-copy"></i>';
 						break;
 					case 'btSupGuardar':
-						$sImg = '<i class="iSaveFill"></i>';
+						$sImg = '<i class="icon-save-fill"></i>';
 						break;
 					case 'btSupReasignar':
-						$sImg = '<i class="iExcel"></i>';
+						$sImg = '<i class="icon-excel"></i>';
 						break;
 					case 'btUpCerrar':
 					case 'btSupCerrar':
-						$sImg = '<i class="iClosed"></i>';
+						$sImg = '<i class="icon-closed"></i>';
 						break;
 					case 'btUpDenegado':
-						$sImg = '<i class="iHelp"></i>';
+						$sImg = '<i class="icon-help"></i>';
 						break;
 					case 'botonTerminar':
 					case 'btUpPublicar':
-						$sImg = '<i class="iTask"></i>';
+						$sImg = '<i class="icon-task"></i>';
+						break;
+					case 'btMiniCancelar':
+						$bBotonMini = true;
+						$sImg = '<i class="icon-closed"></i>';
 						break;
 					case 'botonCancelar':
 					case 'btUpCancelar':
-						$sImg = '<i class="iCancel"></i>'; // Hojita con una X
+						$sImg = '<i class="icon-cancel"></i>';
 						break;
 					case 'botonContinuar':
 					case 'btUpContinuar':
-						$sImg = '<i class="iArrowRight"></i>';
+						$sImg = '<i class="icon-arrow-right"></i>';
 						break;
 					case 'btUpGuardar':
-						$sImg = '<i class="iSaveFill"></i>';
+						$sImg = '<i class="icon-save-fill"></i>';
 						break;
 					case 'btUpMail':
-						$sImg = '<i class="iHelp"></i>';
+						$sImg = '<i class="icon-help"></i>';
 						break;
 					case 'btSupDenegado':
-						$sImg = '<i class="iHelp"></i>';
+						$sImg = '<i class="icon-help"></i>';
 						break;
 					case 'btSupDocumento':
-						$sImg = '<i class="iCopy"></i>';
+						$sImg = '<i class="icon-copy"></i>';
 						break;
 					case 'btSupReasignar':
-						$sImg = '<i class="iExcel"></i>';
+						$sImg = '<i class="icon-excel"></i>';
 						break;
 					case 'btUpDenegado':
-						$sImg = '<i class="iHelp"></i>';
+						$sImg = '<i class="icon-help"></i>';
 						break;
 					case 'btUpRadicar':
-						$sImg = '<i class="iUpload"></i>';
+						$sImg = '<i class="icon-upload"></i>';
 						break;
 					case 'btUpVolver':
-						$sImg = '<i class="iArrowBack"></i>';
+						$sImg = '<i class="icon-arrow-back"></i>';
 						break;
 					default:
 						$bIcono = false;
@@ -1743,25 +1747,25 @@ function html_NoPermiso($iCodModulo, $sTituloModulo, $iPiel = 0)
 	}
 	switch ($iPiel) {
 		default:
-			$rRes = '<div id="interna">
-		<form id="frmedita" name="frmedita" method="post" action="">
-		<div id="titulacion">
-		<div id="titulacionD">
-		<input id="cmdAyuda" name="cmdAyuda" type="button" class="btUpAyuda" onclick="muestraayuda(' . $iCodModulo . ');" title="' . $ETI['bt_ayuda'] . '" value="' . $ETI['bt_ayuda'] . '"/>
-		</div>
-		<div id="titulacionI">
-		<h2>' . $sTituloModulo . '</h2>
-		</div>
-		</div>
-		<div id="cargaForm">
-		<div id="area">
-		<div class="MarquesinaMedia">
-		' . $sCambiaSesion . '
-		</div>
-		</div>
-		</div>
-		</form>
-		</div>';
+			$rRes = '<div id="interna">';
+			$rRes = $rRes . '<form id="frmedita" name="frmedita" method="post" action="">';
+			$rRes = $rRes . '<div id="titulacion">';
+			$rRes = $rRes . '<div id="titulacionD">';
+			$rRes = $rRes . '<input id="cmdAyuda" name="cmdAyuda" type="button" class="btUpAyuda" onclick="muestraayuda(' . $iCodModulo . ');" title="' . $ETI['bt_ayuda'] . '" value="' . $ETI['bt_ayuda'] . '"/>';
+			$rRes = $rRes . '</div>';
+			$rRes = $rRes . '<div id="titulacionI">';
+			$rRes = $rRes . '<h2>' . $sTituloModulo . '</h2>';
+			$rRes = $rRes . '</div>';
+			$rRes = $rRes . '</div>';
+			$rRes = $rRes . '<div id="cargaForm">';
+			$rRes = $rRes . '<div id="area">';
+			$rRes = $rRes . '<div class="MarquesinaMedia">';
+			$rRes = $rRes . '' . $sCambiaSesion . '';
+			$rRes = $rRes . '</div>';
+			$rRes = $rRes . '</div>';
+			$rRes = $rRes . '</div>';
+			$rRes = $rRes . '</form>';
+			$rRes = $rRes . '</div>';
 			break;
 	}
 	return $rRes;
@@ -1773,6 +1777,36 @@ function html_LnkArchivoV2($origen, $id, $titulo = 'Descargar', $sRaiz = 'verarc
 		$res = '<a href="' . $sRaiz . '?u=' . url_encode($origen . '|' . $id) . '" target="_blank" ' . $sClase . '>' . $titulo . '</a>';
 	}
 	return $res;
+}
+function html_LnkArchivoPublico($origen, $id, $iFechaTope = 0, $titulo = 'Descargar', $sClase = 'class="lnkresalte"', $iFechaVence = 0)
+{
+	$res = '&nbsp;';
+	$sInfoCodigo = '';
+	$iFechaRef = 0;
+	$sCodigoArchivo = '';
+	if ($id != 0) {
+		$iHoy = fecha_DiaMod();
+		if ($iFechaTope == 0) {
+			$iFechaRef = fecha_NumSumarDias($iHoy, 30);
+		} else {
+			$iFechaRef = $iFechaTope;
+		}
+		$sRaiz = 'https://aurea.unad.edu.co/va.php';
+		$res = '<a href="' . $sRaiz . '?u=' . url_encode($origen . '|' . $id . '|' . 0 . '|' . 0 . '|' . $iFechaRef . '|' . $iFechaVence) . '" target="_blank" ' . $sClase . '>' . $titulo . '</a>';
+		//$res = $res . ' (C&oacute;digo de descarga: <b>' . seg_CodigoAnexo($origen, $id) . '</b>)';
+		$sCodigoArchivo = seg_CodigoAnexo($origen, $id);
+		if ($iFechaRef < $iHoy) {
+			//Codigo Obligatorio
+			$sInfoCodigo = 'El sistema le solicitar&aacute; el siguiente c&oacute;digo de descarga: <b>' . $sCodigoArchivo . '</b>';
+		}  else {
+			$sInfoCodigo = 'Esta descarga encuentra disponible hasta el ' . formato_FechaLargaDesdeNumero($iFechaRef, true);
+			$sInfoCodigo = $sInfoCodigo . ', luego de esta fecha el sistema le solicitar&aacute; el siguiente c&oacute;digo de descarga: <b>' . $sCodigoArchivo . '</b>';
+		}
+		if ($iFechaVence > 0) {
+			$sInfoCodigo = $sInfoCodigo . ', Este enlace de descarga vence el ' . formato_FechaLargaDesdeNumero($iFechaVence, true);
+		}
+	}
+	return array($res, $sInfoCodigo, $iFechaRef, $sCodigoArchivo);
 }
 function html_menuCampus($idsistema, $objDB, $iPiel = 0, $bDebug = false, $idTercero = 0, $bSalto = false)
 {
@@ -2950,4 +2984,3 @@ function html_Alerta($sTexto, $sColor = '', $bConIcono = true)
 	$sRes = $sRes . '</div>';
 	return $sRes;
 }
-
