@@ -315,7 +315,7 @@ if (isset($_REQUEST['paso']) == 0) {
 }
 // -- 269 aure69versionado
 require $APP->rutacomun . 'lib269.php';
-//require 'lib3000.php';
+require $APP->rutacomun . 'lib3000.php';
 $xajax = new xajax();
 $xajax->configure('javascript URI', $APP->rutacomun . 'xajax/');
 $xajax->register(XAJAX_FUNCTION, 'sesion_abandona_V2');
@@ -324,6 +324,7 @@ $xajax->register(XAJAX_FUNCTION, 'f269_HtmlTablaSistema');
 $xajax->register(XAJAX_FUNCTION, 'f3000_Combobita27equipotrabajo');
 $xajax->register(XAJAX_FUNCTION, 'f3000_Combobita28eqipoparte');
 $xajax->register(XAJAX_FUNCTION, 'f3000_HtmlTablaPQRS');
+$xajax->register(XAJAX_FUNCTION, 'f3000_NotificarResponsables');
 $xajax->processRequest();
 if ($bPeticionXAJAX) {
 	die(); // Esto hace que las llamadas por xajax terminen aquí.
@@ -443,7 +444,7 @@ $html_bagno = $objCombos->html('', $objDB);
 $aParametros[100] = $idTercero;
 $aParametros[106] = $iAgnoFin;
 $aParametros[107] = $_REQUEST['blistar'];
-list($sTabla3000, $aVenceRojo, $aVenceNaranja, $aVenceVerde, $aTiempoRojo, $aTiempoNaranja, $aTiempoVerde, $iIndiceSatisf, $sDebugTabla) = f3000_TablaDetallePQRS($aParametros, $objDB, $bDebug);
+list($sTabla3000, $aVenceRojo, $aVenceNaranja, $aVenceVerde, $aTiempoRojo, $aTiempoNaranja, $aTiempoVerde, $iIndiceSatisf, $aPendientes, $sDebugTabla) = f3000_TablaDetallePQRS($aParametros, $objDB, $bDebug);
 $iIndiceSatisf = number_format($iIndiceSatisf,2,',','');
 $sDebug = $sDebug . $sDebugTabla;
 //DATOS PARA COMPLETAR EL FORMULARIO
@@ -647,14 +648,14 @@ switch ($iPiel) {
 	?>
 
 		function carga_combo_bita27equipotrabajo() {
-			var params = new Array();
+			let params = new Array();
 			params[0] = window.document.frmedita.unae26unidadesfun.value;
 			document.getElementById('div_bita27equipotrabajo').innerHTML = '<b>Procesando datos, por favor espere...</b><input id="bita27equipotrabajo" name="bita27equipotrabajo" type="hidden" value="" />';
 			xajax_f3000_Combobita27equipotrabajo(params);
 		}
 
 		function carga_combo_bita28eqipoparte() {
-			var params = new Array();
+			let params = new Array();
 			params[0] = window.document.frmedita.bita27equipotrabajo.value;
 			document.getElementById('div_bita28eqipoparte').innerHTML = '<b>Procesando datos, por favor espere...</b><input id="bita28eqipoparte" name="bita28eqipoparte" type="hidden" value="" />';
 			xajax_f3000_Combobita28eqipoparte(params);
@@ -664,7 +665,7 @@ switch ($iPiel) {
 	?>
 
 	function paginarf3000() {
-		var params = new Array();
+		let params = new Array();
 		params[99] = window.document.frmedita.debug.value;
 		params[100] = <?php echo $idTercero; ?>;
 		<?php
@@ -687,7 +688,7 @@ switch ($iPiel) {
 	}
 	function abrir_tab(evt, sId) {
 		evt.preventDefault();
-		var i, tabcontent, tablinks;
+		let i, tabcontent, tablinks;
 		tabcontent = document.getElementsByClassName("tabcontent");
 		for (i = 0; i < tabcontent.length; i++) {
 			tabcontent[i].style.display = "none";
@@ -700,6 +701,27 @@ switch ($iPiel) {
 		document.getElementById(sId).style.flexWrap = "wrap";
 		evt.currentTarget.className += " active";
 	}
+<?php
+if ($seg_12 == 1) {
+	if (count($aPendientes)>0) {
+?>
+	function notificar_responsables() {
+		let params = new Array();
+		params[99] = window.document.frmedita.debug.value;
+		params[100] = <?php echo $idTercero; ?>;
+		params[101] = window.document.frmedita.f3000pendientes.value;
+		console.log(params[101]);
+		ModalMensajeV2('<div class="flex gap-2"><div>Notificando responsables<br>Por favor espere... </div><div class="spinner"></div></div>', null, {
+			botonAceptar: 'Cerrar', 
+			botonCancelar: '', 
+			tituloModal: 'Estado del env&iacute;o'
+		});
+		xajax_f3000_NotificarResponsables(params);
+	}
+<?php
+	}
+}
+?>
 </script>
 <div id="interna">
 <form id="frmedita" name="frmedita" method="post" action="" autocomplete="off">
@@ -845,6 +867,12 @@ echo $html_bita28eqipoparte;
 </div>
 </label>
 <?php
+	if (count($aPendientes)>0) {
+?>
+<input id="cmdNotificar" name="cmdNotificar" type="button" value="Notificar Responsables" class="BotonAzul200" onclick="javascript:notificar_responsables()" />
+<div class="salto1px"></div>
+<?php
+	}
 } else {
 ?>
 <label class="Label90">
@@ -860,7 +888,8 @@ echo $html_blistar;
 <?php
 }
 ?>
-<label class="Label60">
+<input id="f3000pendientes" name="f3000pendientes" type="hidden" value="<?php echo htmlspecialchars(json_encode($aPendientes),ENT_QUOTES); ?>" />
+<label class="Label90">
 <?php
 echo $ETI['agno'];
 ?>

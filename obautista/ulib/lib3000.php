@@ -2177,3 +2177,186 @@ function f3000_ValidaTablasAtencion($sContenedor, $saiuid, $objDB)
 	}
 	return array($sTabla, $sError);
 }
+function f3000_NotificarResponsables($aParametros) {
+	$_SESSION['u_ultimominuto'] = iminutoavance();
+	if (!is_array($aParametros)) {
+		$aParametros = json_decode(str_replace('\"', '"', $aParametros), true);
+	}
+	require './app.php';
+	$mensajes_todas = $APP->rutacomun . 'lg/lg_todas_' . $_SESSION['unad_idioma'] . '.php';
+	if (!file_exists($mensajes_todas)) {
+		$mensajes_todas = $APP->rutacomun . 'lg/lg_todas_es.php';
+	}
+	$mensajes_3000 = $APP->rutacomun . 'lg/lg_3000_' . $_SESSION['unad_idioma'] . '.php';
+	if (!file_exists($mensajes_3000)) {
+		$mensajes_3000 = $APP->rutacomun . 'lg/lg_3000_es.php';
+	}
+	require $mensajes_todas;
+	require $mensajes_3000;
+	require $APP->rutacomun . 'libaurea.php';
+	require $APP->rutacomun . 'libmail.php';
+	$objDB = new clsdbadmin($APP->dbhost, $APP->dbuser, $APP->dbpass, $APP->dbname);
+	if ($APP->dbpuerto != '') {
+		$objDB->dbPuerto = $APP->dbpuerto;
+	}
+	$sError = '';
+	$sDebug = '';
+	$sMensaje = '';
+	// -- Se inicia validando todas las posibles entradas de usuario.
+	if (isset($aParametros[99]) == 0) {
+		$aParametros[99] = false;
+	}
+	if (isset($aParametros[100]) == 0) {
+		$aParametros[100] = $_SESSION['unad_id_tercero'];
+	}
+	if (isset($aParametros[101]) == 0) {
+		$aParametros[101] = 0;
+	}
+	$bDebug = $aParametros[99];
+	$idTercero = numeros_validar($aParametros[100]);
+	$sPendientes = cadena_validar($aParametros[101]);
+	$aPendientes = array();
+	// -- Seccion para validar los posibles causales de error.
+	$sSepara = ', ';
+	if ($sPendientes == '') {
+		$sError = $ERR['pendientes_vacia'] . $sSepara . $sError;
+	}
+
+	if ($sError == '') {
+		$aPendientes = json_decode($sPendientes, true);
+		if ($aPendientes == null) {
+			$sError = $ERR['pendientes_invalida'] . $sSepara . $sError;
+		}
+	}
+
+	if ($sError == '') {
+		$aPendientes = ["216182"=>[["numref"=>"202402-5-124DE","id"=>"5","agno"=>"2024","mes"=>"2","fechainicio"=>20240205,"idtemaorigen"=>"1","dias"=>242],
+		["numref"=>"202402-31-CF865","id"=>"31","agno"=>"2024","mes"=>"2","fechainicio"=>20240205,"idtemaorigen"=>"3","dias"=>242],
+		["numref"=>"202402-37-DF5D8","id"=>"37","agno"=>"2024","mes"=>"2","fechainicio"=>20240205,"idtemaorigen"=>"1","dias"=>242],
+		["numref"=>"202402-41-8505C","id"=>"41","agno"=>"2024","mes"=>"2","fechainicio"=>20240205,"idtemaorigen"=>"101","dias"=>242],
+		["numref"=>"202402-178-8FF85","id"=>"178","agno"=>"2024","mes"=>"2","fechainicio"=>20240208,"idtemaorigen"=>"245","dias"=>239],
+		["numref"=>"202402-320-792F5","id"=>"320","agno"=>"2024","mes"=>"2","fechainicio"=>20240210,"idtemaorigen"=>"121","dias"=>237],
+		["numref"=>"202402-353-68553","id"=>"353","agno"=>"2024","mes"=>"2","fechainicio"=>20240211,"idtemaorigen"=>"241","dias"=>236],
+		["numref"=>"202402-358-0EFEB","id"=>"358","agno"=>"2024","mes"=>"2","fechainicio"=>20240211,"idtemaorigen"=>"30","dias"=>236],
+		["numref"=>"202402-656-3DCA3","id"=>"656","agno"=>"2024","mes"=>"2","fechainicio"=>20240217,"idtemaorigen"=>"99","dias"=>230],
+		["numref"=>"202402-721-37015","id"=>"721","agno"=>"2024","mes"=>"2","fechainicio"=>20240219,"idtemaorigen"=>"271","dias"=>228],
+		["numref"=>"202403-1028-866C2","id"=>"1028","agno"=>"2024","mes"=>"3","fechainicio"=>20240314,"idtemaorigen"=>"101","dias"=>204],
+		["numref"=>"202403-1113-6CC71","id"=>"1113","agno"=>"2024","mes"=>"3","fechainicio"=>20240317,"idtemaorigen"=>"176","dias"=>201],
+		["numref"=>"202403-1214-8B73A","id"=>"1214","agno"=>"2024","mes"=>"3","fechainicio"=>20240320,"idtemaorigen"=>"241","dias"=>198],
+		["numref"=>"202403-1226-76624","id"=>"1226","agno"=>"2024","mes"=>"3","fechainicio"=>20240320,"idtemaorigen"=>"121","dias"=>198]],
+		"211046"=>[["numref"=>"202402-5-124DE","id"=>"5","agno"=>"2024","mes"=>"2","fechainicio"=>20240205,"idtemaorigen"=>"1","dias"=>242],
+		["numref"=>"202402-31-CF865","id"=>"31","agno"=>"2024","mes"=>"2","fechainicio"=>20240205,"idtemaorigen"=>"3","dias"=>242],
+		["numref"=>"202402-37-DF5D8","id"=>"37","agno"=>"2024","mes"=>"2","fechainicio"=>20240205,"idtemaorigen"=>"1","dias"=>242],
+		["numref"=>"202402-41-8505C","id"=>"41","agno"=>"2024","mes"=>"2","fechainicio"=>20240205,"idtemaorigen"=>"101","dias"=>242],
+		["numref"=>"202402-178-8FF85","id"=>"178","agno"=>"2024","mes"=>"2","fechainicio"=>20240208,"idtemaorigen"=>"245","dias"=>239],
+		["numref"=>"202402-320-792F5","id"=>"320","agno"=>"2024","mes"=>"2","fechainicio"=>20240210,"idtemaorigen"=>"121","dias"=>237],
+		["numref"=>"202402-353-68553","id"=>"353","agno"=>"2024","mes"=>"2","fechainicio"=>20240211,"idtemaorigen"=>"241","dias"=>236],
+		["numref"=>"202402-358-0EFEB","id"=>"358","agno"=>"2024","mes"=>"2","fechainicio"=>20240211,"idtemaorigen"=>"30","dias"=>236],
+		["numref"=>"202402-656-3DCA3","id"=>"656","agno"=>"2024","mes"=>"2","fechainicio"=>20240217,"idtemaorigen"=>"99","dias"=>230],
+		["numref"=>"202402-721-37015","id"=>"721","agno"=>"2024","mes"=>"2","fechainicio"=>20240219,"idtemaorigen"=>"271","dias"=>228],
+		["numref"=>"202403-1028-866C2","id"=>"1028","agno"=>"2024","mes"=>"3","fechainicio"=>20240314,"idtemaorigen"=>"101","dias"=>204],
+		["numref"=>"202403-1113-6CC71","id"=>"1113","agno"=>"2024","mes"=>"3","fechainicio"=>20240317,"idtemaorigen"=>"176","dias"=>201],
+		["numref"=>"202403-1214-8B73A","id"=>"1214","agno"=>"2024","mes"=>"3","fechainicio"=>20240320,"idtemaorigen"=>"241","dias"=>198],
+		["numref"=>"202403-1226-76624","id"=>"1226","agno"=>"2024","mes"=>"3","fechainicio"=>20240320,"idtemaorigen"=>"121","dias"=>198]]];
+		$sNomEntidad = '';
+		$sMailSeguridad = '';
+		$sURLCampus = '';
+		$sCorreoCopia = 'oabm77@gmail.com'; //! OJO CAMBIAR POR sai@unad.edu.co
+		$sMensaje = $sMensaje . $ETI['pendientes_ok'];
+		if ($sCorreoCopia != '') {
+			$sMensaje = $sMensaje . ' (con copia a ' . $sCorreoCopia . '):<br>';
+		}
+		$idEntidad = Traer_Entidad();
+		$iHoy = fecha_DiaMod();
+		$sFechaLargaHoy = formato_FechaLargaDesdeNumero($iHoy, true);
+		switch ($idEntidad) {
+			case 1: // UNAD FLORIDA
+				$sNomEntidad = 'UNAD FLORIDA INC';
+				$sMailSeguridad = 'aluna@unad.us';
+				$sURLCampus = 'http://unad.us/campus/';
+				break;
+			default: // UNAD Colombia
+				$sNomEntidad = 'UNIVERSIDAD NACIONAL ABIERTA Y A DISTANCIA - UNAD';
+				$sMailSeguridad = 'soporte.campus@unad.edu.co';
+				$sURLCampus = 'https://campus0c.unad.edu.co/campus/';
+				break;
+		}
+		$sMes = date('Ym');
+		$sTabla = 'aure01login' . $sMes;
+		list($idSMTP, $sDebugS) = AUREA_SmtpMejor($sTabla, $objDB, $bDebug);
+		$objMail = new clsMail_Unad($objDB);
+		$objMail->TraerSMTP($idSMTP);
+		foreach($aPendientes as $idResponsable => $aLista) {
+			$bCorreoValido = false;
+			list($sCorreoMensajes, $unad11idgrupocorreo, $sError, $sDebugN) = AUREA_CorreoNotificaV2($idTercero, $objDB, $bDebug);
+			if ($sError == '') {
+				list($bCorreoValido, $sDebugC) = correo_VerificarV2($sCorreoMensajes);
+			}
+			if ($bCorreoValido) {
+				list($unad11razonsocial, $sErrorDet) = tabla_campoxid('unad11terceros', 'unad11razonsocial', 'unad11id', $idResponsable, '{' . 'An&oacute;nimo' . '}', $objDB);
+				$sTituloMensaje = $ETI['mail_pend_titulo'] . $sFechaLargaHoy . ' ' . $sNomEntidad . '';
+				$sCuerpo = '<p style="text-align: justify;">Cordial saludo.<br>
+Estimado(a) <b>' . $unad11razonsocial . '</b><br><br>
+Desde el Sistema de Atenci&oacute;n Integral (SAI) queremos recordar la importancia de gestionar de manera efectiva y responsable las PQRS. 
+Al hacerlo, no solo respondemos a inquietudes y solicitudes, sino que tambi&eacute;n demostramos el compromiso de nuestra instituci&oacute;n con la calidad y excelencia en el servicio.<br>
+Por ello, le invitamos a asegurar que cada solicitud y PQRS sea atendida dentro de los plazos establecidos, con empat&iacute;a, transparencia y soluciones efectivas.</p>
+A continuaci&oacute;n, se listan las PQRS pendientes por gestionar.<br><br>
+<table style="border: 1px solid black; border-collapse: collapse;"><thead style="background-color: black; color: white;"><tr><th style="width: 25%;">No. referencia<br>solicitud</th><th>Fecha de solicitud</th><th>Tema</th><th>Días h&aacute;biles de vencimiento</th></tr></thead><tbody>';
+				$iCuenta = 0;
+				foreach($aLista as $aSolicitud) {
+					$sFechaLargaIni = formato_FechaLargaDesdeNumero($aSolicitud['fechainicio'], true);
+					$i_saiu05idtemaorigen = $aSolicitud['idtemaorigen'];
+					if (isset($asaiu05idtemaorigen[$i_saiu05idtemaorigen]) == 0) {
+						$sSQL = 'SELECT saiu03titulo FROM saiu03temasol WHERE saiu03id=' . $i_saiu05idtemaorigen . '';
+						$tablae = $objDB->ejecutasql($sSQL);
+						if ($objDB->nf($tablae) > 0) {
+							$filae = $objDB->sf($tablae);
+							$asaiu05idtemaorigen[$i_saiu05idtemaorigen] = cadena_LimpiarTildes($filae['saiu03titulo']);
+						} else {
+							$asaiu05idtemaorigen[$i_saiu05idtemaorigen] = '';
+						}
+					}
+					$saiu05idtemaorigen = ($asaiu05idtemaorigen[$i_saiu05idtemaorigen]);
+					$sFondo = 'style="background-color:lightgray;"';
+					$sUrlNumRef = 'https://softwaretest.unad.edu.co/obautista/obautista/sai/saiusolcitudes.php?saiu05origenagno='.$aSolicitud['agno'].'&saiu05origenmes='.$aSolicitud['mes'].'&saiu05id='.$aSolicitud['id'].'&paso=3';
+					// $sUrlNumRef = 'https://aurea2.unad.edu.co/sai/saiusolcitudes.php?saiu05origenagno='.$aSolicitud['agno'].'&saiu05origenmes='.$aSolicitud['mes'].'&saiu05id='.$aSolicitud['id'].'&paso=3';
+					$sCuerpo = $sCuerpo . '<tr ' . ($iCuenta++ % 2 != 0?$sFondo:'') .'><td><a href="'.$sUrlNumRef.'" target="_blank">' . $aSolicitud['numref'] . '</a></td><td>' . $sFechaLargaIni . '</td><td style="text-align: center;">' . $saiu05idtemaorigen . '</td><td style="text-align: center;">' . $aSolicitud['dias'] . '</td></tr>';
+				}
+				$sCuerpo = $sCuerpo . '</tbody></table><br><br>
+Agradecemos su colaboración para seguir fortaleciendo la cultura del buen servicio Unadista<br><br>
+Cordialmente,<br>
+<b>Sistema de Atención Integral - SAI</b><br>';
+				$sCuerpo = AUREA_HTML_EncabezadoCorreo($sTituloMensaje) . $sCuerpo . AUREA_HTML_NoResponder() . AUREA_NotificaPieDePagina() . AUREA_HTML_PieCorreo();
+				$objMail->NuevoMensaje();
+				$objMail->sAsunto = cadena_codificar($sTituloMensaje);
+				$sMensaje = $sMensaje . '<div class="flex gap-2"><div>Se notifica al correo ' . $sCorreoMensajes . '</div><i class="icon-check"></i></div>';
+				$objMail->addCorreo($sCorreoMensajes, $sCorreoMensajes);
+				if ($sCorreoCopia != '') {
+					$objMail->addCorreo($sCorreoCopia, $sCorreoCopia, 'O');					
+				}
+				if ($sError == '') {
+					$objMail->sCuerpo = $sCuerpo;
+					if ($bDebug) {
+						$sDebug = $sDebug . fecha_microtiempo() . ' Enviando respuesta de solicitud a : ' . $sCorreoMensajes . '<br>';
+					}
+					list($sErrorM, $sDebugM) = $objMail->EnviarV2($bDebug);
+					$sError = $sError . $sErrorM;
+					$sDebug = $sDebug . $sDebugM;
+					if ($sError != '') {
+						$sMensaje = '<div class="flex gap-2"><div>' . $ERR['mail_pend_error'] . '</div><i class="icon-closed"></i></div>';
+					}
+				}
+			} else {
+				$sMensaje = '<div class="flex gap-2"><div>' . $ERR['mail_valido'] . '</div><i class="icon-closed"></i></div>';
+			}
+		}
+	}
+	$objDB->CerrarConexion();
+	$objResponse = new xajaxResponse();
+	if ($sError == '') {
+		$objResponse->assign('modal__body', 'innerHTML', $sMensaje);
+	} else {
+		$objResponse->assign('modal__body', 'innerHTML', $sError);
+	}
+	return $objResponse;
+}

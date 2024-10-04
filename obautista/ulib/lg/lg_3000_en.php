@@ -177,4 +177,10 @@ $ERR['saiu00noexiste']='La encuesta no existe.&lt;br&gt;Verifique que el documen
 $ETI['saiucanal']='Canal de atenci&oacute;n';
 $aCanal=array('','Atenci&oacute;n presencial', 'Registro de llamadas', 'Sesiones de chat', 'Registro de correos');
 $iCanal=4;
+
+$ETI['pendientes_ok'] = 'Lista de responsables enviada correctamente';
+$ETI['mail_pend_titulo']='PQRS Pendientes al ';
+$ERR['pendientes_vacia'] = 'Lista de responsables vac&iacute;a';
+$ERR['pendientes_invalida'] = 'Lista de responsables no v&aacute;lida';
+$ERR['mail_pend_error'] = 'Ha ocurrido un error intentando enviar el mensaje de pendientes';
 ?>

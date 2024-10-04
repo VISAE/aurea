@@ -1574,7 +1574,7 @@ function AUREA_HTML_FirmaDocumento($sCodigo, $idModulo, $iSubProceso, $idRegistr
 //
 function AUREA_HTML_NoResponder()
 {
-	return 'Por favor no responder este mensaje, esta es una notificaci&oacute;n del Sistema de Atenci&oacute;n Integral - SII<br>';
+	return 'Por favor no responder este mensaje, esta es una notificaci&oacute;n del Sistema de Atenci&oacute;n Integral - SAI<br>';
 }
 //
 function AUREA_HTML_PieCorreo()

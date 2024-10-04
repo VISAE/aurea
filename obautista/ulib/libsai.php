@@ -283,7 +283,7 @@ function unad11_Mostrar_v2SAI($aParametros)
 		$objDB->CerrarConexion();
 	}
 	$objResponse = new xajaxResponse();
-	$objResponse->assign($sdiv, 'innerHTML', utf8_encode($respuesta));
+	$objResponse->assign($sdiv, 'innerHTML', cadena_codificar($respuesta));
 	$objResponse->assign($objid . '_doc', 'value', $doc);
 	$objResponse->assign($objid, 'value', $idTercero);
 	if ($bExiste) {
@@ -602,7 +602,7 @@ function f3040_RegistrarNoticacion($saiu40idbasecon, $saiu40idtercero, $saiu40vi
 			$sValores3040 = '' . $saiu40idbasecon . ', "' . $saiu40idtercero . '", ' . $saiu40consec . ', ' . $saiu40id . ', "' . $saiu40fecha . '", 
 			' . $saiu40hora . ', ' . $saiu40min . ', ' . $saiu40vianotifica . '';
 			if ($APP->utf8 == 1) {
-				$sSQL = 'INSERT INTO ' . $sTabla40 . ' (' . $sCampos3040 . ') VALUES (' . utf8_encode($sValores3040) . ');';
+				$sSQL = 'INSERT INTO ' . $sTabla40 . ' (' . $sCampos3040 . ') VALUES (' . cadena_codificar($sValores3040) . ');';
 			} else {
 				$sSQL = 'INSERT INTO ' . $sTabla40 . ' (' . $sCampos3040 . ') VALUES (' . $sValores3040 . ');';
 			}
@@ -1162,7 +1162,7 @@ function f3041_TablaInfoAcademico($aParametros, $objDB, $bDebug = false)
 		if (!$bGigante) {
 			$registros = $objDB->nf($tabladetalle);
 			if ($registros == 0) {
-				//return array(utf8_encode($sErrConsulta.'<input id="paginaf304111" name="paginaf304111" type="hidden" value="'.$pagina.'"/><input id="lppf304111" name="lppf304111" type="hidden" value="'.$lineastabla.'"/>'), $sDebug);
+				//return array(cadena_codificar($sErrConsulta.'<input id="paginaf304111" name="paginaf304111" type="hidden" value="'.$pagina.'"/><input id="lppf304111" name="lppf304111" type="hidden" value="'.$lineastabla.'"/>'), $sDebug);
 			}
 			if ((($registros - 1) / $lineastabla) < ($pagina - 1)) {
 				$pagina = (int)(($registros - 1) / $lineastabla) + 1;
@@ -1310,7 +1310,7 @@ function f3041_TablaInfoAcademico($aParametros, $objDB, $bDebug = false)
 	$res = $res . '<div class="salto5px"></div>
 	</div>';
 	$objDB->liberar($tabladetalle);
-	return array(utf8_encode($res), $sDebug);
+	return array(cadena_codificar($res), $sDebug);
 }
 function f3041_HtmlTablaInfoAcademico($aParametros)
 {
@@ -1676,8 +1676,8 @@ function f12206_db_GuardarV2_Depreciar($DATA, $objDB, $bDebug = false)
 			' . $DATA['corf06minaplica'] . ', ' . $DATA['corf06idsesion'] . ', ' . $DATA['corf06idzona'] . ', ' . $DATA['corf06idcentro'] . ', ' . $DATA['corf06idzonadest'] . ', 
 			' . $DATA['corf06idcentrodest'] . '';
 			if ($APP->utf8 == 1) {
-				$sSQL = 'INSERT INTO corf06novedad (' . $sCampos12206 . ') VALUES (' . utf8_encode($sValores12206) . ');';
-				$sdetalle = $sCampos12206 . '[' . utf8_encode($sValores12206) . ']';
+				$sSQL = 'INSERT INTO corf06novedad (' . $sCampos12206 . ') VALUES (' . cadena_codificar($sValores12206) . ');';
+				$sdetalle = $sCampos12206 . '[' . cadena_codificar($sValores12206) . ']';
 			} else {
 				$sSQL = 'INSERT INTO corf06novedad (' . $sCampos12206 . ') VALUES (' . $sValores12206 . ');';
 				$sdetalle = $sCampos12206 . '[' . $sValores12206 . ']';
@@ -1740,8 +1740,8 @@ function f12206_db_GuardarV2_Depreciar($DATA, $objDB, $bDebug = false)
 			}
 			if ($bPasa) {
 				if ($APP->utf8 == 1) {
-					$sdetalle = utf8_encode($sdatos) . '[' . $sWhere . ']';
-					$sSQL = 'UPDATE corf06novedad SET ' . utf8_encode($sdatos) . ' WHERE ' . $sWhere . ';';
+					$sdetalle = cadena_codificar($sdatos) . '[' . $sWhere . ']';
+					$sSQL = 'UPDATE corf06novedad SET ' . cadena_codificar($sdatos) . ' WHERE ' . $sWhere . ';';
 				} else {
 					$sdetalle = $sdatos . '[' . $sWhere . ']';
 					$sSQL = 'UPDATE corf06novedad SET ' . $sdatos . ' WHERE ' . $sWhere . ';';
@@ -1811,7 +1811,7 @@ function f12206_AdicionarNota($corf06id, $corf08nota, $objDB, $bDebug = false)
 	$sValores12208 = '' . $corf06id . ', ' . $corf08consec . ', ' . $corf08id . ', ' . $corf08fecha . ', ' . $corf08hora . ', 
 	' . $corf08min . ', "' . $corf08nota . '", 0, 0, ' . $corf08idusuario . '';
 	if ($APP->utf8 == 1) {
-		$sSQL = 'INSERT INTO corf08novedadnota (' . $sCampos12208 . ') VALUES (' . utf8_encode($sValores12208) . ');';
+		$sSQL = 'INSERT INTO corf08novedadnota (' . $sCampos12208 . ') VALUES (' . cadena_codificar($sValores12208) . ');';
 	} else {
 		$sSQL = 'INSERT INTO corf08novedadnota (' . $sCampos12208 . ') VALUES (' . $sValores12208 . ');';
 	}
@@ -2042,8 +2042,8 @@ function f12206_RegistrarNovedad($DATA, $objDB, $bDebug = false)
 			' . $DATA['corf06minaplica'] . ', ' . $DATA['corf06idsesion'] . ', ' . $DATA['corf06idzona'] . ', ' . $DATA['corf06idcentro'] . ', ' . $DATA['corf06idzonadest'] . ', 
 			' . $DATA['corf06idcentrodest'] . ', ' . $DATA['corf06idestprograma'] . '';
 			if ($APP->utf8 == 1) {
-				$sSQL = 'INSERT INTO corf06novedad (' . $sCampos12206 . ') VALUES (' . utf8_encode($sValores12206) . ');';
-				$sdetalle = $sCampos12206 . '[' . utf8_encode($sValores12206) . ']';
+				$sSQL = 'INSERT INTO corf06novedad (' . $sCampos12206 . ') VALUES (' . cadena_codificar($sValores12206) . ');';
+				$sdetalle = $sCampos12206 . '[' . cadena_codificar($sValores12206) . ']';
 			} else {
 				$sSQL = 'INSERT INTO corf06novedad (' . $sCampos12206 . ') VALUES (' . $sValores12206 . ');';
 				$sdetalle = $sCampos12206 . '[' . $sValores12206 . ']';
@@ -2600,7 +2600,7 @@ function f12206_TablaDetalleUsuario($aParametros, $objDB, $bDebug = false)
 		if (!$bGigante) {
 			$registros = $objDB->nf($tabladetalle);
 			if ($registros == 0) {
-				return array(utf8_encode($sErrConsulta . $sBotones), $sDebug);
+				return array(cadena_codificar($sErrConsulta . $sBotones), $sDebug);
 			}
 			if ((($registros - 1) / $lineastabla) < ($pagina - 1)) {
 				$pagina = (int)(($registros - 1) / $lineastabla) + 1;
@@ -2831,7 +2831,7 @@ function f12206_TablaDetalleUsuario($aParametros, $objDB, $bDebug = false)
 	<div class="salto5px"></div>
 	</div>';
 	$objDB->liberar($tabladetalle);
-	return array(utf8_encode($res), $sDebug);
+	return array(cadena_codificar($res), $sDebug);
 }
 function f12206_HtmlTablaUsuario($aParametros)
 {
@@ -3125,6 +3125,7 @@ function f3000_TablaDetallePQRS($aParametros, $objDB, $bDebug=false){
 	$aTiempoRojo=array(0,0);
 	$aTiempoNaranja=array(0,0);
 	$aTiempoVerde=array(0,0);
+	$aPendientes=array();
 	$iIndiceSatisf=0;
 	$iEncuestas=0;
 	$iTablas=0;
@@ -3196,7 +3197,8 @@ function f3000_TablaDetallePQRS($aParametros, $objDB, $bDebug=false){
 		$sContenedor=$aTablas[$k];
 		$sSQL=$sSQL.'SELECT saiu05idcategoria, saiu05estado, saiu05fecharespprob, saiu05fecharespdef, saiu05evalacepta, 
 		saiu05evalfecha, saiu05evalamabilidad, saiu05evalrapidez, saiu05evalclaridad, saiu05evalresolvio, 
-		saiu05evalconocimiento, saiu05evalutilidad, saiu05idtiposolorigen 
+		saiu05evalconocimiento, saiu05evalutilidad, saiu05idtiposolorigen, saiu05numref, saiu05agno, 
+		saiu05mes, saiu05dia, saiu05idtemaorigen, saiu05idresponsable, saiu05id  
 		FROM saiu05solicitud_' . $sContenedor . '
 		WHERE saiu05tiporadicado=1 ' . $sWhere . '';
 	}
@@ -3224,7 +3226,7 @@ function f3000_TablaDetallePQRS($aParametros, $objDB, $bDebug=false){
 				<td align="center"><b>'.'No se registran solicitudes'.'</b></td>
 				</tr>
 				</table>';
-				return array(utf8_encode($sErrConsulta.$sBotones).$sTabla, $aVenceRojo, $aVenceNaranja, $aVenceVerde, $aTiempoRojo, $aTiempoNaranja, $aTiempoVerde, $iIndiceSatisf, $sDebug);
+				return array(cadena_codificar($sErrConsulta.$sBotones).$sTabla, $aVenceRojo, $aVenceNaranja, $aVenceVerde, $aTiempoRojo, $aTiempoNaranja, $aTiempoVerde, $iIndiceSatisf, $aPendientes, $sDebug);
 			} 
 		}
 	}
@@ -3290,8 +3292,8 @@ function f3000_TablaDetallePQRS($aParametros, $objDB, $bDebug=false){
 			}
 		} else if ($filadet['saiu05estado'] >= 0  && $filadet['saiu05estado'] < 7) {
 			// Determina tiempos de vencimiento de solicitudes
+			$iHoy = fecha_DiaMod();
 			if ($filadet['saiu05fecharespprob'] != 0) {
-				$iHoy = fecha_DiaMod();
 				if ($filadet['saiu05fecharespprob'] >= $iHoy) {					
 					$idias = fecha_DiasEntreFechasDesdeNumero($iHoy, $filadet['saiu05fecharespprob']);
 					if ($filadet['saiu05idtiposolorigen']==53)  {// Derechos de petición - límite 15 días
@@ -3313,6 +3315,22 @@ function f3000_TablaDetallePQRS($aParametros, $objDB, $bDebug=false){
 					} else {
 						$aVenceRojo[1]++;
 					}
+				}
+			}
+			if ($filadet['saiu05idresponsable'] > 0) {
+				$iFechaInicio = fecha_ArmarNumero($filadet['saiu05dia'], $filadet['saiu05mes'], $filadet['saiu05agno']);
+				$iDias = fecha_DiasEntreFechasDesdeNumero($iFechaInicio, $iHoy);
+				if ($iDias >= 6) {
+					if (isset($aPendientes[$filadet['saiu05idresponsable']])==0) {$aPendientes[$filadet['saiu05idresponsable']]=array();}
+					$aPendientes[$filadet['saiu05idresponsable']][] = array(
+						'numref'=>$filadet['saiu05numref'],
+						'id'=>$filadet['saiu05id'],
+						'agno'=>$filadet['saiu05agno'],
+						'mes'=>$filadet['saiu05mes'],
+						'fechainicio'=>$iFechaInicio,
+						'idtemaorigen'=>$filadet['saiu05idtemaorigen'],
+						'dias'=>$iDias
+					);
 				}
 			}
 		}
@@ -3346,7 +3364,7 @@ function f3000_TablaDetallePQRS($aParametros, $objDB, $bDebug=false){
 	}
 	$res=$res.'</table>';
 	$objDB->liberar($tabladetalle);
-	return array(utf8_encode($res), $aVenceRojo, $aVenceNaranja, $aVenceVerde, $aTiempoRojo, $aTiempoNaranja, $aTiempoVerde, $iIndiceSatisf, $sDebug);
+	return array(cadena_codificar($res), $aVenceRojo, $aVenceNaranja, $aVenceVerde, $aTiempoRojo, $aTiempoNaranja, $aTiempoVerde, $iIndiceSatisf, $aPendientes, $sDebug);
 }
 function f3000_HtmlTablaPQRS($aParametros){
 	$_SESSION['u_ultimominuto']=iminutoavance();
@@ -3360,7 +3378,7 @@ function f3000_HtmlTablaPQRS($aParametros){
 	$objDB=new clsdbadmin($APP->dbhost, $APP->dbuser, $APP->dbpass, $APP->dbname);
 	if ($APP->dbpuerto!=''){$objDB->dbPuerto=$APP->dbpuerto;}
 	$objDB->xajax();
-	list($sDetalle, $aVenceRojo, $aVenceNaranja, $aVenceVerde, $aTiempoRojo, $aTiempoNaranja, $aTiempoVerde, $iIndiceSatisf, $sDebugTabla)=f3000_TablaDetallePQRS($aParametros, $objDB, $bDebug);
+	list($sDetalle, $aVenceRojo, $aVenceNaranja, $aVenceVerde, $aTiempoRojo, $aTiempoNaranja, $aTiempoVerde, $iIndiceSatisf, $aPendientes, $sDebugTabla)=f3000_TablaDetallePQRS($aParametros, $objDB, $bDebug);
 	$sDebug=$sDebug.$sDebugTabla;
 	$objDB->CerrarConexion();
 	$objResponse=new xajaxResponse();
@@ -3377,6 +3395,7 @@ function f3000_HtmlTablaPQRS($aParametros){
 	$objResponse->assign('div_f3000tiemporojo_1', 'innerHTML', $aTiempoRojo[1]);
 	$objResponse->assign('div_f3000tiemponaranja_1', 'innerHTML', $aTiempoNaranja[1]);
 	$objResponse->assign('div_f3000tiempoverde_1', 'innerHTML', $aTiempoVerde[1]);
+	$objResponse->assign('f3000pendientes', 'value', json_encode($aPendientes));
 	if ($iIndiceSatisf == 0) {
 		$objResponse->assign('div_f3000indicesatisf_0', 'innerHTML', '_');
 		$objResponse->assign('div_f3000indicesatisf_1', 'innerHTML', '_');
