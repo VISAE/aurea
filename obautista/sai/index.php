@@ -107,16 +107,10 @@ $bEnSesion = false;
 if ((int)$_SESSION['unad_id_tercero'] != 0) {
 	$bEnSesion = true;
 }
-$grupo_id = 0;
 $iConsecutivoMenu = 1;
 $iMinVerDB = 7774;
-$iCodModulo = 3000;
+$iCodModulo = 2200;
 $iCodModuloConsulta = $iCodModulo;
-$audita[1] = false;
-$audita[2] = true;
-$audita[3] = true;
-$audita[4] = true;
-$audita[5] = false;
 // -- Se cargan los archivos de idioma
 $mensajes_todas = $APP->rutacomun . 'lg/lg_todas_' . $_SESSION['unad_idioma'] . '.php';
 if (!file_exists($mensajes_todas)) {
@@ -192,7 +186,8 @@ if (!$bCerrado) {
 	}
 }
 if (!$bCerrado) {
-	list($bDevuelve, $sDebugP) = seg_revisa_permisoV3($iCodModuloConsulta, 1, $_SESSION['unad_id_tercero'], $objDB);
+	// list($bDevuelve, $sDebugP) = seg_revisa_permisoV3($iCodModuloConsulta, 1, $_SESSION['unad_id_tercero'], $objDB);
+	$bDevuelve = true;
 	if (!$bDevuelve) {
 		$bCerrado = true;
 		$sMsgCierre = '<div class="MarquesinaGrande">No cuenta con permiso para acceder a este modulo [' . $iCodModuloConsulta . '].</div>';
@@ -308,10 +303,7 @@ if (isset($_REQUEST['debug']) != 0) {
 //$idEntidad = Traer_Entidad();
 // -- Si esta cargando la pagina por primer vez se revisa si requiere auditar y se manda a hacer un limpiar (paso -1)
 if (isset($_REQUEST['paso']) == 0) {
-	$_REQUEST['paso'] = -1;
-	if ($audita[1]) {
-		seg_auditaingreso($iCodModulo, $_SESSION['unad_id_tercero'], $objDB);
-	}
+	$_REQUEST['paso'] = 0;
 }
 // -- 269 aure69versionado
 require $APP->rutacomun . 'lib269.php';
@@ -352,46 +344,10 @@ if (isset($_REQUEST['lppf269']) == 0) {
 if (isset($_REQUEST['blistar']) == 0) {
 	$_REQUEST['blistar'] = 1;
 }
-//limpiar la pantalla
-if ($_REQUEST['paso'] == -1) {
-	$_REQUEST['paso'] = 0;
-}
 if ($bLimpiaHijos) {
 }
 //AQUI SE DEBEN CARGAR TODOS LOS DATOS QUE LA FORMA NECESITE.
-$bPuedeGuardar = false;
-$bConEliminar = false;
-$bHayImprimir = false;
-$bHayImprimir2 = false;
-$sScriptImprime = 'imprimelista()';
-$sScriptImprime2 = 'imprimep()';
-$sClaseImprime = 'iExcel';
-$sClaseImprime2 = 'iPdf';
-if ($iPiel == 0) {
-	$sClaseImprime = 'btEnviarExcel';
-	$sClaseImprime2 = 'btEnviarPdf';
-}
 //Permisos adicionales
-$seg_5 = 0;
-$seg_6 = 0;
-/*
-list($bDevuelve, $sDebugP) = seg_revisa_permisoV3($iCodModulo, 6, $idTercero, $objDB);
-if ($bDevuelve) {
-	$seg_6 = 1;
-	$bHayImprimir = true;
-}
-*/
-if ((int)$_REQUEST['paso'] != 0) {
-	$bDevuelve = false;
-	//list($bDevuelve, $sDebugP) = seg_revisa_permisoV3($iCodModulo, 5, $idTercero, $objDB);
-	if ($bDevuelve) {
-		$seg_5 = 1;
-	}
-	$bConEliminar = true;
-	if ($seg_5 == 1) {
-		$bHayImprimir2 = true;
-	}
-}
 //DATOS PARA COMPLETAR EL FORMULARIO
 $sNombreUsuario = '';
 //Crear los controles que requieran llamado a base de datos
@@ -412,15 +368,12 @@ if ((int)$_REQUEST['paso'] == 0) {
 } else {
 }
 //Permisos adicionales
-$seg_5 = 0;
-$seg_6 = 0;
 $seg_12 = 0;
 list($bDevuelve, $sDebugP) = seg_revisa_permisoV3($iCodModulo, 12, $idTercero, $objDB);
 if ($bDevuelve) {
 	$seg_12 = 1;
 }
 //Crear los controles que requieran llamado a base de datos
-$objCombos = new clsHtmlCombos();
 if ($seg_12 == 1) {
 	$objCombos->nuevo('unae26unidadesfun', '', true, '{' . $ETI['msg_seleccione'] . '}');
 	$objCombos->sAccion = 'carga_combo_bita27equipotrabajo();';
@@ -475,30 +428,12 @@ switch ($iPiel) {
 		forma_InicioV4($xajax, $sTituloModulo);
 		$aRutas = array(
 			array('./', $sTituloApp),
-			array('./' . $sPaginaModulo, $sGrupoModulo),
+			// array('./' . $sPaginaModulo, $sGrupoModulo),
 			array('', $sTituloModulo)
 		);
 		$iNumBoton = 0;
 		$aBotones[$iNumBoton] = array('muestraayuda(' . $APP->idsistema . ', ' . $iCodModulo . ')', $ETI['bt_ayuda'], 'iHelp');
 		$iNumBoton++;
-		if ($bConEliminar) {
-			$aBotones[$iNumBoton] = array('eliminadato()', $ETI['bt_eliminar'], 'iDelete');
-			$iNumBoton++;
-		}
-		if ($bHayImprimir) {
-			$aBotones[$iNumBoton] = array($sScriptImprime, $ETI['bt_imprimir'], $sClaseImprime);
-			$iNumBoton++;
-		}
-		if ($bHayImprimir2) {
-			$aBotones[$iNumBoton] = array($sScriptImprime2, $ETI['bt_imprimir'], $sClaseImprime2);
-			$iNumBoton++;
-		}
-		$aBotones[$iNumBoton] = array('limpiapagina()', $ETI['bt_limpiar'], 'iDocument');
-		$iNumBoton++;
-		if ($bPuedeGuardar) {
-			$aBotones[$iNumBoton] = array('enviaguardar()', $ETI['bt_guardar'], 'iSaveFill');
-			$iNumBoton++;
-		}
 		$aBotones[$iNumBoton] = array('expandesector(1)', $ETI['bt_volver'], 'iArrowBack', 97);
 		$iNumBoton++;
 		forma_cabeceraV4b($aRutas, $aBotones, true, $iSector);
@@ -521,29 +456,6 @@ switch ($iPiel) {
 		window.document.frmedita.submit();
 	}
 
-	function cambiapagina() {
-		expandesector(98);
-		window.document.frmedita.submit();
-	}
-
-	function expandepanel(codigo, estado, valor) {
-		let objdiv = document.getElementById('div_p' + codigo);
-		let objban = document.getElementById('boculta' + codigo);
-		let otroestado = 'none';
-		if (estado == 'none') {
-			otroestado = 'block';
-		}
-		objdiv.style.display = estado;
-		objban.value = valor;
-		verboton('btrecoge' + codigo, estado);
-		verboton('btexpande' + codigo, otroestado);
-	}
-
-	function verboton(idboton, estado) {
-		let objbt = document.getElementById(idboton);
-		objbt.style.display = estado;
-	}
-
 	function expandesector(codigo) {
 		document.getElementById('div_sector1').style.display = 'none';
 		document.getElementById('div_sector2').style.display = 'none';
@@ -555,16 +467,17 @@ switch ($iPiel) {
 switch ($iPiel) {
 	case 2:
 ?>
-		document.getElementById('botones_sector1').style.display = 'none';
+		document.getElementById('botones_sector1').style.display = 'flex';
+		document.getElementById('botones_sector97').style.display = 'none';
 		switch (codigo) {
 			case 1:
-				document.getElementById('botones_sector1').style.display = 'flex';
 				break;
-			case 2:
-				document.getElementById('botones_sector2').style.display = 'flex';
+			case 97:
+				document.getElementById('botones_sector1').style.display = 'none';
+				document.getElementById('botones_sector' + codigo).style.display = 'flex';
 				break;
 			default:
-				//document.getElementById('botones_sector1').style.display = 'none';
+				document.getElementById('botones_sector1').style.display = 'none';
 				break;
 		}
 		if (codigo == 1) {
@@ -612,11 +525,6 @@ switch ($iPiel) {
 				siguienteobjeto();
 			}
 		}
-	}
-
-	function retornacontrol() {
-		expandesector(1);
-		window.scrollTo(0, window.document.frmedita.iscroll.value);
 	}
 
 	function mantener_sesion() {
@@ -706,16 +614,16 @@ if ($seg_12 == 1) {
 	if (count($aPendientes)>0) {
 ?>
 	function notificar_responsables() {
+		ModalConfirmV2('¿Desea realizar el envío de la notificaci&oacute;n a los responsables de solicitudes&quest;', () => {
+			ejecuta_notificar_responsables();
+		});
+	}
+	function ejecuta_notificar_responsables() {
 		let params = new Array();
 		params[99] = window.document.frmedita.debug.value;
 		params[100] = <?php echo $idTercero; ?>;
 		params[101] = window.document.frmedita.f3000pendientes.value;
-		console.log(params[101]);
-		ModalMensajeV2('<div class="flex gap-2"><div>Notificando responsables<br>Por favor espere... </div><div class="spinner"></div></div>', null, {
-			botonAceptar: 'Cerrar', 
-			botonCancelar: '', 
-			tituloModal: 'Estado del env&iacute;o'
-		});
+		MensajeAlarmaV2('<div class="flex gap-2"><div>Notificando responsables<br>Por favor espere... </div><div class="spinner"></div></div>', 2);		
 		xajax_f3000_NotificarResponsables(params);
 	}
 <?php
@@ -735,8 +643,6 @@ if ($seg_12 == 1) {
 <input id="id11" name="id11" type="hidden" value="<?php echo $idTercero; ?>" />
 <input id="ipiel" name="ipiel" type="hidden" value="<?php echo $iPiel; ?>" />
 <input id="icodmodulo" name="icodmodulo" type="hidden" value="<?php echo $iCodModulo; ?>" />
-<input id="seg_5" name="seg_5" type="hidden" value="<?php echo $seg_5; ?>" />
-<input id="seg_6" name="seg_6" type="hidden" value="<?php echo $seg_6; ?>" />
 <div id="div_sector1">
 <?php
 if ($bBloqueTitulo) {
@@ -744,21 +650,6 @@ if ($bBloqueTitulo) {
 <div class="titulos">
 <div class="titulosD">
 <input id="cmdAyuda" name="cmdAyuda" type="button" class="btUpAyuda" onclick="muestraayuda(<?php echo $APP->idsistema . ', ' . $iCodModulo; ?>);" title="<?php echo $ETI['bt_ayuda']; ?>" value="<?php echo $ETI['bt_ayuda']; ?>" />
-<?php
-?>
-<input id="cmdLimpiar" name="cmdLimpiar" type="button" class="btUpLimpiar" onclick="limpiapagina();" title="<?php echo $ETI['bt_limpiar']; ?>" value="<?php echo $ETI['bt_limpiar']; ?>" />
-<?php
-if ($bPuedeGuardar) {
-?>
-<input id="cmdGuardar" name="cmdGuardar" type="button" class="btUpGuardar" onclick="enviaguardar();" title="<?php echo $ETI['bt_guardar']; ?>" value="<?php echo $ETI['bt_guardar']; ?>" />
-<?php
-}
-if (false) {
-?>
-<input id="cmdAnular" name="cmdAnular" type="button" class="btSupAnular" onclick="expandesector(2);" title="<?php echo $ETI['bt_anular']; ?>" value="<?php echo $ETI['bt_anular']; ?>" />
-<?php
-}
-?>
 </div>
 <div class="titulosI">
 <?php
@@ -790,10 +681,10 @@ echo html_tipodocV2('deb_tipodoc', $_REQUEST['deb_tipodoc']);
 </label>
 <label class="Label30">
 </label>
-<label class="Label30">
-<input id="btRevisaDoc" name="btRevisaDoc" type="button" value="Actualizar" class="btMiniActualizar" onclick="limpiapagina()" title="Consultar documento" />
-</label>
-<label class="Label30"></label>
+<?php
+echo $objForma->htmlBotonSolo('btRevisaDoc', 'btMiniActualizar', 'limpiapagina()', 'Consultar documento', 30);
+?>
+<label class="Label30">&nbsp;</label>
 <b>
 <?php
 echo $sNombreUsuario;
@@ -819,6 +710,7 @@ echo $sTabla269;
 </div>
 </div><!-- CIERRA EL DIV areatrabajo -->
 </div><!-- CIERRA EL DIV areaform -->
+<div class="salto5px"></div>
 <div class="areaform">
 <div class="areatrabajo">
 <label class="TituloGrupo">
@@ -1144,33 +1036,25 @@ if ($iIndiceSatisf == 0) {
 <div class="salto1px"></div>
 </div>
 </div>
-</div><!-- CIERRA EL DIV areatrabajo -->
-</div><!-- CIERRA EL DIV areaform -->
-</div><!-- /DIV_Sector1 -->
+<?php
+// CIERRA EL DIV areatrabajo
+?>
+</div>
+</div>
+</div>
 
 
 <div id="div_sector2" style="display:none">
 <?php
+$objForma = new clsHtmlForma($iPiel);
 if ($bBloqueTitulo) {
-?>
-<div class="titulos">
-<div class="titulosD">
-<input id="cmdAyuda2" name="cmdAyuda2" type="button" class="btSupAyuda" onclick="muestraayuda(<?php echo $iCodModulo; ?>);" title="<?php echo $ETI['bt_ayuda']; ?>" value="<?php echo $ETI['bt_ayuda']; ?>" />
-<input id="cmdVolverSec2" name="cmdVolverSec2" type="button" class="btSupVolver" onclick="expandesector(1);" title="<?php echo $ETI['bt_volver']; ?>" value="<?php echo $ETI['bt_volver']; ?>" />
-</div>
-<div class="titulosI">
-<?php
-echo '<h2>' . $ETI['titulo_sector2'] . '</h2>';
-?>
-</div>
-</div>
-<?php
+	$objForma->addBoton('cmdAyuda2', 'btSupAyuda', 'muestraayuda(' . $iCodModulo . ');', $ETI['bt_ayuda']);
+	$objForma->addBoton('cmdVolverSec2', 'btSupVolver', 'retornacontrol();', $ETI['bt_volver']);
+	echo $objForma->htmlTitulo($sTituloModulo, $iCodModulo);
 }
+echo $objForma->htmlInicioMarco();
+echo $objForma->htmlFinMarco();
 ?>
-<div class="areaform">
-<div class="areatrabajo">
-</div>
-</div>
 <?php
 // Termina el div_sector2
 ?>
@@ -1178,9 +1062,11 @@ echo '<h2>' . $ETI['titulo_sector2'] . '</h2>';
 
 
 <div id="div_sector95" style="display:none">
-<div class="areaform">
-<div id="div_95cuerpo"></div>
-</div>
+<?php
+echo $objForma->htmlInicioMarco();
+echo '<div id="div_95cuerpo"></div>';
+echo $objForma->htmlFinMarco();
+?>
 </div>
 
 
@@ -1192,57 +1078,49 @@ echo '<h2>' . $ETI['titulo_sector2'] . '</h2>';
 <input id="div96llave" name="div96llave" type="hidden" value="" />
 <input id="titulo_3000" name="titulo_3000" type="hidden" value="<?php echo $sTituloModulo; ?>" />
 <?php
+$objForma=new clsHtmlForma($iPiel);
 if ($bBloqueTitulo) {
-?>
-<div class="titulos">
-<div class="titulosD">
-<input id="cmdAyuda96" name="cmdAyuda96" type="button" class="btSupAyuda" onclick="muestraayuda(<?php echo $iCodModulo; ?>);" title="<?php echo $ETI['bt_ayuda']; ?>" value="<?php echo $ETI['bt_ayuda']; ?>" />
-</div>
-<div class="titulosI" id="div_96titulo"></div>
-</div>
-<?php
-} else {
-?>
-<div id="div_96titulo" style="display:none"></div>
-<?php
+	$objForma->addBoton('cmdAyuda96', 'btSupAyuda', 'muestraayuda(' . $iCodModulo . ');', $ETI['bt_ayuda']);
+	$objForma->addBoton('cmdVolverSec96', 'btSupVolver', 'retornacontrol();', $ETI['bt_volver']);
+	echo $objForma->htmlTitulo($sTituloModulo, $iCodModulo, 'div_96titulo');
 }
+echo $objForma->htmlInicioMarco();
+echo '<div id="div_96cuerpo"></div>';
+echo $objForma->htmlFinMarco();
 ?>
-<div class="areaform">
-<div id="div_96cuerpo"></div>
-</div>
 </div>
 
 
 <div id="div_sector97" style="display:none">
+<?php
+$objForma = new clsHtmlForma($iPiel);
+if ($bBloqueTitulo) {
+	$objForma->addBoton('cmdAyuda97', 'btSupAyuda', 'muestraayuda(' . $iCodModulo . ');', $ETI['bt_ayuda']);
+	$objForma->addBoton('cmdVolverSec97', 'btSupVolver', 'retornacontrol();', $ETI['bt_volver']);
+	echo $objForma->htmlTitulo($sTituloModulo, $iCodModulo, 'div_97titulo');
+}
+echo $objForma->htmlInicioMarco();
+?>
+<div id="div_97params"></div>
+<div class="salto1px"></div>
+<div id="div_97tabla"></div>
+<?php
+echo $objForma->htmlFinMarco();
+?>
 </div>
 
 
 <div id="div_sector98" style="display:none">
 <?php
+$objForma = new clsHtmlForma($iPiel);
 if ($bBloqueTitulo) {
-?>
-<div class="titulos">
-<div class="titulosD">
-<input id="cmdAyuda98" name="cmdAyuda98" type="button" class="btSupAyuda" onclick="muestraayuda(<?php echo $iCodModulo; ?>);" title="<?php echo $ETI['bt_ayuda']; ?>" value="<?php echo $ETI['bt_ayuda']; ?>" />
-</div>
-<div class="titulosI">
-<?php
-echo '<h2>' . $sTituloModulo . '</h2>';
-?>
-</div>
-</div>
-<?php
+	$objForma->addBoton('cmdAyuda98', 'btSupAyuda', 'muestraayuda(' . $iCodModulo . ');', $ETI['bt_ayuda']);
+	echo $objForma->htmlTitulo($sTituloModulo, $iCodModulo);
 }
+echo $objForma->htmlInicioMarco();
+echo $objForma->htmlEspere($ETI['msg_espere']);
+echo $objForma->htmlFinMarco();
 ?>
-<div class="areaform">
-<div class="areatrabajo">
-<div class="MarquesinaMedia">
-<?php
-echo $ETI['msg_espere'];
-?>
-</div>
-</div>
-</div>
 </div>
 
 
@@ -1266,17 +1144,6 @@ if ($sDebug != '') {
 ?>
 </div>
 <?php
-if ($bBloqueTitulo) {
-	if ($bPuedeGuardar) {
-?>
-<div class="flotante">
-<input id="cmdGuardarf" name="cmdGuardarf" type="button" class="btSoloGuardar" onClick="enviaguardar();" value="<?php echo $ETI['bt_guardar']; ?>" />
-</div>
-<?php
-	}
-}
-?>
-<?php
 echo html_DivAlarmaV2($sError, $iTipoError);
 //El script que cambia el sector que se muestra
 ?>
@@ -1298,7 +1165,6 @@ if ($bMueveScroll) {
 }
 ?>
 </script>
-<script language="javascript" src="<?php echo $APP->rutacomun; ?>js/chosen.jquery.js"></script>
 <script language="javascript" src="<?php echo $APP->rutacomun; ?>unad_todas2024v2.js"></script>
 <?php
 forma_piedepagina();

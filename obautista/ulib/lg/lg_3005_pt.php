@@ -6,10 +6,10 @@
 */
 $ETI['app_nombre']='APP';
 $ETI['grupo_nombre']='Grupo';
-$ETI['titulo']='Peticiones, Quejas, Reclamos y Solicitudes';
+$ETI['titulo']='Peticiones, Quejas, Reclamos y Sugerencias';
 $ETI['titulo_sector2_PQRS']='PQRS - Resasignar responsable';
 $ETI['titulo_sector93']='Cambio de consecutivo';
-$ETI['titulo_3005']='Peticiones, Quejas, Reclamos y Solicitudes';
+$ETI['titulo_3005']='Peticiones, Quejas, Reclamos y Sugerencias';
 $ETI['titulo_3005sai']='Servicio de Atenci&oacute;n Integral - Solicitudes';
 $ETI['sigla_3005']='PQRS';
 $ETI['bloque1_sai']='Solicitudes registradas';
@@ -68,9 +68,9 @@ $ETI['saiu05tiemprespdias']='Tiemprespdias';
 $ETI['saiu05tiempresphoras']='Tiempresphoras';
 $ETI['saiu05fecharespprob']='Fecharespprob';
 $ETI['saiu05respuesta']='Respuesta';
-$ETI['saiu05fecharespdef'] = 'Fecharespdef';
-$ETI['saiu05horarespdef'] = 'Horarespdef';
-$ETI['saiu05minrespdef'] = 'Minrespdef';
+$ETI['saiu05fecharespdef'] = 'Fecha respuesta';
+$ETI['saiu05horarespdef'] = 'Hora';
+$ETI['saiu05minrespdef'] = 'Minuto';
 $ETI['saiu05diasproc'] = 'Diasproc';
 $ETI['saiu05minproc'] = 'Minproc';
 $ETI['saiu05diashabproc'] = 'Diashabproc';
@@ -79,7 +79,7 @@ $ETI['saiu05idmoduloproc']='Moduloproc';
 $ETI['saiu05identificadormod']='Entificadormod';
 $ETI['saiu05numradicado']='N&deg; de radicado correspondencia';
 $ETI['saiu05evalacepta'] = 'Evalacepta';
-$ETI['saiu05evalfecha'] = 'Evalfecha';
+$ETI['saiu05evalfecha'] = 'Fecha encuesta';
 $ETI['saiu05evalamabilidad'] = 'Evalamabilidad';
 $ETI['saiu05evalamabmotivo'] = 'Evalamabmotivo';
 $ETI['saiu05evalrapidez'] = 'Evalrapidez';
@@ -89,6 +89,7 @@ $ETI['saiu05evalcalridmotivo'] = 'Evalcalridmotivo';
 $ETI['saiu05evalresolvio'] = 'Evalresolvio';
 $ETI['saiu05evalsugerencias'] = 'Evalsugerencias';
 $ETI['saiu05idcategoria'] = 'Tipo';
+$ETI['saiu05idclaseser'] = 'Clase de servicio';
 
 $ERR['saiu05agno']='Necesita el dato '.$ETI['saiu05agno'];
 $ERR['saiu05mes']='Necesita el dato '.$ETI['saiu05mes'];
@@ -161,6 +162,7 @@ $ERR['saiu05evalcalridmotivo'] = 'Necesita el dato ' . $ETI['saiu05evalcalridmot
 $ERR['saiu05evalresolvio'] = 'Necesita el dato ' . $ETI['saiu05evalresolvio'];
 $ERR['saiu05evalsugerencias'] = 'Necesita el dato ' . $ETI['saiu05evalsugerencias'];
 $ERR['saiu05idcategoria'] = 'Necesita el dato ' . $ETI['saiu05idcategoria'];
+$ERR['saiu05idclaseser'] = 'Necesita el dato ' . $ETI['saiu05idclaseser'];
 
 $ERR['saiu05idtiposolorigen_2']='Por favor seleccione la categor&iacute;a y tema de solicitud';
 $ERR['saiu05idtemaorigen_2']='Por favor seleccione el tema de solicitud';
@@ -181,12 +183,14 @@ $ETI['bt_inscribirse']='Crear usuario en campus';
 $ETI['bt_anonimo']='Ingresar anonimamente';
 $ETI['bt_cierrasesion']='Cerrar sesi&oacute;n';
 $ETI['bt_continuar']='Continuar';
+$ETI['bt_regresar']='Regresar';
 $ETI['sesioniniciada']='Usted ya inici&oacute; sesi&oacute;n en Campus.';
 $ETI['advertencia']='<b>ADVERTENCIA: </b>';
 $ETI['msg_alerta_solicitar']='<b>ATENCI&Oacute;N:</b> su solicitud queda radicada &uacute;nicamente hasta que de clic en el bot&oacute;n <span style="background: #014D65; color:#FFF; padding: 0 5px;">Solicitar</span>';
 $ETI['msg_anonimo']='Esta PQRS permite realizarse sin autenticaci&oacute;n, preste atenci&oacute;n al c&oacute;digo de radicado el cual ser&aacute; el &uacute;nico referente de consulta.';
 $ETI['bt_tratadatos']='Autorizaci&oacute;n para el tratamiento de datos personales';
-$ETI['msg_tratadatos']='La UNIVERSIDAD NACIONAL ABIERTA Y A DISTANCIA en adelante UNAD con Nit. 860.512.780-4 y domicilio en la Calle 14 sur N 14-23 de la ciudad de Bogot&aacute;, ente universitario aut&oacute;nomo del orden nacional, con r&eacute;gimen especial en los t&eacute;rminos de la Ley 30 de 1992, est&aacute; comprometida con el correcto tratamiento de los datos personales de los que es responsable.<br><br>La UNAD realizar&aacute; el tratamiento de datos personales mediante la recolecci&oacute;n, transferencia, transmisi&oacute;n, almacenamiento, depuraci&oacute;n, uso, an&aacute;lisis, circulaci&oacute;n, actualizaci&oacute;n, supresi&oacute;n y cruce de informaci&oacute;n, con la finalidad de:<br><strong>Recibir respuesta a la solicitud en el correo de notificaciones indicado.</strong><br><br>Sus derechos como titular de la informaci&oacute;n son los previstos en la Constitucci&oacute;n, la Ley 1581 de 2012, Decretos reglamentarios y nuestra Pol&iacute;tica de tratamiento de datos personales, la cual podr&aacute; consultar en el siguiente link www.unad.edu.co, especialmente los siguientes: conocer, actualizar, Revocar la autorizaci&oacute;n y/o solicitar la supresi&oacute;n del dato, a menos que exista un deber legal o contractual que haga imperativo conservar la informaci&oacute;n, abstenerse de responder las preguntas sobre datos sensibles.<br><br>Estos derechos los podr&aacute; ejercer a trav&eacute;s de los canales o medios dispuestos por la UNAD para la atenci&oacute;n al p&uacute;blico, al correo electr&oacute;nico sgeneral@unad.edu.co para la atenci&oacute;n de requerimientos relacionados con el tratamiento de mis datos personales y el ejercicio de los derechos mencionados en esta autorizaci&oacute;n.<br><br>Mediante el presente se autoriza a la Universidad Nacional Abierta y a Distancia (UNAD) de forma libre, previa, expresa e informada para darle tratamiento a datos personales, en t&eacute;rminos aqu&iacute; referenciados.';
+$ETI['msg_tratadatos']='La UNIVERSIDAD NACIONAL ABIERTA Y A DISTANCIA en adelante UNAD con Nit. 860.512.780-4 y domicilio en la Calle 14 sur N 14-23 de la ciudad de Bogot&aacute;, ente universitario aut&oacute;nomo del orden nacional, con r&eacute;gimen especial en los t&eacute;rminos de la Ley 30 de 1992, est&aacute; comprometida con el correcto tratamiento de los datos personales de los que es responsable.<br><br>La UNAD realizar&aacute; el tratamiento de datos personales mediante la recolecci&oacute;n, transferencia, transmisi&oacute;n, almacenamiento, depuraci&oacute;n, uso, an&aacute;lisis, circulaci&oacute;n, actualizaci&oacute;n, supresi&oacute;n y cruce de informaci&oacute;n, con la finalidad de:<br><strong>Recibir respuesta a la solicitud en el correo de notificaciones indicado.</strong><br><br>Sus derechos como titular de la informaci&oacute;n son los previstos en la Constitucci&oacute;n, la Ley 1581 de 2012, Decretos reglamentarios y nuestra Pol&iacute;tica de tratamiento de datos personales, la cual podr&aacute; consultar en el siguiente link <b><a href="https://sgeneral.unad.edu.co/images/documentos/capsulas/2019/POLI_TRAT_DATO_PERS_UNAD_2021.pdf" target="_blank">www.unad.edu.co</a></b>, especialmente los siguientes: conocer, actualizar, Revocar la autorizaci&oacute;n y/o solicitar la supresi&oacute;n del dato, a menos que exista un deber legal o contractual que haga imperativo conservar la informaci&oacute;n, abstenerse de responder las preguntas sobre datos sensibles.<br><br>Estos derechos los podr&aacute; ejercer a trav&eacute;s de los canales o medios dispuestos por la UNAD para la atenci&oacute;n al p&uacute;blico, al correo electr&oacute;nico <a href="mailto: sgeneral@unad.edu.co">sgeneral@unad.edu.co</a> para la atenci&oacute;n de requerimientos relacionados con el tratamiento de mis datos personales y el ejercicio de los derechos mencionados en esta autorizaci&oacute;n.<br><br>Mediante el presente se autoriza a la Universidad Nacional Abierta y a Distancia (UNAD) de forma libre, previa, expresa e informada para darle tratamiento a datos personales, en t&eacute;rminos aqu&iacute; referenciados.';
+$ETI['msg_cerrar']='Al hacer clic en el bot&oacute;n radicar, usted acepta la remisi&oacute;n de la PQRS a la entidad Universidad Nacional Abierta y a Distancia (UNAD). Sus datos ser&aacute;n recolectados y tratados conforme con la <a href="https://sgeneral.unad.edu.co/images/documentos/capsulas/2019/POLI_TRAT_DATO_PERS_UNAD_2021.pdf" target="_blank">Pol&iacute;tica de Tratamiento de Datos</a>.<br>En la opci&oacute;n <a href="https://aurea.unad.edu.co/sai/" target="_blank">consulta de PQRS</a> podr&aacute; verificar el estado de la respuesta. En caso que la solicitiud de informaci&oacute;n sea de naturaleza de identidad reservada, deber&aacute; efectuar el respectivo trámite ante la Procuradur&iacute;a General de la Naci&oacute;n, haciendo clic en el siguiente link: <a href="https://www.procuraduria.gov.co/SedeElectronica/tramites/tramite.do?formAction=btShow&t=50012&s=0" target="_blank" style="word-wrap:break-word;">procuraduria.gov.co - solicitud_informacion_identificacion_reservada</a>.<br>&iquest;Est&aacute; seguro de continuar?';
 $ETI['bt_tramitar']='Iniciar Tr&aacute;mite';
 $ETI['bt_guardar']='Guardar';
 $ETI['bt_guardarb']='Guardar borrador';
@@ -197,7 +201,9 @@ $ETI['msg_irainscribirse']='Si no cuenta con usuario en nuestra plataforma:';
 $ETI['msg_iranonimo']='O si lo desea puede:';
 $ETI['msg_bestado']='Estado';
 $ETI['msg_borrador']='Borrador';
+$ETI['mail_solic_titulo']='Consulte su solicitud PQRS';
 $ETI['mail_resp_titulo']='Respuesta a su solicitud PQRS';
+$ETI['mail_asig_titulo']='Tiene asignada una solicitud PQRS';
 
 $aEstados = array('Solicitado','','En tr&aacute;mite','','','','','Resuelto');
 
@@ -243,8 +249,10 @@ $ETI['valor1'] = 'Deficiente';
 $ETI['bt_motivo'] = 'Comentarios';
 $ETI['motivo'] = 'Sugerencias o comentarios';
 $ETI['mail_enc_titulo']='Encuesta de calidad del servicio';
+$ETI['mail_enc']='Apreciado Usuario, para la universidad Nacional Abierta y a Distancia - UNAD es muy importante su opini&oacute;n respecto a la calidad de nuestro servicio.<br>Agradecemos dar respuesta a la siguiente encuesta.';
 $ETI['mail_enc_parte1']='Apreciado Usuario, agradecemos su opini&oacute;n respecto a la atenci&oacute;n recibida el d&iacute;a ';
 $ETI['mail_enc_parte2']=' y nos gustar&iacute;a su opini&oacute;n respecto a la calidad de nuestro servicio.';
+$ETI['titulo_encuesta_excel'] = 'Encuesta de Satisfacci&oacute;n PQRS';
 
 $ERR['fecha'] = 'Necesita el dato ' . $ETI['fecha'];
 $ERR['saiu05idencuesta'] = 'Necesita el dato ' . $ETI['saiu05id'];
@@ -259,5 +267,6 @@ $ERR['saui05numref'] = 'C&oacute;digo erroneo';
 $ERR['saui05altertable'] = 'Ha ocurrido un error intentando agregar columnas al contenedor';
 $ERR['mail_resp_error'] = 'Ha ocurrido un error intentando enviar el mensaje de respuesta';
 $ERR['mail_enc_error'] = 'Ha ocurrido un error intentando enviar la encuesta de satisfacci&oacute;n';
+$ERR['saiu05idresponsablefin'] = 'No ha seleccionado un integrante del equipo de trabajo';
 // Fin etiquetas y mensajes de encuesta
 ?>

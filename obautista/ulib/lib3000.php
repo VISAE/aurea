@@ -114,25 +114,25 @@ function f3000_Registrar($valores, $objDB, $bDebug = false)
 			$svr3000[2] = $saiu23idtipo;
 			$svr3000[3] = $saiu23idtema;
 			$svr3000[4] = $saiu23estado;
-			$inumcampos = 4;
+			$iNumCampos = 4;
 			$sWhere = 'saiu23idtercero=' . $saiu23idtercero . ' AND saiu23modulo=' . $saiu23modulo . ' AND saiu23tabla=' . $saiu23tabla . ' AND saiu23idtabla=' . $saiu23idtabla . '';
 			$sSQL = 'SELECT * FROM ' . $sTabla . ' WHERE ' . $sWhere;
 			$sdatos = '';
-			$bpasa = false;
+			$bPasa = false;
 			$result = $objDB->ejecutasql($sSQL);
 			if ($objDB->nf($result) > 0) {
 				$filaorigen = $objDB->sf($result);
-				for ($k = 1; $k <= $inumcampos; $k++) {
+				for ($k = 1; $k <= $iNumCampos; $k++) {
 					if ($filaorigen[$scampo3000[$k]] != $svr3000[$k]) {
 						if ($sdatos != '') {
 							$sdatos = $sdatos . ', ';
 						}
 						$sdatos = $sdatos . $scampo3000[$k] . '="' . $svr3000[$k] . '"';
-						$bpasa = true;
+						$bPasa = true;
 					}
 				}
 			}
-			if ($bpasa) {
+			if ($bPasa) {
 				if ($APP->utf8 == 1) {
 					$sSQL = 'UPDATE ' . $sTabla . ' SET ' . cadena_codificar($sdatos) . ' WHERE ' . $sWhere . ';';
 				} else {
@@ -294,8 +294,8 @@ function f3000_TablaDetalleV2($aParametros, $objDB, $bDebug = false)
 		}
 		if ($registros > $lineastabla) {
 			$rbase = ($pagina - 1) * $lineastabla;
-			$limite = ' LIMIT ' . $rbase . ', ' . $lineastabla;
-			$tabladetalle = $objDB->ejecutasql($sSQL . $limite);
+			$sLimite = ' LIMIT ' . $rbase . ', ' . $lineastabla;
+			$tabladetalle = $objDB->ejecutasql($sSQL . $sLimite);
 		}
 	}
 	$res = $sErrConsulta . $sLeyenda . '<table border="0" align="center" cellpadding="0" cellspacing="2" class="tablaapp">
@@ -2230,38 +2230,10 @@ function f3000_NotificarResponsables($aParametros) {
 	}
 
 	if ($sError == '') {
-		$aPendientes = ["216182"=>[["numref"=>"202402-5-124DE","id"=>"5","agno"=>"2024","mes"=>"2","fechainicio"=>20240205,"idtemaorigen"=>"1","dias"=>242],
-		["numref"=>"202402-31-CF865","id"=>"31","agno"=>"2024","mes"=>"2","fechainicio"=>20240205,"idtemaorigen"=>"3","dias"=>242],
-		["numref"=>"202402-37-DF5D8","id"=>"37","agno"=>"2024","mes"=>"2","fechainicio"=>20240205,"idtemaorigen"=>"1","dias"=>242],
-		["numref"=>"202402-41-8505C","id"=>"41","agno"=>"2024","mes"=>"2","fechainicio"=>20240205,"idtemaorigen"=>"101","dias"=>242],
-		["numref"=>"202402-178-8FF85","id"=>"178","agno"=>"2024","mes"=>"2","fechainicio"=>20240208,"idtemaorigen"=>"245","dias"=>239],
-		["numref"=>"202402-320-792F5","id"=>"320","agno"=>"2024","mes"=>"2","fechainicio"=>20240210,"idtemaorigen"=>"121","dias"=>237],
-		["numref"=>"202402-353-68553","id"=>"353","agno"=>"2024","mes"=>"2","fechainicio"=>20240211,"idtemaorigen"=>"241","dias"=>236],
-		["numref"=>"202402-358-0EFEB","id"=>"358","agno"=>"2024","mes"=>"2","fechainicio"=>20240211,"idtemaorigen"=>"30","dias"=>236],
-		["numref"=>"202402-656-3DCA3","id"=>"656","agno"=>"2024","mes"=>"2","fechainicio"=>20240217,"idtemaorigen"=>"99","dias"=>230],
-		["numref"=>"202402-721-37015","id"=>"721","agno"=>"2024","mes"=>"2","fechainicio"=>20240219,"idtemaorigen"=>"271","dias"=>228],
-		["numref"=>"202403-1028-866C2","id"=>"1028","agno"=>"2024","mes"=>"3","fechainicio"=>20240314,"idtemaorigen"=>"101","dias"=>204],
-		["numref"=>"202403-1113-6CC71","id"=>"1113","agno"=>"2024","mes"=>"3","fechainicio"=>20240317,"idtemaorigen"=>"176","dias"=>201],
-		["numref"=>"202403-1214-8B73A","id"=>"1214","agno"=>"2024","mes"=>"3","fechainicio"=>20240320,"idtemaorigen"=>"241","dias"=>198],
-		["numref"=>"202403-1226-76624","id"=>"1226","agno"=>"2024","mes"=>"3","fechainicio"=>20240320,"idtemaorigen"=>"121","dias"=>198]],
-		"211046"=>[["numref"=>"202402-5-124DE","id"=>"5","agno"=>"2024","mes"=>"2","fechainicio"=>20240205,"idtemaorigen"=>"1","dias"=>242],
-		["numref"=>"202402-31-CF865","id"=>"31","agno"=>"2024","mes"=>"2","fechainicio"=>20240205,"idtemaorigen"=>"3","dias"=>242],
-		["numref"=>"202402-37-DF5D8","id"=>"37","agno"=>"2024","mes"=>"2","fechainicio"=>20240205,"idtemaorigen"=>"1","dias"=>242],
-		["numref"=>"202402-41-8505C","id"=>"41","agno"=>"2024","mes"=>"2","fechainicio"=>20240205,"idtemaorigen"=>"101","dias"=>242],
-		["numref"=>"202402-178-8FF85","id"=>"178","agno"=>"2024","mes"=>"2","fechainicio"=>20240208,"idtemaorigen"=>"245","dias"=>239],
-		["numref"=>"202402-320-792F5","id"=>"320","agno"=>"2024","mes"=>"2","fechainicio"=>20240210,"idtemaorigen"=>"121","dias"=>237],
-		["numref"=>"202402-353-68553","id"=>"353","agno"=>"2024","mes"=>"2","fechainicio"=>20240211,"idtemaorigen"=>"241","dias"=>236],
-		["numref"=>"202402-358-0EFEB","id"=>"358","agno"=>"2024","mes"=>"2","fechainicio"=>20240211,"idtemaorigen"=>"30","dias"=>236],
-		["numref"=>"202402-656-3DCA3","id"=>"656","agno"=>"2024","mes"=>"2","fechainicio"=>20240217,"idtemaorigen"=>"99","dias"=>230],
-		["numref"=>"202402-721-37015","id"=>"721","agno"=>"2024","mes"=>"2","fechainicio"=>20240219,"idtemaorigen"=>"271","dias"=>228],
-		["numref"=>"202403-1028-866C2","id"=>"1028","agno"=>"2024","mes"=>"3","fechainicio"=>20240314,"idtemaorigen"=>"101","dias"=>204],
-		["numref"=>"202403-1113-6CC71","id"=>"1113","agno"=>"2024","mes"=>"3","fechainicio"=>20240317,"idtemaorigen"=>"176","dias"=>201],
-		["numref"=>"202403-1214-8B73A","id"=>"1214","agno"=>"2024","mes"=>"3","fechainicio"=>20240320,"idtemaorigen"=>"241","dias"=>198],
-		["numref"=>"202403-1226-76624","id"=>"1226","agno"=>"2024","mes"=>"3","fechainicio"=>20240320,"idtemaorigen"=>"121","dias"=>198]]];
 		$sNomEntidad = '';
 		$sMailSeguridad = '';
 		$sURLCampus = '';
-		$sCorreoCopia = 'oabm77@gmail.com'; //! OJO CAMBIAR POR sai@unad.edu.co
+		$sCorreoCopia = 'sai@unad.edu.co';
 		$sMensaje = $sMensaje . $ETI['pendientes_ok'];
 		if ($sCorreoCopia != '') {
 			$sMensaje = $sMensaje . ' (con copia a ' . $sCorreoCopia . '):<br>';
@@ -2288,7 +2260,7 @@ function f3000_NotificarResponsables($aParametros) {
 		$objMail->TraerSMTP($idSMTP);
 		foreach($aPendientes as $idResponsable => $aLista) {
 			$bCorreoValido = false;
-			list($sCorreoMensajes, $unad11idgrupocorreo, $sError, $sDebugN) = AUREA_CorreoNotificaV2($idTercero, $objDB, $bDebug);
+			list($sCorreoMensajes, $unad11idgrupocorreo, $sError, $sDebugN) = AUREA_CorreoPrimario($idResponsable, $objDB, $bDebug);
 			if ($sError == '') {
 				list($bCorreoValido, $sDebugC) = correo_VerificarV2($sCorreoMensajes);
 			}
@@ -2318,8 +2290,7 @@ A continuaci&oacute;n, se listan las PQRS pendientes por gestionar.<br><br>
 					}
 					$saiu05idtemaorigen = ($asaiu05idtemaorigen[$i_saiu05idtemaorigen]);
 					$sFondo = 'style="background-color:lightgray;"';
-					$sUrlNumRef = 'https://softwaretest.unad.edu.co/obautista/obautista/sai/saiusolcitudes.php?saiu05origenagno='.$aSolicitud['agno'].'&saiu05origenmes='.$aSolicitud['mes'].'&saiu05id='.$aSolicitud['id'].'&paso=3';
-					// $sUrlNumRef = 'https://aurea2.unad.edu.co/sai/saiusolcitudes.php?saiu05origenagno='.$aSolicitud['agno'].'&saiu05origenmes='.$aSolicitud['mes'].'&saiu05id='.$aSolicitud['id'].'&paso=3';
+					$sUrlNumRef = 'https://aurea2.unad.edu.co/sai/saiusolcitudes.php?saiu05origenagno='.$aSolicitud['agno'].'&saiu05origenmes='.$aSolicitud['mes'].'&saiu05id='.$aSolicitud['id'].'&paso=3';
 					$sCuerpo = $sCuerpo . '<tr ' . ($iCuenta++ % 2 != 0?$sFondo:'') .'><td><a href="'.$sUrlNumRef.'" target="_blank">' . $aSolicitud['numref'] . '</a></td><td>' . $sFechaLargaIni . '</td><td style="text-align: center;">' . $saiu05idtemaorigen . '</td><td style="text-align: center;">' . $aSolicitud['dias'] . '</td></tr>';
 				}
 				$sCuerpo = $sCuerpo . '</tbody></table><br><br>
@@ -2354,9 +2325,10 @@ Cordialmente,<br>
 	$objDB->CerrarConexion();
 	$objResponse = new xajaxResponse();
 	if ($sError == '') {
-		$objResponse->assign('modal__body', 'innerHTML', $sMensaje);
+		// @@@ 07-10-2024 Ajustar esto.
+		$objResponse->call("MensajeAlarmaV2('" . $sMensaje . "', 2)");
 	} else {
-		$objResponse->assign('modal__body', 'innerHTML', $sError);
+		$objResponse->call("MensajeAlarmaV2('" . $sError . "', 0)");
 	}
 	return $objResponse;
 }
