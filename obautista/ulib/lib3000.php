@@ -1429,12 +1429,14 @@ function f3000_EnviaCorreosAtencion($DATA, $sContenedor, $objDB, $bDebug = false
 	$idTercero = 0;
 	$isaiuId = 0;
 	$ssaiuId = '';
+	if (isset($DATA['bcampus'])==0){$DATA['bcampus']=0;}
 	if (isset($DATA['saiuid'])) {		
 		switch($DATA['saiuid']) {
 			case 18:
 			case 19:
 			case 20:
 			case 21:
+			case 73:
 				$isaiuId = $DATA['saiuid'];
 				$ssaiuId = $ETI['saiu'.$isaiuId];
 				$bEntra = true;
@@ -1491,7 +1493,7 @@ function f3000_EnviaCorreosAtencion($DATA, $sContenedor, $objDB, $bDebug = false
 				default: // UNAD Colombia
 					$sNomEntidad = 'UNIVERSIDAD NACIONAL ABIERTA Y A DISTANCIA - UNAD';
 					$sMailSeguridad = 'soporte.campus@unad.edu.co';
-					$sURLCampus = 'https://campus0c.unad.edu.co/campus/';
+					$sURLCampus = 'https://campus0a.unad.edu.co/campus/';
 					$sURLEncuestas = 'https://aurea.unad.edu.co/satisfaccion/';
 					break;
 			}
@@ -1499,7 +1501,7 @@ function f3000_EnviaCorreosAtencion($DATA, $sContenedor, $objDB, $bDebug = false
 			$iFechaServicio = fecha_ArmarNumero($DATA['saiu'.$isaiuId.'dia'] . $DATA['saiu'.$isaiuId.'mes'] . $DATA['saiu'.$isaiuId.'agno']);
 			$sFechaLarga = formato_FechaLargaDesdeNumero($iFechaServicio, true);
 			$sRutaImg = 'https://datateca.unad.edu.co/img/';
-			$sURLDestino = 'https://aurea.unad.edu.co/sai';
+			$sURLDestino = $sURLCampus . 'saiusolusuario.php';
 			$et_NumSol = $DATA['saiu'.$isaiuId.'agno'].'-'.$DATA['saiu'.$isaiuId.'id'].'-'.$isaiuId;
 			$URL = url_encode('' . $et_NumSol);
 			$sURLDestinoEnc = 'https://aurea.unad.edu.co/encuesta';
@@ -1519,9 +1521,20 @@ function f3000_EnviaCorreosAtencion($DATA, $sContenedor, $objDB, $bDebug = false
 				con el n&uacute;mero: <span style="color: rgb(255, 0, 0); font-size: 16px;"><strong>' . $DATA['saiu'.$isaiuId.'idcaso'] . '</strong></span>.<br><br>
 				Le invitamos a ingresar al m&oacute;dulo de Registro de Atenciones, canal: ' . $ssaiuId .', para iniciar el tr&aacute;mite del caso.<br><br>';
 			} else {
+				if ($DATA['bcampus']==1) {
+					$sTituloMensaje = $ETI['mail_solic_titulo'] . ' ' . $ssaiuId . ' ' . $sNomEntidad . '';
+					$sCuerpo = 'Cordial saludo.<br>
+					Estimado(a) <b>' . $unad11razonsocial . '</b><br><br>
+					Para la universidad Nacional Abierta y a Distancia - UNAD es muy importante atender sus solicitudes. 
+					Acorde con lo anterior le informamos que su solicitud radicada el día ' . $sFechaLarga . ', por el módulo de ' . $ssaiuId . '; 
+					puede ser consultada en el siguiente enlace:<br><a href="' . $sURLDestino . '" target="_blank">' . $sURLDestino . '</a><br><br>';
+				} else {
 				$sTituloMensaje = $ETI['mail_enc_titulo'] . ' ' . $ssaiuId . ' ' . $sNomEntidad . '';
 				$sCuerpo = 'Cordial saludo.<br>
-				Estimado(a) <b>' . $unad11razonsocial . '</b><br><br>' . $ETI['mail_enc_parte1'] . $sFechaLarga . $ETI['mail_enc_parte2'];
+				Estimado(a) <b>' . $unad11razonsocial . '</b><br><br>
+				Para la universidad Nacional Abierta y a Distancia - UNAD es muy importante atender sus solicitudes. 
+				Acorde con lo anterior le informamos que la respuesta a su solicitud radicada el día ' . $sFechaLarga . ', por el módulo de ' . $ssaiuId . '; 
+				puede ser consultada en el siguiente enlace:<br><a href="' . $sURLDestino . '" target="_blank">' . $sURLDestino . '</a><br><br><hr>' . $ETI['mail_enc'] . '<br>';
 				
 			$sCuerpo = $sCuerpo . '<table border="0" cellpadding="10" cellspacing="0" width="80%" style="width: 80%; max-width: 80%; min-width: 80%;">
 				<tbody>
@@ -1560,6 +1573,7 @@ function f3000_EnviaCorreosAtencion($DATA, $sContenedor, $objDB, $bDebug = false
 					</tr>
 				</tbody>
 			</table><br>';
+					}
 				}
 			$sCuerpo = $sCuerpo . 'Cordialmente,<br>
 			<b>Sistema de Atención Integral - SAI</b><br>';
@@ -2147,6 +2161,9 @@ function f3000_ValidaTablasAtencion($sContenedor, $saiuid, $objDB)
 		case '21':
 			$sTabla = 'saiu'.$saiuid.'directa_' . $sContenedor;
 			break;
+		case '73':
+			$sTabla = 'saiu'.$saiuid.'solusuario_' . $sContenedor;
+			break;
 		default:
 			$sError = $sError . $ERR['saui00numref'];
 			break;
@@ -2168,6 +2185,10 @@ function f3000_ValidaTablasAtencion($sContenedor, $saiuid, $objDB)
 					break;
 				case '21':
 					list($sErrorR, $sDebugR) = f3021_RevisarTabla($sContenedor, $objDB);
+					$sError = $sError . $sErrorR;
+					break;					
+				case '73':
+					list($sErrorR, $sDebugR) = f3073_RevisarTabla($sContenedor, $objDB);
 					$sError = $sError . $sErrorR;
 					break;					
 			}					

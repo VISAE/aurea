@@ -42,7 +42,7 @@ function unad11_Mostrar_v2SAI($aParametros)
 	$sCorreo = '';
 	$sDireccion = '';
 	switch ($idModulo) {
-		case 3005:
+		case 3005: //pqrs
 			$sCampoPais = 'saiu05idzona';
 			$sCampoDepto = 'saiu05coddepto';
 			$sCampoCiudad = 'saiu05codciudad';
@@ -57,7 +57,7 @@ function unad11_Mostrar_v2SAI($aParametros)
 			$sCampoCorreo = 'saiu05rptacorreo';
 			$sCampoDireccion = 'saiu05rptadireccion';
 			break;
-		case 3018:
+		case 3018: //Telefonico
 			$sCampoPais = 'saiu18idzona';
 			$sCampoDepto = 'saiu18coddepto';
 			$sCampoCiudad = 'saiu18codciudad';
@@ -69,7 +69,7 @@ function unad11_Mostrar_v2SAI($aParametros)
 			$sCampoPrograma = 'saiu18idprograma';
 			$sCampoPeriodo = 'saiu18idperiodo';
 			break;
-		case 3019:
+		case 3019: //Chat
 			$sCampoPais = 'saiu19idzona';
 			$sCampoDepto = 'saiu19coddepto';
 			$sCampoCiudad = 'saiu19codciudad';
@@ -81,7 +81,7 @@ function unad11_Mostrar_v2SAI($aParametros)
 			$sCampoPrograma = 'saiu19idprograma';
 			$sCampoPeriodo = 'saiu19idperiodo';
 			break;
-		case 3020:
+		case 3020: //Correos
 			$sCampoPais = 'saiu20idzona';
 			$sCampoDepto = 'saiu20coddepto';
 			$sCampoCiudad = 'saiu20codciudad';
@@ -93,7 +93,7 @@ function unad11_Mostrar_v2SAI($aParametros)
 			$sCampoPrograma = 'saiu20idprograma';
 			$sCampoPeriodo = 'saiu20idperiodo';
 			break;
-		case 3021:
+		case 3021: //Atencion presencial
 			$sCampoPais = 'saiu21idzona';
 			$sCampoDepto = 'saiu21coddepto';
 			$sCampoCiudad = 'saiu21codciudad';
@@ -116,6 +116,18 @@ function unad11_Mostrar_v2SAI($aParametros)
 			$sCampoEscuela = 'saiu28idescuela';
 			$sCampoPrograma = 'saiu28idprograma';
 			$sCampoPeriodo = 'saiu28idperiodo';
+			break;
+		case 3073: //Solicitudes Usuario
+			$sCampoPais = 'saiu73idzona';
+			$sCampoDepto = 'saiu73coddepto';
+			$sCampoCiudad = 'saiu73codciudad';
+			$sCampoTelefono = 'saiu73numorigen';
+			$sCampoTipoInteresado = 'saiu73tipointeresado';
+			$sCampoZona = 'saiu73idzona';
+			$sCampoCentro = 'saiu73idcentro';
+			$sCampoEscuela = 'saiu73idescuela';
+			$sCampoPrograma = 'saiu73idprograma';
+			$sCampoPeriodo = 'saiu73idperiodo';
 			break;
 		default:
 			$objResponse = new xajaxResponse();
@@ -245,9 +257,13 @@ function unad11_Mostrar_v2SAI($aParametros)
 				$html_depto = f3021_HTMLComboV2_saiu21coddepto($objDB, $objCombos, $sCodDepto, $sCodPais);
 				$html_ciudad = f3021_HTMLComboV2_saiu21codciudad($objDB, $objCombos, $sCodCiudad, $sCodDepto);
 				break;
-			case 3028:
+			case 3028: //Mesa de ayuda.
 				$html_depto = f3028_HTMLComboV2_saiu28coddepto($objDB, $objCombos, $sCodDepto, $sCodPais);
 				$html_ciudad = f3028_HTMLComboV2_saiu28codciudad($objDB, $objCombos, $sCodCiudad, $sCodDepto);
+				break;
+			case 3073: //Solicitudes Usuario
+				// $html_depto = f3073_HTMLComboV2_saiu73coddepto($objDB, $objCombos, $sCodDepto, $sCodPais);
+				// $html_ciudad = f3073_HTMLComboV2_saiu73codciudad($objDB, $objCombos, $sCodCiudad, $sCodDepto);
 				break;
 		}
 	}
@@ -277,6 +293,10 @@ function unad11_Mostrar_v2SAI($aParametros)
 				$html_programa = f3028_HTMLComboV2_saiu28idprograma($objDB, $objCombos, $idPrograma, $idEscuela);
 				$html_centro = f3028_HTMLComboV2_saiu28idcentro($objDB, $objCombos, $idCead, $idZona);
 				break;
+			case 3073:
+				$html_programa = f3073_HTMLComboV2_saiu73idprograma($objDB, $objCombos, $idPrograma, $idEscuela);
+				$html_centro = f3073_HTMLComboV2_saiu73idcentro($objDB, $objCombos, $idCead, $idZona);
+				break;
 		}
 	}
 	if ($bHayDB) {
@@ -289,10 +309,10 @@ function unad11_Mostrar_v2SAI($aParametros)
 	if ($bExiste) {
 		$objResponse->assign($sCampoPais, 'value', $sCodPais);
 		$objResponse->assign($sCampoTelefono, 'value', $sTelefono);
-		$objResponse->assign('div_' . $sCampoDepto, 'innerHTML', $html_depto);
-		$objResponse->call('$("#' . $sCampoDepto . '").chosen()');
-		$objResponse->assign('div_' . $sCampoCiudad, 'innerHTML', $html_ciudad);
-		$objResponse->call('$("#' . $sCampoCiudad . '").chosen()');
+		// $objResponse->assign('div_' . $sCampoDepto, 'innerHTML', $html_depto);
+		// $objResponse->call('$("#' . $sCampoDepto . '").chosen()');
+		// $objResponse->assign('div_' . $sCampoCiudad, 'innerHTML', $html_ciudad);
+		// $objResponse->call('$("#' . $sCampoCiudad . '").chosen()');
 	}
 	$objResponse->assign($sCampoTipoInteresado, 'value', $iTipoInteresado);
 	if ($bConAdicionales) {
@@ -343,10 +363,13 @@ function unad11_TraerXidSAI($aParametros)
 	}
 	$idModulo = $aParametros[6];
 	switch ($idModulo) {
-		case 3005:
-		case 3018:
-		case 3019:
+		case 3005: //pqrs
+		case 3018: //Telefonico
+		case 3019: //Chat
+		case 3020: //Correos
+		case 3021: //Atencion presencial
 		case 3028: //Mesa de ayuda.
+		case 3073: //Solicitudes Usuario
 			break;
 		default:
 			$objResponse = new xajaxResponse();
@@ -2989,7 +3012,7 @@ function f3000_Combobita27equipotrabajo($aParametros){
 	$objDB=new clsdbadmin($APP->dbhost, $APP->dbuser, $APP->dbpass, $APP->dbname);
 	if ($APP->dbpuerto!=''){$objDB->dbPuerto=$APP->dbpuerto;}
 	$objDB->xajax();
-	$objCombos=new clsHtmlCombos('n');
+	$objCombos = new clsHtmlCombos();
 	$html_bita27equipotrabajo=f3000_HTMLComboV2_bita27equipotrabajo($objDB, $objCombos, '', $aParametros[0]);
 	$objDB->CerrarConexion();
 	$objResponse=new xajaxResponse();
@@ -3023,7 +3046,7 @@ function f3000_Combobita28eqipoparte($aParametros){
 	$objDB=new clsdbadmin($APP->dbhost, $APP->dbuser, $APP->dbpass, $APP->dbname);
 	if ($APP->dbpuerto!=''){$objDB->dbPuerto=$APP->dbpuerto;}
 	$objDB->xajax();
-	$objCombos=new clsHtmlCombos('n');
+	$objCombos = new clsHtmlCombos();
 	$html_bita28eqipoparte=f3000_HTMLComboV2_bita28eqipoparte($objDB, $objCombos, '', $aParametros[0]);
 	$objDB->CerrarConexion();
 	$objResponse=new xajaxResponse();
@@ -3078,12 +3101,12 @@ function f3000_TablaDetallePQRS($aParametros, $objDB, $bDebug=false){
 	$iAgno=numeros_validar($aParametros[106]);
 	$bListar=numeros_validar($aParametros[107]);
 	//if ($bDebug){$sDebug=$sDebug.fecha_microtiempo().' bListar: ' . $aParametros[107].'<br>';}
-	$babierta=true;
+	$bAbierta=true;
 	//$sSQL='SELECT Campo FROM Tabla WHERE Id='.$sValorId;
 	//$tabla=$objDB->ejecutasql($sSQL);
 	//if ($objDB->nf($tabla)>0){
 		//$fila=$objDB->sf($tabla);
-		//if ($fila['Campo']!='S'){$babierta=true;}
+		//if ($fila['Campo']!='S'){$bAbierta=true;}
 		//}
 	$sLeyenda='';
 	//if ((int)$idUnidad==0){$sLeyenda='No ha seleccionado una unidad funcional';}
@@ -3350,7 +3373,7 @@ function f3000_TablaDetallePQRS($aParametros, $objDB, $bDebug=false){
 				}
 			if(($tlinea%2)==0){$sClass=' class="resaltetabla"';}
 			$tlinea++;
-			if ($babierta){
+			if ($bAbierta){
 				//$sLink='<a href="javascript:cargadato('."'".$filadet['cara00id']."'".')" class="lnkresalte">'.$ETI['lnk_cargar'].'</a>';
 			}
 			$res=$res.'<tr'.$sClass.'>

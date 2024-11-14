@@ -44,6 +44,25 @@ require $APP->rutacomun . 'libhtml.php';
 require $APP->rutacomun . 'xajax/xajax_core/xajax.inc.php';
 require $APP->rutacomun . 'unad_xajax.php';
 
+if (isset($APP->https) == 0) {
+	$APP->https = 0;
+}
+if ($APP->https == 2) {
+	$bObliga = false;
+	if (isset($_SERVER['HTTPS']) == 0) {
+		$bObliga = true;
+	} else {
+		if ($_SERVER['HTTPS'] != 'on') {
+			$bObliga = true;
+		}
+	}
+	if ($bObliga) {
+		$pageURL = 'https://' . $_SERVER['SERVER_NAME'] . $_SERVER['REQUEST_URI'];
+		header('Location:' . $pageURL);
+		die();
+	}
+}
+
 if (isset($_REQUEST['paso']) == 0) {
 	$_REQUEST['paso'] = 0;
 }
@@ -77,6 +96,7 @@ if ($_REQUEST['paso'] == 0) {
 				case '19':
 				case '20':
 				case '21':
+				case '73':
 					$saiuid = $idRespuesta;
 					$saiulib = '00';
 					break;
@@ -98,12 +118,12 @@ $mensajes_todas = $APP->rutacomun . 'lg/lg_todas_' . $_SESSION['unad_idioma'] . 
 if (!file_exists($mensajes_todas)) {
 	$mensajes_todas = $APP->rutacomun . 'lg/lg_todas_es.php';
 }
-$mensajes_30NN = $APP->rutacomun . 'lg/lg_30'.$saiulib.'_' . $_SESSION['unad_idioma'] . '.php';
-if (!file_exists($mensajes_30NN)) {
-	$mensajes_30NN = $APP->rutacomun . 'lg/lg_30'.$saiulib.'_es.php';
+$mensajes_3000 = $APP->rutacomun . 'lg/lg_3000_' . $_SESSION['unad_idioma'] . '.php';
+if (!file_exists($mensajes_3000)) {
+	$mensajes_3000 = $APP->rutacomun . 'lg/lg_3000_es.php';
 }
 require $mensajes_todas;
-require $mensajes_30NN;
+require $mensajes_3000;
 $xajax = NULL;
 $objDB = new clsdbadmin($APP->dbhost, $APP->dbuser, $APP->dbpass, $APP->dbname);
 if ($APP->dbpuerto != '') {
@@ -309,12 +329,6 @@ if ($sError == '') {
 			<nav class="navbar navbar-expand-xl navbar-dark">
 				<ul class="navbar-nav">
 					<li class="nav-item">
-						<a class="nav-link" href="../">
-							<i class="fa fa-home"></i>
-							Inicio
-						</a>
-					</li>
-					<li class="nav-item">
 						<a class="nav-link active" href="./">
 							<i class="fa fa-list"></i>
 							Encuesta
@@ -328,7 +342,7 @@ if ($sError == '') {
 
 			<article class="article">
 				<h2>
-					<span><i class="fa fa-list"></i> <?php echo $ETI['titulo_encuesta']; ?></span>
+					<span><i class="fa fa-list"></i> <?php echo $ETI['titulo_encuesta'] . ' - ' . $ETI['saiu' . $saiuid]; ?></span>
 				</h2>
 				<div class="article__area row">
 					<!-- form area -->
@@ -353,7 +367,7 @@ if ($sError == '') {
 							<form id="frmcodigo" name="frmcodigo" method="post" action="" autocomplete="off">
 								<div class="form-group row">
 									<div class="col-sm-12">
-										<label for="saui05numref" class="text-center"><?php echo $ETI['ing_campo'] . $ETI['saiu05codigo']; ?></label>
+										<label for="saui05numref" class="text-center"><?php echo $ETI['ing_campo'] . $ETI['saiu00codigo']; ?></label>
 										<input id="saui05numref" name="saui05numref" class="form-control form-control-lg text-center" type="text" value="<?php echo $_REQUEST['saui05numref']; ?>" maxlength="20" placeholder="<?php echo $ETI['digite']; ?>" />
 									</div>
 								</div>

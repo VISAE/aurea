@@ -28,15 +28,6 @@ if (!file_exists('./app.php')){
 	}
 mb_internal_encoding('UTF-8');
 require './app.php';
-//forzar a https
-$bAplicaGeo=true;
-$iHTTPS=0;
-if (file_exists('./opts.php')){
-	require './opts.php';
-	if ($OPT->geo==0){$bAplicaGeo=false;}
-	$iHTTPS=$OPT->https;
-	}
-if ($iHTTPS==0){$bAplicaGeo=false;}
 $bPeticionXAJAX=false;
 if ($_SERVER['REQUEST_METHOD']=='POST'){if (isset($_POST['xjxfun'])){$bPeticionXAJAX=true;}}
 if (!$bPeticionXAJAX){$_SESSION['u_ultimominuto']=(date('W')*1440)+(date('H')*60)+date('i');}
@@ -47,27 +38,44 @@ require $APP->rutacomun . 'libdatos.php';
 require $APP->rutacomun . 'libhtml.php';
 require $APP->rutacomun . 'xajax/xajax_core/xajax.inc.php';
 require $APP->rutacomun . 'unad_xajax.php';
+
+if (isset($APP->https) == 0) {
+	$APP->https = 0;
+}
+if ($APP->https == 2) {
+	$bObliga = false;
+	if (isset($_SERVER['HTTPS']) == 0) {
+		$bObliga = true;
+	} else {
+		if ($_SERVER['HTTPS'] != 'on') {
+			$bObliga = true;
+		}
+	}
+	if ($bObliga) {
+		$pageURL = 'https://' . $_SERVER['SERVER_NAME'] . $_SERVER['REQUEST_URI'];
+		header('Location:' . $pageURL);
+		die();
+	}
+}
+
 // -- Se cargan los archivos de idioma
 $mensajes_todas = $APP->rutacomun . 'lg/lg_todas_' . $_SESSION['unad_idioma'] . '.php';
 if (!file_exists($mensajes_todas)) {
 	$mensajes_todas = $APP->rutacomun . 'lg/lg_todas_es.php';
 }
-$mensajes_3005 = $APP->rutacomun . 'lg/lg_3005_' . $_SESSION['unad_idioma'] . '.php';
-if (!file_exists($mensajes_3005)) {
-	$mensajes_3005 = $APP->rutacomun . 'lg/lg_3005_es.php';
+$mensajes_3000 = $APP->rutacomun . 'lg/lg_3000_' . $_SESSION['unad_idioma'] . '.php';
+if (!file_exists($mensajes_3000)) {
+	$mensajes_3000 = $APP->rutacomun . 'lg/lg_3000_es.php';
 }
 require $mensajes_todas;
-require $mensajes_3005;
+require $mensajes_3000;
 //PROCESOS DE LA PAGINA
-require 'lib3005_externa.php';
+require 'lib3073_externa.php';
 
 $sError = '';
-$bEnSesion=false;
 if (isset($_SESSION['unad_id_tercero'])==0){$_SESSION['unad_id_tercero']=0;}
 if ($_SESSION['unad_id_tercero']==1){$_SESSION['unad_id_tercero']=0;}
-if ((int)$_SESSION['unad_id_tercero']!=0){$bEnSesion=true;}
-if ($bEnSesion){
-$iCodModulo=17;
+$iCodModulo=3073;
 
 $objDB = new clsdbadmin($APP->dbhost, $APP->dbuser, $APP->dbpass, $APP->dbname);
 if ($APP->dbpuerto != '') {
@@ -84,113 +92,10 @@ if ($fila = $objDB->sf($tabla)) {
 	$sRazonSocial=$fila['unad11razonsocial'];
 }
 if (isset($_REQUEST['paso'])==0){$_REQUEST['paso']=0;}
-if (isset($_SERVER['HTTPS'])==0){$_SERVER['HTTPS']='off';}
-if (isset($_SESSION['unad_geo_lat'])==0){$_SESSION['unad_geo_lat']='';}
-$sProtocolo='https';
-$iFechaTerminos=0;
-if ($_SESSION['unad_geo_lat']!=''){$bAplicaGeo=false;}
-if ($bAplicaGeo){
-	//Ver que haya aceptado los terminos y condiciones y que por tanto tengamos en la sesion la geolocalizacion
-	$sql='SELECT unad11fechaterminos, unad11noubicar FROM unad11terceros WHERE unad11id='.$idTercero.'';
-	$tabla=$objDB->ejecutasql($sql);
-	if ($objDB->nf($tabla)>0){
-		$fila=$objDB->sf($tabla);
-		$iFechaTerminos=$fila['unad11fechaterminos'];		
-		if ($fila['unad11noubicar']!=0){
-			$bAplicaGeo=false;
-			$_SESSION['unad_geo_lat']='ND';
-			if ($bDebug){$sDebug=$sDebug.''.fecha_microtiempo().' LA GEOLOCALIZACION ESTA EXCLUIDA PARA ESTE USUARIO ['.$idTercero.']<br>';}
-			}
-		}
-	}else{
-	$_SESSION['unad_geo_lat']='ND';
-	}
-if ($bAplicaGeo){
-	if ($iFechaTerminos<20161225){
-		//pasar a https...
-		$bCambia=false;
-		if ($sProtocolo=='https'){
-			if ($_SERVER['HTTPS']!='on'){$bCambia=true;}
-			}
-		if ($bCambia){
-			$pageURL= $sProtocolo.'://'.$_SERVER['SERVER_NAME'].$_SERVER['REQUEST_URI'];
-			header('Location:'.$pageURL);
-			die();
-			}
-		//Fin de pasar a https.
-		$xajax = new xajax();
-		$xajax->configure('javascript URI', $APP->rutacomun.'xajax/');
-		$xajax->register(XAJAX_FUNCTION,'f17_SesionCoordenadas');
-		$xajax->processRequest();
-		require $APP->rutacomun.'unad_forma_v2.php';
-		forma_cabeceraV3($xajax, 'ACCESIT');
-		echo '<link rel="stylesheet" href="'.$APP->rutacomun.'unad_estilos.css" type="text/css"/>';
-		forma_mitad();
-		require 'terminos.php';
-		forma_piedepagina();
-		die();
-		}
-	}
-//El paso 61 es para ucando definitivamente no se puede establecer ubicación geográfica.
-if ($_REQUEST['paso']==61){
-	$_REQUEST['paso']=0;
-	$_SESSION['unad_geo_lat']='ND';
-	}
-//Establecer la ubicación geografica...
-if ($_SESSION['unad_geo_lat']==''){
-	//pasar a https...
-	$bCambia=false;
-	if ($sProtocolo=='https'){
-		if ($_SERVER['HTTPS']!='on'){$bCambia=true;}
-		}
-	if ($bCambia){
-		$pageURL= $sProtocolo.'://'.$_SERVER['SERVER_NAME'].$_SERVER['REQUEST_URI'];
-		header('Location:'.$pageURL);
-		die();
-		}
-	//Fin de pasar a https.
-	$xajax = new xajax();
-	$xajax->configure('javascript URI', $APP->rutacomun.'xajax/');
-	$xajax->register(XAJAX_FUNCTION,'f17_SesionCoordenadas');
-	$xajax->processRequest();
-	require $APP->rutacomun.'unad_forma_v2.php';
-	forma_cabeceraV3($xajax, 'ACCESIT');
-	echo '<link rel="stylesheet" href="'.$APP->rutacomun.'unad_estilos.css" type="text/css"/>';
-	forma_mitad();
-	require 'ubicacion.php';
-	forma_piedepagina();
-	die();
-	}
-$bOtroUsuario=false;
-if (isset($_REQUEST['deb_doc'])!=0){
-	if (seg_revisa_permiso($iCodModulo, 1707, $objDB)){
-		$sSQL='SELECT unad11id, unad11razonsocial FROM unad11terceros WHERE unad11doc="'.$_REQUEST['deb_doc'].'"';
-		$tabla=$objDB->ejecutasql($sSQL);
-		if ($objDB->nf($tabla)>0){
-			$fila=$objDB->sf($tabla);
-			$idTercero=$fila['unad11id'];
-			$bOtroUsuario=true;
-			if ($bDebug){$sDebug=$sDebug.fecha_microtiempo().' Se verifica la ventana de trabajo para el usuario '.$fila['unad11razonsocial'].'.<br>';}
-			}else{
-			$sError='No se ha encontrado el documento &quot;'.$_REQUEST['deb_doc'].'&quot;';
-			$_REQUEST['deb_doc']='';
-			}
-		}else{
-		if ($bDebug){$sDebug=$sDebug.fecha_microtiempo().' No cuenta con permiso de ingreso como otro usuario Modulo '.$iCodModulo.' Permiso.<br>';}
-		$_REQUEST['deb_doc']='';
-		}
-	}else{
-	$_REQUEST['deb_doc']='';
-	}
-	$objDB->CerrarConexion();
-}
 
 $xajax = new xajax();
 $xajax->configure('javascript URI', $APP->rutacomun . 'xajax/');
-$xajax->register(XAJAX_FUNCTION, 'sesion_abandona_V2');
-$xajax->register(XAJAX_FUNCTION, 'f3005_HTMLOpcionInicial');
-$xajax->register(XAJAX_FUNCTION, 'f3005_IngresaAnonimo');
-$xajax->register(XAJAX_FUNCTION, 'f3005_ConsultaCodigo');
+$xajax->register(XAJAX_FUNCTION, 'f3073_HTMLOpcionInicial');
 $xajax->processRequest();
 $xajax->printJavascript($APP->rutacomun . 'xajax/');
 if ($bPeticionXAJAX){
@@ -214,9 +119,6 @@ if ($_REQUEST['paso'] == 0) {
 // $objCombos->nuevo('aure73tipodoc', $_REQUEST['aure73tipodoc'], true, '{' . $ETI['msg_seleccione'] . '}');
 //$objCombos->addArreglo($aaure73tipodoc, $iaure73tipodoc);
 // $html_aure73tipodoc = $objCombos->html('', $objDB);
-if ($bEnSesion){
-	$et_login = '<div>' . $sRazonSocial . '</div><a class="btn btn-aurea" title="' . $ETI['bt_cierrasesion'] . '" href="salir.php"><i class="fa fa-sign-out"></i> ' . $ETI['bt_cierrasesion'] . '</a>';
-}
 ?>
 <!doctype html>
 <html lang="es">
@@ -247,44 +149,12 @@ if ($bEnSesion){
 	<script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.1/dist/js/bootstrap.bundle.min.js"></script>
 
 	<script>
-		function mantener_sesion(){xajax_sesion_mantener();}
-		//setInterval("xajax_sesion_abandona_V2();", 60000);
-		<?php
-		$bPedirCoordenadas=false;
-		if (isset($_SESSION['unad_geo_lat']) && $_SESSION['unad_geo_lat']==''){
-			if ($_SESSION['unad_geo_intentos']<2){
-		?>
-		function showLocation(position){
-			var valores=new Array();
-			valores[1]=<?php echo $_SESSION['unad_id_sesion']; ?>;
-			valores[2]=<?php echo $idTercero; ?>;
-			valores[3]=position.coords.latitude;
-			valores[4]=position.coords.longitude;
-			valores[5]=position.coords.accuracy;
-			xajax_f17_SesionCoordenadas(valores);
-			}
-		function errorHandler(err){}
-		function getLocation(){
-			if(navigator.geolocation){
-				// timeout at 60000 milliseconds (60 seconds)
-				var options = {timeout:60000};
-				navigator.geolocation.getCurrentPosition(showLocation, errorHandler, options);
-				}else{
-				alert('Su navegador no soporta geolocalizaci\u00f3n le recomendamos actualizarlo.');
-				}
-			}
-		<?php
-				$bPedirCoordenadas=true;
-				$_SESSION['unad_geo_intentos']++;
-				}
-			}
-		?>	
 	
 		function enviaopcionini(id) {
 			let $aParametros = new Array();
 			$aParametros[100] = window.document.frmedita.idtercero.value;
 			$aParametros[101] = id;
-			xajax_f3005_HTMLOpcionInicial($aParametros);
+			xajax_f3073_HTMLOpcionInicial($aParametros);
 		}
 
 		function muestramensajes(tipo, texto) {
@@ -293,15 +163,6 @@ if ($bEnSesion){
 			objToast.show();
 		}
 
-		function ingresaanonimo() {
-			xajax_f3005_IngresaAnonimo();
-		}
-
-		function enviacodigo() {
-			let $aParametros = new Array();
-			$aParametros[100] = window.document.frmcodigo.saui05numref.value;
-			xajax_f3005_ConsultaCodigo($aParametros);
-		}
 	</script>
 </head>
 
@@ -324,13 +185,6 @@ if ($bEnSesion){
 			</a>
 			<div class="header__title">
 				<h1>Portal de Servicios</h1>
-			</div>
-			<div class="float-right text-right">
-<?php
-if ($bEnSesion){
-	echo $et_login;
-}
-?>
 			</div>
 		</div>
 	</header>
@@ -366,9 +220,9 @@ if ($bEnSesion){
 			<nav class="navbar navbar-expand-xl navbar-dark">
 				<ul class="navbar-nav">
 					<li class="nav-item">
-						<a class="nav-link active" href="./">
+						<a class="nav-link active" href="./atencionvirtual.php">
 							<i class="fa fa-list"></i>
-							<?php echo $ETI['sigla_3005']; ?>
+							<?php echo $ETI['sigla_3073']; ?>
 						</a>
 					</li>
 				</ul>
@@ -379,7 +233,7 @@ if ($bEnSesion){
 
 			<article class="article">
 				<h2>
-					<span><i class="fa fa-list"></i> <?php echo $ETI['titulo']; ?></span>
+					<span><i class="fa fa-list"></i> <?php echo $ETI['titulo_3073']; ?></span>
 				</h2>
 				<div class="article__area row">
 					<!-- form area -->
@@ -398,7 +252,7 @@ if ($bEnSesion){
 						<div id="div_saiu05rutaspqrs" class="shadow p-3 mb-5 bg-white rounded text-center" <?php echo $sStyleRutas; ?>>
 							<div class="form-group row">
 								<div class="col-sm-12">
-									<input type="button" id="cmdConsultar" name="cmdConsultar" class="btn btn-aurea w-50" title="<?php echo $ETI['bt_consultar']; ?>" value="<?php echo $ETI['bt_consultar']; ?>" onclick="enviaopcionini(1)">
+									<a id="cmdConsultar" name="cmdConsultar" class="btn btn-aurea w-50" title="<?php echo $ETI['bt_consultar']; ?>" href="https://campus0a.unad.edu.co/campus/saiusolusuario.php" target="_blank" ><?php echo $ETI['bt_consultar']; ?></a>
 								</div>
 								<div class="col-sm-12">
 									<input type="button" id="cmdRadicar" name="cmdRadicar" class="btn btn-aurea w-50 mt-2" title="<?php echo $ETI['bt_radicar']; ?>" value="<?php echo $ETI['bt_radicar']; ?>" onclick="enviaopcionini(2)">

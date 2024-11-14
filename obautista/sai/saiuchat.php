@@ -1637,23 +1637,6 @@ function paginarf3000pqrs(){
 	document.getElementById('div_f3000pqrsdetalle').innerHTML='<div class="GrupoCamposAyuda"><div class="MarquesinaMedia">Procesando datos, por favor espere.</div></div><input id="paginaf3000pqrs" name="paginaf3000pqrs" type="hidden" value="'+params[101]+'" /><input id="lppf3000pqrs" name="lppf3000pqrs" type="hidden" value="'+params[102]+'" />';
 	xajax_f3000pqrs_HtmlTabla(params);
 	}
-// TODO
-function cambiacanal(){
-	let iCanal = parseInt(document.getElementById('saiucanal').value);
-	let sCanal = 'saiuchat';
-	switch(iCanal) {
-		case 1: sCanal='saiupresencial';
-		break;
-		case 2: sCanal='saiutelefonico';
-		break;
-		case 3: sCanal='saiuchat';
-		break;
-		case 4: sCanal='saiucorreo';
-		break;
-	}
-	location.href = './' + sCanal + '.php';
-}
-// TODO
 function valida_combo_saiu19solucion() {
 	let iSolucion = parseInt(document.getElementById('saiu19solucion').value);
 	let iEstado = parseInt(document.getElementById('saiu19estado').value);
@@ -3054,6 +3037,7 @@ $("#bcategoria").chosen({width:"100%"});
 $("#btema").chosen({width:"100%"});
 });
 </script>
+<script language="javascript" src="<?php echo $APP->rutacomun; ?>jsi/js3000.js"></script>
 <script language="javascript" src="ac_3019.js"></script>
 <script language="javascript" src="<?php echo $APP->rutacomun; ?>unad_todas2024v2.js"></script>
 <?php

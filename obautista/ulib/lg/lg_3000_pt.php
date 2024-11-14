@@ -21,6 +21,8 @@ $ETI['titulo_sector7']='Aplazamiento de curso extemporaneo';
 $ETI['titulo_sector8']='Desistimiento de solicitud de aplazamiento';
 $ETI['titulo_cambiocentro']='Cambio de centro';
 $ETI['titulo_3005_pqrs']='Historial de PQRS';
+$ETI['titulo_3073']='Formato de Atenci&oacute;n Virtual';
+$ETI['sigla_3073']='FAV';
 
 $ETI['sigla_3000']='Historial de solicitudes';
 $ETI['bt_mini_guardar_3000']='Salvar Historial de solicitudes';
@@ -112,13 +114,15 @@ $asaiu11=array('Solicitado', 'Asignado', 'En tramite', 'Para reasignar', 'En pau
 $isaiu11=9;
 
 $ETI['mail_asig_titulo']='Tiene asignado un caso de atención a solicitud';
-$ETI['mail_enc_titulo']='Opini&oacute;n sobre la atenci&oacute;n';
-$ETI['mail_enc_parte1']='Agradecemos su opini&oacute;n respecto a la atenci&oacute;n recibida el d&iacute;a ';
-$ETI['mail_enc_parte2']=' y nos gustar&iacute;a su opini&oacute;n respecto a la calidad de nuestro servicio.';
+$ETI['mail_solic_titulo']='Consulte su solicitud de atenci&oacute;n';
+$ETI['mail_enc_titulo']='Respuesta a su solicitud de atenci&oacute;n';
+$ETI['mail_enc']='Agradecemos su opini&oacute;n respecto a la atenci&oacute;n recibida y nos gustar&iacute;a su opini&oacute;n respecto a la calidad de nuestro servicio.';
+$ETI['saiu05']='Peticiones, Quejas, Reclamos y Sugerencias';
 $ETI['saiu18']='Telef&oacute;nica';
 $ETI['saiu19']='Sesi&oacute;n de Chat';
 $ETI['saiu20']='Correo Eletr&oacute;nico';
 $ETI['saiu21']='Presencial';
+$ETI['saiu73']='Formato de Atenci&oacute;n Virtual';
 $ETI['titulo_encuesta'] = 'Encuesta';
 $ETI['bt_enviar'] = 'Enviar';
 $ETI['fecha'] = 'Fecha de encuesta';
@@ -175,9 +179,14 @@ $ERR['tabla']='Necesita el dato Referencia a BD';
 $ERR['saiu00noexiste']='La encuesta no existe.&lt;br&gt;Verifique que el documento no contenga puntos, comas o espacios&lt;br&gt;verifique que el código de sea correcto.';
 
 $ETI['saiucanal']='Canal de atenci&oacute;n';
-$aCanal=array('','Atenci&oacute;n presencial', 'Registro de llamadas', 'Sesiones de chat', 'Registro de correos');
-$iCanal=4;
+$aCanal=array('','Atenci&oacute;n presencial', 'Registro de llamadas', 'Sesiones de chat', 'Registro de correos', 'Formato de Atenci&oacute;n Virtual');
+$iCanal=5;
 
+$ETI['digite'] = 'Dig&iacute;telo aqu&iacute;';
+$ETI['bt_consultar']='Consultar';
+$ETI['bt_radicar']='Radicar';
+$ETI['bt_campus']='Ingresar con credenciales de campus';
+$ETI['bt_inscribirse']='Crear usuario en campus';
 $ETI['pendientes_ok'] = 'Lista de responsables enviada correctamente';
 $ETI['mail_pend_titulo']='PQRS Pendientes al ';
 $ERR['pendientes_vacia'] = 'Lista de responsables vac&iacute;a';
