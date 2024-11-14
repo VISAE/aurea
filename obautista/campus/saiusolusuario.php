@@ -786,6 +786,7 @@ $bPuedeEliminar = false;
 $bPuedeGuardar = false;
 $bPuedeCerrar = false;
 $bHayImprimir = false;
+$bEditable = false;
 if ($_REQUEST['saiu73estado'] == -1) {
 	$bEditable = true;	
 }
@@ -1136,6 +1137,7 @@ function ter_retorna(){
 	}
 function ter_muestra(idcampo, illave){
 	let saiu73idsolicitante=0;
+	let saiu73id=document.getElementById('saiu73id').value;
 	let params=new Array();
 	params[1]=document.getElementById(idcampo+'_doc').value;
 	if (params[1]!=''){
@@ -1145,8 +1147,10 @@ function ter_muestra(idcampo, illave){
 		if (illave==1){params[4]='RevisaLlave';}
 		//if (illave==1){params[5]='FuncionCuandoNoEsta';}
 		if (idcampo=='saiu73idsolicitante'){
-			params[6]=3073;
-			xajax_unad11_Mostrar_v2SAI(params);
+			if (saiu73id === '') {
+				params[6]=3073;
+				xajax_unad11_Mostrar_v2SAI(params);
+			}
 		}else{
 			xajax_unad11_Mostrar_v2(params);
 		}

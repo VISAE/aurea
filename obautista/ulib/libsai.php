@@ -262,8 +262,8 @@ function unad11_Mostrar_v2SAI($aParametros)
 				$html_ciudad = f3028_HTMLComboV2_saiu28codciudad($objDB, $objCombos, $sCodCiudad, $sCodDepto);
 				break;
 			case 3073: //Solicitudes Usuario
-				// $html_depto = f3073_HTMLComboV2_saiu73coddepto($objDB, $objCombos, $sCodDepto, $sCodPais);
-				// $html_ciudad = f3073_HTMLComboV2_saiu73codciudad($objDB, $objCombos, $sCodCiudad, $sCodDepto);
+				$html_depto = f3073_HTMLComboV2_saiu73coddepto($objDB, $objCombos, $sCodDepto, $sCodPais);
+				$html_ciudad = f3073_HTMLComboV2_saiu73codciudad($objDB, $objCombos, $sCodCiudad, $sCodDepto);
 				break;
 		}
 	}

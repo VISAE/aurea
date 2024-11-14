@@ -385,6 +385,8 @@ function f3073_TablaDetalleV2($aParametros, $objDB, $bDebug=false){
 	if (isset($aParametros[108])==0){$aParametros[108]='';}
 	if (isset($aParametros[109])==0){$aParametros[109]='';}
 	if (isset($aParametros[110])==0){$aParametros[110]='';}
+	if (isset($aParametros[111])==0){$aParametros[111]='';}
+	if (isset($aParametros[112])==0){$aParametros[112]='';}
 	//$aParametros[103]=numeros_validar($aParametros[103]);
 	$idTercero=$aParametros[100];
 	$sDebug='';
@@ -398,6 +400,8 @@ function f3073_TablaDetalleV2($aParametros, $objDB, $bDebug=false){
 	$bcategoria = $aParametros[108];
 	$btema = $aParametros[109];
 	$bcampus = $aParametros[110];
+	$bzona = $aParametros[111];
+	$bcead = $aParametros[112];
 	$bAbierta=true;
 	//$sSQL='SELECT Campo FROM Tabla WHERE Id='.$sValorId;
 	//$tabla=$objDB->ejecutasql($sSQL);
@@ -437,6 +441,18 @@ function f3073_TablaDetalleV2($aParametros, $objDB, $bDebug=false){
 	$tabla=$objDB->ejecutasql($sSQL);
 	while($fila=$objDB->sf($tabla)){
 		$aTema[$fila['id']]=cadena_notildes($fila['nombre']);
+		}
+	$aZona=array();
+	$sSQL = 'SELECT unad23id AS id, unad23nombre AS nombre FROM unad23zona WHERE unad23conestudiantes="S"';
+	$tabla=$objDB->ejecutasql($sSQL);
+	while($fila=$objDB->sf($tabla)){
+		$aZona[$fila['id']]=cadena_notildes($fila['nombre']);
+		}
+	$aCead=array();
+	$sSQL = 'SELECT unad24id AS id, unad24nombre AS nombre FROM unad24sede';
+	$tabla=$objDB->ejecutasql($sSQL);
+	while($fila=$objDB->sf($tabla)){
+		$aCead[$fila['id']]=cadena_notildes($fila['nombre']);
 		}
 	$sSQLadd='';
 	$sSQLadd1='';
@@ -501,6 +517,12 @@ function f3073_TablaDetalleV2($aParametros, $objDB, $bDebug=false){
 	if ($bcampus !== '') {
 		$sSQLadd = $sSQLadd . ' AND TB.saiu73idsolicitante=' . $idTercero . '';
 	}
+	if ($bzona !== '') {
+		$sSQLadd = $sSQLadd . ' AND TB.saiu73idzona=' . $bzona . '';
+	}
+	if ($bcead !== '') {
+		$sSQLadd = $sSQLadd . ' AND TB.saiu73idcentro=' . $bcead . '';
+	}
 	//if ((int)$aParametros[103]!=-1){$sSQLadd=$sSQLadd.' AND TB.campo='.$aParametros[103];}
 	/*
 	if ($aParametros[103]!=''){
@@ -537,7 +559,7 @@ WHERE '.$sSQLadd1.' TB.saiu73idsolicitante=T12.unad11id '.$sSQLadd.'';
 	//, TB.saiu73idpqrs, TB.saiu73detalle, TB.saiu73horafin, TB.saiu73minutofin, TB.saiu73paramercadeo, TB.saiu73tiemprespdias, TB.saiu73tiempresphoras, TB.saiu73tiemprespminutos, TB.saiu73tipointeresado, TB.saiu73clasesolicitud, TB.saiu73tiposolicitud, TB.saiu73temasolicitud, TB.saiu73idzona, TB.saiu73idcentro, TB.saiu73codpais, TB.saiu73coddepto, TB.saiu73codciudad, TB.saiu73idescuela, TB.saiu73idprograma, TB.saiu73idperiodo, TB.saiu73idresponsable
 	$sSQL='SELECT TB.saiu73agno, TB.saiu73mes, TB.saiu73consec, TB.saiu73id, TB.saiu73dia, TB.saiu73hora, TB.saiu73minuto, 
 T12.unad11razonsocial AS C12_nombre, TB.saiu73tiposolicitud, saiu73temasolicitud, TB.saiu73estado, T12.unad11tipodoc AS C12_td, 
-T12.unad11doc AS C12_doc, TB.saiu73idsolicitante, TB.saiu73tiporadicado, TB.saiu73solucion 
+T12.unad11doc AS C12_doc, TB.saiu73idsolicitante, TB.saiu73tiporadicado, TB.saiu73solucion, TB.saiu73idzona, TB.saiu73idcentro 
 FROM saiu73solusuario_'.$iAgno.' AS TB, unad11terceros AS T12
 WHERE '.$sSQLadd1.' TB.saiu73idsolicitante=T12.unad11id '.$sSQLadd.'
 ORDER BY TB.saiu73agno DESC, TB.saiu73mes DESC, TB.saiu73dia DESC, TB.saiu73tiporadicado, TB.saiu73consec DESC';
@@ -570,7 +592,8 @@ ORDER BY TB.saiu73agno DESC, TB.saiu73mes DESC, TB.saiu73dia DESC, TB.saiu73tipo
 <td colspan="2"><b>'.$ETI['msg_fecha'].'</b></td>
 <td><b>'.$ETI['saiu73consec'].'</b></td>
 <td colspan="2"><b>'.$ETI['saiu73idsolicitante'].'</b></td>
-<td><b>'.$ETI['saiu73tiposolicitud'].'</b></td>
+<td><b>'.$ETI['saiu73idzona'].'</b></td>
+<td><b>'.$ETI['saiu73idcentro'].'</b></td>
 <td><b>'.$ETI['saiu73temasolicitud'].'</b></td>
 <td><b>'.$ETI['saiu73solucion'].'</b></td>
 <td><b>'.$ETI['saiu73estado'].'</b></td>
@@ -622,6 +645,18 @@ ORDER BY TB.saiu73agno DESC, TB.saiu73mes DESC, TB.saiu73dia DESC, TB.saiu73tipo
 		} else {
 			$sSolucion = $asaiu73solucion[$filadet['saiu73solucion']];
 		}
+		$sZona = '';
+		if (isset($aZona[$filadet['saiu73idzona']])==0) {
+			$sZona = $ETI['definir'];
+		} else {
+			$sZona = $aZona[$filadet['saiu73idzona']];
+		}
+		$sCead = '';
+		if (isset($aCead[$filadet['saiu73idcentro']])==0) {
+			$sCead = $ETI['definir'];
+		} else {
+			$sCead = $aCead[$filadet['saiu73idcentro']];
+		}
 		/*
 		$et_saiu73horafin=html_TablaHoraMin($filadet['saiu73horafin'], $filadet['saiu73minutofin']);
 		$et_saiu73idresponsable_doc='';
@@ -641,7 +676,8 @@ ORDER BY TB.saiu73agno DESC, TB.saiu73mes DESC, TB.saiu73dia DESC, TB.saiu73tipo
 <td>'.$sPrefijo.$filadet['saiu73consec'].$sSufijo.'</td>
 <td>'.$et_saiu73idsolicitante_doc.'</td>
 <td>'.$et_saiu73idsolicitante_nombre.'</td>
-<td>'.$sPrefijo.$sCategoria.$sSufijo.'</td>
+<td>'.$sPrefijo.$sZona.$sSufijo.'</td>
+<td>'.$sPrefijo.$sCead.$sSufijo.'</td>
 <td>'.$sPrefijo.$sTema.$sSufijo.'</td>
 <td>'.$sPrefijo.$sSolucion.$sSufijo.'</td>
 <td>'.$sPrefijo.$sEstado.$sSufijo.'</td>
@@ -1233,7 +1269,7 @@ function f3073_db_GuardarV2($DATA, $objDB, $bDebug=false){
 			$sdato[17]=$DATA['saiu73horafin'];
 			$sdato[18]=$DATA['saiu73minutofin'];
 			$sdato[19]=$DATA['saiu73paramercadeo'];
-			$sdato[20]=$DATA['saiu73idresponsable'];
+			$sdato[20]=$_SESSION['unad_id_tercero'];//$DATA['saiu73idresponsable'];
 			$sdato[21]=$DATA['saiu73solucion'];
 			$sdato[22]=$DATA['saiu73tiposolicitud'];
 			$sdato[23]=$DATA['saiu73estado'];
@@ -1248,7 +1284,7 @@ function f3073_db_GuardarV2($DATA, $objDB, $bDebug=false){
 			$sdato[32]=$DATA['saiu73idunidadcaso'];
 			$sdato[33]=$DATA['saiu73idequipocaso'];
 			$sdato[34]=$DATA['saiu73idsupervisorcaso'];
-			$sdato[35]=$DATA['saiu73idresponsablecaso'];
+			$sdato[35]=$_SESSION['unad_id_tercero'];//$DATA['saiu73idresponsablecaso'];
 			$sdato[36]=$DATA['saiu73idpqrs'];
 			$sdato[37]=$DATA['saiu73numref'];
 			$sdato[38]=$DATA['saiu73fechafin'];
@@ -1326,9 +1362,9 @@ function f3073_db_GuardarV2($DATA, $objDB, $bDebug=false){
 					}
 				if ($bEnviaCaso) {
 					// Notifica responsable
-					list($sMensaje, $sErrorE, $sDebugE) = f3000_EnviaCorreosAtencion($DATA, $DATA['saiu73agno'], $objDB, $bDebug, true);
-					$sError = $sError . $sErrorE;
-					$sDebug = $sDebug . $sDebugE;
+					// list($sMensaje, $sErrorE, $sDebugE) = f3000_EnviaCorreosAtencion($DATA, $DATA['saiu73agno'], $objDB, $bDebug, true);
+					// $sError = $sError . $sErrorE;
+					// $sDebug = $sDebug . $sDebugE;
 					if ($DATA['bcampus']==1) {
 						// Notifica usuario
 						list($sMensaje, $sErrorE, $sDebugE) = f3000_EnviaCorreosAtencion($DATA, $DATA['saiu73agno'], $objDB, $bDebug);
@@ -1799,6 +1835,43 @@ function f3073_Combobtema($aParametros)
 	$objResponse = new xajaxResponse();
 	$objResponse->assign('div_btema', 'innerHTML', $html_btema);
 	$objResponse->call('jQuery("#btema").chosen({no_results_text: "No existen coincidencias: ",width: "100%"})');
+	$objResponse->call('paginarf3073');
+	return $objResponse;
+}
+function f3073_HTMLComboV2_bcead($objDB, $objCombos, $valor, $idzona)
+{
+	require './app.php';
+	$mensajes_todas = $APP->rutacomun . 'lg/lg_todas_' . $_SESSION['unad_idioma'] . '.php';
+	if (!file_exists($mensajes_todas)) {
+		$mensajes_todas = $APP->rutacomun . 'lg/lg_todas_es.php';
+	}
+	require $mensajes_todas;
+	$sCondi = 'unad24idzona="' . $idzona . '"';
+	if ($sCondi != '') {
+		$sCondi = ' WHERE ' . $sCondi;
+	}
+	$objCombos->nuevo('bcead', $valor, true, '{' . $ETI['msg_todos'] . '}');
+	$objCombos->sAccion = 'paginarf3073()';
+	$res = $objCombos->html('SELECT unad24id AS id, unad24nombre AS nombre FROM unad24sede' . $sCondi, $objDB);
+	return $res;
+}
+function f3073_Combobcead($aParametros)
+{
+	$_SESSION['u_ultimominuto'] = iminutoavance();
+	if (!is_array($aParametros)) {
+		$aParametros = json_decode(str_replace('\"', '"', $aParametros), true);
+	}
+	require './app.php';
+	$objDB = new clsdbadmin($APP->dbhost, $APP->dbuser, $APP->dbpass, $APP->dbname);
+	if ($APP->dbpuerto != '') {
+		$objDB->dbPuerto = $APP->dbpuerto;
+	}
+	$objDB->xajax();
+	$objCombos = new clsHtmlCombos();
+	$html_bcead = f3073_HTMLComboV2_bcead($objDB, $objCombos, '', $aParametros[0]);
+	$objDB->CerrarConexion();
+	$objResponse = new xajaxResponse();
+	$objResponse->assign('div_bcead', 'innerHTML', $html_bcead);
 	$objResponse->call('paginarf3073');
 	return $objResponse;
 }

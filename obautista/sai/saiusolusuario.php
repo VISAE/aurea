@@ -328,6 +328,7 @@ $xajax->register(XAJAX_FUNCTION,'f3000pqrs_HtmlTabla');
 $xajax->register(XAJAX_FUNCTION,'elimina_archivo_saiu73idarchivo');
 $xajax->register(XAJAX_FUNCTION,'elimina_archivo_saiu73idarchivorta');
 $xajax->register(XAJAX_FUNCTION,'f3073_Combobtema');
+$xajax->register(XAJAX_FUNCTION,'f3073_Combobcead');
 $xajax->processRequest();
 if ($bPeticionXAJAX) {
 	die(); // Esto hace que las llamadas por xajax terminen aquí.
@@ -426,9 +427,11 @@ if (isset($_REQUEST['csv_separa'])==0){$_REQUEST['csv_separa']=',';}
 if (isset($_REQUEST['bnombre'])==0){$_REQUEST['bnombre']='';}
 if (isset($_REQUEST['bagno'])==0){$_REQUEST['bagno']=fecha_agno();}
 if (isset($_REQUEST['bestado'])==0){$_REQUEST['bestado']=1;}
-if (isset($_REQUEST['blistar'])==0){$_REQUEST['blistar']=2;}
+if (isset($_REQUEST['blistar'])==0){$_REQUEST['blistar']='';}
 if (isset($_REQUEST['bdoc'])==0){$_REQUEST['bdoc']='';}
 if (isset($_REQUEST['btema'])==0){$_REQUEST['btema']='';}
+if (isset($_REQUEST['bzona'])==0){$_REQUEST['bzona']='';}
+if (isset($_REQUEST['bcead'])==0){$_REQUEST['bcead']='';}
 if (isset($_REQUEST['bagnopqrs'])==0){$_REQUEST['bagnopqrs']=fecha_agno();}
 if (isset($_REQUEST['vdtipointeresado'])==0){
 	$sVr='';
@@ -810,14 +813,29 @@ if ($bLimpiaHijos) {
 $bPuedeAbrir = false;
 $bPuedeEliminar = false;
 $bPuedeGuardar = false;
-$bPuedeCerrar = false;
+$bPuedeCerrar = true;
 $bHayImprimir = false;
+$bEditable = false;
+$bPermisoSupv = false;
+$bPermisoResp = false;
+$bPermisoAsignado = false;
 $sScriptImprime = 'imprimeexcel()';
 $sClaseImprime = 'iExcel';
-$bEditable = $_REQUEST['saiu73estado'] == -1 || $_REQUEST['saiu73estado'] == 2;
-$bPermisoSupv = $idTercero == $_REQUEST['saiu73idsupervisorcaso'];
-$bPermisoResp = $idTercero == $_REQUEST['saiu73idresponsablecaso'];
-$bPermisoAsignado = $bPermisoSupv || $bPermisoResp;
+if ($_REQUEST['saiu73estado'] == -1) {
+	$bEditable = true;
+}
+if ($_REQUEST['saiu73estado'] == 2) {
+	$bEditable = true;
+}
+if ($idTercero == $_REQUEST['saiu73idsupervisorcaso']) {
+	$bPermisoSupv = true;
+}
+if ($idTercero == $_REQUEST['saiu73idresponsablecaso']) {
+	$bPermisoResp = true;
+}
+if ($bPermisoSupv || $bPermisoResp) {
+	$bPermisoAsignado = true;
+}
 //DATOS PARA COMPLETAR EL FORMULARIO
 $iAgno=fecha_agno();
 $sNombreUsuario = '';
@@ -861,7 +879,8 @@ if ((int)$_REQUEST['paso'] == 0) {
 			$bPuedeGuardar = true;
 			$bPuedeCerrar = true;
 			break;
-		case 7: // Radicada
+		case 7: // Resuelto
+			$bPuedeCerrar = false;
 			break;
 		default:
 			break;
@@ -993,7 +1012,15 @@ if ($bEditable || $bPermisoSupv) {
 	$html_saiu73idprograma = html_oculto('saiu73idprograma', $_REQUEST['saiu73idprograma'], $saiu73idprograma_nombre);
 	list($saiu73idperiodo_nombre, $sErrorDet) = tabla_campoxid('exte02per_aca', 'exte02nombre', 'exte02id', $_REQUEST['saiu73idperiodo'], '{' . $ETI['msg_sindato'] . '}', $objDB);
 	$html_saiu73idperiodo = html_oculto('saiu73idperiodo', $_REQUEST['saiu73idperiodo'], $saiu73idperiodo_nombre);
-	$html_saiu73solucion = html_oculto('saiu73solucion', $_REQUEST['saiu73solucion'], $asaiu73solucion[$_REQUEST['saiu73solucion']]);
+	if ($_REQUEST['saiu73estado'] < 7) {
+		$objCombos->nuevo('saiu73solucion', $_REQUEST['saiu73solucion'], true, $asaiu73solucion[0], 0);
+		//$objCombos->addItem(1, $ETI['si']);
+		$objCombos->sAccion='valida_combo_saiu73solucion();';
+		$objCombos->addArreglo($asaiu73solucion, $isaiu73solucion);
+		$html_saiu73solucion=$objCombos->html('', $objDB);
+	} else {
+		$html_saiu73solucion = html_oculto('saiu73solucion', $_REQUEST['saiu73solucion'], $asaiu73solucion[$_REQUEST['saiu73solucion']]);
+	}
 }
 if ((int)$_REQUEST['paso'] == 0) {
 	$html_saiu73agno=f3073_HTMLComboV2_saiu73agno($objDB, $objCombos, $_REQUEST['saiu73agno']);
@@ -1052,7 +1079,7 @@ $objCombos->addItem('2', 'En tr&aacute;mite');
 $objCombos->addItem('7', 'Resuelto');
 $objCombos->sAccion = 'paginarf3073()';
 $html_bestado = $objCombos->html('', $objDB);
-$bTodos = false;
+$bTodos = true;
 if ($seg_12 == 1) {
 	$bTodos = true;
 }
@@ -1066,6 +1093,11 @@ $sSQL = 'SELECT saiu03id AS id, saiu03titulo AS nombre FROM saiu03temasol WHERE 
 $objCombos->nuevo('btema', $_REQUEST['btema'], true, '{' . $ETI['msg_todos'] . '}');
 $objCombos->sAccion = 'paginarf3073()';
 $html_btema = $objCombos->html($sSQL, $objDB);
+$objCombos->nuevo('bzona', $_REQUEST['bzona'], true, '{' . $ETI['msg_todas'] . '}');
+$objCombos->sAccion = 'carga_combo_bcead()';
+$sSQL = 'SELECT unad23id AS id, unad23nombre AS nombre FROM unad23zona WHERE unad23conestudiantes="S" ORDER BY unad23nombre';
+$html_bzona = $objCombos->html($sSQL, $objDB);
+$html_bcead = f3073_HTMLComboV2_bcead($objDB, $objCombos, $_REQUEST['bcead'], $_REQUEST['bzona']);
 $objCombos->nuevo('bagnopqrs', $_REQUEST['bagnopqrs'], false, '{' . $ETI['msg_todos'] . '}');
 $objCombos->sAccion = 'paginarf3000pqrs()';
 $objCombos->numeros(2020, $iAgnoFin, 1);
@@ -1117,6 +1149,8 @@ $aParametros[105] = $_REQUEST['bestado'];
 $aParametros[106] = $_REQUEST['blistar'];
 $aParametros[107] = $_REQUEST['bdoc'];
 $aParametros[109] = $_REQUEST['btema'];
+$aParametros[111] = $_REQUEST['bzona'];
+$aParametros[112] = $_REQUEST['bcead'];
 list($sTabla3073, $sDebugTabla) = f3073_TablaDetalleV2($aParametros, $objDB, $bDebug);
 $sDebug = $sDebug . $sDebugTabla;
 $sTabla3000='';
@@ -1354,6 +1388,8 @@ function asignarvariables(){
 	window.document.frmimpp.v3.value = window.document.frmedita.bagno.value;
 	window.document.frmimpp.v4.value = window.document.frmedita.bestado.value;
 	window.document.frmimpp.v5.value = window.document.frmedita.blistar.value;
+	window.document.frmimpp.v6.value = window.document.frmedita.bzona.value;
+	window.document.frmimpp.v7.value = window.document.frmedita.bcead.value;
 	window.document.frmimpp.separa.value = window.document.frmedita.csv_separa.value.trim();
 }
 function imprimeexcel(){
@@ -1458,6 +1494,11 @@ function carga_combo_saiu73idprograma(){
 	document.getElementById('div_saiu73idprograma').innerHTML='<b>Procesando datos, por favor espere...</b><input id="saiu73idprograma" name="saiu73idprograma" type="hidden" value="" />';
 	xajax_f3073_Combosaiu73idprograma(params);
 	}
+function carga_combo_bcead() {
+	let params = new Array();
+	params[0] = window.document.frmedita.bzona.value;
+	xajax_f3073_Combobcead(params);
+}
 function paginarf3073() {
 	let params = new Array();
 	params[99]=window.document.frmedita.debug.value;
@@ -1470,6 +1511,8 @@ function paginarf3073() {
 	params[106] = window.document.frmedita.blistar.value;
 	params[107] = window.document.frmedita.bdoc.value;
 	params[109] = window.document.frmedita.btema.value;
+	params[111] = window.document.frmedita.bzona.value;
+	params[112] = window.document.frmedita.bcead.value;
 	document.getElementById('div_f3073detalle').innerHTML='<div class="GrupoCamposAyuda"><div class="MarquesinaMedia">Procesando datos, por favor espere.</div></div><input id="paginaf3073" name="paginaf3073" type="hidden" value="'+params[101]+'" /><input id="lppf3073" name="lppf3073" type="hidden" value="'+params[102]+'" />';
 	xajax_f3073_HtmlTabla(params);
 	}
@@ -2578,6 +2621,29 @@ echo $ETI['saiu73temasolicitud'];
 <div id="div_btema">
 <?php
 echo $html_btema;
+?>
+</div>
+</label>
+<div class="salto1px"></div>
+<label class="Label60">
+<?php
+echo $ETI['saiu73idzona'];
+?>
+</label>
+<label class="Label350">
+<?php
+echo $html_bzona;
+?>
+</label>
+<label class="Label60">
+<?php
+echo $ETI['saiu73idcentro'];
+?>
+</label>
+<label class="Label300">
+<div id="div_bcead">
+<?php
+echo $html_bcead;
 ?>
 </div>
 </label>

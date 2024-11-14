@@ -159,7 +159,7 @@ $idTercero = $_SESSION['unad_id_tercero'];
 $iPiel = iDefinirPiel($APP, 2);
 $sAnchoExpandeContrae = ' style="width:62px;"';
 $sOcultaConsec = ''; //' style="display:none;"';
-$bEstudiante = true;
+$bEstudiante = false;
 $bTienePeriodo = true;
 if ($APP->idsistema == 23) {
 	//$bEstudiante = false;
