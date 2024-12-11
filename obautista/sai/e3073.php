@@ -25,9 +25,9 @@ require $APP->rutacomun . 'excel/PHPExcel/Writer/Excel2007.php';
 require $APP->rutacomun . 'libexcel.php';
 require $APP->rutacomun . 'libsai.php';
 require $APP->rutacomun . 'libdatos.php';
-$mensajes_3073 = 'lg/lg_3073_' . $_SESSION['unad_idioma'] . '.php';
+$mensajes_3073 = $APP->rutacomun . 'lg/lg_3073_' . $_SESSION['unad_idioma'] . '.php';
 if (!file_exists($mensajes_3073)) {
-	$mensajes_3073 = 'lg/lg_3073_es.php';
+	$mensajes_3073 = $APP->rutacomun . 'lg/lg_3073_es.php';
 }
 require $mensajes_3073;
 if ($_SESSION['unad_id_tercero'] == 0) {

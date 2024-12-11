@@ -103,6 +103,19 @@ if (($bPeticionXAJAX) && ($_SESSION['unad_id_tercero'] == 0)) {
 	$xajax->processRequest();
 	die();
 }
+$bEnSesion = false;
+if ((int)$_SESSION['unad_id_tercero'] > 0) {
+	$bEnSesion = true;
+}
+if (!$bEnSesion) {
+	if ($bDebug) {
+		echo 'No se encuentra una sesi&oacute;n. [' . $APP->rutacomun . ']-[' . $_SESSION['unad_id_tercero'] . ']';
+		die();
+	}
+	$_SESSION['unad_redir'] = 'saisolusuario.php';
+	header('Location:index.php');
+	die();
+}
 $iConsecutivoMenu = 2;
 $iMinVerDB = 7774;
 $iCodModulo = 3073;
@@ -188,7 +201,8 @@ if (!$bCerrado) {
 	}
 }
 if (!$bCerrado) {
-	list($bDevuelve, $sDebugP) = seg_revisa_permisoV3($iCodModuloConsulta, 1, $_SESSION['unad_id_tercero'], $objDB);
+	$bDevuelve = true;
+	//list($bDevuelve, $sDebugP) = seg_revisa_permisoV3($iCodModuloConsulta, 1, $_SESSION['unad_id_tercero'], $objDB);
 	if (!$bDevuelve) {
 		$bCerrado = true;
 		$sMsgCierre = '<div class="MarquesinaGrande">No cuenta con permiso para acceder a este modulo [' . $iCodModuloConsulta . '].</div>';
@@ -198,10 +212,10 @@ if ($bCerrado) {
 	if ($bCargaMenu) {
 		switch ($iPiel) {
 			case 2:
-				list($et_menu, $sDebugM) = html_Menu2023($APP->idsistema, $objDB, $iPiel, $bDebugMenu, $idTercero);
+				list($et_menu, $sDebugM) = html_menuCampusV2($objDB, $iPiel, $bDebugMenu, $idTercero);
 				break;
 			default:
-				list($et_menu, $sDebugM) = html_menuV2($APP->idsistema, $objDB, $iPiel, $bDebugMenu, $idTercero);
+				list($et_menu, $sDebugM) = html_menuCampus($APP->idsistema, $objDB, $iPiel, $bDebugMenu, $idTercero);
 				break;
 		}
 	}
@@ -211,8 +225,7 @@ if ($bCerrado) {
 			require $APP->rutacomun . 'unad_forma2024.php';
 			forma_InicioV4($xajax, $sTituloModulo);
 			$aRutas = array(
-				array('./', $sTituloApp),
-				array('./' . $sPaginaModulo, $sGrupoModulo),
+				array('./sai.php', $sTituloApp),
 				array('', $sTituloModulo)
 			);
 			$iNumBoton = 0;
@@ -231,7 +244,7 @@ if ($bCerrado) {
 	}
 	$objForma = new clsHtmlForma($iPiel);
 	if ($bBloqueTitulo) {
-		$objForma->addBoton('cmdAyuda98', 'btSupAyuda', 'muestraayuda('.$iCodModulo.');', $ETI['bt_ayuda']);
+		$objForma->addBoton('cmdAyuda98', 'btSupAyuda', 'muestraayuda(' . $iCodModulo . ');', $ETI['bt_ayuda']);
 		echo $objForma->htmlTitulo($sTituloModulo, $iCodModulo);
 	}
 	echo $objForma->htmlInicioMarco();
@@ -253,11 +266,8 @@ if (!$bPeticionXAJAX) {
 $bOtroUsuario=false;
 $seg_1707 = 0;
 $bDevuelve = false;
-list($bDevuelve, $sDebugP) = seg_revisa_permisoV3($iCodModulo, 1707, $_SESSION['unad_id_tercero'], $objDB, $bDebug);
-$sDebug = $sDebug . $sDebugP;
-if ($bDevuelve) {
-	$seg_1707 = 1;
-}
+list($bDevuelve, $sDebugP, $seg_1707) = seg_revisa_permisoV3($iCodModulo, 1707, $_SESSION['unad_id_tercero'], $objDB, $bDebug);
+//$sDebug = $sDebug . $sDebugP;
 if (isset($_REQUEST['deb_tipodoc']) == 0) {
 	$_REQUEST['deb_tipodoc'] = $APP->tipo_doc;
 }
@@ -499,34 +509,32 @@ if (($_REQUEST['paso']==1)||($_REQUEST['paso']==3)){
 			$_REQUEST['saiu73solucion']=$fila['saiu73solucion'];
 			$_REQUEST['saiu73idcaso']=$fila['saiu73idcaso'];
 			$_REQUEST['saiu73respuesta']=$fila['saiu73respuesta'];
-			if ($sError=='') {
-				$_REQUEST['saiu73idorigen'] = $fila['saiu73idorigen'];
-				$_REQUEST['saiu73idarchivo'] = $fila['saiu73idarchivo'];
-				$_REQUEST['saiu73idorigenrta'] = $fila['saiu73idorigenrta'];
-				$_REQUEST['saiu73idarchivorta'] = $fila['saiu73idarchivorta'];
-				$_REQUEST['saiu73fecharespcaso'] = $fila['saiu73fecharespcaso'];
-				$_REQUEST['saiu73horarespcaso'] = $fila['saiu73horarespcaso'];
-				$_REQUEST['saiu73minrespcaso'] = $fila['saiu73minrespcaso'];
-				$_REQUEST['saiu73idunidadcaso'] = $fila['saiu73idunidadcaso'];
-				$_REQUEST['saiu73idequipocaso'] = $fila['saiu73idequipocaso'];
-				$_REQUEST['saiu73idsupervisorcaso'] = $fila['saiu73idsupervisorcaso'];
-				$_REQUEST['saiu73idresponsablecaso'] = $fila['saiu73idresponsablecaso'];
-				$_REQUEST['saiu73numref'] = $fila['saiu73numref'];
-				$_REQUEST['saiu73evalacepta'] = $fila['saiu73evalacepta'];
-				$_REQUEST['saiu73evalfecha'] = $fila['saiu73evalfecha'];
-				$_REQUEST['saiu73evalamabilidad'] = $fila['saiu73evalamabilidad'];
-				$_REQUEST['saiu73evalamabmotivo'] = $fila['saiu73evalamabmotivo'];
-				$_REQUEST['saiu73evalrapidez'] = $fila['saiu73evalrapidez'];
-				$_REQUEST['saiu73evalrapidmotivo'] = $fila['saiu73evalrapidmotivo'];
-				$_REQUEST['saiu73evalclaridad'] = $fila['saiu73evalclaridad'];
-				$_REQUEST['saiu73evalcalridmotivo'] = $fila['saiu73evalcalridmotivo'];
-				$_REQUEST['saiu73evalresolvio'] = $fila['saiu73evalresolvio'];
-				$_REQUEST['saiu73evalsugerencias'] = $fila['saiu73evalsugerencias'];
-				$_REQUEST['saiu73evalconocimiento'] = $fila['saiu73evalconocimiento'];
-				$_REQUEST['saiu73evalconocmotivo'] = $fila['saiu73evalconocmotivo'];
-				$_REQUEST['saiu73evalutilidad'] = $fila['saiu73evalutilidad'];
-				$_REQUEST['saiu73evalutilmotivo'] = $fila['saiu73evalutilmotivo'];
-			}
+			$_REQUEST['saiu73idorigen'] = $fila['saiu73idorigen'];
+			$_REQUEST['saiu73idarchivo'] = $fila['saiu73idarchivo'];
+			$_REQUEST['saiu73idorigenrta'] = $fila['saiu73idorigenrta'];
+			$_REQUEST['saiu73idarchivorta'] = $fila['saiu73idarchivorta'];
+			$_REQUEST['saiu73fecharespcaso'] = $fila['saiu73fecharespcaso'];
+			$_REQUEST['saiu73horarespcaso'] = $fila['saiu73horarespcaso'];
+			$_REQUEST['saiu73minrespcaso'] = $fila['saiu73minrespcaso'];
+			$_REQUEST['saiu73idunidadcaso'] = $fila['saiu73idunidadcaso'];
+			$_REQUEST['saiu73idequipocaso'] = $fila['saiu73idequipocaso'];
+			$_REQUEST['saiu73idsupervisorcaso'] = $fila['saiu73idsupervisorcaso'];
+			$_REQUEST['saiu73idresponsablecaso'] = $fila['saiu73idresponsablecaso'];
+			$_REQUEST['saiu73numref'] = $fila['saiu73numref'];
+			$_REQUEST['saiu73evalacepta'] = $fila['saiu73evalacepta'];
+			$_REQUEST['saiu73evalfecha'] = $fila['saiu73evalfecha'];
+			$_REQUEST['saiu73evalamabilidad'] = $fila['saiu73evalamabilidad'];
+			$_REQUEST['saiu73evalamabmotivo'] = $fila['saiu73evalamabmotivo'];
+			$_REQUEST['saiu73evalrapidez'] = $fila['saiu73evalrapidez'];
+			$_REQUEST['saiu73evalrapidmotivo'] = $fila['saiu73evalrapidmotivo'];
+			$_REQUEST['saiu73evalclaridad'] = $fila['saiu73evalclaridad'];
+			$_REQUEST['saiu73evalcalridmotivo'] = $fila['saiu73evalcalridmotivo'];
+			$_REQUEST['saiu73evalresolvio'] = $fila['saiu73evalresolvio'];
+			$_REQUEST['saiu73evalsugerencias'] = $fila['saiu73evalsugerencias'];
+			$_REQUEST['saiu73evalconocimiento'] = $fila['saiu73evalconocimiento'];
+			$_REQUEST['saiu73evalconocmotivo'] = $fila['saiu73evalconocmotivo'];
+			$_REQUEST['saiu73evalutilidad'] = $fila['saiu73evalutilidad'];
+			$_REQUEST['saiu73evalutilmotivo'] = $fila['saiu73evalutilmotivo'];
 			$bcargo=true;
 			$_REQUEST['paso']=2;
 			$_REQUEST['boculta3073']=0;
@@ -788,10 +796,10 @@ $bPuedeCerrar = false;
 $bHayImprimir = false;
 $bEditable = false;
 if ($_REQUEST['saiu73estado'] == -1) {
-	$bEditable = true;	
+	$bEditable = true;
 }
 if ($_REQUEST['saiu73estado'] == 2) {
-	$bEditable = true;	
+	$bEditable = true;
 }
 //DATOS PARA COMPLETAR EL FORMULARIO
 $iAgno=fecha_agno();
@@ -988,13 +996,13 @@ $aParametros[104] = $_REQUEST['bagno'];
 $aParametros[110] = $_REQUEST['bcampus'];
 list($sTabla3073, $sDebugTabla) = f3073_TablaDetalleV2($aParametros, $objDB, $bDebug);
 $sDebug = $sDebug . $sDebugTabla;
-$bDebugMenu=false;
+$bDebugMenu = false;
 switch ($iPiel) {
 	case 2:
-		list($et_menu, $sDebugM) = html_Menu2023($APP->idsistema, $objDB, $iPiel, $bDebugMenu, $idTercero);
+		list($et_menu, $sDebugM) = html_menuCampusV2($objDB, $iPiel, $bDebugMenu, $idTercero);
 		break;
 	default:
-		list($et_menu, $sDebugM) = html_menuV2($APP->idsistema, $objDB, $iPiel, $bDebugMenu, $idTercero);
+		list($et_menu, $sDebugM) = html_menuCampus($APP->idsistema, $objDB, $iPiel, $bDebugMenu, $idTercero);
 		break;
 }
 $sDebug = $sDebug . $sDebugM;
@@ -1005,14 +1013,15 @@ switch ($iPiel) {
 		require $APP->rutacomun . 'unad_forma2024.php';
 		forma_InicioV4($xajax, $sTituloModulo);
 		$aRutas = array(
-			array('./', $sTituloApp),
-			array('./' . $sPaginaModulo, $sGrupoModulo),
+			array('./sai.php', $sTituloApp),
 			array('', $sTituloModulo)
 		);
 		$iNumBoton = 0;
 		$aBotones[$iNumBoton] = array('muestraayuda(' . $APP->idsistema . ', ' . $iCodModulo . ')', $ETI['bt_ayuda'], 'iHelp');
 		$iNumBoton++;
 		$aBotones[$iNumBoton] = array('limpiapagina()', $ETI['bt_limpiar'], 'iDocument');
+		$iNumBoton++;
+		$aBotones[$iNumBoton] = array('volver()', $ETI['bt_volver'], 'iArrowBack');
 		$iNumBoton++;
 		$aBotones[$iNumBoton] = array('expandesector(1)', $ETI['bt_volver'], 'iArrowBack', 97);
 		$iNumBoton++;
@@ -1030,41 +1039,10 @@ switch ($iPiel) {
 ?>
 <link rel="stylesheet" href="<?php echo $APP->rutacomun; ?>css/css_tabs.css" type="text/css" />
 <script language="javascript">
-function enviaguardar(){
-	window.document.frmedita.iscroll.value=window.pageYOffset;
-	expandesector(98);
-	var dpaso=window.document.frmedita.paso;
-	if (dpaso.value==0){
-		dpaso.value=10;
-		}else{
-		dpaso.value=12;
-		}
-	window.document.frmedita.submit();
-	}
-function cambiapagina(){
-	expandesector(98);
-	window.document.frmedita.submit();
-	}
 function cambiapaginaV2(){
 	expandesector(98);
 	window.document.frmedita.paso.value=1;
 	window.document.frmedita.submit();
-	}
-function expandepanel(codigo,estado,valor){
-	let objdiv= document.getElementById('div_p'+codigo);
-	let objban= document.getElementById('boculta'+codigo);
-	let otroestado='none';
-	if (estado=='none'){
-		otroestado='block';
-	}
-	objdiv.style.display=estado;
-	objban.value=valor;
-	verboton('btrecoge'+codigo,estado);
-	verboton('btexpande'+codigo,otroestado);
-	}
-function verboton(idboton,estado){
-	let objbt=document.getElementById(idboton);
-	objbt.style.display=estado;
 	}
 function expandesector(codigo) {
 	document.getElementById('div_sector1').style.display = 'none';
@@ -1137,7 +1115,6 @@ function ter_retorna(){
 	}
 function ter_muestra(idcampo, illave){
 	let saiu73idsolicitante=0;
-	let saiu73id=document.getElementById('saiu73id').value;
 	let params=new Array();
 	params[1]=document.getElementById(idcampo+'_doc').value;
 	if (params[1]!=''){
@@ -1147,10 +1124,8 @@ function ter_muestra(idcampo, illave){
 		if (illave==1){params[4]='RevisaLlave';}
 		//if (illave==1){params[5]='FuncionCuandoNoEsta';}
 		if (idcampo=='saiu73idsolicitante'){
-			if (saiu73id === '') {
-				params[6]=3073;
-				xajax_unad11_Mostrar_v2SAI(params);
-			}
+			params[6]=3073;
+			xajax_unad11_Mostrar_v2SAI(params);
 		}else{
 			xajax_unad11_Mostrar_v2(params);
 		}
@@ -1266,9 +1241,6 @@ function enviaabrir(){
 		window.document.frmedita.submit();
 		}
 	}
-function revfoco(objeto){
-	setTimeout(function(){objeto.focus();},10);
-	}
 function siguienteobjeto(){}
 document.onkeydown=function(e){
 	if (document.all){
@@ -1289,10 +1261,6 @@ function buscarV2016(sCampo){
 	//params[2]=window.document.frmedita.iagno.value;
 	//params[3]=window.document.frmedita.itipo.value;
 	xajax_f3073_Busquedas(params);
-	}
-function retornacontrol(){
-	expandesector(1);
-	window.scrollTo(0, window.document.frmedita.iscroll.value);
 	}
 function Devuelve(sValor){
 	let sCampo=window.document.frmedita.scampobusca.value;
@@ -1423,10 +1391,11 @@ function carga_combo_btema() {
 	document.getElementById('div_btema').innerHTML = '<b>Procesando datos, por favor espere...</b><input id="btema" name="btema" type="hidden" value="" />';
 	xajax_f3073_Combobtema(params);
 }
+	function volver() {
+		window.document.frmvolver.action = 'sai.php';
+		window.document.frmvolver.submit();
+	}
 </script>
-<?php
-// if ($_REQUEST['paso']!=0){
-?>
 <form id="frmimpp" name="frmimpp" method="post" action="p3073.php" target="_blank" style="display:none;">
 <input id="r" name="r" type="hidden" value="3073" />
 <input id="id3073" name="id3073" type="hidden" value="<?php echo $_REQUEST['saiu73id']; ?>" />
@@ -1439,9 +1408,8 @@ function carga_combo_btema() {
 <input id="rdebug" name="rdebug" type="hidden" value="<?php echo $_REQUEST['debug']; ?>"/>
 <input id="clave" name="clave" type="hidden" value="" />
 </form>
-<?php
-// }
-?>
+<form id="frmvolver" name="frmvolver" method="post" action="sai.php" autocomplete="off" style="display:none">
+</form>
 <form id="frmlista" name="frmlista" method="post" action="listados.php" target="_blank" style="display:none;">
 <input id="titulos" name="titulos" type="hidden" value="" />
 <input id="consulta" name="consulta" type="hidden" value="" />
@@ -1472,6 +1440,7 @@ if ($bBloqueTitulo) {
 <div class="titulosD">
 <input id="cmdAyuda" name="cmdAyuda" type="button" class="btUpAyuda" onclick="muestraayuda(<?php echo $APP->idsistema . ', ' . $iCodModulo; ?>);" title="<?php echo $ETI['bt_ayuda']; ?>" value="<?php echo $ETI['bt_ayuda']; ?>" />
 <input id="cmdLimpiar" name="cmdLimpiar" type="button" class="btUpLimpiar" onclick="limpiapagina();" title="<?php echo $ETI['bt_limpiar']; ?>" value="<?php echo $ETI['bt_limpiar']; ?>"/>
+<input id="cmdVolverSec2" name="cmdVolverSec2" type="button" class="btSupVolver" onclick="volver();" title="<?php echo $ETI['bt_volver']; ?>" value="<?php echo $ETI['bt_volver']; ?>" />
 </div>
 <div class="titulosI">
 <?php
