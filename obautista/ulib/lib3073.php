@@ -864,8 +864,8 @@ function f3073_db_GuardarV2($DATA, $objDB, $bDebug=false){
 	//if ($DATA['saiu73dia']==''){$DATA['saiu73dia']=0;}
 	//if ($DATA['saiu73hora']==''){$DATA['saiu73hora']=0;}
 	//if ($DATA['saiu73minuto']==''){$DATA['saiu73minuto']=0;}
-	if ($DATA['saiu73estado']==''){$DATA['saiu73estado']=0;}
-	if ($DATA['saiu73estadoorigen']==''){$DATA['saiu73estadoorigen']=0;}
+	if ($DATA['saiu73estado']==''){$DATA['saiu73estado']=-1;}
+	if ($DATA['saiu73estadoorigen']==''){$DATA['saiu73estadoorigen']=-1;}
 	//if ($DATA['saiu73tipointeresado']==''){$DATA['saiu73tipointeresado']=0;}
 	if ($DATA['saiu73idpqrs']==''){$DATA['saiu73idpqrs']=0;}
 	//if ($DATA['saiu73paramercadeo']==''){$DATA['saiu73paramercadeo']=0;}
@@ -1006,7 +1006,7 @@ function f3073_db_GuardarV2($DATA, $objDB, $bDebug=false){
 		}
 		if ($sError!=''){
 			if ($DATA['saiu73estado']!=1) {	// Asignado
-				$DATA['saiu73estado']=2;	// En tramite
+				$DATA['saiu73estado']=$DATA['saiu73estadoorigen'];
 			}
 		}
 		$sErrorCerrando=$sError;
@@ -1066,7 +1066,7 @@ function f3073_db_GuardarV2($DATA, $objDB, $bDebug=false){
 			//$DATA['saiu73horafin']=fecha_hora();
 			break; 
 			default:
-			$DATA['saiu73estado']=2;
+			$DATA['saiu73estado']=$DATA['saiu73estadoorigen'];
 			if ($DATA['saiu73hora']==''){$DATA['saiu73hora']=fecha_hora();}
 			if ($DATA['saiu73minuto']==''){$DATA['saiu73minuto']=fecha_minuto();}
 			if ($DATA['saiu73fechafin']==''){$DATA['saiu73fechafin']=0;}
@@ -1100,12 +1100,8 @@ function f3073_db_GuardarV2($DATA, $objDB, $bDebug=false){
 			}
 		}
 		//Aprobó las Validaciones al cerrar
-		if ($sError.$sErrorCerrando!=''){
-			if ($DATA['saiu73estado']==7) {
-				$DATA['saiu73estado'] = $DATA['saiu73estadoorigen'];
-			} else if ($DATA['saiu73estado']!=1) {
-				$DATA['saiu73estado']=2;
-			}
+		if ($sError.$sErrorCerrando!=''){			
+			$DATA['saiu73estado'] = $DATA['saiu73estadoorigen'];
 			$sErrorCerrando=$sError.' '.$sErrorCerrando;
 		}else{
 			$bCerrando=true;

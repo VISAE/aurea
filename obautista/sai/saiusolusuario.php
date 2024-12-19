@@ -865,16 +865,18 @@ if ((int)$_REQUEST['paso'] == 0) {
 	$bPuedeGuardar = true;
 } else {
 	switch ($_REQUEST['saiu73estado']) {
+		case -1: // Borrador
+			$bPuedeEliminar = true;
+			$bPuedeGuardar = true;
+			if ($_REQUEST['saiu73id'] > 0) {
+				$bPuedeCerrar = true;
+			}
+			break;
 		case 1: // Caso asignado
 			if ($bPermisoAsignado) {
 				$bPuedeGuardar = true;
 				$bPuedeCerrar = true;
 			}
-			break;
-		case 2: // En tramite
-			$bPuedeEliminar = true;
-			$bPuedeGuardar = true;
-			$bPuedeCerrar = true;
 			break;
 		case 7: // Radicada
 			break;
@@ -2218,7 +2220,7 @@ echo html_lnkarchivo((int)$_REQUEST['saiu73idorigen'], (int)$_REQUEST['saiu73ida
 ?>
 </div>
 <?php
-if ($_REQUEST['saiu73estado']==2) {
+if ($bPuedeCerrar) {
 ?>
 <label class="Label30">
 <input type="button" id="banexasaiu73idarchivo" name="banexasaiu73idarchivo" value="Anexar" class="btAnexarS" onclick="carga_saiu73idarchivo()" title="Cargar archivo" style="display:<?php if ((int)$_REQUEST['saiu73id'] != 0) {
@@ -2241,7 +2243,7 @@ echo 'none';
 </div>
 <div class="salto1px"></div>
 <?php
-if ($_REQUEST['saiu73estado']>0) {
+if ($_REQUEST['saiu73id']>0) {
 	$sEstilo='display:none;';
 	if ($_REQUEST['saiu73solucion']==1 || $_REQUEST['saiu73solucion']==3) {
 		$sEstilo='display:block;';

@@ -833,11 +833,13 @@ if ((int)$_REQUEST['paso'] == 0) {
 	$bPuedeGuardar = true;
 } else {
 	switch ($_REQUEST['saiu73estado']) {
-		case 1: // Caso asignado
-			break;
-		case 2: // En tramite
+		case -1: // Borrador
 			$bPuedeGuardar = true;
-			$bPuedeCerrar = true;
+			if ($_REQUEST['saiu73id']>0) {
+				$bPuedeCerrar = true;
+			}
+			break;
+		case 1: // Caso asignado
 			break;
 		case 7: // Radicada
 			break;
@@ -1749,7 +1751,8 @@ echo html_lnkarchivo((int)$_REQUEST['saiu73idorigen'], (int)$_REQUEST['saiu73ida
 ?>
 </div>
 <?php
-if ($_REQUEST['saiu73estado']==2) {
+if ($_REQUEST['saiu73estado']<7) {
+	if ($bPuedeCerrar) {
 ?>
 <label class="Label30">
 <input type="button" id="banexasaiu73idarchivo" name="banexasaiu73idarchivo" value="Anexar" class="btAnexarS" onclick="carga_saiu73idarchivo()" title="Cargar archivo" style="display:<?php if ((int)$_REQUEST['saiu73id'] != 0) {
@@ -1766,6 +1769,7 @@ echo 'none';
 } ?>;" />
 </label>
 <?php
+	}
 }
 ?>
 <div class="salto1px"></div>
@@ -1830,29 +1834,11 @@ echo 'none';
 </div>
 </div>
 <?php
+	}
 }
 ?>
 <?php
-if ($_REQUEST['paso']==2){
-	if ($_REQUEST['saiu73estado']<7 && $bPuedeCerrar){
-		$_REQUEST['saiu73solucion']=3; // Se inicia caso
-?>
-<div class="salto5px"></div>
-<div class="GrupoCamposAyuda">
-<?php
-echo $ETI['msg_alerta_solicitar'];
-?>
-</div>
-<div class="salto5px"></div>
-<label class="Label130">
-<input id="cmdTermina" name="cmdTermina" type="button" value="<?php echo $ETI['saiu73cerrar']; ?>" class="BotonAzul160" onclick="enviacerrar()" title="<?php echo $ETI['saiu73cerrar']; ?>"/>
-</label>
-<?php
-		}
-	}
-?>
-<?php
-} else {
+if ($_REQUEST['saiu73estado']<0) {
 ?>
 <div class="salto5px"></div>
 <div class="GrupoCamposAyuda">
@@ -1865,6 +1851,19 @@ echo $ETI['msg_alerta_solicitar'];
 <input id="cmdGuardar" name="cmdGuardar" type="button" value="<?php echo $ETI['saiu73guardar']; ?>" class="BotonAzul160" onclick="enviaguardar()" title="<?php echo $ETI['saiu73guardar']; ?>"/>
 </label>
 <?php
+}
+?>
+<?php
+if ($_REQUEST['paso']==2){
+	if ($_REQUEST['saiu73estado']<7 && $bPuedeCerrar){
+		$_REQUEST['saiu73solucion']=3; // Se inicia caso
+?>
+<label class="Label60"></label>
+<label class="Label130">
+<input id="cmdTermina" name="cmdTermina" type="button" value="<?php echo $ETI['saiu73cerrar']; ?>" class="BotonAzul160" onclick="enviacerrar()" title="<?php echo $ETI['saiu73cerrar']; ?>"/>
+</label>
+<?php
+	}
 }
 ?>
 <input id="saiu73idresponsable" name="saiu73idresponsable" type="hidden" value="<?php echo $_REQUEST['saiu73idresponsable']; ?>"/>
