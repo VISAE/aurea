@@ -949,7 +949,7 @@ if ($_REQUEST['paso'] == 93) {
 		$sDetalle = 'Cambia el consecutivo de ' . $_REQUEST['saiu05consec'] . ' a ' . $_REQUEST['saiu05consec_nuevo'] . '';
 		$_REQUEST['saiu05consec'] = $_REQUEST['saiu05consec_nuevo'];
 		$_REQUEST['saiu05consec_nuevo'] = '';
-		seg_auditar($iCodModulo, $_SESSION['u_idtercero'], 8, $_REQUEST['saiu05id'], $sDetalle, $objDB);
+		seg_auditar($iCodModulo, $_SESSION['unad_id_tercero'], 8, $_REQUEST['saiu05id'], $sDetalle, $objDB);
 		$sError = '<b>Se ha aplicado el cambio de consecutivo.</b>';
 		$iTipoError = 1;
 	} else {
@@ -1100,6 +1100,12 @@ if ((int)$_REQUEST['paso'] > 0) {
 	if ($_REQUEST['saiu05idmedio'] != $iViaWeb) {
 		$bConMedio = false;
 	}
+}
+$iFechaIni=20241223;
+$iFechaFin=20250115;
+$bMuestraBotones = false;
+if ($iHoy < $iFechaIni || $iHoy > $iFechaFin) {
+	$bMuestraBotones = true;
 }
 //DATOS PARA COMPLETAR EL FORMULARIO
 $iAgno=fecha_agno();
@@ -2628,6 +2634,9 @@ echo $sTabla3007;
 <?php
 // -- Termina Grupo campos 3007 Anexos
 ?>
+<?php
+if ($bMuestraBotones) {
+?>
 <div class="salto5px"></div>
 <div class="GrupoCamposAyuda">
 <?php
@@ -2660,6 +2669,19 @@ if ($_REQUEST['paso'] == 0) {
 		break;
 	}
 }
+?>
+<?php // Inicio Mensaje temporal
+} else {
+?>
+<div class="salto5px"></div>
+<div class="GrupoCamposAyuda">
+<?php 
+echo $ETI['msg_vacaciones'];
+?>
+</div>
+<div class="salto1px"></div>
+<?php
+} // Fin Mensaje temporal
 ?>
 <?php
 if (false) {

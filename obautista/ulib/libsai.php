@@ -133,7 +133,6 @@ function unad11_Mostrar_v2SAI($aParametros)
 			$objResponse = new xajaxResponse();
 			$objResponse->call("MensajeAlarmaV2('Modulo desconocido Ref:" . $idModulo . "', 0)");
 			return $objResponse;
-			die();
 			break;
 	}
 	if ($doc != '') {
@@ -309,10 +308,10 @@ function unad11_Mostrar_v2SAI($aParametros)
 	if ($bExiste) {
 		$objResponse->assign($sCampoPais, 'value', $sCodPais);
 		$objResponse->assign($sCampoTelefono, 'value', $sTelefono);
-		// $objResponse->assign('div_' . $sCampoDepto, 'innerHTML', $html_depto);
-		// $objResponse->call('$("#' . $sCampoDepto . '").chosen()');
-		// $objResponse->assign('div_' . $sCampoCiudad, 'innerHTML', $html_ciudad);
-		// $objResponse->call('$("#' . $sCampoCiudad . '").chosen()');
+		$objResponse->assign('div_' . $sCampoDepto, 'innerHTML', $html_depto);
+		$objResponse->call('$("#' . $sCampoDepto . '").chosen()');
+		$objResponse->assign('div_' . $sCampoCiudad, 'innerHTML', $html_ciudad);
+		$objResponse->call('$("#' . $sCampoCiudad . '").chosen()');
 	}
 	$objResponse->assign($sCampoTipoInteresado, 'value', $iTipoInteresado);
 	if ($bConAdicionales) {
@@ -2522,6 +2521,7 @@ function f12206_TablaDetalleUsuario($aParametros, $objDB, $bDebug = false)
 	$pagina = $aParametros[101];
 	$lineastabla = $aParametros[102];
 	$bAbierta = false;
+	$iPiel = iDefinirPiel($APP, 2);
 	//$sSQL='SELECT Campo FROM Tabla WHERE Id='.$sValorId;
 	//$tabla=$objDB->ejecutasql($sSQL);
 	//if ($objDB->nf($tabla)>0){
@@ -2636,8 +2636,12 @@ function f12206_TablaDetalleUsuario($aParametros, $objDB, $bDebug = false)
 		}
 	}
 	$res = $sErrConsulta . $sLeyenda;
+	$sClaseTabla = 'table--primary';
+	if ($iPiel == 1) {
+		$sClaseTabla = 'tablaapp';
+	}
 	$res = $res . '<div class="table-responsive">
-	<table border="0" align="center" cellpadding="0" cellspacing="2" class="tablaapp">
+	<table border="0" align="center" cellpadding="0" cellspacing="2" class="' . $sClaseTabla . '">
 	<thead class="fondoazul"><tr>
 	<td colspan="2"><b>' . $ETI['corf06fecha'] . '</b></td>
 	<td><b>' . $ETI['corf06tiponov'] . '</b></td>
@@ -2913,7 +2917,7 @@ function f12206_HtmlPendientes($sListaEscuelas, $sListaProgramas, $objDB, $bDebu
 	if ($objDB->nf($tabla) > 0) {
 		$sRes = '<div class="GrupoCampos520">' . html_salto() . '<b>' . $sTitulo . '</b>';
 		while ($fila = $objDB->sf($tabla)) {
-			$sRes = $sRes . '' . html_salto() . '' . cadena_notildes($fila['corf09nombre']) . ' - Solicitudes: <b>' . $fila['Total'] . '</b> - Estudiantes: <b>' . $fila['Estudiantes'] . '</b>';
+			$sRes = $sRes . html_salto() . '' . cadena_notildes($fila['corf09nombre']) . ' - Solicitudes: <b>' . $fila['Total'] . '</b> - Estudiantes: <b>' . $fila['Estudiantes'] . '</b>';
 		}
 		$sRes = $sRes . html_salto() . '</div>';
 	}
@@ -3419,6 +3423,11 @@ function f3000_HtmlTablaPQRS($aParametros){
 	$objResponse->assign('div_f3000tiemponaranja_1', 'innerHTML', $aTiempoNaranja[1]);
 	$objResponse->assign('div_f3000tiempoverde_1', 'innerHTML', $aTiempoVerde[1]);
 	$objResponse->assign('f3000pendientes', 'value', json_encode($aPendientes));
+	$sHTML = '';
+	if (count($aPendientes)>0) {
+		$sHTML = '<input id="cmdNotificar" name="cmdNotificar" type="button" value="Notificar Responsables" class="BotonAzul200" onclick="javascript:notificar_responsables()" />';
+	}
+	$objResponse->assign('div_cmdNotificar', 'innerHTML', $sHTML);
 	if ($iIndiceSatisf == 0) {
 		$objResponse->assign('div_f3000indicesatisf_0', 'innerHTML', '_');
 		$objResponse->assign('div_f3000indicesatisf_1', 'innerHTML', '_');

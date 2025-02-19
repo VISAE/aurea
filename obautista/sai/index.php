@@ -109,7 +109,7 @@ if ((int)$_SESSION['unad_id_tercero'] != 0) {
 }
 $iConsecutivoMenu = 1;
 $iMinVerDB = 7774;
-$iCodModulo = 2200;
+$iCodModulo = 3000;
 $iCodModuloConsulta = $iCodModulo;
 // -- Se cargan los archivos de idioma
 $mensajes_todas = $APP->rutacomun . 'lg/lg_todas_' . $_SESSION['unad_idioma'] . '.php';
@@ -230,7 +230,7 @@ if ($bCerrado) {
 	}
 	$objForma = new clsHtmlForma($iPiel);
 	if ($bBloqueTitulo) {
-		$objForma->addBoton('cmdAyuda98', 'btSupAyuda', 'muestraayuda('.$iCodModulo.');', $ETI['bt_ayuda']);
+		$objForma->addBoton('cmdAyuda98', 'btSupAyuda', 'muestraayuda(' . $iCodModulo . ');', $ETI['bt_ayuda']);
 		echo $objForma->htmlTitulo($sTituloModulo, $iCodModulo);
 	}
 	echo $objForma->htmlInicioMarco();
@@ -611,7 +611,6 @@ switch ($iPiel) {
 	}
 <?php
 if ($seg_12 == 1) {
-	if (count($aPendientes)>0) {
 ?>
 	function notificar_responsables() {
 		ModalConfirmV2('¿Desea realizar el envío de la notificaci&oacute;n a los responsables de solicitudes&quest;', () => {
@@ -627,7 +626,6 @@ if ($seg_12 == 1) {
 		xajax_f3000_NotificarResponsables(params);
 	}
 <?php
-	}
 }
 ?>
 </script>
@@ -758,13 +756,17 @@ echo $html_bita28eqipoparte;
 ?>
 </div>
 </label>
+<div id="div_cmdNotificar">
 <?php
 	if (count($aPendientes)>0) {
 ?>
 <input id="cmdNotificar" name="cmdNotificar" type="button" value="Notificar Responsables" class="BotonAzul200" onclick="javascript:notificar_responsables()" />
-<div class="salto1px"></div>
 <?php
 	}
+?>
+</div>
+<div class="salto1px"></div>
+<?php
 } else {
 ?>
 <label class="Label90">

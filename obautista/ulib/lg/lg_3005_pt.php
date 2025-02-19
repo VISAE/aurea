@@ -269,4 +269,6 @@ $ERR['mail_resp_error'] = 'Ha ocurrido un error intentando enviar el mensaje de 
 $ERR['mail_enc_error'] = 'Ha ocurrido un error intentando enviar la encuesta de satisfacci&oacute;n';
 $ERR['saiu05idresponsablefin'] = 'No ha seleccionado un integrante del equipo de trabajo';
 // Fin etiquetas y mensajes de encuesta
+
+$ETI['msg_vacaciones'] = '<b>ATENCI&Oacute;N: </b>Estimados usuarios, les informamos que, de acuerdo con la RESOLUCI&Oacute;N No. 021265 del 6 de diciembre de 2024, se suspenden los t&eacute;rminos en todas las actuaciones administrativas de la Universidad Nacional Abierta y a Distancia (UNAD) debido a las vacaciones colectivas. Por lo tanto, el servicio de radicaci&oacute;n de PQRS estar&aacute; temporalmente inactivo y se reanudar&aacute; el 16 de enero de 2025.';
 ?>
