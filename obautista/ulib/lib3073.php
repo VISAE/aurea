@@ -387,6 +387,7 @@ function f3073_TablaDetalleV2($aParametros, $objDB, $bDebug=false){
 	if (isset($aParametros[110])==0){$aParametros[110]='';}
 	if (isset($aParametros[111])==0){$aParametros[111]='';}
 	if (isset($aParametros[112])==0){$aParametros[112]='';}
+	if (isset($aParametros[113])==0){$aParametros[113]='';}
 	//$aParametros[103]=numeros_validar($aParametros[103]);
 	$idTercero=$aParametros[100];
 	$sDebug='';
@@ -402,6 +403,7 @@ function f3073_TablaDetalleV2($aParametros, $objDB, $bDebug=false){
 	$bcampus = $aParametros[110];
 	$bzona = $aParametros[111];
 	$bcead = $aParametros[112];
+	$iCanal = $aParametros[113];
 	$bAbierta=true;
 	//$sSQL='SELECT Campo FROM Tabla WHERE Id='.$sValorId;
 	//$tabla=$objDB->ejecutasql($sSQL);
@@ -410,9 +412,30 @@ function f3073_TablaDetalleV2($aParametros, $objDB, $bDebug=false){
 		//if ($fila['Campo']!='S'){$bAbierta=true;}
 		//}
 	$sLeyenda='';
+	switch ($iCanal) {
+		case 3018:
+			$asaiu73solucion=$aSolucion3018;
+			break;
+		case 3019:
+			$asaiu73solucion=$aSolucion3019;
+			break;
+		case 3020:
+			$asaiu73solucion=$aSolucion3020;
+			break;
+		case 3021:
+		case 3073:
+			break;
+		default:
+			$sLeyenda = $ERR['saiu73idcanal'] . '<br>';
+			break;
+	}
 	//Verificamos que exista la tabla.
+	list($sErrorR, $sDebugR) = f3073_RevTabla_saiu73solusuario($iAgno, $objDB);
+	if ($sErrorR != '') {
+		$sLeyenda = $sLeyenda . $sErrorR . '<br>';
+	}
 	if ($iAgno == '') {
-		$sLeyenda = 'No ha seleccionado un a&ntilde;o a consultar';
+		$sLeyenda = $sLeyenda . $ERR['saiu73agno'];
 	}
 	if ($sLeyenda!=''){
 		$sLeyenda='<div class="salto1px"></div>
@@ -523,6 +546,7 @@ function f3073_TablaDetalleV2($aParametros, $objDB, $bDebug=false){
 	if ($bcead !== '') {
 		$sSQLadd = $sSQLadd . ' AND TB.saiu73idcentro=' . $bcead . '';
 	}
+	$sSQLadd = $sSQLadd . ' AND TB.saiu73idcanal=' . $iCanal . '';
 	//if ((int)$aParametros[103]!=-1){$sSQLadd=$sSQLadd.' AND TB.campo='.$aParametros[103];}
 	/*
 	if ($aParametros[103]!=''){
@@ -537,7 +561,7 @@ function f3073_TablaDetalleV2($aParametros, $objDB, $bDebug=false){
 			}
 		}
 	*/
-	$sTitulos='Agno, Mes, Tiporadicado, Consec, Id, Dia, Hora, Minuto, Estado, Telefono, Numtelefono, Solicitante, Tipointeresado, Clasesolicitud, Tiposolicitud, Temasolicitud, Zona, Centro, Codpais, Coddepto, Codciudad, Escuela, Programa, Periodo, Numorigen, Pqrs, Detalle, Horafin, Minutofin, Paramercadeo, Responsable, Tiemprespdias, Tiempresphoras, Tiemprespminutos';
+	$sTitulos='Agno, Mes, Tiporadicado, Consec, Id, Dia, Hora, Minuto, Estado, Telefono, Numtelefono, Chat, Correo, Solicitante, Tipointeresado, Clasesolicitud, Tiposolicitud, Temasolicitud, Zona, Centro, Codpais, Coddepto, Codciudad, Escuela, Programa, Periodo, Numorigen, Pqrs, Detalle, Horafin, Minutofin, Paramercadeo, Responsable, Tiemprespdias, Tiempresphoras, Tiemprespminutos';
 	$registros=0;
 	$bGigante=false; //En caso de que la tabla sea muy grande pasarlo a true
 	$sLimite='';
@@ -559,7 +583,8 @@ WHERE '.$sSQLadd1.' TB.saiu73idsolicitante=T11.unad11id '.$sSQLadd.'';
 	//, TB.saiu73idpqrs, TB.saiu73detalle, TB.saiu73horafin, TB.saiu73minutofin, TB.saiu73paramercadeo, TB.saiu73tiemprespdias, TB.saiu73tiempresphoras, TB.saiu73tiemprespminutos, TB.saiu73tipointeresado, TB.saiu73clasesolicitud, TB.saiu73tiposolicitud, TB.saiu73temasolicitud, TB.saiu73idzona, TB.saiu73idcentro, TB.saiu73codpais, TB.saiu73coddepto, TB.saiu73codciudad, TB.saiu73idescuela, TB.saiu73idprograma, TB.saiu73idperiodo, TB.saiu73idresponsable
 	$sSQL='SELECT TB.saiu73agno, TB.saiu73mes, TB.saiu73consec, TB.saiu73id, TB.saiu73dia, TB.saiu73hora, TB.saiu73minuto, 
 T11.unad11razonsocial AS C12_nombre, TB.saiu73tiposolicitud, saiu73temasolicitud, TB.saiu73estado, T11.unad11tipodoc AS C12_td, 
-T11.unad11doc AS C12_doc, TB.saiu73idsolicitante, TB.saiu73tiporadicado, TB.saiu73solucion, TB.saiu73idzona, TB.saiu73idcentro 
+T11.unad11doc AS C12_doc, TB.saiu73idsolicitante, TB.saiu73tiporadicado, TB.saiu73solucion, TB.saiu73idzona, TB.saiu73idcentro, 
+TB.saiu73idcanal 
 FROM saiu73solusuario_'.$iAgno.' AS TB, unad11terceros AS T11
 WHERE '.$sSQLadd1.' TB.saiu73idsolicitante=T11.unad11id '.$sSQLadd.'
 ORDER BY TB.saiu73agno DESC, TB.saiu73mes DESC, TB.saiu73dia DESC, TB.saiu73tiporadicado, TB.saiu73consec DESC';
@@ -593,8 +618,11 @@ ORDER BY TB.saiu73agno DESC, TB.saiu73mes DESC, TB.saiu73dia DESC, TB.saiu73tipo
 <td><b>'.$ETI['saiu73consec'].'</b></td>
 <td colspan="2"><b>'.$ETI['saiu73idsolicitante'].'</b></td>
 <td><b>'.$ETI['saiu73idzona'].'</b></td>
-<td><b>'.$ETI['saiu73idcentro'].'</b></td>
-<td><b>'.$ETI['saiu73temasolicitud'].'</b></td>
+<td><b>'.$ETI['saiu73idcentro'].'</b></td>';
+if ($iCanal != 3073) {
+	$res=$res.'<td><b>'.$ETI['saiu73tiposolicitud'].'</b></td>';
+}
+$res=$res.'<td><b>'.$ETI['saiu73temasolicitud'].'</b></td>
 <td><b>'.$ETI['saiu73solucion'].'</b></td>
 <td><b>'.$ETI['saiu73estado'].'</b></td>
 <td align="right">
@@ -677,8 +705,11 @@ ORDER BY TB.saiu73agno DESC, TB.saiu73mes DESC, TB.saiu73dia DESC, TB.saiu73tipo
 <td>'.$et_saiu73idsolicitante_doc.'</td>
 <td>'.$et_saiu73idsolicitante_nombre.'</td>
 <td>'.$sPrefijo.$sZona.$sSufijo.'</td>
-<td>'.$sPrefijo.$sCead.$sSufijo.'</td>
-<td>'.$sPrefijo.$sTema.$sSufijo.'</td>
+<td>'.$sPrefijo.$sCead.$sSufijo.'</td>';
+if ($iCanal != 3073) {
+	$res=$res.'<td>'.$sPrefijo.$sCategoria.$sSufijo.'</td>';
+}
+$res=$res.'<td>'.$sPrefijo.$sTema.$sSufijo.'</td>
 <td>'.$sPrefijo.$sSolucion.$sSufijo.'</td>
 <td>'.$sPrefijo.$sEstado.$sSufijo.'</td>
 <td>'.$sLink.'</td>
@@ -762,6 +793,14 @@ function f3073_db_CargarPadre($DATA, $objDB, $bDebug=false){
 		$DATA['saiu73solucion']=$fila['saiu73solucion'];
 		$DATA['saiu73idcaso']=$fila['saiu73idcaso'];
 		$DATA['saiu73respuesta']=$fila['saiu73respuesta'];
+		$DATA['saiu73idcanal']=$fila['saiu73idcanal'];
+		$DATA['saiu73idtelefono']=$fila['saiu73idtelefono'];
+		$DATA['saiu73numtelefono']=$fila['saiu73numtelefono'];
+		$DATA['saiu73numorigen']=$fila['saiu73numorigen'];
+		$DATA['saiu73idchat']=$fila['saiu73idchat'];
+		$DATA['saiu73numsesionchat']=$fila['saiu73numsesionchat'];
+		$DATA['saiu73idcorreo']=$fila['saiu73idcorreo'];
+		$DATA['saiu73correoorigen']=$fila['saiu73correoorigen'];
 		$bcargo=true;
 		$DATA['paso']=2;
 		$DATA['boculta3073']=0;
@@ -824,6 +863,8 @@ function f3073_db_GuardarV2($DATA, $objDB, $bDebug=false){
 	if (isset($DATA['saiu73respuesta'])==0){$DATA['saiu73respuesta']='';}
 	*/
 	if (isset($DATA['bcampus'])==0){$DATA['bcampus']=0;}
+	if (isset($DATA['saiu73idchat'])==0){$DATA['saiu73idchat']=0;}
+	if (isset($DATA['saiu73idcorreo'])==0){$DATA['saiu73idcorreo']=0;}
 	$DATA['saiuid']=73;
 	$DATA['saiu73agno']=numeros_validar($DATA['saiu73agno']);
 	$DATA['saiu73mes']=numeros_validar($DATA['saiu73mes']);
@@ -860,6 +901,15 @@ function f3073_db_GuardarV2($DATA, $objDB, $bDebug=false){
 	$DATA['saiu73idsupervisorcaso']=numeros_validar($DATA['saiu73idsupervisorcaso']);
 	$DATA['saiu73idresponsablecaso']=numeros_validar($DATA['saiu73idresponsablecaso']);
 	$DATA['saiu73numref']=htmlspecialchars(trim($DATA['saiu73numref']));
+	$DATA['saiu73idcanal']=numeros_validar($DATA['saiu73idcanal']);
+	$DATA['saiu73idtelefono']=numeros_validar($DATA['saiu73idtelefono']);
+	$DATA['saiu73numtelefono']=htmlspecialchars(trim($DATA['saiu73numtelefono']));
+	$DATA['saiu73numorigen']=htmlspecialchars(trim($DATA['saiu73numorigen']));
+	$DATA['saiu73idchat']=numeros_validar($DATA['saiu73idchat']);
+	$DATA['saiu73numsesionchat']=htmlspecialchars(trim($DATA['saiu73numsesionchat']));
+	$DATA['saiu73idcorreo']=numeros_validar($DATA['saiu73idcorreo']);
+	$DATA['saiu73idcorreootro']=htmlspecialchars(trim($DATA['saiu73idcorreootro']));
+	$DATA['saiu73correoorigen']=htmlspecialchars(trim($DATA['saiu73correoorigen']));
 	// -- Se inicializan las variables que puedan pasar vacias {Especialmente números}.
 	//if ($DATA['saiu73dia']==''){$DATA['saiu73dia']=0;}
 	//if ($DATA['saiu73hora']==''){$DATA['saiu73hora']=0;}
@@ -908,6 +958,7 @@ function f3073_db_GuardarV2($DATA, $objDB, $bDebug=false){
 		if ($DATA['saiu73codciudad']==''){$sError=$ERR['saiu73codciudad'].$sSepara.$sError;}
 		if ($DATA['saiu73coddepto']==''){$sError=$ERR['saiu73coddepto'].$sSepara.$sError;}
 		if ($DATA['saiu73codpais']==''){$sError=$ERR['saiu73codpais'].$sSepara.$sError;}
+		if ($DATA['saiu73idcanal']==''){$sError=$ERR['saiu73idcanal'].$sSepara.$sError;}
 		//if ($DATA['saiu73hora']==''){$DATA['saiu73hora']=fecha_hora();}
 		if ($DATA['saiu73solucion']==1){ // Resuelto en la atención
 			if ($DATA['saiu73respuesta']==''){$sError=$ERR['saiu73respuesta'].$sSepara.$sError;}
@@ -931,6 +982,33 @@ function f3073_db_GuardarV2($DATA, $objDB, $bDebug=false){
 					$DATA['saiu73idresponsablecaso']=0;
 				}
 			}
+		}
+		switch ($_REQUEST['saiu73idcanal']) {
+			case 3018:
+				if ($DATA['saiu73idtelefono']==''){
+					$sError=$ERR['saiu73idtelefono'].$sSepara.$sError;
+				}else{
+					if ($DATA['saiu73idtelefono']=='-1'){
+						if ($DATA['saiu73numtelefono']==''){$sError=$ERR['saiu73numtelefono'].$sSepara.$sError;}
+					}
+				}
+	            break;
+			case 3019:
+				if ($DATA['saiu73idchat']==''){$sError=$ERR['saiu73idchat'].$sSepara.$sError;}
+	            break;
+			case 3020:
+				if ($DATA['saiu73correoorigen']==''){$sError=$ERR['saiu73correoorigen'].$sSepara.$sError;}
+				if ($DATA['saiu73idcorreo']==''){$sError=$ERR['saiu73idcorreo'].$sSepara.$sError;}
+				if ($DATA['saiu73idcorreo']==3){
+					if ($DATA['saiu73idcorreootro']==''){$sError=$ERR['saiu73idcorreo'].$sSepara.$sError;}
+				} else {
+					$DATA['saiu73idcorreootro']=='';
+				}
+	            break;
+			case 3021:
+	            break;
+			default:
+		    break;
 		}
 		if ($DATA['saiu73estado']==7) {
 			$bConCierre=true;
@@ -1037,6 +1115,13 @@ function f3073_db_GuardarV2($DATA, $objDB, $bDebug=false){
 						$bEnviaEncuesta=true;
 					}
 				} else {
+					if ($DATA['saiu73estadoorigen']==-1) {
+						$DATA['saiu73agno']=fecha_agno();
+						$DATA['saiu73mes']=fecha_mes();
+						$DATA['saiu73dia']=fecha_dia();
+						$DATA['saiu73hora']=fecha_hora();
+						$DATA['saiu73minuto']=fecha_minuto();
+					}
 					$DATA['saiu73fecharespcaso']=0;
 					$DATA['saiu73fechafin']=fecha_DiaMod();
 					$DATA['saiu73horafin']=fecha_hora();
@@ -1049,8 +1134,11 @@ function f3073_db_GuardarV2($DATA, $objDB, $bDebug=false){
 					$bEnviaCaso=true;
 				}
 				break;
-				case 8: // Sin resolver
-				$DATA['saiu73respuesta']='';
+				case 8: //Cancelada por el usuario
+				$DATA['saiu73respuesta']=$ETI['termina_usuario'];
+				break;
+				case 9: //Terminada por el asesor
+				$DATA['saiu73respuesta']=$ETI['termina_asesor'];
 				break;
 				default:
 				$sError=$ERR['saiu73solucion'].$sSepara.$sError;
@@ -1204,14 +1292,18 @@ function f3073_db_GuardarV2($DATA, $objDB, $bDebug=false){
 			saiu73idcentro, saiu73codpais, saiu73coddepto, saiu73codciudad, saiu73idescuela, 
 			saiu73idprograma, saiu73idperiodo, saiu73idpqrs, saiu73detalle, saiu73fechafin,
 			saiu73horafin, saiu73minutofin, saiu73paramercadeo, saiu73idresponsable, saiu73tiemprespdias, 
-			saiu73tiempresphoras, saiu73tiemprespminutos, saiu73solucion, saiu73idcaso, saiu73respuesta';
+			saiu73tiempresphoras, saiu73tiemprespminutos, saiu73solucion, saiu73idcaso, saiu73respuesta, 
+			saiu73idcanal, saiu73idtelefono, saiu73numtelefono, saiu73numorigen, saiu73idchat, 
+			saiu73numsesionchat, saiu73idcorreo, saiu73idcorreootro, saiu73correoorigen';
 			$sValores3073=''.$DATA['saiu73agno'].', '.$DATA['saiu73mes'].', '.$DATA['saiu73tiporadicado'].', '.$DATA['saiu73consec'].', '.$DATA['saiu73id'].', 
 			'.$DATA['saiu73dia'].', '.$DATA['saiu73hora'].', '.$DATA['saiu73minuto'].', '.$DATA['saiu73estado'].', '.$DATA['saiu73idsolicitante'].', 
 			'.$DATA['saiu73tipointeresado'].', '.$DATA['saiu73clasesolicitud'].', '.$DATA['saiu73tiposolicitud'].', '.$DATA['saiu73temasolicitud'].', '.$DATA['saiu73idzona'].', 
 			'.$DATA['saiu73idcentro'].', "'.$DATA['saiu73codpais'].'", "'.$DATA['saiu73coddepto'].'", "'.$DATA['saiu73codciudad'].'", '.$DATA['saiu73idescuela'].', 
 			'.$DATA['saiu73idprograma'].', '.$DATA['saiu73idperiodo'].', '.$DATA['saiu73idpqrs'].', "'.$saiu73detalle.'", '.$DATA['saiu73fechafin'].', 
 			'.$DATA['saiu73horafin'].', '.$DATA['saiu73minutofin'].', '.$DATA['saiu73paramercadeo'].', '.$DATA['saiu73idresponsable'].', '.$DATA['saiu73tiemprespdias'].', 
-			'.$DATA['saiu73tiempresphoras'].', '.$DATA['saiu73tiemprespminutos'].', '.$DATA['saiu73solucion'].', '.$DATA['saiu73idcaso'].', "'.$saiu73respuesta.'"';
+			'.$DATA['saiu73tiempresphoras'].', '.$DATA['saiu73tiemprespminutos'].', '.$DATA['saiu73solucion'].', '.$DATA['saiu73idcaso'].', "'.$saiu73respuesta.'",
+			'.$DATA['saiu73idcanal'].', '.$DATA['saiu73idtelefono'].', "'.$DATA['saiu73numtelefono'].'", "'.$DATA['saiu73numorigen'].'", '.$DATA['saiu73idchat'].', 
+			"'.$DATA['saiu73numsesionchat'].'", '.$DATA['saiu73idcorreo'].', "'.$DATA['saiu73idcorreootro'].'", "'.$DATA['saiu73correoorigen'].'"';
 			if ($APP->utf8==1){
 				$sSQL='INSERT INTO '.$sTabla21.' ('.$sCampos3073.') VALUES ('.cadena_codificar($sValores3073).');';
 				$sdetalle=$sCampos3073.'['.cadena_codificar($sValores3073).']';
@@ -1260,6 +1352,17 @@ function f3073_db_GuardarV2($DATA, $objDB, $bDebug=false){
 			$scampo[36]='saiu73idpqrs';
 			$scampo[37]='saiu73numref';
 			$scampo[38]='saiu73fechafin';
+			$scampo[39]='saiu73agno';
+			$scampo[40]='saiu73mes';
+			$scampo[41]='saiu73idcanal';
+			$scampo[42]='saiu73idtelefono';
+			$scampo[43]='saiu73numtelefono';
+			$scampo[44]='saiu73numorigen';
+			$scampo[45]='saiu73idchat';
+			$scampo[46]='saiu73numsesionchat';
+			$scampo[47]='saiu73idcorreo';
+			$scampo[48]='saiu73idcorreootro';
+			$scampo[49]='saiu73correoorigen';
 			$sdato[1]=$DATA['saiu73dia'];
 			$sdato[2]=$DATA['saiu73hora'];
 			$sdato[3]=$DATA['saiu73minuto'];
@@ -1298,7 +1401,18 @@ function f3073_db_GuardarV2($DATA, $objDB, $bDebug=false){
 			$sdato[36]=$DATA['saiu73idpqrs'];
 			$sdato[37]=$DATA['saiu73numref'];
 			$sdato[38]=$DATA['saiu73fechafin'];
-			$numcmod=38;
+			$sdato[39]=$DATA['saiu73agno'];
+			$sdato[40]=$DATA['saiu73mes'];
+			$sdato[41]=$DATA['saiu73idcanal'];
+			$sdato[42]=$DATA['saiu73idtelefono'];
+			$sdato[43]=$DATA['saiu73numtelefono'];
+			$sdato[44]=$DATA['saiu73numorigen'];
+			$sdato[45]=$DATA['saiu73idchat'];
+			$sdato[46]=$DATA['saiu73numsesionchat'];
+			$sdato[47]=$DATA['saiu73idcorreo'];
+			$sdato[48]=$DATA['saiu73idcorreootro'];
+			$sdato[49]=$DATA['saiu73correoorigen'];
+			$numcmod=49;
 			$sWhere='saiu73id='.$DATA['saiu73id'].'';
 			$sSQL='SELECT * FROM '.$sTabla21.' WHERE '.$sWhere;
 			$sdatos='';
@@ -1477,7 +1591,7 @@ function f3073_db_Eliminar($saiu73agno, $saiu73id, $objDB, $bDebug=false){
 	return array($sError, $iTipoError, $sDebug);
 	}
 function f3073_TituloBusqueda(){
-	return 'B&uacute;squeda de Registro de Atenci&oacute;n Presencial';
+	return 'B&uacute;squeda de Registro de Atenciones';
 	}
 function f3073_ParametrosBusqueda(){
 	require './app.php';
@@ -1559,7 +1673,7 @@ function f3073_TablaDetalleBusquedas($aParametros, $objDB){
 		}
 	*/
 	$sTitulos='Agno, Mes, Tiporadicado, Consec, Id, Dia, Hora, Minuto, Estado, Telefono, Numtelefono, Solicitante, Tipointeresado, Clasesolicitud, Tiposolicitud, Temasolicitud, Zona, Centro, Codpais, Coddepto, Codciudad, Escuela, Programa, Periodo, Numorigen, Pqrs, Detalle, Horafin, Minutofin, Paramercadeo, Responsable, Tiemprespdias, Tiempresphoras, Tiemprespminutos';
-	$sSQL='SELECT TB.saiu73agno, TB.saiu73mes, T3.saiu16nombre, TB.saiu73consec, TB.saiu73id, TB.saiu73dia, TB.saiu73hora, TB.saiu73minuto, T9.saiu11nombre, T10.saiu22nombre, T12.unad11razonsocial AS C12_nombre, T13.bita07nombre, T14.saiu01titulo, T15.saiu02titulo, T16.saiu03titulo, T17.unad23nombre, T18.unad24nombre, T19.unad18nombre, T20.unad19nombre, T21.unad20nombre, T22.core12nombre, T23.core09nombre, T24.exte02nombre, TB.saiu73idpqrs, TB.saiu73detalle, TB.saiu73horafin, TB.saiu73minutofin, TB.saiu73paramercadeo, T31.unad11razonsocial AS C31_nombre, TB.saiu73tiemprespdias, TB.saiu73tiempresphoras, TB.saiu73tiemprespminutos, TB.saiu73tiporadicado, TB.saiu73estado, TB.saiu73idsolicitante, T12.unad11tipodoc AS C12_td, T12.unad11doc AS C12_doc, TB.saiu73tipointeresado, TB.saiu73clasesolicitud, TB.saiu73tiposolicitud, TB.saiu73temasolicitud, TB.saiu73idzona, TB.saiu73idcentro, TB.saiu73codpais, TB.saiu73coddepto, TB.saiu73codciudad, TB.saiu73idescuela, TB.saiu73idprograma, TB.saiu73idperiodo, TB.saiu73idresponsable, T31.unad11tipodoc AS C31_td, T31.unad11doc AS C31_doc 
+	$sSQL='SELECT TB.saiu73agno, TB.saiu73mes, T3.saiu16nombre, TB.saiu73consec, TB.saiu73id, TB.saiu73dia, TB.saiu73hora, TB.saiu73minuto, T9.saiu11nombre, T10.saiu22nombre, T12.unad11razonsocial AS C12_nombre, T13.bita07nombre, T14.saiu01titulo, T15.saiu02titulo, T16.saiu03titulo, T17.unad23nombre, T18.unad24nombre, T19.unad18nombre, T20.unad19nombre, T21.unad20nombre, T22.core12nombre, T23.core09nombre, T24.exte02nombre, TB.saiu73idpqrs, TB.saiu73detalle, TB.saiu73horafin, TB.saiu73minutofin, TB.saiu73paramercadeo, T31.unad11razonsocial AS C31_nombre, TB.saiu73tiemprespdias, TB.saiu73tiempresphoras, TB.saiu73tiemprespminutos, TB.saiu73tiporadicado, TB.saiu73estado, TB.saiu73idsolicitante, T12.unad11tipodoc AS C12_td, T12.unad11doc AS C12_doc, TB.saiu73tipointeresado, TB.saiu73clasesolicitud, TB.saiu73tiposolicitud, TB.saiu73temasolicitud, TB.saiu73idzona, TB.saiu73idcentro, TB.saiu73codpais, TB.saiu73coddepto, TB.saiu73codciudad, TB.saiu73idescuela, TB.saiu73idprograma, TB.saiu73idperiodo, TB.saiu73idresponsable, T31.unad11tipodoc AS C31_td, T31.unad11doc AS C31_doc, TB.saiu73idcanal
 FROM saiu73solusuario AS TB, saiu16tiporadicado AS T3, saiu11estadosol AS T9, saiu22telefonos AS T10, unad11terceros AS T12, bita07tiposolicitante AS T13, saiu01claseser AS T14, saiu02tiposol AS T15, saiu03temasol AS T16, unad23zona AS T17, unad24sede AS T18, unad18pais AS T19, unad19depto AS T20, unad20ciudad AS T21, core12escuela AS T22, core09programa AS T23, exte02per_aca AS T24, unad11terceros AS T31 
 WHERE '.$sSQLadd1.' TB.saiu73tiporadicado=T3.saiu16id AND TB.saiu73estado=T9.saiu11id AND TB.saiu73idsolicitante=T12.unad11id AND TB.saiu73tipointeresado=T13.bita07id AND TB.saiu73clasesolicitud=T14.saiu01id AND TB.saiu73tiposolicitud=T15.saiu02id AND TB.saiu73temasolicitud=T16.saiu03id AND TB.saiu73idzona=T17.unad23id AND TB.saiu73idcentro=T18.unad24id AND TB.saiu73codpais=T19.unad18codigo AND TB.saiu73coddepto=T20.unad19codigo AND TB.saiu73codciudad=T21.unad20codigo AND TB.saiu73idescuela=T22.core12id AND TB.saiu73idprograma=T23.core09id AND TB.saiu73idperiodo=T24.exte02id AND TB.saiu73idresponsable=T31.unad11id '.$sSQLadd.'
 ORDER BY TB.saiu73agno, TB.saiu73mes, TB.saiu73tiporadicado, TB.saiu73consec';

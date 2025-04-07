@@ -478,12 +478,48 @@ function f107_VerificarPerfiles($idTercero, $idPeriodo, $objDB, $bDebug = false)
 			}
 		}
 	}
+	// 41 - CONTRATACION
+	if (true) {
+		$sCondi = array();
+		// unae26idresponsable (se asigna por permiso de la GAF)
+		$sCondi[1] = 'SELECT 1 FROM cttc05oficina WHERE cttc05idcoordinador=' . $idTercero . ' AND cttc05activa>0';
+		//Solo despues de la tarea 106 es que queda en firme como supervisor.
+		$sCondi[2] = 'SELECT 1 FROM cttc07proceso WHERE cttc07e2_idsupervisor=' . $idTercero . ' AND cttc07idtarea>106';
+		$sCondi[3] = 'SELECT 1 FROM cttc07proceso WHERE cttc07interventor=' . $idTercero . '';
+		$sCondi[4] = 'SELECT 1 FROM cttc07proceso WHERE cttc07e2_contratista=' . $idTercero . '';
+		$sCondi[5] = 'SELECT 1 FROM plan16metaprodcierre WHERE plan16idgestor=' . $idTercero . '';
+		$iTotalPerfiles = 4;
+		$sSQL = 'SELECT * FROM cttc00params WHERE cttc00id=1';
+		if ($bDebug) {
+			$sDebug = $sDebug . fecha_microtiempo() . ' Configuraci&oacute;n de perfiles de CONTRATACION ' . $sSQL . '<br>';
+		}
+		$tabla = $objDB->ejecutasql($sSQL);
+		if ($objDB->nf($tabla) > 0) {
+			$fila = $objDB->sf($tabla);
+			$aCFG[1] = $fila['cttc00perfil_coordunidad'];
+			$aCFG[2] = $fila['cttc00perfil_supervisor'];
+			$aCFG[3] = $fila['cttc00perfil_interventor'];
+			$aCFG[4] = $fila['cttc00perfil_contratista'];
+			$aCFG[5] = $fila['cttc00perfil_avales'];
+		} else {
+			$iTotalPerfiles = 0;
+		}
+		for ($j = 1; $j <= $iTotalPerfiles; $j++) {
+			$tabla = $objDB->ejecutasql($sCondi[$j]);
+			if ($objDB->nf($tabla) > 0) {
+				$id05 = $aCFG[$j];
+				if ($id05 != 0) {
+					$aPerfil[$id05] = 1;
+				}
+			}
+		}
+	}
 	// GAF - Comunes
 	if (true) {
 		$sCondi = array();
-		$sCondi[1] = 'SELECT 1 FROM unae26unidadesfun WHERE unae26idresponsable=' . $idTercero . ' AND unae26idzona=0';
+		$sCondi[1] = 'SELECT 1 FROM unae26unidadesfun WHERE (unae26jefe=' . $idTercero . ' OR unae26idresponsable=' . $idTercero . ') AND unae26idzona=0';
 		$sCondi[2] = 'SELECT 1 FROM unae26unidadesfun WHERE unae26idadministrador=' . $idTercero . ' AND unae26idzona=0';
-		$sCondi[3] = 'SELECT 1 FROM unae26unidadesfun WHERE unae26idresponsable=' . $idTercero . ' AND unae26idzona<>0';
+		$sCondi[3] = 'SELECT 1 FROM unae26unidadesfun WHERE (unae26jefe=' . $idTercero . ' OR unae26idresponsable=' . $idTercero . ') AND unae26idzona<>0';
 		$iTotalPerfiles = 3;
 		$sSQL = 'SELECT * FROM gafi00config WHERE gafi00id=1';
 		if ($bDebug) {
@@ -510,8 +546,15 @@ function f107_VerificarPerfiles($idTercero, $idPeriodo, $objDB, $bDebug = false)
 	}
 	//GTR - Tareas y Recursos (Talento Humano)
 	if (true) {
+		$sHoy = fecha_dia();
+		//$sCondiFechas=' AND (STR_TO_DATE(TB.nico06fecha, "%d/%m/%Y")>=STR_TO_DATE("'.$sFecha.'", "%d/%m/%Y"))';
+		/* 
+		AND (STR_TO_DATE(gthu54ifechaingreso, "%d/%m/%Y")<=STR_TO_DATE("' . $sHoy . '", "%d/%m/%Y")) 
+		AND (gthu54ifechafin=0 OR STR_TO_DATE(gthu54ifechafin, "%d/%m/%Y")>STR_TO_DATE(' . $sHoy . ', "%d/%m/%Y"))';
+		*/
 		$sCondi[1] = 'SELECT 1 FROM gthu54hvlaboral 
-		WHERE gthu54idtercero=' . $idTercero . ' AND gthu54funcionario=1 AND gthu54ifechaingreso<=' . $iHoy . ' 
+		WHERE gthu54idtercero=' . $idTercero . ' AND gthu54funcionario=1 
+		AND (gthu54ifechaingreso<=' . $iHoy . ') 
 		AND (gthu54ifechafin=0 OR gthu54ifechafin>' . $iHoy . ')';
 		$iTotalPerfiles = 1;
 		$sSQL = 'SELECT gthu00idperfilfunc FROM gthu00config WHERE gthu00id=1';
@@ -2645,7 +2688,7 @@ function f1708_TotalEstudiantes($idPeriodo, $idCurso, $objDB, $bDebug = false)
 	$iMatricula = 0;
 	$iAplazados = 0;
 	$iCancelados = 0;
-	$aAula = array(0, 0, 0, 0, 0, 0, 0, 0, 0);
+	$aAula = array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
 	$aAula[1] = 0;
 	$sSQL = 'SELECT ofer08id, ofer08estadooferta, ofer08numestudiantes, ofer08numcancelaciones, ofer08numaplazamientos 
 	FROM ofer08oferta 
@@ -5532,41 +5575,23 @@ function f3073_RevisarTabla($sContenedor, $objDB, $bDebug = false)
 {
 	$sError = '';
 	$sDebug = '';
-	$sTabla37='saiu73solusuario_'.$sContenedor;
-	$sSQL = "SELECT saiu73fecharespcaso FROM " . $sTabla37 . " LIMIT 0, 1;";
+	$sTabla73='saiu73solusuario_'.$sContenedor;
+	$sSQL = "SELECT saiu73idtelefono FROM " . $sTabla73 . " LIMIT 0, 1;";
 	$result = $objDB->ejecutasql($sSQL);
 	if ($result == false) {
-		$sSQL = "ALTER TABLE " . $sTabla37 . " 
-		ADD saiu73fecharespcaso INT NULL DEFAULT 0 AFTER saiu73respuesta,
-		ADD saiu73horarespcaso INT NULL DEFAULT 0 AFTER saiu73fecharespcaso,
-		ADD saiu73minrespcaso INT NULL DEFAULT 0 AFTER saiu73horarespcaso,
-		ADD saiu73idunidadcaso INT NULL DEFAULT 0 AFTER saiu73minrespcaso,
-		ADD saiu73idequipocaso INT NULL DEFAULT 0 AFTER saiu73idunidadcaso,
-		ADD saiu73idsupervisorcaso INT NULL DEFAULT 0 AFTER saiu73idequipocaso,
-		ADD saiu73idresponsablecaso INT NULL DEFAULT 0 AFTER saiu73idsupervisorcaso,
-		ADD saiu73numref VARCHAR(37) NULL AFTER saiu73idresponsablecaso,
-		ADD saiu73evalacepta INT NULL DEFAULT 0 AFTER saiu73numref,
-		ADD saiu73evalfecha INT NULL DEFAULT 0 AFTER saiu73evalacepta,
-		ADD saiu73evalamabilidad INT NULL DEFAULT 0 AFTER saiu73evalfecha,
-		ADD saiu73evalamabmotivo TEXT AFTER saiu73evalamabilidad,
-		ADD saiu73evalrapidez INT NULL DEFAULT 0 AFTER saiu73evalamabmotivo,
-		ADD saiu73evalrapidmotivo TEXT AFTER saiu73evalrapidez,
-		ADD saiu73evalclaridad INT NULL DEFAULT 0 AFTER saiu73evalrapidmotivo,
-		ADD saiu73evalcalridmotivo TEXT AFTER saiu73evalclaridad,
-		ADD saiu73evalresolvio INT NULL DEFAULT 0 AFTER saiu73evalcalridmotivo,
-		ADD saiu73evalsugerencias TEXT AFTER saiu73evalresolvio,
-		ADD saiu73evalconocimiento INT NULL DEFAULT 0 AFTER saiu73evalsugerencias,
-		ADD saiu73evalconocmotivo TEXT AFTER saiu73evalconocimiento,
-		ADD saiu73evalutilidad INT NULL DEFAULT 0 AFTER saiu73evalconocmotivo,
-		ADD saiu73evalutilmotivo TEXT AFTER saiu73evalutilidad,
-		ADD saiu73idorigen INT NULL DEFAULT 0 AFTER saiu73detalle,
-		ADD saiu73idarchivo INT NULL DEFAULT 0 AFTER saiu73idorigen,
-		ADD saiu73idorigenrta INT NULL DEFAULT 0 AFTER saiu73respuesta,
-		ADD saiu73idarchivorta INT NULL DEFAULT 0 AFTER saiu73idorigenrta,
-		ADD saiu73fechafin INT NULL DEFAULT 0 AFTER saiu73idarchivo";
+		$sSQL = "ALTER TABLE " . $sTabla73 . " 
+		ADD saiu73idcanal INT NULL DEFAULT 3073,
+		ADD saiu73idtelefono INT NULL DEFAULT 0,
+		ADD saiu73numtelefono VARCHAR(20) NULL,
+		ADD saiu73numorigen VARCHAR(20) NULL,
+		ADD saiu73idchat INT NULL DEFAULT 0,
+		ADD saiu73numsesionchat VARCHAR(20) NULL,
+		ADD saiu73idcorreo INT NULL DEFAULT 0,
+		ADD saiu73idcorreootro VARCHAR(50) NULL,
+		ADD saiu73correoorigen VARCHAR(50) NULL";
 		$result = $objDB->ejecutasql($sSQL);
 		if ($result == false) {
-			$sError = $sError . ' Falla al intentar agregar campos de encuesta';
+			$sError = $sError . ' Falla al intentar agregar campos a la tabla';
 		}
 	}
 	return array($sError, $sDebug);
@@ -5825,7 +5850,10 @@ function f3000_TablasMes($iAgno, $iMes, $objDB, $bDebug = false)
 			saiu73temasolicitud int NULL DEFAULT 0, saiu73idzona int NULL DEFAULT 0, saiu73idcentro int NULL DEFAULT 0, saiu73codpais varchar(3) NULL, saiu73coddepto varchar(5) NULL, saiu73codciudad varchar(8) NULL, 
 			saiu73idescuela int NULL DEFAULT 0, saiu73idprograma int NULL DEFAULT 0, saiu73idperiodo int NULL DEFAULT 0, saiu73idpqrs int NULL DEFAULT 0, saiu73detalle Text NULL, saiu73horafin int NULL DEFAULT 0, 
 			saiu73minutofin int NULL DEFAULT 0, saiu73paramercadeo int NULL DEFAULT 0, saiu73idresponsable int NULL DEFAULT 0, saiu73tiemprespdias int NULL DEFAULT 0, saiu73tiempresphoras int NULL DEFAULT 0, 
-			saiu73tiemprespminutos int NULL DEFAULT 0, saiu73solucion int NULL DEFAULT 0, saiu73idcaso int NULL DEFAULT 0, saiu73respuesta Text NULL)";
+			saiu73tiemprespminutos int NULL DEFAULT 0, saiu73solucion int NULL DEFAULT 0, saiu73idcaso int NULL DEFAULT 0, saiu73respuesta Text NULL, saiu73fecharespcaso INT NULL DEFAULT 0, 
+			saiu73horarespcaso INT NULL DEFAULT 0, saiu73minrespcaso INT NULL DEFAULT 0, saiu73idunidadcaso INT NULL DEFAULT 0, saiu73idequipocaso INT NULL DEFAULT 0, saiu73idsupervisorcaso INT NULL DEFAULT 0, 
+			saiu73idresponsablecaso INT NULL DEFAULT 0, saiu73numref VARCHAR(37) NULL, saiu73idorigen INT NULL DEFAULT 0, saiu73idarchivo INT NULL DEFAULT 0, saiu73idorigenrta INT NULL DEFAULT 0, 
+			saiu73idarchivorta INT NULL DEFAULT 0, saiu73fechafin INT NULL DEFAULT 0)";
 			$bResultado = $objDB->ejecutasql($sSQL);
 			if ($bResultado == false) {
 				$sError = 'No ha sido posible iniciar la creaci&oacute;n de los contenedores para ' . $sTabla . ', Por favor informe al administrador del sistema';

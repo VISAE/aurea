@@ -60,6 +60,15 @@ if (isset($_REQUEST['v4']) == 0) {
 if (isset($_REQUEST['v5']) == 0) {
 	$_REQUEST['v5'] = '';
 }
+if (isset($_REQUEST['v6']) == 0) {
+	$_REQUEST['v6'] = '';
+}
+if (isset($_REQUEST['v7']) == 0) {
+	$_REQUEST['v7'] = '';
+}
+if (isset($_REQUEST['v8']) == 0) {
+	$sError = $sError . $ERR['saiu73idcanal'];
+}
 if ($sError != '') {
 	$bEntra = false;
 }
@@ -80,7 +89,34 @@ if ($bEntra) {
 	$iAgno = $_REQUEST['v3'];
 	$iEstado = $_REQUEST['v4'];
 	$iListar = $_REQUEST['v5'];
-	$sTituloRpt = $sTituloRpt . ' Atencion virtual ' . $iAgno;
+	$iZona = $_REQUEST['v6'];
+	$iCentro = $_REQUEST['v7'];
+	$iCanal = $_REQUEST['v8'];
+	$sCanal = '';
+	$sCanalCorto = '';
+	switch ($iCanal) { 
+		case 3018:
+			$asaiu73solucion=$aSolucion3018;
+			$sCanal = cadena_tildes($ETI['canal' . $iCanal]);
+			$sCanalCorto = cadena_tildes($ETI['canal' . $iCanal . '_corto']);
+			break;
+		case 3019:
+			$asaiu73solucion=$aSolucion3019;
+			$sCanal = cadena_tildes($ETI['canal' . $iCanal]);
+			$sCanalCorto = cadena_tildes($ETI['canal' . $iCanal . '_corto']);
+			break;
+		case 3020:
+			$asaiu73solucion=$aSolucion3020;
+			$sCanal = cadena_tildes($ETI['canal' . $iCanal]);
+			$sCanalCorto = cadena_tildes($ETI['canal' . $iCanal . '_corto']);
+			break;
+		case 3021:
+		case 3073:
+			$sCanal = cadena_tildes($ETI['canal' . $iCanal]);
+			$sCanalCorto = cadena_tildes($ETI['canal' . $iCanal . '_corto']);
+			break;
+	}
+	$sTituloRpt = $sTituloRpt . ' ' . $sCanalCorto . ' ' . $iAgno;
 	if ($sError == '') {
 		$objDB = new clsdbadmin($APP->dbhost, $APP->dbuser, $APP->dbpass, $APP->dbname);
 		if ($APP->dbpuerto != '') {
@@ -106,7 +142,7 @@ if ($bEntra) {
 		$objPHPExcel->getProperties()->setLastModifiedBy($sNombreUsuario . 'http://www.unad.edu.co');
 		$objPHPExcel->getProperties()->setTitle($sTituloRpt);
 		$objPHPExcel->getProperties()->setSubject($sTituloRpt);
-		$objPHPExcel->getProperties()->setDescription('Reporte del Formato de Atencion Virtual ' . $sServerRpt . ' creado en ' . fecha_hoy() . ' ' . formato_horaminuto(fecha_hora(), fecha_minuto()));
+		$objPHPExcel->getProperties()->setDescription('Reporte ' . $sCanal . ' ' . $sServerRpt . ' creado en ' . fecha_hoy() . ' ' . formato_horaminuto(fecha_hora(), fecha_minuto()));
 		$objHoja = $objPHPExcel->getActiveSheet();
 		$objHoja->setTitle($sTituloRpt);
 		$sColTope = 'S';
@@ -117,7 +153,7 @@ if ($bEntra) {
 		PHPExcel_Texto_Tres_Partes($objPHPExcel, $sColTope . '9', ' ', 'Fecha impresión: ', $sFechaImpreso, 'AmOsUn', true, false, 9, 'Calibri', 'AzOsUn');
 		PHPExcel_Alinear_Celda_Derecha($objPHPExcel, $sColTope . '9');
 		//Titulo 
-		$sTituloHoja = cadena_tildes($ETI['titulo']);
+		$sTituloHoja = $sCanal;
 		$objHoja->setCellValueByColumnAndRow(0, 10, $sTituloHoja . ' ' . $iAgno);
 		PHPExcel_Mexclar_Celdas($objPHPExcel, 'A10:' . $sColTope . '11');
 		PHPExcel_Justificar_Celda_HorizontalCentro($objPHPExcel, 'A10');
@@ -192,6 +228,15 @@ if ($bEntra) {
 		if ($iEstado !== '') {
 			$sCondi = $sCondi . ' AND TB.saiu73estado=' . $iEstado . '';
 		}
+		if ($iZona !== '') {
+			$sCondi = $sCondi . ' AND TB.saiu73idzona=' . $iZona . '';
+		}
+		if ($iCentro !== '') {
+			$sCondi = $sCondi . ' AND TB.saiu73idcentro=' . $iCentro . '';
+		}
+		if ($iCanal !== '') {
+			$sCondi = $sCondi . ' AND TB.saiu73idcanal=' . $iCanal . '';
+		}
 		switch ($iListar) {
 			case 1:
 				$sCondi = $sCondi . ' AND TB.saiu73idresponsable=' . $idTercero . '';
@@ -232,8 +277,8 @@ if ($bEntra) {
 		TB.saiu73tiposolicitud, TB.saiu73temasolicitud, TB.saiu73idunidadcaso, TB.saiu73idequipocaso, TB.saiu73idsupervisorcaso, 
 		TB.saiu73idresponsablecaso, TB.saiu73evalfecha, TB.saiu73evalamabilidad, TB.saiu73evalamabmotivo, TB.saiu73evalrapidez,
 		TB.saiu73evalrapidmotivo, TB.saiu73evalclaridad, TB.saiu73evalcalridmotivo, TB.saiu73evalresolvio, TB.saiu73evalsugerencias,
-		TB.saiu73evalconocimiento, TB.saiu73evalconocmotivo, TB.saiu73evalutilidad, TB.saiu73evalutilmotivo,
-		TB.saiu73fechafin, TB.saiu73horafin, TB.saiu73minutofin
+		TB.saiu73evalconocimiento, TB.saiu73evalconocmotivo, TB.saiu73evalutilidad, TB.saiu73evalutilmotivo, TB.saiu73fechafin, 
+		TB.saiu73horafin, TB.saiu73minutofin, TB.saiu73fecharespcaso, TB.saiu73horarespcaso, TB.saiu73minrespcaso
 		FROM saiu73solusuario_' . $iAgno . ' AS TB, unad11terceros AS T11
 		WHERE TB.saiu73idsolicitante=T11.unad11id ' . $sCondi . '';
 		if ($sSQL != '') {
@@ -261,8 +306,8 @@ if ($bEntra) {
 					$saiu73dia = fecha_armar($fila['saiu73dia'], $fila['saiu73mes'], $fila['saiu73agno']);
 					$saiu73hora = html_TablaHoraMin($fila['saiu73hora'], $fila['saiu73minuto']);
 					$i_saiu73estado = $fila['saiu73estado'];
-					$saiu73fechafin = fecha_desdenumero($fila['saiu73fechafin']);
-					$saiu73horafin = html_TablaHoraMin($fila['saiu73horafin'], $fila['saiu73minutofin']);
+					$saiu73fecharespcaso = fecha_desdenumero($fila['saiu73fecharespcaso']);
+					$saiu73horarespcaso = html_TablaHoraMin($fila['saiu73horarespcaso'], $fila['saiu73minrespcaso']);
 					$saiu73evalfecha = fecha_desdenumero($fila['saiu73evalfecha']);
 					if (isset($asaiu73estado[$i_saiu73estado]) == 0) {
 						$sSQL = 'SELECT saiu11nombre FROM saiu11estadosol WHERE saiu11id=' . $i_saiu73estado . '';
@@ -405,8 +450,8 @@ if ($bEntra) {
 					$objHoja->setCellValueByColumnAndRow(1, $iFila, $saiu73dia);
 					$objHoja->setCellValueByColumnAndRow(2, $iFila, $saiu73hora);
 					$objHoja->setCellValueByColumnAndRow(3, $iFila, cadena_decodificar($saiu73estado));
-					$objHoja->setCellValueByColumnAndRow(4, $iFila, $saiu73fechafin);
-					$objHoja->setCellValueByColumnAndRow(5, $iFila, $saiu73horafin);
+					$objHoja->setCellValueByColumnAndRow(4, $iFila, $saiu73fecharespcaso);
+					$objHoja->setCellValueByColumnAndRow(5, $iFila, $saiu73horarespcaso);
 					$objHoja->setCellValueByColumnAndRow(6, $iFila, cadena_decodificar($saiu73solucion));
 					$objHoja->setCellValueByColumnAndRow(7, $iFila, cadena_decodificar($saiu73tiposolicitud));
 					$objHoja->setCellValueByColumnAndRow(8, $iFila, cadena_decodificar($saiu73temasolicitud));
