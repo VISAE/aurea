@@ -54,7 +54,6 @@ function fColor($Color)
 		case 'AzOs':
 			$res = 'FF000080';
 			break;
-
 		case 'AmUn':
 			$res = 'FFC000';
 			break;
@@ -179,10 +178,53 @@ function PHPExcel_Contorno_Tabla($objHoja, $ColumnaIni, $filaIni, $Color = 'Ro',
 	}
 }
 //Escribir en una celda
-function PHPEXCEL_Escribir($objHoja, $iColumna, $iFila, $sValor) {
+function PHPEXCEL_Escribir($objHoja, $iColumna, $iFila, $sValor)
+{
 	$objHoja->setCellValue([$iColumna + 1, $iFila], $sValor);
 }
 
+function PHPEXCEL_EscribirPorcentaje($objHoja, $iColumna, $iFila, $sValor, $iDecimales = 0)
+{
+	$objHoja->setCellValue([$iColumna + 1, $iFila], ($sValor / 100));
+	$sDec = '';
+	for ($i = 1; $i <= $iDecimales; $i++) {
+		$sDec .= '0';
+	}
+	if ($sDec != '') {
+		$sDec = '.' . $sDec;
+	}
+	$objHoja->getStyleByColumnAndRow($iColumna + 1, $iFila)->getNumberFormat()->setFormatCode('0' . $sDec . '%');
+}
+
+function PHPEXCEL_EscribirDecimales($objHoja, $iColumna, $iFila, $sValor, $iDecimales = 1)
+{
+	$sPunto = '';
+	$sDec = '';
+	for ($i = 1; $i <= $iDecimales; $i++) {
+		$sPunto = '.';
+		$sDec .= '0';
+	}
+	$objHoja->setCellValueByColumnAndRow($iColumna + 1, $iFila, $sValor);
+	$formatoNumero = '#,##0.' . $sPunto . $sDec;
+	$objHoja->getStyleByColumnAndRow($iColumna + 1, $iFila)->getNumberFormat()->setFormatCode($formatoNumero);
+}
+function PHPEXCEL_EscribirMoneda($objHoja, $iColumna, $iFila, $sValor, $iDecimales = 0)
+{
+	$sPunto = '';
+	$sDec = '';
+	for ($i = 1; $i <= $iDecimales; $i++) {
+		$sPunto = '.';
+		$sDec .= '0';
+	}
+	$objHoja->setCellValueByColumnAndRow($iColumna + 1, $iFila, $sValor);
+	$formatoNumero = '$ #,##0' . $sPunto . $sDec;
+	$objHoja->getStyleByColumnAndRow($iColumna + 1, $iFila)->getNumberFormat()->setFormatCode($formatoNumero);
+}
+function PHPEXCEL_EscribirTexto($objHoja, $iColumna, $iFila, $sValor)
+{
+	$objHoja->getStyleByColumnAndRow($iColumna + 1, $iFila)->getNumberFormat()->setFormatCode('@');
+	$objHoja->setCellValue([$iColumna + 1, $iFila], $sValor);
+}
 function PHPExcel_Formatear_Celdas_Numero($objHoja, $Rango)
 {
 	//Para revisar
@@ -207,6 +249,14 @@ function PHPExcel_Formato_Fuente_Celda($objHoja, $Celda, $Size, $NombreFuente = 
 function PHPExcel_Justificar_Celda_HorizontalCentro($objHoja, $Celda)
 {
 	$objHoja->getStyle($Celda)->getAlignment()->setHorizontal(\PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_CENTER);
+}
+function PHPExcel_Justificar_Celda_HorizontalIzquierda($objHoja, $Celda)
+{
+	$objHoja->getStyle($Celda)->getAlignment()->setHorizontal(\PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_LEFT);
+}
+function PHPExcel_Justificar_Celda_HorizontalDerecha($objHoja, $Celda)
+{
+	$objHoja->getStyle($Celda)->getAlignment()->setHorizontal(\PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_RIGHT);
 }
 function PHPExcel_Justificar_Celda_VerticalCentro($objHoja, $Celda)
 {

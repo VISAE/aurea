@@ -98,6 +98,7 @@ $ETI['saiu73evalconocmotivo'] = 'Observaciones y sugerencias';
 $ETI['saiu73evalutilidad'] = '¿Como califica la accesibilidad, utilidad e innovaci&oacute;n del Sistema de Atenci&oacute;n Integral&quest;';
 $ETI['saiu73evalutilmotivo'] = 'Observaciones y sugerencias';
 $ETI['saiu73evalcontrtamotivo'] = 'Observaciones y sugerencias';
+$ETI['msg_abrir'] = 'Esta seguro de abrir el registro&quest;\nesto le permite volver a modificar';
 $ETI['msg_cerrar'] = 'Esta seguro de cerrar el registro&quest;\nluego de cerrado no se permite modificar';
 $ETI['msg_alerta_solicitar']='<b>ATENCI&Oacute;N:</b> su solicitud queda radicada &uacute;nicamente hasta que de clic en el bot&oacute;n <span style="background: #014D65; color:#FFF; padding: 0 5px;"> Radicar solicitud </span>';
 $ETI['cerrar_atencion'] = 'Cerrar atenci&oacute;n';
@@ -167,6 +168,8 @@ $ERR['saiu73idresponsablecaso'] = 'Necesita el dato ' . $ETI['saiu73idresponsabl
 
 $ERR['saiu73solucion_proceso']='Debe indicar el resultado del servicio de atenci&oacute;n';
 $ERR['saiu73idresponsablecasofin']='No ha seleccionado un integrante del equipo de trabajo';
+
+$ERR['msgcontenedor']='No ha sido posible acceder al contenedor de datos';
 
 $asaiu73paramercadeo=array('', '');
 $isaiu73paramercadeo=0;
