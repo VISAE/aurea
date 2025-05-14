@@ -154,36 +154,6 @@ list($sGrupoModulo, $sPaginaModulo) = f109_GrupoModulo($iCodModuloConsulta, $iCo
 $sOcultaId = ' style="display:none;"';
 $sTituloApp = $APP->siglasistema; //f101_SiglaModulo($APP->idsistema, $objDB);
 $sTituloModulo = $ETI['titulo_3073'];
-$sCerrar = $ETI['saiu73cerrar'];
-if (isset($_REQUEST['saiu73idcanal'])) {
-	switch ($_REQUEST['saiu73idcanal']) { 
-		case 3018:
-			$sTituloModulo = $ETI['canal3018'];
-			$sCerrar=$ETI['cerrar_atencion'];
-			$asaiu73solucion=$aSolucion3018;
-			$isaiu73solucion=$iSolucion3018;
-			break;
-		case 3019:
-			$sTituloModulo = $ETI['canal3019'];
-			$sCerrar=$ETI['cerrar_atencion'];
-			$asaiu73solucion=$aSolucion3019;
-			$isaiu73solucion=$iSolucion3019;
-			break;
-		case 3020:
-			$sTituloModulo = $ETI['canal3020'];
-			$sCerrar=$ETI['cerrar_atencion'];
-			$asaiu73solucion=$aSolucion3020;
-			$isaiu73solucion=$iSolucion3020;
-			break;
-		case 3021:
-			$sTituloModulo = $ETI['canal3021'];
-			$sCerrar=$ETI['cerrar_atencion'];
-			break;
-	}
-	$ETI['titulo_sector2'] = $sTituloModulo;
-	$ETI['sigla_3073'] = $sTituloModulo;
-	$ETI['saiu73cerrar']=$sCerrar;
-}
 switch ($iPiel) {
 	case 2:
 		$sAnchoExpandeContrae = '';
@@ -731,21 +701,20 @@ if (isset($_REQUEST['vdidcorreo']) == 0) {
 	}
 	$_REQUEST['vdidcorreo'] = $sVr;
 }
-if (isset($_REQUEST['u']) == 0) {
-} else {
+if (isset($_REQUEST['u'])) {
 	$sArgs = url_decode_simple($_REQUEST['u']);
 	$aArgs = explode('|', $sArgs);
-	if (count($aArgs) == 4) {
+	if (count($aArgs) == 2) {
 		$_REQUEST['saiu73agno'] = numeros_validar($aArgs[0]);
 		$_REQUEST['saiu73id'] = numeros_validar($aArgs[1]);
-		$_REQUEST['saiu73idcanal'] = numeros_validar($aArgs[2]);
-		$_REQUEST['paso'] = numeros_validar($aArgs[3]);
+		$_REQUEST['paso'] = 3;
 	}
 }
 $sTabla73 = 'saiu73solusuario_' . $_REQUEST['saiu73agno'];
 $bExiste = $objDB->bexistetabla($sTabla73);
 if (!$bExiste) {
 	$sError = $ERR['msgcontenedor'] . ' ' . $sTabla73 . '';
+	$_REQUEST['paso'] = -1;
 }
 //Si Modifica o Elimina Cargar los campos
 if (($_REQUEST['paso'] == 1) || ($_REQUEST['paso'] == 3)) {
@@ -755,86 +724,82 @@ if (($_REQUEST['paso'] == 1) || ($_REQUEST['paso'] == 3)) {
 	$_REQUEST['saiu73idresponsable_doc'] = '';
 	$_REQUEST['saiu73idresponsablecaso_td'] = $APP->tipo_doc;
 	$_REQUEST['saiu73idresponsablecaso_doc'] = '';
-	if ($sError == '') {
-		if ($_REQUEST['paso'] == 1) {
-			$sSQLcondi = 'saiu73agno=' . $_REQUEST['saiu73agno'] . ' AND saiu73mes=' . $_REQUEST['saiu73mes'] . ' AND saiu73tiporadicado=' . $_REQUEST['saiu73tiporadicado'] . ' AND saiu73consec=' . $_REQUEST['saiu73consec'] . '';
-		} else {
-			$sSQLcondi = 'saiu73id=' . $_REQUEST['saiu73id'] . '';
-		}
-		$sSQL = 'SELECT * FROM ' . $sTabla73 . ' WHERE ' . $sSQLcondi;
-		if ($bDebug) {
-			$sDebug = $sDebug . fecha_microtiempo() . ' Consulta registro: ' . $sSQL . '<br>';
-		}
-		$tabla = $objDB->ejecutasql($sSQL);
-		if ($objDB->nf($tabla) > 0) {
-			$fila = $objDB->sf($tabla);
-			$_REQUEST['saiu73agno'] = $fila['saiu73agno'];
-			$_REQUEST['saiu73mes'] = $fila['saiu73mes'];
-			$_REQUEST['saiu73tiporadicado'] = $fila['saiu73tiporadicado'];
-			$_REQUEST['saiu73consec'] = $fila['saiu73consec'];
-			$_REQUEST['saiu73id'] = $fila['saiu73id'];
-			$_REQUEST['saiu73dia'] = $fila['saiu73dia'];
-			$_REQUEST['saiu73hora'] = $fila['saiu73hora'];
-			$_REQUEST['saiu73minuto'] = $fila['saiu73minuto'];
-			$_REQUEST['saiu73estado'] = $fila['saiu73estado'];
-			$_REQUEST['saiu73estadoorigen'] = $fila['saiu73estado'];
-			$_REQUEST['saiu73idsolicitante'] = $fila['saiu73idsolicitante'];
-			$_REQUEST['saiu73tipointeresado'] = $fila['saiu73tipointeresado'];
-			$_REQUEST['saiu73clasesolicitud'] = $fila['saiu73clasesolicitud'];
-			$_REQUEST['saiu73tiposolicitud'] = $fila['saiu73tiposolicitud'];
-			$_REQUEST['saiu73temasolicitud'] = $fila['saiu73temasolicitud'];
-			$_REQUEST['saiu73temasolicitudorigen'] = $fila['saiu73temasolicitud'];
-			$_REQUEST['saiu73idzona'] = $fila['saiu73idzona'];
-			$_REQUEST['saiu73idcentro'] = $fila['saiu73idcentro'];
-			$_REQUEST['saiu73codpais'] = $fila['saiu73codpais'];
-			$_REQUEST['saiu73coddepto'] = $fila['saiu73coddepto'];
-			$_REQUEST['saiu73codciudad'] = $fila['saiu73codciudad'];
-			$_REQUEST['saiu73idescuela'] = $fila['saiu73idescuela'];
-			$_REQUEST['saiu73idprograma'] = $fila['saiu73idprograma'];
-			$_REQUEST['saiu73idperiodo'] = $fila['saiu73idperiodo'];
-			$_REQUEST['saiu73idpqrs'] = $fila['saiu73idpqrs'];
-			$_REQUEST['saiu73detalle'] = $fila['saiu73detalle'];
-			$_REQUEST['saiu73fechafin'] = $fila['saiu73fechafin'];
-			$_REQUEST['saiu73horafin'] = $fila['saiu73horafin'];
-			$_REQUEST['saiu73minutofin'] = $fila['saiu73minutofin'];
-			$_REQUEST['saiu73paramercadeo'] = $fila['saiu73paramercadeo'];
-			$_REQUEST['saiu73idresponsable'] = $fila['saiu73idresponsable'];
-			$_REQUEST['saiu73tiemprespdias'] = $fila['saiu73tiemprespdias'];
-			$_REQUEST['saiu73tiempresphoras'] = $fila['saiu73tiempresphoras'];
-			$_REQUEST['saiu73tiemprespminutos'] = $fila['saiu73tiemprespminutos'];
-			$_REQUEST['saiu73solucion'] = $fila['saiu73solucion'];
-			$_REQUEST['saiu73idcaso'] = $fila['saiu73idcaso'];
-			$_REQUEST['saiu73respuesta'] = $fila['saiu73respuesta'];
-			$_REQUEST['saiu73idorigen'] = $fila['saiu73idorigen'];
-			$_REQUEST['saiu73idarchivo'] = $fila['saiu73idarchivo'];
-			$_REQUEST['saiu73idorigenrta'] = $fila['saiu73idorigenrta'];
-			$_REQUEST['saiu73idarchivorta'] = $fila['saiu73idarchivorta'];
-			$_REQUEST['saiu73fecharespcaso'] = $fila['saiu73fecharespcaso'];
-			$_REQUEST['saiu73horarespcaso'] = $fila['saiu73horarespcaso'];
-			$_REQUEST['saiu73minrespcaso'] = $fila['saiu73minrespcaso'];
-			$_REQUEST['saiu73idunidadcaso'] = $fila['saiu73idunidadcaso'];
-			$_REQUEST['saiu73idequipocaso'] = $fila['saiu73idequipocaso'];
-			$_REQUEST['saiu73idsupervisorcaso'] = $fila['saiu73idsupervisorcaso'];
-			$_REQUEST['saiu73idresponsablecaso'] = $fila['saiu73idresponsablecaso'];
-			$_REQUEST['saiu73numref'] = $fila['saiu73numref'];
-			$_REQUEST['saiu73idcanal'] = $fila['saiu73idcanal'];
-			$_REQUEST['saiu73idtelefono'] = $fila['saiu73idtelefono'];
-			$_REQUEST['saiu73numtelefono'] = $fila['saiu73numtelefono'];
-			$_REQUEST['saiu73numorigen'] = $fila['saiu73numorigen'];
-			$_REQUEST['saiu73idchat'] = $fila['saiu73idchat'];
-			$_REQUEST['saiu73numsesionchat'] = $fila['saiu73numsesionchat'];
-			$_REQUEST['saiu73idcorreo'] = $fila['saiu73idcorreo'];
-			$_REQUEST['saiu73idcorreootro'] = $fila['saiu73idcorreootro'];
-			$_REQUEST['saiu73correoorigen'] = $fila['saiu73correoorigen'];
-			$bcargo = true;
-			$_REQUEST['paso'] = 2;
-			$_REQUEST['boculta3073'] = 0;
-			$bLimpiaHijos = true;
-		} else {
-			$_REQUEST['paso'] = 0;
-		}
+	if ($_REQUEST['paso'] == 1) {
+		$sSQLcondi = 'saiu73agno=' . $_REQUEST['saiu73agno'] . ' AND saiu73mes=' . $_REQUEST['saiu73mes'] . ' AND saiu73tiporadicado=' . $_REQUEST['saiu73tiporadicado'] . ' AND saiu73consec=' . $_REQUEST['saiu73consec'] . '';
 	} else {
-		$_REQUEST['paso'] = -1;
+		$sSQLcondi = 'saiu73id=' . $_REQUEST['saiu73id'] . '';
+	}
+	$sSQL = 'SELECT * FROM ' . $sTabla73 . ' WHERE ' . $sSQLcondi;
+	if ($bDebug) {
+		$sDebug = $sDebug . fecha_microtiempo() . ' Consulta registro: ' . $sSQL . '<br>';
+	}
+	$tabla = $objDB->ejecutasql($sSQL);
+	if ($objDB->nf($tabla) > 0) {
+		$fila = $objDB->sf($tabla);
+		$_REQUEST['saiu73agno'] = $fila['saiu73agno'];
+		$_REQUEST['saiu73mes'] = $fila['saiu73mes'];
+		$_REQUEST['saiu73tiporadicado'] = $fila['saiu73tiporadicado'];
+		$_REQUEST['saiu73consec'] = $fila['saiu73consec'];
+		$_REQUEST['saiu73id'] = $fila['saiu73id'];
+		$_REQUEST['saiu73dia'] = $fila['saiu73dia'];
+		$_REQUEST['saiu73hora'] = $fila['saiu73hora'];
+		$_REQUEST['saiu73minuto'] = $fila['saiu73minuto'];
+		$_REQUEST['saiu73estado'] = $fila['saiu73estado'];
+		$_REQUEST['saiu73estadoorigen'] = $fila['saiu73estado'];
+		$_REQUEST['saiu73idsolicitante'] = $fila['saiu73idsolicitante'];
+		$_REQUEST['saiu73tipointeresado'] = $fila['saiu73tipointeresado'];
+		$_REQUEST['saiu73clasesolicitud'] = $fila['saiu73clasesolicitud'];
+		$_REQUEST['saiu73tiposolicitud'] = $fila['saiu73tiposolicitud'];
+		$_REQUEST['saiu73temasolicitud'] = $fila['saiu73temasolicitud'];
+		$_REQUEST['saiu73temasolicitudorigen'] = $fila['saiu73temasolicitud'];
+		$_REQUEST['saiu73idzona'] = $fila['saiu73idzona'];
+		$_REQUEST['saiu73idcentro'] = $fila['saiu73idcentro'];
+		$_REQUEST['saiu73codpais'] = $fila['saiu73codpais'];
+		$_REQUEST['saiu73coddepto'] = $fila['saiu73coddepto'];
+		$_REQUEST['saiu73codciudad'] = $fila['saiu73codciudad'];
+		$_REQUEST['saiu73idescuela'] = $fila['saiu73idescuela'];
+		$_REQUEST['saiu73idprograma'] = $fila['saiu73idprograma'];
+		$_REQUEST['saiu73idperiodo'] = $fila['saiu73idperiodo'];
+		$_REQUEST['saiu73idpqrs'] = $fila['saiu73idpqrs'];
+		$_REQUEST['saiu73detalle'] = $fila['saiu73detalle'];
+		$_REQUEST['saiu73fechafin'] = $fila['saiu73fechafin'];
+		$_REQUEST['saiu73horafin'] = $fila['saiu73horafin'];
+		$_REQUEST['saiu73minutofin'] = $fila['saiu73minutofin'];
+		$_REQUEST['saiu73paramercadeo'] = $fila['saiu73paramercadeo'];
+		$_REQUEST['saiu73idresponsable'] = $fila['saiu73idresponsable'];
+		$_REQUEST['saiu73tiemprespdias'] = $fila['saiu73tiemprespdias'];
+		$_REQUEST['saiu73tiempresphoras'] = $fila['saiu73tiempresphoras'];
+		$_REQUEST['saiu73tiemprespminutos'] = $fila['saiu73tiemprespminutos'];
+		$_REQUEST['saiu73solucion'] = $fila['saiu73solucion'];
+		$_REQUEST['saiu73idcaso'] = $fila['saiu73idcaso'];
+		$_REQUEST['saiu73respuesta'] = $fila['saiu73respuesta'];
+		$_REQUEST['saiu73idorigen'] = $fila['saiu73idorigen'];
+		$_REQUEST['saiu73idarchivo'] = $fila['saiu73idarchivo'];
+		$_REQUEST['saiu73idorigenrta'] = $fila['saiu73idorigenrta'];
+		$_REQUEST['saiu73idarchivorta'] = $fila['saiu73idarchivorta'];
+		$_REQUEST['saiu73fecharespcaso'] = $fila['saiu73fecharespcaso'];
+		$_REQUEST['saiu73horarespcaso'] = $fila['saiu73horarespcaso'];
+		$_REQUEST['saiu73minrespcaso'] = $fila['saiu73minrespcaso'];
+		$_REQUEST['saiu73idunidadcaso'] = $fila['saiu73idunidadcaso'];
+		$_REQUEST['saiu73idequipocaso'] = $fila['saiu73idequipocaso'];
+		$_REQUEST['saiu73idsupervisorcaso'] = $fila['saiu73idsupervisorcaso'];
+		$_REQUEST['saiu73idresponsablecaso'] = $fila['saiu73idresponsablecaso'];
+		$_REQUEST['saiu73numref'] = $fila['saiu73numref'];
+		$_REQUEST['saiu73idcanal'] = $fila['saiu73idcanal'];
+		$_REQUEST['saiu73idtelefono'] = $fila['saiu73idtelefono'];
+		$_REQUEST['saiu73numtelefono'] = $fila['saiu73numtelefono'];
+		$_REQUEST['saiu73numorigen'] = $fila['saiu73numorigen'];
+		$_REQUEST['saiu73idchat'] = $fila['saiu73idchat'];
+		$_REQUEST['saiu73numsesionchat'] = $fila['saiu73numsesionchat'];
+		$_REQUEST['saiu73idcorreo'] = $fila['saiu73idcorreo'];
+		$_REQUEST['saiu73idcorreootro'] = $fila['saiu73idcorreootro'];
+		$_REQUEST['saiu73correoorigen'] = $fila['saiu73correoorigen'];
+		$bcargo = true;
+		$_REQUEST['paso'] = 2;
+		$_REQUEST['boculta3073'] = 0;
+		$bLimpiaHijos = true;
+	} else {
+		$_REQUEST['paso'] = 0;
 	}
 }
 //Cerrar
@@ -955,52 +920,50 @@ if ($_REQUEST['paso'] == 13) {
 if ($_REQUEST['paso'] == 26) {
 	$_REQUEST['paso'] = 2;
 	$bMueveScroll = true;
-	$bPermisoSupv = false;
+	$bPuedeReasignar = $seg_1707;
 	if ($idTercero == $_REQUEST['saiu73idsupervisorcaso']) {
-		$bPermisoSupv = true;
+		$bPuedeReasignar = true;
 	}
-	if ($bPermisoSupv || $seg_1707) {
-		if ($sError == '') {
-			$bCambiaLider = false;
-			$saiu73idunidadcaso = $_REQUEST['saiu73idunidadcaso'];
-			$saiu73idequipocaso = $_REQUEST['saiu73idequipocaso'];
-			$saiu73idsupervisorcaso = $_REQUEST['saiu73idsupervisorcaso'];
-			$sSQL = 'SELECT bita27id, bita27idlider, bita27idunidadfunc FROM bita27equipotrabajo WHERE bita27idlider=' . $_REQUEST['saiu73idresponsablecasofin'] . ' AND bita27activo=1 ';
-			$tabla = $objDB->ejecutasql($sSQL);
-			if ($objDB->nf($tabla) > 0) {
-				$fila = $objDB->sf($tabla);
-				$sSQL = 'UPDATE ' . $sTabla73 . ' SET saiu73idunidadcaso=' . $fila['bita27idunidadfunc'] . ', saiu73idequipocaso=' . $fila['bita27id'] . ', 
-				saiu73idsupervisorcaso=' . $fila['bita27idlider'] . ', saiu73idresponsablecaso=' . $_REQUEST['saiu73idresponsablecasofin'] . ' WHERE saiu73id=' . $_REQUEST['saiu73id'] . '';
-				$bCambiaLider = true;
-				$saiu05idunidadresp = $fila['bita27idunidadfunc'];
-				$saiu73idequipocaso = $fila['bita27id'];
-				$saiu73idsupervisorcaso = $fila['bita27idlider'];
-			} else {
-				$sSQL = 'UPDATE ' . $sTabla73 . ' SET saiu73idresponsablecaso=' . $_REQUEST['saiu73idresponsablecasofin'] . ' WHERE saiu73id=' . $_REQUEST['saiu73id'] . '';
+	if ($bPuedeReasignar) {
+		$bCambiaLider = false;
+		$saiu73idunidadcaso = $_REQUEST['saiu73idunidadcaso'];
+		$saiu73idequipocaso = $_REQUEST['saiu73idequipocaso'];
+		$saiu73idsupervisorcaso = $_REQUEST['saiu73idsupervisorcaso'];
+		$sSQL = 'SELECT bita27id, bita27idlider, bita27idunidadfunc FROM bita27equipotrabajo WHERE bita27idlider=' . $_REQUEST['saiu73idresponsablecasofin'] . ' AND bita27activo=1 ';
+		$tabla = $objDB->ejecutasql($sSQL);
+		if ($objDB->nf($tabla) > 0) {
+			$fila = $objDB->sf($tabla);
+			$sSQL = 'UPDATE ' . $sTabla73 . ' SET saiu73idunidadcaso=' . $fila['bita27idunidadfunc'] . ', saiu73idequipocaso=' . $fila['bita27id'] . ', 
+			saiu73idsupervisorcaso=' . $fila['bita27idlider'] . ', saiu73idresponsablecaso=' . $_REQUEST['saiu73idresponsablecasofin'] . ' WHERE saiu73id=' . $_REQUEST['saiu73id'] . '';
+			$bCambiaLider = true;
+			$saiu05idunidadresp = $fila['bita27idunidadfunc'];
+			$saiu73idequipocaso = $fila['bita27id'];
+			$saiu73idsupervisorcaso = $fila['bita27idlider'];
+		} else {
+			$sSQL = 'UPDATE ' . $sTabla73 . ' SET saiu73idresponsablecaso=' . $_REQUEST['saiu73idresponsablecasofin'] . ' WHERE saiu73id=' . $_REQUEST['saiu73id'] . '';
+		}
+		if ($bDebug) {
+			$sDebug = $sDebug . fecha_microtiempo() . ' Consulta reasignación: ' . $sSQL . '<br>';
+		}
+		$result = $objDB->ejecutasql($sSQL);
+		if ($result == false) {
+			$sError = $sError . $ERR['saiu73idresponsablecasofin'] . '';
+		} else {
+			seg_auditar($iCodModulo, $_SESSION['unad_id_tercero'], 3, $_REQUEST['saiu73id'], 'Reasigna el responsable ', $objDB);
+			if ($bCambiaLider) {
+				$_REQUEST['saiu73idunidadcaso'] = $saiu73idunidadcaso;
+				$_REQUEST['saiu73idequipocaso'] = $saiu73idequipocaso;
+				$_REQUEST['saiu73idsupervisorcaso'] = $saiu73idsupervisorcaso;
 			}
-			if ($bDebug) {
-				$sDebug = $sDebug . fecha_microtiempo() . ' Consulta reasignación: ' . $sSQL . '<br>';
-			}
-			$result = $objDB->ejecutasql($sSQL);
-			if ($result == false) {
-				$sError = $sError . $ERR['saiu73idresponsablecasofin'] . '';
-			} else {
-				seg_auditar($iCodModulo, $_SESSION['unad_id_tercero'], 3, $_REQUEST['saiu73id'], 'Reasigna el responsable ', $objDB);
-				if ($bCambiaLider) {
-					$_REQUEST['saiu73idunidadcaso'] = $saiu73idunidadcaso;
-					$_REQUEST['saiu73idequipocaso'] = $saiu73idequipocaso;
-					$_REQUEST['saiu73idsupervisorcaso'] = $saiu73idsupervisorcaso;
-				}
-				$_REQUEST['saiu73idresponsablecaso'] = $_REQUEST['saiu73idresponsablecasofin'];
-				$sError = '<b>Se ha realizado la reasignaci&oacute;n.</b>';
-				$iTipoError = 1;
-				list($sMensaje, $sErrorE, $sDebugE) = f3073_EnviaCorreosAtencion($_REQUEST, $objDB, $bDebug, true);
-				$sError = $sError . $sErrorE;
-				$sDebug = $sDebug . $sDebugE;
-			}
+			$_REQUEST['saiu73idresponsablecaso'] = $_REQUEST['saiu73idresponsablecasofin'];
+			$sError = '<b>Se ha realizado la reasignaci&oacute;n.</b>';
+			$iTipoError = 1;
+			list($sMensaje, $sErrorE, $sDebugE) = f3073_EnviaCorreosAtencion($_REQUEST, $objDB, $bDebug, true);
+			$sError = $sError . $sErrorE;
+			$sDebug = $sDebug . $sDebugE;
 		}
 	} else {
-		$sError = $sError . $ERR['3'] . '';
+		$sError = $sError . $ERR['3'];
 	}
 }
 // Actualiza atiende
@@ -1100,52 +1063,48 @@ $bPuedeEliminar = false;
 $bPuedeGuardar = true;
 $bPuedeCerrar = false;
 $bHayImprimir = false;
-$bEditable = false;
-$bPermisoSupv = false;
-$bPermisoSupv1707 = false;
-$bPermisoResp = false;
-$bPermisoAsignado = false;
+$bEnTramite = false;
+$bPuedeEditar = $seg_1707;
 $bMuestraTiempos = false;
-$bSolucionInmediata = false;
-$bIniciaCaso = false;
 $bResuelto = false;
-$bMuestraResp = false;
+$bMostrarResponsable = false;
 $bEsFAV = false;
+//
+$bEsSupervisor = false;
+//
 $sScriptImprime = 'imprimeexcel()';
 $sClaseImprime = 'iExcel';
 switch ($_REQUEST['saiu73estado']) {
 	case -1: // borrador
-	case  2: // En tramite
-		$bEditable = true;
+	case 2: // En tramite
+		$bEnTramite = true;
 		break;
 	case  1: // Asignado
 		$bPuedeCerrar = true;
 		break;
 }
 if ($idTercero == $_REQUEST['saiu73idsupervisorcaso']) {
-	$bPermisoSupv = true;
+	$bEsSupervisor = true;
 }
 if ($idTercero == $_REQUEST['saiu73idresponsablecaso']) {
-	$bPermisoResp = true;
-}
-if ($bPermisoSupv || $bPermisoResp) {
-	$bPermisoAsignado = true;
+	$bEsSupervisor = true;
 }
 if ($_REQUEST['saiu73idcanal'] == $iCodModulo) {
 	$bEsFAV = true;
 }
 if ($_REQUEST['saiu73solucion'] == 1) {
-	$bSolucionInmediata = true;
+	$bMostrarResponsable = true;
 }
 if ($_REQUEST['saiu73solucion'] == 3) {
-	$bIniciaCaso = true;
+	$bMostrarResponsable = true;
 }
-if ($bSolucionInmediata || $bIniciaCaso) {
-	$bMuestraResp = true;
+if ($bPuedeGuardar && $bEsSupervisor) {
+	$bPuedeEditar = true;
 }
-if ($bPermisoSupv || $seg_1707) {
-	$bPermisoSupv1707 = true;
-}
+// Variables para la forma
+$sTituloModulo = $ETI['canal' . $_REQUEST['saiu73idcanal']];
+$ETI['titulo_sector2'] = $sTituloModulo;
+$ETI['sigla_3073'] = $sTituloModulo;
 //DATOS PARA COMPLETAR EL FORMULARIO
 $iAgno = fecha_agno();
 $sNombreUsuario = '';
@@ -1189,7 +1148,7 @@ if ((int)$_REQUEST['paso'] == 0) {
 			}
 			break;
 		case 1: // Caso asignado
-			if ($bPermisoAsignado) {
+			if ($bEsSupervisor) {
 				$bPuedeCerrar = true;
 			}
 			$bMuestraTiempos = true;
@@ -1226,7 +1185,7 @@ list($saiu73estado_nombre, $sErrorDet) = tabla_campoxid('saiu11estadosol', 'saiu
 $html_saiu73estado = html_oculto('saiu73estado', $_REQUEST['saiu73estado'], $saiu73estado_nombre);
 list($saiu73idsolicitante_rs, $_REQUEST['saiu73idsolicitante'], $_REQUEST['saiu73idsolicitante_td'], $_REQUEST['saiu73idsolicitante_doc']) = html_tercero($_REQUEST['saiu73idsolicitante_td'], $_REQUEST['saiu73idsolicitante_doc'], $_REQUEST['saiu73idsolicitante'], 0, $objDB);
 $bOculto = true;
-if ($bEditable) {
+if ($bEnTramite) {
 	$bOculto = false;
 }
 $html_saiu73idsolicitante = html_DivTerceroV8('saiu73idsolicitante', $_REQUEST['saiu73idsolicitante_td'], $_REQUEST['saiu73idsolicitante_doc'], $bOculto, $objDB, $objCombos, 0, $ETI['ing_doc']);
@@ -1242,43 +1201,37 @@ if ($_REQUEST['saiu73idunidadcaso'] != '') {
 	}
 }
 $html_saiu73idunidadcaso = html_oculto('saiu73idunidadcaso', $_REQUEST['saiu73idunidadcaso'], $saiu73idunidadcaso_nombre);
-$saiu73idequipocaso_nombre = '&nbsp;';
+$saiu73idequipocaso_nombre = '{' . $ETI['msg_sindato'] . '}';
 if ($_REQUEST['saiu73idequipocaso'] != '') {
-	if ((int)$_REQUEST['saiu73idequipocaso'] == 0) {
-		$saiu73idequipocaso_nombre = '{' . $ETI['msg_sindato'] . '}';
-	} else {
+	if ((int)$_REQUEST['saiu73idequipocaso'] != 0) {
 		list($saiu73idequipocaso_nombre, $sErrorDet) = tabla_campoxid('bita27equipotrabajo', 'bita27nombre', 'bita27id', $_REQUEST['saiu73idequipocaso'], '{' . $ETI['msg_sindato'] . '}', $objDB);
 	}
 }
 $html_saiu73idequipocaso = html_oculto('saiu73idequipocaso', $_REQUEST['saiu73idequipocaso'], $saiu73idequipocaso_nombre);
-$saiu73idsupervisorcaso_rs = '&nbsp;';
+$saiu73idsupervisorcaso_rs = '{' . $ETI['msg_sindato'] . '}';
 $sSQL = 'SELECT T11.unad11razonsocial FROM saiu03temasol AS TB, unad11terceros AS T11 WHERE TB.saiu03idliderrespon1=T11.unad11id AND TB.saiu03id = ' . $_REQUEST['saiu73temasolicitud'] . ' AND TB.saiu03idliderrespon1 = ' . $_REQUEST['saiu73idsupervisorcaso'] . '';
 $tabla = $objDB->ejecutasql($sSQL);
 if ($objDB->nf($tabla) > 0) {
 	$fila = $objDB->sf($tabla);
 	$saiu73idsupervisorcaso_rs = $fila['unad11razonsocial'];
-} else {
-	$saiu73idsupervisorcaso_rs = '{' . $ETI['msg_sindato'] . '}';
 }
 list($saiu73idresponsablecaso_rs, $_REQUEST['saiu73idresponsablecaso'], $_REQUEST['saiu73idresponsablecaso_td'], $_REQUEST['saiu73idresponsablecaso_doc']) = html_tercero($_REQUEST['saiu73idresponsablecaso_td'], $_REQUEST['saiu73idresponsablecaso_doc'], $_REQUEST['saiu73idresponsablecaso'], 0, $objDB);
 if ($saiu73idresponsablecaso_rs == '') {
 	$saiu73idresponsablecaso_rs = '{' . $ETI['msg_sindato'] . '}';
 }
-$html_saiu73idresponsablecasocombo = '<b>' . $saiu73idresponsablecaso_rs . '</b>';
-if ($bPuedeGuardar) {
-	if ($bPermisoSupv1707) {
-		$objCombos->nuevo('saiu73idresponsablecasofin', $_REQUEST['saiu73idresponsablecaso'], true, '{' . $ETI['msg_seleccione'] . '}');
-		$sSQL = 'SELECT TB.bita28idtercero AS id, T2.unad11razonsocial AS nombre
-			FROM bita28eqipoparte AS TB, unad11terceros AS T2 
-			WHERE  TB.bita28idequipotrab=' . $_REQUEST['saiu73idequipocaso'] . ' AND TB.bita28idtercero=T2.unad11id AND TB.bita28activo="S"
-			ORDER BY T2.unad11razonsocial';
-		if ($bDebug) {
-			$sDebug = $sDebug . fecha_microtiempo() . ' Lista de responsables: ' . $sSQL . '<br>ID RESPONSABLE: ' . $_REQUEST['saiu73idresponsablecaso'] . '<br>';
-		}
-		$html_saiu73idresponsablecasocombo = $objCombos->html($sSQL, $objDB);
+$html_saiu73idresponsablecaso = '<b>' . $saiu73idresponsablecaso_rs . '</b>';
+if ($bPuedeEditar) {
+	$objCombos->nuevo('saiu73idresponsablecasofin', $_REQUEST['saiu73idresponsablecaso'], true, '{' . $ETI['msg_seleccione'] . '}');
+	$sSQL = 'SELECT TB.bita28idtercero AS id, T2.unad11razonsocial AS nombre
+		FROM bita28eqipoparte AS TB, unad11terceros AS T2 
+		WHERE  TB.bita28idequipotrab=' . $_REQUEST['saiu73idequipocaso'] . ' AND TB.bita28idtercero=T2.unad11id AND TB.bita28activo="S"
+		ORDER BY T2.unad11razonsocial';
+	if ($bDebug) {
+		$sDebug = $sDebug . fecha_microtiempo() . ' Lista de responsables: ' . $sSQL . '<br>ID RESPONSABLE: ' . $_REQUEST['saiu73idresponsablecaso'] . '<br>';
 	}
+	$html_saiu73idresponsablecaso = $objCombos->html($sSQL, $objDB);
 }
-if ($bEditable) {
+if ($bEnTramite) {
 	$objCombos->nuevo('saiu73tipointeresado', $_REQUEST['saiu73tipointeresado'], true, '{' . $ETI['msg_seleccione'] . '}');
 	$sSQL = 'SELECT bita07id AS id, bita07nombre AS nombre FROM bita07tiposolicitante ORDER BY bita07orden, bita07nombre';
 	$html_saiu73tipointeresado = $objCombos->html($sSQL, $objDB);
@@ -1309,7 +1262,22 @@ if ($bEditable) {
 	$objCombos->addItem(1, $ETI['si']);
 	//$objCombos->addArreglo($asaiu73paramercadeo, $isaiu73paramercadeo);
 	$html_saiu73paramercadeo = $objCombos->html('', $objDB);
-	$objCombos->nuevo('saiu73solucion', $_REQUEST['saiu73solucion'], true, $asaiu73solucion[0], 0);
+	//
+	switch ($_REQUEST['saiu73idcanal']) { 
+		case 3018:
+			$asaiu73solucion = $aSolucion3018;
+			$isaiu73solucion = $iSolucion3018;
+			break;
+		case 3019:
+			$asaiu73solucion = $aSolucion3019;
+			$isaiu73solucion = $iSolucion3019;
+			break;
+		case 3020:
+			$asaiu73solucion = $aSolucion3020;
+			$isaiu73solucion = $iSolucion3020;
+			break;
+	}
+	$objCombos->nuevo('saiu73solucion', $_REQUEST['saiu73solucion'], true, '{' . $ETI['msg_seleccione'] . '}');
 	//$objCombos->addItem(1, $ETI['si']);
 	$objCombos->sAccion = 'valida_combo_saiu73solucion();';
 	$objCombos->addArreglo($asaiu73solucion, $isaiu73solucion);
@@ -2011,8 +1979,7 @@ function actualizaratiende() {
 	window.document.frmedita.submit();
 }
 <?php
-if ($bPuedeGuardar) {
-	if ($bPermisoSupv1707) {
+if ($bPuedeEditar) {
 ?>
 	function enviareasignar() {
 		window.document.frmedita.iscroll.value = window.pageYOffset;
@@ -2028,7 +1995,6 @@ if ($bPuedeGuardar) {
 		window.document.frmedita.submit();
 	}
 <?php
-	}
 }
 ?>
 function abrir_tab(evt, sId) {
@@ -2421,10 +2387,9 @@ echo $html_saiu73idcorreo;
 ?>
 </label>
 <?php
+$sEstilo = ' style="display:none;"';
 if ($_REQUEST['saiu73idcorreo'] == 3) {
 	$sEstilo = ' style="display:block;"';
-} else {
-	$sEstilo = ' style="display:none;"';
 }
 ?>
 <label id="lbl_saiu73idcorreootro" <?php echo $sEstilo; ?>>
@@ -2490,18 +2455,18 @@ echo $ETI['saiu73correoorigen'];
 }
 ?>
 <?php
+$sEstiloDiv = ' style="display:none;"';
 if ($_REQUEST['saiu73idsolicitante'] == 0) {
 	$sEstiloDiv = ' style="display:block;"';
-} else {
-	$sEstiloDiv = ' style="display:none;"';
 }
 ?>
 <div id="div_saiu73regsolicitante" class="L" <?php echo $sEstiloDiv; ?>>
-<input id="cmdRegSolicitante" name="cmdRegSolicitante" type="button" value="<?php echo $ETI['saiu73regsolicitante']; ?>" class="BotonAzul200" onclick="window.open('unadpersonas.php', '_blank');" title="<?php echo $ETI['saiu73regsolicitante']; ?>"/>
+<?php
+echo $objForma->htmlBotonSolo('cmdRegSolicitante', 'BotonAzul200', "window.open('unadpersonas.php', '_blank');", $ETI['saiu73regsolicitante'], 130);
+?>
 </div>
 <div class="salto1px"></div>
 </div>
-
 <div class="GrupoCampos520">
 <label class="Label130">
 <?php
@@ -2683,13 +2648,9 @@ echo $html_saiu73idperiodo;
 echo $ETI['saiu73detalle'];
 ?>
 <?php
-$sInactivo='readonly disabled';
-if ($bEditable){
-	$sInactivo='';
-} else {
-?>
-<input name="saiu73detalle" type="hidden" value="<?php echo $_REQUEST['saiu73detalle']; ?>" />
-<?php
+$sInactivo='';
+if (!$bEnTramite){
+	$sInactivo='readonly';
 }
 ?>
 <textarea id="saiu73detalle" name="saiu73detalle" placeholder="<?php echo $ETI['ing_campo'].$ETI['saiu73detalle']; ?>" <?php echo $sInactivo; ?>><?php echo $_REQUEST['saiu73detalle']; ?></textarea>
@@ -2705,33 +2666,27 @@ echo html_lnkarchivo((int)$_REQUEST['saiu73idorigen'], (int)$_REQUEST['saiu73ida
 ?>
 </div>
 <?php
-if ($bPuedeCerrar) {
-?>
-<label class="Label30">
-<input type="button" id="banexasaiu73idarchivo" name="banexasaiu73idarchivo" value="Anexar" class="btAnexarS" onclick="carga_saiu73idarchivo()" title="Cargar archivo" style="display:<?php if ((int)$_REQUEST['saiu73id'] != 0) {
-echo 'block';
-} else {
-echo 'none';
-} ?>;" />
-</label>
-<label class="Label30">
-<input type="button" id="beliminasaiu73idarchivo" name="beliminasaiu73idarchivo" value="Eliminar" class="btBorrarS" onclick="eliminasaiu73idarchivo()" title="Eliminar archivo" style="display:<?php if ((int)$_REQUEST['saiu73idarchivo'] != 0) {
-echo 'block';
-} else {
-echo 'none';
-} ?>;" />
-</label>
-<?php
+if ($bPuedeEliminar) {
+	$sEstiloAnexa = 'style="display:none;"';
+	$sEstiloElimina = 'style="display:none;"';
+	if ((int)$_REQUEST['saiu73id'] != 0) {
+		$sEstiloAnexa = 'style="display:block;"';
+	}
+	if ((int)$_REQUEST['saiu73idarchivo'] != 0) {
+		$sEstiloElimina = 'style="display:block;"';
+	}
+	echo $objForma->htmlBotonSolo('banexasaiu73idarchivo', 'btAnexarS', 'carga_saiu73idarchivo()', 'Cargar archivo', 30, $sEstiloAnexa, 'Anexar');
+	echo $objForma->htmlBotonSolo('beliminasaiu73idarchivo', 'btBorrarS', 'eliminasaiu73idarchivo()', 'Eliminar archivo', 30, $sEstiloElimina, 'Eliminar');
 }
 ?>
 <div class="salto1px"></div>
 </div>
 <div class="salto1px"></div>
 <?php
-if ($_REQUEST['saiu73id']>0) {
-	$sEstilo='display:none;';
-	if ($bMuestraResp) {
-		$sEstilo='display:block;';
+if ($_REQUEST['saiu73id'] > 0) {
+	$sEstilo = 'display:none;';
+	if ($bMostrarResponsable) {
+		$sEstilo = 'display:block;';
 	}
 ?>
 <div id="div_saiu73respuesta" style="<?php echo $sEstilo; ?>">
@@ -2745,7 +2700,7 @@ if ($bResuelto) {
 ?>
 <label class="Label220 ir_derecha">
 <?php
-if ($bSolucionInmediata) {
+if ($bMostrarResponsable) {
 	$saiu73fecharesp = fecha_desdenumero($_REQUEST['saiu73fechafin']);
 	$saiu73horaresp = html_HoraMin('saiu73horafin', $_REQUEST['saiu73horafin'], 'saiu73minutofin', $_REQUEST['saiu73minutofin'], true);
 	echo $saiu73fecharesp . ' ' . $saiu73horaresp;
@@ -2777,22 +2732,16 @@ echo html_lnkarchivo((int)$_REQUEST['saiu73idorigenrta'], (int)$_REQUEST['saiu73
 </div>
 <?php
 if ($bPuedeCerrar) {
-?>
-<label class="Label30">
-<input type="button" id="banexasaiu73idarchivorta" name="banexasaiu73idarchivorta" value="Anexar" class="btAnexarS" onclick="carga_saiu73idarchivorta()" title="Cargar archivo" style="display:<?php if ((int)$_REQUEST['saiu73id'] != 0) {
-echo 'block';
-} else {
-echo 'none';
-} ?>;" />
-</label>
-<label class="Label30">
-<input type="button" id="beliminasaiu73idarchivorta" name="beliminasaiu73idarchivorta" value="Eliminar" class="btBorrarS" onclick="eliminasaiu73idarchivorta()" title="Eliminar archivo" style="display:<?php if ((int)$_REQUEST['saiu73idarchivorta'] != 0) {
-echo 'block';
-} else {
-echo 'none';
-} ?>;" />
-</label>
-<?php
+	$sEstiloAnexa = 'style="display:none;"';
+	$sEstiloElimina = 'style="display:none;"';
+	if ((int)$_REQUEST['saiu73id'] != 0) {
+		$sEstiloAnexa = 'style="display:block;"';
+	}
+	if ((int)$_REQUEST['saiu73idarchivorta'] != 0) {
+		$sEstiloElimina = 'style="display:block;"';
+	}
+	echo $objForma->htmlBotonSolo('banexasaiu73idarchivorta', 'btAnexarS', 'carga_saiu73idarchivorta()', 'Cargar archivo', 30, $sEstiloAnexa, 'Anexar');
+	echo $objForma->htmlBotonSolo('beliminasaiu73idarchivorta', 'btBorrarS', 'eliminasaiu73idarchivorta()', 'Eliminar archivo', 30, $sEstiloElimina, 'Eliminar');
 }
 ?>
 <div class="salto1px"></div>
@@ -2855,7 +2804,7 @@ if ($_REQUEST['saiu73idpqrs']!=0) {
 	$html_saiu73idpqrs_cod=f3000_NumSolicitud($_REQUEST['saiu73agno'], $_REQUEST['saiu73mes'], $_REQUEST['saiu73idpqrs']);
 }
 echo html_oculto('saiu73idpqrs', $_REQUEST['saiu73idpqrs'],$html_saiu73idpqrs_cod);
-if ($_REQUEST['saiu73numref']!='') {
+if ($_REQUEST['saiu73numref'] != '') {
 	echo '<br><b>Ref. de consulta: <a href="saiusolcitudes.php?saiu05origenagno='.$_REQUEST['saiu73agno'].'&saiu05origenmes='.$_REQUEST['saiu73mes'].'&saiu05id='.$_REQUEST['saiu73idpqrs'].'&paso=3" target="_blank">' . $_REQUEST['saiu73numref'] . '</a></b>';
 }
 ?>
@@ -2863,11 +2812,7 @@ if ($_REQUEST['saiu73numref']!='') {
 <div class="salto1px"></div>
 <?php
 if ($bPuedeCerrar){
-?>
-<label class="Label130">
-<input id="cmdTermina" name="cmdTermina" type="button" value="<?php echo $ETI['saiu73resolver']; ?>" class="BotonAzul160" onclick="enviacerrar()" title="<?php echo $ETI['saiu73resolver']; ?>"/>
-</label>
-<?php
+	echo $objForma->htmlBotonSolo('cmdTermina', 'BotonAzul160', 'enviacerrar()', $ETI['saiu73resolver'], 130);
 }
 ?>
 <div class="salto1px"></div>
@@ -2925,7 +2870,7 @@ echo $ETI['saiu73tiemprespdias'].' <b>'.Tiempo_HTML($_REQUEST['saiu73tiemprespdi
 <?php
 // Inicio caja - responsable caso
 $sEstilo = ' style="display:none"';
-if ($bIniciaCaso) {
+if ($bMostrarResponsable) {
 	$sEstilo = ' style="display:block"';
 }
 ?>
@@ -2935,18 +2880,18 @@ if ($bIniciaCaso) {
 echo $ETI['saiu73atiendecaso'];
 ?>
 <?php
-if ($bPuedeGuardar) {
-	if ($bPermisoSupv) {
+if ($bPuedeEditar) {
 ?>
-<div class="ir_derecha" style="width:62px;">
-<input id="bRevAtiende" name="bRevAtiende" type="button" value="<?php echo $ETI['saiu73actatiendecaso']; ?>" class="btMiniActualizar" onclick="actualizaratiende()" title="<?php echo $ETI['saiu73actatiendecaso']; ?>" style="display:<?php if ((int)$_REQUEST['saiu73id'] != 0) {
-echo 'block';
-} else {
-echo 'none';
-} ?>;" />
+<div class="ir_derecha"<?php echo $sAnchoExpandeContrae; ?>>
+<?php
+$sEstiloElimina = 'style="display:none;"';
+if ((int)$_REQUEST['saiu73id'] != 0) {
+    $sEstiloElimina = 'style="display:block;"';
+}
+echo $objForma->htmlBotonSolo('bRevAtiende', 'btMiniActualizar', 'actualizaratiende()', $ETI['saiu73actatiendecaso'], 30, $sEstiloElimina);
+?>
 </div>
 <?php
-	}
 }
 ?>
 </label>
@@ -2954,24 +2899,34 @@ echo 'none';
 <input id="saiu73idsupervisorcaso" name="saiu73idsupervisorcaso" type="hidden" value="<?php echo $_REQUEST['saiu73idsupervisorcaso']; ?>" />
 <input id="saiu73idresponsablecaso" name="saiu73idresponsablecaso" type="hidden" value="<?php echo $_REQUEST['saiu73idresponsablecaso']; ?>" />
 <label class="Label160">
-<?php echo $ETI['saiu73idunidadcaso']; ?>
+<?php 
+echo $ETI['saiu73idunidadcaso'];
+?>
 </label>
 <label class="Label200">
 <b><?php echo $html_saiu73idunidadcaso; ?></b>
 </label>
 <div class="salto1px"></div>
 <label class="Label160">
-<?php echo $ETI['saiu73idequipocaso']; ?>
+<?php 
+echo $ETI['saiu73idequipocaso'];
+?>
 </label>
 <label class="Label200">
-<b><?php echo $html_saiu73idequipocaso; ?></b>
+<b><?php 
+echo $html_saiu73idequipocaso; 
+?></b>
 </label>
 <div class="salto1px"></div>
 <label class="Label160">
-<?php echo $ETI['saiu73idsupervisorcaso']; ?>
+<?php 
+echo $ETI['saiu73idsupervisorcaso']; 
+?>
 </label>
 <label class="Label200">
-<b><?php echo $saiu73idsupervisorcaso_rs; ?></b>
+<b><?php
+echo $saiu73idsupervisorcaso_rs; 
+?></b>
 </label>
 <div class="salto1px"></div>
 <label class="Label160">
@@ -2982,15 +2937,13 @@ echo 'none';
 </label>
 <div class="salto1px"></div>
 <?php
-if ($bPuedeGuardar) {
-	if ($bPermisoSupv) {
+if ($bPuedeEditar) {
 ?>
-<label class="Label160">
-<input id="cmdReasignar" name="cmdReasignar" type="button" class="BotonAzul200" value="<?php echo $ETI['saiu73reasignacaso']; ?>" onclick="expandesector(2);" title="<?php echo $ETI['saiu73reasignacaso']; ?>" />
-</label>
+<?php
+echo $objForma->htmlBotonSolo('cmdReasignar', 'BotonAzul200', "expandesector(2);", $ETI['saiu73reasignacaso'], 130);
+?>
 <div class="salto1px"></div>
 <?php
-	}
 }
 ?>
 </div>
@@ -3159,12 +3112,9 @@ echo '<h2>' . $ETI['titulo_sector2_reasigna'] . '</h2>';
 <div class="areaform">
 <div class="areatrabajo">
 <?php
-if ($bPuedeGuardar) {
-if ($bPermisoSupv1707) {
+$sEstiloDiv = ' style="display:none;"';
+if ($bPuedeEditar) {
 	$sEstiloDiv = ' style="display:block;"';
-} else {
-	$sEstiloDiv = ' style="display:none;"';
-}
 }
 ?>
 <div class="GrupoCampos520" <?php echo $sEstiloDiv; ?>>
@@ -3201,20 +3151,18 @@ echo $ETI['saiu73atiendecaso'];
 <label class="Label200">
 <div id="div_saiu73idresponsablecaso">
 <?php 
-echo $html_saiu73idresponsablecasocombo; 
+echo $html_saiu73idresponsablecaso; 
 ?>
 </div>
 </label>
 <?php
 if ($bPuedeGuardar) {
-if ($bPermisoSupv1707) {
 ?>
 <div class="salto1px"></div>
-<label class="Label160">
-<input id="cmdGuardarR" name="cmdGuardarR" type="button" class="BotonAzul200" value="<?php echo $ETI['guarda_reasigna']; ?>" onclick="enviareasignar();" title="<?php echo $ETI['guarda_reasigna']; ?>" />
-</label>
 <?php
-}
+echo $objForma->htmlBotonSolo('cmdGuardarR', 'BotonAzul200', "enviareasignar();", $ETI['guarda_reasigna'], 130);
+?>
+<?php
 }
 ?>
 <div class="salto1px"></div>
@@ -3403,7 +3351,7 @@ if ($bMueveScroll) {
 document.getElementById("tab_inicial").click();
 $().ready(function(){
 <?php
-if ($bEditable) {
+if ($bEnTramite) {
 ?>
 $("#saiu73idcentro").chosen({width:"100%"});
 $("#saiu73coddepto").chosen({width:"100%"});
@@ -3418,7 +3366,7 @@ $("#saiu73idperiodo").chosen({width:"100%"});
 if (!$bEsFAV) {
 ?>
 <?php
-if ($bEditable){
+if ($bEnTramite){
 ?>
 $("#saiu73tiposolicitud").chosen({width:"100%"});
 <?php
