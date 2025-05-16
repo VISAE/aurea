@@ -13,14 +13,18 @@ define('TONO_VERDE', '');
 define('TONO_ROJO', '');
 
 //$sDirBase = './';
+/*
 $sDirBase = '/var/www/ulib/';
-if (isset($APP->rutacomun) == 0) {
+if (file_exists($sDirBase . 'app.php')) {
 	require $sDirBase . 'app.php';
+} else {
+	$APP = new stdclass();
+	$APP->rutacomun = './';
 }
 if (file_exists($sDirBase . $APP->rutacomun . 'unad_libphp8.php')) {
 	require $sDirBase . $APP->rutacomun . 'unad_libphp8.php';
 }
-
+*/
 function archivo_eliminar($stabla, $scampoid, $scidorigen, $scidarchivo, $vrid, $objDB)
 {
 	$sSQL = 'SELECT ' . $scidorigen . ', ' . $scidarchivo . ' FROM ' . $stabla . ' WHERE ' . $scampoid . '=' . $vrid;
@@ -156,6 +160,43 @@ function cadena_aletoria($iLargo = 8)
 		$sRes = $sRes . substr($sPermitidos, rand(0, 62), 1);
 	}
 	return $sRes;
+}
+// Enero 23 de 2025 - Se hace una nuevar version de la cadena aleatoria.
+function cadena_AleatoriaV2($largo, $incluirMinusculas = true, $caracteresAdicionales = "", $incluirMayusculas = true, $incluirNumeros = true)
+{
+	if ($largo <= 0) {
+		return "";
+	}
+
+	// Construcción del conjunto de caracteres posibles
+	$minusculas = "abcdefghijklmnopqrstuvwxyz";
+	$mayusculas = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+	$numeros = "0123456789";
+
+	$conjuntoCaracteres = "";
+
+	if ($incluirMinusculas) {
+		$conjuntoCaracteres .= $minusculas;
+	}
+	if ($incluirMayusculas) {
+		$conjuntoCaracteres .= $mayusculas;
+	}
+	if ($incluirNumeros) {
+		$conjuntoCaracteres .= $numeros;
+	}
+	$conjuntoCaracteres .= $caracteresAdicionales;
+
+	if (empty($conjuntoCaracteres)) {
+		return "";
+	}
+
+	// Generador aleatorio
+	$cadena = "";
+	for ($i = 0; $i < $largo; $i++) {
+		$cadena .= $conjuntoCaracteres[random_int(0, strlen($conjuntoCaracteres) - 1)];
+	}
+
+	return $cadena;
 }
 // Abril 27 de 2023 - Se ajusta el modelo de codificacion para PHP 8
 function cadena_codificar($sCadena)
@@ -417,7 +458,7 @@ function cadena_LimpiarEspecial($semilla, $adicionales = '', $sComodin = '?')
 }
 function cadena_LimpiarXAJAX($semilla, $adicionales = '', $sComodin = '?')
 {
-	$permitidos = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890._-/*+=()%&$#[]{}@!|,;:" ' . $adicionales;
+	$permitidos = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890._-/*+=()%&$#[]{}@!¿|,;:" ' . $adicionales;
 	$permitidos = $permitidos . 'áéíóúñüÁÉÍÓÚÑÜ';
 	//$permitidos = $permitidos . '°';
 	$cf = '';
@@ -464,16 +505,88 @@ function cadena_notildes($origen, $butf8 = false)
 		}
 	*/
 	$sT = array(
-		'á', 'é', 'í', 'ó', 'ú', 'è', 'ì', 'ò', 'ñ', 'Ñ',
-		'Á', 'É', 'Í', 'Ó', 'Ú', '¿', '¬', '°', 'Â', 'Ç',
-		'©', '¡', 'ª', '­', '–', '™', 'ê', 'ã', 'ç', 'â',
-		'õ', '“', '”', '´', 'ü', 'Ü', '∩', 'π', '^', '’'
+		'á',
+		'é',
+		'í',
+		'ó',
+		'ú',
+		'è',
+		'ì',
+		'ò',
+		'ñ',
+		'Ñ',
+		'Á',
+		'É',
+		'Í',
+		'Ó',
+		'Ú',
+		'¿',
+		'¬',
+		'°',
+		'Â',
+		'Ç',
+		'©',
+		'¡',
+		'ª',
+		'­',
+		'–',
+		'™',
+		'ê',
+		'ã',
+		'ç',
+		'â',
+		'õ',
+		'“',
+		'”',
+		'´',
+		'ü',
+		'Ü',
+		'∩',
+		'π',
+		'^',
+		'’'
 	);
 	$sH = array(
-		'&aacute;', '&eacute;', '&iacute;', '&oacute;', '&uacute;', '&egrave;', '&igrave;', '&ograve;', '&ntilde;', '&Ntilde;',
-		'&Aacute;', '&Eacute;', '&Iacute;', '&Oacute;', '&Uacute;', '&iquest;', '&not;', '&deg;', '&Acirc;', '&Ccedil;',
-		'&copy;', '&iexcl;', '&ordf;', '&shy;', '&ndash;', '&trade;', '&ecirc;', '&atilde;', '&ccedil;', '&acirc;',
-		'&otilde;', '&ldquo;', '&rdquo;', '&acute;', '&uuml;', '&Uuml;', '&cap;', '&pi;', '&#94;', '&#8217;'
+		'&aacute;',
+		'&eacute;',
+		'&iacute;',
+		'&oacute;',
+		'&uacute;',
+		'&egrave;',
+		'&igrave;',
+		'&ograve;',
+		'&ntilde;',
+		'&Ntilde;',
+		'&Aacute;',
+		'&Eacute;',
+		'&Iacute;',
+		'&Oacute;',
+		'&Uacute;',
+		'&iquest;',
+		'&not;',
+		'&deg;',
+		'&Acirc;',
+		'&Ccedil;',
+		'&copy;',
+		'&iexcl;',
+		'&ordf;',
+		'&shy;',
+		'&ndash;',
+		'&trade;',
+		'&ecirc;',
+		'&atilde;',
+		'&ccedil;',
+		'&acirc;',
+		'&otilde;',
+		'&ldquo;',
+		'&rdquo;',
+		'&acute;',
+		'&uuml;',
+		'&Uuml;',
+		'&cap;',
+		'&pi;',
+		'&#94;',
+		'&#8217;'
 	);
 	$iTotal = 39;
 	for ($k = 0; $k <= $iTotal; $k++) {
@@ -489,16 +602,88 @@ function cadena_tildes($origen, $butf8 = false)
 {
 	$nuevo = $origen;
 	$sH = array(
-		'á', 'é', 'í', 'ó', 'ú', 'è', 'ì', 'ò', 'ñ', 'Ñ',
-		'Á', 'É', 'Í', 'Ó', 'Ú', '¿', '¬', '°', 'Â', 'Ç',
-		'©', '¡', 'ª', '­', '–', '™', 'ê', 'ã', 'ç', 'â',
-		'õ', '“', '”', '´', 'ü', 'Ü', '∩', 'π', '^', '€'
+		'á',
+		'é',
+		'í',
+		'ó',
+		'ú',
+		'è',
+		'ì',
+		'ò',
+		'ñ',
+		'Ñ',
+		'Á',
+		'É',
+		'Í',
+		'Ó',
+		'Ú',
+		'¿',
+		'¬',
+		'°',
+		'Â',
+		'Ç',
+		'©',
+		'¡',
+		'ª',
+		'­',
+		'–',
+		'™',
+		'ê',
+		'ã',
+		'ç',
+		'â',
+		'õ',
+		'“',
+		'”',
+		'´',
+		'ü',
+		'Ü',
+		'∩',
+		'π',
+		'^',
+		'€'
 	);
 	$sT = array(
-		'&aacute;', '&eacute;', '&iacute;', '&oacute;', '&uacute;', '&egrave;', '&igrave;', '&ograve;', '&ntilde;', '&Ntilde;',
-		'&Aacute;', '&Eacute;', '&Iacute;', '&Oacute;', '&Uacute;', '&iquest;', '&not;', '&deg;', '&Acirc;', '&Ccedil;',
-		'&copy;', '&iexcl;', '&ordf;', '&shy;', '&ndash;', '&trade;', '&ecirc;', '&atilde;', '&ccedil;', '&acirc;',
-		'&otilde;', '&ldquo;', '&rdquo;', '&acute;', '&uuml;', '&Uuml;', '&cap;', '&pi;', '&#94;', '&euro;'
+		'&aacute;',
+		'&eacute;',
+		'&iacute;',
+		'&oacute;',
+		'&uacute;',
+		'&egrave;',
+		'&igrave;',
+		'&ograve;',
+		'&ntilde;',
+		'&Ntilde;',
+		'&Aacute;',
+		'&Eacute;',
+		'&Iacute;',
+		'&Oacute;',
+		'&Uacute;',
+		'&iquest;',
+		'&not;',
+		'&deg;',
+		'&Acirc;',
+		'&Ccedil;',
+		'&copy;',
+		'&iexcl;',
+		'&ordf;',
+		'&shy;',
+		'&ndash;',
+		'&trade;',
+		'&ecirc;',
+		'&atilde;',
+		'&ccedil;',
+		'&acirc;',
+		'&otilde;',
+		'&ldquo;',
+		'&rdquo;',
+		'&acute;',
+		'&uuml;',
+		'&Uuml;',
+		'&cap;',
+		'&pi;',
+		'&#94;',
+		'&euro;'
 	);
 	$iTotal = 38;
 	for ($k = 0; $k <= $iTotal; $k++) {
@@ -510,10 +695,42 @@ function cadena_NoTildesJS($origen, $butf8 = false)
 {
 	$nuevo = $origen;
 	$sT = array(
-		'á', 'é', 'í', 'ó', 'ú', 'è', 'ì', 'ò', 'ñ', 'Ñ',
-		'Á', 'É', 'Í', 'Ó', 'Ú', '¿', '¬', '°', 'Â', 'Ç',
-		'©', '¡', 'ª', '­', '–', '™', 'ê', 'ã', 'ç', 'â',
-		'õ', '“', '”', '´', 'ü', 'Ü'
+		'á',
+		'é',
+		'í',
+		'ó',
+		'ú',
+		'è',
+		'ì',
+		'ò',
+		'ñ',
+		'Ñ',
+		'Á',
+		'É',
+		'Í',
+		'Ó',
+		'Ú',
+		'¿',
+		'¬',
+		'°',
+		'Â',
+		'Ç',
+		'©',
+		'¡',
+		'ª',
+		'­',
+		'–',
+		'™',
+		'ê',
+		'ã',
+		'ç',
+		'â',
+		'õ',
+		'“',
+		'”',
+		'´',
+		'ü',
+		'Ü'
 	);
 	/*
 \u00e1 = á
@@ -529,10 +746,42 @@ function cadena_NoTildesJS($origen, $butf8 = false)
 \u00f1 = ñ
 \u00d1 = Ñ 	*/
 	$sH = array(
-		'\u00e1', '\u00e9', '\u00ed', '\u00f3', '\u00fa', '&egrave;', '&igrave;', '&ograve;', '\u00f1', '\u00d1',
-		'\u00c1', '\u00c9', '\u00cd', '\u00d3', '\u00da', '&iquest;', '&not;', '&deg;', '&Acirc;', '&Ccedil;',
-		'&copy;', '&iexcl;', '&ordf;', '&shy;', '&ndash;', '&trade;', '&ecirc;', '&atilde;', '&ccedil;', '&acirc;',
-		'&otilde;', '&ldquo;', '&rdquo;', '&acute;', '&uuml;', '&Uuml;'
+		'\u00e1',
+		'\u00e9',
+		'\u00ed',
+		'\u00f3',
+		'\u00fa',
+		'&egrave;',
+		'&igrave;',
+		'&ograve;',
+		'\u00f1',
+		'\u00d1',
+		'\u00c1',
+		'\u00c9',
+		'\u00cd',
+		'\u00d3',
+		'\u00da',
+		'&iquest;',
+		'&not;',
+		'&deg;',
+		'&Acirc;',
+		'&Ccedil;',
+		'&copy;',
+		'&iexcl;',
+		'&ordf;',
+		'&shy;',
+		'&ndash;',
+		'&trade;',
+		'&ecirc;',
+		'&atilde;',
+		'&ccedil;',
+		'&acirc;',
+		'&otilde;',
+		'&ldquo;',
+		'&rdquo;',
+		'&acute;',
+		'&uuml;',
+		'&Uuml;'
 	);
 	$iTotal = 15;
 	for ($k = 0; $k <= $iTotal; $k++) {
@@ -599,7 +848,7 @@ function cadena_ResuelveParaHTML($sBase)
 function cadena_Validar($semilla, $bTolerante = false)
 {
 	$sSignos = '.,;()!¡$=+-_$?¿|°*[]{}~"@:%€' . "'";
-	$permitidos = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890ñáéíóúüÑÁÉÍÓÚÜ ' . $sSignos;
+	$permitidos = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890ñáéíóúüÑÁÉÍÓÚÜ ' . $sSignos . "\r\n";
 	if ($bTolerante) {
 		$permitidos = $permitidos . '-<>/';
 	}
@@ -1290,6 +1539,41 @@ function fecha_MinutoEnNumero()
 {
 	return fecha_MinutoMod();
 }
+function fecha_MinutosEntreFechas($iDiaIni, $iHoraIni, $iMinIni, $iDiaFin, $iHoraFin, $iMinFin)
+{
+	$iDias = 0;
+	$iMinutos = 0;
+	if ($iDiaIni == $iDiaFin) {
+		$iPuntoIni = ($iHoraIni * 60) + $iMinIni;
+		$iPuntoFin = ($iHoraFin * 60) + $iMinFin;
+		$iMinutos = $iPuntoFin - $iPuntoIni;
+	} else {
+		//Dias diferentes
+		$iDias = fecha_DiasEntreFechasDesdeNumero($iDiaIni, $iDiaFin);
+		if ($iDiaIni < $iDiaFin) {
+			// quita un día y Suma los minutos
+			$iDias--;
+			$iPuntoIni = 1440 - (($iHoraIni * 60) + $iMinIni);
+			$iPuntoFin = ($iHoraFin * 60) + $iMinFin;
+			$iMinutos = $iPuntoIni + $iPuntoFin;
+			if ($iMinutos > 1439) {
+				$iDias++;
+				$iMinutos = $iMinutos - 1440;
+			}
+		} else {
+			// Deja el negativo pero suma los minutos
+			$iDias++;
+			$iPuntoIni = 1440 - (($iHoraFin * 60) + $iMinFin);
+			$iPuntoFin = ($iHoraIni * 60) + $iMinIni;
+			$iMinutos = - $iPuntoIni - $iPuntoFin;
+			if ($iMinutos < -1439) {
+				$iDias--;
+				$iMinutos = $iMinutos + 1440;
+			}
+		}
+	}
+	return array($iDias, $iMinutos);
+}
 function fecha_DiaMod()
 {
 	return (date('Y') * 10000) + (date('m') * 100) + date('d');
@@ -1653,6 +1937,19 @@ function html_check($sNombre, $sEtiqueta, $valor, $bMarcado, $accion = '', $sSep
 		$sCheck = ' checked="checked"';
 	}
 	$res = '<input id="' . $sNombre . '" name="' . $sNombre . '" type="checkbox"' . $sCheck . ' value="' . $valor . '"' . $sTemp . ' />' . $sEtiqueta . $sSepara;
+	return $res;
+}
+function html_checkV2($sNombre, $sEtiqueta, $valor, $bMarcado, $accion = '')
+{
+	$sTemp = '';
+	$sCheck = '';
+	if ($accion != '') {
+		$sTemp = ' onChange="' . $accion . '"';
+	}
+	if ($bMarcado != '') {
+		$sCheck = ' checked="checked"';
+	}
+	$res = '<label><input id="' . $sNombre . '" name="' . $sNombre . '" type="checkbox"' . $sCheck . ' value="' . $valor . '"' . $sTemp . ' />' . $sEtiqueta . '</label>';
 	return $res;
 }
 // -- Marzo 19 de 2014 Se agrega opcion de enviar multiples valores "vacio" separados por una barra |
@@ -2081,7 +2378,7 @@ function html_HoraMinV2($sNomCampoHora, $iHora, $sNomCampoMin, $iMin, $bOculto =
 			if (((int)$iHora + (int)$iMin) == 0) {
 				$sVN = '';
 			}
-			$sAdd = $sAdd . '<select class="w-8" id="' . $sNomCampoHora . '_Ciclo" name="' . $sNomCampoHora . '_Ciclo" onchange="javascript:hora_ajusta(\'' . $sNomCampoHora . '\');">';
+			$sAdd = $sAdd . '<select id="' . $sNomCampoHora . '_Ciclo" name="' . $sNomCampoHora . '_Ciclo" onchange="javascript:hora_ajusta(\'' . $sNomCampoHora . '\');">';
 			$sAdd = $sAdd . '<option value="A"' . $sSelA . '>AM</option>';
 			$sAdd = $sAdd . '<option value="P"' . $sSelP . '>PM</option>';
 			$sAdd = $sAdd . '</select>';
@@ -2887,6 +3184,37 @@ function html_Radio($sNombre, $sValor, $sLista, $sEtiquetas, $sAccion = '', $iDe
 	}
 	return $res;
 }
+function html_RadioV2($sNombre, $sValor, $sLista, $sEtiquetas, $sAccion = '', $iDerecha = true)
+{
+	$sRes = '';
+	$sOpciones = explode('|', $sLista);
+	$sEtiquetasControl = explode('|', $sEtiquetas);
+	$iTotal = count($sOpciones);
+	$sEjecuta = '';
+	if ($sAccion != '') {
+		$sEjecuta = ' onclick="' . $sAccion . '"';
+	}
+	for ($p = 0; $p < $iTotal; $p++) {
+		$sEstado = '';
+		$sValorOpcion = $sOpciones[$p];
+		if ($sValorOpcion == $sValor) {
+			$sEstado = ' checked="checked"';
+		}
+		$sMuestra = '';
+		if (isset($sEtiquetasControl[$p]) == 0) {
+			$sMuestra = $sValorOpcion;
+		} else {
+			$sMuestra = $sEtiquetasControl[$p];
+		}
+		$sPrevio = '';
+		if (!$iDerecha) {
+			$sPrevio = $sMuestra;
+			$sMuestra = '';
+		}
+		$sRes = $sRes . $sPrevio . '<label><input id="' . $sNombre . '" name="' . $sNombre . '" type="radio" value="' . $sValorOpcion . '"' . $sEstado . $sEjecuta . ' />' . $sMuestra . '</label>';
+	}
+	return $sRes;
+}
 function html_sino($nombre, $valor, $bvacio = false, $etvacio = '', $vrvacio = '', $accion = '', $etsi = 'Si', $etno = 'No', $vrsi = 'S', $vrno = 'N')
 {
 	$stemp = '';
@@ -3016,7 +3344,7 @@ function html_TablaTiempo($iHora, $iMin, $iSeg, $iMilecimas = 2)
 	return $res;
 }
 //Junio 04 de 2019 - Esta funcion se deprecia, se deberia usar la libreria clsHtmlTercero->Traer
-//Septiembre 9 de 2020 - Se agrega el parametro especial incialmente para incluir necesidades especiales (Seguro esta depreciada??? )
+//Septiembre 9 de 2020 - Se agrega el parametro especial incialmente para incluir necesidades es peciales (Seguro esta depreciada??? )
 function html_tercero($sTipoDoc, $sDoc, $id, $iModelo, $objDB, $iEspecial = 0)
 {
 	$sHTML = '';
@@ -3133,10 +3461,7 @@ function licencia_PuedeSeguir($idTercero, $idSistema, $objDB)
 	$iTipoLicencia = 1001;
 	return array($bContinua, $sError, $iTipoLicencia);
 }
-function licencia_AgregarAccion($idTercero, $idSistema, $objDB)
-{
-
-}
+function licencia_AgregarAccion($idTercero, $idSistema, $objDB) {}
 // Fin del tema de licencia
 function login_activaperfil($idtercero, $idperfil, $sestado, $objDB, $fechalimite = '00/00/0000')
 {
@@ -3291,12 +3616,8 @@ function login_iniciarsesion($objDB, $bDebug = false)
 	}
 	return $sDebug;
 }
-function login_revisa_grupos_v2($idtercero, $objDB)
-{
-}
-function login_validar_v3($std, $sid, $spw, $idsistema, $objDB)
-{
-}
+function login_revisa_grupos_v2($idtercero, $objDB) {}
+function login_validar_v3($std, $sid, $spw, $idsistema, $objDB) {}
 function login_valida_usuario_v3($susuario, $spw, $idsistema, $objDB)
 {
 	$res = '';
@@ -3622,7 +3943,7 @@ function seg_auditaingreso($idmodulo, $idtercero, $objDB)
 {
 	return seg_auditar($idmodulo, $idtercero, 1, 0, '', $objDB);
 }
-function seg_CodigoAnexo($idContenedor, $idArchivo) 
+function seg_CodigoAnexo($idContenedor, $idArchivo)
 {
 	$iCodigo = $idContenedor + ($idArchivo * 2);
 	$sCodigo = strtoupper(substr(md5($iCodigo), 5, 5));
@@ -3791,51 +4112,23 @@ function sesion_actualizar_v2($objDB, $bDebug = false)
 // -- Funciones del sistema
 function sys_traeripreal()
 {
-	if (isset($_SERVER['HTTP_X_FORWARDED_FOR']) == 0) {
-		$_SERVER['HTTP_X_FORWARDED_FOR'] = '';
+	$client_ip = 'sin_ip';
+	// Obtener la IP remota
+	if (!empty($_SERVER['REMOTE_ADDR'])) {
+		$client_ip = $_SERVER['REMOTE_ADDR'];
+	} elseif (!empty($_ENV['REMOTE_ADDR'])) {
+		$client_ip = $_ENV['REMOTE_ADDR'];
 	}
-	if ($_SERVER['HTTP_X_FORWARDED_FOR'] != '') {
-		$client_ip =
-			(!empty($_SERVER['REMOTE_ADDR'])) ?
-			$_SERVER['REMOTE_ADDR']
-			: ((!empty($_ENV['REMOTE_ADDR'])) ?
-				$_ENV['REMOTE_ADDR']
-				:
-				"sin_ip");
-		// los proxys van añadiendo al final de esta cabecera
-		// las direcciones ip que van "ocultando". Para localizar la ip real
-		// del usuario se comienza a mirar por el principio hasta encontrar 
-		// una dirección ip que no sea del rango privado. En caso de no 
-		// encontrarse ninguna se toma como valor el REMOTE_ADDR
-		$entries = preg_split('/[, ]/', $_SERVER['HTTP_X_FORWARDED_FOR']);
-		reset($entries);
-		while (list(, $entry) = each($entries)) {
-			$entry = trim($entry);
-			if (preg_match("/^([0-9]+\.[0-9]+\.[0-9]+\.[0-9]+)/", $entry, $ip_list)) {
-				// http: //www.faqs.org/rfcs/rfc1918.html
-				$private_ip = array(
-					'/^0\./',
-					'/^127\.0\.0\.1/',
-					'/^192\.168\..*/',
-					'/^172\.((1[6-9])|(2[0-9])|(3[0-1]))\..*/',
-					'/^10\..*/'
-				);
-				$found_ip = preg_replace($private_ip, $client_ip, $ip_list[1]);
-				if ($client_ip != $found_ip) {
-					$client_ip = $found_ip;
-					break;
-				}
+	// Verificar si hay una cabecera HTTP_X_FORWARDED_FOR
+	if (!empty($_SERVER['HTTP_X_FORWARDED_FOR'])) {
+		$entries = array_map('trim', explode(',', $_SERVER['HTTP_X_FORWARDED_FOR']));
+		foreach ($entries as $entry) {
+			if (filter_var($entry, FILTER_VALIDATE_IP, FILTER_FLAG_NO_PRIV_RANGE | FILTER_FLAG_NO_RES_RANGE)) {
+				return $entry; // Retornar la primera IP válida no privada
 			}
 		}
-	} else {
-		$client_ip =
-			(!empty($_SERVER['REMOTE_ADDR'])) ?
-			$_SERVER['REMOTE_ADDR']
-			: ((!empty($_ENV['REMOTE_ADDR'])) ?
-				$_ENV['REMOTE_ADDR']
-				:
-				"sin_ip");
 	}
+	// Retornar la IP remota si no se encuentra una válida en HTTP_X_FORWARDED_FOR
 	return $client_ip;
 }
 
@@ -3844,9 +4137,7 @@ function tercero_anexos_cargar($idtercero, $objDB)
 	$id60 = 0;
 	$sSQL60 = '';
 }
-function tercero_historial($idtercero, $sdir, $stel, $smail, $objDB)
-{
-}
+function tercero_historial($idtercero, $sdir, $stel, $smail, $objDB) {}
 
 //FUNCIONES RELATIVAS A TRABAJO CON TABLAS
 // -- Traer un consecutivo
@@ -4081,16 +4372,15 @@ function url_encode($string)
 }
 function url_decode($string)
 {
-	$cad = split('[?]', $string); //separo la url desde el ?
+	$cad = str_split('[?]', $string); //separo la url desde el ?
 	$string = $cad[1]; //capturo la url desde el separador ? en adelante
 	$string = base64_decode($string); //decodifico la cadena
 	$control = 'encrypt#34!!'; //defino la llave con la que fue encriptada la cadena,, cambiarla por la que deseamos usar
 	$string = str_replace($control, '', $string); //quito la llave de la cadena
-
 	//procedo a dejar cada variable en el $_GET
-	$cad_get = split('[&]', $string); //separo la url por &
+	$cad_get = str_split('[&]', $string); //separo la url por &
 	foreach ($cad_get as $value) {
-		$val_get = split('[=]', $value); //asigno los valosres al GET
+		$val_get = str_split('[=]', $value); //asigno los valosres al GET
 		if (isset($val_get[1]) == 0) {
 			$val_get[1] = '';
 		}
@@ -4198,5 +4488,31 @@ function fecha_NumEsDiaHabil($iFecha)
 		$bRes = true;
 	}
 	return $bRes;
+}
+function calcularStepSize($aDatos)
+{
+	if (empty($aDatos)) {
+		return 10; // Valor por defecto en caso de array vacío
+	}
+	$maxValor = max($aDatos);
+	$minValor = min($aDatos);
+	$rango = $maxValor - $minValor;
+	if ($rango == 0) {
+		return 1; // Evita división por cero si todos los valores son iguales
+	}
+	// Definir el stepSize dinámicamente
+	if ($maxValor <= 10) {
+		return 1;
+	} elseif ($maxValor <= 50) {
+		return 5;
+	} elseif ($maxValor <= 100) {
+		return 10;
+	} elseif ($maxValor <= 500) {
+		return 50;
+	} elseif ($maxValor <= 1000) {
+		return 100;
+	} else {
+		return round($maxValor / 10, -1); // Aproxima a la decena más cercana
+	}
 }
 

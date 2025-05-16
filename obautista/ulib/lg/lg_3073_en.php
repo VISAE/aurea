@@ -169,7 +169,7 @@ $ERR['saiu73idresponsablecaso'] = 'Necesita el dato ' . $ETI['saiu73idresponsabl
 $ERR['saiu73solucion_proceso']='Debe indicar el resultado del servicio de atenci&oacute;n';
 $ERR['saiu73idresponsablecasofin']='No ha seleccionado un integrante del equipo de trabajo';
 
-$ERR['msgcontenedor']='No ha sido posible acceder al contenedor de datos';
+$ERR['msg_contenedor']='No ha sido posible acceder al contenedor de datos';
 
 $asaiu73paramercadeo=array('', '');
 $isaiu73paramercadeo=0;

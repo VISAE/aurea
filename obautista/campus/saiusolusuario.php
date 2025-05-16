@@ -655,7 +655,7 @@ if (isset($_REQUEST['saiucanal']) == 0) {
 $sTabla73 = 'saiu73solusuario_' . $_REQUEST['saiu73agno'];
 $bExiste = $objDB->bexistetabla($sTabla73);
 if (!$bExiste) {
-	$sError = $ERR['msgcontenedor'] . ' ' . $sTabla73 . '';
+	$sError = $ERR['msg_contenedor'] . ' ' . $sTabla73 . '';
 	$_REQUEST['paso'] = -1;
 }
 //Si Modifica o Elimina Cargar los campos
@@ -1013,6 +1013,7 @@ if ($seg_1707 == 1) {
 	$objCombos->iAncho = 60;
 	$html_deb_tipodoc = $objCombos->html('', $objDB, 145);
 }
+$iAgnoIni = 2024;
 $iAgnoFin = fecha_agno();
 list($saiu73estado_nombre, $sErrorDet) = tabla_campoxid('saiu11estadosol', 'saiu11nombre', 'saiu11id', $_REQUEST['saiu73estado'], '{' . $ETI['msg_sindato'] . '}', $objDB);
 $html_saiu73estado = html_oculto('saiu73estado', $_REQUEST['saiu73estado'], $saiu73estado_nombre);
@@ -1099,8 +1100,9 @@ $id_rpt = 0;
 //$id_rpt=reportes_id(_Identificador_Tipo_Reporte_, $objDB);
 $objCombos->nuevo('bagno', $_REQUEST['bagno'], false, '{' . $ETI['msg_todos'] . '}');
 $objCombos->sAccion = 'paginarf3073()';
-$objCombos->numeros(2024, $iAgnoFin, 1);
-$html_bagno = $objCombos->html('', $objDB);
+$objCombos->numeros($iAgnoIni, $iAgnoFin, 1);
+$sSQL = '';
+$html_bagno = $objCombos->html($sSQL, $objDB);
 //$html_blistar = $objCombos->comboSistema(3073, 1, $objDB, 'paginarf3073()');
 if (false) {
 	$objCombos->nuevo('csv_separa', $_REQUEST['csv_separa'], false);
@@ -1183,334 +1185,382 @@ switch ($iPiel) {
 ?>
 <link rel="stylesheet" href="<?php echo $APP->rutacomun; ?>css/css_tabs.css" type="text/css" />
 <script language="javascript">
-function expandesector(codigo) {
-	document.getElementById('div_sector1').style.display = 'none';
-	document.getElementById('div_sector2').style.display = 'none';
-	document.getElementById('div_sector93').style.display='none';
-	document.getElementById('div_sector95').style.display = 'none';
-	document.getElementById('div_sector96').style.display = 'none';
-	document.getElementById('div_sector97').style.display='none';
-	document.getElementById('div_sector98').style.display = 'none';
-	document.getElementById('div_sector' + codigo).style.display = 'block';
-<?php
-switch ($iPiel) {
-	case 2:
-?>
-		document.getElementById('botones_sector1').style.display = 'none';
-		document.getElementById('botones_sector97').style.display = 'none';
-		switch (codigo) {
-			case 1:
-				document.getElementById('botones_sector1').style.display = 'flex';
-				break;
+	function expandesector(codigo) {
+		document.getElementById('div_sector1').style.display = 'none';
+		document.getElementById('div_sector2').style.display = 'none';
+		document.getElementById('div_sector93').style.display = 'none';
+		document.getElementById('div_sector95').style.display = 'none';
+		document.getElementById('div_sector96').style.display = 'none';
+		document.getElementById('div_sector97').style.display = 'none';
+		document.getElementById('div_sector98').style.display = 'none';
+		document.getElementById('div_sector' + codigo).style.display = 'block';
+		<?php
+		switch ($iPiel) {
 			case 2:
-				document.getElementById('botones_sector2').style.display = 'flex';
-				break;
-			case 97:
+		?>
 				document.getElementById('botones_sector1').style.display = 'none';
-				document.getElementById('botones_sector' + codigo).style.display = 'flex';
+				document.getElementById('botones_sector97').style.display = 'none';
+				switch (codigo) {
+					case 1:
+						document.getElementById('botones_sector1').style.display = 'flex';
+						break;
+					case 2:
+						document.getElementById('botones_sector2').style.display = 'flex';
+						break;
+					case 97:
+						document.getElementById('botones_sector1').style.display = 'none';
+						document.getElementById('botones_sector' + codigo).style.display = 'flex';
+						break;
+					default:
+						//document.getElementById('botones_sector1').style.display = 'none';
+						break;
+				}
+				if (codigo == 1) {
+					document.getElementById('nav').removeAttribute('disabled');
+				} else {
+					document.getElementById('nav').setAttribute('disabled', '');
+				}
+				<?php
 				break;
 			default:
-				//document.getElementById('botones_sector1').style.display = 'none';
+				if ($bPuedeGuardar && $bBloqueTitulo) {
+				?>
+					let sEst = 'none';
+					if (codigo == 1) {
+						sEst = 'block';
+					}
+					if (window.document.frmedita.saiu73estado.value < 7) {
+						document.getElementById('cmdGuardarf').style.display = sEst;
+					}
+		<?php
+				}
 				break;
 		}
-		if (codigo == 1) {
-			document.getElementById('nav').removeAttribute('disabled');
+		?>
+	}
+
+	function ter_retorna() {
+		let sRetorna = window.document.frmedita.div96v2.value;
+		if (sRetorna != '') {
+			let idcampo = window.document.frmedita.div96campo.value;
+			let illave = window.document.frmedita.div96llave.value;
+			let did = document.getElementById(idcampo);
+			let dtd = document.getElementById(idcampo + '_td');
+			let ddoc = document.getElementById(idcampo + '_doc');
+			dtd.value = window.document.frmedita.div96v1.value;
+			ddoc.value = sRetorna;
+			did.value = window.document.frmedita.div96v3.value;
+			ter_muestra(idcampo, illave);
+		}
+		MensajeAlarmaV2('', 0);
+		retornacontrol();
+	}
+
+	function ter_muestra(idcampo, illave) {
+		let saiu73idsolicitante = 0;
+		let params = new Array();
+		params[1] = document.getElementById(idcampo + '_doc').value;
+		if (params[1] != '') {
+			params[0] = document.getElementById(idcampo + '_td').value;
+			params[2] = idcampo;
+			params[3] = 'div_' + idcampo;
+			if (illave == 1) {
+				params[4] = 'RevisaLlave';
+			}
+			//if (illave==1){params[5]='FuncionCuandoNoEsta';}
+			if (idcampo == 'saiu73idsolicitante') {
+				params[6] = 3073;
+				xajax_unad11_Mostrar_v2SAI(params);
+			} else {
+				xajax_unad11_Mostrar_v2(params);
+			}
 		} else {
-			document.getElementById('nav').setAttribute('disabled', '');
-		}
-<?php
-		break;
-	default:
-		if ($bPuedeGuardar && $bBloqueTitulo) {
-?>
-		let sEst = 'none';
-		if (codigo == 1) {
-			sEst = 'block';
-		}
-		if (window.document.frmedita.saiu73estado.value<7){
-		document.getElementById('cmdGuardarf').style.display = sEst;
-		}
-<?php
-		}
-		break;
-}
-?>
-}
-function ter_retorna(){
-	let sRetorna=window.document.frmedita.div96v2.value;
-	if (sRetorna!=''){
-		let idcampo=window.document.frmedita.div96campo.value;
-		let illave=window.document.frmedita.div96llave.value;
-		let did=document.getElementById(idcampo);
-		let dtd=document.getElementById(idcampo+'_td');
-		let ddoc=document.getElementById(idcampo+'_doc');
-		dtd.value=window.document.frmedita.div96v1.value;
-		ddoc.value=sRetorna;
-		did.value=window.document.frmedita.div96v3.value;
-		ter_muestra(idcampo, illave);
-		}
-	MensajeAlarmaV2('', 0);
-	retornacontrol();
-	}
-function ter_muestra(idcampo, illave){
-	let saiu73idsolicitante=0;
-	let params=new Array();
-	params[1]=document.getElementById(idcampo+'_doc').value;
-	if (params[1]!=''){
-		params[0]=document.getElementById(idcampo+'_td').value;
-		params[2]=idcampo;
-		params[3]='div_'+idcampo;
-		if (illave==1){params[4]='RevisaLlave';}
-		//if (illave==1){params[5]='FuncionCuandoNoEsta';}
-		if (idcampo=='saiu73idsolicitante'){
-			params[6]=3073;
-			xajax_unad11_Mostrar_v2SAI(params);
-		}else{
-			xajax_unad11_Mostrar_v2(params);
-		}
-	}else{
-		document.getElementById(idcampo).value=0;
-		document.getElementById('div_'+idcampo).innerHTML='&nbsp;';
-	}
-}
-function ter_traerxid(idcampo, vrcampo){
-	let params=new Array();
-	params[0]=vrcampo;
-	params[1]=idcampo;
-	if (params[0]!=0){
-		params[6]=3073;
-		xajax_unad11_TraerXidSAI(params);
+			document.getElementById(idcampo).value = 0;
+			document.getElementById('div_' + idcampo).innerHTML = '&nbsp;';
 		}
 	}
-function asignarvariables(){
-	window.document.frmimpp.v0.value = <?php echo $idTercero; ?>;
-	window.document.frmimpp.v3.value = window.document.frmedita.bagno.value;
-	window.document.frmimpp.v4.value = window.document.frmedita.bestado.value;
-	window.document.frmimpp.v5.value = window.document.frmedita.blistar.value;
-	window.document.frmimpp.separa.value = window.document.frmedita.csv_separa.value.trim();
-}
-function RevisaLlave(){
-	let datos= new Array();
-	datos[1]=window.document.frmedita.saiu73agno.value;
-	datos[2]=window.document.frmedita.saiu73mes.value;
-	datos[3]=window.document.frmedita.saiu73tiporadicado.value;
-	datos[4]=window.document.frmedita.saiu73consec.value;
-	if ((datos[1]!='')&&(datos[2]!='')&&(datos[3]!='')&&(datos[4]!='')){
-		xajax_f3073_ExisteDato(datos);
+
+	function ter_traerxid(idcampo, vrcampo) {
+		let params = new Array();
+		params[0] = vrcampo;
+		params[1] = idcampo;
+		if (params[0] != 0) {
+			params[6] = 3073;
+			xajax_unad11_TraerXidSAI(params);
 		}
 	}
-function cargadato(llave1, llave2, llave3, llave4){
-	window.document.frmedita.saiu73agno.value=String(llave1);
-	window.document.frmedita.saiu73mes.value=String(llave2);
-	window.document.frmedita.saiu73tiporadicado.value=String(llave3);
-	window.document.frmedita.saiu73consec.value=String(llave4);
-	window.document.frmedita.paso.value=1;
-	window.document.frmedita.submit();
+
+
+	function asignarvariables() {
+		window.document.frmimpp.v0.value = <?php echo $idTercero; ?>;
+		window.document.frmimpp.v3.value = window.document.frmedita.bagno.value;
+		window.document.frmimpp.v4.value = window.document.frmedita.bestado.value;
+		window.document.frmimpp.v5.value = window.document.frmedita.blistar.value;
+		window.document.frmimpp.separa.value = window.document.frmedita.csv_separa.value.trim();
 	}
-function cargaridf3073(llave1, llave2){
-	window.document.frmedita.saiu73agno.value=String(llave1);
-	window.document.frmedita.saiu73id.value=String(llave2);
-	window.document.frmedita.paso.value=3;
-	window.document.frmedita.submit();
+
+
+
+
+
+	function RevisaLlave() {
+		let datos = new Array();
+		datos[1] = window.document.frmedita.saiu73agno.value;
+		datos[2] = window.document.frmedita.saiu73mes.value;
+		datos[3] = window.document.frmedita.saiu73tiporadicado.value;
+		datos[4] = window.document.frmedita.saiu73consec.value;
+		if ((datos[1] != '') && (datos[2] != '') && (datos[3] != '') && (datos[4] != '')) {
+			xajax_f3073_ExisteDato(datos);
+		}
 	}
-function carga_combo_saiu73tiposolicitud(){
-	let params=new Array();
-	params[0]=window.document.frmedita.saiu73temasolicitud.value;
-	document.getElementById('div_saiu73tiposolicitud').innerHTML='<b>Procesando datos, por favor espere...</b><input id="saiu73tiposolicitud" name="saiu73tiposolicitud" type="hidden" value="" />';
-	document.getElementById('div_saiu73temasolicitud').innerHTML='<b>Procesando datos, por favor espere...</b><input id="saiu73temasolicitud" name="saiu73temasolicitud" type="hidden" value="" />';
-	xajax_f3073_Combosaiu73tiposolicitud(params);
-	}
-function carga_combo_saiu73temasolicitud(){
-	let params=new Array();
-	params[0]=window.document.frmedita.saiu73tiposolicitud.value;
-	document.getElementById('div_saiu73temasolicitud').innerHTML='<b>Procesando datos, por favor espere...</b><input id="saiu73temasolicitud" name="saiu73temasolicitud" type="hidden" value="" />';
-	xajax_f3073_Combosaiu73temasolicitud(params);
-	}
-function carga_combo_saiu73idcentro(){
-	let params=new Array();
-	params[0]=window.document.frmedita.saiu73idzona.value;
-	document.getElementById('div_saiu73idcentro').innerHTML='<b>Procesando datos, por favor espere...</b><input id="saiu73idcentro" name="saiu73idcentro" type="hidden" value="" />';
-	xajax_f3073_Combosaiu73idcentro(params);
-	}
-function carga_combo_saiu73coddepto(){
-	let params=new Array();
-	params[0]=window.document.frmedita.saiu73codpais.value;
-	document.getElementById('div_saiu73coddepto').innerHTML='<b>Procesando datos, por favor espere...</b><input id="saiu73coddepto" name="saiu73coddepto" type="hidden" value="" />';
-	xajax_f3073_Combosaiu73coddepto(params);
-	}
-function carga_combo_saiu73codciudad(){
-	let params=new Array();
-	params[0]=window.document.frmedita.saiu73coddepto.value;
-	document.getElementById('div_saiu73codciudad').innerHTML='<b>Procesando datos, por favor espere...</b><input id="saiu73codciudad" name="saiu73codciudad" type="hidden" value="" />';
-	xajax_f3073_Combosaiu73codciudad(params);
-	}
-function carga_combo_saiu73idprograma(){
-	let params=new Array();
-	params[0]=window.document.frmedita.saiu73idescuela.value;
-	document.getElementById('div_saiu73idprograma').innerHTML='<b>Procesando datos, por favor espere...</b><input id="saiu73idprograma" name="saiu73idprograma" type="hidden" value="" />';
-	xajax_f3073_Combosaiu73idprograma(params);
-	}
-function paginarf3073() {
-	let params = new Array();
-	params[99]=window.document.frmedita.debug.value;
-	params[100]=<?php echo $idTercero; ?>;
-	params[101]=window.document.frmedita.paginaf3073.value;
-	params[102]=window.document.frmedita.lppf3073.value;
-	params[104]=window.document.frmedita.bagno.value;
-	params[110]=window.document.frmedita.bcampus.value;
-	params[113]=window.document.frmedita.saiu73idcanal.value;
-	document.getElementById('div_f3073detalle').innerHTML='<div class="GrupoCamposAyuda"><div class="MarquesinaMedia">Procesando datos, por favor espere.</div></div><input id="paginaf3073" name="paginaf3073" type="hidden" value="'+params[101]+'" /><input id="lppf3073" name="lppf3073" type="hidden" value="'+params[102]+'" />';
-	xajax_f3073_HtmlTabla(params);
-	}
-function enviacerrar(){
-	ModalMensajeV2('<?php echo $ETI['msg_cerrar']; ?>', () => {
-		expandesector(98);
-		window.document.frmedita.paso.value=16;
+
+	function cargadato(llave1, llave2, llave3, llave4) {
+		window.document.frmedita.saiu73agno.value = String(llave1);
+		window.document.frmedita.saiu73mes.value = String(llave2);
+		window.document.frmedita.saiu73tiporadicado.value = String(llave3);
+		window.document.frmedita.saiu73consec.value = String(llave4);
+		window.document.frmedita.paso.value = 1;
 		window.document.frmedita.submit();
-	}, {
-		botonAceptar: 'Cerrar'
-	});
-}
-function siguienteobjeto(){}
-document.onkeydown=function(e){
-	if (document.all){
-		if (event.keyCode==13){event.keyCode=9;}
-		}else{
-		if (e.which==13){siguienteobjeto();}
+	}
+
+	function cargaridf3073(llave1, llave2) {
+		window.document.frmedita.saiu73agno.value = String(llave1);
+		window.document.frmedita.saiu73id.value = String(llave2);
+		window.document.frmedita.paso.value = 3;
+		window.document.frmedita.submit();
+	}
+
+	function carga_combo_saiu73tiposolicitud() {
+		let params = new Array();
+		params[0] = window.document.frmedita.saiu73temasolicitud.value;
+		document.getElementById('div_saiu73tiposolicitud').innerHTML = '<b>Procesando datos, por favor espere...</b><input id="saiu73tiposolicitud" name="saiu73tiposolicitud" type="hidden" value="" />';
+		document.getElementById('div_saiu73temasolicitud').innerHTML = '<b>Procesando datos, por favor espere...</b><input id="saiu73temasolicitud" name="saiu73temasolicitud" type="hidden" value="" />';
+		xajax_f3073_Combosaiu73tiposolicitud(params);
+	}
+
+	function carga_combo_saiu73temasolicitud() {
+		let params = new Array();
+		params[0] = window.document.frmedita.saiu73tiposolicitud.value;
+		document.getElementById('div_saiu73temasolicitud').innerHTML = '<b>Procesando datos, por favor espere...</b><input id="saiu73temasolicitud" name="saiu73temasolicitud" type="hidden" value="" />';
+		xajax_f3073_Combosaiu73temasolicitud(params);
+	}
+
+	function carga_combo_saiu73idcentro() {
+		let params = new Array();
+		params[0] = window.document.frmedita.saiu73idzona.value;
+		document.getElementById('div_saiu73idcentro').innerHTML = '<b>Procesando datos, por favor espere...</b><input id="saiu73idcentro" name="saiu73idcentro" type="hidden" value="" />';
+		xajax_f3073_Combosaiu73idcentro(params);
+	}
+
+	function carga_combo_saiu73coddepto() {
+		let params = new Array();
+		params[0] = window.document.frmedita.saiu73codpais.value;
+		document.getElementById('div_saiu73coddepto').innerHTML = '<b>Procesando datos, por favor espere...</b><input id="saiu73coddepto" name="saiu73coddepto" type="hidden" value="" />';
+		xajax_f3073_Combosaiu73coddepto(params);
+	}
+
+	function carga_combo_saiu73codciudad() {
+		let params = new Array();
+		params[0] = window.document.frmedita.saiu73coddepto.value;
+		document.getElementById('div_saiu73codciudad').innerHTML = '<b>Procesando datos, por favor espere...</b><input id="saiu73codciudad" name="saiu73codciudad" type="hidden" value="" />';
+		xajax_f3073_Combosaiu73codciudad(params);
+	}
+
+	function carga_combo_saiu73idprograma() {
+		let params = new Array();
+		params[0] = window.document.frmedita.saiu73idescuela.value;
+		document.getElementById('div_saiu73idprograma').innerHTML = '<b>Procesando datos, por favor espere...</b><input id="saiu73idprograma" name="saiu73idprograma" type="hidden" value="" />';
+		xajax_f3073_Combosaiu73idprograma(params);
+	}
+
+	function paginarf3073() {
+		let params = new Array();
+		params[99] = window.document.frmedita.debug.value;
+		params[100] = <?php echo $idTercero; ?>;
+		params[101] = window.document.frmedita.paginaf3073.value;
+		params[102] = window.document.frmedita.lppf3073.value;
+		params[104] = window.document.frmedita.bagno.value;
+		params[110]=window.document.frmedita.bcampus.value;
+		params[113] = window.document.frmedita.saiu73idcanal.value;
+		document.getElementById('div_f3073detalle').innerHTML = '<div class="GrupoCamposAyuda"><div class="MarquesinaMedia">Procesando datos, por favor espere.</div></div><input id="paginaf3073" name="paginaf3073" type="hidden" value="' + params[101] + '" /><input id="lppf3073" name="lppf3073" type="hidden" value="' + params[102] + '" />';
+		xajax_f3073_HtmlTabla(params);
+	}
+
+	function enviacerrar() {
+		ModalMensajeV2('<?php echo $ETI['msg_cerrar']; ?>', () => {
+			expandesector(98);
+			window.document.frmedita.paso.value = 16;
+			window.document.frmedita.submit();
+		}, {
+			botonAceptar: 'Cerrar'
+		});
+	}
+
+
+	function siguienteobjeto() {}
+	document.onkeydown = function(e) {
+		if (document.all) {
+			if (event.keyCode == 13) {
+				event.keyCode = 9;
+			}
+		} else {
+			if (e.which == 13) {
+				siguienteobjeto();
+			}
 		}
 	}
-function objinicial(){
-	document.getElementById("saiu73agno").focus();
+
+	function objinicial() {
+		document.getElementById("saiu73agno").focus();
 	}
-function buscarV2016(sCampo){
-	window.document.frmedita.iscroll.value=window.scrollY;
-	expandesector(98);
-	window.document.frmedita.scampobusca.value=sCampo;
-	var params=new Array();
-	params[1]=sCampo;
-	//params[2]=window.document.frmedita.iagno.value;
-	//params[3]=window.document.frmedita.itipo.value;
-	xajax_f3073_Busquedas(params);
+
+	function buscarV2016(sCampo) {
+		window.document.frmedita.iscroll.value = window.scrollY;
+		expandesector(98);
+		window.document.frmedita.scampobusca.value = sCampo;
+		var params = new Array();
+		params[1] = sCampo;
+		//params[2]=window.document.frmedita.iagno.value;
+		//params[3]=window.document.frmedita.itipo.value;
+		xajax_f3073_Busquedas(params);
 	}
-function Devuelve(sValor){
-	let sCampo=window.document.frmedita.scampobusca.value;
-	if (sCampo=='saiu73idsolicitante'){
-		ter_traerxid('saiu73idsolicitante', sValor);
+
+	function Devuelve(sValor) {
+		let sCampo = window.document.frmedita.scampobusca.value;
+		if (sCampo == 'saiu73idsolicitante') {
+			ter_traerxid('saiu73idsolicitante', sValor);
 		}
-	if (sCampo=='saiu73idresponsable'){
-		ter_traerxid('saiu73idresponsable', sValor);
+		if (sCampo == 'saiu73idresponsable') {
+			ter_traerxid('saiu73idresponsable', sValor);
 		}
-	retornacontrol();
+		retornacontrol();
 	}
-function mantener_sesion(){xajax_sesion_mantenerV4();}
-setInterval ('xajax_sesion_abandona_V2();', 60000);
-function AyudaLocal(sCampo){
-	let divAyuda=document.getElementById('div_ayuda_'+sCampo);
-	if (typeof divAyuda==='undefined'){
-		}else{
-		verboton('cmdAyuda_'+sCampo, 'none');
-		var sMensaje='Lo que quiera decir.';
-		//if (sCampo=='sNombreCampo'){sMensaje='Mensaje para otro campo.';}
-		divAyuda.innerHTML=sMensaje;
-		divAyuda.style.display='block';
+
+	function mantener_sesion() {
+		xajax_sesion_mantenerV4();
+	}
+	setInterval('xajax_sesion_abandona_V2();', 60000);
+
+	function AyudaLocal(sCampo) {
+		let divAyuda = document.getElementById('div_ayuda_' + sCampo);
+		if (typeof divAyuda === 'undefined') {} else {
+			verboton('cmdAyuda_' + sCampo, 'none');
+			var sMensaje = 'Lo que quiera decir.';
+			//if (sCampo=='sNombreCampo'){sMensaje='Mensaje para otro campo.';}
+			divAyuda.innerHTML = sMensaje;
+			divAyuda.style.display = 'block';
 		}
 	}
-function cierraDiv96(ref){
-	let sRetorna=window.document.frmedita.div96v2.value;
-	if (ref == '3073') {
-		if (sRetorna != '') {
-			window.document.frmedita.saiu73idorigen.value = window.document.frmedita.div96v1.value;
-			window.document.frmedita.saiu73idarchivo.value = sRetorna;
-			verboton('beliminasaiu73idarchivo', 'block');
+
+	function cierraDiv96(ref) {
+		let sRetorna = window.document.frmedita.div96v2.value;
+		if (ref == '3073') {
+			if (sRetorna != '') {
+				window.document.frmedita.saiu73idorigen.value = window.document.frmedita.div96v1.value;
+				window.document.frmedita.saiu73idarchivo.value = sRetorna;
+				verboton('beliminasaiu73idarchivo', 'block');
+			}
+			archivo_lnk(window.document.frmedita.saiu73idorigen.value, window.document.frmedita.saiu73idarchivo.value, 'div_saiu73idarchivo');
 		}
-		archivo_lnk(window.document.frmedita.saiu73idorigen.value, window.document.frmedita.saiu73idarchivo.value, 'div_saiu73idarchivo');
-	}
-	if (ref == '3073rta') {
-		if (sRetorna != '') {
-			window.document.frmedita.saiu73idorigenrta.value = window.document.frmedita.div96v1.value;
-			window.document.frmedita.saiu73idarchivorta.value = sRetorna;
-			verboton('beliminasaiu73idarchivorta', 'block');
+		if (ref == '3073rta') {
+			if (sRetorna != '') {
+				window.document.frmedita.saiu73idorigenrta.value = window.document.frmedita.div96v1.value;
+				window.document.frmedita.saiu73idarchivorta.value = sRetorna;
+				verboton('beliminasaiu73idarchivorta', 'block');
+			}
+			archivo_lnk(window.document.frmedita.saiu73idorigenrta.value, window.document.frmedita.saiu73idarchivorta.value, 'div_saiu73idarchivorta');
 		}
-		archivo_lnk(window.document.frmedita.saiu73idorigenrta.value, window.document.frmedita.saiu73idarchivorta.value, 'div_saiu73idarchivorta');
+		retornacontrol();
 	}
-	retornacontrol();
+
+	function mod_consec() {
+		ModalConfirm('<?php echo $ETI['msg_confirmamodconsec']; ?>');
+		ModalDialogConfirm(function(confirm) {
+			if (confirm) {
+				ejecuta_modconsec();
+			}
+		});
 	}
-function mod_consec(){
-	ModalConfirm('<?php echo $ETI['msg_confirmamodconsec']; ?>');
-	ModalDialogConfirm(function(confirm){if(confirm){ejecuta_modconsec();}});
+
+	function ejecuta_modconsec() {
+		MensajeAlarmaV2('<?php echo $ETI['msg_ejecutando']; ?>', 2);
+		expandesector(98);
+		window.document.frmedita.paso.value = 93;
+		window.document.frmedita.submit();
 	}
-function ejecuta_modconsec(){
-	MensajeAlarmaV2('<?php echo $ETI['msg_ejecutando']; ?>', 2);
-	expandesector(98);
-	window.document.frmedita.paso.value=93;
-	window.document.frmedita.submit();
+
+		function limpia_saiu73idarchivo() {
+			window.document.frmedita.saiu73idorigen.value = 0;
+			window.document.frmedita.saiu73idarchivo.value = 0;
+			let da_Archivo = document.getElementById('div_saiu73idarchivo');
+			da_Archivo.innerHTML = '&nbsp;';
+			verboton('beliminasaiu73idarchivo', 'none');
+			//paginarf0000();
+		}
+
+		function carga_saiu73idarchivo() {
+			window.document.frmedita.iscroll.value = window.pageYOffset;
+			window.document.frmedita.div96v1.value = '';
+			window.document.frmedita.div96v2.value = '';
+			window.document.frmedita.div96v3.value = '';
+			let saiu73id = window.document.frmedita.saiu73id.value;
+			let agno = window.document.frmedita.saiu73agno.value;
+			document.getElementById('div_96titulo').innerHTML = '<h2>' + window.document.frmedita.titulo_3073.value + ' - Cargar archivo detalle</h2>';
+			document.getElementById('div_96cuerpo').innerHTML = '<iframe id="iframe96" src="framearchivodis.php?ref=3073&id=' + saiu73id + '&tabla=_' + agno + '&tipo=0" height="400px" width="100%" frameborder="0"></iframe>';
+			expandesector(96);
+			window.scrollTo(0, 150);
+		}
+
+		function eliminasaiu73idarchivo() {
+			let did = window.document.frmedita.saiu73id;
+			let agno = window.document.frmedita.saiu73agno.value;
+			if (confirm("Esta seguro de eliminar el archivo?")) {
+				xajax_elimina_archivo_saiu73idarchivo(did.value, agno);
+				//paginarf0000();
+			}
+		}
+
+		function limpia_saiu73idarchivorta() {
+			window.document.frmedita.saiu73idorigenrta.value = 0;
+			window.document.frmedita.saiu73idarchivorta.value = 0;
+			let da_Archivo = document.getElementById('div_saiu73idarchivorta');
+			da_Archivo.innerHTML = '&nbsp;';
+			verboton('beliminasaiu73idarchivorta', 'none');
+			//paginarf0000();
+		}
+
+		function carga_saiu73idarchivorta() {
+			window.document.frmedita.iscroll.value = window.pageYOffset;
+			window.document.frmedita.div96v1.value = '';
+			window.document.frmedita.div96v2.value = '';
+			window.document.frmedita.div96v3.value = '';
+			let saiu73id = window.document.frmedita.saiu73id.value;
+			let agno = window.document.frmedita.saiu73agno.value;
+			document.getElementById('div_96titulo').innerHTML = '<h2>' + window.document.frmedita.titulo_3073.value + ' - Cargar archivo respuesta</h2>';
+			document.getElementById('div_96cuerpo').innerHTML = '<iframe id="iframe96" src="framearchivodis.php?ref=3073rta&id=' + saiu73id + '&tabla=_' + agno + '&tipo=0" height="400px" width="100%" frameborder="0"></iframe>';
+			expandesector(96);
+			window.scrollTo(0, 150);
+		}
+
+		function eliminasaiu73idarchivorta() {
+			let did = window.document.frmedita.saiu73id;
+			let agno = window.document.frmedita.saiu73agno.value;
+			if (confirm("Esta seguro de eliminar el archivo?")) {
+				xajax_elimina_archivo_saiu73idarchivorta(did.value, agno);
+				//paginarf0000();
+			}
+		}
+
+	function carga_combo_btema() {
+		let params = new Array();
+		params[0] = window.document.frmedita.bcategoria.value;
+		document.getElementById('div_btema').innerHTML = '<b>Procesando datos, por favor espere...</b><input id="btema" name="btema" type="hidden" value="" />';
+		xajax_f3073_Combobtema(params);
 	}
-function limpia_saiu73idarchivo(){
-	window.document.frmedita.saiu73idorigen.value=0;
-	window.document.frmedita.saiu73idarchivo.value=0;
-	let da_Archivo=document.getElementById('div_saiu73idarchivo');
-	da_Archivo.innerHTML='&nbsp;';
-	verboton('beliminasaiu73idarchivo','none');
-	//paginarf0000();
-}
-function carga_saiu73idarchivo(){
-	window.document.frmedita.iscroll.value=window.pageYOffset;
-	window.document.frmedita.div96v1.value='';
-	window.document.frmedita.div96v2.value='';
-	window.document.frmedita.div96v3.value='';
-	let saiu73id=window.document.frmedita.saiu73id.value;
-	let agno=window.document.frmedita.saiu73agno.value;
-	document.getElementById('div_96titulo').innerHTML='<h2>'+window.document.frmedita.titulo_3073.value+' - Cargar archivo detalle</h2>';
-	document.getElementById('div_96cuerpo').innerHTML='<iframe id="iframe96" src="framearchivodis.php?ref=3073&id='+saiu73id+'&tabla=_'+agno+'&tipo=0" height="400px" width="100%" frameborder="0"></iframe>';
-	expandesector(96);
-	window.scrollTo(0, 150);
-}
-function eliminasaiu73idarchivo(){
-	let did=window.document.frmedita.saiu73id;
-	let agno=window.document.frmedita.saiu73agno.value;
-	if (confirm("Esta seguro de eliminar el archivo?")){
-		xajax_elimina_archivo_saiu73idarchivo(did.value, agno);
-		//paginarf0000();
+	function volver() {
+		window.document.frmvolver.action = 'sai.php';
+		window.document.frmvolver.submit();
 	}
-}
-function limpia_saiu73idarchivorta(){
-	window.document.frmedita.saiu73idorigenrta.value=0;
-	window.document.frmedita.saiu73idarchivorta.value=0;
-	let da_Archivo=document.getElementById('div_saiu73idarchivorta');
-	da_Archivo.innerHTML='&nbsp;';
-	verboton('beliminasaiu73idarchivorta','none');
-	//paginarf0000();
-}
-function carga_saiu73idarchivorta(){
-	window.document.frmedita.iscroll.value=window.pageYOffset;
-	window.document.frmedita.div96v1.value='';
-	window.document.frmedita.div96v2.value='';
-	window.document.frmedita.div96v3.value='';
-	let saiu73id=window.document.frmedita.saiu73id.value;
-	let agno=window.document.frmedita.saiu73agno.value;
-	document.getElementById('div_96titulo').innerHTML='<h2>'+window.document.frmedita.titulo_3073.value+' - Cargar archivo respuesta</h2>';
-	document.getElementById('div_96cuerpo').innerHTML='<iframe id="iframe96" src="framearchivodis.php?ref=3073rta&id='+saiu73id+'&tabla=_'+agno+'&tipo=0" height="400px" width="100%" frameborder="0"></iframe>';
-	expandesector(96);
-	window.scrollTo(0, 150);
-}
-function eliminasaiu73idarchivorta(){
-	let did=window.document.frmedita.saiu73id;
-	let agno=window.document.frmedita.saiu73agno.value;
-	if (confirm("Esta seguro de eliminar el archivo?")){
-		xajax_elimina_archivo_saiu73idarchivorta(did.value, agno);
-		//paginarf0000();
-	}
-}
-function carga_combo_btema() {
-	let params = new Array();
-	params[0] = window.document.frmedita.bcategoria.value;
-	document.getElementById('div_btema').innerHTML = '<b>Procesando datos, por favor espere...</b><input id="btema" name="btema" type="hidden" value="" />';
-	xajax_f3073_Combobtema(params);
-}
-function volver() {
-	window.document.frmvolver.action = 'sai.php';
-	window.document.frmvolver.submit();
-}
 </script>
 <form id="frmimpp" name="frmimpp" method="post" action="p3073.php" target="_blank" style="display:none;">
 <input id="r" name="r" type="hidden" value="3073" />
@@ -1906,8 +1956,10 @@ echo $saiu73fecharespcaso . ' ' . $saiu73horarespcaso;
 ?>
 </label>
 <?php
-$sInactivo='readonly disabled';
-if ($bPuedeCerrar){$sInactivo='';}
+$sInactivo = '';
+if (!$bPuedeCerrar) {
+	$sInactivo = 'readonly disabled';
+}
 ?>
 <textarea id="saiu73respuesta" name="saiu73respuesta" placeholder="<?php echo $ETI['ing_campo'].$ETI['saiu73respuesta']; ?>" <?php echo $sInactivo; ?>><?php echo $_REQUEST['saiu73respuesta']; ?></textarea>
 </label>

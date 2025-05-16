@@ -5,6 +5,7 @@
 --- Modelo Versión 2.29.6 lunes, 31 de julio de 2023
 --- 3073 saiu73solusuario
 */
+
 /** Archivo lib3073.php.
  * Libreria 3073 saiu73solusuario.
  * @author Omar Augusto Bautista Mora - omar.bautista@unad.edu.co
@@ -18,17 +19,17 @@ function f3073_HTMLComboV2_saiu73agno($objDB, $objCombos, $valor)
 		$mensajes_todas = $APP->rutacomun . 'lg/lg_todas_es.php';
 	}
 	require $mensajes_todas;
-	$objCombos->nuevo('saiu73agno', $valor, false, '{'.$ETI['msg_seleccione'].'}');
+	$objCombos->nuevo('saiu73agno', $valor, false, '{' . $ETI['msg_seleccione'] . '}');
 	//$objCombos->iAncho = 450;
 	$objCombos->sAccion = 'RevisaLlave();';
-	$sSQL='SHOW TABLES LIKE "saiu73solusuario%"';
+	$sSQL = 'SHOW TABLES LIKE "saiu73solusuario%"';
 	//if ($bDebug){$sDebug=$sDebug.fecha_microtiempo().' Total Periodo: Lista de contenedores: '.$sSQL.'<br>';}
-	$tablac=$objDB->ejecutasql($sSQL);
-	while($filac = $objDB->sf($tablac)) {
+	$tablac = $objDB->ejecutasql($sSQL);
+	while ($filac = $objDB->sf($tablac)) {
 		$sAgno = substr($filac[0], 17);
 		$objCombos->addItem($sAgno, $sAgno);
 	}
-	$res=$objCombos->html('', $objDB);
+	$res = $objCombos->html('', $objDB);
 	return $res;
 }
 function f3073_HTMLComboV2_saiu73mes($objDB, $objCombos, $valor)
@@ -50,7 +51,7 @@ function f3073_HTMLComboV2_saiu73tiporadicado($objDB, $objCombos, $valor)
 		$mensajes_todas = $APP->rutacomun . 'lg/lg_todas_es.php';
 	}
 	require $mensajes_todas;
-	$objCombos->nuevo('saiu73tiporadicado', $valor, false, '{'.$ETI['msg_seleccione'].'}');
+	$objCombos->nuevo('saiu73tiporadicado', $valor, false, '{' . $ETI['msg_seleccione'] . '}');
 	//$objCombos->iAncho = 450;
 	$objCombos->sAccion = 'RevisaLlave();';
 	$sSQL = 'SELECT saiu16id AS id, saiu16nombre AS nombre FROM saiu16tiporadicado WHERE saiu16id IN (1, 3) ORDER BY saiu16nombre';
@@ -65,8 +66,8 @@ function f3073_HTMLComboV2_saiu73tiposolicitud($objDB, $objCombos, $valor)
 		$mensajes_todas = $APP->rutacomun . 'lg/lg_todas_es.php';
 	}
 	require $mensajes_todas;
-	$objCombos->nuevo('saiu73tiposolicitud', $valor, true, '{'.$ETI['msg_seleccione'].'}');
-	$objCombos->sAccion='carga_combo_saiu73temasolicitud();';
+	$objCombos->nuevo('saiu73tiposolicitud', $valor, true, '{' . $ETI['msg_seleccione'] . '}');
+	$objCombos->sAccion = 'carga_combo_saiu73temasolicitud();';
 	//$objCombos->iAncho=450;
 	$sSQL = 'SELECT TB.saiu02id AS id, CONCAT(TB.saiu02titulo, " [", T1.saiu01titulo, "]") AS nombre 
 	FROM saiu02tiposol AS TB, saiu01claseser AS T1 
@@ -83,12 +84,12 @@ function f3073_HTMLComboV2_saiu73temasolicitud($objDB, $objCombos, $valor, $vrsa
 		$mensajes_todas = $APP->rutacomun . 'lg/lg_todas_es.php';
 	}
 	require $mensajes_todas;
-	$vrsaiu73tiposolicitud=numeros_validar($vrsaiu73tiposolicitud);
-	$objCombos->nuevo('saiu73temasolicitud', $valor, true, '{'.$ETI['msg_seleccione'].'}');
+	$vrsaiu73tiposolicitud = numeros_validar($vrsaiu73tiposolicitud);
+	$objCombos->nuevo('saiu73temasolicitud', $valor, true, '{' . $ETI['msg_seleccione'] . '}');
 	//$objCombos->iAncho = 450;
 	$sSQL = '';
 	if ((int)$vrsaiu73tiposolicitud == 0) {
-		$objCombos->sAccion='carga_combo_saiu73tiposolicitud()';
+		$objCombos->sAccion = 'carga_combo_saiu73tiposolicitud()';
 		$sSQL = 'SELECT TB.saiu03id AS id, CONCAT(TB.saiu03titulo, " [", T2.saiu02titulo, "]") AS nombre 
 		FROM saiu03temasol AS TB, saiu02tiposol AS T2 
 		WHERE TB.saiu03id>0 AND TB.saiu03ordenllamada<9 AND TB.saiu03tiposol=T2.saiu02id
@@ -96,7 +97,7 @@ function f3073_HTMLComboV2_saiu73temasolicitud($objDB, $objCombos, $valor, $vrsa
 	} else {
 		$sSQL = 'SELECT saiu03id AS id, saiu03titulo AS nombre 
 		FROM saiu03temasol 
-		WHERE saiu03id>0 AND saiu03ordenllamada<9 AND saiu03tiposol='.$vrsaiu73tiposolicitud.'
+		WHERE saiu03id>0 AND saiu03ordenllamada<9 AND saiu03tiposol=' . $vrsaiu73tiposolicitud . '
 		ORDER BY saiu03ordenllamada, saiu03titulo';
 	}
 	$res = $objCombos->html($sSQL, $objDB);
@@ -181,7 +182,7 @@ function f3073_Combosaiu73tiposolicitud($aParametros)
 	$objCombos = new clsHtmlCombos();
 	$idTema = numeros_validar($aParametros[0]);
 	$idTipo = 0;
-	$sSQL = 'SELECT saiu03tiposol FROM saiu03temasol WHERE saiu03id='.$idTema.'';
+	$sSQL = 'SELECT saiu03tiposol FROM saiu03temasol WHERE saiu03id=' . $idTema . '';
 	$tabla = $objDB->ejecutasql($sSQL);
 	if ($objDB->nf($tabla) > 0) {
 		$fila = $objDB->sf($tabla);
@@ -189,7 +190,7 @@ function f3073_Combosaiu73tiposolicitud($aParametros)
 		$html_saiu73tiposolicitud = f3073_HTMLComboV2_saiu73tiposolicitud($objDB, $objCombos, $idTipo);
 		$html_saiu73temasolicitud = f3073_HTMLComboV2_saiu73temasolicitud($objDB, $objCombos, $idTema, $idTipo);
 		$objDB->CerrarConexion();
-		$objResponse=new xajaxResponse();
+		$objResponse = new xajaxResponse();
 		$objResponse->assign('div_saiu73tiposolicitud', 'innerHTML', $html_saiu73tiposolicitud);
 		$objResponse->assign('div_saiu73temasolicitud', 'innerHTML', $html_saiu73temasolicitud);
 		$objResponse->call('$("#saiu73tiposolicitud").chosen()');
@@ -230,17 +231,17 @@ function f3073_HTMLComboV2_saiu73idprograma($objDB, $objCombos, $valor, $vrsaiu7
 	$objCombos->nuevo('saiu73idprograma', $valor, true, '{' . $ETI['msg_seleccione'] . '}');
 	$objCombos->addItem('0', $ETI['msg_na']);
 	//$objCombos->iAncho = 450;
-	$sCondiEscuela = ' AND TB.core09idescuela="'.$vrsaiu73idescuela.'"';
+	$sCondiEscuela = ' AND TB.core09idescuela="' . $vrsaiu73idescuela . '"';
 	$sTabla2 = '';
 	$sCampos2 = '';
-	if ($vrsaiu73idescuela == ''){
+	if ($vrsaiu73idescuela == '') {
 		$sCondiEscuela = ' AND TB.core09idescuela=T12.core12id';
 		$sTabla2 = ', core12escuela AS T12';
 		$sCampos2 = ', " [", T12.core12sigla, "]"';
 	}
 	$sSQL = 'SELECT TB.core09id AS id, CONCAT(TB.core09nombre, " [", TB.core09codigo, "]"' . $sCampos2 . ') AS nombre 
 	FROM core09programa AS TB' . $sTabla2 . ' 
-	WHERE TB.core09id>0'.$sCondiEscuela;
+	WHERE TB.core09id>0' . $sCondiEscuela;
 	$res = $objCombos->html($sSQL, $objDB);
 	return $res;
 }
@@ -442,7 +443,7 @@ function f3073_Busquedas($aParametros)
 	}
 	$mensajes_3073 = $APP->rutacomun . 'lg/lg_3073_' . $_SESSION['unad_idioma'] . '.php';
 	if (!file_exists($mensajes_3073)) {
-		$mensajes_3073 = $APP->rutacomun.'lg/lg_3073_es.php';
+		$mensajes_3073 = $APP->rutacomun . 'lg/lg_3073_es.php';
 	}
 	require $mensajes_todas;
 	require $mensajes_3073;
@@ -589,20 +590,20 @@ function f3073_TablaDetalleV2($aParametros, $objDB, $bDebug = false)
 	$sBotones = $sBotones . '<input id="lppf3073" name="lppf3073" type="hidden" value="' . $lineastabla . '"/>';
 	switch ($iCanal) {
 		case 3018:
-		$asaiu73solucion=$aSolucion3018;
-		break;
+			$asaiu73solucion = $aSolucion3018;
+			break;
 		case 3019:
-		$asaiu73solucion=$aSolucion3019;
-		break;
+			$asaiu73solucion = $aSolucion3019;
+			break;
 		case 3020:
-		$asaiu73solucion=$aSolucion3020;
-		break;
+			$asaiu73solucion = $aSolucion3020;
+			break;
 		case 3021:
 		case 3073:
-		break;
+			break;
 		default:
-		$sLeyenda = $ERR['saiu73idcanal'] . '<br>';
-		break;
+			$sLeyenda = $ERR['saiu73idcanal'] . '<br>';
+			break;
 	}
 	//Verificamos que exista la tabla.
 	list($sErrorR, $sDebugR) = f3073_RevTabla_saiu73solusuario($iAgno, $objDB);
@@ -656,39 +657,39 @@ function f3073_TablaDetalleV2($aParametros, $objDB, $bDebug = false)
 	}
 	switch ($bListar) {
 		case 1:
-		$sSQLadd=$sSQLadd.' AND TB.saiu73idresponsable=' . $idTercero. '';		
-		break;
+			$sSQLadd = $sSQLadd . ' AND TB.saiu73idresponsable=' . $idTercero . '';
+			break;
 		case 2:
-		$sSQLadd=$sSQLadd.' AND TB.saiu73idresponsablecaso=' . $idTercero. '';		
-		break;
+			$sSQLadd = $sSQLadd . ' AND TB.saiu73idresponsablecaso=' . $idTercero . '';
+			break;
 		case 3:
-		$aEquipos = array();
-		$sEquipos = '';
-		$sSQL = 'SELECT bita27id FROM bita27equipotrabajo WHERE bita27activo=1 AND bita27idlider=' . $idTercero . '';
-		$tabla = $objDB->ejecutasql($sSQL);
-		if ($objDB->nf($tabla) > 0) {
-			while ($fila = $objDB->sf($tabla)) {
-				$aEquipos[] = $fila['bita27id'];
-			}
-		} else {
-			$sSQL = 'SELECT bita28idequipotrab FROM bita28eqipoparte WHERE bita28activo="S" AND bita28idtercero=' . $idTercero . '';
+			$aEquipos = array();
+			$sEquipos = '';
+			$sSQL = 'SELECT bita27id FROM bita27equipotrabajo WHERE bita27activo=1 AND bita27idlider=' . $idTercero . '';
 			$tabla = $objDB->ejecutasql($sSQL);
 			if ($objDB->nf($tabla) > 0) {
 				while ($fila = $objDB->sf($tabla)) {
-					$aEquipos[] = $fila['bita28idequipotrab'];
+					$aEquipos[] = $fila['bita27id'];
+				}
+			} else {
+				$sSQL = 'SELECT bita28idequipotrab FROM bita28eqipoparte WHERE bita28activo="S" AND bita28idtercero=' . $idTercero . '';
+				$tabla = $objDB->ejecutasql($sSQL);
+				if ($objDB->nf($tabla) > 0) {
+					while ($fila = $objDB->sf($tabla)) {
+						$aEquipos[] = $fila['bita28idequipotrab'];
+					}
 				}
 			}
-		}
-		$sEquipos = implode(',', $aEquipos);
-		if ($sEquipos != '') {
-			$sSQLadd = $sSQLadd . ' AND TB.saiu73idequipocaso IN (' . $sEquipos . ')';
-		} else {
-			$sSQLadd = $sSQLadd . ' AND TB.saiu73idresponsablecaso=' . $idTercero . '';
-		}
-		if ($bDebug) {
-			$sDebug = $sDebug . fecha_microtiempo() . ' Lider o Colaborador: ' . $sSQL . '<br>';
-		}
-		break;
+			$sEquipos = implode(',', $aEquipos);
+			if ($sEquipos != '') {
+				$sSQLadd = $sSQLadd . ' AND TB.saiu73idequipocaso IN (' . $sEquipos . ')';
+			} else {
+				$sSQLadd = $sSQLadd . ' AND TB.saiu73idresponsablecaso=' . $idTercero . '';
+			}
+			if ($bDebug) {
+				$sDebug = $sDebug . fecha_microtiempo() . ' Lider o Colaborador: ' . $sSQL . '<br>';
+			}
+			break;
 	}
 	if ($sNombre != '') {
 		$sBase = mb_strtoupper($sNombre);
@@ -702,7 +703,7 @@ function f3073_TablaDetalleV2($aParametros, $objDB, $bDebug = false)
 	}
 	if ($bdoc != '') {
 		$sSQLadd = $sSQLadd . ' AND T11.unad11doc LIKE "%' . $bdoc . '%"';
-	}	
+	}
 	if ($bcategoria != '') {
 		$sSQLadd = $sSQLadd . ' AND TB.saiu73tiposolicitud=' . $bcategoria . '';
 	}
@@ -719,7 +720,7 @@ function f3073_TablaDetalleV2($aParametros, $objDB, $bDebug = false)
 	}
 	if ($bcead !== '') {
 		$sSQLadd = $sSQLadd . ' AND TB.saiu73idcentro=' . $bcead . '';
-	}	
+	}
 	// ------------------------------------------------
 	// Fin de las condiciones de la consulta
 	// ------------------------------------------------
@@ -835,37 +836,37 @@ function f3073_TablaDetalleV2($aParametros, $objDB, $bDebug = false)
 			$et_saiu73idsolicitante_nombre = $sPrefijo . cadena_notildes($filadet['C12_nombre']) . $sSufijo;
 		}
 		$et_saiu73estado = '';
-		if (isset($aEstado[$filadet['saiu73estado']])==0) {
+		if (isset($aEstado[$filadet['saiu73estado']]) == 0) {
 			$et_saiu73estado = $ETI['definir'];
 		} else {
 			$et_saiu73estado = $sPrefijo . cadena_notildes($aEstado[$filadet['saiu73estado']]) . $sSufijo;
 		}
 		$et_saiu73tiposolicitud = '';
-		if (isset($aCategoria[$filadet['saiu73tiposolicitud']])==0) {
+		if (isset($aCategoria[$filadet['saiu73tiposolicitud']]) == 0) {
 			$et_saiu73tiposolicitud = $ETI['definir'];
 		} else {
 			$et_saiu73tiposolicitud = $sPrefijo . cadena_notildes($aCategoria[$filadet['saiu73tiposolicitud']]) . $sSufijo;
 		}
 		$et_saiu73temasolicitud = '';
-		if (isset($aTema[$filadet['saiu73temasolicitud']])==0) {
+		if (isset($aTema[$filadet['saiu73temasolicitud']]) == 0) {
 			$et_saiu73temasolicitud = $ETI['definir'];
 		} else {
 			$et_saiu73temasolicitud = $sPrefijo . cadena_notildes($aTema[$filadet['saiu73temasolicitud']]) . $sSufijo;
 		}
 		$et_saiu73solucion = '';
-		if (isset($asaiu73solucion[$filadet['saiu73solucion']])==0) {
+		if (isset($asaiu73solucion[$filadet['saiu73solucion']]) == 0) {
 			$et_saiu73solucion = $ETI['definir'];
 		} else {
 			$et_saiu73solucion = $sPrefijo . cadena_notildes($asaiu73solucion[$filadet['saiu73solucion']]) . $sSufijo;
 		}
 		$et_saiu73idzona = '';
-		if (isset($aZona[$filadet['saiu73idzona']])==0) {
+		if (isset($aZona[$filadet['saiu73idzona']]) == 0) {
 			$et_saiu73idzona = $ETI['definir'];
 		} else {
 			$et_saiu73idzona = $sPrefijo . cadena_notildes($aZona[$filadet['saiu73idzona']]) . $sSufijo;
 		}
 		$et_saiu73idcentro = '';
-		if (isset($aCead[$filadet['saiu73idcentro']])==0) {
+		if (isset($aCead[$filadet['saiu73idcentro']]) == 0) {
 			$et_saiu73idcentro = $ETI['definir'];
 		} else {
 			$et_saiu73idcentro = $sPrefijo . cadena_notildes($aCead[$filadet['saiu73idcentro']]) . $sSufijo;
@@ -1149,7 +1150,7 @@ function f3073_db_GuardarV2($DATA, $objDB, $bDebug = false, $idTercero = 0, $iCo
 		$DATA['saiu73idchat'] = 0;
 	}
 	if (isset($DATA['saiu73idcorreo']) == 0) {
-		$DATA['saiu73idcorreo']=0;
+		$DATA['saiu73idcorreo'] = 0;
 	}
 	// -- Se inicia validando todas las posibles entradas de usuario.
 	$DATA['saiu73agno'] = numeros_validar($DATA['saiu73agno']);
@@ -1207,13 +1208,13 @@ function f3073_db_GuardarV2($DATA, $objDB, $bDebug = false, $idTercero = 0, $iCo
 	$DATA['saiu73idcorreootro'] = cadena_Validar(trim($DATA['saiu73idcorreootro']));
 	$DATA['saiu73correoorigen'] = cadena_Validar(trim($DATA['saiu73correoorigen']));
 	// -- Se inicializan las variables que puedan pasar vacias {Especialmente números}.
-	if ($DATA['saiu73estado'] == ''){
+	if ($DATA['saiu73estado'] == '') {
 		$DATA['saiu73estado'] = -1;
 	}
-	if ($DATA['saiu73estadoorigen'] == ''){
+	if ($DATA['saiu73estadoorigen'] == '') {
 		$DATA['saiu73estadoorigen'] = -1;
 	}
-	if ($DATA['saiu73idpqrs'] == ''){
+	if ($DATA['saiu73idpqrs'] == '') {
 		$DATA['saiu73idpqrs'] = 0;
 	}
 	// -- Seccion para validar los posibles causales de error.
@@ -2368,7 +2369,7 @@ function f3073_ConsultaResponsable($saiu73temasolicitud, $objDB, $bDebug = false
 		'saiu73tiemprespdias' => 0,
 		'saiu73tiempresphoras' => 0
 	);
-	if ($saiu73temasolicitud == '') {
+	if ($saiu73temasolicitud == 0) {
 		$sError = $ERR['saiu73temasolicitud'] . $sSepara . $sError;
 	}
 	if ($sError == '') {
@@ -2393,104 +2394,51 @@ function f3073_ConsultaResponsable($saiu73temasolicitud, $objDB, $bDebug = false
 	}
 	return array($aParametros, $sError, $iTipoError, $sDebug);
 }
-function f3073_ActualizarAtiende($saiu73id, $saiu73agno, $objDB, $bDebug = false, $idTercero)
+function f3073_ActualizaAtiendeSolicitud($saiu73id, $iAgno, $objDB, $bDebug = false)
 {
 	require './app.php';
-	$mensajes_todas = $APP->rutacomun . 'lg/lg_todas_' . $_SESSION['unad_idioma'] . '.php';
-	if (!file_exists($mensajes_todas)) {
-		$mensajes_todas = $APP->rutacomun . 'lg/lg_todas_es.php';
-	}
 	$mensajes_3073 = $APP->rutacomun . 'lg/lg_3073_' . $_SESSION['unad_idioma'] . '.php';
 	if (!file_exists($mensajes_3073)) {
 		$mensajes_3073 = $APP->rutacomun . 'lg/lg_3073_es.php';
 	}
-	require $mensajes_todas;
 	require $mensajes_3073;
-	$iCodModulo = 3073;
-	$saiu73id = numeros_validar($saiu73id);
-	$saiu73agno = numeros_validar($saiu73agno);
-	$sTabla21 = 'saiu73solusuario_' . $saiu73agno;
-	$sResultado = '';
 	$sError = '';
 	$sDebug = '';
-	$sSepara = ', ';
-	$iTipoError = 0;
-	if ($saiu73id == '') {
-		$sError = $sError . $ETI['saiu73id'];
+	$saiu73id = numeros_validar($saiu73id);
+	$saiu73agno = numeros_validar($iAgno);
+	$sTabla73 = 'saiu73solusuario_' . $saiu73agno;
+	if ($saiu73id == 0 || $saiu73agno == 0) {
+		$sError = 'Error en la validaci&oacute;n de los datos';
 	}
-	if ($saiu73agno == '') {
-		$sError = $sError . $sSepara . $ETI['saiu73agno'];
-	}
-	if (!$objDB->bexistetabla($sTabla21)) {
-		$sError = $sError . $sSepara . 'No ha sido posible acceder al contenedor de datos';
+	if (!$objDB->bexistetabla($sTabla73)) {
+		$sError = 'No ha sido posible acceder al contenedor de datos';
 	}
 	if ($sError == '') {
-		$sWhere = 'saiu73id=' . $saiu73id . '';
-		$sSQL = 'SELECT * FROM ' . $sTabla21 . ' WHERE ' . $sWhere . '';
+		$sSQL = 'SELECT saiu73temasolicitud FROM ' . $sTabla73 . ' WHERE saiu73id=' . $saiu73id . '';
 		$tabla = $objDB->ejecutasql($sSQL);
 		if ($objDB->nf($tabla) > 0) {
 			$fila = $objDB->sf($tabla);
-			list($aParametros, $sErrorF, $iTipoError, $sDebugF) = f3073_ConsultaResponsable($fila['saiu73temasolicitud'], $objDB, $bDebug);
-			$sError = $sError . $sErrorF;
-			if ($bDebug) {
-				$sDebug = $sDebug . $sDebugF;
-			}
-			if ($sError == '') {
-				$scampo[1] = 'saiu73idunidadcaso';
-				$scampo[2] = 'saiu73idequipocaso';
-				$scampo[3] = 'saiu73idsupervisorcaso';
-				$scampo[4] = 'saiu73idresponsablecaso';
-				$scampo[5] = 'saiu73tiemprespdias';
-				$scampo[6] = 'saiu73tiempresphoras';
-				$sdato[1] = $aParametros['saiu73idunidadcaso'];
-				$sdato[2] = $aParametros['saiu73idequipocaso'];
-				$sdato[3] = $aParametros['saiu73idsupervisorcaso'];
-				$sdato[4] = $aParametros['saiu73idresponsablecaso'];
-				$sdato[5] = $aParametros['saiu73tiemprespdias'];
-				$sdato[6] = $aParametros['saiu73tiempresphoras'];
-				$numcmod = 6;
-				$sdatos = '';
-				$sdetalle = '';
-				$idAccion = 3;
-				$bpasa = false;
-				if ($bDebug) {
-					for ($k = 1; $k <= $numcmod; $k++) {
-						if (isset($fila[$scampo[$k]]) == 0) {
-							$sDebug = $sDebug . fecha_microtiempo() . ' FALLA CODIGO: Falta el campo ' . $k . ' ' . $scampo[$k] . '<br>';
-						}
-					}
+			$sSQL = 'SELECT saiu03idunidadresp1, saiu03idequiporesp1, saiu03idliderrespon1, saiu03tiemprespdias1, saiu03tiempresphoras1
+			FROM saiu03temasol
+			WHERE saiu03id = ' . $fila['saiu73temasolicitud'] . '';
+			$tabla = $objDB->ejecutasql($sSQL);
+			if ($objDB->nf($tabla) > 0) {
+				$fila = $objDB->sf($tabla);
+				$sSQL = 'UPDATE ' . $sTabla73 . ' SET saiu73idunidadcaso=' . $fila['saiu03idunidadresp1'] . ', saiu73idequipocaso=' . $fila['saiu03idequiporesp1'] . ', 
+				saiu73idsupervisorcaso=' . $fila['saiu03idliderrespon1'] . ', saiu73idresponsablecaso=' . $fila['saiu03idliderrespon1'] . ', saiu73tiemprespdias=' . $fila['saiu03tiemprespdias1'] . ', 
+				saiu73tiempresphoras=' . $fila['saiu03tiempresphoras1'] . ' WHERE saiu73id=' . $saiu73id . '';
+				$result = $objDB->ejecutasql($sSQL);
+				if ($result == false) {
+					$sError = 'Error al intentar actualizar el encargado de la solicitud.';
 				}
-				for ($k = 1; $k <= $numcmod; $k++) {
-					if ($fila[$scampo[$k]] != $sdato[$k]) {
-						if ($sdatos != '') {
-							$sdatos = $sdatos . ', ';
-						}
-						$sdatos = $sdatos . $scampo[$k] . '="' . $sdato[$k] . '"';
-						$bpasa = true;
-					}
-				}
-				if ($bpasa) {
-					if ($APP->utf8 == 1) {
-						$sdetalle = cadena_codificar($sdatos) . '[' . $sWhere . ']';
-						$sSQL = 'UPDATE ' . $sTabla21 . ' SET ' . cadena_codificar($sdatos) . ' WHERE ' . $sWhere . ';';
-					} else {
-						$sdetalle = $sdatos . '[' . $sWhere . ']';
-						$sSQL = 'UPDATE ' . $sTabla21 . ' SET ' . $sdatos . ' WHERE ' . $sWhere . ';';
-					}
-					$result = $objDB->ejecutasql($sSQL);
-					if ($result == false) {
-						$sError = $sError . $ERR['falla_guardar'] . ' [3073] ..<!-- ' . $sSQL . ' -->';
-					} else {
-						$sError = $sError . '<b>' . $ETI['msg_itemguardado'] . '</b>';
-						$iTipoError = 1;
-					}
-				}
+			} else {
+				$sError = 'No se ha configurado los datos b&aacute;sicos de la solicitud.';
 			}
 		} else {
-			$sError = $sError . $ETI['saiu73noexiste'];
+			$sError = 'No se encuentra la solicitud {Ref: ' . $saiu73id . '}';
 		}
 	}
-	return array($aParametros, $sError, $iTipoError, $sDebug);
+	return array($sError, $sDebug);
 }
 function f3073_HTMLComboV2_btema($objDB, $objCombos, $valor, $vrbtipo)
 {

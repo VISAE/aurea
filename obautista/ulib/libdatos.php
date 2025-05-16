@@ -81,13 +81,15 @@ function f107_UbicacionUsuario($objDB, $bDebug = false)
 	return array($iLat, $sLat, $iLong, $sLong, $iProximidad);
 }
 //
-function f107_VerificarPerfiles($idTercero, $idPeriodo, $objDB, $bDebug = false)
+function f107_VerificarPerfiles($idTercero, $idPeriodo, $objDB, $bDebug = false, $bConInfo = false)
 {
 	//Marzo 3 de 2021 - Se reconstruye esta funcion para que no se sobrepongan los permisos, 
 	//entonces ya no se hacen por modulo sino que se hagan globales.
 	$sError = '';
 	$sDebug = '';
+	$sInfo = '';
 	$iHoy = fecha_DiaMod();
+	$bMuestraInfo = $bDebug || $bConInfo;
 	//Primero cargamos todos los perfiles reservados y le decimos que no estan activos.
 	$aLista = array();
 	$aPerfil = array();
@@ -116,6 +118,36 @@ function f107_VerificarPerfiles($idTercero, $idPeriodo, $objDB, $bDebug = false)
 		$tabla = $objDB->ejecutasql($sSQL);
 		while ($fila = $objDB->sf($tabla)) {
 			$aPerfil[$fila['bita27idperfil']] = 1;
+		}
+	}
+	// 16 - CCOR 
+	if (true) {
+		$sCondi = array();
+		$sCondi[1] = 'SELECT 1 FROM unad24sede WHERE unad24ccor_admin=' . $idTercero . ' AND unad24activa="S"';
+		$sCondi[2] = 'SELECT 1 FROM ccor07actores WHERE ccor07idtercero=' . $idTercero . ' AND ccor07activo="S" AND ccor07nivel=1';
+		$sCondi[3] = 'SELECT 1 FROM ccor07actores WHERE ccor07idtercero=' . $idTercero . ' AND ccor07activo="S" AND ccor07nivel=0';
+		$iTotalPerfiles = 3;
+		$sSQL = 'SELECT * FROM ccor06params WHERE ccor06id=1';
+		if ($bDebug) {
+			$sDebug = $sDebug . fecha_microtiempo() . ' Configuraci&oacute;n de perfiles de CONSECUTIVOS ' . $sSQL . '<br>';
+		}
+		$tabla = $objDB->ejecutasql($sSQL);
+		if ($objDB->nf($tabla) > 0) {
+			$fila = $objDB->sf($tabla);
+			$aCFG[1] = $fila['ccor06idperfilsupervisor'];
+			$aCFG[2] = $fila['ccor06idperfilsupervisor'];
+			$aCFG[3] = $fila['ccor06idperfilusuario'];
+		} else {
+			$iTotalPerfiles = 0;
+		}
+		for ($j = 1; $j <= $iTotalPerfiles; $j++) {
+			$tabla = $objDB->ejecutasql($sCondi[$j]);
+			if ($objDB->nf($tabla) > 0) {
+				$id05 = $aCFG[$j];
+				if ($id05 != 0) {
+					$aPerfil[$id05] = 1;
+				}
+			}
 		}
 	}
 	//OAI
@@ -487,8 +519,10 @@ function f107_VerificarPerfiles($idTercero, $idPeriodo, $objDB, $bDebug = false)
 		$sCondi[2] = 'SELECT 1 FROM cttc07proceso WHERE cttc07e2_idsupervisor=' . $idTercero . ' AND cttc07idtarea>106';
 		$sCondi[3] = 'SELECT 1 FROM cttc07proceso WHERE cttc07interventor=' . $idTercero . '';
 		$sCondi[4] = 'SELECT 1 FROM cttc07proceso WHERE cttc07e2_contratista=' . $idTercero . '';
-		$sCondi[5] = 'SELECT 1 FROM plan16metaprodcierre WHERE plan16idgestor=' . $idTercero . '';
-		$iTotalPerfiles = 4;
+		$sCondi[5] = 'SELECT 1 FROM cttc30unidadcttc WHERE cttc30idtercero=' . $idTercero . ' AND (cttc30fechaing<=' . $iHoy . ') AND (cttc30fecharet=0 OR cttc30fecharet>=' . $iHoy . ')';
+		$sCondi[6] = 'SELECT 1 FROM unae26unidadesfun WHERE (unae26idresponsable=' . $idTercero . ') AND unae26idzona=0';
+		$sCondi[7] = 'SELECT 1 FROM plan16metaprodcierre WHERE plan16idgestor=' . $idTercero . '';
+		$iTotalPerfiles = 5;
 		$sSQL = 'SELECT * FROM cttc00params WHERE cttc00id=1';
 		if ($bDebug) {
 			$sDebug = $sDebug . fecha_microtiempo() . ' Configuraci&oacute;n de perfiles de CONTRATACION ' . $sSQL . '<br>';
@@ -500,7 +534,9 @@ function f107_VerificarPerfiles($idTercero, $idPeriodo, $objDB, $bDebug = false)
 			$aCFG[2] = $fila['cttc00perfil_supervisor'];
 			$aCFG[3] = $fila['cttc00perfil_interventor'];
 			$aCFG[4] = $fila['cttc00perfil_contratista'];
-			$aCFG[5] = $fila['cttc00perfil_avales'];
+			$aCFG[5] = $fila['cttc00perfil_unidadcoord'];
+			$aCFG[6] = $aCFG[5];
+			$aCFG[7] = $fila['cttc00perfil_avales'];
 		} else {
 			$iTotalPerfiles = 0;
 		}
@@ -629,7 +665,7 @@ function f107_VerificarPerfiles($idTercero, $idPeriodo, $objDB, $bDebug = false)
 	//Ahora las alertas de ayuda.
 	list($sDebugA) = f269_RegistarAyudas($idTercero, $objDB, $bDebug);
 	$sDebug = $sDebug . $sDebugA;
-	return array($sError, $sDebug);
+	return array($sError, $sDebug, $sInfo);
 }
 function f107_VerificarPerfilesV0($idTercero, $idPeriodo, $objDB, $bDebug = false)
 {
@@ -1423,7 +1459,7 @@ function f111_CambiarUsuarios($ryctipodoc, $rycdoc, $rycusuario, $objDB, $bDebug
 	while ($fila = $objDB->sf($result)) {
 		// Cambiar los usuarios menos el que tiene el mismo tipo y documento que vienen de ryc
 		// @@@@ se deja el tipo documento y documento del mismo o del ultimo? 
-		$sNuevoUsuario = $fila['unad11tipodoc'] . $fila['unad11doc'];
+		$sNuevoUsuario = strtolower($fila['unad11tipodoc'] . $fila['unad11doc']);
 		// $sNuevoUsuario = $sTipoDoc . $rycdoc;
 		$sSQL = 'UPDATE unad11terceros
 		SET unad11usuario="' . $sNuevoUsuario . '" 
@@ -3594,6 +3630,9 @@ function f2205_ArmarAgendaCursoEstudiante($idPeriodo, $idTercero, $idCurso, $obj
 					}
 					if ($sValores05 != '') {
 						$sSQL = 'INSERT INTO ' . $sTabla05 . '(' . $sCampos05 . ') VALUES ' . $sValores05 . '';
+						if ($bDebug) {
+							$sDebug = $sDebug . fecha_microtiempo() . ' Insertando agenda <b>' . $sSQL . '</b><br>';
+						}
 						$result = $objDB->ejecutasql($sSQL);
 						if ($result == false) {
 							$sErrCurso = 'Falla al intentar guardar la agenda';
@@ -5588,7 +5627,16 @@ function f3073_RevisarTabla($sContenedor, $objDB, $bDebug = false)
 		ADD saiu73numsesionchat VARCHAR(20) NULL,
 		ADD saiu73idcorreo INT NULL DEFAULT 0,
 		ADD saiu73idcorreootro VARCHAR(50) NULL,
-		ADD saiu73correoorigen VARCHAR(50) NULL";
+		ADD saiu73correoorigen VARCHAR(50) NULL,
+		ADD saiu73evalacepta INT NULL DEFAULT 0,
+		ADD saiu73evalfecha INT NULL DEFAULT 0,
+		ADD saiu73evalamabilidad INT NULL DEFAULT 0,
+		ADD saiu73evalrapidez INT NULL DEFAULT 0,
+		ADD saiu73evalclaridad INT NULL DEFAULT 0,
+		ADD saiu73evalresolvio INT NULL DEFAULT 0,
+		ADD saiu73evalconocimiento INT NULL DEFAULT 0,
+		ADD saiu73evalutilidad INT NULL DEFAULT 0,
+		ADD saiu73evalsugerencias TEXT";
 		$result = $objDB->ejecutasql($sSQL);
 		if ($result == false) {
 			$sError = $sError . ' Falla al intentar agregar campos a la tabla';
@@ -5992,6 +6040,17 @@ function f3000_TablasMes($iAgno, $iMes, $objDB, $bDebug = false)
 			if ($bResultado == false) {
 				$sSQL = 'ALTER TABLE ' . $sTabla . ' ADD saiu47t707formarecaudo int NULL DEFAULT 0, ADD saiu47t707identidadconv int NULL DEFAULT 0, 
 				ADD saiu47t707idbanco int NULL DEFAULT 0, ADD saiu47t707idcuenta int NULL DEFAULT 0';
+				$bResultado = $objDB->ejecutasql($sSQL);
+			}
+			//Febrero 27 de 2025 - Se agregan los campos para hacer metricas de duración del proceso.
+			$sSQL = 'SELECT saiu47prob_abandono FROM ' . $sTabla . ' LIMIT 0, 1';
+			$bResultado = $objDB->ejecutasql($sSQL);
+			if ($bResultado == false) {
+				$sSQL = 'ALTER TABLE ' . $sTabla . ' ADD saiu47prob_abandono int NOT NULL DEFAULT 0, ADD saiu47tem_radicado int NOT NULL DEFAULT 0, 
+				ADD saiu47tem_est4 int NOT NULL DEFAULT 0, ADD saiu47tem_est6 int NOT NULL DEFAULT 0, ADD saiu47tem_est31 int NOT NULL DEFAULT 0, 
+				ADD saiu47tem_est21 int NOT NULL DEFAULT 0, ADD saiu47tem_est7 int NOT NULL DEFAULT 0, ADD saiu47tem_est36 int NOT NULL DEFAULT 0, 
+				ADD saiu47tem_est8 int NOT NULL DEFAULT 0, ADD saiu47tem_est46 int NOT NULL DEFAULT 0, ADD saiu47tem_est11 int NOT NULL DEFAULT 0, 
+				ADD saiu47tem_est12 int NOT NULL DEFAULT 0, ADD saiu47tem_est10 int NOT NULL DEFAULT 0, ADD saiu47tem_total int NOT NULL DEFAULT 0';
 				$bResultado = $objDB->ejecutasql($sSQL);
 			}
 		}
