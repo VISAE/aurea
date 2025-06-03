@@ -1,0 +1,211 @@
+@charset "UTF-8";
+main {
+  max-width: unset;
+}
+
+label {
+  margin-bottom: 0.25rem;
+}
+
+textarea {
+  height: 8rem;
+  resize: none;
+}
+
+select {
+  width: 100%;
+}
+
+input[type=radio] {
+  appearance: none;
+  width: 2.5rem;
+  height: 2.5rem;
+  border: 0.125rem solid var(--sys-on-container);
+  border-radius: 50%;
+  outline: none;
+  cursor: pointer;
+  transition: 0.2s all ease-out;
+}
+input[type=radio]:checked {
+  background-color: var(--sys-green);
+  border-color: var(--sys-green);
+}
+
+/* Estilo inicial del checkbox */
+input[type=checkbox] {
+  appearance: none;
+  width: 2.5rem;
+  height: 2.5rem;
+  border: 0.125rem solid var(--sys-on-container);
+  border-radius: 0.5rem;
+  outline: none;
+  cursor: pointer;
+  transition: 0.2s all ease-out;
+  position: relative;
+}
+input[type=checkbox]::after {
+  content: ""; /* Requerido para pseudo-elementos */
+  width: 1rem;
+  height: 2rem;
+  border: solid #fff; /* Color del check */
+  border-width: 0 0.4rem 0.4rem 0; /* Crear el diseño del check */
+  position: absolute;
+  top: 40%;
+  left: 50%;
+  transform: translate(-50%, -50%) rotate(45deg) scale(0); /* Ocultar inicialmente */
+  transition: 0.2 all ease-out; /* Animación del check */
+}
+input[type=checkbox]:checked {
+  background-color: var(--sys-green);
+  border-color: var(--sys-green);
+}
+input[type=checkbox]:checked::after {
+  transform: translate(-50%, -50%) rotate(45deg) scale(0.8); /* Mostrar el check */
+}
+
+.container-encuesta, .container-datos {
+  display: grid;
+  gap: 1rem;
+  border-radius: 2rem;
+  padding: 2rem;
+  margin: 3rem 0;
+  border: 0.125rem solid transparent !important;
+  background-color: var(--sys-container-lower) !important;
+  color: var(--sys-on-container) !important;
+  box-shadow: var(--elevation-1);
+}
+
+.container-datos {
+  gap: 4rem;
+}
+.container-datos .datos-residencia, .container-datos .datos-unad {
+  display: grid;
+  gap: 1rem;
+}
+.container-datos .datos-residencia > b, .container-datos .datos-unad > b {
+  margin: 0;
+  text-align: left;
+  font-size: 2.25rem;
+}
+.container-datos .datos-residencia .datos__content, .container-datos .datos-unad .datos__content {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  row-gap: 2rem;
+  column-gap: 4rem;
+  padding-top: 2rem;
+  border-top: 0.125rem solid var(--sys-container-higher);
+}
+.container-datos .datos-residencia .datos__content > div, .container-datos .datos-unad .datos__content > div {
+  display: grid;
+}
+.container-datos .datos-unad .datos__content {
+  grid-template-columns: repeat(4, 1fr);
+}
+
+.encuesta-form {
+  padding: 1rem;
+  border-top: 0.125rem solid var(--sys-container-higher);
+}
+.encuesta-form .container-pregunta {
+  margin-top: 1rem;
+  margin-left: 3rem;
+  display: grid;
+}
+.encuesta-form .container-pregunta > .pregunta {
+  display: grid;
+  gap: 1rem;
+  padding: 1rem 1.5rem;
+  position: relative;
+  z-index: 1;
+}
+.encuesta-form .container-pregunta > .pregunta .group-radio, .encuesta-form .container-pregunta > .pregunta .group-check {
+  display: grid;
+  flex-wrap: wrap;
+  row-gap: 1rem;
+  column-gap: 4rem;
+}
+.encuesta-form .container-pregunta > .pregunta .group-radio label, .encuesta-form .container-pregunta > .pregunta .group-check label {
+  display: flex;
+  gap: 1rem;
+  align-items: center;
+  color: var(--sys-on-container);
+}
+.encuesta-form .container-pregunta > .pregunta::before {
+  content: "";
+  display: block;
+  position: absolute;
+  width: 1rem;
+  background-color: var(--sys-container);
+  left: -3rem;
+  top: 0;
+  bottom: 0;
+}
+.encuesta-form .container-pregunta:has(.container-pregunta) .container-pregunta {
+  margin-left: unset;
+}
+.encuesta-form .container-pregunta:has(.container-pregunta) .container-pregunta .pregunta::before {
+  left: -3rem !important;
+}
+.encuesta-form .container-pregunta:has(.container-pregunta) > .container-pregunta {
+  display: none;
+}
+.encuesta-form .container-pregunta p {
+  font-weight: 600;
+}
+.encuesta-form .container-pregunta:nth-of-type(even) {
+  position: relative;
+}
+.encuesta-form .container-pregunta:nth-of-type(even)::after {
+  width: 100%;
+  height: 100%;
+  background-color: var(--sys-container);
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+}
+.encuesta-form .container-pregunta.fill > .pregunta textarea {
+  border: 0.25rem solid var(--sys-green);
+}
+.encuesta-form .container-pregunta.fill > .pregunta select {
+  border-bottom: 0.25rem solid var(--sys-green);
+}
+.encuesta-form .container-pregunta.fill > .pregunta::before {
+  background-color: var(--sys-green);
+}
+.encuesta-form .container-pregunta.fill.divergente:has(.container-pregunta) > .container-pregunta {
+  display: grid !important;
+}
+.encuesta-form .container-pregunta.error > .pregunta textarea {
+  border: 0.25rem solid var(--sys-red);
+}
+.encuesta-form .container-pregunta.error > .pregunta select {
+  border-bottom: 0.25rem solid var(--sys-red);
+}
+.encuesta-form .container-pregunta.error > .pregunta::before {
+  background-color: var(--sys-red);
+}
+.encuesta-form .btn-tertiary {
+  width: 100%;
+  height: 5rem;
+  margin-top: 2rem;
+}
+
+/* Mobile */
+@media only screen and (max-width: 767px) {
+  .container-datos .datos-residencia .datos__content, .container-datos .datos-unad .datos__content {
+    grid-template-columns: 1fr;
+  }
+}
+/* Tablet */
+@media only screen and (min-width: 768px) and (max-width: 1024px), print {
+  .container-datos .datos-residencia .datos__content, .container-datos .datos-unad .datos__content {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+/* Desktop */
+@media only screen and (min-width: 1025px) {
+  main {
+    padding: 4rem;
+  }
+}

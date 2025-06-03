@@ -84,7 +84,6 @@ function f3073_HTMLComboV2_saiu73temasolicitud($objDB, $objCombos, $valor, $vrsa
 		$mensajes_todas = $APP->rutacomun . 'lg/lg_todas_es.php';
 	}
 	require $mensajes_todas;
-	$vrsaiu73tiposolicitud = numeros_validar($vrsaiu73tiposolicitud);
 	$objCombos->nuevo('saiu73temasolicitud', $valor, true, '{' . $ETI['msg_seleccione'] . '}');
 	//$objCombos->iAncho = 450;
 	$sSQL = '';
@@ -140,7 +139,7 @@ function f3073_HTMLComboV2_saiu73coddepto($objDB, $objCombos, $valor, $vrsaiu73c
 		//$objCombos->addItem('0', '[Sin Dato]');
 		$sSQL = 'SELECT TB.unad19codigo AS id, TB.unad19nombre AS nombre 
 		FROM unad19depto AS TB
-		WHERE TB.unad19codpais=' . $vrsaiu73codpais . ' 
+		WHERE TB.unad19codpais="' . $vrsaiu73codpais . '"
 		ORDER BY TB.unad19nombre';
 	}
 	$res = $objCombos->html($sSQL, $objDB);
@@ -161,7 +160,7 @@ function f3073_HTMLComboV2_saiu73codciudad($objDB, $objCombos, $valor, $vrsaiu73
 		//$objCombos->addItem('0', '[Sin Dato]');
 		$sSQL = 'SELECT TB.unad20codigo AS id, TB.unad20nombre AS nombre 
 		FROM unad20ciudad AS TB
-		WHERE TB.unad20coddepto=' . $vrsaiu73coddepto . ' 
+		WHERE TB.unad20coddepto="' . $vrsaiu73coddepto . '"
 		ORDER BY TB.unad20nombre';
 	}
 	$res = $objCombos->html($sSQL, $objDB);
@@ -416,7 +415,7 @@ function f3073_ExisteDato($datos)
 			$objDB->dbPuerto = $APP->dbpuerto;
 		}
 		$objDB->xajax();
-		$sSQL = 'SELECT 1 FROM saiu73solusuario WHERE saiu73agno=' . $saiu73agno . ' AND saiu73mes=' . $saiu73mes . ' AND saiu73tiporadicado=' . $saiu73tiporadicado . ' AND saiu73consec=' . $saiu73consec . '';
+		$sSQL = 'SELECT 1 FROM saiu73solusuario_' . $saiu73agno . ' WHERE saiu73agno=' . $saiu73agno . ' AND saiu73mes=' . $saiu73mes . ' AND saiu73tiporadicado=' . $saiu73tiporadicado . ' AND saiu73consec=' . $saiu73consec . '';
 		$res = $objDB->ejecutasql($sSQL);
 		if ($objDB->nf($res) == 0) {
 			$bHayLlave = false;
@@ -619,7 +618,6 @@ function f3073_TablaDetalleV2($aParametros, $objDB, $bDebug = false)
 		die();
 	}
 	$iPiel = iDefinirPiel($APP, 2);
-
 	$aEstado = array();
 	$sSQL = 'SELECT saiu11id, saiu11nombre FROM saiu11estadosol';
 	$tabla = $objDB->ejecutasql($sSQL);
@@ -807,7 +805,7 @@ function f3073_TablaDetalleV2($aParametros, $objDB, $bDebug = false)
 	$res = $res . '<th><b>' . $ETI['saiu73temasolicitud'] . '</b></th>';
 	$res = $res . '<th><b>' . $ETI['saiu73solucion'] . '</b></th>';
 	$res = $res . '<th><b>' . $ETI['saiu73estado'] . '</b></th>';
-	$res = $res . '<th class="text-right">';
+	$res = $res . '<th class="flex gap-1 justify-end">';
 	$res = $res . html_paginador('paginaf3073', $registros, $lineastabla, $pagina, 'paginarf3073()');
 	$res = $res . html_lpp('lppf3073', $lineastabla, 'paginarf3073()');
 	$res = $res . '</th>';
@@ -835,41 +833,29 @@ function f3073_TablaDetalleV2($aParametros, $objDB, $bDebug = false)
 			$et_saiu73idsolicitante_doc = $sPrefijo . $filadet['C12_td'] . ' ' . $filadet['C12_doc'] . $sSufijo;
 			$et_saiu73idsolicitante_nombre = $sPrefijo . cadena_notildes($filadet['C12_nombre']) . $sSufijo;
 		}
-		$et_saiu73estado = '';
-		if (isset($aEstado[$filadet['saiu73estado']]) == 0) {
-			$et_saiu73estado = $ETI['definir'];
-		} else {
-			$et_saiu73estado = $sPrefijo . cadena_notildes($aEstado[$filadet['saiu73estado']]) . $sSufijo;
+		$et_saiu73estado = $ETI['definir'];
+		if ($filadet['saiu73estado'] != 0) {
+			$et_saiu73estado = $sPrefijo . $aEstado[$filadet['saiu73estado']] . $sSufijo;
 		}
-		$et_saiu73tiposolicitud = '';
-		if (isset($aCategoria[$filadet['saiu73tiposolicitud']]) == 0) {
-			$et_saiu73tiposolicitud = $ETI['definir'];
-		} else {
-			$et_saiu73tiposolicitud = $sPrefijo . cadena_notildes($aCategoria[$filadet['saiu73tiposolicitud']]) . $sSufijo;
+		$et_saiu73tiposolicitud = $ETI['definir'];
+		if ($filadet['saiu73tiposolicitud'] != 0) {
+			$et_saiu73tiposolicitud = $sPrefijo . $aCategoria[$filadet['saiu73tiposolicitud']] . $sSufijo;
 		}
-		$et_saiu73temasolicitud = '';
-		if (isset($aTema[$filadet['saiu73temasolicitud']]) == 0) {
-			$et_saiu73temasolicitud = $ETI['definir'];
-		} else {
-			$et_saiu73temasolicitud = $sPrefijo . cadena_notildes($aTema[$filadet['saiu73temasolicitud']]) . $sSufijo;
+		$et_saiu73temasolicitud = $ETI['definir'];
+		if ($filadet['saiu73temasolicitud'] != 0) {
+			$et_saiu73temasolicitud = $sPrefijo . $aTema[$filadet['saiu73temasolicitud']] . $sSufijo;
 		}
-		$et_saiu73solucion = '';
-		if (isset($asaiu73solucion[$filadet['saiu73solucion']]) == 0) {
-			$et_saiu73solucion = $ETI['definir'];
-		} else {
-			$et_saiu73solucion = $sPrefijo . cadena_notildes($asaiu73solucion[$filadet['saiu73solucion']]) . $sSufijo;
+		$et_saiu73solucion = $ETI['definir'];
+		if ($filadet['saiu73solucion'] != 0) {
+			$et_saiu73solucion = $sPrefijo . $asaiu73solucion[$filadet['saiu73solucion']] . $sSufijo;
 		}
-		$et_saiu73idzona = '';
-		if (isset($aZona[$filadet['saiu73idzona']]) == 0) {
-			$et_saiu73idzona = $ETI['definir'];
-		} else {
-			$et_saiu73idzona = $sPrefijo . cadena_notildes($aZona[$filadet['saiu73idzona']]) . $sSufijo;
+		$et_saiu73idzona = $ETI['definir'];
+		if ($filadet['saiu73idzona'] != 0) {
+			$et_saiu73idzona = $sPrefijo . $aZona[$filadet['saiu73idzona']] . $sSufijo;
 		}
-		$et_saiu73idcentro = '';
-		if (isset($aCead[$filadet['saiu73idcentro']]) == 0) {
-			$et_saiu73idcentro = $ETI['definir'];
-		} else {
-			$et_saiu73idcentro = $sPrefijo . cadena_notildes($aCead[$filadet['saiu73idcentro']]) . $sSufijo;
+		$et_saiu73idcentro = $ETI['definir'];
+		if ($filadet['saiu73idcentro'] != 0) {
+			$et_saiu73idcentro = $sPrefijo . $aCead[$filadet['saiu73idcentro']] . $sSufijo;
 		}
 		if ($bAbierta) {
 			$sLink = '<a href="javascript:cargaridf3073(' . $filadet['saiu73agno'] . ',' . $filadet['saiu73id'] . ')" class="lnkresalte">' . $ETI['lnk_cargar'] . '</a>';
@@ -1290,8 +1276,6 @@ function f3073_db_GuardarV2($DATA, $objDB, $bDebug = false, $idTercero = 0, $iCo
 				if ($DATA['saiu73idcorreootro'] == '') {
 					$sError = $ERR['saiu73idcorreo'] . $sSepara . $sError;
 				}
-			} else {
-				$DATA['saiu73idcorreootro'] == '';
 			}
 			break;
 		case 3021:
@@ -2556,6 +2540,7 @@ function f3073_EnviaCorreosAtencion($DATA, $objDB, $bDebug = false, $bResponsabl
 	require $mensajes_3073;
 	$sError = '';
 	$sDebug = '';
+	$sSepara = '|';
 	$sMensaje = '';
 	$bEntra = false;
 	$idTercero = 0;
@@ -2627,13 +2612,16 @@ function f3073_EnviaCorreosAtencion($DATA, $objDB, $bDebug = false, $bResponsabl
 					$sURLCampus = 'https://campus0a.unad.edu.co/campus/';
 					break;
 			}
+			$sCuerpo = '';
 			$sCorreoCopia = '';
 			$iFechaServicio = fecha_ArmarNumero($DATA['saiu73dia'], $DATA['saiu73mes'], $DATA['saiu73agno']);
 			$sFechaLarga = formato_FechaLargaDesdeNumero($iFechaServicio, true);
 			$sRutaImg = 'https://datateca.unad.edu.co/img/';
 			$sURLDestino = $sURLCampus . 'saiusolusuario.php';
-			$sArgs = url_encode($DATA['saiu73agno'] . '|' . $DATA['saiu73id']);
+			$sArgs = url_encode($DATA['saiu73agno'] . $sSepara . $DATA['saiu73id']);
 			$sURLSaiMod = $sURLSai . 'saiusolusuario.php';
+			$sURLEncuesta = $sURLCampus . 'saiuencuesta.php';
+			$sArgsEncuesta = url_encode($DATA['saiu73idcanal'] . $sSepara . $DATA['saiu73id'] . $sSepara . $DATA['saiu73agno']);
 			$sMes = date('Ym');
 			$sTabla = 'aure01login' . $sMes;
 			list($idSMTP, $sDebugS) = AUREA_SmtpMejor($sTabla, $objDB, $bDebug);
@@ -2642,30 +2630,63 @@ function f3073_EnviaCorreosAtencion($DATA, $objDB, $bDebug = false, $bResponsabl
 			list($unad11razonsocial, $sErrorDet) = tabla_campoxid('unad11terceros', 'unad11razonsocial', 'unad11id', $idTercero, '{' . 'An&oacute;nimo' . '}', $objDB);
 			if ($bResponsable) {
 				$sTituloMensaje = $ETI['mail_asig_titulo'] . ' ' . $sNomEntidad . '';
-				$sCuerpo = 'Cordial saludo.<br>
-				Estimado(a) <b>' . $unad11razonsocial . '</b><br><br>
-				El Sistema de Atenci&oacute;n Integral (SAI) le informa que le ha sido asignado un caso de <strong>' . $ssaiuId . '</strong>, radicado el d&iacute;a ' . $sFechaLarga . '; 
-				con el n&uacute;mero: <span style="color: rgb(255, 0, 0); font-size: 16px;"><strong>' . $DATA['saiu73idcaso'] . '</strong></span>, 
-				puede ser consultado en el siguiente enlace:<br><a href="' . $sURLSaiMod . '?u=' . $sArgs . '" target="_blank">' . $sURLSaiMod . '</a><br><br>';
+				$sCuerpo = 'Cordial saludo.<br>';
+				$sCuerpo = $sCuerpo . 'Estimado(a) <b>' . $unad11razonsocial . '</b><br><br>';
+				$sCuerpo = $sCuerpo . 'El Sistema de Atenci&oacute;n Integral (SAI) le informa que le ha sido asignado un caso de <strong>' . $ssaiuId . '</strong>, radicado el d&iacute;a ' . $sFechaLarga . '; ';
+				$sCuerpo = $sCuerpo . 'con el n&uacute;mero: <span style="color: rgb(255, 0, 0); font-size: 16px;"><strong>' . $DATA['saiu73idcaso'] . '</strong></span>, ';
+				$sCuerpo = $sCuerpo . 'puede ser consultado en el siguiente enlace:<br><a href="' . $sURLSaiMod . '?u=' . $sArgs . '" target="_blank">' . $sURLSaiMod . '</a><br><br>';
 			} else {
 				if ($DATA['bcampus'] == 1) {
 					$sTituloMensaje = $ETI['mail_solic_titulo'] . ' ' . $ssaiuId . ' ' . $sNomEntidad . '';
-					$sCuerpo = 'Cordial saludo.<br>
-					Estimado(a) <b>' . $unad11razonsocial . '</b><br><br>
-					Para la universidad Nacional Abierta y a Distancia - UNAD es muy importante atender sus solicitudes. 
-					Acorde con lo anterior le informamos que su solicitud radicada el día ' . $sFechaLarga . ', por el módulo de ' . $ssaiuId . '; 
-					puede ser consultada en el siguiente enlace:<br><a href="' . $sURLDestino . '" target="_blank">' . $sURLDestino . '</a><br><br>';
+					$sCuerpo = 'Cordial saludo.<br>';
+					$sCuerpo = $sCuerpo . 'Estimado(a) <b>' . $unad11razonsocial . '</b><br><br>';
+					$sCuerpo = $sCuerpo . 'Para la universidad Nacional Abierta y a Distancia - UNAD es muy importante atender sus solicitudes. ';
+					$sCuerpo = $sCuerpo . 'Acorde con lo anterior le informamos que su solicitud radicada el día ' . $sFechaLarga . ', por el módulo de ' . $ssaiuId . '; ';
+					$sCuerpo = $sCuerpo . 'puede ser consultada en el siguiente enlace:<br><a href="' . $sURLDestino . '" target="_blank">' . $sURLDestino . '</a><br><br>';
 				} else {
 					$sTituloMensaje = $ETI['mail_enc_titulo'] . ' ' . $ssaiuId . ' ' . $sNomEntidad . '';
-					$sCuerpo = 'Cordial saludo.<br>
-					Estimado(a) <b>' . $unad11razonsocial . '</b><br><br>
-					Para la universidad Nacional Abierta y a Distancia - UNAD es muy importante atender sus solicitudes. 
-					Acorde con lo anterior le informamos que la respuesta a su solicitud radicada el día ' . $sFechaLarga . ', por el módulo de ' . $ssaiuId . '; 
-					puede ser consultada en el siguiente enlace:<br><a href="' . $sURLDestino . '" target="_blank">' . $sURLDestino . '</a><br><br>';
+					$sCuerpo = 'Cordial saludo.<br>';
+					$sCuerpo = $sCuerpo . 'Estimado(a) <b>' . $unad11razonsocial . '</b><br><br>';
+					$sCuerpo = $sCuerpo . 'Para la universidad Nacional Abierta y a Distancia - UNAD es muy importante atender sus solicitudes. ';
+					$sCuerpo = $sCuerpo . 'Acorde con lo anterior le informamos que la respuesta a su solicitud radicada el día ' . $sFechaLarga . ', por el módulo de ' . $ssaiuId . '; ';
+					$sCuerpo = $sCuerpo . 'puede ser consultada en el siguiente enlace:<br><a href="' . $sURLDestino . '" target="_blank">' . $sURLDestino . '</a><br><br>';
+					$sCuerpo = $sCuerpo . '<hr><p style="padding:0 5px;">' . $ETI['mail_enc'] . '</p>';
+					$sCuerpo = $sCuerpo . '<table border="0" cellpadding="10" cellspacing="0" width="80%" style="width: 80%; max-width: 80%; min-width: 80%;">';
+					$sCuerpo = $sCuerpo . '<tbody>';
+					$sCuerpo = $sCuerpo . '<tr>';
+					$sCuerpo = $sCuerpo . '<td align="center" bgcolor="#F0B429" style="font-size:22px;">';
+					$sCuerpo = $sCuerpo . '<font face="Arial, Helvetica, sans-serif" color="#005883">';
+					$sCuerpo = $sCuerpo . '<a style="padding: 10px 20px; color: #005883; font-size: 12px; text-decoration: none; word-wrap: break-word;" target="_blank"';
+					$sCuerpo = $sCuerpo . 'href="' . $sURLEncuesta . '?u=' . $sArgsEncuesta . '">';
+					$sCuerpo = $sCuerpo . '<span style="font-size: 24px;">RESPONDER</span>';
+					$sCuerpo = $sCuerpo . '</a>';
+					$sCuerpo = $sCuerpo . '</font>';
+					$sCuerpo = $sCuerpo . '</td>';
+					$sCuerpo = $sCuerpo . '</tr>';
+					$sCuerpo = $sCuerpo . '<tr>';
+					$sCuerpo = $sCuerpo . '<td height="5">';
+					$sCuerpo = $sCuerpo . '</td>';
+					$sCuerpo = $sCuerpo . '</tr>';
+					$sCuerpo = $sCuerpo . '<tr>';
+					$sCuerpo = $sCuerpo . '<td align="center" bgcolor="#005883" style="font-size:14px;">';
+					$sCuerpo = $sCuerpo . '<font face="Arial, Helvetica, sans-serif" color="#ffffff">';
+					$sCuerpo = $sCuerpo . '<a style="padding: 10px 20px; color: #ffffff; font-size: 12px; text-decoration: none; word-wrap: break-word;" target="_blank"';
+					$sCuerpo = $sCuerpo . 'href="' . $sURLEncuesta . '?n=' . $sArgsEncuesta . '">';
+					$sCuerpo = $sCuerpo . 'Si no desea responder, por favor haga clic aqu&iacute;';
+					$sCuerpo = $sCuerpo . '</a>';
+					$sCuerpo = $sCuerpo . '</font>';
+					$sCuerpo = $sCuerpo . '</td>';
+					$sCuerpo = $sCuerpo . '</tr>';
+					$sCuerpo = $sCuerpo . '<tr>';
+					$sCuerpo = $sCuerpo . '<td height="5">';
+					$sCuerpo = $sCuerpo . '</td>';
+					$sCuerpo = $sCuerpo . '</tr>';
+					$sCuerpo = $sCuerpo . '</tbody>';
+					$sCuerpo = $sCuerpo . '</table>';
 				}
 			}
-			$sCuerpo = $sCuerpo . 'Cordialmente,<br>
-			<b>Sistema de Atención Integral - SAI</b><br>';
+			$sCuerpo = $sCuerpo . 'Cordialmente,<br>';
+			$sCuerpo = $sCuerpo . '<b>Sistema de Atención Integral - SAI</b><br>';
 			$sCuerpo = AUREA_HTML_EncabezadoCorreo($sTituloMensaje) . $sCuerpo . AUREA_HTML_NoResponder() . AUREA_NotificaPieDePagina() . AUREA_HTML_PieCorreo();
 			$objMail->sAsunto = cadena_codificar(html_entity_decode($sTituloMensaje));
 			$sMensaje = 'Se notifica al correo ' . $sCorreoMensajes;

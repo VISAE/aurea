@@ -1,6 +1,6 @@
 <?php
 /*
---- © Angel Mauro Avellaneda Barreto - Ideas - 2016 ---
+--- © Angel Mauro Avellaneda Barreto - Unad - 2016 ---
 --- mauro@avellaneda.co - http://www.ideasw.com
 --- Modelo Versión 2.13.3 miércoles, 13 de julio de 2016
 */
@@ -112,7 +112,7 @@ class clsHtmlCombos
 		}
 		$sAncho = '';
 		if ($this->iAncho != 0) {
-			$sAncho = 'width:' . $this->iAncho . 'px;';
+			$sAncho = 'max-width:' . $this->iAncho . 'px;';
 			if ($this->sEstilos == '') {
 				$sEstilos = ' style="' . $sAncho . '"';
 			}
@@ -466,6 +466,18 @@ class clsHtmlForma
 						case 'white':
 							$sClaseFin = 'btn-container';
 							break;
+						case 'higher':
+							$sClaseFin = 'btn-container-higher';
+							break;
+						case 'high':
+							$sClaseFin = 'btn-container-high';
+							break;
+						case 'lower':
+							$sClaseFin = 'btn-container-lower';
+							break;
+						case 'low':
+							$sClaseFin = 'btn-container-low';
+							break;
 						case 'gray':
 						case 'gr':
 						case 'gris':
@@ -503,6 +515,10 @@ class clsHtmlForma
 					case 'btMiniAprobar':
 						$bBotonMini = true;
 						$sImg = '<i class="icon-check"></i>';
+						break;
+					case 'btMiniDescargar':
+						$bBotonMini = true;
+						$sImg = '<i class="icon-download"></i>';
 						break;
 					case 'botonAprobado':
 					case 'btUpAprobado':
@@ -671,13 +687,13 @@ class clsHtmlForma
 					case 'btSupAbrir':
 						$sImg = '<i class="icon-open"></i>';
 						break;
-					case 'btSupClonar':
 					case 'btSupVolver':
 						$sImg = '<i class="icon-arrow-back"></i>';
 						break;
 					case 'btSupDenegado':
 						$sImg = '<i class="icon-help"></i>';
 						break;
+					case 'btSupClonar':
 					case 'btSupDocumento':
 						$sImg = '<i class="icon-copy"></i>';
 						break;
@@ -734,6 +750,9 @@ class clsHtmlForma
 					case 'btUpVolver':
 						$sImg = '<i class="icon-arrow-back"></i>';
 						break;
+					case 'btLibrary':
+						$sImg = '<i class="icon-library-book"></i>';
+						break;
 					default:
 						$bIcono = false;
 						break;
@@ -742,7 +761,7 @@ class clsHtmlForma
 					$sTexto = '';
 					$sClaseFin = $sClaseFin . $sClaseMini;
 				} else {
-					$sAddB = $sAddB . 'padding-right: 1rem;';
+					$sAddB = $sAddB . ' padding-right: 1rem;';
 				}
 				if (!$bIcono) {
 					$sImg = '';
@@ -1362,9 +1381,10 @@ function html_BotonAyudaV2($sNombreCampo, $sTituloCampo = 'Informaci&oacute;n re
 }
 function html_BotonAyuda($sNombreCampo, $sTituloCampo = 'Informaci&oacute;n relevante')
 {
-	$sRes = '<label class="Label30">';
-	$sRes = $sRes . '<input id="cmdAyuda_' . $sNombreCampo . '" name="cmdAyuda_' . $sNombreCampo . '" type="button" class="btMiniAyuda" onclick="AyudaLocal(\'' . $sNombreCampo . '\');" title="' . $sTituloCampo . '" />';
-	$sRes = $sRes . '</label>';
+	require './app.php';
+	$iPiel = iDefinirPiel($APP, 2);
+	$objForma = new clsHtmlForma($iPiel);
+	$sRes = $objForma->htmlBotonSolo('cmdAyuda_' . $sNombreCampo, 'btMiniAyuda', 'AyudaLocal(\'' . $sNombreCampo . '\')', $sTituloCampo, 30);
 	return $sRes;
 }
 function html_BotonVerde($sNombreCampo, $sValor, $sAccion = '', $sEtiqueta = '')
@@ -1423,7 +1443,8 @@ function html_Caja($sTitulo, $sCuerpo, $iAncho = 450, $iPiel = 1, $aDatos = NULL
 	return $sRes;
 }
 // Caja de informacion importante
-function html_CajaInfoImportante($sTitulo, $sCuerpo) {
+function html_CajaInfoImportante($sTitulo, $sCuerpo)
+{
 	$sRes = '<div class="container bg--tertiary max-w-100per grid gap-1" style="border: none; padding: 2rem;">';
 	if ($sTitulo != '') {
 		$sRes = $sRes . '<h2 class="subtitle text-on-tertiary" style="border-color: var(--sys-on-tertiary); padding-bottom: 1rem;"><b>' . $sTitulo . '</b></h2>';
@@ -1433,7 +1454,30 @@ function html_CajaInfoImportante($sTitulo, $sCuerpo) {
 	$sRes = $sRes . '</div></div>';
 	return $sRes;
 }
-//El div alarma
+// Contenedor
+function html_Contenedor($sHTMLContenido = '', $sClase = '')
+{
+	$sHTMLClase = '';
+	switch ($sClase) {
+		case '':
+			break;
+		case '30':
+		case '60':
+		case '130':
+		case '160':
+		case '220':
+		case '250':
+		case 'L':
+			$sHTMLClase = ' class="Label' . $sClase . '"';
+			break;
+		default:
+			$sHTMLClase = ' class="Label' . $sClase . '"';
+			break;
+	}
+	$sRes = '<label' . $sHTMLClase . '>' . $sHTMLContenido . '</label>';
+	return $sRes;
+}
+// El div alarma
 function html_DivAlarmaV2($sError, $iTipoError, $bDebug = false)
 {
 	$sClase = '';
@@ -1625,7 +1669,7 @@ function html_DivTerceroV8($sNombreCampo, $sTipoDoc, $sDoc, $bOculto, $objDB, $o
 			switch ($iPiel) {
 				case 2:
 					$objForma = new clsHtmlForma($iPiel);
-					$sRes .= '<div class="flex" style="gap: 1rem">';
+					$sRes .= '<div class="flex gap-1">';
 					if ($bConbuscar) {
 						$sRes .= $objForma->htmlBotonSolo('b' . $sNombreCampo, 'btMiniBuscar', 'buscarV2016(\'' . $sNombreCampo . '\')', 'Buscar Tercero');
 					}
@@ -1651,7 +1695,7 @@ function html_DivTerceroV8($sNombreCampo, $sTipoDoc, $sDoc, $bOculto, $objDB, $o
 	}
 	$sClassFin = '';
 	if ($iPiel == 2) {
-		$sClassFin = ' class="flex"';
+		$sClassFin = ' class="flex gap-1"';
 	}
 	return '<div' . $sClassFin . '>' . $sRes . '</div>';
 }
@@ -1676,6 +1720,8 @@ function htmlEspereV2($sMsgEspere = 'Procesando datos, por favor espere...', $bS
 //Mostrar la fecha desde un numero
 function html_FechaEnNumero($nomcampo, $valor = 0, $bvacio = false, $accion = '', $iagnoini = 0, $iagnofin = 0, $idiafijo = 0, $imesfijo = 0)
 {
+	require './app.php';
+	$iPiel = iDefinirPiel($APP, 2);
 	if (!$bvacio) {
 		if ((int)$valor == 0) {
 			$valor = fecha_DiaMod();
@@ -1730,6 +1776,9 @@ function html_FechaEnNumero($nomcampo, $valor = 0, $bvacio = false, $accion = ''
 		$valor = '0';
 	}
 	$res = $res . '<input id="' . $nomcampo . '" name="' . $nomcampo . '" type="hidden" value="' . $valor . '"/>';
+	if ($iPiel == 2) {
+		$res = '<div class="flex gap-1">' . $res . '</div>';
+	}
 	return $res;
 }
 
@@ -1784,6 +1833,7 @@ function html_LnkArchivoPublico($origen, $id, $iFechaTope = 0, $titulo = 'Descar
 	$sInfoCodigo = '';
 	$iFechaRef = 0;
 	$sCodigoArchivo = '';
+	$sEnlaceU = '';
 	if ($id != 0) {
 		$iHoy = fecha_DiaMod();
 		if ($iFechaTope == 0) {
@@ -1792,13 +1842,14 @@ function html_LnkArchivoPublico($origen, $id, $iFechaTope = 0, $titulo = 'Descar
 			$iFechaRef = $iFechaTope;
 		}
 		$sRaiz = 'https://aurea.unad.edu.co/va.php';
-		$res = '<a href="' . $sRaiz . '?u=' . url_encode($origen . '|' . $id . '|' . 0 . '|' . 0 . '|' . $iFechaRef . '|' . $iFechaVence) . '" target="_blank" ' . $sClase . '>' . $titulo . '</a>';
+		$sEnlaceU = url_encode($origen . '|' . $id . '|' . 0 . '|' . 0 . '|' . $iFechaRef . '|' . $iFechaVence);
+		$res = '<a href="' . $sRaiz . '?u=' . $sEnlaceU . '" target="_blank" ' . $sClase . '>' . $titulo . '</a>';
 		//$res = $res . ' (C&oacute;digo de descarga: <b>' . seg_CodigoAnexo($origen, $id) . '</b>)';
 		$sCodigoArchivo = seg_CodigoAnexo($origen, $id);
 		if ($iFechaRef < $iHoy) {
 			//Codigo Obligatorio
 			$sInfoCodigo = 'El sistema le solicitar&aacute; el siguiente c&oacute;digo de descarga: <b>' . $sCodigoArchivo . '</b>';
-		}  else {
+		} else {
 			$sInfoCodigo = 'Esta descarga encuentra disponible hasta el ' . formato_FechaLargaDesdeNumero($iFechaRef, true);
 			$sInfoCodigo = $sInfoCodigo . ', luego de esta fecha el sistema le solicitar&aacute; el siguiente c&oacute;digo de descarga: <b>' . $sCodigoArchivo . '</b>';
 		}
@@ -1806,7 +1857,7 @@ function html_LnkArchivoPublico($origen, $id, $iFechaTope = 0, $titulo = 'Descar
 			$sInfoCodigo = $sInfoCodigo . ', Este enlace de descarga vence el ' . formato_FechaLargaDesdeNumero($iFechaVence, true);
 		}
 	}
-	return array($res, $sInfoCodigo, $iFechaRef, $sCodigoArchivo);
+	return array($res, $sInfoCodigo, $iFechaRef, $sCodigoArchivo, $sEnlaceU);
 }
 function html_menuCampus($idsistema, $objDB, $iPiel = 0, $bDebug = false, $idTercero = 0, $bSalto = false)
 {
@@ -2318,6 +2369,241 @@ function html_menuCampusV2($objDB, $iPiel = 2, $bDebug = false, $idTercero = 0, 
 	$sHTML = $sHTML . '</li>';
 	return array($sHTML, $sDebug);
 }
+function html_menuCampusV3($objDB, $bDebug = false, $idTercero = 0)
+{
+	$sDebug = '';
+	require './app.php';
+	$idEntidad = Traer_Entidad();
+	$_SESSION['u_ultimominuto'] = iminutoavance();
+	if ($idTercero == 0) {
+		$idTercero = $_SESSION['unad_id_tercero'];
+	}
+	$sDebug = sesion_actualizar_v2($objDB, $bDebug);
+	$sHTML = '';
+	$sClaseLinkBase = ' class="option"';
+	$sClaseLinkItem = '';
+	$sClaseLiBase = ' class="option__list"';
+	$sClaseLiItem = '';
+	$sInicioBloque = '<ul class="option__drop">';
+	$sFinBloque = '</ul>';
+	$sInicioItem = '<li>';
+	$sFinItem = '</li>';
+	$et_inicio = 'Inicio';
+	$et_accesit = 'ACCESIT';
+	$et_clave = 'Contrase&ntilde;a';
+	$et_miperfil = 'Mi perfil';
+	$et_salir = 'Salir';
+	$et_miscursos = 'Mis cursos';
+	$et_misinscripciones = 'Mis inscripciones';
+	$et_misprogramas = 'Mis programas';
+	$et_proveedores = 'Proveedores';
+	$et_vida = 'Vida acad&eacute;mica';
+	$et_sai = 'Sistema de Atenci&oacute;n Integral';
+	$et_cipas = 'CIPAS';
+	$et_servicios = 'Servicios';
+	$et_mooc = 'Cursos MOOC';
+	$et_admisiones = 'Admisiones';
+	$et_oferabierta = 'Cursos Abiertos';
+	$et_contacto = 'Datos de contacto';
+	$et_emprendimiento = 'Emprendimiento';
+	$et_soporte = 'Soporte';
+	$et_banner = 'Banner';
+	$et_erp = 'SIGAF';
+	$et_gestion = 'Gesti&oacute;n';
+	$et_modulos = 'Acad&eacute;mico';
+	$et_ayuda = 'Ayuda';
+	$et_manuales = 'Manuales';
+	$et_acerca = 'Acerca de...';
+	switch ($_SESSION['unad_idioma']) {
+		case 'en':
+			$et_ayuda = 'Help';
+			$et_acerca = 'About...';
+			$et_miperfil = 'My profile';
+			$et_manuales = 'Manuals';
+			$et_salir = 'Exit';
+			break;
+		case 'pt':
+			$et_ayuda = 'Ajuda';
+			$et_acerca = 'Sobre...';
+			$et_miperfil = 'Meu perfil';
+			$et_manuales = 'Manuais';
+			$et_salir = 'Sair';
+			break;
+	}
+	$sSalto = '';
+	$sHTML = $sHTML . '<li' . $sClaseLiBase . '><a href="#"' . $sClaseLinkBase . '><span>' . $et_inicio . '</span></a>' . $sInicioBloque;
+	$sHTML = $sHTML . $sInicioItem . '<a href="accesit.php"' . $sClaseLinkItem . '><span>' . $et_accesit . '</span></a>' . $sFinItem;
+	$bEspeciales = false;
+	$bRevisaEspeciales = false;
+	if ((int)$idTercero > 0) {
+		switch ($idEntidad) {
+			case 0: // Colombia
+				$bRevisaEspeciales = true;
+				break;
+		}
+		if ($bRevisaEspeciales) {
+			if (function_exists('f107_PerfilPertenece')) {
+				if (f107_PerfilPertenece($idTercero, 1, $objDB)) {
+					$bEspeciales = true;
+				} else {
+				}
+			}
+		}
+		$sHTML = $sHTML . $sInicioItem . '<a href="miperfil.php"' . $sClaseLinkItem . $sSalto . '><span>' . $et_miperfil . '</span></a>' . $sFinItem;
+		$sHTML = $sHTML . $sInicioItem . '<a href="contrasegna.php"' . $sClaseLinkItem . $sSalto . '><span>' . $et_clave . '</span></a>' . $sFinItem;
+		$sHTML = $sHTML . $sInicioItem . '<a href="contacto.php"' . $sClaseLinkItem . $sSalto . '><span>' . $et_contacto . '</span></a>' . $sFinItem;
+		$sHTML = $sHTML . $sInicioItem . '<a href="salir.php"' . $sClaseLinkItem . '><span>' . $et_salir . '</span></a>' . $sFinItem;
+		$sHTML = $sHTML . $sFinBloque . '';
+		$sHTML = $sHTML . '<li' . $sClaseLiBase . '><a href="#"' . $sClaseLinkBase . '><span>' . $et_vida . '</span></a>' . $sInicioBloque;
+		$sHTML = $sHTML . $sInicioItem . '<a href="miscursos.php"' . $sClaseLinkItem . $sSalto . '><span>' . $et_miscursos . '</span></a>' . $sFinItem;
+		$sHTML = $sHTML . $sInicioItem . '<a href="misinscripciones.php"' . $sClaseLinkItem . $sSalto . '><span>' . $et_misinscripciones . '</span></a>' . $sFinItem;
+		if ($idEntidad == 0) {
+			$sHTML = $sHTML . $sInicioItem . '<a href="cipas.php"' . $sClaseLinkItem . $sSalto . '><span>' . $et_cipas . '</span></a>' . $sFinItem;
+			$sHTML = $sHTML . $sInicioItem . '<a href="sai.php"' . $sClaseLinkItem . $sSalto . '><span>' . $et_sai . '</span></a>' . $sFinItem;
+			if ($bEspeciales) {
+				$sHTML = $sHTML . $sInicioItem . '<a href="misprogramas.php"' . $sClaseLinkItem . $sSalto . '><span>' . $et_misprogramas . '</span></a>' . $sFinItem;
+			}
+		}
+		$sHTML = $sHTML . $sFinBloque . '';
+		$sHTML = $sHTML . '<li' . $sClaseLiBase . '><a href="#"' . $sClaseLinkBase . '><span>' . $et_servicios . '</span></a>' . $sInicioBloque;
+		$sHTML = $sHTML . $sInicioItem . '<a href="admisiones.php"' . $sClaseLinkItem . $sSalto . '><span>' . $et_admisiones . '</span></a>' . $sFinItem;
+		$sHTML = $sHTML . $sInicioItem . '<a href="mooc.php"' . $sClaseLinkItem . $sSalto . '><span>' . $et_mooc . '</span></a>' . $sFinItem;
+		if ($idEntidad == 0) {
+			$sHTML = $sHTML . $sInicioItem . '<a href="ofertaabierta.php"' . $sClaseLinkItem . $sSalto . '><span>' . $et_oferabierta . '</span></a>' . $sFinItem;
+			$sHTML = $sHTML . $sInicioItem . '<a href="emprendedor.php"' . $sClaseLinkItem . $sSalto . '><span>' . $et_emprendimiento . '</span></a>' . $sFinItem;
+			if ($bEspeciales) {
+				$sHTML = $sHTML . $sInicioItem . '<a href="https://erp.unad.edu.co/proveedor/" target="_blank"' . $sClaseLinkItem . $sSalto . '><span>' . $et_proveedores . '</span></a>' . $sFinItem;
+			}
+		}
+	}
+	$sHTML = $sHTML . $sFinBloque . '';
+	//Ver si tiene funciones administrativas.
+	$bConSoporte = false;
+	$bInternos = false;
+	if ((int)$idTercero > 0) {
+		if (is_object($objDB)) {
+			$bInternos = true;
+			list($bConSoporte, $sDebugP) = seg_revisa_permisoV3(202, 1, $idTercero, $objDB);
+		}
+	}
+	if ($bInternos) {
+		$sSQL = 'SELECT unad88appsestado FROM unad88opciones WHERE unad88id=1';
+		$tabla = $objDB->ejecutasql($sSQL);
+		if ($objDB->nf($tabla) > 0) {
+			$fila = $objDB->sf($tabla);
+			if ($fila['unad88appsestado'] == 9) {
+				$bInternos = false;
+			}
+		} else {
+			$bInternos = false;
+		}
+	}
+	if ($bInternos) {
+		//Acceso a los modulos en los que tiene permiso.
+		$bConModulos = false;
+		$bConERP = false;
+		$bConGestion = false;
+		$sPerfiles = '-99';
+		$sSQL = 'SELECT unad07idperfil FROM unad07usuarios WHERE unad07idtercero=' . $idTercero . ' AND unad07vigente="S"';
+		$tabla = $objDB->ejecutasql($sSQL);
+		while ($fila = $objDB->sf($tabla)) {
+			$sPerfiles = $sPerfiles . ',' . $fila['unad07idperfil'];
+		}
+		$sSistema = '-99';
+		//, unad01orden
+		if ($sPerfiles != '-99') {
+			$sSQL = 'SELECT T1.unad02idsistema, TS.unad01orden 
+			FROM unad06perfilmodpermiso AS TB, unad02modulos AS T1, unad01sistema AS TS 
+			WHERE TB.unad06idperfil IN (' . $sPerfiles . ') AND TB.unad06idpermiso=1 AND TB.unad06vigente="S" 
+			AND TB.unad06idmodulo=T1.unad02id AND T1.unad02idsistema NOT IN (99)
+			AND T1.unad02idsistema=TS.unad01id 
+			GROUP BY T1.unad02idsistema, TS.unad01orden';
+			$tabla = $objDB->ejecutasql($sSQL);
+			while ($fila = $objDB->sf($tabla)) {
+				if ($fila['unad01orden'] < 70) {
+					$bConModulos = true;
+				} else {
+					if ($fila['unad01orden'] < 100) {
+						$bConERP = true;
+					} else {
+						$bConGestion = true;
+					}
+				}
+				$sSistema = $sSistema . ',' . $fila['unad02idsistema'];
+			}
+		}
+		$sRutaBase = 'https://aurea2.unad.edu.co/';
+		switch ($idEntidad) {
+			case 0: // Colombia
+				break;
+			default:
+				$sRutaBase = './';
+				break;
+		}
+		$sSalto = ' target="_blank"';
+		if ($bConModulos) {
+			//Vemos los temas asociados a modulos academicos y eventos.
+			$sSQL = 'SELECT unad01nombre, unad01descripcion, unad01ruta 
+			FROM unad01sistema 
+			WHERE unad01id IN (' . $sSistema . ') AND unad01publico="S" AND unad01instalado="S" AND unad01orden<70 
+			ORDER BY unad01orden, unad01nombre';
+			$tabla = $objDB->ejecutasql($sSQL);
+			if ($objDB->nf($tabla) > 0) {
+				$sHTML = $sHTML . '<li' . $sClaseLiBase . '><a href="#"' . $sClaseLinkBase . '><span>' . $et_modulos . '</span></a>' . $sInicioBloque;
+			}
+			while ($fila = $objDB->sf($tabla)) {
+				$sRutaDef = $sRutaBase . cadena_Reemplazar($fila['unad01ruta'], '../', '');
+				$sHTML = $sHTML . $sInicioItem . '<a href="' . $sRutaDef . '"' . $sClaseLinkItem . ' title="' . cadena_notildes($fila['unad01descripcion']) . '" target="_blank"><span>' . strtoupper($fila['unad01nombre']) . '</span></a>' . $sFinItem;
+			}
+			$sHTML = $sHTML . $sFinBloque . '</li>';
+		}
+		if ($bConERP) {
+			//ERP
+			$sSQL = 'SELECT unad01nombre, unad01descripcion, unad01ruta 
+			FROM unad01sistema 
+			WHERE unad01id IN (' . $sSistema . ') AND unad01publico="S" AND unad01instalado="S" AND unad01orden>69 AND unad01orden<100  
+			ORDER BY unad01orden, unad01nombre';
+			$tabla = $objDB->ejecutasql($sSQL);
+			if ($objDB->nf($tabla) > 0) {
+				$bConERP = true;
+				$sHTML = $sHTML . '<li' . $sClaseLiBase . '><a href="#"' . $sClaseLinkBase . '><span>' . $et_erp . '</span></a>' . $sInicioBloque;
+			}
+			while ($fila = $objDB->sf($tabla)) {
+				$sRutaDef = $sRutaBase . cadena_Reemplazar($fila['unad01ruta'], '../', '');
+				$sHTML = $sHTML . $sInicioItem . '<a href="' . $sRutaDef . '"' . $sClaseLinkItem . ' title="' . cadena_notildes($fila['unad01descripcion']) . '" target="_blank"><span>' . strtoupper($fila['unad01nombre']) . '</span></a>' . $sFinItem;
+			}
+			$sHTML = $sHTML . $sFinBloque . '</li>';
+		}
+		if ($bConGestion) {
+			//Modulos de gestion.
+			$sSQL = 'SELECT unad01nombre, unad01descripcion, unad01ruta 
+			FROM unad01sistema 
+			WHERE unad01id IN (' . $sSistema . ') AND unad01publico="S" AND unad01instalado="S" AND unad01orden>99  
+			ORDER BY unad01orden, unad01nombre';
+			$tabla = $objDB->ejecutasql($sSQL);
+			if ($objDB->nf($tabla) > 0) {
+				$bConGestion = true;
+				$sHTML = $sHTML . '<li' . $sClaseLiBase . '><a href="#"' . $sClaseLinkBase . '><span>' . $et_gestion . '</span></a>' . $sInicioBloque;
+			}
+			while ($fila = $objDB->sf($tabla)) {
+				$sRutaDef = $sRutaBase . cadena_Reemplazar($fila['unad01ruta'], '../', '');
+				$sHTML = $sHTML . $sInicioItem . '<a href="' . $sRutaDef . '"' . $sClaseLinkItem . ' title="' . cadena_notildes($fila['unad01descripcion']) . '" target="_blank"><span>' . strtoupper($fila['unad01nombre']) . '</span></a>' . $sFinItem;
+			}
+			$sHTML = $sHTML . $sFinBloque . '</li>';
+		}
+	}
+	//Termina las funciones administrativas
+	$sHTML = $sHTML . '<li' . $sClaseLiBase . '><a href="#"' . $sClaseLinkBase . '><span>' . $et_ayuda . '</span></a>' . $sInicioBloque;
+	if ($bConSoporte) {
+		$sHTML = $sHTML . $sInicioItem . '<a href="adminbanner.php"' . $sClaseLinkItem . $sSalto . '><span>' . $et_banner . '</span></a>' . $sFinItem;
+	}
+	if ((int)$idTercero > 0) {
+		$sHTML = $sHTML . $sInicioItem . '<a href="unadayudas.php"' . $sClaseLinkItem . '><span>' . $et_manuales . '</span></a>' . $sFinItem;
+	}
+	$sHTML = $sHTML . $sInicioItem . '<a href="acercade.php"' . $sClaseLinkItem . '><span>' . $et_acerca . '</span></a>' . $sFinItem;
+	$sHTML = $sHTML . $sFinBloque . '</li>';
+	return array($sHTML, $sDebug);
+}
 // --- Menu de proveedores que es para el portal de proveedores
 function html_MenuProveedores($objDB, $iPiel = 2, $bDebug = false, $idTercero = 0, $bSalto = false)
 {
@@ -2397,6 +2683,47 @@ function html_MenuProveedores($objDB, $iPiel = 2, $bDebug = false, $idTercero = 
 	}
 	//Acceso a los modulos en los que tiene permiso.
 	$sHTML = $sHTML . '</li>';
+	return array($sHTML, $sDebug);
+}
+// Menu para el modulo de documentacion
+function html_menuDocs($objDB, $bDebug = false, $idTercero = 0)
+{
+	require './app.php';
+	$sDebug = '';
+	$idEntidad = Traer_Entidad($APP);
+	$_SESSION['u_ultimominuto'] = iminutoavance();
+	if ($idTercero == 0) {
+		$idTercero = $_SESSION['unad_id_tercero'];
+	}
+	$sDebug = sesion_actualizar_v2($objDB, $bDebug);
+	$sHTML = '';
+	$sClaseLinkBase = ' class="option"';
+	$sClaseLinkItem = '';
+	$sClaseLiBase = ' class="option__list"';
+	$sClaseLiItem = '';
+	$sInicioBloque = '<ul class="option__drop">';
+	$sFinBloque = '</ul>';
+	$sInicioItem = '<li>';
+	$sFinItem = '</li>';
+
+
+
+
+	// $sHTML = $sHTML . '<li class="options__item">';
+	// $sHTML = $sHTML . '<a class="option">' . $et_ini . '<i class="iNavigateNext"></i></a>';
+	// $sHTML = $sHTML . $sInicioBloque;
+	// $sHTML = $sHTML . '<li><a href="./">' . $et_panel . '</a></li>';
+	// $sHTML = $sHTML . '<li><a href="miperfil.php">' . $et_miperfil . '</a></li>';
+	// $sHTML = $sHTML . '<li><a href="contrasegna.php">' . $et_clave . '</a></li>';
+	// $sHTML = $sHTML . '<li><a href="contacto.php">' . $et_contacto . '</a></li>';
+	// $sHTML = $sHTML . $sFinBloque;
+	// $sHTML = $sHTML . '</li><li class="options__item">';
+	// $sHTML = $sHTML . '<a class="option">' . $et_proveedor . '<i class="iNavigateNext"></i></a>';
+	// $sHTML = $sHTML . $sInicioBloque;
+	// $sHTML = $sHTML . '<li><a href="proveedor.php" title="' . $et_regproveeedor . '">' . $et_regproveeedor . '</a></li>';
+	// $sHTML = $sHTML . '<li><a href="cotizacion.php" title="' . $et_cotizaciones . '">' . $et_cotizaciones . '</a></li>';
+	// $sHTML = $sHTML . $sFinBloque;
+	// $sHTML = $sHTML . '</li>';
 	return array($sHTML, $sDebug);
 }
 // --- Termina el menu de proveedores
@@ -2901,6 +3228,16 @@ function html_GrupoBotones($iCodigo, $iClase, $iSel = 0)
 	return $sRes;
 }
 
+function html_GrupoBotonesV2($iCodigo, $iClase, $iSel = 0)
+{
+	$sClase = '';
+	if ($iSel == 1) {
+		$sClase = ' class="button-checked"';
+	}
+	$sRes = '<button id="button-' . $iClase . '" onclick="javascript:marca_boton(' . $iCodigo . ')"' . $sClase . '>' . $iCodigo . '</button>';
+	return $sRes;
+}
+
 function html_Tercero1l($id, $objDB, $bHtml = false)
 {
 	$sHTML = '';
@@ -2960,27 +3297,32 @@ function html_Alerta($sTexto, $sColor = '', $bConIcono = true)
 	$sTipo = '';
 	$sIcono = '';
 	switch ($sColor) {
+		case 'green':
 		case 'verde':
 			$sTipo = 'success';
-			$sIcono = '';
+			$sIcono = 'icon-check';
 			break;
+		case 'yellow':
+		case 'amarillo':
+		case 'orange':
 		case 'naranja':
 			$sTipo = 'warning';
-			$sIcono = '';
+			$sIcono = 'icon-warning';
 			break;
+		case 'red':
 		case 'rojo':
 			$sTipo = 'danger';
-			$sIcono = '';
+			$sIcono = 'icon-error';
 			break;
 		default:
 			$sTipo = 'info';
 			$sIcono = 'icon-info';
 	}
-	$sRes = '<div class="alert alert-' . $sTipo . '">';
+	$sRes = '<span class="alert alert-' . $sTipo . ' py-1">';
 	if ($bConIcono) {
 		$sRes = $sRes . '<i class="' . $sIcono . '"></i>';
 	}
 	$sRes = $sRes . '<p>' . $sTexto . '</p>';
-	$sRes = $sRes . '</div>';
+	$sRes = $sRes . '</span>';
 	return $sRes;
 }
