@@ -245,10 +245,10 @@ function f269_TablaDetalleV2($aParametros, $objDB, $bDebug = false)
 	$sDebug = '';
 	if (true) {
 		//Leemos los parametros de entrada.
-	$pagina = $aParametros[101];
-	$lineastabla = $aParametros[102];
-	$bNombre = $aParametros[103];
-	$bGrupo = $aParametros[104];
+		$pagina = $aParametros[101];
+		$lineastabla = $aParametros[102];
+		$bNombre = $aParametros[103];
+		$bGrupo = $aParametros[104];
 	}
 	$bAbierta = true;
 	/*
@@ -284,23 +284,23 @@ function f269_TablaDetalleV2($aParametros, $objDB, $bDebug = false)
 	*/
 	if (true) {
 		//Esta condición la ponemos para mantener la conparación con los arhcivos tipo e
-	$sSQLadd = '';
-	$sSQLadd1 = '';
-	//if ($aParametros[104]!=''){$sSQLadd=$sSQLadd.' AND TB.campo2 LIKE "%'.$aParametros[104].'%"';}
-	if ($bGrupo != '') {
-		$sSQLadd1 = $sSQLadd1 . 'TB.aure69idgrupo=' . $aParametros[104] . ' AND ';
-	}
-	if ($bNombre != '') {
-		$sBase = trim(strtoupper($bNombre));
-		$aNoms = explode(' ', $sBase);
-		for ($k = 1; $k <= count($aNoms); $k++) {
-			$sCadena = $aNoms[$k - 1];
-			if ($sCadena != '') {
-				$sSQLadd = $sSQLadd . ' AND TB.aure69detalle LIKE "%' . $sCadena . '%"';
-				//$sSQLadd1=$sSQLadd1.'T1.unad11razonsocial LIKE "%'.$sCadena.'%" AND ';
+		$sSQLadd = '';
+		$sSQLadd1 = '';
+		//if ($aParametros[104]!=''){$sSQLadd=$sSQLadd.' AND TB.campo2 LIKE "%'.$aParametros[104].'%"';}
+		if ($bGrupo != '') {
+			$sSQLadd1 = $sSQLadd1 . 'TB.aure69idgrupo=' . $aParametros[104] . ' AND ';
+		}
+		if ($bNombre != '') {
+			$sBase = trim(strtoupper($bNombre));
+			$aNoms = explode(' ', $sBase);
+			for ($k = 1; $k <= count($aNoms); $k++) {
+				$sCadena = $aNoms[$k - 1];
+				if ($sCadena != '') {
+					$sSQLadd = $sSQLadd . ' AND TB.aure69detalle LIKE "%' . $sCadena . '%"';
+					//$sSQLadd1=$sSQLadd1.'T1.unad11razonsocial LIKE "%'.$sCadena.'%" AND ';
+				}
 			}
 		}
-	}
 	}
 	$sTitulos = 'Consec, Id, Sistema, Fecha, Verupd, Mayor, Menor, Correccion, Grupo, Detalle, Publico';
 	$registros = 0;
@@ -357,22 +357,25 @@ function f269_TablaDetalleV2($aParametros, $objDB, $bDebug = false)
 		}
 	}
 	$res = $sErrConsulta . $sLeyenda;
-	$res = $res . '<div class="table-responsive">
-	<table border="0" align="center" cellpadding="0" cellspacing="2" class="tablaapp">
-	<thead class="fondoazul"><tr>
-	<td><b>' . $ETI['aure69consec'] . '</b></td>
-	<td><b>' . $ETI['aure69idsistema'] . '</b></td>
-	<td><b>' . $ETI['aure69fecha'] . '</b></td>
-	<td><b>' . $ETI['aure69verupd'] . '</b></td>
-	<td><b>' . $ETI['msg_version'] . '</b></td>
-	<td><b>' . $ETI['aure69idgrupo'] . '</b></td>
-	<td><b>' . $ETI['aure69publico'] . '</b></td>
-	<td align="right">
-	' . html_paginador('paginaf269', $registros, $lineastabla, $pagina, 'paginarf269()') . '
-	' . html_lpp('lppf269', $lineastabla, 'paginarf269()') . '
-	</td>
-	</tr></thead>';
-	//<td><b>'.$ETI['aure69detalle'].'</b></td>
+	$sClaseTabla = 'table--primary';
+	if ($iPiel == 1) {
+		$sClaseTabla = 'tablaapp';
+	}
+	$res = $res . '<div class="table-responsive">';
+	$res = $res . '<table border="0" align="center" cellpadding="0" cellspacing="2" class="' . $sClaseTabla . '">';
+	$res = $res . '<thead class="fondoazul"><tr>';
+	$res = $res . '<th><b>' . $ETI['aure69consec'] . '</b></th>';
+	$res = $res . '<th><b>' . $ETI['aure69idsistema'] . '</b></th>';
+	$res = $res . '<th><b>' . $ETI['aure69fecha'] . '</b></th>';
+	$res = $res . '<th><b>' . $ETI['aure69verupd'] . '</b></th>';
+	$res = $res . '<th><b>' . $ETI['msg_version'] . '</b></th>';
+	$res = $res . '<th><b>' . $ETI['aure69idgrupo'] . '</b></th>';
+	$res = $res . '<th><b>' . $ETI['aure69publico'] . '</b></th>';
+	$res = $res . '<th class="flex gap-1 justify-end">';
+	$res = $res . html_paginador('paginaf269', $registros, $lineastabla, $pagina, 'paginarf269()') . '';
+	$res = $res . html_lpp('lppf269', $lineastabla, 'paginarf269()') . '';
+	$res = $res . '</th>';
+	$res = $res . '</tr></thead><tbody>';
 	$tlinea = 1;
 	while ($filadet = $objDB->sf($tabladetalle)) {
 		$sPrefijo = '';
@@ -400,27 +403,27 @@ function f269_TablaDetalleV2($aParametros, $objDB, $bDebug = false)
 		}
 		$sVerSistema = '';
 		$sVerSistema = $filadet['aure69mayor'] . '.' . $filadet['aure69menor'] . '.' . $filadet['aure69correccion'];
-		$res = $res . '<tr' . $sClass . '>
-		<td>' . $sPrefijo . $filadet['aure69consec'] . $sSufijo . '</td>
-		<td>' . $sPrefijo . cadena_notildes($filadet['unad01nombre']) . $sSufijo . '</td>
-		<td>' . $sPrefijo . $et_aure69fecha . $sSufijo . '</td>
-		<td>' . $sPrefijo . $filadet['aure69verupd'] . $sSufijo . '</td>
-		<td>' . $sPrefijo . $sVerSistema . $sSufijo . '</td>
-		<td>' . $sPrefijo . cadena_notildes($filadet['aure68nombre']) . $sSufijo . '</td>
-		<td>' . $sPrefijo . $et_aure69publico . $sSufijo . '</td>
-		<td>' . $sLink . '</td>
-		</tr>';
+		$res = $res . '<tr' . $sClass . '>';
+		$res = $res . '<td>' . $sPrefijo . $filadet['aure69consec'] . $sSufijo . '</td>';
+		$res = $res . '<td>' . $sPrefijo . cadena_notildes($filadet['unad01nombre']) . $sSufijo . '</td>';
+		$res = $res . '<td>' . $sPrefijo . $et_aure69fecha . $sSufijo . '</td>';
+		$res = $res . '<td>' . $sPrefijo . $filadet['aure69verupd'] . $sSufijo . '</td>';
+		$res = $res . '<td>' . $sPrefijo . $sVerSistema . $sSufijo . '</td>';
+		$res = $res . '<td>' . $sPrefijo . cadena_notildes($filadet['aure68nombre']) . $sSufijo . '</td>';
+		$res = $res . '<td>' . $sPrefijo . $et_aure69publico . $sSufijo . '</td>';
+		$res = $res . '<td>' . $sLink . '</td>';
+		$res = $res . '</tr>';
 		if ($filadet['aure69detalle'] != '') {
-			$res = $res . '<tr' . $sClass . '>
-			<td></td>
-			<td colspan="9">' . $sPrefijo . cadena_notildes($filadet['aure69detalle']) . $sSufijo . '</td>
-			</tr>';
+			$res = $res . '<tr' . $sClass . '>';
+			$res = $res . '<td></td>';
+			$res = $res . '<td colspan="9">' . $sPrefijo . cadena_notildes($filadet['aure69detalle']) . $sSufijo . '</td>';
+			$res = $res . '</tr>';
 		}
 		//<td>'.$sPrefijo.cadena_notildes($filadet['aure69enlace']).$sSufijo.'</td>
 	}
-	$res = $res . '</table>
-	<div class="salto5px"></div>
-	</div>';
+	$res = $res . '</tbody></table>';
+	$res = $res . '<div class="salto5px"></div>';
+	$res = $res . '</div>';
 	$objDB->liberar($tabladetalle);
 	return array(cadena_codificar($res), $sDebug);
 }
@@ -981,8 +984,12 @@ function f269_TablaDetalleBusquedas($aParametros, $objDB)
 		}
 	}
 	$res = $sErrConsulta . $sLeyenda;
+	$sClaseTabla = 'table--primary';
+	if ($iPiel == 1) {
+		$sClaseTabla = 'tablaapp';
+	}
 	$res = $res . '<div class="table-responsive">
-	<table border="0" align="center" cellpadding="0" cellspacing="2" class="tablaapp">
+	<table border="0" align="center" cellpadding="0" cellspacing="2" class="' . $sClaseTabla . '">
 	<thead class="fondoazul"><tr>
 	<td><b>' . $ETI['aure69consec'] . '</b></td>
 	<td><b>' . $ETI['aure69idsistema'] . '</b></td>
@@ -1097,6 +1104,7 @@ function f269_TablaDetalleV2Usuario($aParametros, $objDB, $bDebug = false)
 		return array($sLeyenda . $sBotones, $sDebug);
 		die();
 	}
+	$iPiel = iDefinirPiel($APP, 2);
 	/*
 	$aEstado=array();
 	$sSQL='SELECT id, nombre FROM tabla';
@@ -1122,10 +1130,10 @@ function f269_TablaDetalleV2Usuario($aParametros, $objDB, $bDebug = false)
 			}
 		}
 	}
-	if ($bModulo != ''){
+	if ($bModulo != '') {
 		$sSQLadd1 = $sSQLadd1 . ' TB.aure69idmodulo=' . $bModulo . ' AND ';
 	} else {
-		if ($idSistema == 0){
+		if ($idSistema == 0) {
 			$sSQLadd1 = $sSQLadd1 . ' TB.aure69campus=1 AND ';
 		} else {
 			list($sModulos, $sDebugM) = f269_ModulosTerceroV2($idSistema, $idTercero, $objDB, $bDebug);
@@ -1198,34 +1206,27 @@ function f269_TablaDetalleV2Usuario($aParametros, $objDB, $bDebug = false)
 		}
 	}
 	$res = $sErrConsulta . $sLeyenda;
-	$sPaginador = '<td align="right">
-	' . html_paginador('paginaf269', $registros, $lineastabla, $pagina, 'paginarf269()') . '
-	' . html_lpp('lppf269', $lineastabla, 'paginarf269()') . '
-	</td>';
-	$res = $res . '<div class="table-responsive">
-	<table border="0" align="center" cellpadding="0" cellspacing="2" class="tablaapp">
-	<thead class="fondoazul"><tr>
-	<td colspan="3" align="center"><b>' . $ETI['msg_novedades'] . '</b></td>
-	</tr></thead>';
-	//<td><b>'.$ETI['aure69detalle'].'</b></td>
+	$sClaseTabla = 'table--primary';
+	if ($iPiel == 1) {
+		$sClaseTabla = 'tablaapp';
+	}
+	$res = $res . '<div class="table-responsive">';
+	$res = $res . '<table border="0" align="center" cellpadding="0" cellspacing="2" class="' . $sClaseTabla . '">';
+	$res = $res . '<thead class="fondoazul"><tr>';
+	$res = $res . '<th colspan="2" style="text-align: center;"><b>' . $ETI['msg_novedades'] . '</b></th>';
+	$res = $res . '<th class="text-right w-20">';
+	$res = $res . html_paginador('paginaf269', $registros, $lineastabla, $pagina, 'paginarf269()');
+	$res = $res . html_lpp('lppf269', $lineastabla, 'paginarf269()');
+	$res = $res . '</th>';
+	$res = $res . '</tr></thead><tbody>';
 	$tlinea = 1;
-	$sFecha = '';
 	$idGrupo = -99;
 	while ($filadet = $objDB->sf($tabladetalle)) {
 		if ($idGrupo != $filadet['aure69idgrupo']) {
 			$idGrupo = $filadet['aure69idgrupo'];
-			$sFecha = $filadet['aure69fecha'];
-			if ($sPaginador != '') {
-				$res = $res . '<tr class="fondoazul">
-				<td colspan="2" align="center">' . $ETI['aure69idgrupo'] . ' <b>' . cadena_notildes($filadet['aure68nombre']) . '</b></td>
-				' . $sPaginador . '
-				</tr>';
-				$sPaginador = '';
-			} else {
-				$res = $res . '<tr class="fondoazul">
-				<td colspan="3" align="center">' . $ETI['aure69idgrupo'] . ' <b>' . cadena_notildes($filadet['aure68nombre']) . '</b></td>
-				</tr>';
-			}
+			$res = $res . '<tr class="fondoazul">';
+			$res = $res . '<td colspan="3" align="center">' . $ETI['aure69idgrupo'] . ': <b>' . cadena_notildes($filadet['aure68nombre']) . '</b></td>';
+			$res = $res . '</tr>';
 		}
 		$sPrefijo = '';
 		$sSufijo = '';
@@ -1246,26 +1247,20 @@ function f269_TablaDetalleV2Usuario($aParametros, $objDB, $bDebug = false)
 		}
 		$tlinea++;
 		$et_aure69fecha = $filadet['aure69fecha'];
-		if ($bAbierta) {
-			//$sLink='<a href="javascript:cargaridf269('.$filadet['aure69id'].')" class="lnkresalte">'.$ETI['lnk_cargar'].'</a>';
-		}
-		//$sVerSistema='';
-		//$sVerSistema=$filadet['aure69mayor'].'.'.$filadet['aure69menor'].'.'.$filadet['aure69correccion'];
-		$res = $res . '<tr' . $sClass . '>
-		<td>' . $sPrefijo . $et_aure69fecha . $sSufijo . '</td>
-		<td colspan="2">' . $sPrefijo . cadena_notildes($filadet['aure69detalle']) . $sSufijo . '</td>
-		</tr>';
+		$res = $res . '<tr' . $sClass . '>';
+		$res = $res . '<td class="w-15">' . $sPrefijo . $et_aure69fecha . $sSufijo . '</td>';
+		$res = $res . '<td colspan="2">' . $sPrefijo . cadena_notildes($filadet['aure69detalle']) . $sSufijo . '</td>';
+		$res = $res . '</tr>';
 		if ($filadet['aure69enlace'] != '') {
-			$res = $res . '<tr' . $sClass . '>
-			<td></td>
-			<td colspan="2">' . $ETI['msg_masinfo'] . ' <a href="' . $filadet['aure69enlace'] . '" class="lnkresalte" title="' . $filadet['aure69enlace'] . '" target="_blank">' . $ETI['msg_click'] . '</a></td>
-			</tr>';
+			$res = $res . '<tr' . $sClass . '>';
+			$res = $res . '<td></td>';
+			$res = $res . '<td colspan="2">' . $ETI['msg_masinfo'] . ' <a href="' . $filadet['aure69enlace'] . '" class="lnkresalte" title="' . $filadet['aure69enlace'] . '" target="_blank">' . $ETI['msg_click'] . '</a></td>';
+			$res = $res . '</tr>';
 		}
-		//<td>'.$sPrefijo.cadena_notildes($filadet['aure69enlace']).$sSufijo.'</td>
 	}
-	$res = $res . '</table>
-	<div class="salto5px"></div>
-	</div>';
+	$res = $res . '</tbody></table>';
+	$res = $res . '<div class="salto5px"></div>';
+	$res = $res . '</div>';
 	$objDB->liberar($tabladetalle);
 	return array(cadena_codificar($res), $sDebug);
 }
@@ -1374,6 +1369,7 @@ function f269_TablaDetalleV2Sistema($aParametros, $objDB, $bDebug = false)
 		return array($sLeyenda . $sBotones, $sDebug);
 		die();
 	}
+	$iPiel = iDefinirPiel($APP, 2);
 	/*
 	$aEstado=array();
 	$sSQL='SELECT id, nombre FROM tabla';
@@ -1477,34 +1473,27 @@ function f269_TablaDetalleV2Sistema($aParametros, $objDB, $bDebug = false)
 		}
 	}
 	$res = $sErrConsulta . $sLeyenda;
-	$sPaginador = '<td align="right">
-	' . html_paginador('paginaf269', $registros, $lineastabla, $pagina, 'paginarf269()') . '
-	' . html_lpp('lppf269', $lineastabla, 'paginarf269()') . '
-	</td>';
-	$res = $res . '<div class="table-responsive">
-	<table border="0" align="center" cellpadding="0" cellspacing="2" class="tablaapp">
-	<thead class="fondoazul"><tr>
-	<td colspan="3" align="center"><b>' . $ETI['msg_novedades'] . '</b></td>
-	</tr></thead>';
-	//<td><b>'.$ETI['aure69detalle'].'</b></td>
+	$sClaseTabla = 'table--primary';
+	if ($iPiel == 1) {
+		$sClaseTabla = 'tablaapp';
+	}
+	$res = $res . '<div class="table-responsive">';
+	$res = $res . '<table border="0" align="center" cellpadding="0" cellspacing="2" class="' . $sClaseTabla . '">';
+	$res = $res . '<thead class="fondoazul"><tr>';
+	$res = $res . '<th colspan="2" style="text-align: center;"><b>' . $ETI['msg_novedades'] . '</b></th>';
+	$res = $res . '<th class="text-right w-20">';
+	$res = $res . html_paginador('paginaf269', $registros, $lineastabla, $pagina, 'paginarf269()');
+	$res = $res . html_lpp('lppf269', $lineastabla, 'paginarf269()');
+	$res = $res . '</th>';
+	$res = $res . '</tr></thead><tbody>';
 	$tlinea = 1;
-	$sFecha = '';
 	$idGrupo = -99;
 	while ($filadet = $objDB->sf($tabladetalle)) {
 		if ($idGrupo != $filadet['aure69idgrupo']) {
 			$idGrupo = $filadet['aure69idgrupo'];
-			$sFecha = $filadet['aure69fecha'];
-			if ($sPaginador != '') {
-				$res = $res . '<tr class="fondoazul">
-				<td colspan="2" align="center">' . $ETI['aure69idgrupo'] . ' <b>' . cadena_notildes($filadet['aure68nombre']) . '</b></td>
-				' . $sPaginador . '
-				</tr>';
-				$sPaginador = '';
-			} else {
-				$res = $res . '<tr class="fondoazul">
-				<td colspan="3" align="center">' . $ETI['aure69idgrupo'] . ' <b>' . cadena_notildes($filadet['aure68nombre']) . '</b></td>
-				</tr>';
-			}
+			$res = $res . '<tr class="fondoazul">';
+			$res = $res . '<td colspan="3" align="center">' . $ETI['aure69idgrupo'] . ': <b>' . cadena_notildes($filadet['aure68nombre']) . '</b></td>';
+			$res = $res . '</tr>';
 		}
 		$sPrefijo = '';
 		$sSufijo = '';
@@ -1524,33 +1513,28 @@ function f269_TablaDetalleV2Sistema($aParametros, $objDB, $bDebug = false)
 			$sClass = '';
 		}
 		$tlinea++;
+
 		$et_aure69fecha = $filadet['aure69fecha'];
-		if ($bAbierta) {
-			//$sLink='<a href="javascript:cargaridf269('.$filadet['aure69id'].')" class="lnkresalte">'.$ETI['lnk_cargar'].'</a>';
-		}
-		//$sVerSistema='';
-		//$sVerSistema=$filadet['aure69mayor'].'.'.$filadet['aure69menor'].'.'.$filadet['aure69correccion'];
-		$res = $res . '<tr' . $sClass . '>
-		<td>' . $sPrefijo . $et_aure69fecha . $sSufijo . '</td>
-		<td colspan="2">' . $sPrefijo . cadena_notildes($filadet['aure69detalle']) . $sSufijo . '</td>
-		</tr>';
+		$res = $res . '<tr' . $sClass . '>';
+		$res = $res . '<td class="w-15">' . $sPrefijo . $et_aure69fecha . $sSufijo . '</td>';
+		$res = $res . '<td colspan="2">' . $sPrefijo . cadena_notildes($filadet['aure69detalle']) . $sSufijo . '</td>';
+		$res = $res . '</tr>';
 		if ($filadet['aure69enlace'] != '') {
-			$res = $res . '<tr' . $sClass . '>
-			<td></td>
-			<td>' . $ETI['msg_masinfo'] . ' <a href="' . $filadet['aure69enlace'] . '" class="lnkresalte" title="' . $filadet['aure69enlace'] . '" target="_blank">' . $ETI['msg_click'] . '</a></td>
-			<td><a href="javascript:paginarf269(' . $filadet['aure69id'] . ')" class="lnkresalte">' . $ETI['msg_visto'] . '</a></td>
-			</tr>';
+			$res = $res . '<tr' . $sClass . '>';
+			$res = $res . '<td></td>';
+			$res = $res . '<td>' . $ETI['msg_masinfo'] . ' <a href="' . $filadet['aure69enlace'] . '" class="lnkresalte" title="' . $filadet['aure69enlace'] . '" target="_blank">' . $ETI['msg_click'] . '</a></td>';
+			$res = $res . '<td><a href="javascript:paginarf269(' . $filadet['aure69id'] . ')" class="lnkresalte">' . $ETI['msg_visto'] . '</a></td>';
+			$res = $res . '</tr>';
 		} else {
-			$res = $res . '<tr' . $sClass . '>
-			<td colspan="2"></td>
-			<td><a href="javascript:paginarf269(' . $filadet['aure69id'] . ')" class="lnkresalte">' . $ETI['msg_visto'] . '</a></td>
-			</tr>';
+			$res = $res . '<tr' . $sClass . '>';
+			$res = $res . '<td colspan="2"></td>';
+			$res = $res . '<td><a href="javascript:paginarf269(' . $filadet['aure69id'] . ')" class="lnkresalte">' . $ETI['msg_visto'] . '</a></td>';
+			$res = $res . '</tr>';
 		}
-		//<td>'.$sPrefijo.cadena_notildes($filadet['aure69enlace']).$sSufijo.'</td>
 	}
-	$res = $res . '</table>
-	<div class="salto5px"></div>
-	</div>';
+	$res = $res . '</tbody></table>';
+	$res = $res . '<div class="salto5px"></div>';
+	$res = $res . '</div>';
 	$objDB->liberar($tabladetalle);
 	return array(cadena_codificar($res), $sDebug);
 }

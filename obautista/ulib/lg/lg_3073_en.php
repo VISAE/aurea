@@ -85,6 +85,7 @@ $ETI['saiu73horarespuesta']='Hora respuesta';
 $ETI['saiu73razonsocial']='Nombre';
 $ETI['titulo_encuesta_excel'] = 'Encuesta de Satisfacci&oacute;n';
 $ETI['saiu73evalfecha'] = 'Fecha encuesta';
+$ETI['saiu73evalacepta'] = 'Acepta responder';
 $ETI['saiu73evalamabilidad'] = '¿Califique la amabilidad y empat&iacute;a por parte del gestor del servicio&quest;';
 $ETI['saiu73evalamabmotivo'] = 'Observaciones y sugerencias';
 $ETI['saiu73evalrapidez'] = '¿El tiempo de respuesta a su solicitud fue el adecuado&quest;';

@@ -247,7 +247,7 @@ function AUREA_ClaveValidaV3($sValor, $idTercero, $objDB, $sPermitidos = '', $bD
 		}
 	}
 	if ($sError == '') {
-		if ($idTercero > 0){
+		if ($idTercero > 0) {
 			//Que no este poniendo la misma.
 			$sHash = password_hash($sValor, PASSWORD_DEFAULT);
 			$sSQL = 'SELECT unad11clave FROM unad11terceros WHERE unad11id=' . $idTercero . '';
@@ -264,7 +264,7 @@ function AUREA_ClaveValidaV3($sValor, $idTercero, $objDB, $sPermitidos = '', $bD
 		}
 	}
 	if ($sError == '') {
-		if ($idTercero > 0){
+		if ($idTercero > 0) {
 			//Ver que no se haya usado recientemente.
 			$sSQL = 'SELECT unae10hash, unae10fecha FROM unae10historialclave WHERE unae10idtercero=' . $idTercero . ' ORDER BY unae10fecha DESC LIMIT 0, 3';
 			if ($bDebug) {
@@ -284,6 +284,7 @@ function AUREA_ClaveValidaV3($sValor, $idTercero, $objDB, $sPermitidos = '', $bD
 	}
 	return array($sError, $sDebug);
 }
+// 
 function AUREA_ConfirmarCorreoNotifica($idTercero, $objDB, $sFrase = '', $bDebug = false)
 {
 	$sError = '';
@@ -551,20 +552,20 @@ function AUREA_CorreoNotificaV2($idTercero, $objDB, $bDebug = false)
 		//Ahora validamos el grupo de correo.
 		if ($unad11idgrupocorreo == -1) {
 			if ($bHayCorreo) {
-				$aCorreo = explode('@' , $sCorreoUsuario);
+				$aCorreo = explode('@', $sCorreoUsuario);
 				if (count($aCorreo) > 1) {
 					$sDominio = strtolower(trim($aCorreo[1]));
 					list($unad11idgrupocorreo, $sDebugG) = AUREA_GrupoDominio($sDominio, $objDB, $bDebug = false);
 					$sDebug = $sDebug . $sDebugG;
 					$sSQL = 'UPDATE unad11terceros SET unad11idgrupocorreo=' . $unad11idgrupocorreo . ' WHERE unad11id=' . $idTercero . '';
-					if ($bDebug){
+					if ($bDebug) {
 						$sDebug = $sDebug . fecha_microtiempo() . ' <b>GRUPO CORREO</b> Actualizando ' . $sSQL . '<br>';
 					}
 					$result = $objDB->ejecutasql($sSQL);
 				}
 			}
 		}
-		if ($bDebug){
+		if ($bDebug) {
 			$sDebug = $sDebug . fecha_microtiempo() . ' <b>GRUPO CORREO</b> Grupo resultante ' . $unad11idgrupocorreo . '<br>';
 		}
 	}
@@ -778,7 +779,7 @@ function AUREA_CrearTabla_aure02intentos($sMes, $objDB, $bDebug = false)
 		} else {
 			$sSQL = "ALTER TABLE " . $sTabla . " ADD PRIMARY KEY(aure02id)";
 			$result = $objDB->ejecutasql($sSQL);
-			$sSQL=$objDB->sSQLCrearIndice($sTabla, 'aure02intentos_id', 'aure02idtercero, aure02fecha, aure02consec', true);
+			$sSQL = $objDB->sSQLCrearIndice($sTabla, 'aure02intentos_id', 'aure02idtercero, aure02fecha, aure02consec', true);
 			$result = $objDB->ejecutasql($sSQL);
 		}
 	}
@@ -862,8 +863,8 @@ function AUREA_HTML_EncabezadoCorreo($sTituloCorreo)
 		switch ($APP->entidad) {
 			case 1: // Unad Florida
 			case 2: // Union Europea
-			$idEntidad = $APP->entidad;
-			break;
+				$idEntidad = $APP->entidad;
+				break;
 		}
 	}
 	$sProtocolo = 'https://';
@@ -890,169 +891,169 @@ function AUREA_HTML_EncabezadoCorreo($sTituloCorreo)
 			break;
 	}
 	$sRes = '<!DOCTYPE html>
-	<html xmlns:v="urn:schemas-microsoft-com:vml" xmlns="http://www.w3.org/148/xhtml">
-	<head>
-	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
-	<meta name="viewport" content="width=device-width, initial-scale=1.0">
-	<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
-	<meta name="format-detection" content="telephone=no" />
-	<title>' . $sNomEntidad . '</title>
-	<style type="text/css">
-	html {margin: 0;padding: 0;}
-	body,#bodyTable,
-	#bodyCell {height: 100% !important;margin: 0;padding: 0;width: 100% !important;}
-	table {border-collapse: collapse;}
-	table[id=bodyTable] {width: 100% !important;margin: auto;max-width: 600px !important;font-weight: normal;}
-	table,
-	td {mso-table-lspace: 0pt;mso-table-rspace: 0pt;}
-	img {-ms-interpolation-mode: bicubic;outline: none;text-decoration: none;}
-	body,table,td,p,a,li,
-	blockquote {-ms-text-size-adjust: 100%;-webkit-text-size-adjust: 100%;font-weight: normal !important;}
-	body,
-	#bodyTable {background-color: #E1E1E1;}
-	#emailBody {background-color: #e5e5e5;}
-	.text-black {color: #000000 !important;}
-	.text-white {color: #e5e5e5 !important;}
-	.text-blue {color: #01385f !important;}
-	.text-red {color: #ed3833 !important;}
-	.hidden-lg {display: none !important;mso-hide: all !important;}
-	@media only screen and (max-width: 599px) {
-	body {width: 100% !important;min-width: 100% !important;}
-	table[id="emailBody"] {width: 100% !important;}
-	.hidden {display: none;}
-	.hidden-sm {display: none !important;}
-	.hidden-lg {display: table !important;overflow: visible !important;max-height: inherit !important;}
-	.hidden-lg-inline {display: inline-block !important;overflow: visible !important;max-height: inherit !important;}
-	.textbody {padding: 47px 38px !important;font-size: 14px !important;line-height: 18px !important;width: 100%;}
-	.textbody #personalizacion {font-size: 18px !important;}
-	.text-center {text-align: center !important;height: auto !important;}
-	.text-right {text-align: right !important;}
-	.text-left {text-align: left !important;}
-	.text-justify {text-align: justify !important;}
-	.margin-auto {margin-left: auto !important;margin-right: auto !important;}
-	.center-image {margin: 0 auto !important;text-align: center !important;}
-	.right-image {margin-right: 0 !important;text-align: right !important;}
-	.left-image {margin-left: 0 !important;text-align: left !important;}
-	.block {display: block !important;margin: 0 auto !important;}
-	.block-auto {display: block !important;height: auto !important;margin-left: auto !important;margin-right: auto !important;float: none !important;}
-	.height-auto {height: auto !important;}
-	.scale-95 {width: 95% !important;}
-	.scale-90 {width: 90% !important;}
-	.scale-85 {width: 85% !important;}
-	.p-5 {padding: 5% !important;}
-	.p-10 {padding: 10% !important;}
-	.p-15 {padding: 15% !important;}
-	.p-20 {padding: 20% !important;}
-	.p-30 {padding: 30% !important;}
-	.p-40 {padding: 40% !important;}
-	.p-50 {padding: 50% !important;}
-	.pv-5 {padding-top: 5% !important;padding-bottom: 5% !important;}
-	.pv-10 {padding-top: 10% !important;padding-bottom: 10% !important;}
-	.pv-20 {padding-top: 20% !important;padding-bottom: 20% !important;}
-	.pv-30 {padding-top: 30% !important;padding-bottom: 30% !important;}
-	.pv-40 {padding-top: 40% !important;padding-bottom: 40% !important;}
-	.pv-50 {padding-top: 50% !important;padding-bottom: 50% !important;}
-	.pt-0 {padding-top: 0% !important;}
-	.pt-5 {padding-top: 5% !important;}
-	.pt-10 {padding-top: 10% !important;}
-	.pt-20 {padding-top: 20% !important;}
-	.pt-30 {padding-top: 30% !important;}
-	.pt-40 {padding-top: 40% !important;}
-	.pb-0 {padding-bottom: 0% !important;}
-	.pb-5 {padding-bottom: 5% !important;}
-	.pb-10 {padding-bottom: 10% !important;}
-	.pb-20 {padding-bottom: 20% !important;}
-	.pb-30 {padding-bottom: 30% !important;}
-	.pb-40 {padding-bottom: 40% !important;}
-	.pl-0 {padding-left: 0% !important;}
-	.pl-5 {padding-left: 5% !important;}
-	.pl-10 {padding-left: 10% !important;}
-	.pl-20 {padding-left: 20% !important;}
-	.pl-30 {padding-left: 30% !important;}
-	.pl-40 {padding-left: 40% !important;}
-	.pr-0 {padding-right: 0% !important;}
-	.pr-5 {padding-right: 5% !important;}
-	.pr-10 {padding-right: 10% !important;}
-	.pr-20 {padding-right: 20% !important;}
-	.pr-30 {padding-right: 30% !important;}
-	.pr-40 {padding-left: 40% !important;}
-	.ph-5 {padding-right: 5% !important;padding-left: 5% !important;}
-	.ph-10 {padding-right: 10% !important;padding-left: 10% !important;}
-	.ph-20 {padding-right: 20% !important;padding-left: 20% !important;}
-	.ph-30 {padding-right: 30% !important;padding-left: 30% !important;}
-	.ph-40 {padding-right: 40% !important;padding-left: 40% !important;}
-	.mt-0 {margin-top: 0% !important;}
-	.mt-5 {margin-top: 5% !important;}
-	.mt-10 {margin-top: 10% !important;}
-	.mt-20 {margin-top: 20% !important;}
-	.mt-30 {margin-top: 30% !important;}
-	.mt-40 {margin-top: 40% !important;}
-	.mb-0 {margin-bottom: 0% !important;}
-	.mb-5 {margin-bottom: 5% !important;}
-	.mb-10 {margin-bottom: 10% !important;}
-	.mb-20 {margin-bottom: 20% !important;}
-	.mb-30 {margin-bottom: 30% !important;}
-	.mb-40 {margin-bottom: 40% !important;}
-	.col-sm-auto {width: auto !important;}
-	.col-sm-0 {width: 2.33333333% !important;}
-	.col-sm-1 {width: 8.33333333% !important;}
-	.col-sm-2 {width: 16.66666667% !important;}
-	.col-sm-3 {width: 25% !important;}
-	.col-sm-4 {width: 33.33333333% !important;}
-	.col-sm-5 {width: 41.66666667% !important;}
-	.col-sm-6 {width: 50% !important;}
-	.col-sm-7 {width: 58.33333333% !important;}
-	.col-sm-8 {width: 66.66666667% !important;}
-	.col-sm-9 {width: 75% !important;}
-	.col-sm-10 {width: 83.333333% !important;}
-	.col-sm-11 {width: 91.666667% !important;}
-	.col-sm-12 {width: 100% !important;}
-	.border-none {border: 0 !important;}
-	@media only screen and (max-width: 400px) {
-	.scale-sm-95 {width: 95% !important;}
-	.scale-sm-90 {width: 90% !important;}
-	.scale-sm-85 {width: 85% !important;}.height-px {height: 108px !important;}}} 
-	@media only screen and (max-width: 470px) {}
-	</style>
-	</head>
-	<body bgcolor="#e5e5e5" leftmargin="0" marginwidth="0" topmargin="0" marginheight="0" offset="0">
-	<center style="background-color:#e5e5e5;">
-	<table border="0" cellpadding="0" cellspacing="0" height="100%" width="100%" id="bodyTable" style="table-layout: fixed;max-width:100% !important;width: 100% !important;min-width: 100% !important; background-color:#e5e5e5;">
-	<tr>
-	<td align="center" valign="top" id="bodyCell">
-	<table bgcolor="#e5e5e5" border="0" cellpadding="0" cellspacing="0" width="600" id="emailBody">
-	<tr>
-	<td align="center">
-	<table border="0" cellpadding="0" cellspacing="0" width="100%" bgcolor="#ffffff">
-	<tr>
-	<td align="center" valign="top">
-	<table class="hidden-lg" border="0" cellpadding="0" cellspacing="0" width="100%" style="width: 100%; max-width: 100%; min-width: 100%;" bgcolor="#ffffff">
-	<tbody>
-	<tr>
-	<td class="hidden-lg col-sm-12 text-center" align="center" style="text-align:center; margin: 15px 0 15px 0;">
-	<a target="_blank" href="' . $sProtocolo . $sDominio . '/"><img width="197" src="' . $sRutaImg . $sImgCabeza . '"  alt="UNAD"></a>
-	</td>
-	</tr>
-	</tbody>
-	</table>
-	<table border="0" class="hidden-sm" cellpadding="30" cellspacing="0" width="100%" style="width: 100%; max-width: 100%; min-width: 100%;">
-	<tbody>
-	<tr>
-	<td valign="bottom" class="hidden-sm" align="center" style="width: 600px;">
-	<a target="_blank" href="' . $sProtocolo . $sDominio . '/"><img class="hidden-sm" width="540" src="' . $sRutaImg . $sImgCabeza2 . '"  alt="UNAD"></a>
-	</td>
-	</tr>
-	</tbody>
-	</table>
-	<table border="0" cellpadding="10" cellspacing="0" width="100%" style="width: 100%; max-width: 100%; min-width: 100%;">
-	<tbody>
-	<tr>
-	<td align="center" bgcolor="#005883" style="font-size:22px;">
-	<font face="Arial, Helvetica, sans-serif" color="#ffffff">' . $sTituloCorreo . '</font>
-	</td>
-	</tr>
-	</tbody>
-	</table>';
+<html xmlns:v="urn:schemas-microsoft-com:vml" xmlns="http://www.w3.org/148/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+<meta name="format-detection" content="telephone=no" />
+<title>' . $sNomEntidad . '</title>
+<style type="text/css">
+html {margin: 0;padding: 0;}
+body,#bodyTable,
+#bodyCell {height: 100% !important;margin: 0;padding: 0;width: 100% !important;}
+table {border-collapse: collapse;}
+table[id=bodyTable] {width: 100% !important;margin: auto;max-width: 600px !important;font-weight: normal;}
+table,
+td {mso-table-lspace: 0pt;mso-table-rspace: 0pt;}
+img {-ms-interpolation-mode: bicubic;outline: none;text-decoration: none;}
+body,table,td,p,a,li,
+blockquote {-ms-text-size-adjust: 100%;-webkit-text-size-adjust: 100%;font-weight: normal !important;}
+body,
+#bodyTable {background-color: #E1E1E1;}
+#emailBody {background-color: #e5e5e5;}
+.text-black {color: #000000 !important;}
+.text-white {color: #e5e5e5 !important;}
+.text-blue {color: #01385f !important;}
+.text-red {color: #ed3833 !important;}
+.hidden-lg {display: none !important;mso-hide: all !important;}
+@media only screen and (max-width: 599px) {
+body {width: 100% !important;min-width: 100% !important;}
+table[id="emailBody"] {width: 100% !important;}
+.hidden {display: none;}
+.hidden-sm {display: none !important;}
+.hidden-lg {display: table !important;overflow: visible !important;max-height: inherit !important;}
+.hidden-lg-inline {display: inline-block !important;overflow: visible !important;max-height: inherit !important;}
+.textbody {padding: 47px 38px !important;font-size: 14px !important;line-height: 18px !important;width: 100%;}
+.textbody #personalizacion {font-size: 18px !important;}
+.text-center {text-align: center !important;height: auto !important;}
+.text-right {text-align: right !important;}
+.text-left {text-align: left !important;}
+.text-justify {text-align: justify !important;}
+.margin-auto {margin-left: auto !important;margin-right: auto !important;}
+.center-image {margin: 0 auto !important;text-align: center !important;}
+.right-image {margin-right: 0 !important;text-align: right !important;}
+.left-image {margin-left: 0 !important;text-align: left !important;}
+.block {display: block !important;margin: 0 auto !important;}
+.block-auto {display: block !important;height: auto !important;margin-left: auto !important;margin-right: auto !important;float: none !important;}
+.height-auto {height: auto !important;}
+.scale-95 {width: 95% !important;}
+.scale-90 {width: 90% !important;}
+.scale-85 {width: 85% !important;}
+.p-5 {padding: 5% !important;}
+.p-10 {padding: 10% !important;}
+.p-15 {padding: 15% !important;}
+.p-20 {padding: 20% !important;}
+.p-30 {padding: 30% !important;}
+.p-40 {padding: 40% !important;}
+.p-50 {padding: 50% !important;}
+.pv-5 {padding-top: 5% !important;padding-bottom: 5% !important;}
+.pv-10 {padding-top: 10% !important;padding-bottom: 10% !important;}
+.pv-20 {padding-top: 20% !important;padding-bottom: 20% !important;}
+.pv-30 {padding-top: 30% !important;padding-bottom: 30% !important;}
+.pv-40 {padding-top: 40% !important;padding-bottom: 40% !important;}
+.pv-50 {padding-top: 50% !important;padding-bottom: 50% !important;}
+.pt-0 {padding-top: 0% !important;}
+.pt-5 {padding-top: 5% !important;}
+.pt-10 {padding-top: 10% !important;}
+.pt-20 {padding-top: 20% !important;}
+.pt-30 {padding-top: 30% !important;}
+.pt-40 {padding-top: 40% !important;}
+.pb-0 {padding-bottom: 0% !important;}
+.pb-5 {padding-bottom: 5% !important;}
+.pb-10 {padding-bottom: 10% !important;}
+.pb-20 {padding-bottom: 20% !important;}
+.pb-30 {padding-bottom: 30% !important;}
+.pb-40 {padding-bottom: 40% !important;}
+.pl-0 {padding-left: 0% !important;}
+.pl-5 {padding-left: 5% !important;}
+.pl-10 {padding-left: 10% !important;}
+.pl-20 {padding-left: 20% !important;}
+.pl-30 {padding-left: 30% !important;}
+.pl-40 {padding-left: 40% !important;}
+.pr-0 {padding-right: 0% !important;}
+.pr-5 {padding-right: 5% !important;}
+.pr-10 {padding-right: 10% !important;}
+.pr-20 {padding-right: 20% !important;}
+.pr-30 {padding-right: 30% !important;}
+.pr-40 {padding-left: 40% !important;}
+.ph-5 {padding-right: 5% !important;padding-left: 5% !important;}
+.ph-10 {padding-right: 10% !important;padding-left: 10% !important;}
+.ph-20 {padding-right: 20% !important;padding-left: 20% !important;}
+.ph-30 {padding-right: 30% !important;padding-left: 30% !important;}
+.ph-40 {padding-right: 40% !important;padding-left: 40% !important;}
+.mt-0 {margin-top: 0% !important;}
+.mt-5 {margin-top: 5% !important;}
+.mt-10 {margin-top: 10% !important;}
+.mt-20 {margin-top: 20% !important;}
+.mt-30 {margin-top: 30% !important;}
+.mt-40 {margin-top: 40% !important;}
+.mb-0 {margin-bottom: 0% !important;}
+.mb-5 {margin-bottom: 5% !important;}
+.mb-10 {margin-bottom: 10% !important;}
+.mb-20 {margin-bottom: 20% !important;}
+.mb-30 {margin-bottom: 30% !important;}
+.mb-40 {margin-bottom: 40% !important;}
+.col-sm-auto {width: auto !important;}
+.col-sm-0 {width: 2.33333333% !important;}
+.col-sm-1 {width: 8.33333333% !important;}
+.col-sm-2 {width: 16.66666667% !important;}
+.col-sm-3 {width: 25% !important;}
+.col-sm-4 {width: 33.33333333% !important;}
+.col-sm-5 {width: 41.66666667% !important;}
+.col-sm-6 {width: 50% !important;}
+.col-sm-7 {width: 58.33333333% !important;}
+.col-sm-8 {width: 66.66666667% !important;}
+.col-sm-9 {width: 75% !important;}
+.col-sm-10 {width: 83.333333% !important;}
+.col-sm-11 {width: 91.666667% !important;}
+.col-sm-12 {width: 100% !important;}
+.border-none {border: 0 !important;}
+@media only screen and (max-width: 400px) {
+.scale-sm-95 {width: 95% !important;}
+.scale-sm-90 {width: 90% !important;}
+.scale-sm-85 {width: 85% !important;}.height-px {height: 108px !important;}}} 
+@media only screen and (max-width: 470px) {}
+</style>
+</head>
+<body bgcolor="#e5e5e5" leftmargin="0" marginwidth="0" topmargin="0" marginheight="0" offset="0">
+<center style="background-color:#e5e5e5;">
+<table border="0" cellpadding="0" cellspacing="0" height="100%" width="100%" id="bodyTable" style="table-layout: fixed;max-width:100% !important;width: 100% !important;min-width: 100% !important; background-color:#e5e5e5;">
+<tr>
+<td align="center" valign="top" id="bodyCell">
+<table bgcolor="#e5e5e5" border="0" cellpadding="0" cellspacing="0" width="600" id="emailBody">
+<tr>
+<td align="center">
+<table border="0" cellpadding="0" cellspacing="0" width="100%" bgcolor="#ffffff">
+<tr>
+<td align="center" valign="top">
+<table class="hidden-lg" border="0" cellpadding="0" cellspacing="0" width="100%" style="width: 100%; max-width: 100%; min-width: 100%;" bgcolor="#ffffff">
+<tbody>
+<tr>
+<td class="hidden-lg col-sm-12 text-center" align="center" style="text-align:center; margin: 15px 0 15px 0;">
+<a target="_blank" href="' . $sProtocolo . $sDominio . '/"><img width="197" src="' . $sRutaImg . $sImgCabeza . '"  alt="UNAD"></a>
+</td>
+</tr>
+</tbody>
+</table>
+<table border="0" class="hidden-sm" cellpadding="30" cellspacing="0" width="100%" style="width: 100%; max-width: 100%; min-width: 100%;">
+<tbody>
+<tr>
+<td valign="bottom" class="hidden-sm" align="center" style="width: 600px;">
+<a target="_blank" href="' . $sProtocolo . $sDominio . '/"><img class="hidden-sm" width="540" src="' . $sRutaImg . $sImgCabeza2 . '"  alt="UNAD"></a>
+</td>
+</tr>
+</tbody>
+</table>
+<table border="0" cellpadding="10" cellspacing="0" width="100%" style="width: 100%; max-width: 100%; min-width: 100%;">
+<tbody>
+<tr>
+<td align="center" bgcolor="#005883" style="font-size:22px;">
+<font face="Arial, Helvetica, sans-serif" color="#ffffff">' . $sTituloCorreo . '</font>
+</td>
+</tr>
+</tbody>
+</table>';
 	return $sRes;
 }
 // Codigo de confirmacion del correo de notificaciones.
@@ -1098,28 +1099,28 @@ function AUREA_HTML_CodigoConfirma($sCodigo)
 			break;
 	}
 	$sInfoCentro = '<font face="Arial, Helvetica, sans-serif" color="#333333" size="12">
-	<p style="padding: 10px 20px; background: #F0B429;">' . $sCodigo . '</p>
-	</font>';
+<p style="padding: 10px 20px; background: #F0B429;">' . $sCodigo . '</p>
+</font>';
 	$sRes = '<table border="0" cellpadding="0" cellspacing="0" width="100%" style="width: 100%; max-width: 100%; min-width: 100%;">
-	<tbody>
-	<tr>
-	<td align="right" bgcolor="#F1F1F1" valign="bottom" width="268" height="290" class="hidden-sm">
-	<img class="text-center" style="max-width: 100%; display: block;" width="260" src="' . $sRutaImg . 'correo2022/estudiante' . $sNumImage . '.jpg">
-	</td>
-	<td bgcolor="#F1F1F1">
-	<font face="Arial, Helvetica, sans-serif" color="#333333">
-	<p>&nbsp;Su c&oacute;digo de confirmaci&oacute;n es:</p>
-	</font>' . $sInfoCentro . '
+<tbody>
+<tr>
+<td align="right" bgcolor="#F1F1F1" valign="bottom" width="268" height="290" class="hidden-sm">
+<img class="text-center" style="max-width: 100%; display: block;" width="260" src="' . $sRutaImg . 'correo2022/estudiante' . $sNumImage . '.jpg">
+</td>
+<td bgcolor="#F1F1F1">
+<font face="Arial, Helvetica, sans-serif" color="#333333">
+<p>&nbsp;Su c&oacute;digo de confirmaci&oacute;n es:</p>
+</font>' . $sInfoCentro . '
 
-	<font face="Arial, Helvetica, sans-serif" color="#333333">
-	<p>Este c&oacute;digo estar&aacute; vigente durante todo el d&iacute;a.<br>
-	<b>Comedidamente:</b><br>
-	Equipo de Soporte T&eacute;cnico.</p>
-	</font>
-	</td>
-	</tr>
-	</tbody>
-	</table>';
+<font face="Arial, Helvetica, sans-serif" color="#333333">
+<p>Este c&oacute;digo estar&aacute; vigente durante todo el d&iacute;a.<br>
+<b>Comedidamente:</b><br>
+Equipo de Soporte T&eacute;cnico.</p>
+</font>
+</td>
+</tr>
+</tbody>
+</table>';
 	return $sRes;
 }
 // Cuerpo del correo de codigo de envio
@@ -1160,28 +1161,28 @@ function AUREA_HTML_CodigoCorreo($sCodigo, $sURL)
 			break;
 	}
 	$sRes = '<table border="0" cellpadding="0" cellspacing="0" width="100%" style="width: 100%; max-width: 100%; min-width: 100%;">
-	<tbody>
-	<tr>
-	<td align="right" bgcolor="#F1F1F1" valign="bottom" width="268" height="290" class="hidden-sm">
-	<img class="text-center" style="max-width: 100%; display: block;" width="260" src="' . $sRutaImg . 'estudiante' . $sNumImage . '.jpg">
-	</td>
-	<td align="center" bgcolor="#F1F1F1">
-	<font face="Arial, Helvetica, sans-serif" color="#333333">
-	<p>' . $ETI['mail_login_parte2'] . ':</p>
-	</font>
-	<font face="Arial, Helvetica, sans-serif" color="#333333" size="12">
-	<p style="padding: 10px 20px; background: #F0B429;">' . $sCodigo . '</p>
-	</font>
+<tbody>
+<tr>
+<td align="right" bgcolor="#F1F1F1" valign="bottom" width="268" height="290" class="hidden-sm">
+<img class="text-center" style="max-width: 100%; display: block;" width="260" src="' . $sRutaImg . 'estudiante' . $sNumImage . '.jpg">
+</td>
+<td align="center" bgcolor="#F1F1F1">
+<font face="Arial, Helvetica, sans-serif" color="#333333">
+<p>' . $ETI['mail_login_parte2'] . ':</p>
+</font>
+<font face="Arial, Helvetica, sans-serif" color="#333333" size="12">
+<p style="padding: 10px 20px; background: #F0B429;">' . $sCodigo . '</p>
+</font>
 
-	<font face="Arial, Helvetica, sans-serif" color="#333333">
-	<p><div style="word-wrap: break-word; width: 100%; max-width: 330px; padding: 0 10px;">' . $ETI['mail_login_parte3'] . ':
-	<a style="color: #005883;" href="' . $sURL . '" target="_blank">' . $sURL . '</a>
-	</div></p>
-	</font>
-	</td>
-	</tr>
-	</tbody>
-	</table>';
+<font face="Arial, Helvetica, sans-serif" color="#333333">
+<p><div style="word-wrap: break-word; width: 100%; max-width: 330px; padding: 0 10px;">' . $ETI['mail_login_parte3'] . ':
+<a style="color: #005883;" href="' . $sURL . '" target="_blank">' . $sURL . '</a>
+</div></p>
+</font>
+</td>
+</tr>
+</tbody>
+</table>';
 	return $sRes;
 }
 //
@@ -1224,32 +1225,32 @@ function AUREA_HTML_CodigoRecupera($sCabeza, $sCodigo, $aure01punto, $URL, $sPie
 			break;
 	}
 	$sInfoCentro = '<font face="Arial, Helvetica, sans-serif" color="#333333" size="12">
-	<p style="padding: 10px 20px; background: #F0B429;">' . $sCodigo . '</p>
-	</font>';
+<p style="padding: 10px 20px; background: #F0B429;">' . $sCodigo . '</p>
+</font>';
 	if ($aure01punto != '') {
 		$sInfoCentro = '<font face="Arial, Helvetica, sans-serif" color="#333333">
-		<p><div style="word-wrap: break-word; width: 100%; max-width: 330px; padding: 0 10px;"><a style="color: #005883;" href="' . $aure01punto . '?u=' . $URL . '" target="_blank">' . $URL . '</a>
-		</div></p>
-		</font>';
+<p><div style="word-wrap: break-word; width: 100%; max-width: 330px; padding: 0 10px;"><a style="color: #005883;" href="' . $aure01punto . '?u=' . $URL . '" target="_blank">' . $URL . '</a>
+</div></p>
+</font>';
 	}
 	$sRes = '<table border="0" cellpadding="0" cellspacing="0" width="100%" style="width: 100%; max-width: 100%; min-width: 100%;">
-	<tbody>
-	<tr>
-	<td align="right" bgcolor="#F1F1F1" valign="bottom" width="268" height="290" class="hidden-sm">
-	<img class="text-center" style="max-width: 100%; display: block;" width="260" src="' . $sRutaImg . 'correo2022/estudiante' . $sNumImage . '.jpg">
-	</td>
-	<td bgcolor="#F1F1F1">
-	<font face="Arial, Helvetica, sans-serif" color="#333333">
-	<p>' . $sCabeza . '</p>
-	</font>' . $sInfoCentro . '
+<tbody>
+<tr>
+<td align="right" bgcolor="#F1F1F1" valign="bottom" width="268" height="290" class="hidden-sm">
+<img class="text-center" style="max-width: 100%; display: block;" width="260" src="' . $sRutaImg . 'correo2022/estudiante' . $sNumImage . '.jpg">
+</td>
+<td bgcolor="#F1F1F1">
+<font face="Arial, Helvetica, sans-serif" color="#333333">
+<p>' . $sCabeza . '</p>
+</font>' . $sInfoCentro . '
 
-	<font face="Arial, Helvetica, sans-serif" color="#333333">
-	<p>' . $sPie . '</p>
-	</font>
-	</td>
-	</tr>
-	</tbody>
-	</table>';
+<font face="Arial, Helvetica, sans-serif" color="#333333">
+<p>' . $sPie . '</p>
+</font>
+</td>
+</tr>
+</tbody>
+</table>';
 	return $sRes;
 }
 // Correo de encuesta de publica.
@@ -1294,67 +1295,67 @@ function AUREA_HTML_CuerpoCorreoEncuesta($sCodigo, $idImagen, $sURL, $iFechaServ
 	}
 	$sFechaLarga = formato_FechaLargaDesdeNumero($iFechaServicio, true);
 	$sRes = '<table border="0" cellpadding="0" cellspacing="0" width="100%" style="width: 100%; max-width: 100%; min-width: 100%;">
-	<tbody>
-	<tr>
-	<td align="right" bgcolor="#F1F1F1" valign="bottom" width="268" height="290" class="hidden-sm">
-	<img class="text-center" style="max-width: 100%; display: block;" width="260" src="' . $sRutaImg . 'correo2022/estudiante' . $sNumImage . '.jpg">
-	</td>
-	<td align="center" bgcolor="#F1F1F1">';
+<tbody>
+<tr>
+<td align="right" bgcolor="#F1F1F1" valign="bottom" width="268" height="290" class="hidden-sm">
+<img class="text-center" style="max-width: 100%; display: block;" width="260" src="' . $sRutaImg . 'correo2022/estudiante' . $sNumImage . '.jpg">
+</td>
+<td align="center" bgcolor="#F1F1F1">';
 	$sRes = $sRes . '<font face="Arial, Helvetica, sans-serif" color="#333333">
-	<p>' . $ETI['mail_enc_parte1'] . $sFechaLarga . $ETI['mail_enc_parte2'] . '</p>
-	</font>
-	<table border="0" cellpadding="10" cellspacing="0" width="80%" style="width: 80%; max-width: 80%; min-width: 80%;">
-	<tbody>
-	<tr>
-	<td align="center" bgcolor="#F0B429" style="font-size:22px;">
-	<font face="Arial, Helvetica, sans-serif" color="#005883">
-	<a style="padding: 10px 20px; color: #005883; font-size: 12px; text-decoration: none; word-wrap: break-word;" target="_blank"
-	href="' . $sURLDestino . '?u=' . $sURL . '">
-	<span style="font-size: 24px;">RESPONDER</span>
-	</a>
-	</font>
-	</td>
-	</tr>
-	<tr>
-	<td height="5">
-	</td>
-	</tr>
-	</tbody>
-	</table>
+<p>' . $ETI['mail_enc_parte1'] . $sFechaLarga . $ETI['mail_enc_parte2'] . '</p>
+</font>
+<table border="0" cellpadding="10" cellspacing="0" width="80%" style="width: 80%; max-width: 80%; min-width: 80%;">
+<tbody>
+<tr>
+<td align="center" bgcolor="#F0B429" style="font-size:22px;">
+<font face="Arial, Helvetica, sans-serif" color="#005883">
+<a style="padding: 10px 20px; color: #005883; font-size: 12px; text-decoration: none; word-wrap: break-word;" target="_blank"
+href="' . $sURLDestino . '?u=' . $sURL . '">
+<span style="font-size: 24px;">RESPONDER</span>
+</a>
+</font>
+</td>
+</tr>
+<tr>
+<td height="5">
+</td>
+</tr>
+</tbody>
+</table>
 
-	<table border="0" cellpadding="10" cellspacing="0" width="60%" style="width: 60%; max-width: 60%; min-width: 60%;">
-	<tbody>
-	<tr>
-	<td align="center" bgcolor="#005883" style="font-size:14px;">
-	<font face="Arial, Helvetica, sans-serif" color="#ffffff">
-	<a style="padding: 10px 20px; color: #ffffff; font-size: 12px; text-decoration: none; word-wrap: break-word;" target="_blank"
-	href="' . $sURLDestino . '?n=' . $sURL . '">
-	Si no desea responder, por favor haga clic aqu&iacute;
-	</a>
-	</font>
-	</td>
-	</tr>
-	<tr>
-	<td height="5">
-	</td>
-	</tr>
-	</tbody>
-	</table>
+<table border="0" cellpadding="10" cellspacing="0" width="60%" style="width: 60%; max-width: 60%; min-width: 60%;">
+<tbody>
+<tr>
+<td align="center" bgcolor="#005883" style="font-size:14px;">
+<font face="Arial, Helvetica, sans-serif" color="#ffffff">
+<a style="padding: 10px 20px; color: #ffffff; font-size: 12px; text-decoration: none; word-wrap: break-word;" target="_blank"
+href="' . $sURLDestino . '?n=' . $sURL . '">
+Si no desea responder, por favor haga clic aqu&iacute;
+</a>
+</font>
+</td>
+</tr>
+<tr>
+<td height="5">
+</td>
+</tr>
+</tbody>
+</table>
 
-	<font face="Arial, Helvetica, sans-serif">
-	<p>
-	En caso de que no pueda acceder desde este correo, por favor ingrese a<br>
-	<a style="padding: 10px 20px; color: #005883; word-wrap: break-word;" target="_blank"
-	href="' . $sURLDestino . '">' . $sURLDestino . '
-	</a><br>
-	e ingrese su n&uacute;mero de documento y el c&oacute;digo <b>' . $sCodigo . '</b>
-	</p>
-	<br>
-	</font>';
+<font face="Arial, Helvetica, sans-serif">
+<p>
+En caso de que no pueda acceder desde este correo, por favor ingrese a<br>
+<a style="padding: 10px 20px; color: #005883; word-wrap: break-word;" target="_blank"
+href="' . $sURLDestino . '">' . $sURLDestino . '
+</a><br>
+e ingrese su n&uacute;mero de documento y el c&oacute;digo <b>' . $sCodigo . '</b>
+</p>
+<br>
+</font>';
 	$sRes = $sRes . '</td>
-	</tr>
-	</tbody>
-	</table>';
+</tr>
+</tbody>
+</table>';
 	return $sRes;
 }
 // Correo de desercion
@@ -1413,31 +1414,61 @@ function AUREA_HTML_CuerpoCorreoDesercion($sCodigo, $idImagen, $sMes, $aure73id,
 	</table>';
 	*/
 	$sRes = $sRes . '<font face="Arial, Helvetica, sans-serif" color="#333333">
-	<table border="0" cellpadding="20" cellspacing="0" width="100%" style="width: 100%; max-width: 100%; min-width: 100%;">
-	<span style="font-size:18px;">
-	Apreciado estudiante, para la UNAD es muy importante conocer las razones por las cuales no continu&oacute; su proceso formativo con nosotros.<br><br>
-	Por lo anterior le solicitamos seleccionar la alternativa que explica sus razones.
-	</span>
-	<tbody>
-	<tr>
-	<td align="center">
-	<table border="0" cellpadding="0" cellspacing="0" width="80%" style="width: 80%; max-width: 80%; min-width: 80%;">';
+<table border="0" cellpadding="20" cellspacing="0" width="100%" style="width: 100%; max-width: 100%; min-width: 100%;">
+<span style="font-size:18px;">
+Apreciado estudiante, para la UNAD es muy importante conocer las razones por las cuales no continu&oacute; su proceso formativo con nosotros.<br><br>
+Por lo anterior le solicitamos seleccionar la alternativa que explica sus razones.
+</span>
+<tbody>
+<tr>
+<td align="center">
+<table border="0" cellpadding="0" cellspacing="0" width="80%" style="width: 80%; max-width: 80%; min-width: 80%;">';
 	$sCuerpo = '';
 	$iFilas = 12;
 	$aValor = array(
-		0, 1, 3, 4, 5, 6,
-		7, 9, 10, 13, 14,
-		2, 11
+		0,
+		1,
+		3,
+		4,
+		5,
+		6,
+		7,
+		9,
+		10,
+		13,
+		14,
+		2,
+		11
 	);
 	$aIconos = array(
-		'', 'no.png', 'time.png', 'student.png', 'quality.png', 'support.png',
-		'cursor.png', 'program.png', 'university.png', 'wifi.png', 'money.png',
-		'break.png', 'clear.png'
+		'',
+		'no.png',
+		'time.png',
+		'student.png',
+		'quality.png',
+		'support.png',
+		'cursor.png',
+		'program.png',
+		'university.png',
+		'wifi.png',
+		'money.png',
+		'break.png',
+		'clear.png'
 	);
 	$aEtiquetas = array(
-		'', 'No Adaptaci&oacute;n a la Modalidad de estudio', 'Administraci&oacute;n del tiempo y/o h&aacute;bitos de estudio', 'Prefiere la modalidad presencial', 'No Recibi&oacute; servicio de Calidad', 'No Recibi&oacute; Soporte t&eacute;cnico y administrativo',
-		'Poco dominio de herramientas ofim&aacute;ticas', 'El programa acad&eacute;mico no responde a sus expectativas', 'Se encuentra estudiando en otra universidad', 'Dificultades en conectividad', 'Factor econ&oacute;mico',
-		'Dificultades personales y/o familiares', 'Prefiero no responder'
+		'',
+		'No Adaptaci&oacute;n a la Modalidad de estudio',
+		'Administraci&oacute;n del tiempo y/o h&aacute;bitos de estudio',
+		'Prefiere la modalidad presencial',
+		'No Recibi&oacute; servicio de Calidad',
+		'No Recibi&oacute; Soporte t&eacute;cnico y administrativo',
+		'Poco dominio de herramientas ofim&aacute;ticas',
+		'El programa acad&eacute;mico no responde a sus expectativas',
+		'Se encuentra estudiando en otra universidad',
+		'Dificultades en conectividad',
+		'Factor econ&oacute;mico',
+		'Dificultades personales y/o familiares',
+		'Prefiero no responder'
 	);
 	//Octubre 28 de 2022, en lugar de que vaya fijo el listado, se toma de la tabla cara15
 	$iFilas = 0;
@@ -1459,33 +1490,33 @@ function AUREA_HTML_CuerpoCorreoDesercion($sCodigo, $idImagen, $sMes, $aure73id,
 		$URL = url_encode('' . $sMes . '|' . $aure73id . '|' . md5($iFechaServicio) . '|' . $aValor[$k]);
 		$sURL = '' . $URL . '';
 		$sCuerpo = $sCuerpo . '<tr style="padding:5px 0 5px 0 !important">
-		<td width="80" align="center" valign="baseline">
-		<a href="' . $sURLDestino . '?u=' . $sURL . '"><img src="' . $sRutaImg . 'ico-encuestas/' . $aIconos[$k] . '"  width="50"></a>
-		</td>
-		<td valign="middle">
-		<a style="text-decoration: none; padding: 30px 0; color: #333333;font-size:16px;" target="_blank" href="' . $sURLDestino . '?u=' . $sURL . '">
-		' . $aEtiquetas[$k] . '
-		</a>
-		</td>
-		</tr>';
+<td width="80" align="center" valign="baseline">
+<a href="' . $sURLDestino . '?u=' . $sURL . '"><img src="' . $sRutaImg . 'ico-encuestas/' . $aIconos[$k] . '"  width="50"></a>
+</td>
+<td valign="middle">
+<a style="text-decoration: none; padding: 30px 0; color: #333333;font-size:16px;" target="_blank" href="' . $sURLDestino . '?u=' . $sURL . '">
+' . $aEtiquetas[$k] . '
+</a>
+</td>
+</tr>';
 	}
 	$sRes = $sRes . $sCuerpo;
 	$sRes = $sRes . '</table>
-	<font face="Arial, Helvetica, sans-serif">
-	<p>
-		En caso de que no pueda acceder desde este correo, por favor ingrese a<br>
-		<a style="padding: 10px 20px; color: #005883; word-wrap: break-word;" target="_blank"
-			href="' . $sURLDestino . '">' . $sURLDestino . '
-		</a><br>
-		e ingrese su n&uacute;mero de documento y el c&oacute;digo <b>' . $sCodigo . '</b>
-	</p>
-	<br>
-	</font>	
-	</td>
-	</tr>
-	</tbody>
-	</table>
-	</font>';
+<font face="Arial, Helvetica, sans-serif">
+<p>
+En caso de que no pueda acceder desde este correo, por favor ingrese a<br>
+<a style="padding: 10px 20px; color: #005883; word-wrap: break-word;" target="_blank" 
+href="' . $sURLDestino . '">' . $sURLDestino . '
+</a><br>
+e ingrese su n&uacute;mero de documento y el c&oacute;digo <b>' . $sCodigo . '</b>
+</p>
+<br>
+</font>	
+</td>
+</tr>
+</tbody>
+</table>
+</font>';
 	return $sRes;
 }
 //Firma del codigo de correo.
@@ -1528,7 +1559,7 @@ function AUREA_HTML_FirmaDocumento($sCodigo, $idModulo, $iSubProceso, $idRegistr
 			break;
 	}
 	$sDetalleProceso = '';
-	switch($idModulo) {
+	switch ($idModulo) {
 		case 508:
 			$sSQL = 'SELECT T3.ppto03codigo, TB.ppto08consec, TB.ppto08objeto, TB.ppto08vrtotal 
 			FROM ppto08soldisponib AS TB, ppto03vigencia AS T3 
@@ -1537,7 +1568,7 @@ function AUREA_HTML_FirmaDocumento($sCodigo, $idModulo, $iSubProceso, $idRegistr
 			if ($objDB->nf($tabla) > 0) {
 				$fila = $objDB->sf($tabla);
 				$sNomSubProceso = '{' . $iSubProceso . '}';
-				switch($iSubProceso){
+				switch ($iSubProceso) {
 					case 11:
 						$sNomSubProceso = 'firmando';
 						break;
@@ -1549,26 +1580,26 @@ function AUREA_HTML_FirmaDocumento($sCodigo, $idModulo, $iSubProceso, $idRegistr
 			break;
 	}
 	$sInfoCentro = '<font face="Arial, Helvetica, sans-serif" color="#333333" size="12">
-	<p style="padding: 10px 20px; background: #F0B429;">' . $sCodigo . '</p>
-	</font>';
+<p style="padding: 10px 20px; background: #F0B429;">' . $sCodigo . '</p>
+</font>';
 	$sRes = '<table border="0" cellpadding="0" cellspacing="0" width="100%" style="width: 100%; max-width: 100%; min-width: 100%;">
-	<tbody>
-	<tr>
-	<td align="right" bgcolor="#F1F1F1" valign="bottom" width="268" height="290" class="hidden-sm">
-	<img class="text-center" style="max-width: 100%; display: block;" width="260" src="' . $sRutaImg . 'correo2022/estudiante' . $sNumImage . '.jpg">
-	</td>
-	<td bgcolor="#F1F1F1">
-	<font face="Arial, Helvetica, sans-serif" color="#333333">' . $sDetalleProceso . '
-	<p>&nbsp;Su c&oacute;digo de confirmaci&oacute;n es:</p>
-	</font>' . $sInfoCentro . '
+<tbody>
+<tr>
+<td align="right" bgcolor="#F1F1F1" valign="bottom" width="268" height="290" class="hidden-sm">
+<img class="text-center" style="max-width: 100%; display: block;" width="260" src="' . $sRutaImg . 'correo2022/estudiante' . $sNumImage . '.jpg">
+</td>
+<td bgcolor="#F1F1F1">
+<font face="Arial, Helvetica, sans-serif" color="#333333">' . $sDetalleProceso . '
+<p>&nbsp;Su c&oacute;digo de confirmaci&oacute;n es:</p>
+</font>' . $sInfoCentro . '
 
-	<font face="Arial, Helvetica, sans-serif" color="#333333">
-	<p>Este c&oacute;digo estar&aacute; vigente durante todo el d&iacute;a.</p>
-	</font>
-	</td>
-	</tr>
-	</tbody>
-	</table>';
+<font face="Arial, Helvetica, sans-serif" color="#333333">
+<p>Este c&oacute;digo estar&aacute; vigente durante todo el d&iacute;a.</p>
+</font>
+</td>
+</tr>
+</tbody>
+</table>';
 	return $sRes;
 }
 //
@@ -1625,43 +1656,122 @@ function AUREA_HTML_PieCorreo()
 			break;
 	}
 	$sRes = '<table border="0" cellpadding="0" cellspacing="0" width="100%" style="width: 100%; max-width: 100%; min-width: 100%;">
-	<tr>
-	<td bgcolor="#F0B429" height="10"></td>
-	</tr>
-	</table>
+<tr>
+<td bgcolor="#F0B429" height="10"></td>
+</tr>
+</table>
 
-	<table border="0" cellpadding="10" cellspacing="0" width="100%" style="width: 100%; max-width: 100%; min-width: 100%;">
-	<tr>
-	<td align="center">
-	<font face="Arial, Helvetica, sans-serif" color="#333333">
-	<p>
-	<strong>' . $sNomEntidad . '</strong>
-	<br>' . $sDato1 . '
-	</p>
-	<p>' . $sDato2 . '</p>
-	</font>
-	<a target="_blank" href="' . $sProtocolo . $sDominio . '/">
-	</a>
-	</td>
-	</tr>
-	</table>
+<table border="0" cellpadding="10" cellspacing="0" width="100%" style="width: 100%; max-width: 100%; min-width: 100%;">
+<tr>
+<td align="center">
+<font face="Arial, Helvetica, sans-serif" color="#333333">
+<p>
+<strong>' . $sNomEntidad . '</strong>
+<br>' . $sDato1 . '
+</p>
+<p>' . $sDato2 . '</p>
+</font>
+<a target="_blank" href="' . $sProtocolo . $sDominio . '/">
+</a>
+</td>
+</tr>
+</table>
 
-	</td>
-	</tr>
-	</table>
-	</td>
-	</tr>
-	</table>
-	</td>
-	</tr>
-	</table>
-	</center>
-	</body>
-	</html>';
+</td>
+</tr>
+</table>
+</td>
+</tr>
+</table>
+</td>
+</tr>
+</table>
+</center>
+</body>
+</html>';
 	return $sRes;
 }
 //Fin de las html de notificaciones.
-function AUREA_IniciarLogin($idTercero, $objDB, $sFrase = '', $iUso = 0, $bDebug = false)
+function AUREA_Protocolo($idEntidad)
+{
+	$sProtocolo = 'http';
+	switch ($idEntidad) {
+		case 1: // Unad florida
+		default:
+			if (isset($_SERVER['HTTPS']) != 0) {
+				if ($_SERVER['HTTPS'] == 'on') {
+					$sProtocolo = 'https';
+				}
+			}
+			break;
+	}
+	return $sProtocolo;
+}
+function AUREA_Idioma()
+{
+	$idEntidad = Traer_Entidad();
+	$sIdioma = 'es';
+	switch ($idEntidad) {
+		case 1: //UNAD FLORIDA
+			if (isset($_SESSION['unad_idioma']) == 0) {
+				$_SESSION['unad_idioma'] = 'en';
+				$sIdioma = 'en';
+			}
+			break;
+		case 2: //UNION EUROPEA
+		default:
+			if (isset($_SESSION['unad_idioma']) == 0) {
+				$_SESSION['unad_idioma'] = 'es';
+			}
+			break;
+	}
+	switch ($_SESSION['unad_idioma']) {
+		case 'en':
+		case 'es':
+		case 'pt':
+			$sIdioma = $_SESSION['unad_idioma'];
+			break;
+		default:
+			$_SESSION['unad_idioma'] = 'es';
+			break;
+	}
+	return $sIdioma;
+}
+function AUREA_ExisteCodigo($idTercero, $objDB, $iUso = 1, $sCodigo = '', $bDebug = false)
+{
+	$bRes = false;
+	$sError = '';
+	$sDebug = '';
+	$sMes = date('Ym');
+	$sTabla = 'aure01login' . $sMes;
+	$bexiste = $objDB->bexistetabla($sTabla);
+	if (!$bexiste) {
+		$sError = 'No se ha creado la tabla';
+	}
+	if ($sError == '') {
+		$idEntidad = Traer_Entidad();
+		$sProtocolo = AUREA_Protocolo($idEntidad);
+		$aure01fecha = fecha_DiaMod();
+		$aure01punto = $sProtocolo . '://' . $_SERVER['SERVER_NAME'] . formato_UrlLimpia($_SERVER['REQUEST_URI']);
+		$sCondi = '';
+		if ($sCodigo != '') {
+			$sCondi = ' AND aure01codigo="' . $sCodigo . '"';
+		}
+		$sSQL = 'SELECT aure01id FROM ' . $sTabla . ' 
+		WHERE aure01idtercero=' . $idTercero . ' AND aure01punto="' . $aure01punto . '" AND aure01fecha=' . $aure01fecha . ' 
+		AND aure01fechaaplica=-1 AND aure01tipo=' . $iUso . '' . $sCondi;
+		if ($bDebug) {
+			//$sDebug = $sDebug . fecha_microtiempo() . ' Consultando codigo ' . $sSQL . '<br>';
+		}
+		$tabla = $objDB->ejecutasql($sSQL);
+		if ($objDB->nf($tabla) > 0) {
+			$bRes = true;
+		}
+	}
+	return array($bRes, $sDebug);
+}
+
+function AUREA_IniciarLogin($idTercero, $objDB, $sFrase = '', $iUso = 0, $bDebug = false, $bHayCodigo = false)
 {
 	//$iUso=2 desde soporte, $iUso=3 desde chatbox
 	//El uso 0 es para iniciar sesion , el 1 es para recuperar contraseña. y 2 para recuperar contrase;a desde soporte.
@@ -1696,11 +1806,14 @@ function AUREA_IniciarLogin($idTercero, $objDB, $sFrase = '', $iUso = 0, $bDebug
 	$sMes = date('Ym');
 	$sTabla = 'aure01login' . $sMes;
 	$bexiste = $objDB->bexistetabla($sTabla);
-	if ($objDB->dbmodelo == 'M') {
-		if (!$bexiste) {
-			list($sError, $sDebugT) = AUREA_CrearTabla_aure01login($sMes, $objDB, $bDebug);
-		} else {
-			list($sError, $sDebugT) = AUREA_RevTabla_aure01login($sMes, $objDB, $bDebug);
+	if (!$bHayCodigo) {
+		// Si tiene código no se revisa si existe la tabla
+		if ($objDB->dbmodelo == 'M') {
+			if (!$bexiste) {
+				list($sError, $sDebugT) = AUREA_CrearTabla_aure01login($sMes, $objDB, $bDebug);
+			} else {
+				list($sError, $sDebugT) = AUREA_RevTabla_aure01login($sMes, $objDB, $bDebug);
+			}
 		}
 	}
 	$idEntidad = Traer_Entidad();
@@ -1708,12 +1821,12 @@ function AUREA_IniciarLogin($idTercero, $objDB, $sFrase = '', $iUso = 0, $bDebug
 		case 1: // UNAD FLORIDA
 			$sNomEntidad = 'UNAD FLORIDA INC';
 			$sMailSeguridad = 'aluna@unad.us';
-			$sURLCampus = 'http://unad.us/campus/';
+			$sURLCampus = 'https://unad.us/campus/';
 			break;
 		case 2: // UNAD UNION EUROPEA
 			$sNomEntidad = 'UNAD UNION EUROPEA';
 			$sMailSeguridad = 'informacion@unad-ue.es';
-			$sURLCampus = 'http://campus.unad-ue.es/';
+			$sURLCampus = 'https://campus.unad-ue.es/';
 			break;
 		default: // UNAD Colombia
 			$sNomEntidad = 'UNIVERSIDAD NACIONAL ABIERTA Y A DISTANCIA - UNAD';
@@ -1734,45 +1847,57 @@ function AUREA_IniciarLogin($idTercero, $objDB, $sFrase = '', $iUso = 0, $bDebug
 		if ($bDebug) {
 			$sDebug = $sDebug . fecha_microtiempo() . ' SMTP: ' . $idSMTP . ' Grupo: ' . $idGrupoCorreo . '<br>';
 		}
-		//Agregar el punto.
-		$sProtocolo = 'http';
-		switch ($idEntidad) {
-			case 1:
-				break;
-			default:
-				if (isset($_SERVER['HTTPS']) != 0) {
-					if ($_SERVER['HTTPS'] == 'on') {
-						$sProtocolo = 'https';
-					}
-				}
-				break;
-		}
-		$aure01punto = $sProtocolo . '://' . $_SERVER['SERVER_NAME'] . formato_UrlLimpia($_SERVER['REQUEST_URI']);
-		$aure01consec = tabla_consecutivo($sTabla, 'aure01consec', 'aure01idtercero=' . $idTercero . '', $objDB);
-		$aure01fecha = fecha_DiaMod();
-		$aure01min = fecha_MinutoMod();
-		$aure01codigo = md5($aure01fecha . $aure01min . $idTercero . $sTabla);
-		$aure01codigo = numeros_validar($aure01codigo);
-		$aure01codigo = substr($aure01codigo, 0, 10);
-		$aure01ip = sys_traeripreal();
-		$aure01id = tabla_consecutivo($sTabla, 'aure01id', '', $objDB);
-		$scampos = 'aure01idtercero, aure01consec, aure01id, aure01fecha, 
-		aure01min, aure01codigo, aure01fechaaplica, aure01minaplica, aure01ip, aure01punto, aure01idsmtp';
-		$svalores = '' . $idTercero . ', ' . $aure01consec . ', ' . $aure01id . ', ' . $aure01fecha . ', 
-		' . $aure01min . ', "' . $aure01codigo . '", -1, 0, "' . $aure01ip . '", "' . $aure01punto . '", ' . $idSMTP . '';
-		$sSQL = 'INSERT INTO ' . $sTabla . ' (' . $scampos . ') VALUES (' . $svalores . ');';
-		$result = $objDB->ejecutasql($sSQL);
-		//Septiembre 3 de 2021 - Se agrega un control de fallos.
-		if ($result == false) {
-			//Fallo el registro del codigo, hacemos un reintento, pero refrescando el id.
+		if ($bHayCodigo) {
+			// Si hay código se trae la información para enviarla
+			$sSQL = 'SELECT aure01id, aure01min, aure01codigo, aure01ip, aure01punto 
+			FROM ' . $sTabla . ' 
+			WHERE aure01idtercero=' . $idTercero . ' AND aure01fecha=' . fecha_DiaMod() . ' 
+			AND aure01fechaaplica=-1 AND aure01tipo=' . $iUso;
+			if ($bDebug) {
+				$sDebug = $sDebug . fecha_microtiempo() . ' Consultando codigo ' . $sSQL . '<br>';
+			}
+			$tabla = $objDB->ejecutasql($sSQL);
+			if ($objDB->nf($tabla) > 0) {
+				$fila = $objDB->sf($tabla);
+				$aure01id = $fila['aure01id'];
+				$aure01codigo = $fila['aure01codigo'];
+				$aure01min = $fila['aure01min'];
+				$aure01ip = $fila['aure01ip'];
+				$aure01punto = $fila['aure01punto'];
+			}
+		} else {
+			//Agregar el punto.
+			$sProtocolo = AUREA_Protocolo($idEntidad);
+			$aure01punto = $sProtocolo . '://' . $_SERVER['SERVER_NAME'] . formato_UrlLimpia($_SERVER['REQUEST_URI']);
+			$aure01consec = tabla_consecutivo($sTabla, 'aure01consec', 'aure01idtercero=' . $idTercero . '', $objDB);
+			$aure01fecha = fecha_DiaMod();
+			$aure01min = fecha_MinutoMod();
+			$aure01codigo = md5($aure01fecha . $aure01min . $idTercero . $sTabla);
+			$aure01codigo = numeros_validar($aure01codigo);
+			$aure01codigo = substr($aure01codigo, 0, 10);
+			$aure01ip = sys_traeripreal();
 			$aure01id = tabla_consecutivo($sTabla, 'aure01id', '', $objDB);
+			$scampos = 'aure01idtercero, aure01consec, aure01id, aure01fecha, 
+			aure01min, aure01codigo, aure01fechaaplica, aure01minaplica, aure01ip, aure01punto, 
+			aure01idsmtp, aure01tipo, aure01idorigen';
 			$svalores = '' . $idTercero . ', ' . $aure01consec . ', ' . $aure01id . ', ' . $aure01fecha . ', 
-			' . $aure01min . ', "' . $aure01codigo . '", -1, 0, "' . $aure01ip . '", "' . $aure01punto . '", ' . $idSMTP . '';
+			' . $aure01min . ', "' . $aure01codigo . '", -1, 0, "' . $aure01ip . '", "' . $aure01punto . '", 
+			' . $idSMTP . ', ' . $iUso . ', 0';
 			$sSQL = 'INSERT INTO ' . $sTabla . ' (' . $scampos . ') VALUES (' . $svalores . ');';
 			$result = $objDB->ejecutasql($sSQL);
+			//Septiembre 3 de 2021 - Se agrega un control de fallos.
 			if ($result == false) {
-				//No, esto fallo definitivamente.
-				$sError = $ERR['falla_codigo'];
+				//Fallo el registro del codigo, hacemos un reintento, pero refrescando el id.
+				$aure01id = tabla_consecutivo($sTabla, 'aure01id', '', $objDB);
+				$svalores = '' . $idTercero . ', ' . $aure01consec . ', ' . $aure01id . ', ' . $aure01fecha . ', 
+				' . $aure01min . ', "' . $aure01codigo . '", -1, 0, "' . $aure01ip . '", "' . $aure01punto . '", 
+				' . $idSMTP . ', ' . $iUso . ', 0';
+				$sSQL = 'INSERT INTO ' . $sTabla . ' (' . $scampos . ') VALUES (' . $svalores . ');';
+				$result = $objDB->ejecutasql($sSQL);
+				if ($result == false) {
+					//No, esto fallo definitivamente.
+					$sError = $ERR['falla_codigo'];
+				}
 			}
 		}
 	}
@@ -1861,6 +1986,43 @@ function AUREA_IniciarLogin($idTercero, $objDB, $sFrase = '', $iUso = 0, $bDebug
 	}
 	return array($aure01codigo, $sError, $sDebug, $sCodSMTP);
 }
+// Marcar codigo 
+function AUREA_MarcarCodigo($idTercero, $iUso, $sCodigo, $objDB, $bDebug = false)
+{
+	$bRes = false;
+	$sError = '';
+	$sDebug = '';
+	$sMes = date('Ym');
+	$sTabla = 'aure01login' . $sMes;
+	$bexiste = $objDB->bexistetabla($sTabla);
+	if (!$bexiste) {
+		$sError = 'No se ha creado la tabla';
+	}
+	if ($sError == '') {
+		$idEntidad = Traer_Entidad();
+		$sProtocolo = AUREA_Protocolo($idEntidad);
+		$aure01fecha = fecha_DiaMod();
+		$aure01punto = $sProtocolo . '://' . $_SERVER['SERVER_NAME'] . formato_UrlLimpia($_SERVER['REQUEST_URI']);
+		$sSQL = 'SELECT aure01id FROM ' . $sTabla . ' 
+		WHERE aure01idtercero=' . $idTercero . ' AND aure01punto="' . $aure01punto . '" AND aure01fecha=' . $aure01fecha . ' 
+		AND aure01fechaaplica=-1 AND aure01tipo=' . $iUso . ' AND aure01codigo="' . $sCodigo . '"';
+		if ($bDebug) {
+			$sDebug = $sDebug . fecha_microtiempo() . ' Consultando codigo ' . $sSQL . '<br>';
+		}
+		$tabla = $objDB->ejecutasql($sSQL);
+		if ($objDB->nf($tabla) > 0) {
+			$fila = $objDB->sf($tabla);
+			$aure01id = $fila['aure01id'];
+			$aure01fecha = fecha_DiaMod();
+			$aure01min = fecha_MinutoMod();
+			$sSQL = 'UPDATE ' . $sTabla . ' SET aure01fechaaplica=' . $aure01fecha . ' , aure01minaplica=' . $aure01min . ' WHERE aure01id=' . $aure01id . '';
+			$result = $objDB->ejecutasql($sSQL);
+			$bRes = true;
+		}
+	}
+	return array($bRes, $sDebug);
+}
+// Notificaciones
 function AUREA_NotificaPieDePagina()
 {
 	$idEntidad = Traer_Entidad();
@@ -1890,7 +2052,7 @@ function AUREA_RequiereDobleAutenticacionV2($idTercero, $objDB)
 			switch ($idTercero) {
 				case 4:
 				case 6: //
-				$bDepurador = true;
+					$bDepurador = true;
 			}
 			if ($bDepurador) {
 				$bRes = true;
@@ -2043,7 +2205,7 @@ function AUREA_SmtpMejorV2($sTabla, $idGrupo, $objDB, $bDebug = false)
 	$iTotal = 0;
 	//Cargar el listado de SMTPS.
 	$sCondiGrupo = '';
-	if ($idGrupo > 0){
+	if ($idGrupo > 0) {
 		$sCondiGrupo = ' AND T1.unad69idgrupo=' . $idGrupo . '';
 	}
 	$sIds = '-99';
@@ -2054,6 +2216,15 @@ function AUREA_SmtpMejorV2($sTabla, $idGrupo, $objDB, $bDebug = false)
 		$sDebug = $sDebug . fecha_microtiempo() . ' <b>MEJOR SMTP</b> Correos Disponibles: ' . $sSQL . '<br>';
 	}
 	$tabla = $objDB->ejecutasql($sSQL);
+	if ($objDB->nf($tabla) == 0) {
+		$sSQL = 'SELECT TB.unad89idsmtp 
+		FROM unad89loginsmtp AS TB, unad69smtp AS T1 
+		WHERE TB.unad89activo="S" AND TB.unad89idopciones=1 AND TB.unad89idsmtp=T1.unad69id AND T1.unad69confirmado="S"';
+		if ($bDebug) {
+			$sDebug = $sDebug . fecha_microtiempo() . ' <b>MEJOR SMTP</b> Correos Disponibles no encontrados: ' . $sSQL . '<br>';
+		}
+		$tabla = $objDB->ejecutasql($sSQL);
+	}
 	while ($fila = $objDB->sf($tabla)) {
 		$iTotal++;
 		$aLista[$iTotal]['cod'] = $fila['unad89idsmtp'];
@@ -2411,7 +2582,7 @@ function AUREA_IniciarFirma($idTercero, $idModulo, $iSubProceso, $idRegistro, $o
 	switch ($idModulo) {
 		case 508:
 			$sNomDocumento = 'Solicitud de disponibilidad presupuestal';
-			switch($iSubProceso) {
+			switch ($iSubProceso) {
 				case 11:
 					$sSubProceso = 'Aval oficina solicitante.';
 					break;
@@ -2539,7 +2710,8 @@ function AUREA_IniciarFirma($idTercero, $idModulo, $iSubProceso, $idRegistro, $o
 	return array($aure01codigo, $sError, $sDebug);
 }
 
-function f2202_EnviarEncuestaDesercion($objDB, $bDebug = false, $sCorreoCopia = '') {
+function f2202_EnviarEncuestaDesercion($objDB, $bDebug = false, $sCorreoCopia = '')
+{
 	$sError = '';
 	$sDebug = '';
 	$iEnvios = 0;
@@ -2551,7 +2723,7 @@ function f2202_EnviarEncuestaDesercion($objDB, $bDebug = false, $sCorreoCopia = 
 	AND TB.core01idprograma=T9.core09id AND T9.core09aplicacontinuidad=1 
 	GROUP BY TB.core01idtercero';
 	$tabla = $objDB->ejecutasql($sSQL);
-	while ($fila = $objDB->sf($tabla)){
+	while ($fila = $objDB->sf($tabla)) {
 		$sIds = $sIds . ',' . $fila['core01idtercero'];
 	}
 	$sSQL = 'SELECT TB.core01idtercero
@@ -2564,7 +2736,7 @@ function f2202_EnviarEncuestaDesercion($objDB, $bDebug = false, $sCorreoCopia = 
 		$sDebug = $sDebug . fecha_microtiempo() . ' <b>ENCUESTAS DESERCION</b>: Alistando tercero con mas de un PEI ' . $sSQL . '<br>';
 	}
 	$tabla = $objDB->ejecutasql($sSQL);
-	while ($fila = $objDB->sf($tabla)){
+	while ($fila = $objDB->sf($tabla)) {
 		$sIds = $sIds . ',' . $fila['core01idtercero'];
 	}
 	if ($sIds != '-99') {
@@ -2599,7 +2771,7 @@ function f2202_EnviarEncuestaDesercion($objDB, $bDebug = false, $sCorreoCopia = 
 		$sDebug = $sDebug . fecha_microtiempo() . ' <b>ENCUESTAS DESERCION</b>: Datos a procesar ' . $sSQL . '<br>';
 	}
 	$tabla = $objDB->ejecutasql($sSQL);
-	while ($fila = $objDB->sf($tabla)){
+	while ($fila = $objDB->sf($tabla)) {
 		$bPosibleGraduado = false;
 		$sSQL = 'SELECT 1 FROM graduados WHERE documento="' . $fila['unad11doc'] . '"';
 		$tablag = $objDBGrados->ejecutasql($sSQL);

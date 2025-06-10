@@ -1,8 +1,9 @@
 <?php
 /*
---- © Angel Mauro Avellaneda Barreto - UNAD - 2020 ---
+--- © Angel Mauro Avellaneda Barreto - UNAD - 2020 - 2025 ---
 --- angel.avellaneda@unad.edu.co - http://www.unad.edu.co
 --- Modelo Versión 2.24.1 viernes, 21 de febrero de 2020
+--- Modelo Versión 3.0.13b jueves, 27 de febrero de 2025
 */
 function unad11_Mostrar_v2SAI($aParametros)
 {
@@ -1393,7 +1394,7 @@ function f3041_HtmlTablaInfoAcademico($aParametros)
 }
 
 //
-function f3046_HtmlComunicado($id46, $idTercero, $objDB, $bDegug = false)
+function f3046_HtmlComunicado($id46, $idTercero, $objDB, $bDebug = false)
 {
 	$sRes = '';
 	$sDebug = '';
@@ -1425,6 +1426,162 @@ function f3046_HtmlComunicado($id46, $idTercero, $objDB, $bDegug = false)
 	}
 	return array($sRes, $sDebug);
 }
+
+// Febrero 27 de 2025 Tiempo Respuesta
+function f3047_TiemposProceso($iAgno, $id, $objDB, $bDebug = false) {
+	$sDebug = '';
+	$sError = '';
+	$saiu47prob_abandono = 0;
+	$saiu47tem_radicado = 0;
+	$saiu47tem_est4 = 0;
+	$saiu47tem_est6 = 0;
+	$saiu47tem_est31 = 0;
+	$saiu47tem_est21 = 0;
+	$saiu47tem_est7 = 0;
+	$saiu47tem_est36 = 0;
+	$saiu47tem_est8 = 0;
+	$saiu47tem_est46 = 0;
+	$saiu47tem_est11 = 0;
+	$saiu47tem_est12 = 0;
+	$saiu47tem_est10 = 0;
+	$saiu47tem_total = 0;
+	$sTabla47 = 'saiu47tramites_' . $iAgno;
+	$sTabla49 = 'saiu49cambioesttra_' . $iAgno;
+
+	$sSQL = 'SELECT * FROM ' . $sTabla47 . ' WHERE saiu47id=' . $id . '';
+	if ($bDebug) {
+		$sDebug = $sDebug . fecha_microtiempo() . ' <b>Totalizando proceso</b> Datos base: ' . $sSQL . ' <br>';
+	}
+	$tabla47 = $objDB->ejecutasql($sSQL);
+	if ($objDB->nf($tabla47) > 0) {
+		$fila47 = $objDB->sf($tabla47);
+		$saiu47estado = $fila47['saiu47estado'];
+		$iDiaInicio = fecha_ArmarNumero($fila47['saiu47dia'], $fila47['saiu47mes'], $fila47['saiu47agno']);
+		$bPrimerDevuelta = true;
+		$bTerminada = false;
+		switch($saiu47estado) {
+			case 0: // Borrador
+			case 5: // Devuelta
+				$saiu47prob_abandono = fecha_NumSumarDias($iDiaInicio, 30);
+				$bPrimerDevuelta = false;
+				break;
+		}
+		//Ahora traemos el historico de cambios de estado para hacer el calculo.
+		$sSQL = 'SELECT saiu49idestadofin, saiu49fecha, saiu49hora, saiu49minuto FROM ' . $sTabla49 . ' WHERE saiu49idtramite=' . $id . ' ORDER BY saiu49consec DESC';
+		if ($bDebug) {
+			$sDebug = $sDebug . fecha_microtiempo() . ' <b>Totalizando proceso</b> Historial de cambios de estado: ' . $sSQL . ' <br>';
+		}
+		$tabla49 = $objDB->ejecutasql($sSQL);
+		while ($fila49 = $objDB->sf($tabla49)) {
+			switch($fila49['saiu49idestadofin']) {
+				case 0: // Borrador, se supone que no sucede, pero... uno nunca sabe.
+				case 5: // Devuelta
+					if (!$bPrimerDevuelta) {
+						$saiu47prob_abandono = fecha_NumSumarDias($fila49['saiu49fecha'], 30);
+						$bPrimerDevuelta = true;
+					}
+					break;
+				case 1: // Radicado
+					if (($saiu47tem_radicado == 0) && ($saiu47prob_abandono == 0)) {
+						$saiu47tem_radicado = $fila49['saiu49fecha'];
+					}
+					break;
+				case 4: // En concepto Jurídico
+					if ($saiu47tem_est4 == 0) {
+						$saiu47tem_est4 = $fila49['saiu49fecha'];
+					}
+					break;
+				case 6: // En concepto técnico y análisis financiero
+					if ($saiu47tem_est6 == 0) {
+						$saiu47tem_est6 = $fila49['saiu49fecha'];
+					}
+					break;
+				case 31: // En ajustes RCONT
+					if ($saiu47tem_est31 == 0) {
+						$saiu47tem_est31 = $fila49['saiu49fecha'];
+					}
+					break;
+				case 21: // En proyección de respuesta
+					if ($saiu47tem_est21 == 0) {
+						$saiu47tem_est21 = $fila49['saiu49fecha'];
+					}
+					break;
+				case 7: // En proyección de resolución-acto administrativo
+					if ($saiu47tem_est7 == 0) {
+						$saiu47tem_est7 = $fila49['saiu49fecha'];
+					}
+					break;
+				case 36: // En ajustes de resolución-acto administrativo
+					if ($saiu47tem_est36 == 0) {
+						$saiu47tem_est36 = $fila49['saiu49fecha'];
+					}
+					break;
+				case 8: // En aprobación de la GAF
+					if ($saiu47tem_est8 == 0) {
+						$saiu47tem_est8 = $fila49['saiu49fecha'];
+					}
+					break;
+				case 46: // En firma de la VISAE
+					if ($saiu47tem_est46 == 0) {
+						$saiu47tem_est46 = $fila49['saiu49fecha'];
+					}
+					break;
+				case 11: // En firma de la GAF
+					if ($saiu47tem_est11 == 0) {
+						$saiu47tem_est11 = $fila49['saiu49fecha'];
+					}
+					break;
+				case 12: // En proceso de pago
+					if ($saiu47tem_est12 == 0) {
+						$saiu47tem_est12 = $fila49['saiu49fecha'];
+					}
+					break;
+				case 9: // No procedente
+				case 10: // Solicitud resuelta	
+					if ($saiu47tem_est10 == 0) {
+						$bTerminada = true;
+						$saiu47tem_est10 = $fila49['saiu49fecha'];
+					}
+					break;
+				case 98: // Abandonada
+				case 99: // Anulada
+					break;
+			}
+		}
+		if ($bTerminada && ($saiu47tem_radicado != 0) && ($saiu47tem_est10 != 0)) {
+			$saiu47tem_total = fecha_DiasEntreFechasDesdeNumero($saiu47tem_radicado, $saiu47tem_est10) + 1;
+		}
+	} else {
+		$sError = 'No ha sido posible identificar los datos de origen.';
+	}
+	if ($sError == '') {
+		$sDatos = '';
+		$aCampos = array('saiu47prob_abandono', 'saiu47tem_radicado', 'saiu47tem_est4', 'saiu47tem_est6', 'saiu47tem_est31'
+		, 'saiu47tem_est21'	, 'saiu47tem_est7', 'saiu47tem_est36', 'saiu47tem_est8', 'saiu47tem_est46'
+		, 'saiu47tem_est11', 'saiu47tem_est12', 'saiu47tem_est10', 'saiu47tem_total');
+		$aValores = array($saiu47prob_abandono, $saiu47tem_radicado, $saiu47tem_est4, $saiu47tem_est6, $saiu47tem_est31
+		, $saiu47tem_est21, $saiu47tem_est7, $saiu47tem_est36, $saiu47tem_est8, $saiu47tem_est46
+		, $saiu47tem_est11, $saiu47tem_est12, $saiu47tem_est10, $saiu47tem_total);
+		$iCampos = 14;
+		for ($k = 0; $k < $iCampos; $k++) {
+			if ($fila47[$aCampos[$k]] != $aValores[$k]) {
+				if ($sDatos != '') {
+					$sDatos = $sDatos . ', ';
+				}
+				$sDatos = $sDatos . $aCampos[$k] . '=' . $aValores[$k];
+			}
+		}
+		if ($sDatos != '') {
+			$sSQL = 'UPDATE ' . $sTabla47 . ' SET ' . $sDatos . ' WHERE saiu47id=' . $id . '';
+			if ($bDebug) {
+				$sDebug = $sDebug . fecha_microtiempo() . ' <b>Totalizando proceso</b> Actualizando: ' . $sSQL . ' <br>';
+			}
+			$result = $objDB->ejecutasql($sSQL);
+		}
+	}
+	return array($saiu47prob_abandono, $saiu47tem_radicado, $sDebug);
+}
+
 function f3070_SeleccionaResponsable($idPaso, $idZona, $idCentro, $idEscuela, $idPrograma, $objDB, $bDebug = false)
 {
 	$sError = '';
@@ -3423,11 +3580,6 @@ function f3000_HtmlTablaPQRS($aParametros){
 	$objResponse->assign('div_f3000tiemponaranja_1', 'innerHTML', $aTiempoNaranja[1]);
 	$objResponse->assign('div_f3000tiempoverde_1', 'innerHTML', $aTiempoVerde[1]);
 	$objResponse->assign('f3000pendientes', 'value', json_encode($aPendientes));
-	$sHTML = '';
-	if (count($aPendientes)>0) {
-		$sHTML = '<input id="cmdNotificar" name="cmdNotificar" type="button" value="Notificar Responsables" class="BotonAzul200" onclick="javascript:notificar_responsables()" />';
-	}
-	$objResponse->assign('div_cmdNotificar', 'innerHTML', $sHTML);
 	if ($iIndiceSatisf == 0) {
 		$objResponse->assign('div_f3000indicesatisf_0', 'innerHTML', '_');
 		$objResponse->assign('div_f3000indicesatisf_1', 'innerHTML', '_');

@@ -549,6 +549,9 @@ function f3000_TablaDetalleAcad($aParametros, $objDB, $bDebug = false)
 			if ($filadet['exte02fechatopetablero'] >= $iHoy) {
 				//Ver si tiene una excepcion podria cambiar la fecha tope de cancelaciones.
 				$sSQL = 'SELECT corf39nuevafecha FROM corf39prorrogas WHERE corf39idtercero=' . $saiu18idsolicitante . ' AND corf39periodo=' . $idPeriodo . ' AND corf39estado=7 AND corf39nuevafecha>=' . $iHoy . '';
+				if ($bDebug) {
+					$sDebug = $sDebug . fecha_microtiempo() . ' Verifica excepcion para cambiar la fecha: ' . $sSQL . '<br>';
+				}
 				$tabla39 = $objDB->ejecutasql($sSQL);
 				if ($objDB->nf($tabla39) > 0) {
 					$fila39 = $objDB->sf($tabla39);
@@ -594,6 +597,9 @@ function f3000_TablaDetalleAcad($aParametros, $objDB, $bDebug = false)
 							if ($filadet['exte02tipoperiodo'] == 0) {
 								//Ver si tiene una solicitud aprobada.
 								$sSQL = 'SELECT corf06id FROM corf06novedad WHERE corf06tiponov=1 AND corf06estado=7 AND corf06idestudiante=' . $saiu18idsolicitante . ' AND corf06idperiodo=' . $idPeriodo . '';
+								if ($bDebug) {
+									$sDebug = $sDebug . fecha_microtiempo() . ' Solicitudes aprobadas: ' . $sSQL . '<br>';
+								}
 								$tabla7 = $objDB->ejecutasql($sSQL);
 								if ($objDB->nf($tabla7) > 0) {
 									$sBotonAplaza = '<td><input id="CmdAplazarTodo" name="CmdAplazarTodo" type="button" class="BotonAzul" value="Aplazar" onclick="aplazasem(' . $idPeriodo . ')" title="Aplazar periodo"/></td>';
@@ -636,6 +642,9 @@ function f3000_TablaDetalleAcad($aParametros, $objDB, $bDebug = false)
 			AND TB.core04idcurso=T40.unad40id
 			ORDER BY TB.core04estado, T40.unad40titulo';
 			//$res=$res.'<tr><td colspan="4">'.$sSQL.'</td></tr>';
+			if ($bDebug) {
+				$sDebug = $sDebug . fecha_microtiempo() . ' Mostrar cursos por matricula: ' . $sSQL . '<br>';
+			}
 			$tabla = $objDB->ejecutasql($sSQL);
 			while ($fila = $objDB->sf($tabla)) {
 				$sPrefijo = '';
@@ -664,6 +673,7 @@ function f3000_TablaDetalleAcad($aParametros, $objDB, $bDebug = false)
 				switch ($fila['core04estado']) {
 					case 0: //Matriculado
 					case 2: //Curso Externo
+					case 5: //Reportado 75 %
 						if ($bPuedeAplazar) {
 							//$sBotonCambia='<a href="javascript:cambiacurso('.$idPeriodo.', '.$idCurso.')" class="lnkresalte">'.'Cambiar curso'.'</a>';
 							$sBotonAplaza = '<a href="javascript:aplaza(' . $idPeriodo . ', ' . $idCurso . ')" class="lnkresalte">' . 'Aplazar curso' . '</a>';
@@ -681,6 +691,9 @@ function f3000_TablaDetalleAcad($aParametros, $objDB, $bDebug = false)
 							WHERE TB.corf06tiponov=7 AND TB.corf06idestudiante=' . $saiu18idsolicitante . ' AND TB.corf06idperiodo=' . $idPeriodo . ' 
 							AND TB.corf06estado NOT IN (0,2,8) AND TB.corf06id=T7.corf07idnovedad AND T7.corf07idcurso=' . $idCurso . '';
 							//if ($bDebug){$sDebug=$sDebug.fecha_microtiempo().' Revisando si aplica '.$sSQL.'<br>';}
+							if ($bDebug) {
+								$sDebug = $sDebug . fecha_microtiempo() . ' Verifica solicitud tardia: ' . $sSQL . '<br>';
+							}
 							$tabla7 = $objDB->ejecutasql($sSQL);
 							if ($objDB->nf($tabla7) > 0) {
 								$bEntra = false;
@@ -1394,227 +1407,7 @@ function f3000pqrs_TablaDetalleV2($aParametros, $objDB, $bDebug = false)
 	//Fin de los historicos.
 	return array(cadena_codificar($res), $sDebug);
 }
-/**
- * Envía correos de atención a solicitudes
- * 
- * Esta función permite el envío de la notificación por correo electrónico 
- * al líder responsable de atender la atención a una solicitud (presencial, telefónica, correo o vía chat).
- * Mediante validación también realiza envío de encuesta a solicitante.
- * 
- * @param array $DATA valores de $_REQUEST de la solicitud
- * @param string $sContenedor fecha de tabla distribuida
- * @param object $objDB objeto de acceso a la Base de Datos
- * @param boolean $bDebug permite ejecutar depuración en la función (por defecto: false)
- * @param boolean $bResponsable determina si el mensaje va dirigido al responsable (por defecto: false)
- * @param boolean $bForzar permite forzar el envío (por defecto: false)
- * @return array Mensaje de estado del envío, valor de variable sError y valor de la variable sDebug
- */
-function f3000_EnviaCorreosAtencion($DATA, $sContenedor, $objDB, $bDebug = false, $bResponsable = false, $bForzar = false)
-{
-	require './app.php';
-	$mensajes_todas = $APP->rutacomun . 'lg/lg_todas_' . $_SESSION['unad_idioma'] . '.php';
-	if (!file_exists($mensajes_todas)) {
-		$mensajes_todas = $APP->rutacomun . 'lg/lg_todas_es.php';
-	}
-	$mensajes_3000 = $APP->rutacomun . 'lg/lg_3000_' . $_SESSION['unad_idioma'] . '.php';
-	if (!file_exists($mensajes_3000)) {
-		$mensajes_3000 = $APP->rutacomun . 'lg/lg_3000_es.php';
-	}
-	require $mensajes_todas;
-	require $mensajes_3000;
-	$sError = '';
-	$sDebug = '';
-	$sMensaje = '';
-	$bEntra = false;
-	$idTercero = 0;
-	$isaiuId = 0;
-	$ssaiuId = '';
-	if (isset($DATA['bcampus'])==0){$DATA['bcampus']=0;}
-	if (isset($DATA['saiuid'])) {		
-		switch($DATA['saiuid']) {
-			case 18:
-			case 19:
-			case 20:
-			case 21:
-			case 73:
-				$isaiuId = $DATA['saiuid'];
-				$ssaiuId = $ETI['saiu'.$isaiuId];
-				$bEntra = true;
-			break;
-		}
-	}
-	if ($bEntra) {
-		$bEntra = false;
-		if (isset($DATA['saiu'.$isaiuId.'idsolicitante']) != 0) {
-			$idTercero = numeros_validar($DATA['saiu'.$isaiuId.'idsolicitante']);
-			if ($idTercero == $DATA['saiu'.$isaiuId.'idsolicitante']) {
-				if ((int)$idTercero != 0) {
-					$bEntra = true;
-				}
-			}
-		}
-	}
-	if ($bResponsable) {
-		$bEntra = false;
-		if (isset($DATA['saiu'.$isaiuId.'idsupervisorcaso']) != 0) {
-			$idTercero = numeros_validar($DATA['saiu'.$isaiuId.'idsupervisorcaso']);
-			if ((int)$idTercero != 0) {
-				$bEntra = true;
-			}
-		}
-		if ($bEntra) {
-			if (isset($DATA['saiu'.$isaiuId.'idresponsablecaso']) != 0) {
-				$saiu05idresponsable = numeros_validar($DATA['saiu'.$isaiuId.'idresponsablecaso']);
-				if ((int)$saiu05idresponsable != 0) {
-					$idTercero = $saiu05idresponsable;
-				}
-			}
-		}
-	}
-	if ($bEntra) {
-		$bCorreoValido = false;
-		list($sCorreoMensajes, $unad11idgrupocorreo, $sError, $sDebugN) = AUREA_CorreoNotificaV2($idTercero, $objDB, $bDebug);
-		if ($sError == '') {
-			$bCorreoValido = true;
-		}
-		if ($bCorreoValido) {
-			$sNomEntidad = '';
-			$sMailSeguridad = '';
-			$sURLCampus = '';
-			$sURLEncuestas = '';
-			$idEntidad = Traer_Entidad();
-			switch ($idEntidad) {
-				case 1: // UNAD FLORIDA
-					$sNomEntidad = 'UNAD FLORIDA INC';
-					$sMailSeguridad = 'aluna@unad.us';
-					$sURLCampus = 'http://unad.us/campus/';
-					$sURLEncuestas = 'http://unad.us/aurea/';
-					break;
-				default: // UNAD Colombia
-					$sNomEntidad = 'UNIVERSIDAD NACIONAL ABIERTA Y A DISTANCIA - UNAD';
-					$sMailSeguridad = 'soporte.campus@unad.edu.co';
-					$sURLCampus = 'https://campus0a.unad.edu.co/campus/';
-					$sURLEncuestas = 'https://aurea.unad.edu.co/satisfaccion/';
-					break;
-			}
-			$sCorreoCopia = '';
-			$iFechaServicio = fecha_ArmarNumero($DATA['saiu'.$isaiuId.'dia'] . $DATA['saiu'.$isaiuId.'mes'] . $DATA['saiu'.$isaiuId.'agno']);
-			$sFechaLarga = formato_FechaLargaDesdeNumero($iFechaServicio, true);
-			$sRutaImg = 'https://datateca.unad.edu.co/img/';
-			$sURLDestino = $sURLCampus . 'saiusolusuario.php';
-			$et_NumSol = $DATA['saiu'.$isaiuId.'agno'].'-'.$DATA['saiu'.$isaiuId.'id'].'-'.$isaiuId;
-			$URL = url_encode('' . $et_NumSol);
-			$sURLDestinoEnc = 'https://aurea.unad.edu.co/encuesta';
-			$sURL = '' . $URL . '';
-			$sConRespuesta = '';
-			$sMes = date('Ym');
-			$sTabla = 'aure01login' . $sMes;
-			list($idSMTP, $sDebugS) = AUREA_SmtpMejor($sTabla, $objDB, $bDebug);
-			$objMail = new clsMail_Unad($objDB);
-			$objMail->TraerSMTP($idSMTP);
-			list($unad11razonsocial, $sErrorDet) = tabla_campoxid('unad11terceros', 'unad11razonsocial', 'unad11id', $idTercero, '{' . 'An&oacute;nimo' . '}', $objDB);
-			if ($bResponsable) {
-				$sTituloMensaje = $ETI['mail_asig_titulo'] . ' ' . $sNomEntidad . '';				
-				$sCuerpo = 'Cordial saludo.<br>
-				Estimado(a) <b>' . $unad11razonsocial . '</b><br><br>
-				El Sistema de Atenci&oacute;n Integral (SAI) le informa que le ha sido asignado un caso de <strong>atenci&oacute;n ' . $ssaiuId . '</strong>, radicado el d&iacute;a ' . $sFechaLarga . '; 
-				con el n&uacute;mero: <span style="color: rgb(255, 0, 0); font-size: 16px;"><strong>' . $DATA['saiu'.$isaiuId.'idcaso'] . '</strong></span>.<br><br>
-				Le invitamos a ingresar al m&oacute;dulo de Registro de Atenciones, canal: ' . $ssaiuId .', para iniciar el tr&aacute;mite del caso.<br><br>';
-			} else {
-				if ($DATA['bcampus']==1) {
-					$sTituloMensaje = $ETI['mail_solic_titulo'] . ' ' . $ssaiuId . ' ' . $sNomEntidad . '';
-					$sCuerpo = 'Cordial saludo.<br>
-					Estimado(a) <b>' . $unad11razonsocial . '</b><br><br>
-					Para la universidad Nacional Abierta y a Distancia - UNAD es muy importante atender sus solicitudes. 
-					Acorde con lo anterior le informamos que su solicitud radicada el día ' . $sFechaLarga . ', por el módulo de ' . $ssaiuId . '; 
-					puede ser consultada en el siguiente enlace:<br><a href="' . $sURLDestino . '" target="_blank">' . $sURLDestino . '</a><br><br>';
-				} else {
-				$sTituloMensaje = $ETI['mail_enc_titulo'] . ' ' . $ssaiuId . ' ' . $sNomEntidad . '';
-				$sCuerpo = 'Cordial saludo.<br>
-				Estimado(a) <b>' . $unad11razonsocial . '</b><br><br>
-				Para la universidad Nacional Abierta y a Distancia - UNAD es muy importante atender sus solicitudes. 
-				Acorde con lo anterior le informamos que la respuesta a su solicitud radicada el día ' . $sFechaLarga . ', por el módulo de ' . $ssaiuId . '; 
-				puede ser consultada en el siguiente enlace:<br><a href="' . $sURLDestino . '" target="_blank">' . $sURLDestino . '</a><br><br><hr>' . $ETI['mail_enc'] . '<br>';
-				
-			$sCuerpo = $sCuerpo . '<table border="0" cellpadding="10" cellspacing="0" width="80%" style="width: 80%; max-width: 80%; min-width: 80%;">
-				<tbody>
-					<tr>
-						<td align="center" bgcolor="#F0B429" style="font-size:22px;">
-							<font face="Arial, Helvetica, sans-serif" color="#005883">
-								<a style="padding: 10px 20px; color: #005883; font-size: 12px; text-decoration: none; word-wrap: break-word;" target="_blank"
-								href="' . $sURLDestinoEnc . '?u=' . $sURL . '">
-									<span style="font-size: 24px;">RESPONDER</span>
-								</a>
-							</font>
-						</td>
-					</tr>
-					<tr>
-						<td height="5">
-						</td>
-					</tr>
-				</tbody>
-			</table>
 
-			<table border="0" cellpadding="10" cellspacing="0" width="60%" style="width: 60%; max-width: 60%; min-width: 60%;">
-				<tbody>
-					<tr>
-						<td align="center" bgcolor="#005883" style="font-size:14px;">
-							<font face="Arial, Helvetica, sans-serif" color="#ffffff">
-								<a style="padding: 10px 20px; color: #ffffff; font-size: 12px; text-decoration: none; word-wrap: break-word;" target="_blank"
-								href="' . $sURLDestinoEnc . '?n=' . $sURL . '">
-									Si no desea responder, por favor haga clic aqu&iacute;
-								</a>
-							</font>
-						</td>
-					</tr>
-					<tr>
-						<td height="5">
-						</td>
-					</tr>
-				</tbody>
-			</table><br>';
-					}
-				}
-			$sCuerpo = $sCuerpo . 'Cordialmente,<br>
-			<b>Sistema de Atención Integral - SAI</b><br>';
-			$sCuerpo = AUREA_HTML_EncabezadoCorreo($sTituloMensaje) . $sCuerpo . AUREA_HTML_NoResponder() . AUREA_NotificaPieDePagina() . AUREA_HTML_PieCorreo();
-			$objMail->sAsunto = cadena_codificar(html_entity_decode($sTituloMensaje));
-			$sMensaje = 'Se notifica al correo ' . $sCorreoMensajes;
-			$objMail->addCorreo($sCorreoMensajes, $sCorreoMensajes);
-			if ($sCorreoCopia != '') {
-				$objMail->addCorreo($sCorreoCopia, $sCorreoCopia, 'O');
-				$sMensaje = $sMensaje . ' con copia a ' . $sCorreoCopia;
-			}
-			if ($sError == '') {
-				$objMail->sCuerpo = $sCuerpo;
-				if ($bDebug) {
-					if ($bResponsable) {
-						$sDebug = $sDebug . fecha_microtiempo() . ' Enviando notificaci&oacute;n de caso a : ' . $sCorreoMensajes . '<br>';
-					} else {
-						$sDebug = $sDebug . fecha_microtiempo() . ' Enviando encuesta de satisfacci&oacute;n a : ' . $sCorreoMensajes . '<br>';
-					}
-				}
-				list($sErrorM, $sDebugM) = $objMail->EnviarV2($bDebug);
-				$sError = $sError . $sErrorM;
-				$sDebug = $sDebug . $sDebugM;
-				if ($sError != '') {
-					if ($bResponsable) {
-						$sError = $sError . $ERR['mail_asig_error'];
-					} else {
-						$sError = $sError . $ERR['mail_enc_error'];
-					}
-				}
-			}
-		} else {
-			$sError = $ERR['mail_valido'];
-		}
-	} else {
-		if ($bDebug) {
-			$sDebug = $sDebug . fecha_microtiempo() . ' <b>Noficando Caso de Atenci&oacute;n</b>: No aplica para notificar.<br>';
-		}
-	}
-	return array($sMensaje, $sError, $sDebug);
-}
 /**
  * Busca encuesta del registro de atención
  * 
@@ -2214,7 +2007,6 @@ function f3000_NotificarResponsables($aParametros) {
 	}
 	require $mensajes_todas;
 	require $mensajes_3000;
-	require $APP->rutacomun . 'libaurea.php';
 	require $APP->rutacomun . 'libmail.php';
 	$objDB = new clsdbadmin($APP->dbhost, $APP->dbuser, $APP->dbpass, $APP->dbname);
 	if ($APP->dbpuerto != '') {

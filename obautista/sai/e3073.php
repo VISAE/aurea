@@ -198,7 +198,9 @@ if ($sError == '') {
 	TB.saiu73idzona, TB.saiu73idcentro, TB.saiu73idescuela, TB.saiu73idprograma, TB.saiu73solucion, 
 	TB.saiu73tiposolicitud, TB.saiu73temasolicitud, TB.saiu73idunidadcaso, TB.saiu73idequipocaso, TB.saiu73idsupervisorcaso, 
 	TB.saiu73idresponsablecaso, TB.saiu73fechafin, TB.saiu73horafin, TB.saiu73minutofin, TB.saiu73fecharespcaso, 
-	TB.saiu73horarespcaso, TB.saiu73minrespcaso';
+	TB.saiu73horarespcaso, TB.saiu73minrespcaso, TB.saiu73evalfecha, TB.saiu73evalacepta, TB.saiu73evalamabilidad, 
+	TB.saiu73evalrapidez, TB.saiu73evalclaridad, TB.saiu73evalresolvio, TB.saiu73evalconocimiento, TB.saiu73evalutilidad, 
+	TB.saiu73evalsugerencias';
 	$sConsulta = 'FROM saiu73solusuario_' . $iAgno . ' AS TB, unad11terceros AS T11
 	WHERE ' . $sSQLadd1 . ' TB.saiu73idsolicitante=T11.unad11id ' . $sSQLadd . '';
 	$sOrden = 'ORDER BY TB.saiu73agno, TB.saiu73mes, TB.saiu73dia, TB.saiu73consec';
@@ -229,7 +231,7 @@ if ($sError == '') {
 	$objHoja = $objExcel->getActiveSheet();
 	$objHoja->setTitle(substr($sTituloRpt, 0, 30));
 	$objContenedor = $objHoja;
-	$sColTope = 'S';
+	$sColTope = 'AB';
 	//Imagen del encabezado
 	$sImagenSuperior = $APP->rutacomun . 'imagenes/rpt_cabeza.jpg';
 	PHPExcel_Justificar_Celda_HorizontalCentro($objContenedor, 'A1');
@@ -266,15 +268,19 @@ if ($sError == '') {
 		cadena_tildes($ETI['saiu73consec']), cadena_tildes($ETI['msg_fecha']), cadena_tildes($ETI['saiu73hora']), cadena_tildes($ETI['saiu73estado']),cadena_tildes($ETI['saiu73fecharespuesta']), 
 		cadena_tildes($ETI['saiu73horarespuesta']), cadena_tildes($ETI['saiu73solucion']), cadena_tildes($ETI['saiu73tiposolicitud']), cadena_tildes($ETI['saiu73temasolicitud']), cadena_tildes($ETI['saiu73idunidadcaso']), 
 		cadena_tildes($ETI['saiu73idequipocaso']), cadena_tildes($ETI['saiu73idsupervisorcaso']), cadena_tildes($ETI['saiu73idresponsablecaso']), cadena_tildes($ETI['saiu73idsolicitante']), cadena_tildes($ETI['saiu73razonsocial']), 
-		cadena_tildes($ETI['saiu73idzona']), cadena_tildes($ETI['saiu73idcentro']), cadena_tildes($ETI['saiu73idescuela']), cadena_tildes($ETI['saiu73idprograma'])
+		cadena_tildes($ETI['saiu73idzona']), cadena_tildes($ETI['saiu73idcentro']), cadena_tildes($ETI['saiu73idescuela']), cadena_tildes($ETI['saiu73idprograma']), cadena_tildes($ETI['saiu73evalfecha']),
+		cadena_tildes($ETI['saiu73evalacepta']), cadena_tildes($ETI['saiu73evalamabilidad']), cadena_tildes($ETI['saiu73evalrapidez']), cadena_tildes($ETI['saiu73evalclaridad']), cadena_tildes($ETI['saiu73evalresolvio']), 
+		cadena_tildes($ETI['saiu73evalconocimiento']), cadena_tildes($ETI['saiu73evalutilidad']), cadena_tildes($ETI['saiu73evalsugerencias'])
 	);
 	$aAnchos = array(
 		13, 13, 13, 13, 13, 
 		13, 13, 13, 13, 13, 
 		13, 30, 30, 13, 30, 
-		13, 13, 13, 13
+		13, 13, 13, 13, 13, 
+		13, 13, 13, 13, 13, 
+		13, 13, 30
 	);
-	for ($k = 0; $k <= 18; $k++) {
+	for ($k = 0; $k <= 27; $k++) {
 		PHPEXCEL_Escribir($objHoja, $k, $iFila, $aTitulos[$k]);
 		$sColumna = columna_Letra($k);
 		$objHoja->getColumnDimension($sColumna)->setWidth($aAnchos[$k]);
@@ -298,6 +304,7 @@ if ($sError == '') {
 	$asaiu73idperiodo = array();
 	$asaiu73idtelefono = array();
 	$asaiu73idchat = array();
+	$acalificacion = array('','Deficiente','Malo','Aceptable','Bueno','Excelente');
 	$tabla = $objDB->ejecutasql($sSQLReporte);
 	if ($bDebug) {
 		PHPEXCEL_Escribir($objHoja, 1, $iFila, $sSQL);
@@ -445,6 +452,14 @@ if ($sError == '') {
 			}
 		}
 		$saiu73idprograma = ($asaiu73idprograma[$i_saiu73idprograma]);
+		$saiu73evalfecha = fecha_desdenumero($fila['saiu73evalfecha']);
+		$saiu73evalacepta = '';
+		if ($fila['saiu73evalfecha'] > 0) {
+			$saiu73evalacepta = 'No';
+			if ($fila['saiu73evalacepta'] == 1) {
+				$saiu73evalacepta = 'Si';
+			}
+		}
 		PHPEXCEL_Escribir($objHoja, 0, $iFila, $fila['saiu73id']);
 		PHPEXCEL_Escribir($objHoja, 1, $iFila, $saiu73dia);
 		PHPEXCEL_Escribir($objHoja, 2, $iFila, $saiu73hora);
@@ -464,6 +479,15 @@ if ($sError == '') {
 		PHPEXCEL_Escribir($objHoja, 16, $iFila, $saiu73idcentro);
 		PHPEXCEL_Escribir($objHoja, 17, $iFila, $saiu73idescuela);
 		PHPEXCEL_Escribir($objHoja, 18, $iFila, $saiu73idprograma);
+		PHPEXCEL_Escribir($objHoja, 19, $iFila, $saiu73evalfecha);
+		PHPEXCEL_Escribir($objHoja, 20, $iFila, $saiu73evalacepta);
+		PHPEXCEL_Escribir($objHoja, 21, $iFila, $acalificacion[$fila['saiu73evalamabilidad']]);
+		PHPEXCEL_Escribir($objHoja, 22, $iFila, $acalificacion[$fila['saiu73evalrapidez']]);
+		PHPEXCEL_Escribir($objHoja, 23, $iFila, $acalificacion[$fila['saiu73evalclaridad']]);
+		PHPEXCEL_Escribir($objHoja, 24, $iFila, $acalificacion[$fila['saiu73evalresolvio']]);
+		PHPEXCEL_Escribir($objHoja, 25, $iFila, $acalificacion[$fila['saiu73evalconocimiento']]);
+		PHPEXCEL_Escribir($objHoja, 26, $iFila, $acalificacion[$fila['saiu73evalutilidad']]);
+		PHPEXCEL_Escribir($objHoja, 27, $iFila, cadena_decodificar($fila['saiu73evalsugerencias']));
 		$iFila++;
 	}
 	$objDB->CerrarConexion();

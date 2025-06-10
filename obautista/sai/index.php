@@ -95,6 +95,7 @@ require $APP->rutacomun . 'libhtml.php';
 require $APP->rutacomun . 'xajax/xajax_core/xajax.inc.php';
 require $APP->rutacomun . 'unad_xajax.php';
 require $APP->rutacomun . 'libsai.php';
+require $APP->rutacomun . 'libaurea.php';
 if (($bPeticionXAJAX) && ($_SESSION['unad_id_tercero'] == 0)) {
 	// viene por xajax.
 	$xajax = new xajax();
