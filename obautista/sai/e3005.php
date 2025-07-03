@@ -139,7 +139,7 @@ if ($bEntra) {
 		$iFila++;
 		$iFilaBase = $iFila;
 		$aTitulos = array(
-			cadena_tildes($ETI['msg_numsolicitud']), cadena_tildes($ETI['saiu05numref']), cadena_tildes($ETI['saiu05dia']), cadena_tildes($ETI['saiu05hora']), cadena_tildes($ETI['saiu05estado']),cadena_tildes($ETI['saiu05fecharespdef']), cadena_tildes($ETI['saiu05horarespdef']), cadena_tildes($ETI['saiu05idcategoria']),
+			cadena_tildes($ETI['msg_numsolicitud']), cadena_tildes($ETI['saiu05numref']), cadena_tildes($ETI['saiu05fecharad']), cadena_tildes($ETI['saiu05hora']), cadena_tildes($ETI['saiu05estado']),cadena_tildes($ETI['saiu05fecharespdef']), cadena_tildes($ETI['saiu05horarespdef']), cadena_tildes($ETI['saiu05idcategoria']),
 			cadena_tildes($ETI['saiu05idtiposolorigen']), cadena_tildes($ETI['saiu05idclaseser']), cadena_tildes($ETI['saiu05idtemaorigen']), cadena_tildes($ETI['saiu05idunidadresp']), cadena_tildes($ETI['saiu05idequiporesp']), cadena_tildes($ETI['saiu05idsupervisor']),
 			cadena_tildes($ETI['saiu05idresponsable']), cadena_tildes($ETI['saiu05idsolicitante']), cadena_tildes($ETI['saiu05razonsocial']), cadena_tildes($ETI['saiu05idzona']),
 			cadena_tildes($ETI['saiu05cead']), cadena_tildes($ETI['saiu05idescuela']), cadena_tildes($ETI['saiu05idprograma'])
@@ -285,12 +285,12 @@ if ($bEntra) {
 			TB.saiu05evalrapidmotivo, TB.saiu05evalclaridad, TB.saiu05evalcalridmotivo, TB.saiu05evalresolvio, TB.saiu05evalsugerencias,
 			TB.saiu05evalconocimiento,TB.saiu05evalconocmotivo,TB.saiu05evalutilidad,TB.saiu05evalutilmotivo,
 			TB.saiu05fecharespdef,TB.saiu05horarespdef,TB.saiu05minrespdef,TB.saiu05numref,TB.saiu05detalle,
-			TB.saiu05respuesta			
+			TB.saiu05respuesta,TB.saiu05fecharespprob,TB.saiu05raddesphab			
 			FROM saiu05solicitud_' . $sContenedor . ' AS TB, unad11terceros AS T11
 			WHERE TB.saiu05tiporadicado=1 AND TB.saiu05idsolicitante=T11.unad11id ' . $sCondi . '';
 		}
 		if ($sSQL != '') {
-			$sSQL = $sSQL . ' ORDER BY saiu05agno DESC, saiu05mes DESC, saiu05consec DESC';
+			$sSQL = $sSQL . ' ORDER BY saiu05estado, saiu05fecharespprob, saiu05agno, saiu05mes, saiu05dia';
 			$tabla = $objDB->ejecutasql($sSQL);
 			if ($tabla == false) {
 				if ($bDebug) {
@@ -317,8 +317,14 @@ if ($bEntra) {
 					$sNumRef = $fila['saiu05numref'];
 					$sDetalle = $fila['saiu05detalle'];
 					$sRespuesta = $fila['saiu05respuesta'];
-					$saiu05dia = fecha_armar($fila['saiu05dia'], $fila['saiu05mes'], $fila['saiu05agno']);
-					$saiu05hora = html_TablaHoraMin($fila['saiu05hora'], $fila['saiu05minuto']);
+					$saiu05dia = $ETI['et_estadorad'];
+					$saiu05hora = '';
+					if ($fila['saiu05estado'] != -1) {
+						$iFechaRad = fecha_ArmarNumero($fila['saiu05dia'], $fila['saiu05mes'], $fila['saiu05agno']);
+						$iFechaRad = fecha_NumSumarDias($iFechaRad, $fila['saiu05raddesphab']);
+						$saiu05dia = fecha_desdenumero($iFechaRad);
+						$saiu05hora = html_TablaHoraMin($fila['saiu05hora'], $fila['saiu05minuto']);
+					}
 					$i_saiu05estado = $fila['saiu05estado'];
 					$saiu05fecharespdef = fecha_desdenumero($fila['saiu05fecharespdef']);
 					$saiu05horarespdef = html_TablaHoraMin($fila['saiu05horarespdef'], $fila['saiu05minrespdef']);

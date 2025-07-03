@@ -66,8 +66,8 @@ function limpiaf3006(){
 	let params=new Array();
 	xajax_f3006_PintarLlaves(params);
 	window.document.frmedita.saiu06anotacion.value='';
-	window.document.frmedita.saiu06visible.value='';
-	window.document.frmedita.saiu06descartada.value='';
+	window.document.frmedita.saiu06visible.value='N';
+	window.document.frmedita.saiu06descartada.value='N';
 	limpia_saiu06idarchivo();
 	verboton('banexasaiu06idarchivo','none');
 	window.document.frmedita.saiu06idusuario.value=0;

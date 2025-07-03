@@ -1127,8 +1127,8 @@ Equipo de Soporte T&eacute;cnico.</p>
 function AUREA_HTML_CodigoCorreo($sCodigo, $sURL)
 {
 	$sRutaBase = __DIR__ . '/';
-	require $sRutaBase . 'app.php';
-	$sRutaComun = $sRutaBase . $APP->rutacomun;
+	require './app.php';
+	$sRutaComun = $APP->rutacomun;
 	$mensajes_17 = $sRutaComun . 'lg/lg_17_' . $_SESSION['unad_idioma'] . '.php';
 	if (!file_exists($mensajes_17)) {
 		$mensajes_17 = $sRutaComun . 'lg/lg_17_es.php';
@@ -1796,8 +1796,8 @@ function AUREA_IniciarLogin($idTercero, $objDB, $sFrase = '', $iUso = 0, $bDebug
 		$sIdioma = $_SESSION['unad_idioma'];
 	}
 	$sRutaBase = __DIR__ . '/';
-	require $sRutaBase . 'app.php';
-	$sRutaComun = $sRutaBase . $APP->rutacomun;
+	require './app.php';
+	$sRutaComun = $APP->rutacomun;
 	$mensajes_17 = $sRutaComun . 'lg/lg_17_' . $sIdioma . '.php';
 	if (!file_exists($mensajes_17)) {
 		$mensajes_17 = $sRutaComun . 'lg/lg_17_es.php';

@@ -78,7 +78,7 @@ $ETI['saiu05minhabproc'] = 'Minhabproc';
 $ETI['saiu05idmoduloproc']='Moduloproc';
 $ETI['saiu05identificadormod']='Entificadormod';
 $ETI['saiu05numradicado']='N&deg; de radicado correspondencia';
-$ETI['saiu05evalacepta'] = 'Evalacepta';
+$ETI['saiu05evalacepta'] = 'Acepta evaluar servicio: ';
 $ETI['saiu05evalfecha'] = 'Fecha encuesta';
 $ETI['saiu05evalamabilidad'] = 'Evalamabilidad';
 $ETI['saiu05evalamabmotivo'] = 'Evalamabmotivo';
@@ -191,7 +191,7 @@ $ETI['msg_anonimo']='Esta PQRS permite realizarse sin autenticaci&oacute;n, pres
 $ETI['bt_tratadatos']='Autorizaci&oacute;n para el tratamiento de datos personales';
 $ETI['msg_tratadatos']='La UNIVERSIDAD NACIONAL ABIERTA Y A DISTANCIA en adelante UNAD con Nit. 860.512.780-4 y domicilio en la Calle 14 sur N 14-23 de la ciudad de Bogot&aacute;, ente universitario aut&oacute;nomo del orden nacional, con r&eacute;gimen especial en los t&eacute;rminos de la Ley 30 de 1992, est&aacute; comprometida con el correcto tratamiento de los datos personales de los que es responsable.<br><br>La UNAD realizar&aacute; el tratamiento de datos personales mediante la recolecci&oacute;n, transferencia, transmisi&oacute;n, almacenamiento, depuraci&oacute;n, uso, an&aacute;lisis, circulaci&oacute;n, actualizaci&oacute;n, supresi&oacute;n y cruce de informaci&oacute;n, con la finalidad de:<br><strong>Recibir respuesta a la solicitud en el correo de notificaciones indicado.</strong><br><br>Sus derechos como titular de la informaci&oacute;n son los previstos en la Constitucci&oacute;n, la Ley 1581 de 2012, Decretos reglamentarios y nuestra Pol&iacute;tica de tratamiento de datos personales, la cual podr&aacute; consultar en el siguiente link <b><a href="https://sgeneral.unad.edu.co/images/documentos/capsulas/2019/POLI_TRAT_DATO_PERS_UNAD_2021.pdf" target="_blank">www.unad.edu.co</a></b>, especialmente los siguientes: conocer, actualizar, Revocar la autorizaci&oacute;n y/o solicitar la supresi&oacute;n del dato, a menos que exista un deber legal o contractual que haga imperativo conservar la informaci&oacute;n, abstenerse de responder las preguntas sobre datos sensibles.<br><br>Estos derechos los podr&aacute; ejercer a trav&eacute;s de los canales o medios dispuestos por la UNAD para la atenci&oacute;n al p&uacute;blico, al correo electr&oacute;nico <a href="mailto: sgeneral@unad.edu.co">sgeneral@unad.edu.co</a> para la atenci&oacute;n de requerimientos relacionados con el tratamiento de mis datos personales y el ejercicio de los derechos mencionados en esta autorizaci&oacute;n.<br><br>Mediante el presente se autoriza a la Universidad Nacional Abierta y a Distancia (UNAD) de forma libre, previa, expresa e informada para darle tratamiento a datos personales, en t&eacute;rminos aqu&iacute; referenciados.';
 $ETI['msg_cerrar']='Al hacer clic en el bot&oacute;n radicar, usted acepta la remisi&oacute;n de la PQRS a la entidad Universidad Nacional Abierta y a Distancia (UNAD). Sus datos ser&aacute;n recolectados y tratados conforme con la <a href="https://sgeneral.unad.edu.co/images/documentos/capsulas/2019/POLI_TRAT_DATO_PERS_UNAD_2021.pdf" target="_blank">Pol&iacute;tica de Tratamiento de Datos</a>.<br>En la opci&oacute;n <a href="https://aurea.unad.edu.co/sai/" target="_blank">consulta de PQRS</a> podr&aacute; verificar el estado de la respuesta. En caso que la solicitiud de informaci&oacute;n sea de naturaleza de identidad reservada, deber&aacute; efectuar el respectivo trámite ante la Procuradur&iacute;a General de la Naci&oacute;n, haciendo clic en el siguiente link: <a href="https://www.procuraduria.gov.co/SedeElectronica/tramites/tramite.do?formAction=btShow&t=50012&s=0" target="_blank" style="word-wrap:break-word;">procuraduria.gov.co - solicitud_informacion_identificacion_reservada</a>.<br>&iquest;Est&aacute; seguro de continuar?';
-$ETI['bt_tramitar']='Iniciar Tr&aacute;mite';
+$ETI['bt_tramitar']='Aceptar PQRS';
 $ETI['bt_guardar']='Guardar';
 $ETI['bt_guardarb']='Guardar borrador';
 $ETI['bt_solicitar']='Solicitar';
@@ -271,4 +271,16 @@ $ERR['saiu05idresponsablefin'] = 'No ha seleccionado un integrante del equipo de
 // Fin etiquetas y mensajes de encuesta
 
 $ETI['msg_vacaciones'] = '<b>ATENCI&Oacute;N: </b>Estimados usuarios, les informamos que, de acuerdo con la RESOLUCI&Oacute;N No. 021265 del 6 de diciembre de 2024, se suspenden los t&eacute;rminos en todas las actuaciones administrativas de la Universidad Nacional Abierta y a Distancia (UNAD) debido a las vacaciones colectivas. Por lo tanto, el servicio de radicaci&oacute;n de PQRS estar&aacute; temporalmente inactivo y se reanudar&aacute; el 16 de enero de 2025.';
+$ETI['msg_radicar'] = 'Se proceder&aacute; a radicar la PQRS, ¿est&aacute; seguro de continuar&quest;';
+$ETI['msg_tramitar'] = 'Se proceder&aacute; a dar inicio del tr&aacute;mite de la PQRS, ¿est&aacute; seguro de continuar&quest;';
+$ETI['msg_resolver'] = 'Se proceder&aacute; a dar respuesta y dar cierre de la PQRS, ¿est&aacute; seguro de continuar&quest;';
+$ETI['bt_resigna'] = 'Reasignar';
+$ETI['bt_guardaresigna'] = 'Guardar Reasignaci&oacute;n';
+$ETI['bt_revborrador'] = 'Procesar Borradores';
+$ETI['msg_revborrador'] = 'Se proceder&aacute; a eliminar las solicitudes en <b>Borrador</b> que tengan m&aacute;s de 3 (tres) d&iacute;as en espera, ¿est&aacute; seguro de continuar&quest;';
+$ETI['msg_resborradorok'] = 'Se eliminaron borradores con m&aacute;s de 3 (tres) d&iacute;as en espera. Cantidad: ';
+$ETI['msg_resborradorno'] = 'No se encontraron borradores con m&aacute;s de 3 (tres) d&iacute;as en espera.';
+$ETI['saiu05fecharad'] = 'Fecha radicado';
+$ETI['et_estadorad'] = 'SIN RADICAR';
+$ETI['msg_alertapendientes'] = '<br><b>ALERTA: </b>Existen solicitudes que han superado la fecha l&iacute;mite de respuesta. Cantidad: ';
 ?>

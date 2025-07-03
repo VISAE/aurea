@@ -42,93 +42,31 @@ function unad11_Mostrar_v2SAI($aParametros)
 	$sCampoDireccion = '';
 	$sCorreo = '';
 	$sDireccion = '';
+	$idMod = '';
 	switch ($idModulo) {
 		case 3005: //pqrs
-			$sCampoPais = 'saiu05idzona';
-			$sCampoDepto = 'saiu05coddepto';
-			$sCampoCiudad = 'saiu05codciudad';
-			$sCampoTelefono = 'saiu05numorigen';
-			$sCampoTipoInteresado = 'saiu05tipointeresado';
-			$sCampoZona = 'saiu05idzona';
-			$sCampoCentro = 'saiu05idcentro';
-			$sCampoEscuela = 'saiu05idescuela';
-			$sCampoPrograma = 'saiu05idprograma';
-			$sCampoPeriodo = 'saiu05idperiodo';
+			$idMod = '05';
 			$bEnviarCorreo = true;
 			$sCampoCorreo = 'saiu05rptacorreo';
 			$sCampoDireccion = 'saiu05rptadireccion';
 			break;
 		case 3018: //Telefonico
-			$sCampoPais = 'saiu18idzona';
-			$sCampoDepto = 'saiu18coddepto';
-			$sCampoCiudad = 'saiu18codciudad';
-			$sCampoTelefono = 'saiu18numorigen';
-			$sCampoTipoInteresado = 'saiu18tipointeresado';
-			$sCampoZona = 'saiu18idzona';
-			$sCampoCentro = 'saiu18idcentro';
-			$sCampoEscuela = 'saiu18idescuela';
-			$sCampoPrograma = 'saiu18idprograma';
-			$sCampoPeriodo = 'saiu18idperiodo';
+			$idMod = '18';
 			break;
 		case 3019: //Chat
-			$sCampoPais = 'saiu19idzona';
-			$sCampoDepto = 'saiu19coddepto';
-			$sCampoCiudad = 'saiu19codciudad';
-			$sCampoTelefono = 'saiu19numorigen';
-			$sCampoTipoInteresado = 'saiu19tipointeresado';
-			$sCampoZona = 'saiu19idzona';
-			$sCampoCentro = 'saiu19idcentro';
-			$sCampoEscuela = 'saiu19idescuela';
-			$sCampoPrograma = 'saiu19idprograma';
-			$sCampoPeriodo = 'saiu19idperiodo';
+			$idMod = '19';
 			break;
 		case 3020: //Correos
-			$sCampoPais = 'saiu20idzona';
-			$sCampoDepto = 'saiu20coddepto';
-			$sCampoCiudad = 'saiu20codciudad';
-			$sCampoTelefono = 'saiu20numorigen';
-			$sCampoTipoInteresado = 'saiu20tipointeresado';
-			$sCampoZona = 'saiu20idzona';
-			$sCampoCentro = 'saiu20idcentro';
-			$sCampoEscuela = 'saiu20idescuela';
-			$sCampoPrograma = 'saiu20idprograma';
-			$sCampoPeriodo = 'saiu20idperiodo';
+			$idMod = '20';
 			break;
 		case 3021: //Atencion presencial
-			$sCampoPais = 'saiu21idzona';
-			$sCampoDepto = 'saiu21coddepto';
-			$sCampoCiudad = 'saiu21codciudad';
-			$sCampoTelefono = 'saiu21numorigen';
-			$sCampoTipoInteresado = 'saiu21tipointeresado';
-			$sCampoZona = 'saiu21idzona';
-			$sCampoCentro = 'saiu21idcentro';
-			$sCampoEscuela = 'saiu21idescuela';
-			$sCampoPrograma = 'saiu21idprograma';
-			$sCampoPeriodo = 'saiu21idperiodo';
+			$idMod = '21';
 			break;
 		case 3028: //Mesa de ayuda.
-			$sCampoPais = 'saiu28idzona';
-			$sCampoDepto = 'saiu28coddepto';
-			$sCampoCiudad = 'saiu28codciudad';
-			$sCampoTelefono = 'saiu28numorigen';
-			$sCampoTipoInteresado = 'saiu28tipointeresado';
-			$sCampoZona = 'saiu28idzona';
-			$sCampoCentro = 'saiu28idcentro';
-			$sCampoEscuela = 'saiu28idescuela';
-			$sCampoPrograma = 'saiu28idprograma';
-			$sCampoPeriodo = 'saiu28idperiodo';
+			$idMod = '28';
 			break;
 		case 3073: //Solicitudes Usuario
-			$sCampoPais = 'saiu73idzona';
-			$sCampoDepto = 'saiu73coddepto';
-			$sCampoCiudad = 'saiu73codciudad';
-			$sCampoTelefono = 'saiu73numorigen';
-			$sCampoTipoInteresado = 'saiu73tipointeresado';
-			$sCampoZona = 'saiu73idzona';
-			$sCampoCentro = 'saiu73idcentro';
-			$sCampoEscuela = 'saiu73idescuela';
-			$sCampoPrograma = 'saiu73idprograma';
-			$sCampoPeriodo = 'saiu73idperiodo';
+			$idMod = '73';
 			break;
 		default:
 			$objResponse = new xajaxResponse();
@@ -136,6 +74,16 @@ function unad11_Mostrar_v2SAI($aParametros)
 			return $objResponse;
 			break;
 	}
+	$sCampoPais = 'saiu' . $idMod . 'idzona';
+	$sCampoDepto = 'saiu' . $idMod . 'coddepto';
+	$sCampoCiudad = 'saiu' . $idMod . 'codciudad';
+	$sCampoTelefono = 'saiu' . $idMod . 'numorigen';
+	$sCampoTipoInteresado = 'saiu' . $idMod . 'tipointeresado';
+	$sCampoZona = 'saiu' . $idMod . 'idzona';
+	$sCampoCentro = 'saiu' . $idMod . 'idcentro';
+	$sCampoEscuela = 'saiu' . $idMod . 'idescuela';
+	$sCampoPrograma = 'saiu' . $idMod . 'idprograma';
+	$sCampoPeriodo = 'saiu' . $idMod . 'idperiodo';
 	if ($doc != '') {
 		require './app.php';
 		$objDB = new clsdbadmin($APP->dbhost, $APP->dbuser, $APP->dbpass, $APP->dbname);
@@ -193,7 +141,7 @@ function unad11_Mostrar_v2SAI($aParametros)
 		$sSQL = 'SELECT core01idestado, core01idescuela, core01idprograma, core01idzona, core011idcead 
 		FROM core01estprograma 
 		WHERE core01idtercero=' . $idTercero . ' AND core01idestado NOT IN (11, 12) 
-		ORDER BY core01id DESC';
+		ORDER BY core01peracainicial DESC';
 		$tabla = $objDB->ejecutasql($sSQL);
 		if ($objDB->nf($tabla) > 0) {
 			$fila = $objDB->sf($tabla);
