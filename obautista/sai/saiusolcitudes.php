@@ -1739,6 +1739,18 @@ switch ($_REQUEST['saiu05estado']) {
 	break;
 }
 ?>
+<?php
+if ($bEsSupervisor) {
+	if (!$bEsBorrador) {
+?>
+	function enviaguardarsupv() {
+		window.document.frmedita.bCambiaEst.value = 0;
+		enviaguardar();
+	}
+<?php
+	}
+}
+?>
 
 	function expandesector(codigo) {
 		document.getElementById('div_sector1').style.display = 'none';
@@ -3096,6 +3108,13 @@ if ($_REQUEST['saiu05estado']==2) {
 }
 ?>
 <div class="salto5px"></div>
+<?php
+if ($bEsSupervisor) {
+	if (!$bEsBorrador) {
+		echo $objForma->htmlBotonSolo('cmdGuardar', 'BotonAzul160', "enviaguardarsupv();", $ETI['bt_guardar'], 160);	
+	}
+}
+?>
 <?php
 switch ($_REQUEST['saiu05estado']) {
 	case -1:
