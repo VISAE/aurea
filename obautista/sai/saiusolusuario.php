@@ -1,8 +1,9 @@
 <?php
 /*
---- © Angel Mauro Avellaneda Barreto - UNAD - 2024 ---
+--- © Angel Mauro Avellaneda Barreto - UNAD - 2024 - 2025 ---
 --- angel.avellaneda@unad.edu.co - http://www.unad.edu.co
 --- Modelo Versión 3.0.11b miércoles, 14 de agosto de 2024
+--- Modelo Versión 3.0.16 jueves, 3 de julio de 2025
 */
 
 /** Archivo saiusolusuario.php.
@@ -88,6 +89,8 @@ if (!$bPeticionXAJAX) {
 require $APP->rutacomun . 'unad_todas.php';
 require $APP->rutacomun . 'libs/clsdbadmin.php';
 require $APP->rutacomun . 'unad_librerias.php';
+require $APP->rutacomun . 'libaurea.php';
+require $APP->rutacomun . 'libcomp.php';
 require $APP->rutacomun . 'libdatos.php';
 require $APP->rutacomun . 'libhtml.php';
 require $APP->rutacomun . 'xajax/xajax_core/xajax.inc.php';
@@ -95,7 +98,6 @@ require $APP->rutacomun . 'unad_xajax.php';
 require $APP->rutacomun . 'libsai.php';
 require $APP->rutacomun . 'libtiempo.php';
 require $APP->rutacomun . 'libmail.php';
-require $APP->rutacomun . 'libaurea.php';
 if (($bPeticionXAJAX) && ($_SESSION['unad_id_tercero'] == 0)) {
 	// viene por xajax.
 	$xajax = new xajax();
@@ -108,28 +110,29 @@ $iConsecutivoMenu = 2;
 $iMinVerDB = 7774;
 $iCodModulo = 3073;
 $iCodModuloConsulta = $iCodModulo;
+$sIdioma = AUREA_Idioma();
 $audita[1] = false;
 $audita[2] = true;
 $audita[3] = true;
 $audita[4] = true;
 $audita[5] = false;
 // -- Se cargan los archivos de idioma
-$mensajes_todas = $APP->rutacomun . 'lg/lg_todas_' . $_SESSION['unad_idioma'] . '.php';
+$mensajes_todas = $APP->rutacomun . 'lg/lg_todas_' . $sIdioma . '.php';
 if (!file_exists($mensajes_todas)) {
 	$mensajes_todas = $APP->rutacomun . 'lg/lg_todas_es.php';
 }
 /*
-$mensajes_000 = 'lg/lg_000_' . $_SESSION['unad_idioma'] . '.php';
-if (!file_exists($mensajes_000)) {
-	$mensajes_000 = 'lg/lg_000_es.php';
+$mensajes_3000 = 'lg/lg_3000_' . $sIdioma . '.php';
+if (!file_exists($mensajes_3000)) {
+	$mensajes_3000 = 'lg/lg_3000_es.php';
 }
-require $mensajes_000;
+require $mensajes_3000;
 */
 $mensajes_3000 = $APP->rutacomun . 'lg/lg_3000_' . $_SESSION['unad_idioma'] . '.php';
 if (!file_exists($mensajes_3000)) {
 	$mensajes_3000 = $APP->rutacomun . 'lg/lg_3000_es.php';
 }
-$mensajes_3073 = $APP->rutacomun . 'lg/lg_3073_' . $_SESSION['unad_idioma'] . '.php';
+$mensajes_3073 = $APP->rutacomun . 'lg/lg_3073_' . $sIdioma . '.php';
 if (!file_exists($mensajes_3073)) {
 	$mensajes_3073 = $APP->rutacomun . 'lg/lg_3073_es.php';
 }
@@ -163,7 +166,7 @@ switch ($iPiel) {
 }
 // --- Final de las variables para la forma
 if ($bDebug) {
-	$sDebug = $sDebug . fecha_microtiempo() . ' Probando conexi&oacute;n con la base de datos <b>' . $APP->dbname . '</b> en <b>' . $APP->dbhost . '</b><br>';
+	$sDebug = $sDebug . log_debug('Probando conexi&oacute;n con la base de datos <b>' . $APP->dbname . '</b> en <b>' . $APP->dbhost . '</b>');
 }
 $bCargaMenu = true;
 if (!$objDB->Conectar()) {
@@ -171,7 +174,7 @@ if (!$objDB->Conectar()) {
 	$bCerrado = true;
 	$sMsgCierre = '<div class="MarquesinaGrande">Disculpe las molestias estamos en este momento nuestros servicios no estas disponibles.<br>Por favor intente acceder mas tarde.<br>Si el problema persiste por favor informe al administrador del sistema.</div>';
 	if ($bDebug) {
-		$sDebug = $sDebug . fecha_microtiempo() . ' Error al intentar conectar con la base de datos <b>' . $objDB->serror . '</b><br>';
+		$sDebug = $sDebug . log_debug('Error al intentar conectar con la base de datos <b>' . $objDB->serror . '</b>');
 	}
 }
 if (!$bCerrado) {
@@ -180,16 +183,16 @@ if (!$bCerrado) {
 		$bCerrado = true;
 		$sMsgCierre = '<div class="MarquesinaGrande">La base de datos se encuentra desactualizada para este modulo.<br>Por favor informe al administrador del sistema.</div>';
 		if ($bDebug) {
-			$sDebug = $sDebug . fecha_microtiempo() . ' <b>DB DESACTUALIZADA [Requerida:' . $iMinVerDB . ' - Encontrada:' . $iVerDB . ']</b><br>';
+			$sDebug = $sDebug . log_debug('<b>DB DESACTUALIZADA [Requerida:' . $iMinVerDB . ' - Encontrada:' . $iVerDB . ']</b>');
 		}
 	} else {
 		if ($bDebug) {
-			$sDebug = $sDebug . fecha_microtiempo() . ' Versi&oacute;n DB <b>' . $iVerDB . '</b> [Requerida:' . $iMinVerDB . ']<br>';
+			$sDebug = $sDebug . log_debug('Versi&oacute;n DB <b>' . $iVerDB . '</b> [Requerida:' . $iMinVerDB . ']');
 		}
 	}
 }
 if (!$bCerrado) {
-	list($bDevuelve, $sDebugP) = seg_revisa_permisoV3($iCodModuloConsulta, 1, $_SESSION['unad_id_tercero'], $objDB);
+	list($bDevuelve, $sDebugP) = seg_revisa_permisoV3($iCodModuloConsulta, 1, $idTercero, $objDB);
 	if (!$bDevuelve) {
 		$bCerrado = true;
 		$sMsgCierre = '<div class="MarquesinaGrande">No cuenta con permiso para acceder a este modulo [' . $iCodModuloConsulta . '].</div>';
@@ -238,7 +241,7 @@ if ($bCerrado) {
 	echo $objForma->htmlInicioMarco();
 	echo $sMsgCierre;
 	if ($bDebug) {
-		echo $sDebug;
+		echo console_debug($sDebug);
 	}
 	echo $objForma->htmlFinMarco();
 	forma_piedepagina();
@@ -258,6 +261,8 @@ $sDebug = $sDebug . $sDebugP;
 if (isset($_REQUEST['deb_tipodoc']) == 0) {
 	$_REQUEST['deb_tipodoc'] = $APP->tipo_doc;
 }
+$_REQUEST['deb_tipodoc'] = cadena_Validar($_REQUEST['deb_tipodoc']);
+$_REQUEST['deb_doc'] = cadena_Validar($_REQUEST['deb_doc']);
 if ($_REQUEST['deb_doc'] != '') {
 	if ($seg_1707 == 1) {
 		$sSQL = 'SELECT unad11id, unad11razonsocial FROM unad11terceros WHERE unad11doc="' . $_REQUEST['deb_doc'] . '" AND unad11tipodoc="' . $_REQUEST['deb_tipodoc'] . '"';
@@ -267,7 +272,7 @@ if ($_REQUEST['deb_doc'] != '') {
 			$idTercero = $fila['unad11id'];
 			$bOtroUsuario = true;
 			if ($bDebug) {
-				$sDebug = $sDebug . fecha_microtiempo() . ' Se verifica la ventana de trabajo para el usuario ' . $fila['unad11razonsocial'] . '.<br>';
+				$sDebug = $sDebug . log_debug('Se verifica la ventana de trabajo para el usuario ' . $fila['unad11razonsocial'] . '.');
 			}
 		} else {
 			$sError = 'No se ha encontrado el documento &quot;' . $_REQUEST['deb_tipodoc'] . ' ' . $_REQUEST['deb_doc'] . '&quot;';
@@ -275,7 +280,7 @@ if ($_REQUEST['deb_doc'] != '') {
 		}
 	} else {
 		if ($bDebug) {
-			$sDebug = $sDebug . fecha_microtiempo() . ' No cuenta con permiso de ingreso como otro usuario [Modulo ' . $iCodModulo . ' Permiso 1707]<br>';
+			$sDebug = $sDebug . log_debug('No cuenta con permiso de ingreso como otro usuario [Modulo ' . $iCodModulo . ' Permiso 1707]');
 		}
 		$_REQUEST['deb_doc'] = '';
 	}
@@ -326,6 +331,7 @@ $xajax->register(XAJAX_FUNCTION, 'elimina_archivo_saiu73idarchivo');
 $xajax->register(XAJAX_FUNCTION, 'elimina_archivo_saiu73idarchivorta');
 $xajax->register(XAJAX_FUNCTION, 'f3073_Combobtema');
 $xajax->register(XAJAX_FUNCTION, 'f3073_Combobcead');
+$xajax->register(XAJAX_FUNCTION, 'f3073_db_EliminarBorradores');
 $xajax->processRequest();
 if ($bPeticionXAJAX) {
 	die(); // Esto hace que las llamadas por xajax terminen aquí.
@@ -415,7 +421,7 @@ if (isset($_REQUEST['saiu73tipointeresado']) == 0) {
 	$_REQUEST['saiu73tipointeresado'] = '';
 }
 if (isset($_REQUEST['saiu73idcanal']) == 0) {
-	$_REQUEST['saiu73idcanal'] = $iCodModulo;
+	$_REQUEST['saiu73idcanal'] = '';
 }
 if ($_REQUEST['saiu73idcanal'] == $iCodModulo) {
 	$iTipoSolicitud = 58;
@@ -567,6 +573,9 @@ if (isset($_REQUEST['saiu73idcorreootro']) == 0) {
 if (isset($_REQUEST['saiu73correoorigen']) == 0) {
 	$_REQUEST['saiu73correoorigen'] = '';
 }
+if (isset($_REQUEST['saiu73fecharad']) == 0) {
+	$_REQUEST['saiu73fecharad'] = 0;
+}
 $_REQUEST['saiu73agno'] = numeros_validar($_REQUEST['saiu73agno']);
 $_REQUEST['saiu73mes'] = numeros_validar($_REQUEST['saiu73mes']);
 $_REQUEST['saiu73tiporadicado'] = numeros_validar($_REQUEST['saiu73tiporadicado']);
@@ -629,6 +638,7 @@ $_REQUEST['saiu73numsesionchat'] = cadena_Validar($_REQUEST['saiu73numsesionchat
 $_REQUEST['saiu73idcorreo'] = numeros_validar($_REQUEST['saiu73idcorreo']);
 $_REQUEST['saiu73idcorreootro'] = cadena_Validar($_REQUEST['saiu73idcorreootro']);
 $_REQUEST['saiu73correoorigen'] = cadena_Validar($_REQUEST['saiu73correoorigen']);
+$_REQUEST['saiu73fecharad'] = numeros_validar($_REQUEST['saiu73fecharad']);
 // Espacio para inicializar otras variables
 if (isset($_REQUEST['csv_separa']) == 0) {
 	$_REQUEST['csv_separa'] = ',';
@@ -712,6 +722,14 @@ if (isset($_REQUEST['u'])) {
 		$_REQUEST['paso'] = 3;
 	}
 }
+if (isset($_REQUEST['bdetalle']) == 0) {
+	$_REQUEST['bdetalle'] = '';
+}
+if (isset($_REQUEST['brespuesta']) == 0) {
+	$_REQUEST['brespuesta'] = '';
+}
+$_REQUEST['bdetalle'] = cadena_Validar($_REQUEST['bdetalle']);
+$_REQUEST['brespuesta'] = cadena_Validar($_REQUEST['brespuesta']);
 $sTabla73 = 'saiu73solusuario_' . $_REQUEST['saiu73agno'];
 $bExiste = $objDB->bexistetabla($sTabla73);
 if ($bExiste) {
@@ -721,9 +739,13 @@ if ($bExiste) {
 	$sError = $ERR['msg_contenedor'] . ' ' . $sTabla73 . '';
 	$_REQUEST['paso'] = -1;
 }
+$bResuelto = false;
+if ($_REQUEST['saiu73estado'] == 7) {
+	$bResuelto = true;
+}
 // Actualiza atiende
 if ($_REQUEST['paso'] == 27) {
-	if ($_REQUEST['saiu73estado'] < 7) {
+	if (!$bResuelto) {
 		list($sError, $sDebugA) = f3073_ActualizaAtiendeSolicitud($_REQUEST['saiu73id'], $_REQUEST['saiu73agno'], $objDB, $bDebug);
 		$sDebug = $sDebug . $sDebugA;
 		if ($sError == '') {
@@ -811,6 +833,7 @@ if (($_REQUEST['paso'] == 1) || ($_REQUEST['paso'] == 3)) {
 		$_REQUEST['saiu73idcorreo'] = $fila['saiu73idcorreo'];
 		$_REQUEST['saiu73idcorreootro'] = $fila['saiu73idcorreootro'];
 		$_REQUEST['saiu73correoorigen'] = $fila['saiu73correoorigen'];
+		$_REQUEST['saiu73fecharad'] = $fila['saiu73fecharad'];
 		$bcargo = true;
 		$_REQUEST['paso'] = 2;
 		$_REQUEST['boculta3073'] = 0;
@@ -1049,27 +1072,37 @@ if ($_REQUEST['paso'] == -1) {
 	$_REQUEST['saiu73idcorreo'] = 0;
 	$_REQUEST['saiu73idcorreootro'] = '';
 	$_REQUEST['saiu73correoorigen'] = '';
+	$_REQUEST['saiu73fecharad'] = 0;
 	$_REQUEST['paso'] = 0;
 }
 if ($bLimpiaHijos) {
 }
 //AQUI SE DEBEN CARGAR TODOS LOS DATOS QUE LA FORMA NECESITE.
 $bPuedeAbrir = false;
-$bPuedeEliminar = false;
 $bPuedeGuardar = true;
+$bPuedeEliminar = false;
 $bPuedeCerrar = false;
 $bHayImprimir = false;
 $bEnTramite = false;
 $bPuedeEditar = $seg_1707;
 $bMuestraTiempos = false;
-$bResuelto = false;
 $bMostrarResponsable = false;
 $bEsFAV = false;
 $bEsSupervisor = false;
+$bEsBorrador = false;
 $sScriptImprime = 'imprimeexcel()';
+$sScriptImprime2 = 'imprimep()';
 $sClaseImprime = 'iExcel';
+$sClaseImprime2 = 'iPdf';
+if ($iPiel == 0) {
+	$sClaseImprime = 'btEnviarExcel';
+	$sClaseImprime2 = 'btEnviarPdf';
+}
 switch ($_REQUEST['saiu73estado']) {
 	case -1: // borrador
+		$bEsBorrador = true;
+		$bEnTramite = true;
+		break;
 	case 2: // En tramite
 		$bEnTramite = true;
 		break;
@@ -1108,7 +1141,11 @@ if ($bMostrarResponsable) {
 	$sDatosResuelto = $saiu73fecharesp . ' ' . $saiu73horaresp;
 }
 // Variables para la forma
-$sTituloModulo = $ETI['canal' . $_REQUEST['saiu73idcanal']];
+if ((int)$_REQUEST['saiu73idcanal'] == 0) {
+	$sTituloModulo = $ETI['canal3073'];
+} else {
+	$sTituloModulo = $ETI['canal' . $_REQUEST['saiu73idcanal']];
+}
 $ETI['titulo_sector2'] = $sTituloModulo;
 $ETI['sigla_3073'] = $sTituloModulo;
 //DATOS PARA COMPLETAR EL FORMULARIO
@@ -1130,15 +1167,8 @@ list($bDevuelve, $sDebugP) = seg_revisa_permisoV3($iCodModulo, 12, $idTercero, $
 if ($bDevuelve) {
 	$seg_12 = 1;
 }
-list($bDevuelve, $sDebugP) = seg_revisa_permisoV3($iCodModulo, 6, $idTercero, $objDB);
-if ($bDevuelve) {
-	$seg_6 = 1;
-}
-if ($seg_6 == 1) {
-	$bHayImprimir = true;
-}
-if ((int)$_REQUEST['paso'] == 0) {
-} else {
+list($bHayImprimir, $sDebugP, $seg_6) = seg_revisa_permisoV3($iCodModulo, 6, $idTercero, $objDB);
+if ((int)$_REQUEST['paso'] != 0) {
 	switch ($_REQUEST['saiu73estado']) {
 		case -1: // Borrador
 			$bPuedeEliminar = true;
@@ -1327,7 +1357,11 @@ if ($bEnTramite) {
 		$objCombos->addArreglo($asaiu73solucion, $isaiu73solucion);
 		$html_saiu73solucion = $objCombos->html('', $objDB);
 	} else {
-		$html_saiu73solucion = html_oculto('saiu73solucion', $_REQUEST['saiu73solucion'], $asaiu73solucion[$_REQUEST['saiu73solucion']]);
+		$sSolucion = $asaiu73solucion[$_REQUEST['saiu73solucion']];
+		if ($_REQUEST['saiu73solucion'] == 3) {
+			$sSolucion = $ETI['msg_inicaso'];
+		}
+		$html_saiu73solucion = html_oculto('saiu73solucion', $_REQUEST['saiu73solucion'], $sSolucion);
 	}
 }
 if ((int)$_REQUEST['paso'] == 0) {
@@ -1349,6 +1383,14 @@ if ((int)$_REQUEST['paso'] == 0) {
 	list($saiu73tiporadicado_nombre, $sErrorDet) = tabla_campoxid('saiu16tiporadicado', 'saiu16nombre', 'saiu16id', $_REQUEST['saiu73tiporadicado'], '{' . $ETI['msg_sindato'] . '}', $objDB);
 	$html_saiu73tiporadicado = html_oculto('saiu73tiporadicado', $_REQUEST['saiu73tiporadicado'], $saiu73tiporadicado_nombre);
 }
+$sFechaRad = $ETI['et_estadorad'];
+if (!$bEsBorrador) {
+	$sFechaRad = fecha_desdenumero($_REQUEST['saiu73fecharad']);
+	if ($_REQUEST['saiu73fecharad'] == 0) {
+		$sFechaRad = fecha_armar($_REQUEST['saiu73dia'], $_REQUEST['saiu73mes'], $_REQUEST['saiu73agno']);
+	}
+}
+$html_saiu73fecharad = html_oculto('saiu73fecharad', $_REQUEST['saiu73fecharad'], $sFechaRad);
 //Alistar datos adicionales
 $bConBotonAbandona = false;
 $bConBotonCancela = false;
@@ -1421,10 +1463,7 @@ if (false) {
 } else {
 	$csv_separa = '<input id="csv_separa" name="csv_separa" type="hidden" value="," />';
 }
-$iNumFormatosImprime = 0;
-$iModeloReporte = $_REQUEST['saiu73idcanal'];
-$html_iFormatoImprime = '<input id="iformatoimprime" name="iformatoimprime" type="hidden" value="0" />';
-$objCombos->nuevo('saiu73idcanal', $_REQUEST['saiu73idcanal'], false, '{' . $ETI['msg_todas'] . '}');
+$objCombos->nuevo('saiu73idcanal', $_REQUEST['saiu73idcanal'], true, '{' . $ETI['msg_seleccione'] . '}');
 $objCombos->sAccion = 'limpiapagina()';
 $objCombos->addItem(3018, $ETI['canal3018']);
 $objCombos->addItem(3019, $ETI['canal3019']);
@@ -1447,7 +1486,10 @@ $aParametros[109] = $_REQUEST['btema'];
 $aParametros[111] = $_REQUEST['bzona'];
 $aParametros[112] = $_REQUEST['bcead'];
 $aParametros[113] = $_REQUEST['saiu73idcanal'];
-list($sTabla3073, $sDebugTabla) = f3073_TablaDetalleV2($aParametros, $objDB, $bDebug);
+$aParametros[114] = $_REQUEST['bdetalle'];
+$aParametros[115] = $_REQUEST['brespuesta'];
+list($sTabla3073, $sErrorTabla, $iTipoError, $sDebugTabla) = f3073_TablaDetalleV2($aParametros, $objDB, $bDebug);
+$sError = $sError . $sErrorTabla;
 $sDebug = $sDebug . $sDebugTabla;
 $sTabla3000 = '';
 $sTabla3000pqrs = '';
@@ -1467,7 +1509,6 @@ if ($_REQUEST['paso'] != 0) {
 	list($sTabla3000pqrs, $sDebugTabla) = f3000pqrs_TablaDetalleV2($aParametros3000, $objDB, $bDebug);
 	$sDebug = $sDebug . $sDebugTabla;
 }
-$bDebugMenu = false;
 switch ($iPiel) {
 	case 2:
 		list($et_menu, $sDebugM) = html_Menu2023($APP->idsistema, $objDB, $iPiel, $bDebugMenu, $idTercero);
@@ -1569,9 +1610,7 @@ switch ($iPiel) {
 					if (codigo == 1) {
 						sEst = 'block';
 					}
-					if (window.document.frmedita.saiu73estado.value < 7) {
 						document.getElementById('cmdGuardarf').style.display = sEst;
-					}
 		<?php
 				}
 				break;
@@ -1657,6 +1696,8 @@ switch ($iPiel) {
 		window.document.frmimpp.v6.value = window.document.frmedita.bzona.value;
 		window.document.frmimpp.v7.value = window.document.frmedita.bcead.value;
 		window.document.frmimpp.v8.value = window.document.frmedita.saiu73idcanal.value;
+		window.document.frmimpp.v14.value = window.document.frmedita.bdetalle.value;
+		window.document.frmimpp.v15.value = window.document.frmedita.brespuesta.value;
 		window.document.frmimpp.separa.value = window.document.frmedita.csv_separa.value.trim();
 	}
 
@@ -1680,13 +1721,6 @@ switch ($iPiel) {
 			asignarvariables();
 			window.document.frmimpp.action = 'p3073.php';
 			window.document.frmimpp.submit();
-			<?php
-			if ($iNumFormatosImprime > 0) {
-			?>
-				expandesector(1);
-			<?php
-			}
-			?>
 		} else {
 			ModalMensaje("<?php echo $ERR['5']; ?>");
 		}
@@ -1803,6 +1837,8 @@ switch ($iPiel) {
 		params[111] = window.document.frmedita.bzona.value;
 		params[112] = window.document.frmedita.bcead.value;
 		params[113] = window.document.frmedita.saiu73idcanal.value;
+		params[114] = window.document.frmedita.bdetalle.value;
+		params[115] = window.document.frmedita.brespuesta.value;
 		document.getElementById('div_f3073detalle').innerHTML = '<div class="GrupoCamposAyuda"><div class="MarquesinaMedia">Procesando datos, por favor espere.</div></div><input id="paginaf3073" name="paginaf3073" type="hidden" value="' + params[101] + '" /><input id="lppf3073" name="lppf3073" type="hidden" value="' + params[102] + '" />';
 		xajax_f3073_HtmlTabla(params);
 	}
@@ -1846,7 +1882,7 @@ switch ($iPiel) {
 		window.document.frmedita.iscroll.value = window.scrollY;
 		expandesector(98);
 		window.document.frmedita.scampobusca.value = sCampo;
-		var params = new Array();
+		let params = new Array();
 		params[1] = sCampo;
 		//params[2]=window.document.frmedita.iagno.value;
 		//params[3]=window.document.frmedita.itipo.value;
@@ -1902,11 +1938,8 @@ switch ($iPiel) {
 	}
 
 	function mod_consec() {
-		ModalConfirm('<?php echo $ETI['msg_confirmamodconsec']; ?>');
-		ModalDialogConfirm(function(confirm) {
-			if (confirm) {
-				ejecuta_modconsec();
-			}
+		ModalConfirmV2('<?php echo $ETI['msg_confirmamodconsec']; ?>', () => {
+			ejecuta_modconsec();
 		});
 	}
 
@@ -2141,6 +2174,41 @@ switch ($iPiel) {
 		document.getElementById('div_btema').innerHTML = '<b>Procesando datos, por favor espere...</b><input id="btema" name="btema" type="hidden" value="" />';
 		xajax_f3073_Combobtema(params);
 	}
+<?php
+if ($bPuedeEditar) {
+?>
+	function revisaborrador() {
+		ModalConfirmV2('<?php echo $ETI['msg_revborrador']; ?>', () => {
+			let params = new Array();
+			params[99] = window.document.frmedita.debug.value;
+			params[100] = <?php echo $idTercero; ?>;
+			params[101] = window.document.frmedita.paginaf3073.value;
+			params[102] = window.document.frmedita.lppf3073.value;
+			params[103] = window.document.frmedita.bnombre.value;
+			params[104] = window.document.frmedita.bagno.value;
+			params[105] = window.document.frmedita.bestado.value;
+			params[106] = window.document.frmedita.blistar.value;
+			params[107] = window.document.frmedita.bdoc.value;
+			<?php
+			if (!$bEsFAV) {
+			?>
+				params[108] = window.document.frmedita.bcategoria.value;
+			<?php
+			}
+			?>
+			params[109] = window.document.frmedita.btema.value;
+			params[111] = window.document.frmedita.bzona.value;
+			params[112] = window.document.frmedita.bcead.value;
+			params[113] = window.document.frmedita.saiu73idcanal.value;
+			params[114] = window.document.frmedita.bdetalle.value;
+			params[115] = window.document.frmedita.brespuesta.value;
+			document.getElementById('div_f3073detalle').innerHTML = '<div class="GrupoCamposAyuda"><div class="MarquesinaMedia">Procesando datos, por favor espere.</div></div><input id="paginaf3073" name="paginaf3073" type="hidden" value="' + params[101] + '" /><input id="lppf3073" name="lppf3073" type="hidden" value="' + params[102] + '" />';
+			xajax_f3073_db_EliminarBorradores(params);
+		});
+	}
+<?php
+}
+?>
 </script>
 <form id="frmimpp" name="frmimpp" method="post" action="p3073.php" target="_blank" style="display:none;">
 <input id="r" name="r" type="hidden" value="3073" />
@@ -2152,9 +2220,11 @@ switch ($iPiel) {
 <input id="v6" name="v6" type="hidden" value="" />
 <input id="v7" name="v7" type="hidden" value="" />
 <input id="v8" name="v8" type="hidden" value="" />
+<input id="v14" name="v14" type="hidden" value="" />
+<input id="v15" name="v15" type="hidden" value="" />
 <input id="iformato94" name="iformato94" type="hidden" value="0" />
 <input id="separa" name="separa" type="hidden" value="," />
-<input id="rdebug" name="rdebug" type="hidden" value="<?php echo $_REQUEST['debug']; ?>"/>
+<input id="rdebug" name="rdebug" type="hidden" value="<?php echo $_REQUEST['debug']; ?>" />
 <input id="clave" name="clave" type="hidden" value="" />
 </form>
 <form id="frmlista" name="frmlista" method="post" action="listados.php" target="_blank" style="display:none;">
@@ -2233,11 +2303,6 @@ if ($_REQUEST['saiu73estado']<7 && $bPuedeGuardar){
 			}
 		}
 	}
-if (false){
-?>
-<input id="cmdAnular" name="cmdAnular" type="button" class="btSupAnular" onclick="expandesector(2);" title="<?php echo $ETI['bt_anular']; ?>" value="<?php echo $ETI['bt_anular']; ?>"/>
-<?php
-	}
 ?>
 </div>
 <div class="titulosI">
@@ -2270,9 +2335,9 @@ echo $html_deb_tipodoc;
 </label>
 <label class="Label30">
 </label>
-<label class="Label30">
-<input id="btRevisaDoc" name="btRevisaDoc" type="button" value="Actualizar" class="btMiniActualizar" onclick="limpiapagina()" title="Consultar documento" />
-</label>
+<?php
+echo $objForma->htmlBotonSolo('btRevisaDoc', 'btMiniActualizar', 'limpiapagina()', 'Consultar documento', 30);
+?>
 <label class="Label30">&nbsp;</label>
 <b>
 <?php
@@ -2291,16 +2356,27 @@ echo $sNombreUsuario;
 }
 ?>
 <?php
+// Si no se ha seleccionado un canal vamos a bloquear la ventana de edición
+$sClase = $sAnchoExpandeContrae;
+if ((int)$_REQUEST['saiu73idcanal'] == 0) {
+	$sClase = ' style="display:none;"';
+	$sLeyenda = 'Por favor seleccione el canal de atenci&oacute;n';
+	echo html_salto() . '<div class="GrupoCamposAyuda">' . $sLeyenda . html_salto() . '</div>';
+}
 //Div para ocultar
 $bConExpande = true;
 if ($bConExpande) {
 ?>
-<div class="ir_derecha"<?php echo $sAnchoExpandeContrae; ?>>
+<div class="ir_derecha"<?php echo $sClase; ?>>
 <?php
 echo $objForma->htmlExpande(3073, $_REQUEST['boculta3073'], $ETI['bt_mostrar'], $ETI['bt_ocultar']);
 $sEstiloDiv = '';
 if ($_REQUEST['boculta3073'] != 0) {
 	$sEstiloDiv = ' style="display:none;"';
+} else {
+	if ((int)$_REQUEST['saiu73idcanal'] == 0) {
+		$sEstiloDiv = ' style="display:none;"';
+	}
 }
 ?>
 </div>
@@ -2394,6 +2470,17 @@ echo $html_saiu73estado;
 ?>
 </div>
 <input id="saiu73estadoorigen" name="saiu73estadoorigen" type="hidden" value="<?php echo $_REQUEST['saiu73estadoorigen']; ?>" />
+</label>
+<div class="salto1px"></div>
+<label class="Label130">
+<?php
+echo $ETI['saiu73fecharad'];
+?>
+</label>
+<label class="Label130">
+<?php
+echo $html_saiu73fecharad;
+?>
 </label>
 <div class="salto1px"></div>
 <?php
@@ -2631,7 +2718,7 @@ if ($bEsFAV) {
 echo $ETI['saiu73tiposolicitud'];
 ?>
 </label>
-<label>
+<label class="Label600">
 <div id="div_saiu73tiposolicitud">
 <?php
 echo $html_saiu73tiposolicitud;
@@ -2647,7 +2734,7 @@ echo $html_saiu73tiposolicitud;
 echo $ETI['saiu73temasolicitud'];
 ?>
 </label>
-<label>
+<label class="Label600">
 <div id="div_saiu73temasolicitud">
 <?php
 echo $html_saiu73temasolicitud;
@@ -2661,7 +2748,7 @@ echo $html_saiu73temasolicitud;
 echo $ETI['saiu73idescuela'];
 ?>
 </label>
-<label>
+<label class="Label600">
 <?php
 echo $html_saiu73idescuela;
 ?>
@@ -2672,7 +2759,7 @@ echo $html_saiu73idescuela;
 echo $ETI['saiu73idprograma'];
 ?>
 </label>
-<label>
+<label class="Label600">
 <div id="div_saiu73idprograma">
 <?php
 echo $html_saiu73idprograma;
@@ -2685,14 +2772,14 @@ echo $html_saiu73idprograma;
 echo $ETI['saiu73idperiodo'];
 ?>
 </label>
-<label>
+<label class="Label600">
 <?php
 echo $html_saiu73idperiodo;
 ?>
 </label>
 <div class="salto1px"></div>
-<div class="GrupoCampos520">
-<label class="txtAreaS">
+<div class="GrupoCampos">
+<label class="txtAreaM">
 <?php
 echo $ETI['saiu73detalle'];
 ?>
@@ -2735,8 +2822,8 @@ if ($bPuedeEliminar) {
 if ($_REQUEST['paso'] != 0) {
 ?>
 <div id="div_saiu73respuesta">
-<div class="GrupoCampos520">
-<label class="txtAreaS">
+<div class="GrupoCampos">
+<label class="txtAreaL">
 <?php
 echo $ETI['saiu73respuesta'];
 ?>
@@ -2937,41 +3024,41 @@ echo $objForma->htmlBotonSolo('bRevAtiende', 'btMiniActualizar', 'actualizaratie
 <div class="salto1px"></div>
 <input id="saiu73idsupervisorcaso" name="saiu73idsupervisorcaso" type="hidden" value="<?php echo $_REQUEST['saiu73idsupervisorcaso']; ?>" />
 <input id="saiu73idresponsablecaso" name="saiu73idresponsablecaso" type="hidden" value="<?php echo $_REQUEST['saiu73idresponsablecaso']; ?>" />
-<label class="Label160">
+<label class="Label130">
 <?php 
 echo $ETI['saiu73idunidadcaso'];
 ?>
 </label>
-<label class="Label200">
+<label style="width:360px;">
 <b><?php echo $html_saiu73idunidadcaso; ?></b>
 </label>
 <div class="salto1px"></div>
-<label class="Label160">
+<label class="Label130">
 <?php 
 echo $ETI['saiu73idequipocaso'];
 ?>
 </label>
-<label class="Label200">
+<label style="width:360px;">
 <b><?php 
 echo $html_saiu73idequipocaso; 
 ?></b>
 </label>
 <div class="salto1px"></div>
-<label class="Label160">
+<label class="Label130">
 <?php 
 echo $ETI['saiu73idsupervisorcaso']; 
 ?>
 </label>
-<label class="Label200">
+<label style="width:360px;">
 <b><?php
 echo $saiu73idsupervisorcaso_rs; 
 ?></b>
 </label>
 <div class="salto1px"></div>
-<label class="Label160">
+<label class="Label130">
 <?php echo $ETI['saiu73idresponsablecaso']; ?>
 </label>
-<label id="lbl_f3073CambioResponsable" class="Label200">
+<label id="lbl_f3073CambioResponsable" style="width:360px;">
 <b><?php echo $saiu73idresponsablecaso_rs; ?></b>
 </label>
 <div class="salto1px"></div>
@@ -3015,7 +3102,7 @@ echo '<h3>'.$ETI['bloque1'].'</h3>';
 </div>
 <div class="areatrabajo">
 <div class="ir_derecha">
-<label class="Label90">
+<label class="Label220">
 <?php
 echo $ETI['msg_bdoc'];
 ?>
@@ -3035,7 +3122,7 @@ echo $ETI['msg_bnombre'];
 <?php
 if (!$bEsFAV) {
 ?>
-<label class="Label130">
+<label class="Label220">
 <?php
 echo $ETI['saiu73tiposolicitud'];
 ?>
@@ -3049,7 +3136,7 @@ echo $html_bcategoria;
 <?php
 }
 ?>
-<label class="Label90">
+<label class="Label220">
 <?php
 echo $ETI['saiu73temasolicitud'];
 ?>
@@ -3062,7 +3149,7 @@ echo $html_btema;
 </div>
 </label>
 <div class="salto1px"></div>
-<label class="Label60">
+<label class="Label220">
 <?php
 echo $ETI['saiu73idzona'];
 ?>
@@ -3085,7 +3172,7 @@ echo $html_bcead;
 </div>
 </label>
 <div class="salto1px"></div>
-<label class="Label60">
+<label class="Label220">
 <?php
 echo $ETI['msg_blistar'];
 ?>
@@ -3105,6 +3192,11 @@ echo $ETI['saiu73estado'];
 echo $html_bestado;
 ?>
 </label>
+<?php
+if ($bPuedeEditar) {
+	echo $objForma->htmlBotonSolo('btRevBorrador', 'btMiniActualizar', 'revisaborrador()', $ETI['bt_revborrador'], 60);
+}
+?>
 <label class="Label60">
 <?php
 echo $ETI['saiu73agno'];
@@ -3115,18 +3207,41 @@ echo $ETI['saiu73agno'];
 echo $html_bagno;
 ?>
 </label>
+<div class="salto1px"></div>
+<label class="Label220">
+<?php
+echo $ETI['saiu73detalle'];
+?>
+</label>
+<label>
+<input id="bdetalle" name="bdetalle" type="text" value="<?php echo $_REQUEST['bdetalle']; ?>" onchange="paginarf3073()" autocomplete="off" />
+</label>
+<div class="salto1px"></div>
+<label class="Label220">
+<?php
+echo $ETI['saiu73respuesta'];
+?>
+</label>
+<label>
+<input id="brespuesta" name="brespuesta" type="text" value="<?php echo $_REQUEST['brespuesta']; ?>" onchange="paginarf3073()" autocomplete="off" />
+</label>
+<div class="salto1px"></div>
 </div>
 <div class="salto1px"></div>
 <?php
-echo ' '.$csv_separa;
+echo ' ' . $csv_separa;
 ?>
+<div class="salto1px"></div>
 <div id="div_f3073detalle">
 <?php
 echo $sTabla3073;
 ?>
 </div>
-</div><!-- /div_areatrabajo -->
-</div><!-- /DIV_areaform -->
+<?php
+// Termina el div_areatrabajo y DIV_areaform
+?>
+</div>
+</div>
 </div>
 
 
@@ -3184,10 +3299,10 @@ echo $ETI['saiu73atiendecaso'];
 <b><?php echo $saiu73idsupervisorcaso_rs; ?></b>
 </label>
 <div class="salto1px"></div>
-<label class="Label160">
+<label class="Label130">
 <?php echo $ETI['saiu73idresponsablecaso']; ?>
 </label>
-<label class="Label200">
+<label style="width:330px">
 <div id="div_saiu73idresponsablecaso">
 <?php 
 echo $html_saiu73idresponsablecaso; 
@@ -3240,7 +3355,7 @@ echo $ETI['msg_saiu73consec_nuevo'];
 ?>
 </label>
 <label class="Label90">
-<input id="saiu73consec_nuevo" name="saiu73consec_nuevo" type="text" value="<?php echo $_REQUEST['saiu73consec_nuevo']; ?>" class="cuatro"/>
+<input id="saiu73consec_nuevo" name="saiu73consec_nuevo" type="text" value="<?php echo $_REQUEST['saiu73consec_nuevo']; ?>" class="cuatro" />
 </label>
 <div class="salto1px"></div>
 <label class="Label160">&nbsp;</label>
@@ -3248,7 +3363,9 @@ echo $ETI['msg_saiu73consec_nuevo'];
 echo $objForma->htmlBotonSolo('cmdCambiaConsecFinal', 'botonProceso', 'mod_consec();', $ETI['bt_cambiar'], 130);
 echo $objForma->htmlFinMarco();
 ?>
-</div><!-- /DIV_Sector93 -->
+</div>
+
+
 <div id="div_sector95" style="display:none">
 <div class="areaform">
 <div id="div_95cuerpo"></div>
@@ -3283,6 +3400,7 @@ if ($bBloqueTitulo) {
 <div id="div_96cuerpo"></div>
 </div>
 </div>
+
 
 <div id="div_sector97" style="display:none">
 <?php
@@ -3338,7 +3456,9 @@ if ($sDebug != '') {
 		$iSegIni = $iSegFin;
 	}
 	$iSegundos = $iSegFin-$iSegIni;
-	echo '<div class="salto1px"></div><div class="GrupoCampos" id="div_debug">' . $sDebug . fecha_microtiempo() . ' Tiempo total del proceso: <b>' . $iSegundos . '</b> Segundos' . '<div class="salto1px"></div></div>';
+	$sDebug = $sDebug . log_debug('Tiempo total del proceso: <b>' . $iSegundos . '</b> Segundos');
+	echo html_salto();
+	echo console_debug($sDebug);
 }
 ?>
 <input id="scampobusca" name="scampobusca" type="hidden" value="" />
@@ -3382,7 +3502,7 @@ if ($bMueveScroll) {
 }
 ?>
 </script>
-<link rel="stylesheet" href="<?php echo $APP->rutacomun; ?>js/jquery.autocomplete.css" type="text/css"/>
+<link rel="stylesheet" href="<?php echo $APP->rutacomun; ?>js/jquery.autocomplete.css" type="text/css" />
 <script language="javascript" src="<?php echo $APP->rutacomun; ?>js/jquery.autocomplete.js"></script>
 <link rel="stylesheet" href="<?php echo $APP->rutacomun; ?>js/chosen.css" type="text/css"/>
 <script language="javascript" src="<?php echo $APP->rutacomun; ?>js/chosen.jquery.js"></script>

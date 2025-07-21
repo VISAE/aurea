@@ -1019,10 +1019,18 @@ if ($bLimpiaHijos) {
 $bConMedio = false;
 $bMuestraAdicionales = false;
 $bPuedeGuardar = false;
+$bEsBorrador = false;
+$bExisteNumRef = false;
 if ((int)$_REQUEST['paso'] > 0) {
 	if ($_REQUEST['saiu05idmedio'] != $iViaWeb) {
 		$bConMedio = false;
 	}
+}
+if ($_REQUEST['saiu05estado'] == -1) {
+	$bEsBorrador = true;
+}
+if ($_REQUEST['saiu05numref'] != '') {
+	$bExisteNumRef = true;
 }
 $iAgno = fecha_agno();
 $iAgnoFin = fecha_agno();
@@ -1080,6 +1088,13 @@ list($saiu05idescuela_nombre, $sErrorDet) = tabla_campoxid('core12escuela', 'cor
 $html_saiu05idescuela = html_oculto('saiu05idescuela', $_REQUEST['saiu05idescuela'], $saiu05idescuela_nombre);
 list($saiu05idprograma_nombre, $sErrorDet) = tabla_campoxid('core09programa', 'core09nombre', 'core09id', $_REQUEST['saiu05idprograma'], '{' . $ETI['msg_sindato'] . '}', $objDB);
 $html_saiu05idprograma = html_oculto('saiu05idprograma', $_REQUEST['saiu05idprograma'], $saiu05idprograma_nombre);
+$html_saiu05fecharad = '<b>'. $ETI['et_estadorad'] . '</b>';
+if (!$bEsBorrador) {
+	$iFechaRad = fecha_ArmarNumero($_REQUEST['saiu05dia'], $_REQUEST['saiu05mes'], $_REQUEST['saiu05agno']);
+	$iFechaRad = fecha_NumSumarDias($iFechaRad, $_REQUEST['saiu05raddesphab']);
+	$iFechaRad = fecha_desdenumero($iFechaRad);
+	$html_saiu05fecharad = '<b>'. $iFechaRad .'</b>';
+}
 if ($bConMedio) {
 	//list($saiu05idmedio_nombre, $sErrorDet) = tabla_campoxid('bita01tiposolicitud', 'bita01nombre', 'bita01id', $_REQUEST['saiu05idmedio'], '{' . $ETI['msg_sindato'] . '}', $objDB);
 	//$html_saiu05idmedio = html_oculto('saiu05idmedio', $_REQUEST['saiu05idmedio'], $saiu05idmedio_nombre);
@@ -1146,8 +1161,7 @@ list($saiu05idcategoria_nombre, $sErrorDet) = tabla_campoxid('saiu68categoria', 
 $html_saiu05idcategoria = html_oculto('saiu05idcategoria', $_REQUEST['saiu05idcategoria'], $saiu05idcategoria_nombre);
 list($saiu05rptaforma_nombre, $sErrorDet) = tabla_campoxid('saiu12formarespuesta', 'saiu12nombre', 'saiu12id', $_REQUEST['saiu05rptaforma'], '{' . $ETI['msg_sindato'] . '}', $objDB);
 $html_saiu05rptaforma = html_oculto('saiu05rptaforma', $_REQUEST['saiu05rptaforma'], $saiu05rptaforma_nombre);
-if ($_REQUEST['saiu05numref'] != '') { $bMuestraAdicionales = true; }
-if ($bMuestraAdicionales) {
+if ($bExisteNumRef) {
 	$objCombos->nuevo('saiu06visible', $_REQUEST['saiu06visible'], false);
 	$objCombos->sino();
 	$html_saiu06visible = $objCombos->html('', $objDB);
@@ -1206,7 +1220,8 @@ $aParametros[104] = $_REQUEST['bagno'];
 $aParametros[105] = '';
 $aParametros[106] = '';
 $aParametros[107] = '';
-list($sTabla3005, $sDebugTabla) = f3005_TablaDetalleCampus($aParametros, $objDB, $bDebug);
+list($sTabla3005, $sErrorT, $sDebugTabla) = f3005_TablaDetalleCampus($aParametros, $objDB, $bDebug);
+$sError = $sError . $sErrorT;
 $sDebug = $sDebug . $sDebugTabla;
 $sTabla3006 = '';
 $sTabla3007 = '';
@@ -1681,6 +1696,24 @@ if ($iNumFormatosImprime>0) {
 		document.getElementById('div_infopersonal').innerHTML = '<b>Procesando datos, por favor espere...</b>';
 		xajax_f236_TraerInfoPersonal(params);
 	}
+<?php
+if ($bEsBorrador) {
+?>
+	function enviacerrar() {
+		ModalConfirmV2('<?php echo $ETI['msg_radicar']; ?>', () => {
+			ejecuta_enviacerrar();
+		});
+	}
+
+	function ejecuta_enviacerrar() {
+		MensajeAlarmaV2('<?php echo $ETI['msg_ejecutando']; ?>', 2);
+		expandesector(98);
+		window.document.frmedita.paso.value = 16;
+		window.document.frmedita.submit();
+	}
+<?php
+}
+?>
 </script>
 <form id="frmvolver" name="frmvolver" method="post" action="sai.php" autocomplete="off" style="display:none">
 </form>
@@ -1916,8 +1949,17 @@ echo $html_saiu05idcategoria;
 ?>
 </label>
 <div class="salto1px"></div>
-
-
+<label class="Label130">
+<?php
+echo $ETI['saiu05fecharad'];
+?>
+</label>
+<label class="Label130">
+<?php
+echo $html_saiu05fecharad;
+?>
+</label>
+<div class="salto1px"></div>
 <?php
 // Inicio caja - solicitante
 ?>
@@ -2232,21 +2274,18 @@ echo $ETI['saiu05detalle'];
 <div class="salto1px"></div>
 </div>
 <input id="saiu05detalle" name="saiu05detalle" type="hidden" value="<?php echo $_REQUEST['saiu05detalle']; ?>" />
-<input id="saiu05infocomplemento" name="saiu05infocomplemento" type="hidden" value="<?php echo $_REQUEST['saiu05infocomplemento']; ?>" />
 <div class="salto1px"></div>
 <?php
-if (false) {
-?>
-<input id="saiu05idperiodo" name="saiu05idperiodo" type="hidden" value="<?php echo $_REQUEST['saiu05idperiodo']; ?>" />
-<input id="saiu05idcurso" name="saiu05idcurso" type="hidden" value="<?php echo $_REQUEST['saiu05idcurso']; ?>" />
-<input id="saiu05idgrupo" name="saiu05idgrupo" type="hidden" value="<?php echo $_REQUEST['saiu05idgrupo']; ?>" />
-<?php
+if ($bEsBorrador) {
+	if ($bExisteNumRef) {
+		echo $objForma->htmlBotonSolo('cmdSolicitar', 'BotonAzul160', "enviacerrar();", $ETI['bt_radicar'], 160);
+	}
 }
 ?>
+<input id="saiu05infocomplemento" name="saiu05infocomplemento" type="hidden" value="<?php echo $_REQUEST['saiu05infocomplemento']; ?>" />
 <input id="saiu05tiemprespdias" name="saiu05tiemprespdias" type="hidden" value="<?php echo $_REQUEST['saiu05tiemprespdias']; ?>" />
 <input id="saiu05tiempresphoras" name="saiu05tiempresphoras" type="hidden" value="<?php echo $_REQUEST['saiu05tiempresphoras']; ?>" />
 <input id="saiu05fecharespprob" name="saiu05fecharespprob" type="hidden" value="<?php echo $_REQUEST['saiu05fecharespprob']; ?>" />
-<div class="salto1px"></div>
 <?php
 if ($_REQUEST['saiu05estado']>=2) {
 ?>

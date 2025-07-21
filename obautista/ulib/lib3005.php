@@ -1,8 +1,9 @@
 <?php
 /*
---- © Angel Mauro Avellaneda Barreto - UNAD - 2020 ---
+--- © Angel Mauro Avellaneda Barreto - UNAD - 2020 - 2005 ---
 --- angel.avellaneda@unad.edu.co - http://www.unad.edu.co
 --- Modelo Versión 2.24.1 viernes, 21 de febrero de 2020
+--- Modelo Versión 3.0.16 jueves, 10 de julio de 2025
 --- 3005 saiu05solicitud
 */
 
@@ -14,7 +15,8 @@
 function f3005_HTMLComboV2_saiu05tiporadicado($objDB, $objCombos, $valor)
 {
 	require './app.php';
-	$mensajes_todas = $APP->rutacomun . 'lg/lg_todas_' . $_SESSION['unad_idioma'] . '.php';
+	$sIdioma = AUREA_Idioma();
+	$mensajes_todas = $APP->rutacomun . 'lg/lg_todas_' . $sIdioma . '.php';
 	if (!file_exists($mensajes_todas)) {
 		$mensajes_todas = $APP->rutacomun . 'lg/lg_todas_es.php';
 	}
@@ -155,6 +157,95 @@ function f3005_Combosaiu05idtemaorigen($aParametros)
 	$objResponse = new xajaxResponse();
 	$objResponse->assign('div_saiu05idtemaorigen', 'innerHTML', $html_saiu05idtemaorigen);
 	$objResponse->call('jQuery("#saiu05idtemaorigen").chosen({no_results_text: "No existen coincidencias: ",width: "100%"})');
+	return $objResponse;
+}
+function f3005_HTMLComboV2_bcentro($objDB, $objCombos, $valor, $vrbzona)
+{
+	require './app.php';
+	$sIdioma = AUREA_Idioma();
+	$mensajes_todas = $APP->rutacomun . 'lg/lg_todas_' . $sIdioma . '.php';
+	if (!file_exists($mensajes_todas)) {
+		$mensajes_todas = $APP->rutacomun . 'lg/lg_todas_es.php';
+	}
+	require $mensajes_todas;
+	$objCombos->nuevo('bcentro', $valor, true, '{' . $ETI['msg_todos'] . '}');
+	//$objCombos->iAncho = 450;
+	$objCombos->sAccion = 'paginarf3005()';
+	$sSQL = '';
+	if ((int)$vrbzona != 0) {
+		//$objCombos->addItem('0', '[Sin Dato]');
+		$sSQL = 'SELECT TB.unad24id AS id, TB.unad24nombre AS nombre 
+		FROM unad24sede AS TB
+		WHERE TB.unad24idzona=' . $vrbzona . ' 
+		ORDER BY TB.unad24nombre';
+	}
+	$res = $objCombos->html($sSQL, $objDB);
+	return $res;
+}
+function f3005_Combobcentro($aParametros)
+{
+	$_SESSION['u_ultimominuto'] = iminutoavance();
+	if (!is_array($aParametros)) {
+		$aParametros = json_decode(str_replace('\"', '"', $aParametros), true);
+	}
+	require './app.php';
+	$objDB = new clsdbadmin($APP->dbhost, $APP->dbuser, $APP->dbpass, $APP->dbname);
+	if ($APP->dbpuerto != '') {
+		$objDB->dbPuerto = $APP->dbpuerto;
+	}
+	$objDB->xajax();
+	$objCombos = new clsHtmlCombos();
+	$html_bcentro = f3005_HTMLComboV2_bcentro($objDB, $objCombos, '', $aParametros[0]);
+	$objDB->CerrarConexion();
+	$objResponse = new xajaxResponse();
+	$objResponse->assign('div_bcentro', 'innerHTML', $html_bcentro);
+	//$objResponse->call('$("#bcentro").chosen()');
+	$objResponse->call('paginarf3005()');
+	return $objResponse;
+}
+function f3005_HTMLComboV2_bprograma($objDB, $objCombos, $valor, $vrbescuela)
+{
+	require './app.php';
+	$sIdioma = AUREA_Idioma();
+	$mensajes_todas = $APP->rutacomun . 'lg/lg_todas_' . $sIdioma . '.php';
+	if (!file_exists($mensajes_todas)) {
+		$mensajes_todas = $APP->rutacomun . 'lg/lg_todas_es.php';
+	}
+	require $mensajes_todas;
+	$objCombos->nuevo('bprograma', $valor, true, '{' . $ETI['msg_todos'] . '}');
+	$objCombos->sAccion = 'paginarf3005()';
+	$sSQL = '';
+	if ((int)$vrbescuela != 0) {
+		$objCombos->iAncho = 600;
+		//$objCombos->addItem('0', '[Sin Dato]');
+		$sSQL='SELECT TB.core09id AS id, CONCAT(TB.core09nombre, " - ", TB.core09codigo, CASE TB.core09activo WHEN "S" THEN "" ELSE " [INACTIVO]" END) AS nombre 
+		FROM core09programa AS TB  
+		WHERE TB.core09idescuela=' . $vrbescuela .'  
+		ORDER BY TB.core09activo DESC, TB.core09nombre';
+
+	}
+	$res = $objCombos->html($sSQL, $objDB);
+	return $res;
+}
+function f3005_Combobprograma($aParametros)
+{
+	$_SESSION['u_ultimominuto'] = iminutoavance();
+	if (!is_array($aParametros)) {
+		$aParametros = json_decode(str_replace('\"', '"', $aParametros), true);
+	}
+	require './app.php';
+	$objDB = new clsdbadmin($APP->dbhost, $APP->dbuser, $APP->dbpass, $APP->dbname);
+	if ($APP->dbpuerto != '') {
+		$objDB->dbPuerto = $APP->dbpuerto;
+	}
+	$objDB->xajax();
+	$objCombos = new clsHtmlCombos();
+	$html_bprograma = f3005_HTMLComboV2_bprograma($objDB, $objCombos, '', $aParametros[0]);
+	$objDB->CerrarConexion();
+	$objResponse = new xajaxResponse();
+	$objResponse->assign('div_bprograma', 'innerHTML', $html_bprograma);
+	$objResponse->call('$("#bprograma").chosen()');
+	$objResponse->call('paginarf3005()');
 	return $objResponse;
 }
 function f3005_ExisteDato($datos)
@@ -335,7 +426,8 @@ function f3005_HtmlBusqueda($aParametros)
 function f3005_TablaDetalleV2($aParametros, $objDB, $bDebug = false)
 {
 	require './app.php';
-	$mensajes_todas = $APP->rutacomun . 'lg/lg_todas_' . $_SESSION['unad_idioma'] . '.php';
+	$sIdioma = AUREA_Idioma();
+	$mensajes_todas = $APP->rutacomun . 'lg/lg_todas_' . $sIdioma . '.php';
 	if (!file_exists($mensajes_todas)) {
 		$mensajes_todas = $APP->rutacomun . 'lg/lg_todas_es.php';
 	}
@@ -357,7 +449,7 @@ function f3005_TablaDetalleV2($aParametros, $objDB, $bDebug = false)
 	if (isset($aParametros[102]) == 0) {
 		$aParametros[102] = 20;
 	}
-	$iNumVariables = 113;
+	$iNumVariables = 115;
 	for ($k = 103; $k <= $iNumVariables; $k++) {
 		if (isset($aParametros[$k]) == 0) {
 			$aParametros[$k] = '';
@@ -380,7 +472,11 @@ function f3005_TablaDetalleV2($aParametros, $objDB, $bDebug = false)
 	$bcategoria = numeros_validar($aParametros[109]);
 	$btema = numeros_validar($aParametros[110]);
 	$bref = cadena_Validar(trim($aParametros[111]));
-	$bRevBorrador = numeros_validar($aParametros[112]);
+	//$bRevBorrador = numeros_validar($aParametros[112]);
+	$bzona = numeros_validar($aParametros[112]);
+	$bcentro = numeros_validar($aParametros[113]);
+	$bescuela = numeros_validar($aParametros[114]);
+	$bprograma = numeros_validar($aParametros[115]);
 	$bAbierta = true;
 	/*
 	$sSQL = 'SELECT Campo FROM Tabla WHERE Id=' . $sValorId;
@@ -450,6 +546,20 @@ function f3005_TablaDetalleV2($aParametros, $objDB, $bDebug = false)
 			}
 			break;
 	}
+	if ($bcentro != '') {
+		$sSQLadd1 = $sSQLadd1 . 'TB.saiu05cead=' . $bcentro . ' AND ';
+	} else {
+		if ($bzona != '') {
+			$sSQLadd1 = $sSQLadd1 . 'TB.saiu05idzona=' . $bzona . ' AND ';
+		}
+	}
+	if ($bprograma != '') {
+		$sSQLadd1 = $sSQLadd1 . 'TB.saiu05idprograma=' . $bprograma . ' AND ';
+	} else {
+		if ($bescuela != '') {
+			$sSQLadd1 = $sSQLadd1 . 'TB.saiu05idescuela=' . $bescuela . ' AND ';
+		}
+	}
 	if ($sNombre != '') {
 		$sBase = mb_strtoupper($sNombre);
 		$aNoms = explode(' ', $sBase);
@@ -515,7 +625,8 @@ function f3005_TablaDetalleV2($aParametros, $objDB, $bDebug = false)
 		T11.unad11doc, T11.unad11razonsocial, T13.saiu68nombre, TB.saiu05idtemaorigen, TB.saiu05fecharespprob, 
 		TB.saiu05tiemprespdias, TB.saiu05origenagno, TB.saiu05origenmes, TB.saiu05raddesphab';
 		$sConsulta = 'FROM saiu05solicitud_' . $sContenedor . ' AS TB, saiu11estadosol AS T12, unad11terceros AS T11, saiu68categoria AS T13 
-		WHERE TB.saiu05tiporadicado=1 AND TB.saiu05estado=T12.saiu11id AND TB.saiu05idsolicitante=T11.unad11id AND TB.saiu05idcategoria=T13.saiu68id ' . $sSQLadd . '';
+		WHERE TB.saiu05tiporadicado=1 AND ' . $sSQLadd1 . ' TB.saiu05estado=T12.saiu11id AND TB.saiu05idsolicitante=T11.unad11id 
+		AND TB.saiu05idcategoria=T13.saiu68id ' . $sSQLadd . '';
 		$sSQL = $sSQL . $sCampos . ' ' . $sConsulta;
 	}
 	if ($sSQL != '') {
@@ -1371,11 +1482,11 @@ saiu05fecharespprob, saiu05respuesta, saiu05idmoduloproc, saiu05identificadormod
 						case 0:
 						case 7:
 							if ($saiu05estadoorigen == -1) {
-								list($sMensaje, $sErrorE, $sDebugE) = f3005_EnviaCorreosSolicitud($DATA, $sContenedor, $objDB, $bDebug, true);
+								// list($sMensaje, $sErrorE, $sDebugE) = f3005_EnviaCorreosSolicitud($DATA, $sContenedor, $objDB, $bDebug, true);
 							}
-							list($sMensaje, $sErrorE, $sDebugE) = f3005_EnviaCorreosSolicitud($DATA, $sContenedor, $objDB, $bDebug);
-							$sError = $sError . $sErrorE;
-							$sDebug = $sDebug . $sDebugE;
+							// list($sMensaje, $sErrorE, $sDebugE) = f3005_EnviaCorreosSolicitud($DATA, $sContenedor, $objDB, $bDebug);
+							// $sError = $sError . $sErrorE;
+							// $sDebug = $sDebug . $sDebugE;
 							break;
 					}
 				}
@@ -2542,7 +2653,7 @@ function f3005_ActualizarAtiende($DATA, $objDB, $bDebug = false, $idTercero)
 	$sDebug = '';
 	$iTipoError = 0;
 	if (!$objDB->bexistetabla($sTabla05)) {
-		$sError = $sError . 'No ha sido posible acceder al contenedor de datos';
+		$sError = $sError . $ERR['contenedor'];
 	}
 	if ($sError == '') {
 		$sSQL = 'SELECT saiu05agno, saiu05mes, saiu05estado, saiu05idtemaorigen FROM ' . $sTabla05 . ' WHERE saiu05id=' . $DATA['saiu05id'] . '';
@@ -2563,10 +2674,13 @@ function f3005_ActualizarAtiende($DATA, $objDB, $bDebug = false, $idTercero)
 			$iFechaBase = fecha_DiaMod();
 			$DATA['saiu05fecharespprob'] = fecha_NumSumarDias($iFechaBase, $DATA['saiu05tiemprespdias']);
 		}
-		list($DATA, $sErrorE, $iTipoError, $sDebugGuardar) = f3005_db_GuardarV2($DATA, $objDB, $bDebug, $idTercero);
-		$sError = $sError . $sErrorE;
-		$sDebug = $sDebug . $sDebugGuardar;
-		if ($sError == '') {
+		$sSQL = 'UPDATE ' . $sTabla05 . ' SET saiu05idunidadresp=' . $DATA['saiu05idunidadresp'] . ', saiu05idequiporesp=' . $DATA['saiu05idequiporesp'] . ', saiu05idsupervisor=' . $DATA['saiu05idsupervisor'];
+		$sSQL = $sSQL . ', saiu05idresponsable=' . $DATA['saiu05idresponsable'] . ', saiu05tiemprespdias=' . $DATA['saiu05tiemprespdias'] . ', saiu05tiempresphoras=' . $DATA['saiu05tiempresphoras'] . ', saiu05fecharespprob=' . $DATA['saiu05fecharespprob'];
+		$sSQL = $sSQL . ' WHERE saiu05id=' . $DATA['saiu05id'] . '';
+		$result = $objDB->ejecutasql($sSQL);
+		if ($result == false){
+			$sError = $ERR['reasigna'];
+		} else {
 			$sError = '<b>' . $ETI['msg_itemguardado'] . '</b>';
 			$iTipoError = 1;
 		}

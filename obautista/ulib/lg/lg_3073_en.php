@@ -115,6 +115,22 @@ $ETI['canal3019_corto'] = 'Chat';
 $ETI['canal3020_corto'] = 'Correos';
 $ETI['canal3021_corto'] = 'Presencial';
 $ETI['canal3073_corto'] = 'FAV';
+$ETI['msg_fecha']='Fecha solicitud';
+$ETI['msg_tipo']='Tipo';
+$ETI['msg_inicaso']='Se inicia Caso';
+$ETI['saiu73idresponsable_td']='Tipo Documento atiende';
+$ETI['saiu73idresponsable_doc']='Documento atiende';
+$ETI['saiu73idresponsable_rs']='Raz&oacute;n social atiende';
+$ETI['saiu73idresponsable_rol']='Rol de quien atiende';
+$ETI['saiu73fecharad'] = 'Fecha radicado';
+$ETI['lnk_cargarsol'] = 'Respuesta';
+$ETI['et_estadorad'] = 'SIN RADICAR';
+$ETI['msg_itemradicado'] = 'La solicitud ha sido radicada';
+$ETI['bt_revborrador'] = 'Procesar Borradores';
+$ETI['msg_revborrador'] = 'Se proceder&aacute; a eliminar las solicitudes en <b>Borrador</b> que tengan m&aacute;s de 3 (tres) d&iacute;as en espera, ¿est&aacute; seguro de continuar&quest;';
+$ETI['msg_resborradorok'] = 'Se eliminaron borradores con m&aacute;s de 3 (tres) d&iacute;as en espera. Cantidad: ';
+$ETI['msg_resborradorno'] = 'No se encontraron borradores con m&aacute;s de 3 (tres) d&iacute;as en espera.';
+$ETI['msg_alertaborradores'] = '<br><b>ALERTA: </b>Existen solicitudes en estado Borrador a&uacute;n <b>SIN RADICAR</b>. Cantidad: ';
 
 $ERR['saiu73agno'] = 'Necesita el dato ' . $ETI['saiu73agno'];
 $ERR['saiu73mes'] = 'Necesita el dato ' . $ETI['saiu73mes'];
@@ -166,29 +182,28 @@ $ERR['saiu73idunidadcaso'] = 'Necesita el dato ' . $ETI['saiu73idunidadcaso'] . 
 $ERR['saiu73idequipocaso'] = 'Necesita el dato ' . $ETI['saiu73idequipocaso'] . $ERR['configtemas'];
 $ERR['saiu73idsupervisorcaso'] = 'Necesita el dato ' . $ETI['saiu73idsupervisorcaso'] . $ERR['configtemas'];
 $ERR['saiu73idresponsablecaso'] = 'Necesita el dato ' . $ETI['saiu73idresponsablecaso'] . $ERR['configtemas'];
+$ERR['saiu73fecharad'] = 'Necesita el dato ' . $ETI['saiu73fecharad'];
 
 $ERR['saiu73solucion_proceso']='Debe indicar el resultado del servicio de atenci&oacute;n';
 $ERR['saiu73idresponsablecasofin']='No ha seleccionado un integrante del equipo de trabajo';
 
 $ERR['msg_contenedor']='No ha sido posible acceder al contenedor de datos';
+$ERR['msg_radicacion']='Error al radicar solicitud';
 
 $asaiu73paramercadeo=array('', '');
 $isaiu73paramercadeo=0;
 
-$asaiu73solucion=array('En proceso', 'Resuelto en la atenci&oacute;n', '', 'Se inicia Caso', '', 'Se inicia PQRS');
+$asaiu73solucion=array('En proceso', 'Resuelto en la atenci&oacute;n', '', '', '', 'Se inicia PQRS');
 $isaiu73solucion=6;
-$aSolucion3018=array('En proceso', 'Resuelto en la llamada', '', 'Se inicia Caso', '', 'Se inicia PQRS', '', '', 'Llamada abandonada por usuario', 'Llamada terminada por asesor');
+$aSolucion3018=array('En proceso', 'Resuelto en la llamada', '', '', '', 'Se inicia PQRS', '', '', 'Llamada abandonada por usuario', 'Llamada terminada por asesor');
 $iSolucion3018=9;
-$aSolucion3019=array('En proceso', 'Resuelto en la conversaci&oacute;n', '', 'Se inicia Caso', '', 'Se inicia PQRS', '', '', 'Sesi&oacute;n abandonada por usuario', 'Sesi&oacute;n terminada por asesor');
+$aSolucion3019=array('En proceso', 'Resuelto en la conversaci&oacute;n', '', '', '', 'Se inicia PQRS', '', '', 'Sesi&oacute;n abandonada por usuario', 'Sesi&oacute;n terminada por asesor');
 $iSolucion3019=9;
-$aSolucion3020=array('En proceso', 'Resuelto en correo de respuesta', '', 'Se inicia Caso', '', 'Se inicia PQRS');
+$aSolucion3020=array('En proceso', 'Resuelto en correo de respuesta', '', '', '', 'Se inicia PQRS');
 $iSolucion3020=6;
 
 $asaiu73idcorreo=array('', 'Soporte Campus', 'Atenci&oacute;n a usuarios', 'Otro');
 $isaiu73idcorreo=4;
-
-$ETI['msg_fecha']='Fecha';
-$ETI['msg_tipo']='Tipo';
 
 $aListar2=array('', 'Mis registros');
 $iListar2=1;

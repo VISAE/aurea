@@ -211,6 +211,7 @@ $ERR['saiu05refdoc'] = 'Necesita el dato ' . $ETI['saiu05refdoc'];
 $ERR['contenedor'] = 'No ha sido posible acceder al contenedor de datos';
 $ERR['codigo'] = 'C&oacute;digo Incorrecto';
 $ERR['encontrado'] = 'Se ha encontrado informaci&oacute;n de la PQRS';
+$ERR['reasigna'] = 'Error al reasignar';
 
 // Inicio etiquetas y mensajes de encuesta
 $ETI['titulo_encuesta'] = 'Encuesta';
@@ -274,7 +275,7 @@ $ETI['msg_vacaciones'] = '<b>ATENCI&Oacute;N: </b>Estimados usuarios, les inform
 $ETI['msg_radicar'] = 'Se proceder&aacute; a radicar la PQRS, ¿est&aacute; seguro de continuar&quest;';
 $ETI['msg_tramitar'] = 'Se proceder&aacute; a dar inicio del tr&aacute;mite de la PQRS, ¿est&aacute; seguro de continuar&quest;';
 $ETI['msg_resolver'] = 'Se proceder&aacute; a dar respuesta y dar cierre de la PQRS, ¿est&aacute; seguro de continuar&quest;';
-$ETI['bt_resigna'] = 'Reasignar';
+$ETI['bt_reasigna'] = 'Reasignar';
 $ETI['bt_guardaresigna'] = 'Guardar Reasignaci&oacute;n';
 $ETI['bt_revborrador'] = 'Procesar Borradores';
 $ETI['msg_revborrador'] = 'Se proceder&aacute; a eliminar las solicitudes en <b>Borrador</b> que tengan m&aacute;s de 3 (tres) d&iacute;as en espera, ¿est&aacute; seguro de continuar&quest;';
@@ -283,4 +284,7 @@ $ETI['msg_resborradorno'] = 'No se encontraron borradores con m&aacute;s de 3 (t
 $ETI['saiu05fecharad'] = 'Fecha radicado';
 $ETI['et_estadorad'] = 'SIN RADICAR';
 $ETI['msg_alertapendientes'] = '<br><b>ALERTA: </b>Existen solicitudes que han superado la fecha l&iacute;mite de respuesta. Cantidad: ';
+$ETI['msg_alertaborradores'] = '<br><b>ALERTA: </b>Existen solicitudes en estado Borrador a&uacute;n <b>SIN RADICAR</b>. Cantidad: ';
+$ETI['msg_alertaanotacion'] = '<b>ATENCI&Oacute;N: </b>Tenga en cuenta que las anotaciones NO dan cierre a las solicitudes.';
+$ETI['bt_actatiente'] = 'Actualizar atiende';
 ?>
