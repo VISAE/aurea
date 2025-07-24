@@ -66,6 +66,8 @@ $ETI['saiu03ordensoporte']='Mesa de ayuda';
 $ETI['saiu03ordenpqrs']='PQRS';
 $ETI['saiu03ordentramites']='Tramites';
 $ETI['saiu03ordencorresp']='Correspondencia';
+$ETI['saiu03reddeservicio']='Red de Servicio';
+$ETI['saiu03ordenfav']='FAV';
 
 $ERR['saiu03tiposol']='Necesita el dato '.$ETI['saiu03tiposol'];
 $ERR['saiu03consec']='Necesita el dato '.$ETI['saiu03consec'];

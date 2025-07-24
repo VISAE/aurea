@@ -159,6 +159,7 @@ $ETI['valor2'] = 'Malo';
 $ETI['valor1'] = 'Deficiente';
 $ETI['bt_motivo'] = 'Comentarios';
 $ETI['motivo'] = 'Sugerencias o comentarios';
+$ETI['saiu00idtema'] = 'Tema de la solicitud';
 
 $ERR['mail_valido']='No se ha definido un correo electr&oacute;nico v&aacute;lidado para notificar.';
 $ERR['mail_asig_error']='Ha ocurrido un error intentando enviar la notificaci&oacute;n de la asignaci&oacute;n';
@@ -177,6 +178,10 @@ $ERR['saui00numref']='C&oacute;digo incorrecto';
 $ERR['contenedor']='No ha sido posible acceder al contenedor de datos';
 $ERR['tabla']='Necesita el dato Referencia a BD';
 $ERR['saiu00noexiste']='La encuesta no existe.&lt;br&gt;Verifique que el documento no contenga puntos, comas o espacios&lt;br&gt;verifique que el código de sea correcto.';
+$ERR['saiu00idzona'] = 'Necesita el dato ' . $ETI['saiu00idzona'];
+$ERR['saiu00idcentro'] = 'Necesita el dato ' . $ETI['saiu00idcentro'];
+$ERR['saiu00idtema'] = 'Necesita el dato ' . $ETI['saiu00idtema'];
+$ERR['saiu00noidtema'] = 'No se ha configurado el tema de solicitud.';
 
 $ETI['saiucanal']='Canal de atenci&oacute;n';
 $aCanal=array('','Atenci&oacute;n presencial', 'Registro de llamadas', 'Sesiones de chat', 'Registro de correos', 'Formato de Atenci&oacute;n Virtual');

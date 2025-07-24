@@ -444,6 +444,7 @@ function f3005_db_Guardar($DATA, $objDB, $bDebug = false)
 		$DATA['saiu05rptacorreo'] = '';
 		$DATA['saiu05rptadireccion'] = '';
 	}
+	$iFechaHoy = fecha_DiaMod();
 	$saiu05idzona = 0;
 	$saiu05cead = 0;
 	$saiu05idescuela = 0;
@@ -529,73 +530,22 @@ function f3005_db_Guardar($DATA, $objDB, $bDebug = false)
 		}
 	}
 	if ($sError == '') {
-		if ($DATA['saiu05estado'] < 0) {
-			$saiu05idunidadresp = 0;
-			$saiu05idequiporesp = 0;
-			$saiu05idsupervisor = 0;
-			$saiu05idresponsable = 0;
-			$sSQL = 'SELECT saiu03idunidadresp1, saiu03idequiporesp1, saiu03idliderrespon1, saiu03tiemprespdias1, saiu03tiempresphoras1
-			FROM saiu03temasol
-			WHERE saiu03id = ' . $DATA['saiu05idtemaorigen'] . '';
+		if ($DATA['saiu05estado'] == 0) {
+			list($aParametros, $sError, $iTipoError, $sDebugF) = f3000_ConsultaResponsable($DATA['saiu05idtemaorigen'], $DATA['saiu05idzona'], $DATA['saiu05cead'], $objDB, $bDebug);
+			if ($sError == '') {
+				$saiu05idunidadresp = $aParametros['idunidad'];
+				$saiu05idequiporesp = $aParametros['idequipo'];
+				$saiu05idsupervisor = $aParametros['idsupervisor'];
+				$saiu05idresponsable = $aParametros['idresponsable'];
+				$saiu05tiemprespdias = $aParametros['tiemprespdias'];
+				$saiu05tiempresphoras = $aParametros['tiempresphoras'];
+				if ($saiu05tiemprespdias > 0) {
+					$saiu05fecharespprob = fecha_NumSumarDias($iFechaHoy, $saiu05tiemprespdias);
+				}
+			}
 			if ($bDebug) {
-				$sDebug = $sDebug . fecha_microtiempo() . ' Consulta responsable solicitud ' . $sSQL . '<br>';
+				$sDebug = $sDebug . $sDebugF;
 			}
-			$tabla = $objDB->ejecutasql($sSQL);
-			if ($objDB->nf($tabla) > 0) {
-				$fila = $objDB->sf($tabla);
-				$saiu05idunidadresp = $fila['saiu03idunidadresp1'];
-				$saiu05idequiporesp = $fila['saiu03idequiporesp1'];
-				$saiu05idsupervisor = $fila['saiu03idliderrespon1'];
-				$saiu05tiemprespdias = $fila['saiu03tiemprespdias1'];
-				$saiu05tiempresphoras = $fila['saiu03tiempresphoras1'];
-				if ($saiu05idequiporesp > 0) {
-					$sSQL = 'SELECT bita28idtercero
-					FROM bita28eqipoparte
-					WHERE bita28idequipotrab = ' . $saiu05idequiporesp . ' AND bita28activo = "S"' . '';
-					$tabla = $objDB->ejecutasql($sSQL);
-					if ($objDB->nf($tabla) > 0) {
-						$aEquipo = array();
-						$sEquipo = '';
-						while ($fila = $objDB->sf($tabla)) {
-							$aEquipo[] = $fila['bita28idtercero'];
-						}
-						$sEquipo = implode(',', $aEquipo);
-						$sSQL = 'SELECT saiu05idresponsable, COUNT(saiu05id) AS asignaciones
-						FROM ' . $sTabla05 . '
-						WHERE saiu05idresponsable IN (' . $sEquipo . ')
-						GROUP BY saiu05idresponsable
-						ORDER BY asignaciones';
-						$tabla = $objDB->ejecutasql($sSQL);
-						$iResponsables = $objDB->nf($tabla);
-						if ($iResponsables > 0) {
-							$aResponsables = array();
-							while ($fila = $objDB->sf($tabla)) {
-								$aResponsables[] = $fila['saiu05idresponsable'];
-							}
-							shuffle($aResponsables);
-							if ($iResponsables >= count($aEquipo)) {
-								$saiu05idresponsable = $aResponsables[0];
-							} else {
-								$aSinAsignar = array_values(array_diff($aEquipo, $aResponsables));
-								shuffle($aSinAsignar);
-								$saiu05idresponsable = $aSinAsignar[0];
-							}
-						}
-					}
-					$saiu05idresponsable = $saiu05idsupervisor;
-				}
-				if ($bDebug) {
-					$sDebug = $sDebug . fecha_microtiempo() . ' Unidad - Equipo - Lider - Responsable ' . $saiu05idunidadresp . ' - ' . $saiu05idequiporesp . ' - ' . $saiu05idsupervisor . ' - ' . $saiu05idresponsable . '<br>';
-				}
-			} else {
-				$sError = $sError . 'No se ha configurado el tema de solicitud.';
-			}
-		}
-	}
-	if ($sError == '') {
-		if ($saiu05tiemprespdias > 0) {
-			$iFechaBase = fecha_DiaMod();
-			$saiu05fecharespprob = fecha_NumSumarDias($iFechaBase, $saiu05tiemprespdias);
 		}
 	}
 	if ($sError == '') {

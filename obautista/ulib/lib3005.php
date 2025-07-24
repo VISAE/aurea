@@ -1015,6 +1015,7 @@ function f3005_db_GuardarV2($DATA, $objDB, $bDebug = false, $idTercero = 0)
 		$DATA['saiu05rptacorreo'] = '';
 		$DATA['saiu05rptadireccion'] = '';
 	}
+	$iFechaHoy = fecha_DiaMod();
 	$saiu05agno = fecha_agno();
 	$saiu05mes = fecha_mes();
 	$saiu05dia = fecha_dia();
@@ -1211,13 +1212,16 @@ function f3005_db_GuardarV2($DATA, $objDB, $bDebug = false, $idTercero = 0)
 	}
 	if ($sError == '') {
 		if ($DATA['saiu05estado'] < 0 || $DATA['bCambiaEst'] == 0) {
-			list($saiu05idunidadresp, $saiu05idequiporesp, $saiu05idsupervisor, $saiu05idresponsable, $saiu05tiemprespdias, $saiu05tiempresphoras, $sErrorF, $iTipoError, $sDebugF) = f3005_ConsultaResponsable($DATA, $objDB, $bDebug);
-			$saiu05idresponsable = $saiu05idsupervisor;
-			$sError = $sError . $sErrorF;
+			list($aParametros, $sError, $iTipoError, $sDebugF) = f3000_ConsultaResponsable($DATA['saiu05idtemaorigen'], $DATA['saiu05idzona'], $DATA['saiu05cead'], $objDB, $bDebug);
 			if ($sError == '') {
+				$saiu05idunidadresp = $aParametros['idunidad'];
+				$saiu05idequiporesp = $aParametros['idequipo'];
+				$saiu05idsupervisor = $aParametros['idsupervisor'];
+				$saiu05idresponsable = $aParametros['idresponsable'];
+				$saiu05tiemprespdias = $aParametros['tiemprespdias'];
+				$saiu05tiempresphoras = $aParametros['tiempresphoras'];
 				if ($saiu05tiemprespdias > 0) {
-					$iFechaBase = fecha_DiaMod();
-					$saiu05fecharespprob = fecha_NumSumarDias($iFechaBase, $saiu05tiemprespdias);
+					$saiu05fecharespprob = fecha_NumSumarDias($iFechaHoy, $saiu05tiemprespdias);
 				}
 			}
 			if ($bDebug) {
@@ -1251,7 +1255,6 @@ function f3005_db_GuardarV2($DATA, $objDB, $bDebug = false, $idTercero = 0)
 		}
 		if ($bAsignaBorrador) {
 			$sSQL = '';
-			$iFechaHoy = fecha_DiaMod();
 			$iFechaSolicitud = fecha_ArmarNumero($DATA['saiu05dia'], $DATA['saiu05mes'], $DATA['saiu05agno']);
 			$iDiasBorrador = fecha_DiasEntreFechasDesdeNumero($iFechaSolicitud, $iFechaHoy);
 			$iNumDia = fecha_NumDiaSemana($iFechaHoy);
@@ -1262,13 +1265,21 @@ function f3005_db_GuardarV2($DATA, $objDB, $bDebug = false, $idTercero = 0)
 				$iDiasBorrador = $iDiasBorrador + 2;
 			}
 			if ($saiu05tiemprespdias == 0) {
-				list($saiu05idunidadresp, $saiu05idequiporesp, $saiu05idsupervisor, $saiu05idresponsable, $saiu05tiemprespdias, $saiu05tiempresphoras, $sErrorF, $iTipoError, $sDebugF) = f3005_ConsultaResponsable($DATA, $objDB, $bDebug);
-				$saiu05idresponsable = $saiu05idsupervisor;
-				$sError = $sError . $sErrorF;
-				$sDebug = $sDebug . $sDebugF;
-			}
-			if ($saiu05tiemprespdias > 0) {
-				$saiu05fecharespprob = fecha_NumSumarDias($iFechaHoy, $saiu05tiemprespdias);
+				list($aParametros, $sError, $iTipoError, $sDebugF) = f3000_ConsultaResponsable($DATA['saiu05idtemaorigen'], $DATA['saiu05idzona'], $DATA['saiu05cead'], $objDB, $bDebug);
+				if ($sError == '') {
+					$saiu05idunidadresp = $aParametros['idunidad'];
+					$saiu05idequiporesp = $aParametros['idequipo'];
+					$saiu05idsupervisor = $aParametros['idsupervisor'];
+					$saiu05idresponsable = $aParametros['idresponsable'];
+					$saiu05tiemprespdias = $aParametros['tiemprespdias'];
+					$saiu05tiempresphoras = $aParametros['tiempresphoras'];
+					if ($saiu05tiemprespdias > 0) {
+						$saiu05fecharespprob = fecha_NumSumarDias($iFechaHoy, $saiu05tiemprespdias);
+					}
+				}
+				if ($bDebug) {
+					$sDebug = $sDebug . $sDebugF;
+				}
 			}
 			if ($sError == '') {
 				$sSQL = $sSQL . 'UPDATE ' . $sTabla05 . ' SET ';
@@ -1482,11 +1493,11 @@ saiu05fecharespprob, saiu05respuesta, saiu05idmoduloproc, saiu05identificadormod
 						case 0:
 						case 7:
 							if ($saiu05estadoorigen == -1) {
-								// list($sMensaje, $sErrorE, $sDebugE) = f3005_EnviaCorreosSolicitud($DATA, $sContenedor, $objDB, $bDebug, true);
+								list($sMensaje, $sErrorE, $sDebugE) = f3005_EnviaCorreosSolicitud($DATA, $sContenedor, $objDB, $bDebug, true);
 							}
-							// list($sMensaje, $sErrorE, $sDebugE) = f3005_EnviaCorreosSolicitud($DATA, $sContenedor, $objDB, $bDebug);
-							// $sError = $sError . $sErrorE;
-							// $sDebug = $sDebug . $sDebugE;
+							list($sMensaje, $sErrorE, $sDebugE) = f3005_EnviaCorreosSolicitud($DATA, $sContenedor, $objDB, $bDebug);
+							$sError = $sError . $sErrorE;
+							$sDebug = $sDebug . $sDebugE;
 							break;
 					}
 				}
@@ -1830,93 +1841,6 @@ ORDER BY TB.saiu05agno, TB.saiu05mes, TB.saiu05tiporadicado, TB.saiu05consec';
 // -----------------------------------
 // ---- Funciones personalizadas  ----
 // -----------------------------------
-function f3005_ConsultaResponsable($DATA, $objDB, $bDebug = false)
-{
-	require './app.php';
-	$mensajes_todas = $APP->rutacomun . 'lg/lg_todas_' . $_SESSION['unad_idioma'] . '.php';
-	if (!file_exists($mensajes_todas)) {
-		$mensajes_todas = $APP->rutacomun . 'lg/lg_todas_es.php';
-	}
-	$mensajes_3005 = $APP->rutacomun . 'lg/lg_3005_' . $_SESSION['unad_idioma'] . '.php';
-	if (!file_exists($mensajes_3005)) {
-		$mensajes_3005 = $APP->rutacomun . 'lg/lg_3005_es.php';
-	}
-	require $mensajes_todas;
-	require $mensajes_3005;
-	$sError = '';
-	$iTipoError = 0;
-	$sDebug = '';
-	$sTabla05 = 'saiu05solicitud' . f3000_Contenedor($DATA['saiu05agno'], $DATA['saiu05mes']);
-	$saiu05idunidadresp = 0;
-	$saiu05idequiporesp = 0;
-	$saiu05idsupervisor = 0;
-	$saiu05idresponsable = 0;
-	$saiu05tiemprespdias = 0;
-	$saiu05tiempresphoras = 0;
-	if (isset($DATA['saiu05idtemaorigen']) == 0) {
-		$DATA['saiu05idtemaorigen'] = '';
-	}
-	if ($DATA['saiu05idtemaorigen'] == '') {
-		$sError = $ERR['saiu05idtemaorigen_2'] . $sSepara . $sError;
-	}
-	if ($sError == '') {
-		$sSQL = 'SELECT saiu03idunidadresp1, saiu03idequiporesp1, saiu03idliderrespon1, saiu03tiemprespdias1, saiu03tiempresphoras1
-		FROM saiu03temasol
-		WHERE saiu03id = ' . $DATA['saiu05idtemaorigen'] . '';
-		if ($bDebug) {
-			$sDebug = $sDebug . fecha_microtiempo() . ' Consulta responsable solicitud ' . $sSQL . '<br>';
-		}
-		$tabla = $objDB->ejecutasql($sSQL);
-		if ($objDB->nf($tabla) > 0) {
-			$fila = $objDB->sf($tabla);
-			$saiu05idunidadresp = $fila['saiu03idunidadresp1'];
-			$saiu05idequiporesp = $fila['saiu03idequiporesp1'];
-			$saiu05idsupervisor = $fila['saiu03idliderrespon1'];
-			$saiu05tiemprespdias = $fila['saiu03tiemprespdias1'];
-			$saiu05tiempresphoras = $fila['saiu03tiempresphoras1'];
-			if ($saiu05idequiporesp > 0) {
-				$sSQL = 'SELECT bita28idtercero
-				FROM bita28eqipoparte
-				WHERE bita28idequipotrab = ' . $saiu05idequiporesp . ' AND bita28activo = "S"' . '';
-				$tabla = $objDB->ejecutasql($sSQL);
-				if ($objDB->nf($tabla) > 0) {
-					$aEquipo = array();
-					$sEquipo = '';
-					while ($fila = $objDB->sf($tabla)) {
-						$aEquipo[] = $fila['bita28idtercero'];
-					}
-					$sEquipo = implode(',', $aEquipo);
-					$sSQL = 'SELECT saiu05idresponsable, COUNT(saiu05id) AS asignaciones
-					FROM ' . $sTabla05 . '
-					WHERE saiu05idresponsable IN (' . $sEquipo . ')
-					GROUP BY saiu05idresponsable
-					ORDER BY asignaciones';
-					$tabla = $objDB->ejecutasql($sSQL);
-					$iResponsables = $objDB->nf($tabla);
-					$aResponsables = array();
-					while ($fila = $objDB->sf($tabla)) {
-						$aResponsables[] = $fila['saiu05idresponsable'];
-					}
-					shuffle($aResponsables);
-					if ($iResponsables >= count($aEquipo)) {
-						$saiu05idresponsable = $aResponsables[0];
-					} else {
-						$aSinAsignar = array_values(array_diff($aEquipo, $aResponsables));
-						shuffle($aSinAsignar);
-						$saiu05idresponsable = $aSinAsignar[0];
-						if ($bDebug) {
-							$sDebug = $sDebug . fecha_microtiempo() . ' sin asignar: ' . print_r($aSinAsignar, true) . '<br>';
-						}
-					}
-				}
-			}
-			$saiu05idresponsable = $saiu05idsupervisor;
-		} else {
-			$sError = $sError . 'No se ha configurado el tema de solicitud.';
-		}
-	}
-	return array($saiu05idunidadresp, $saiu05idequiporesp, $saiu05idsupervisor, $saiu05idresponsable, $saiu05tiemprespdias, $saiu05tiempresphoras, $sError, $iTipoError, $sDebug);
-}
 function f3005_RevTabla_saiu05solicitud($sContenedor, $objDB, $bDebug = false)
 {
 	list($sError, $sDebug) = f3005_RevisarTabla($sContenedor, $objDB, $bDebug);
@@ -2656,12 +2580,11 @@ function f3005_ActualizarAtiende($DATA, $objDB, $bDebug = false, $idTercero)
 		$sError = $sError . $ERR['contenedor'];
 	}
 	if ($sError == '') {
-		$sSQL = 'SELECT saiu05agno, saiu05mes, saiu05estado, saiu05idtemaorigen FROM ' . $sTabla05 . ' WHERE saiu05id=' . $DATA['saiu05id'] . '';
+		$sSQL = 'SELECT saiu05idzona, saiu05cead, saiu05idtemaorigen FROM ' . $sTabla05 . ' WHERE saiu05id=' . $DATA['saiu05id'] . '';
 		$tabla = $objDB->ejecutasql($sSQL);
 		if ($objDB->nf($tabla) > 0) {
 			$fila = $objDB->sf($tabla);
-			list($DATA['saiu05idunidadresp'], $DATA['saiu05idequiporesp'], $DATA['saiu05idsupervisor'], $DATA['saiu05idresponsable'], $DATA['saiu05tiemprespdias'], $DATA['saiu05tiempresphoras'], $sErrorF, $iTipoError, $sDebugF) = f3005_ConsultaResponsable($fila, $objDB, $bDebug);
-			$sError = $sError . $sErrorF;
+			list($aParametros, $sError, $iTipoError, $sDebugF) = f3000_ConsultaResponsable($fila['saiu05idtemaorigen'], $fila['saiu05idzona'], $fila['saiu05cead'], $objDB, $bDebug);
 			if ($bDebug) {
 				$sDebug = $sDebug . $sDebugF;
 			}
@@ -2670,6 +2593,12 @@ function f3005_ActualizarAtiende($DATA, $objDB, $bDebug = false, $idTercero)
 		}
 	}
 	if ($sError == '') {
+		$DATA['saiu05idunidadresp'] = $aParametros['idunidad'];
+		$DATA['saiu05idequiporesp'] = $aParametros['idequipo'];
+		$DATA['saiu05idsupervisor'] = $aParametros['idsupervisor'];
+		$DATA['saiu05idresponsable'] = $aParametros['idresponsable'];
+		$DATA['saiu05tiemprespdias'] = $aParametros['tiemprespdias'];
+		$DATA['saiu05tiempresphoras'] = $aParametros['tiempresphoras'];
 		if ($DATA['saiu05tiemprespdias'] > 0) {
 			$iFechaBase = fecha_DiaMod();
 			$DATA['saiu05fecharespprob'] = fecha_NumSumarDias($iFechaBase, $DATA['saiu05tiemprespdias']);

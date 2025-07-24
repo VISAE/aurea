@@ -2145,3 +2145,147 @@ Cordialmente,<br>
 	}
 	return $objResponse;
 }
+
+// -- Devolver el responsable de una red de servicio.
+function f3074_ActorRedServicio($id73, $idZona, $idCentro, $objDB, $bDebug = false) 
+{
+	$idUnidad = 0;
+	$idGrupoTrabajo = 0;
+	$idResponsable = 0;
+	$sError = '';
+	$sDebug = '';
+	$bResuelve = false;
+	$bTraerLider = false;
+	$idAdministrador = 0;
+	$sSQL = 'SELECT saiu74idunidad, saiu74idadministrador, saiu74activa FROM saiu74reddeservicio WHERE saiu74id=' . $id73 . '';
+	$tabla = $objDB->ejecutasql($sSQL);
+	if ($objDB->nf($tabla) > 0) {
+		$fila = $objDB->sf($tabla);
+		$idUnidad = $fila['saiu74idunidad'];
+		$idAdministrador = $fila['saiu74idadministrador'];
+		if ($fila['saiu74activa'] == 0) {
+			$sError = 'La red de servicio no se encuentra activa.';
+		}
+	} else {
+		$sError = 'No se ha encontrado la red de servicio Ref ' . $id73 . '';
+	}
+	if (($sError == '') && ((int)$idCentro > 0)) {
+		//Si el centro es mayor a 0 buscamos para el centro.
+		$sSQL = 'SELECT saiu75idequipo FROM saiu75redequipo WHERE saiu75idred=' . $id73 . ' AND saiu75idcentro=' . $idCentro . ' AND saiu75idequipo>0';
+		$tabla = $objDB->ejecutasql($sSQL);
+		if ($objDB->nf($tabla) > 0) {
+			$fila = $objDB->sf($tabla);
+			$idGrupoTrabajo = $fila['saiu75idequipo'];
+			$bResuelve = true;
+			$bTraerLider = true;
+		}
+	}
+	if ((!$bResuelve) && ($sError == '') && ((int)$idZona > 0)) {
+		//No lo ha encontrado por centro, vamos por zona
+		$sSQL = 'SELECT saiu75idequipo FROM saiu75redequipo WHERE saiu75idred=' . $id73 . ' AND saiu75idzona=' . $idZona . ' AND saiu75idcentro=0 AND saiu75idequipo>0';
+		$tabla = $objDB->ejecutasql($sSQL);
+		if ($objDB->nf($tabla) > 0) {
+			$fila = $objDB->sf($tabla);
+			$idGrupoTrabajo = $fila['saiu75idequipo'];
+			$bResuelve = true;
+			$bTraerLider = true;
+		}
+	}
+	if ((!$bResuelve) && ($sError == '')) {
+		//Si no hay datos, se envia al administrador
+		$idResponsable = $idAdministrador;
+	}
+	if ($bTraerLider) {
+		//Traer el lider del equipo de trabajo.
+		$sSQL = 'SELECT bita27idlider FROM bita27equipotrabajo WHERE bita27id=' . $idGrupoTrabajo . ' AND bita27idlider>0';
+		$tabla = $objDB->ejecutasql($sSQL);
+		if ($objDB->nf($tabla) > 0) {
+			$fila = $objDB->sf($tabla);
+			$idAdministrador = $fila['bita27idlider'];
+		}
+		//Traer integrantes del equipo de trabajo.
+		$aIntegrantes = array();
+		$iIntegrantes = 0;
+		$sSQL = 'SELECT bita28idtercero FROM bita28eqipoparte WHERE bita28idequipotrab=' . $idGrupoTrabajo . ' AND bita28activo="S"';
+		$tabla = $objDB->ejecutasql($sSQL);
+		if ($objDB->nf($tabla) > 0) {
+			while ($fila = $objDB->sf($tabla)) {
+				$aIntegrantes[] = $fila['bita28idtercero'];
+				$iIntegrantes = $iIntegrantes + 1;
+			}
+			$iSeleccionado = rand(0, $iIntegrantes-1);
+			$idResponsable = $aIntegrantes[$iSeleccionado];
+		} else {
+			$idResponsable = $idAdministrador;
+		}
+	}
+	return array($idUnidad, $idGrupoTrabajo, $idAdministrador, $idResponsable, $sError, $sDebug);
+}
+function f3000_ConsultaResponsable($idTema, $idZona, $idCentro, $objDB, $bDebug = false)
+{
+	require './app.php';
+	$sIdioma = AUREA_Idioma();
+	$mensajes_todas = $APP->rutacomun . 'lg/lg_todas_' . $sIdioma . '.php';
+	if (!file_exists($mensajes_todas)) {
+		$mensajes_todas = $APP->rutacomun . 'lg/lg_todas_es.php';
+	}
+	$mensajes_3000 = $APP->rutacomun . 'lg/lg_3000_' . $_SESSION['unad_idioma'] . '.php';
+	if (!file_exists($mensajes_3000)) {
+		$mensajes_3000 = $APP->rutacomun . 'lg/lg_3000_es.php';
+	}
+	require $mensajes_todas;
+	require $mensajes_3000;
+	$idTema = numeros_validar($idTema);
+	$idZona = numeros_validar($idZona);
+	$idCentro = numeros_validar($idCentro);
+	$sError = '';
+	$iTipoError = 0;
+	$sDebug = '';
+	$sSepara = '<br>';
+	$aParametros = array(
+		'idunidad' => 0,
+		'idequipo' => 0,
+		'idsupervisor' => 0,
+		'idresponsable' => 0,
+		'tiemprespdias' => 0,
+		'tiempresphoras' => 0
+	);
+	if ($idTema == '') {
+		$sError = $sError. $ERR['saiu00idtema'] . $sSepara;
+	}
+	if ($idZona == '') {
+		$sError = $sError. $ERR['saiu00idzona'] . $sSepara;
+	}
+	if ($idCentro == '') {
+		$sError = $sError. $ERR['saiu00idcentro'] . $sSepara;
+	}
+	if ($sError == '') {
+		$sSQL = 'SELECT saiu03idunidadresp1, saiu03idequiporesp1, saiu03idliderrespon1, saiu03tiemprespdias1, saiu03tiempresphoras1, 
+		saiu03reddeservicio
+		FROM saiu03temasol
+		WHERE saiu03id = ' . $idTema . '';
+		if ($bDebug) {
+			$sDebug = $sDebug . fecha_microtiempo() . ' Consulta responsable solicitud ' . $sSQL . '<br>';
+		}
+		$tabla = $objDB->ejecutasql($sSQL);
+		if ($objDB->nf($tabla) > 0) {
+			$fila = $objDB->sf($tabla);
+			$aParametros['idunidad'] = $fila['saiu03idunidadresp1'];
+			$aParametros['idequipo'] = $fila['saiu03idequiporesp1'];
+			$aParametros['idsupervisor'] = $fila['saiu03idliderrespon1'];
+			$aParametros['idresponsable'] = $fila['saiu03idliderrespon1'];
+			$aParametros['tiemprespdias'] = $fila['saiu03tiemprespdias1'];
+			$aParametros['tiempresphoras'] = $fila['saiu03tiempresphoras1'];
+			if ($fila['saiu03reddeservicio'] != 0) {
+				list($idUnidad, $idEquipo, $idSupervisor, $idResponsable, $sError, $sDebug) = f3074_ActorRedServicio($fila['saiu03reddeservicio'], $idZona, $idCentro, $objDB, $bDebug);
+				$aParametros['idunidad'] = $idUnidad;
+				$aParametros['idequipo'] = $idEquipo;
+				$aParametros['idsupervisor'] = $idSupervisor;
+				$aParametros['idresponsable'] = $idResponsable;
+			}
+		} else {
+			$sError = $sError . $ERR['saiu00noidtema'];
+		}
+	}
+	return array($aParametros, $sError, $iTipoError, $sDebug);
+}

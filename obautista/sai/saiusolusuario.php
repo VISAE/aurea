@@ -965,23 +965,7 @@ if ($_REQUEST['paso'] == 26) {
 		$bPuedeReasignar = true;
 	}
 	if ($bPuedeReasignar) {
-		$bCambiaLider = false;
-		$saiu73idunidadcaso = $_REQUEST['saiu73idunidadcaso'];
-		$saiu73idequipocaso = $_REQUEST['saiu73idequipocaso'];
-		$saiu73idsupervisorcaso = $_REQUEST['saiu73idsupervisorcaso'];
-		$sSQL = 'SELECT bita27id, bita27idlider, bita27idunidadfunc FROM bita27equipotrabajo WHERE bita27idlider=' . $_REQUEST['saiu73idresponsablecasofin'] . ' AND bita27activo=1 ';
-		$tabla = $objDB->ejecutasql($sSQL);
-		if ($objDB->nf($tabla) > 0) {
-			$fila = $objDB->sf($tabla);
-			$sSQL = 'UPDATE ' . $sTabla73 . ' SET saiu73idunidadcaso=' . $fila['bita27idunidadfunc'] . ', saiu73idequipocaso=' . $fila['bita27id'] . ', 
-			saiu73idsupervisorcaso=' . $fila['bita27idlider'] . ', saiu73idresponsablecaso=' . $_REQUEST['saiu73idresponsablecasofin'] . ' WHERE saiu73id=' . $_REQUEST['saiu73id'] . '';
-			$bCambiaLider = true;
-			$saiu05idunidadresp = $fila['bita27idunidadfunc'];
-			$saiu73idequipocaso = $fila['bita27id'];
-			$saiu73idsupervisorcaso = $fila['bita27idlider'];
-		} else {
-			$sSQL = 'UPDATE ' . $sTabla73 . ' SET saiu73idresponsablecaso=' . $_REQUEST['saiu73idresponsablecasofin'] . ' WHERE saiu73id=' . $_REQUEST['saiu73id'] . '';
-		}
+		$sSQL = 'UPDATE ' . $sTabla73 . ' SET saiu73idresponsablecaso=' . $_REQUEST['saiu73idresponsablecasofin'] . ' WHERE saiu73id=' . $_REQUEST['saiu73id'] . '';
 		if ($bDebug) {
 			$sDebug = $sDebug . fecha_microtiempo() . ' Consulta reasignación: ' . $sSQL . '<br>';
 		}
@@ -990,11 +974,6 @@ if ($_REQUEST['paso'] == 26) {
 			$sError = $sError . $ERR['saiu73idresponsablecasofin'] . '';
 		} else {
 			seg_auditar($iCodModulo, $_SESSION['unad_id_tercero'], 3, $_REQUEST['saiu73id'], 'Reasigna el responsable ', $objDB);
-			if ($bCambiaLider) {
-				$_REQUEST['saiu73idunidadcaso'] = $saiu73idunidadcaso;
-				$_REQUEST['saiu73idequipocaso'] = $saiu73idequipocaso;
-				$_REQUEST['saiu73idsupervisorcaso'] = $saiu73idsupervisorcaso;
-			}
 			$_REQUEST['saiu73idresponsablecaso'] = $_REQUEST['saiu73idresponsablecasofin'];
 			$sError = '<b>Se ha realizado la reasignaci&oacute;n.</b>';
 			$iTipoError = 1;
@@ -1108,6 +1087,7 @@ switch ($_REQUEST['saiu73estado']) {
 		break;
 	case  1: // Asignado
 		$bPuedeCerrar = true;
+		$bMostrarResponsable = true;
 		break;
 	case 7: // Resuelto
 		$bPuedeGuardar = false;
@@ -1236,7 +1216,7 @@ if ($_REQUEST['saiu73idequipocaso'] != '') {
 }
 $html_saiu73idequipocaso = html_oculto('saiu73idequipocaso', $_REQUEST['saiu73idequipocaso'], $saiu73idequipocaso_nombre);
 $saiu73idsupervisorcaso_rs = '{' . $ETI['msg_sindato'] . '}';
-$sSQL = 'SELECT T11.unad11razonsocial FROM saiu03temasol AS TB, unad11terceros AS T11 WHERE TB.saiu03idliderrespon1=T11.unad11id AND TB.saiu03id = ' . $_REQUEST['saiu73temasolicitud'] . ' AND TB.saiu03idliderrespon1 = ' . $_REQUEST['saiu73idsupervisorcaso'] . '';
+$sSQL = 'SELECT unad11razonsocial FROM unad11terceros WHERE unad11id = ' . $_REQUEST['saiu73idsupervisorcaso'] . '';
 $tabla = $objDB->ejecutasql($sSQL);
 if ($objDB->nf($tabla) > 0) {
 	$fila = $objDB->sf($tabla);

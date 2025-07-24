@@ -1137,23 +1137,7 @@ if ($_REQUEST['paso'] == 17) {
 		$sError = $sError . 'No ha sido posible acceder al contenedor de datos de cambio responsable '. $sTabla05;
 	}
 	if ($sError == '') {
-		$bCambiaLider = false;
-		$saiu05idunidadresp = $_REQUEST['saiu05idunidadresp'];
-		$saiu05idequiporesp = $_REQUEST['saiu05idequiporesp'];
-		$saiu05idsupervisor = $_REQUEST['saiu05idsupervisor'];
-		$sSQL = 'SELECT bita27id, bita27idlider, bita27idunidadfunc FROM bita27equipotrabajo WHERE bita27idlider=' . $_REQUEST['saiu05idresponsablefin'] . ' AND bita27activo=1 ';
-		$tabla = $objDB->ejecutasql($sSQL);
-		if ($objDB->nf($tabla) > 0) {
-			$fila = $objDB->sf($tabla);
-			$sSQL = 'UPDATE ' . $sTabla05 . ' SET saiu05idunidadresp=' . $fila['bita27idunidadfunc'] . ', saiu05idequiporesp=' . $fila['bita27id'] . ', 
-saiu05idsupervisor=' . $fila['bita27idlider'] . ', saiu05idresponsable=' . $_REQUEST['saiu05idresponsablefin'] . ' WHERE saiu05id=' . $_REQUEST['saiu05id'] . '';
-			$bCambiaLider = true;
-			$saiu05idunidadresp = $fila['bita27idunidadfunc'];
-			$saiu05idequiporesp = $fila['bita27id'];
-			$saiu05idsupervisor = $fila['bita27idlider'];
-		} else {
-			$sSQL = 'UPDATE ' . $sTabla05 . ' SET saiu05idresponsable=' . $_REQUEST['saiu05idresponsablefin'] . ' WHERE saiu05id=' . $_REQUEST['saiu05id'] . '';
-		}
+		$sSQL = 'UPDATE ' . $sTabla05 . ' SET saiu05idresponsable=' . $_REQUEST['saiu05idresponsablefin'] . ' WHERE saiu05id=' . $_REQUEST['saiu05id'] . '';
 		if ($bDebug) {
 			$sDebug = $sDebug . fecha_microtiempo() . ' Consulta reasignación: '.$sSQL.'<br>';
 		}
@@ -1162,11 +1146,6 @@ saiu05idsupervisor=' . $fila['bita27idlider'] . ', saiu05idresponsable=' . $_REQ
 			$sError=$sError.$ERR['saiu05idresponsablefin'].'';
 		} else {
 			seg_auditar($iCodModulo, $_SESSION['unad_id_tercero'], 3, $_REQUEST['saiu05id'], 'Reasigna el responsable ', $objDB);
-			if ($bCambiaLider) {
-				$_REQUEST['saiu05idunidadresp']=$saiu05idunidadresp;
-				$_REQUEST['saiu05idequiporesp']=$saiu05idequiporesp;
-				$_REQUEST['saiu05idsupervisor']=$saiu05idsupervisor;
-			}
 			$_REQUEST['saiu05idresponsable']=$_REQUEST['saiu05idresponsablefin'];
 		}
 	}

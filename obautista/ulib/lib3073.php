@@ -1443,19 +1443,19 @@ function f3073_db_GuardarV2($DATA, $objDB, $bDebug = false, $idTercero = 0, $iCo
 				$DATA['saiu73idresponsablecaso'] = 0;
 			}
 			if ($DATA['saiu73idresponsablecaso'] == 0) {
-				list($aParametros, $sErrorF, $iTipoError, $sDebugF) = f3073_ConsultaResponsable($DATA['saiu73temasolicitud'], $objDB, $bDebug);
+				list($aParametros, $sErrorF, $iTipoError, $sDebugF) = f3000_ConsultaResponsable($DATA['saiu73temasolicitud'], $DATA['saiu73idzona'], $DATA['saiu73idcentro'], $objDB, $bDebug);
 				if ($sErrorF != '') {
 					$sError = $sError . '<br>' . $sErrorF;
 				}
 				if ($bDebug) {
 					$sDebug = $sDebug . fecha_microtiempo() . ' Consulta Responsable: ' . $sDebugF . '<br>';
 				}
-				$DATA['saiu73idunidadcaso'] = $aParametros['saiu73idunidadcaso'];
-				$DATA['saiu73idequipocaso'] = $aParametros['saiu73idequipocaso'];
-				$DATA['saiu73idsupervisorcaso'] = $aParametros['saiu73idsupervisorcaso'];
-				$DATA['saiu73idresponsablecaso'] = $aParametros['saiu73idresponsablecaso'];
-				$DATA['saiu73tiemprespdias'] = $aParametros['saiu73tiemprespdias'];
-				$DATA['saiu73tiempresphoras'] = $aParametros['saiu73tiempresphoras'];
+				$DATA['saiu73idunidadcaso'] = $aParametros['idunidad'];
+				$DATA['saiu73idequipocaso'] = $aParametros['idequipo'];
+				$DATA['saiu73idsupervisorcaso'] = $aParametros['idsupervisor'];
+				$DATA['saiu73idresponsablecaso'] = $aParametros['idresponsable'];
+				$DATA['saiu73tiemprespdias'] = $aParametros['tiemprespdias'];
+				$DATA['saiu73tiempresphoras'] = $aParametros['tiempresphoras'];
 				if ($DATA['saiu73idunidadcaso'] == 0) {
 					$sError = $ERR['saiu73idunidadcaso'] . $sSepara . $sError;
 				}
@@ -2411,58 +2411,6 @@ function f3073_RevTabla_saiu73solusuario($sContenedor, $objDB, $bDebug = false)
 	list($sError, $sDebug) = f3073_RevisarTabla($sContenedor, $objDB, $bDebug);
 	return array($sError, $sDebug);
 }
-function f3073_ConsultaResponsable($saiu73temasolicitud, $objDB, $bDebug = false)
-{
-	require './app.php';
-	$sIdioma = AUREA_Idioma();
-	$mensajes_todas = $APP->rutacomun . 'lg/lg_todas_' . $sIdioma . '.php';
-	if (!file_exists($mensajes_todas)) {
-		$mensajes_todas = $APP->rutacomun . 'lg/lg_todas_es.php';
-	}
-	$mensajes_3073 = $APP->rutacomun . 'lg/lg_3073_' . $_SESSION['unad_idioma'] . '.php';
-	if (!file_exists($mensajes_3073)) {
-		$mensajes_3073 = $APP->rutacomun . 'lg/lg_3073_es.php';
-	}
-	require $mensajes_todas;
-	require $mensajes_3073;
-	$saiu73temasolicitud = numeros_validar($saiu73temasolicitud);
-	$sError = '';
-	$iTipoError = 0;
-	$sDebug = '';
-	$sSepara = ', ';
-	$aParametros = array(
-		'saiu73idunidadcaso' => 0,
-		'saiu73idequipocaso' => 0,
-		'saiu73idsupervisorcaso' => 0,
-		'saiu73idresponsablecaso' => 0,
-		'saiu73tiemprespdias' => 0,
-		'saiu73tiempresphoras' => 0
-	);
-	if ($saiu73temasolicitud == 0) {
-		$sError = $ERR['saiu73temasolicitud'] . $sSepara . $sError;
-	}
-	if ($sError == '') {
-		$sSQL = 'SELECT saiu03idunidadresp1, saiu03idequiporesp1, saiu03idliderrespon1, saiu03tiemprespdias1, saiu03tiempresphoras1
-		FROM saiu03temasol
-		WHERE saiu03id = ' . $saiu73temasolicitud . '';
-		if ($bDebug) {
-			$sDebug = $sDebug . fecha_microtiempo() . ' Consulta responsable solicitud ' . $sSQL . '<br>';
-		}
-		$tabla = $objDB->ejecutasql($sSQL);
-		if ($objDB->nf($tabla) > 0) {
-			$fila = $objDB->sf($tabla);
-			$aParametros['saiu73idunidadcaso'] = $fila['saiu03idunidadresp1'];
-			$aParametros['saiu73idequipocaso'] = $fila['saiu03idequiporesp1'];
-			$aParametros['saiu73idsupervisorcaso'] = $fila['saiu03idliderrespon1'];
-			$aParametros['saiu73idresponsablecaso'] = $fila['saiu03idliderrespon1'];
-			$aParametros['saiu73tiemprespdias'] = $fila['saiu03tiemprespdias1'];
-			$aParametros['saiu73tiempresphoras'] = $fila['saiu03tiempresphoras1'];
-		} else {
-			$sError = $sError . 'No se ha configurado el tema de solicitud.';
-		}
-	}
-	return array($aParametros, $sError, $iTipoError, $sDebug);
-}
 function f3073_ActualizaAtiendeSolicitud($saiu73id, $iAgno, $objDB, $bDebug = false)
 {
 	require './app.php';
@@ -2483,19 +2431,18 @@ function f3073_ActualizaAtiendeSolicitud($saiu73id, $iAgno, $objDB, $bDebug = fa
 		$sError = 'No ha sido posible acceder al contenedor de datos';
 	}
 	if ($sError == '') {
-		$sSQL = 'SELECT saiu73temasolicitud FROM ' . $sTabla73 . ' WHERE saiu73id=' . $saiu73id . '';
+		$sSQL = 'SELECT saiu73temasolicitud, saiu73idzona, saiu73idcentro FROM ' . $sTabla73 . ' WHERE saiu73id=' . $saiu73id . '';
 		$tabla = $objDB->ejecutasql($sSQL);
 		if ($objDB->nf($tabla) > 0) {
 			$fila = $objDB->sf($tabla);
-			$sSQL = 'SELECT saiu03idunidadresp1, saiu03idequiporesp1, saiu03idliderrespon1, saiu03tiemprespdias1, saiu03tiempresphoras1
-			FROM saiu03temasol
-			WHERE saiu03id = ' . $fila['saiu73temasolicitud'] . '';
-			$tabla = $objDB->ejecutasql($sSQL);
-			if ($objDB->nf($tabla) > 0) {
-				$fila = $objDB->sf($tabla);
-				$sSQL = 'UPDATE ' . $sTabla73 . ' SET saiu73idunidadcaso=' . $fila['saiu03idunidadresp1'] . ', saiu73idequipocaso=' . $fila['saiu03idequiporesp1'] . ', 
-				saiu73idsupervisorcaso=' . $fila['saiu03idliderrespon1'] . ', saiu73idresponsablecaso=' . $fila['saiu03idliderrespon1'] . ', saiu73tiemprespdias=' . $fila['saiu03tiemprespdias1'] . ', 
-				saiu73tiempresphoras=' . $fila['saiu03tiempresphoras1'] . ' WHERE saiu73id=' . $saiu73id . '';
+			list($aParametros, $sError, $iTipoError, $sDebugF) = f3000_ConsultaResponsable($fila['saiu73temasolicitud'], $fila['saiu73idzona'], $fila['saiu73idcentro'], $objDB, $bDebug);
+			if ($bDebug) {
+				$sDebug = $sDebug . fecha_microtiempo() . ' Consulta Responsable: ' . $sDebugF . '<br>';
+			}
+			if ($sError == '') {
+				$sSQL = 'UPDATE ' . $sTabla73 . ' SET saiu73idunidadcaso=' . $aParametros['idunidad'] . ', saiu73idequipocaso=' . $aParametros['idequipo'] . ', 
+				saiu73idsupervisorcaso=' . $aParametros['idsupervisor'] . ', saiu73idresponsablecaso=' . $aParametros['idresponsable'] . ', saiu73tiemprespdias=' . $aParametros['tiemprespdias'] . ', 
+				saiu73tiempresphoras=' . $aParametros['tiempresphoras'] . ' WHERE saiu73id=' . $saiu73id . '';
 				$result = $objDB->ejecutasql($sSQL);
 				if ($result == false) {
 					$sError = 'Error al intentar actualizar el encargado de la solicitud.';
