@@ -2701,7 +2701,7 @@ function f3005_db_EliminarBorradores($aParametros)
 	$aTablas = array();
 	$iTablas = 0;
 	$iNumSolicitudes = 0;
-	$iDiasLimiteBorrador = 3;
+	$iDiasLimiteBorrador = 30;
 	$bExistenBorradores = false;
 	$sMensaje = '';
 	$iCantBorradores = 0;
@@ -2747,7 +2747,7 @@ function f3005_db_EliminarBorradores($aParametros)
 			$tabla = $objDB->ejecutasql($sSQL);		
 			if ($objDB->nf($tabla) > 0) {
 				$sIdsBorrador = '';
-				$sIdsSolicitante = '';
+				$aIdsBorrador = array();
 				$saiu05dia = 0;
 				$saiu05mes = 0;
 				$saiu05agno = 0;
@@ -2760,26 +2760,21 @@ function f3005_db_EliminarBorradores($aParametros)
 					if ($iDias > $iDiasLimiteBorrador) {
 						if ($sIdsBorrador != '') {
 							$sIdsBorrador = $sIdsBorrador . ',';
-							$sIdsSolicitante = $sIdsSolicitante . ',';
 						}
 						$sIdsBorrador = $sIdsBorrador . $fila['saiu05id'];
-						$sIdsSolicitante = $sIdsSolicitante . $fila['saiu05idsolicitante'];
+						$aIdsBorrador[] = $fila['saiu05id'];
 						$iCantBorradores = $iCantBorradores + 1;
 					}
 				}
 				if ($sIdsBorrador != '') {
-					$sSQL = 'DELETE FROM ' . $sTabla6 . ' WHERE saiu06idsolicitud IN (' . $sIdsBorrador . ')';
-					$tabla=$objDB->ejecutasql($sSQL);
-					$sSQL = 'DELETE FROM ' . $sTabla7 . ' WHERE saiu07idsolicitud IN (' . $sIdsBorrador . ')';
-					$tabla=$objDB->ejecutasql($sSQL);
 					$sWhere = 'saiu05id IN (' . $sIdsBorrador . ')';
-					//$sWhere='saiu05consec='.$filabase['saiu05consec'].' AND saiu05tiporadicado='.$filabase['saiu05tiporadicado'].' AND saiu05mes='.$filabase['saiu05mes'].' AND saiu05agno='.$filabase['saiu05agno'].'';
-					$sSQL = 'DELETE FROM ' . $sTabla5 . ' WHERE ' . $sWhere . ';';
+					$sSQL = 'UPDATE ' . $sTabla5 . ' SET saiu05estado = -2 WHERE ' . $sWhere . ';';
 					$result = $objDB->ejecutasql($sSQL);
 					if ($result == false) {
 						$sError = $sError . $ERR['falla_eliminar'] . ' .. <!-- ' . $sSQL . ' --><br>';
 					} else {						
-						list($sErrorT, $sDebugT) = f3005_CalcularTotales($sIdsSolicitante, $saiu05agno, $saiu05mes, $bAudita[4], $sIdsBorrador, $objDB, $bDebug);
+						list($sErrorT, $sDebugT) = f3005_RegistrarCambioEstado($aIdsBorrador, $saiu05agno, $saiu05mes, $objDB, $bDebug);
+						$sError = $sError . $sErrorT;
 						$sDebug = $sDebug . $sDebugT;
 						$sMensaje = $ETI['msg_resborradorok'];
 					}
@@ -2806,42 +2801,44 @@ function f3005_db_EliminarBorradores($aParametros)
 	}
 	return $objResponse;
 }
-function f3005_CalcularTotales($sIdsSolicitante, $iAgno, $iMes, $bAudita4, $sIds, $objDB, $bDebug = false)
+function f3005_RegistrarCambioEstado($aIdsBorrador, $iAgno, $iMes, $objDB, $bDebug = false)
 {
 	$sError = '';
 	$sDebug = '';
 	$iCodModulo = 3005;
 	$iMes = (int)$iMes;
-	$sTabla = 'saiu05solicitud' . f3000_Contenedor($iAgno, $iMes);
-	$sSQL = 'UPDATE saiu15historico SET saiu15numsolicitudes=0, saiu15numsupervisiones=0 WHERE saiu15idinteresado IN (' . $sIdsSolicitante . ') AND saiu15agno=' . $iAgno . ' AND saiu15mes=' . $iMes . '';
-	$result = $objDB->ejecutasql($sSQL);
-	$iSolicitados = 0;
-	$iResponsable = 0;
-	$sSQL = 'SELECT saiu05idsolicitante, saiu05tiporadicado, COUNT(saiu05id) AS Total FROM ' . $sTabla . ' WHERE saiu05idsolicitante IN (' . $sIdsSolicitante . ') GROUP BY saiu05tiporadicado';
-	if ($bDebug) {
-		$sDebug = $sDebug . fecha_microtiempo() . ' Consultando el mes: ' . $sSQL . '<br>';
+	$sTabla09 = 'saiu09cambioestado' . f3000_Contenedor($iAgno, $iMes);	
+	$saiu09consec = tabla_consecutivo($sTabla09, 'saiu09consec', '', $objDB);
+	if ($saiu09consec == -1) {
+		$sError = $objDB->serror;
 	}
-	$tabla5 = $objDB->ejecutasql($sSQL);
-	while ($fila5 = $objDB->sf($tabla5)) {
-		$iSolicitados = $fila5['Total'];
-		$sSQL = 'SELECT saiu15id FROM saiu15historico WHERE saiu15idinteresado=' . $fila5['saiu05idsolicitante'] . ' AND saiu15agno=' . $iAgno . ' AND saiu15mes=' . $iMes . ' AND saiu15tiporadicado=' . $fila5['saiu05tiporadicado'] . '';
-		$tabla15 = $objDB->ejecutasql($sSQL);
-		if ($objDB->nf($tabla15) == 0) {
-			$saiu15id = tabla_consecutivo('saiu15historico', 'saiu15id', '', $objDB);
-			$sSQL = 'INSERT INTO saiu15historico (saiu15idinteresado, saiu15agno, saiu15mes, saiu15tiporadicado, saiu15id, saiu15numsolicitudes, saiu15numsupervisiones) VALUES (' . $fila5['saiu05idsolicitante'] . ', ' . $iAgno . ', ' . $iMes . ', ' . $fila5['saiu05tiporadicado'] . ', ' . $saiu15id . ', ' . $iSolicitados . ', ' . $iResponsable . ')';
-		} else {
-			$fila15 = $objDB->sf($tabla15);
-			$sSQL = 'UPDATE saiu15historico SET saiu15numsolicitudes=' . $iSolicitados . ', saiu15numsupervisiones=' . $iResponsable . ' WHERE saiu15id=' . $fila15['saiu15id'] . '';
+	$saiu09id = tabla_consecutivo($sTabla09, 'saiu09id', '', $objDB);
+	if ($saiu09id == -1) {
+		$sError = $objDB->serror;
+	}
+	if ($sError == '') {
+		$iHoy = fecha_DiaMod();
+		$iHora = fecha_hora();
+		$iMinuto = fecha_minuto();
+		$sValores3009 = '';
+		$sCampos3009 = 'saiu09idsolicitud,saiu09consec,saiu09id,saiu09idestadoorigen,saiu09idestadofin,
+		saiu09idusuario,saiu09fecha,saiu09hora,saiu09minuto';
+		foreach($aIdsBorrador as $saiu05id) {
+			if ($sValores3009 != '') {
+				$sValores3009 = $sValores3009 . ', ';
+			}
+			$sValores3009 = '(' . $saiu05id . ',' . $saiu09consec . ',' . $saiu09id . ', -1, -2,
+			' . $_SESSION['unad_id_tercero'] . ',' . $iHoy . ',' . $iHora . ',' . $iMinuto . ')';
+			$saiu09consec = $saiu09consec + 1;
+			$saiu09id = $saiu09id + 1;
 		}
+		$sSQL = 'INSERT INTO ' . $sTabla09 . '(' . $sCampos3009 . ') VALUES ' . $sValores3009 . '';
 		if ($bDebug) {
-			$sDebug = $sDebug . fecha_microtiempo() . ' Actualiza el historico: ' . $sSQL . '<br>';
+			$sDebug = $sDebug . fecha_microtiempo() . ' Registrando cambio de estado: ' . $sSQL . '<br>';
 		}
 		$result = $objDB->ejecutasql($sSQL);
-		if ($bAudita4) {
-			$aIds = explode(',', $sIds);
-			foreach($aIds as $saiu05id) {
-				seg_auditar($iCodModulo, $_SESSION['unad_id_tercero'], 4, $saiu05id, $sTabla . '- saiu05estado = -1', $objDB);
-			}
+		if ($result == false) {
+			$sError = 'Se ha producido un error al intentar grabar los datos, <br>por favor comuniquese con el administrador del sistema [3009] ..<!-- ' . $sSQL . ' -->';
 		}
 	}
 	return array($sError, $sDebug);
