@@ -893,22 +893,14 @@ if (isset($_REQUEST['bagnopqrs']) == 0) {
 	$_REQUEST['bagnopqrs'] = fecha_agno();
 }
 if ($bTraerEntorno) {
-	$sSQL = 'SELECT * FROM unad95entorno WHERE unad95id=' . $idTercero . '';
+	$sSQL = 'SELECT unad95escuela, unad95programa, unad95zona, unad95centro FROM unad95entorno WHERE unad95id=' . $idTercero . '';
 	$tabla = $objDB->ejecutasql($sSQL);
 	if ($objDB->nf($tabla) > 0) {
 		$fila = $objDB->sf($tabla);
-			if ($fila['unad95escuela'] != 0) {
-				$_REQUEST['bescuela'] = $fila['unad95escuela'];
-			}
-		if ($fila['unad95programa'] != 0) {
-			$_REQUEST['bprograma'] = $fila['unad95programa'];
-		}
-		if ($fila['unad95zona'] != 0) {
-			$_REQUEST['bzona'] = $fila['unad95zona'];
-		}
-		if ($fila['unad95centro'] != 0) {
-			$_REQUEST['bcead'] = $fila['unad95centro'];
-		}
+		$_REQUEST['bescuela'] = $fila['unad95escuela'];
+		$_REQUEST['bprograma'] = $fila['unad95programa'];
+		$_REQUEST['bzona'] = $fila['unad95zona'];
+		$_REQUEST['bcead'] = $fila['unad95centro'];
 	}
 }
 if ((int)$_REQUEST['paso'] > 0) {
@@ -1137,7 +1129,24 @@ if ($_REQUEST['paso'] == 17) {
 		$sError = $sError . 'No ha sido posible acceder al contenedor de datos de cambio responsable '. $sTabla05;
 	}
 	if ($sError == '') {
-		$sSQL = 'UPDATE ' . $sTabla05 . ' SET saiu05idresponsable=' . $_REQUEST['saiu05idresponsablefin'] . ' WHERE saiu05id=' . $_REQUEST['saiu05id'] . '';
+		$bCambiaLider = false;
+		$saiu05idunidadresp = $_REQUEST['saiu05idunidadresp'];
+		$saiu05idequiporesp = $_REQUEST['saiu05idequiporesp'];
+		$saiu05idsupervisor = $_REQUEST['saiu05idsupervisor'];
+		$sSQL = 'SELECT bita27id, bita27idlider, bita27idunidadfunc FROM bita27equipotrabajo WHERE bita27idlider=' . $_REQUEST['saiu05idresponsablefin'] . ' AND bita27activo=1 ';
+		$tabla = $objDB->ejecutasql($sSQL);
+		if ($objDB->nf($tabla) > 0) {
+			$fila = $objDB->sf($tabla);
+			$sSQL = 'UPDATE ' . $sTabla05 . ' SET saiu05idunidadresp=' . $fila['bita27idunidadfunc'] . ', saiu05idequiporesp=' . $fila['bita27id'] . 
+			', saiu05idsupervisor=' . $fila['bita27idlider'] . ', saiu05idresponsable=' . $_REQUEST['saiu05idresponsablefin'] . 
+			' WHERE saiu05id=' . $_REQUEST['saiu05id'] . '';
+			$bCambiaLider = true;
+			$saiu05idunidadresp = $fila['bita27idunidadfunc'];
+			$saiu05idequiporesp = $fila['bita27id'];
+			$saiu05idsupervisor = $fila['bita27idlider'];
+		} else {
+			$sSQL = 'UPDATE ' . $sTabla05 . ' SET saiu05idresponsable=' . $_REQUEST['saiu05idresponsablefin'] . ' WHERE saiu05id=' . $_REQUEST['saiu05id'] . '';
+		}
 		if ($bDebug) {
 			$sDebug = $sDebug . fecha_microtiempo() . ' Consulta reasignación: '.$sSQL.'<br>';
 		}
@@ -1146,6 +1155,11 @@ if ($_REQUEST['paso'] == 17) {
 			$sError=$sError.$ERR['saiu05idresponsablefin'].'';
 		} else {
 			seg_auditar($iCodModulo, $_SESSION['unad_id_tercero'], 3, $_REQUEST['saiu05id'], 'Reasigna el responsable ', $objDB);
+			if ($bCambiaLider) {
+				$_REQUEST['saiu05idunidadresp']=$saiu05idunidadresp;
+				$_REQUEST['saiu05idequiporesp']=$saiu05idequiporesp;
+				$_REQUEST['saiu05idsupervisor']=$saiu05idsupervisor;
+			}
 			$_REQUEST['saiu05idresponsable']=$_REQUEST['saiu05idresponsablefin'];
 		}
 	}
@@ -1749,7 +1763,6 @@ switch ($iPiel) {
 		break;
 }
 ?>
-<link rel="stylesheet" href="<?php echo $APP->rutacomun; ?>css/css_tabs.css" type="text/css" />
 <script language="javascript">
 <?php
 switch ($_REQUEST['saiu05estado']) {
@@ -3964,6 +3977,7 @@ width: "100%"});
 </script>
 <script language="javascript" src="ac_3005.js?v=1"></script>
 <script language="javascript" src="<?php echo $APP->rutacomun; ?>unad_todas2024v2.js"></script>
+<link rel="stylesheet" href="<?php echo $APP->rutacomun; ?>css/css_tabs.css" type="text/css" />
 <?php
 forma_piedepagina();
 

@@ -81,6 +81,7 @@ function unad11_Mostrar_v2SAI($aParametros)
 	$sCampoTipoInteresado = 'saiu' . $idMod . 'tipointeresado';
 	$sCampoZona = 'saiu' . $idMod . 'idzona';
 	$sCampoCentro = 'saiu' . $idMod . 'idcentro';
+	$sCampoCead = 'saiu' . $idMod . 'cead';
 	$sCampoEscuela = 'saiu' . $idMod . 'idescuela';
 	$sCampoPrograma = 'saiu' . $idMod . 'idprograma';
 	$sCampoPeriodo = 'saiu' . $idMod . 'idperiodo';
@@ -266,6 +267,9 @@ function unad11_Mostrar_v2SAI($aParametros)
 	if ($bConAdicionales) {
 		$objResponse->assign($sCampoZona, 'value', $idZona);
 		$objResponse->assign($sCampoEscuela, 'value', $idEscuela);
+		$objResponse->assign($sCampoCentro, 'value', $idCead);
+		$objResponse->assign($sCampoCead, 'value', $idCead);
+		$objResponse->assign($sCampoPrograma, 'value', $idPrograma);
 		$objResponse->assign('div_' . $sCampoPrograma, 'innerHTML', $html_programa);
 		$objResponse->call('$("#' . $sCampoPrograma . '").chosen()');
 		$objResponse->assign('div_' . $sCampoCentro, 'innerHTML', $html_centro);

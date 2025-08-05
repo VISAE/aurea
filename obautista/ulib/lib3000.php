@@ -2194,6 +2194,13 @@ function f3074_ActorRedServicio($id73, $idZona, $idCentro, $objDB, $bDebug = fal
 	if ((!$bResuelve) && ($sError == '')) {
 		//Si no hay datos, se envia al administrador
 		$idResponsable = $idAdministrador;
+		//busca equipo de líderes nacionales
+		$sSQL = 'SELECT saiu75idequipo FROM saiu75redequipo WHERE saiu75idred=' . $id73 . ' AND saiu75idzona=0 AND saiu75idcentro=0 AND saiu75idequipo>0';
+		$tabla = $objDB->ejecutasql($sSQL);
+		if ($objDB->nf($tabla) > 0) {
+			$fila = $objDB->sf($tabla);
+			$idGrupoTrabajo = $fila['saiu75idequipo'];
+		}
 	}
 	if ($bTraerLider) {
 		//Traer el lider del equipo de trabajo.

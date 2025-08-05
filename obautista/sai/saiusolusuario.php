@@ -965,7 +965,23 @@ if ($_REQUEST['paso'] == 26) {
 		$bPuedeReasignar = true;
 	}
 	if ($bPuedeReasignar) {
-		$sSQL = 'UPDATE ' . $sTabla73 . ' SET saiu73idresponsablecaso=' . $_REQUEST['saiu73idresponsablecasofin'] . ' WHERE saiu73id=' . $_REQUEST['saiu73id'] . '';
+		$bCambiaLider = false;
+		$saiu73idunidadcaso = $_REQUEST['saiu73idunidadcaso'];
+		$saiu73idequipocaso = $_REQUEST['saiu73idequipocaso'];
+		$saiu73idsupervisorcaso = $_REQUEST['saiu73idsupervisorcaso'];
+		$sSQL = 'SELECT bita27id, bita27idlider, bita27idunidadfunc FROM bita27equipotrabajo WHERE bita27idlider=' . $_REQUEST['saiu73idresponsablecasofin'] . ' AND bita27activo=1 ';
+		$tabla = $objDB->ejecutasql($sSQL);
+		if ($objDB->nf($tabla) > 0) {
+			$fila = $objDB->sf($tabla);
+			$sSQL = 'UPDATE ' . $sTabla73 . ' SET saiu73idunidadcaso=' . $fila['bita27idunidadfunc'] . ', saiu73idequipocaso=' . $fila['bita27id'] . ', 
+			saiu73idsupervisorcaso=' . $fila['bita27idlider'] . ', saiu73idresponsablecaso=' . $_REQUEST['saiu73idresponsablecasofin'] . ' WHERE saiu73id=' . $_REQUEST['saiu73id'] . '';
+			$bCambiaLider = true;
+			$saiu05idunidadresp = $fila['bita27idunidadfunc'];
+			$saiu73idequipocaso = $fila['bita27id'];
+			$saiu73idsupervisorcaso = $fila['bita27idlider'];
+		} else {
+			$sSQL = 'UPDATE ' . $sTabla73 . ' SET saiu73idresponsablecaso=' . $_REQUEST['saiu73idresponsablecasofin'] . ' WHERE saiu73id=' . $_REQUEST['saiu73id'] . '';
+		}
 		if ($bDebug) {
 			$sDebug = $sDebug . fecha_microtiempo() . ' Consulta reasignación: ' . $sSQL . '<br>';
 		}
@@ -974,6 +990,11 @@ if ($_REQUEST['paso'] == 26) {
 			$sError = $sError . $ERR['saiu73idresponsablecasofin'] . '';
 		} else {
 			seg_auditar($iCodModulo, $_SESSION['unad_id_tercero'], 3, $_REQUEST['saiu73id'], 'Reasigna el responsable ', $objDB);
+			if ($bCambiaLider) {
+				$_REQUEST['saiu73idunidadcaso'] = $saiu73idunidadcaso;
+				$_REQUEST['saiu73idequipocaso'] = $saiu73idequipocaso;
+				$_REQUEST['saiu73idsupervisorcaso'] = $saiu73idsupervisorcaso;
+			}
 			$_REQUEST['saiu73idresponsablecaso'] = $_REQUEST['saiu73idresponsablecasofin'];
 			$sError = '<b>Se ha realizado la reasignaci&oacute;n.</b>';
 			$iTipoError = 1;
@@ -1121,9 +1142,8 @@ if ($bMostrarResponsable) {
 	$sDatosResuelto = $saiu73fecharesp . ' ' . $saiu73horaresp;
 }
 // Variables para la forma
-if ((int)$_REQUEST['saiu73idcanal'] == 0) {
-	$sTituloModulo = $ETI['canal3073'];
-} else {
+$sTituloModulo = $ETI['canal3073'];
+if ((int)$_REQUEST['saiu73idcanal'] != 0) {
 	$sTituloModulo = $ETI['canal' . $_REQUEST['saiu73idcanal']];
 }
 $ETI['titulo_sector2'] = $sTituloModulo;
