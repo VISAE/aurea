@@ -903,6 +903,16 @@ if ($bTraerEntorno) {
 		$_REQUEST['bcead'] = $fila['unad95centro'];
 	}
 }
+if (isset($_REQUEST['u'])) {
+	$sArgs = url_decode_simple($_REQUEST['u']);
+	$aArgs = explode('|', $sArgs);
+	if (count($aArgs) == 3) {
+		$_REQUEST['saiu05agno'] = numeros_validar($aArgs[0]);
+		$_REQUEST['saiu05mes'] = numeros_validar($aArgs[1]);
+		$_REQUEST['saiu05id'] = numeros_validar($aArgs[2]);
+		$_REQUEST['paso'] = 3;
+	}
+}
 if ((int)$_REQUEST['paso'] > 0) {
 	//Anotaciones
 	if (isset($_REQUEST['bnombre3006']) == 0) {

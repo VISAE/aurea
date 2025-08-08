@@ -431,7 +431,7 @@ function f3005_TablaDetalleV2($aParametros, $objDB, $bDebug = false)
 	if (!file_exists($mensajes_todas)) {
 		$mensajes_todas = $APP->rutacomun . 'lg/lg_todas_es.php';
 	}
-	$mensajes_3005 = $APP->rutacomun . 'lg/lg_3005_' . $_SESSION['unad_idioma'] . '.php';
+	$mensajes_3005 = $APP->rutacomun . 'lg/lg_3005_' . $sIdioma . '.php';
 	if (!file_exists($mensajes_3005)) {
 		$mensajes_3005 = $APP->rutacomun . 'lg/lg_3005_es.php';
 	}
@@ -623,7 +623,7 @@ function f3005_TablaDetalleV2($aParametros, $objDB, $bDebug = false)
 		$sCampos = 'SELECT TB.saiu05agno, TB.saiu05mes, TB.saiu05dia, TB.saiu05consec, T12.saiu11nombre, 
 		TB.saiu05hora, TB.saiu05minuto, TB.saiu05id, TB.saiu05estado, T11.unad11tipodoc, 
 		T11.unad11doc, T11.unad11razonsocial, T13.saiu68nombre, TB.saiu05idtemaorigen, TB.saiu05fecharespprob, 
-		TB.saiu05tiemprespdias, TB.saiu05origenagno, TB.saiu05origenmes, TB.saiu05raddesphab';
+		TB.saiu05tiemprespdias, TB.saiu05origenagno, TB.saiu05origenmes, TB.saiu05raddesphab, TB.saiu05numref';
 		$sConsulta = 'FROM saiu05solicitud_' . $sContenedor . ' AS TB, saiu11estadosol AS T12, unad11terceros AS T11, saiu68categoria AS T13 
 		WHERE TB.saiu05tiporadicado=1 AND ' . $sSQLadd1 . ' TB.saiu05estado=T12.saiu11id AND TB.saiu05idsolicitante=T11.unad11id 
 		AND TB.saiu05idcategoria=T13.saiu68id ' . $sSQLadd . '';
@@ -667,7 +667,7 @@ function f3005_TablaDetalleV2($aParametros, $objDB, $bDebug = false)
 	$res = $res . '<div class="table-responsive">';
 	$res = $res . '<table border="0" align="center" cellpadding="0" cellspacing="2" class="' . $sClaseTabla . '">';
 	$res = $res . '<thead class="fondoazul"><tr>';
-	$res = $res . '<th><b>' . $ETI['msg_numsolicitud'] . '</b></th>';
+	$res = $res . '<th><b>' . $ETI['saiu05numref'] . '</b></th>';
 	$res = $res . '<th><b>' . $ETI['saiu05idcategoria'] . '</b></th>';
 	$res = $res . '<th><b>' . $ETI['saiu05idtemaorigen'] . '</b></th>';
 	$res = $res . '<th><b>' . $ETI['saiu05idsolicitante'] . '</b></th>';
@@ -700,7 +700,7 @@ function f3005_TablaDetalleV2($aParametros, $objDB, $bDebug = false)
 			}
 			$tlinea++;
 			$iFechaSol = fecha_ArmarNumero($filadet['saiu05dia'], $filadet['saiu05mes'], $filadet['saiu05agno']);
-			$et_NumSol = f3000_NumSolicitud($filadet['saiu05agno'], $filadet['saiu05mes'], $filadet['saiu05consec']);
+			$et_NumRef = $filadet['saiu05numref'];
 			$et_saiu05dia = $ETI['et_estadorad'];
 			if ($filadet['saiu05estado'] != -1) {				
 				$iFechaRad = fecha_NumSumarDias($iFechaSol, $filadet['saiu05raddesphab']);
@@ -752,7 +752,7 @@ function f3005_TablaDetalleV2($aParametros, $objDB, $bDebug = false)
 			}
 			if ($bMostrar) {
 				$res = $res . '<tr' . $sClass . '>';
-				$res = $res . '<td>' . $sPrefijo . $et_NumSol . $sSufijo . '</td>';
+				$res = $res . '<td>' . $sPrefijo . $et_NumRef . $sSufijo . '</td>';
 				$res = $res . '<td>' . $sPrefijo . cadena_notildes($filadet['saiu68nombre']) . $sSufijo . '</td>';
 				$res = $res . '<td>' . $sPrefijo . $sTema . $sSufijo . '</td>';
 				$res = $res . '<td>' . $sPrefijo . cadena_notildes($filadet['unad11tipodoc']) . cadena_notildes($filadet['unad11doc']) . $sSufijo . '</td>';
