@@ -154,7 +154,7 @@ $idTercero = $_SESSION['unad_id_tercero'];
 $iPiel = iDefinirPiel($APP, 2);
 $sAnchoExpandeContrae = ' style="width:62px;"';
 $sOcultaConsec = ''; //' style="display:none;"';
-list($sGrupoModulo, $sPaginaModulo) = f109_GrupoModulo($iCodModuloConsulta, $iConsecutivoMenu, $objDB);
+list($sGrupoModulo, $sPaginaModulo) = f109_GrupoModulo(3021, 2, $objDB);
 $sOcultaId = ' style="display:none;"';
 $sTituloApp = $APP->siglasistema; //f101_SiglaModulo($APP->idsistema, $objDB);
 $sTituloModulo = $ETI['titulo_3073'];
@@ -713,13 +713,26 @@ if (isset($_REQUEST['vdidcorreo']) == 0) {
 	}
 	$_REQUEST['vdidcorreo'] = $sVr;
 }
-if (isset($_REQUEST['u'])) {
+if (isset($_REQUEST['u']) != 0) {
 	$sArgs = url_decode_simple($_REQUEST['u']);
 	$aArgs = explode('|', $sArgs);
 	if (count($aArgs) == 2) {
 		$_REQUEST['saiu73agno'] = numeros_validar($aArgs[0]);
 		$_REQUEST['saiu73id'] = numeros_validar($aArgs[1]);
-		$_REQUEST['paso'] = 3;
+		?>
+		<form name="frmedita" method="post" action="saiusolusuario.php" style="display: none;">
+			<input id="saiu73agno" name="saiu73agno" type="hidden" value="<?php echo numeros_validar($aArgs[0]); ?>">
+			<input id="saiu73id" name="saiu73id" type="hidden" value="<?php echo numeros_validar($aArgs[1]); ?>">
+			<input id="paso" name="paso" type="hidden" value="3">
+		</form>
+		<script language="javascript">
+		function recargar(){
+			frmedita.submit();
+			}
+		setInterval ("recargar();", 1000); 
+		</script>
+		<?php
+		die();
 	}
 }
 if (isset($_REQUEST['bdetalle']) == 0) {
@@ -728,8 +741,25 @@ if (isset($_REQUEST['bdetalle']) == 0) {
 if (isset($_REQUEST['brespuesta']) == 0) {
 	$_REQUEST['brespuesta'] = '';
 }
+if (isset($_REQUEST['bfecharadini']) == 0) {
+	$_REQUEST['bfecharadini'] = 0;
+}
+if (isset($_REQUEST['bfecharadfin']) == 0) {
+	$_REQUEST['bfecharadfin'] = 0;
+}
+if (isset($_REQUEST['bfecharptaini']) == 0) {
+	$_REQUEST['bfecharptaini'] = 0;
+}
+if (isset($_REQUEST['bfecharptafin']) == 0) {
+	$_REQUEST['bfecharptafin'] = 0;
+}
 $_REQUEST['bdetalle'] = cadena_Validar($_REQUEST['bdetalle']);
 $_REQUEST['brespuesta'] = cadena_Validar($_REQUEST['brespuesta']);
+$_REQUEST['bfecharadini'] = numeros_validar($_REQUEST['bfecharadini']);
+$_REQUEST['bfecharadfin'] = numeros_validar($_REQUEST['bfecharadfin']);
+$_REQUEST['bfecharptaini'] = numeros_validar($_REQUEST['bfecharptaini']);
+$_REQUEST['bfecharptafin'] = numeros_validar($_REQUEST['bfecharptafin']);
+
 $sTabla73 = 'saiu73solusuario_' . $_REQUEST['saiu73agno'];
 $bExiste = $objDB->bexistetabla($sTabla73);
 if ($bExiste) {
@@ -918,7 +948,7 @@ if ($_REQUEST['paso'] == 93) {
 	if ($sError == '') {
 		list($bDevuelve, $sDebugP) = seg_revisa_permisoV3($iCodModulo, 8, $idTercero, $objDB);
 		if (!$bDevuelve) {
-			$sError = $ERR['8'];
+			$sError = $ERR['8'] . ' [Mod ' . $iCodModulo . ']';
 		}
 	}
 	if ($sError == '') {
@@ -1142,8 +1172,9 @@ if ($bMostrarResponsable) {
 	$sDatosResuelto = $saiu73fecharesp . ' ' . $saiu73horaresp;
 }
 // Variables para la forma
-$sTituloModulo = $ETI['canal3073'];
-if ((int)$_REQUEST['saiu73idcanal'] != 0) {
+if ((int)$_REQUEST['saiu73idcanal'] == 0) {
+	$sTituloModulo = $ETI['canal3073'];
+} else {
 	$sTituloModulo = $ETI['canal' . $_REQUEST['saiu73idcanal']];
 }
 $ETI['titulo_sector2'] = $sTituloModulo;
@@ -1488,6 +1519,10 @@ $aParametros[112] = $_REQUEST['bcead'];
 $aParametros[113] = $_REQUEST['saiu73idcanal'];
 $aParametros[114] = $_REQUEST['bdetalle'];
 $aParametros[115] = $_REQUEST['brespuesta'];
+$aParametros[116] = $_REQUEST['bfecharadini'];
+$aParametros[117] = $_REQUEST['bfecharadfin'];
+$aParametros[118] = $_REQUEST['bfecharptaini'];
+$aParametros[119] = $_REQUEST['bfecharptafin'];
 list($sTabla3073, $sErrorTabla, $iTipoError, $sDebugTabla) = f3073_TablaDetalleV2($aParametros, $objDB, $bDebug);
 $sError = $sError . $sErrorTabla;
 $sDebug = $sDebug . $sDebugTabla;
@@ -1812,6 +1847,7 @@ switch ($iPiel) {
 	function carga_combo_bcead() {
 		let params = new Array();
 		params[0] = window.document.frmedita.bzona.value;
+		document.getElementById('div_bcead').innerHTML = '<b>Procesando datos, por favor espere...</b><input id="bcead" name="bcead" type="hidden" value="" />';
 		xajax_f3073_Combobcead(params);
 	}
 
@@ -1839,6 +1875,10 @@ switch ($iPiel) {
 		params[113] = window.document.frmedita.saiu73idcanal.value;
 		params[114] = window.document.frmedita.bdetalle.value;
 		params[115] = window.document.frmedita.brespuesta.value;
+		params[116] = window.document.frmedita.bfecharadini.value;
+		params[117] = window.document.frmedita.bfecharadfin.value;
+		params[118] = window.document.frmedita.bfecharptaini.value;
+		params[119] = window.document.frmedita.bfecharptafin.value;
 		document.getElementById('div_f3073detalle').innerHTML = '<div class="GrupoCamposAyuda"><div class="MarquesinaMedia">Procesando datos, por favor espere.</div></div><input id="paginaf3073" name="paginaf3073" type="hidden" value="' + params[101] + '" /><input id="lppf3073" name="lppf3073" type="hidden" value="' + params[102] + '" />';
 		xajax_f3073_HtmlTabla(params);
 	}
@@ -2222,6 +2262,10 @@ if ($bPuedeEditar) {
 <input id="v8" name="v8" type="hidden" value="" />
 <input id="v14" name="v14" type="hidden" value="" />
 <input id="v15" name="v15" type="hidden" value="" />
+<input id="v16" name="v16" type="hidden" value="" />
+<input id="v17" name="v17" type="hidden" value="" />
+<input id="v18" name="v18" type="hidden" value="" />
+<input id="v19" name="v19" type="hidden" value="" />
 <input id="iformato94" name="iformato94" type="hidden" value="0" />
 <input id="separa" name="separa" type="hidden" value="," />
 <input id="rdebug" name="rdebug" type="hidden" value="<?php echo $_REQUEST['debug']; ?>" />
@@ -3224,6 +3268,48 @@ echo $ETI['saiu73respuesta'];
 </label>
 <label>
 <input id="brespuesta" name="brespuesta" type="text" value="<?php echo $_REQUEST['brespuesta']; ?>" onchange="paginarf3073()" autocomplete="off" />
+</label>
+<div class="salto1px"></div>
+<label class="Label220">
+<?php
+echo $ETI['msg_bfecharadini'];
+?>
+</label>
+<label class="Label250">
+<?php
+echo html_FechaEnNumero('bfecharadini', $_REQUEST['bfecharadini'], true, 'paginarf3073()', $iAgnoIni, $iAgnoFin);
+?>
+</label>
+<label class="Label90">
+<?php
+echo $ETI['msg_bfecharadfin'];
+?>
+</label>
+<label class="Label250">
+<?php
+echo html_FechaEnNumero('bfecharadfin', $_REQUEST['bfecharadfin'], true, 'paginarf3073()', $iAgnoIni, $iAgnoFin);
+?>
+</label>
+<div class="salto1px"></div>
+<label class="Label220">
+<?php
+echo $ETI['msg_bfecharptaini'];
+?>
+</label>
+<label class="Label250">
+<?php
+echo html_FechaEnNumero('bfecharptaini', $_REQUEST['bfecharptaini'], true, 'paginarf3073()', $iAgnoIni, $iAgnoFin);
+?>
+</label>
+<label class="Label90">
+<?php
+echo $ETI['msg_bfecharptafin'];
+?>
+</label>
+<label class="Label250">
+<?php
+echo html_FechaEnNumero('bfecharptafin', $_REQUEST['bfecharptafin'], true, 'paginarf3073()', $iAgnoIni, $iAgnoFin);
+?>
 </label>
 <div class="salto1px"></div>
 </div>

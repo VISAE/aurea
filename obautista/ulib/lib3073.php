@@ -568,7 +568,7 @@ function f3073_TablaDetalleV2($aParametros, $objDB, $bDebug = false)
 	if (isset($aParametros[102]) == 0) {
 		$aParametros[102] = 20;
 	}
-	$iNumVariables = 115;
+	$iNumVariables = 119;
 	for ($k = 103; $k <= $iNumVariables; $k++) {
 		if (isset($aParametros[$k]) == 0) {
 			$aParametros[$k] = '';
@@ -596,6 +596,10 @@ function f3073_TablaDetalleV2($aParametros, $objDB, $bDebug = false)
 	$iCanal = numeros_validar($aParametros[113]);
 	$bdetalle = cadena_Validar(trim($aParametros[114]));
 	$brespuesta = cadena_Validar(trim($aParametros[115]));
+	$bfecharadini = numeros_validar($aParametros[116]);
+	$bfecharadfin = numeros_validar($aParametros[117]);
+	$bfecharptaini = numeros_validar($aParametros[118]);
+	$bfecharptafin = numeros_validar($aParametros[119]);
 	$bAbierta = true;
 	/*
 	$sSQL = 'SELECT Campo FROM Tabla WHERE Id=' . $sValorId;
@@ -731,6 +735,18 @@ function f3073_TablaDetalleV2($aParametros, $objDB, $bDebug = false)
 				$sSQLadd1 = $sSQLadd1 . 'TB.saiu73respuesta LIKE "%' . $sCadena . '%" AND ';
 			}
 		}
+	}
+	if (fecha_NumValido($bfecharadini)) {
+		$sSQLadd1 = $sSQLadd1 . 'TB.saiu73fecharad>=' . $bfecharadini . ' AND ';
+	}
+	if (fecha_NumValido($bfecharadfin)) {
+		$sSQLadd1 = $sSQLadd1 . 'TB.saiu73fecharad<=' . $bfecharadfin . ' AND ';
+	}
+	if (fecha_NumValido($bfecharptaini)) {
+		$sSQLadd1 = $sSQLadd1 . 'TB.saiu73fechafin>=' . $bfecharptaini . ' AND ';
+	}
+	if (fecha_NumValido($bfecharptafin)) {
+		$sSQLadd1 = $sSQLadd1 . 'TB.saiu73fechafin<=' . $bfecharptafin . ' AND ';
 	}
 	if ($sNombre != '') {
 		$sBase = mb_strtoupper($sNombre);

@@ -7,11 +7,11 @@
 --- Modelo Versión 3.0.16 jueves, 10 de julio de 2025
 */
 
-/** Archivo saiusolcitudes.php.
- * Modulo 3005 saiu05solicitud.
- * @author Angel Mauro Avellaneda Barreto - angel.avellaneda@unad.edu.co
- * @param debug=1 (Opcional), bandera para indicar si se generan datos de depuración
- * @date domingo, 23 de febrero de 2020
+/** Archivo saiusolusuario.php.
+ * Modulo 3073 saiu73solusuario
+ * @author Omar Augusto Bautista Mora - omar.bautista@unad.edu.co
+ * @param debug = 1  (Opcional), bandera para indicar si se generan datos de depuración
+ * @date jueves, 17 de octubre de 2024
  */
 if (file_exists('./err_control.php')) {
 	require './err_control.php';
@@ -892,17 +892,6 @@ if (isset($_REQUEST['bprograma']) == 0) {
 if (isset($_REQUEST['bagnopqrs']) == 0) {
 	$_REQUEST['bagnopqrs'] = fecha_agno();
 }
-if ($bTraerEntorno) {
-	$sSQL = 'SELECT unad95escuela, unad95programa, unad95zona, unad95centro FROM unad95entorno WHERE unad95id=' . $idTercero . '';
-	$tabla = $objDB->ejecutasql($sSQL);
-	if ($objDB->nf($tabla) > 0) {
-		$fila = $objDB->sf($tabla);
-		$_REQUEST['bescuela'] = $fila['unad95escuela'];
-		$_REQUEST['bprograma'] = $fila['unad95programa'];
-		$_REQUEST['bzona'] = $fila['unad95zona'];
-		$_REQUEST['bcead'] = $fila['unad95centro'];
-	}
-}
 if (isset($_REQUEST['u'])) {
 	$sArgs = url_decode_simple($_REQUEST['u']);
 	$aArgs = explode('|', $sArgs);
@@ -910,7 +899,41 @@ if (isset($_REQUEST['u'])) {
 		$_REQUEST['saiu05agno'] = numeros_validar($aArgs[0]);
 		$_REQUEST['saiu05mes'] = numeros_validar($aArgs[1]);
 		$_REQUEST['saiu05id'] = numeros_validar($aArgs[2]);
+		?>
+		<form name="frmedita" method="post" action="saiusolcitudes.php" style="display: none;" >
+			<input id="saiu05agno" name="saiu05agno" type="hidden" value="<?php echo numeros_validar($aArgs[0]); ?>">
+			<input id="saiu05mes" name="saiu05mes" type="hidden" value="<?php echo numeros_validar($aArgs[1]); ?>">
+			<input id="saiu05id" name="saiu05id" type="hidden" value="<?php echo numeros_validar($aArgs[2]); ?>">
+			<input id="paso" name="paso" type="hidden" value="3">
+		</form>
+		<script language="javascript">
+		function recargar(){
+			frmedita.submit();
+			}
+		setInterval ("recargar();", 1000); 
+		</script>
+		<?php
+		die();
 		$_REQUEST['paso'] = 3;
+	}
+}
+if ($bTraerEntorno) {
+	$sSQL = 'SELECT * FROM unad95entorno WHERE unad95id=' . $idTercero . '';
+	$tabla = $objDB->ejecutasql($sSQL);
+	if ($objDB->nf($tabla) > 0) {
+		$fila = $objDB->sf($tabla);
+			if ($fila['unad95escuela'] != 0) {
+				$_REQUEST['bescuela'] = $fila['unad95escuela'];
+			}
+		if ($fila['unad95programa'] != 0) {
+			$_REQUEST['bprograma'] = $fila['unad95programa'];
+		}
+		if ($fila['unad95zona'] != 0) {
+			$_REQUEST['bzona'] = $fila['unad95zona'];
+		}
+		if ($fila['unad95centro'] != 0) {
+			$_REQUEST['bcead'] = $fila['unad95centro'];
+		}
 	}
 }
 if ((int)$_REQUEST['paso'] > 0) {
