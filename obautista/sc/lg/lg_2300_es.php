@@ -1,6 +1,6 @@
 <?php
 /*
---- © Angel Mauro Avellaneda Barreto - Ideas - 2014 ---
+--- © Angel Mauro Avellaneda Barreto - Unad - 2014 ---
 --- angel.avellaneda@unad.edu.co - http://www.unad.edu.co
 --- Modelo Versión 2.7.11 viernes, 26 de junio de 2015
 */

@@ -2,7 +2,10 @@
 /*
 --- © Angel Mauro Avellaneda Barreto - UNAD - 2021 ---
 --- angel.avellaneda@unad.edu.co - http://www.unad.edu.co
+--- © Juan David Avellaneda Molina - UNAD - 2025 ---
+--- juand.avellaneda@unad.edu.co - http://www.unad.edu.co
 --- Modelo Versión 2.26.3b viernes, 24 de septiembre de 2021
+--- Modelo Versión 3.0.15b martes, 17 de junio de 2025
 --- 269 aure69versionado
 */
 
@@ -14,7 +17,8 @@
 function f269_HTMLComboV2_aure69idmodulo($objDB, $objCombos, $valor, $vraure69idsistema)
 {
 	require './app.php';
-	$mensajes_todas = $APP->rutacomun . 'lg/lg_todas_' . $_SESSION['unad_idioma'] . '.php';
+	$sIdioma = AUREA_Idioma();
+	$mensajes_todas = $APP->rutacomun . 'lg/lg_todas_' . $sIdioma . '.php';
 	if (!file_exists($mensajes_todas)) {
 		$mensajes_todas = $APP->rutacomun . 'lg/lg_todas_es.php';
 	}
@@ -31,7 +35,8 @@ function f269_HTMLComboV2_aure69idmodulo($objDB, $objCombos, $valor, $vraure69id
 function f269_HTMLComboV2_aure69idmoduloUsuario($objDB, $objCombos, $valor, $vraure69idsistema, $idTercero)
 {
 	require './app.php';
-	$mensajes_todas = $APP->rutacomun . 'lg/lg_todas_' . $_SESSION['unad_idioma'] . '.php';
+	$sIdioma = AUREA_Idioma();
+	$mensajes_todas = $APP->rutacomun . 'lg/lg_todas_' . $sIdioma . '.php';
 	if (!file_exists($mensajes_todas)) {
 		$mensajes_todas = $APP->rutacomun . 'lg/lg_todas_es.php';
 	}
@@ -149,11 +154,12 @@ function f269_Busquedas($aParametros)
 		$objDB->dbPuerto = $APP->dbpuerto;
 	}
 	$objDB->xajax();
-	$mensajes_todas = $APP->rutacomun . 'lg/lg_todas_' . $_SESSION['unad_idioma'] . '.php';
+	$sIdioma = AUREA_Idioma();
+	$mensajes_todas = $APP->rutacomun . 'lg/lg_todas_' . $sIdioma . '.php';
 	if (!file_exists($mensajes_todas)) {
 		$mensajes_todas = $APP->rutacomun . 'lg/lg_todas_es.php';
 	}
-	$mensajes_269 = $APP->rutacomun . 'lg/lg_269_' . $_SESSION['unad_idioma'] . '.php';
+	$mensajes_269 = $APP->rutacomun . 'lg/lg_269_' . $sIdioma . '.php';
 	if (!file_exists($mensajes_269)) {
 		$mensajes_269 = $APP->rutacomun . 'lg/lg_269_es.php';
 	}
@@ -171,6 +177,7 @@ function f269_Busquedas($aParametros)
 		$aParametros[3] = 0;
 	}
 	$iPiel = iDefinirPiel($APP, 2);
+	$sTituloModulo = $ETI['titulo_269'];
 	$sParams = '';
 	$sTabla = '';
 	$sJavaBusqueda = '';
@@ -179,7 +186,7 @@ function f269_Busquedas($aParametros)
 	$aParametrosB[102] = 20;
 	switch ($sCampo) {
 	}
-	$sTitulo = '<h2>' . $ETI['titulo_269'] . ' - ' . $sTitulo . '</h2>';
+	$sTitulo = '<h2>' . $sTituloModulo . ' - ' . $sTitulo . '</h2>';
 	$objResponse = new xajaxResponse();
 	$objResponse->assign('div_97titulo', 'innerHTML', $sTitulo);
 	$objResponse->assign('div_97params', 'innerHTML', $sParams);
@@ -216,6 +223,13 @@ function f269_TablaDetalleV2($aParametros, $objDB, $bDebug = false)
 		$mensajes_todas = $APP->rutacomun . 'lg/lg_todas_es.php';
 	}
 	require $mensajes_todas;
+	/*
+	$mensajes_200 = 'lg/lg_200_' . $_SESSION['unad_idioma'] . '.php';
+	if (!file_exists($mensajes_200)) {
+		$mensajes_200 = 'lg/lg_200_es.php';
+	}
+	require $mensajes_200;
+	*/
 	$mensajes_269 = $APP->rutacomun . 'lg/lg_269_' . $_SESSION['unad_idioma'] . '.php';
 	if (!file_exists($mensajes_269)) {
 		$mensajes_269 = $APP->rutacomun . 'lg/lg_269_es.php';
@@ -233,23 +247,21 @@ function f269_TablaDetalleV2($aParametros, $objDB, $bDebug = false)
 	if (isset($aParametros[102]) == 0) {
 		$aParametros[102] = 20;
 	}
-	if (isset($aParametros[103]) == 0) {
-		$aParametros[103] = '';
+	$iNumVariables = 104;
+	for ($k = 103; $k <= $iNumVariables; $k++) {
+		if (isset($aParametros[$k]) == 0) {
+			$aParametros[$k] = '';
+		}
 	}
-	if (isset($aParametros[104]) == 0) {
-		$aParametros[104] = '';
-	}
-	//$aParametros[103]=numeros_validar($aParametros[103]);
-	//$aParametros[104]=numeros_validar($aParametros[104]);
-	$idTercero = $aParametros[100];
+	$idTercero = numeros_validar($aParametros[100]);
 	$sDebug = '';
-	if (true) {
-		//Leemos los parametros de entrada.
-		$pagina = $aParametros[101];
-		$lineastabla = $aParametros[102];
-		$bNombre = $aParametros[103];
-		$bGrupo = $aParametros[104];
-	}
+	// ------------------------------------------------
+	// Leemos los parametros de entrada.
+	// ------------------------------------------------
+	$pagina = numeros_validar($aParametros[101]);
+	$lineastabla = numeros_validar($aParametros[102]);
+	$bNombre = trim($aParametros[103]);
+	$bGrupo = numeros_validar($aParametros[104]);
 	$bAbierta = true;
 	/*
 	$sSQL = 'SELECT Campo FROM Tabla WHERE Id=' . $sValorId;
@@ -262,55 +274,62 @@ function f269_TablaDetalleV2($aParametros, $objDB, $bDebug = false)
 	}
 	*/
 	$sLeyenda = '';
-	$sBotones = '<input id="paginaf269" name="paginaf269" type="hidden" value="' . $pagina . '"/>
-	<input id="lppf269" name="lppf269" type="hidden" value="' . $lineastabla . '"/>';
+	$sBotones = '<input id="paginaf269" name="paginaf269" type="hidden" value="' . $pagina . '"/>';
+	$sBotones = $sBotones . '<input id="lppf269" name="lppf269" type="hidden" value="' . $lineastabla . '"/>';
 	if ($sLeyenda != '') {
-		$sLeyenda = '<div class="salto1px"></div>
-		<div class="GrupoCamposAyuda">
-		' . $sLeyenda . '
-		<div class="salto1px"></div>
-		</div>';
-		return array($sLeyenda . $sBotones, $sDebug);
+		$sRes = html_salto() . '<div class="GrupoCamposAyuda">' . $sLeyenda . html_salto() . '</div>';
+		return array($sRes . $sBotones, $sDebug);
 		die();
 	}
 	$iPiel = iDefinirPiel($APP, 2);
 	/*
-	$aEstado=array();
+	$aEstado = array();
 	$sSQL = 'SELECT id, nombre FROM tabla';
 	$tabla = $objDB->ejecutasql($sSQL);
 	while ($fila = $objDB->sf($tabla)) {
 		$aEstado[$fila['id']] = cadena_notildes($fila['nombre']);
 	}
 	*/
-	if (true) {
-		//Esta condición la ponemos para mantener la conparación con los arhcivos tipo e
-		$sSQLadd = '';
-		$sSQLadd1 = '';
-		//if ($aParametros[104]!=''){$sSQLadd=$sSQLadd.' AND TB.campo2 LIKE "%'.$aParametros[104].'%"';}
-		if ($bGrupo != '') {
-			$sSQLadd1 = $sSQLadd1 . 'TB.aure69idgrupo=' . $aParametros[104] . ' AND ';
-		}
-		if ($bNombre != '') {
-			$sBase = trim(strtoupper($bNombre));
-			$aNoms = explode(' ', $sBase);
-			for ($k = 1; $k <= count($aNoms); $k++) {
-				$sCadena = $aNoms[$k - 1];
-				if ($sCadena != '') {
-					$sSQLadd = $sSQLadd . ' AND TB.aure69detalle LIKE "%' . $sCadena . '%"';
-					//$sSQLadd1=$sSQLadd1.'T1.unad11razonsocial LIKE "%'.$sCadena.'%" AND ';
-				}
+	$sSQLadd = '';
+	$sSQLadd1 = '';
+	if ($bGrupo != '') {
+		$sSQLadd1 = $sSQLadd1 . 'TB.aure69idgrupo=' . $aParametros[104] . ' AND ';
+	}
+	if ($bNombre != '') {
+		$sBase = mb_strtoupper($bNombre);
+		$aNoms = explode(' ', $sBase);
+		for ($k = 1; $k <= count($aNoms); $k++) {
+			$sCadena = $aNoms[$k - 1];
+			if ($sCadena != '') {
+				$sSQLadd = $sSQLadd . ' AND TB.aure69detalle LIKE "%' . $sCadena . '%"';
+				//$sSQLadd1=$sSQLadd1.'T1.unad11razonsocial LIKE "%'.$sCadena.'%" AND ';
 			}
 		}
 	}
+	// ------------------------------------------------
+	// Fin de las condiciones de la consulta
+	// ------------------------------------------------
 	$sTitulos = 'Consec, Id, Sistema, Fecha, Verupd, Mayor, Menor, Correccion, Grupo, Detalle, Publico';
 	$registros = 0;
 	$bGigante = false; //En caso de que la tabla sea muy grande pasarlo a true
 	$sLimite = '';
+	$sCampos = 'SELECT TB.aure69consec, TB.aure69id, T3.unad01nombre, TB.aure69fecha, TB.aure69verupd, TB.aure69mayor, TB.aure69menor, 
+	TB.aure69correccion, T9.aure68nombre, TB.aure69detalle, TB.aure69publico, TB.aure69idsistema, TB.aure69idgrupo';
+	$sConsulta = 'FROM aure69versionado AS TB, unad01sistema AS T3, aure68grupoversion AS T9 
+	WHERE ' . $sSQLadd1 . ' TB.aure69id>0 AND TB.aure69idsistema=T3.unad01id AND TB.aure69idgrupo=T9.aure68id ' . $sSQLadd . '';
+	$sOrden = 'ORDER BY TB.aure69fecha DESC';
+	$sSQL = $sCampos . ' ' . $sConsulta . ' ' . $sOrden;
+	// ------------------------------------------------
+	// Fin de la consulta
+	// ------------------------------------------------
+	$sSQLlista = str_replace("'", "|", $sSQL);
+	$sSQLlista = str_replace('"', "|", $sSQLlista);
 	if ($bGigante) {
-		$sSQL = 'SELECT COUNT(1) AS Total 
-		FROM aure69versionado AS TB, unad01sistema AS T3, aure68grupoversion AS T9 
-		WHERE ' . $sSQLadd1 . ' TB.aure69idsistema=T3.unad01id AND TB.aure69idgrupo=T9.aure68id ' . $sSQLadd . '';
-		$tabladetalle = $objDB->ejecutasql($sSQL);
+		$sSQLContador = 'SELECT COUNT(1) AS Total ' . $sConsulta . '';
+		if ($bDebug) {
+			$sDebug = $sDebug . fecha_microtiempo() . ' Totalizando consulta 269: ' . $sSQLContador . '<br>';
+		}
+		$tabladetalle = $objDB->ejecutasql($sSQLContador);
 		if ($objDB->nf($tabladetalle) > 0) {
 			$fila = $objDB->sf($tabladetalle);
 			$registros = $fila['Total'];
@@ -320,41 +339,39 @@ function f269_TablaDetalleV2($aParametros, $objDB, $bDebug = false)
 		}
 		if ($registros > $lineastabla) {
 			$rbase = ($pagina - 1) * $lineastabla;
-			$sLimite = ' LIMIT ' . $rbase . ', ' . $lineastabla;
+			$sSQL = $objDB->sSQLPaginar($sCampos, $sConsulta, $sOrden, $rbase, $lineastabla);
 		}
 	}
-	$sSQL = 'SELECT TB.aure69consec, TB.aure69id, T3.unad01nombre, TB.aure69fecha, TB.aure69verupd, TB.aure69mayor, TB.aure69menor, 
-	TB.aure69correccion, T9.aure68nombre, TB.aure69detalle, TB.aure69publico, TB.aure69idsistema, TB.aure69idgrupo 
-	FROM aure69versionado AS TB, unad01sistema AS T3, aure68grupoversion AS T9 
-	WHERE ' . $sSQLadd1 . ' TB.aure69idsistema=T3.unad01id AND TB.aure69idgrupo=T9.aure68id ' . $sSQLadd . '
-	ORDER BY TB.aure69fecha DESC';
-	$sSQLlista = str_replace("'", "|", $sSQL);
-	$sSQLlista = str_replace('"', "|", $sSQLlista);
-	$sErrConsulta = '<input id="consulta_269" name="consulta_269" type="hidden" value="' . $sSQLlista . '"/>
-	<input id="titulos_269" name="titulos_269" type="hidden" value="' . $sTitulos . '"/>';
-	$tabladetalle = $objDB->ejecutasql($sSQL . $sLimite);
+	$sErrConsulta = '<input id="consulta_269" name="consulta_269" type="hidden" value="' . $sSQLlista . '"/>';
+	$sErrConsulta = $sErrConsulta . '<input id="titulos_269" name="titulos_269" type="hidden" value="' . $sTitulos . '"/>';
 	if ($bDebug) {
-		$sDebug = $sDebug . fecha_microtiempo() . ' Consulta 269: ' . $sSQL . $sLimite . '<br>';
+		$sDebug = $sDebug . fecha_microtiempo() . ' Consulta 269: ' . $sSQL . '<br>';
 	}
+	$tabladetalle = $objDB->ejecutasql($sSQL);
 	if ($tabladetalle == false) {
 		$registros = 0;
 		$sErrConsulta = $sErrConsulta . '..<input id="err" name="err" type="hidden" value="' . $sSQL . ' ' . $objDB->serror . '"/>';
-		//$sLeyenda=$sSQL;
+		//$sLeyenda = $sSQL;
 	} else {
 		if (!$bGigante) {
 			$registros = $objDB->nf($tabladetalle);
+			/*
 			if ($registros == 0) {
-				//return array(cadena_codificar($sErrConsulta.'<input id="paginaf269" name="paginaf269" type="hidden" value="'.$pagina.'"/><input id="lppf269" name="lppf269" type="hidden" value="'.$lineastabla.'"/>'), $sDebug);
+				return array($sErrConsulta . $sBotones, $sDebug);
 			}
+			*/
 			if ((($registros - 1) / $lineastabla) < ($pagina - 1)) {
 				$pagina = (int)(($registros - 1) / $lineastabla) + 1;
 			}
 			if ($registros > $lineastabla) {
 				$rbase = ($pagina - 1) * $lineastabla;
-				$sLimite = ' LIMIT ' . $rbase . ', ' . $lineastabla;
-				$tabladetalle = $objDB->ejecutasql($sSQL . $sLimite);
+				$sSQLLimitado = $objDB->sSQLPaginar($sCampos, $sConsulta, $sOrden, $rbase, $lineastabla);
+				$tabladetalle = $objDB->ejecutasql($sSQLLimitado);
 			}
 		}
+	}
+	if ($bDebug) {
+		$sDebug = $sDebug . fecha_microtiempo() . ' Termina la consulta 269<br>';
 	}
 	$res = $sErrConsulta . $sLeyenda;
 	$sClaseTabla = 'table--primary';
@@ -372,8 +389,8 @@ function f269_TablaDetalleV2($aParametros, $objDB, $bDebug = false)
 	$res = $res . '<th><b>' . $ETI['aure69idgrupo'] . '</b></th>';
 	$res = $res . '<th><b>' . $ETI['aure69publico'] . '</b></th>';
 	$res = $res . '<th class="flex gap-1 justify-end">';
-	$res = $res . html_paginador('paginaf269', $registros, $lineastabla, $pagina, 'paginarf269()') . '';
-	$res = $res . html_lpp('lppf269', $lineastabla, 'paginarf269()') . '';
+	$res = $res . html_paginador('paginaf269', $registros, $lineastabla, $pagina, 'paginarf269()');
+	$res = $res . html_lpp('lppf269', $lineastabla, 'paginarf269()');
 	$res = $res . '</th>';
 	$res = $res . '</tr></thead><tbody>';
 	$tlinea = 1;
@@ -390,6 +407,8 @@ function f269_TablaDetalleV2($aParametros, $objDB, $bDebug = false)
 			$sClass = '';
 		}
 		$tlinea++;
+		$et_aure69consec = $sPrefijo . $filadet['aure69consec'] . $sSufijo;
+		$et_aure69idsistema = $sPrefijo . cadena_notildes($filadet['unad01nombre']) . $sSufijo;
 		$et_aure69fecha = '';
 		if ($filadet['aure69fecha'] != '00/00/0000') {
 			$et_aure69fecha = $filadet['aure69fecha'];
@@ -404,14 +423,14 @@ function f269_TablaDetalleV2($aParametros, $objDB, $bDebug = false)
 		$sVerSistema = '';
 		$sVerSistema = $filadet['aure69mayor'] . '.' . $filadet['aure69menor'] . '.' . $filadet['aure69correccion'];
 		$res = $res . '<tr' . $sClass . '>';
-		$res = $res . '<td>' . $sPrefijo . $filadet['aure69consec'] . $sSufijo . '</td>';
-		$res = $res . '<td>' . $sPrefijo . cadena_notildes($filadet['unad01nombre']) . $sSufijo . '</td>';
+		$res = $res . '<td>' . $et_aure69consec . '</td>';
+		$res = $res . '<td>' . $et_aure69idsistema . '</td>';
 		$res = $res . '<td>' . $sPrefijo . $et_aure69fecha . $sSufijo . '</td>';
 		$res = $res . '<td>' . $sPrefijo . $filadet['aure69verupd'] . $sSufijo . '</td>';
 		$res = $res . '<td>' . $sPrefijo . $sVerSistema . $sSufijo . '</td>';
 		$res = $res . '<td>' . $sPrefijo . cadena_notildes($filadet['aure68nombre']) . $sSufijo . '</td>';
 		$res = $res . '<td>' . $sPrefijo . $et_aure69publico . $sSufijo . '</td>';
-		$res = $res . '<td>' . $sLink . '</td>';
+		$res = $res . '<td align="right">' . $sLink . '</td>';
 		$res = $res . '</tr>';
 		if ($filadet['aure69detalle'] != '') {
 			$res = $res . '<tr' . $sClass . '>';
@@ -419,7 +438,6 @@ function f269_TablaDetalleV2($aParametros, $objDB, $bDebug = false)
 			$res = $res . '<td colspan="9">' . $sPrefijo . cadena_notildes($filadet['aure69detalle']) . $sSufijo . '</td>';
 			$res = $res . '</tr>';
 		}
-		//<td>'.$sPrefijo.cadena_notildes($filadet['aure69enlace']).$sSufijo.'</td>
 	}
 	$res = $res . '</tbody></table>';
 	$res = $res . '<div class="salto5px"></div>';
@@ -497,9 +515,8 @@ function f269_db_CargarPadre($DATA, $objDB, $bDebug = false)
 	}
 	return array($DATA, $sError, $iTipoError, $sDebug);
 }
-function f269_db_GuardarV2($DATA, $objDB, $bDebug = false, $idTercero = 0)
+function f269_db_GuardarV2($DATA, $objDB, $bDebug = false, $idTercero = 0, $iCodModulo = 269)
 {
-	$iCodModulo = 269;
 	$bAudita[2] = true;
 	$bAudita[3] = true;
 	require './app.php';
@@ -519,23 +536,49 @@ function f269_db_GuardarV2($DATA, $objDB, $bDebug = false, $idTercero = 0)
 	if ($idTercero == 0) {
 		$idTercero = $_SESSION['unad_id_tercero'];
 	}
-	// -- Se inicia validando todas las posibles entradas de usuario.
 	/*
 	if (isset($DATA['aure69consec'])==0){$DATA['aure69consec']='';}
 	if (isset($DATA['aure69id'])==0){$DATA['aure69id']='';}
 	if (isset($DATA['aure69idsistema'])==0){$DATA['aure69idsistema']='';}
 	if (isset($DATA['aure69fecha'])==0){$DATA['aure69fecha']='';}
-	if (isset($DATA['aure69verupd'])==0){$DATA['aure69verupd']='';}
-	if (isset($DATA['aure69mayor'])==0){$DATA['aure69mayor']='';}
-	if (isset($DATA['aure69menor'])==0){$DATA['aure69menor']='';}
-	if (isset($DATA['aure69correccion'])==0){$DATA['aure69correccion']='';}
-	if (isset($DATA['aure69idgrupo'])==0){$DATA['aure69idgrupo']='';}
-	if (isset($DATA['aure69detalle'])==0){$DATA['aure69detalle']='';}
-	if (isset($DATA['aure69publico'])==0){$DATA['aure69publico']='';}
-	if (isset($DATA['aure69idmodulo'])==0){$DATA['aure69idmodulo']='';}
-	if (isset($DATA['aure69fechavigencia'])==0){$DATA['aure69fechavigencia']='';}
-	if (isset($DATA['aure69enlace'])==0){$DATA['aure69enlace']='';}
+	if (isset($DATA['aure69idsistema']) == 0) {
+		$DATA['aure69idsistema'] = 0;
+	}
+	if (isset($DATA['aure69fecha']) == 0) {
+		$DATA['aure69fecha'] = '00/00/0000';
+	}
+	if (isset($DATA['aure69verupd']) == 0) {
+		$DATA['aure69verupd'] = 0;
+	}
+	if (isset($DATA['aure69mayor']) == 0) {
+		$DATA['aure69mayor'] = 0;
+	}
+	if (isset($DATA['aure69menor']) == 0) {
+		$DATA['aure69menor'] = 0;
+	}
+	if (isset($DATA['aure69correccion']) == 0) {
+		$DATA['aure69correccion'] = 0;
+	}
+	if (isset($DATA['aure69idgrupo']) == 0) {
+		$DATA['aure69idgrupo'] = 0;
+	}
+	if (isset($DATA['aure69detalle']) == 0) {
+		$DATA['aure69detalle'] = '';
+	}
+	if (isset($DATA['aure69publico']) == 0) {
+		$DATA['aure69publico'] = '';
+	}
+	if (isset($DATA['aure69idmodulo']) == 0) {
+		$DATA['aure69idmodulo'] = 0;
+	}
+	if (isset($DATA['aure69fechavigencia']) == 0) {
+		$DATA['aure69fechavigencia'] = 0;
+	}
+	if (isset($DATA['aure69enlace']) == 0) {
+		$DATA['aure69enlace'] = '';
+	}
 	*/
+	// -- Se inicia validando todas las posibles entradas de usuario.
 	$DATA['aure69consec'] = numeros_validar($DATA['aure69consec']);
 	$DATA['aure69idsistema'] = numeros_validar($DATA['aure69idsistema']);
 	$DATA['aure69verupd'] = numeros_validar($DATA['aure69verupd']);
@@ -543,19 +586,38 @@ function f269_db_GuardarV2($DATA, $objDB, $bDebug = false, $idTercero = 0)
 	$DATA['aure69menor'] = numeros_validar($DATA['aure69menor']);
 	$DATA['aure69correccion'] = numeros_validar($DATA['aure69correccion']);
 	$DATA['aure69idgrupo'] = numeros_validar($DATA['aure69idgrupo']);
-	$DATA['aure69detalle'] = htmlspecialchars(trim($DATA['aure69detalle']));
-	$DATA['aure69publico'] = htmlspecialchars(trim($DATA['aure69publico']));
+	$DATA['aure69detalle'] = cadena_Validar(trim($DATA['aure69detalle']));
+	$DATA['aure69publico'] = cadena_Validar(trim($DATA['aure69publico']));
 	$DATA['aure69idmodulo'] = numeros_validar($DATA['aure69idmodulo']);
-	$DATA['aure69enlace'] = htmlspecialchars(trim($DATA['aure69enlace']));
+	$DATA['aure69enlace'] = cadena_Validar(trim($DATA['aure69enlace']), true);
 	$DATA['aure69campus'] = numeros_validar($DATA['aure69campus']);
 	// -- Se inicializan las variables que puedan pasar vacias {Especialmente números}.
-	//if ($DATA['aure69idsistema']==''){$DATA['aure69idsistema']=0;}
-	//if ($DATA['aure69verupd']==''){$DATA['aure69verupd']=0;}
-	//if ($DATA['aure69mayor']==''){$DATA['aure69mayor']=0;}
-	//if ($DATA['aure69menor']==''){$DATA['aure69menor']=0;}
-	//if ($DATA['aure69correccion']==''){$DATA['aure69correccion']=0;}
-	//if ($DATA['aure69idgrupo']==''){$DATA['aure69idgrupo']=0;}
-	//if ($DATA['aure69idmodulo']==''){$DATA['aure69idmodulo']=0;}
+	/*
+	if ($DATA['aure69idsistema'] == '') {
+		$DATA['aure69idsistema'] = 0;
+	}
+	if ($DATA['aure69fecha'] == '') {
+		$DATA['aure69fecha'] = 0;
+	}
+	if ($DATA['aure69verupd'] == '') {
+		$DATA['aure69verupd'] = 0;
+	}
+	if ($DATA['aure69mayor'] == '') {
+		$DATA['aure69mayor'] = 0;
+	}
+	if ($DATA['aure69menor'] == '') {
+		$DATA['aure69menor'] = 0;
+	}
+	if ($DATA['aure69correccion'] == '') {
+		$DATA['aure69correccion'] = 0;
+	}
+	if ($DATA['aure69idgrupo'] == '') {
+		$DATA['aure69idgrupo'] = 0;
+	}
+	if ($DATA['aure69idmodulo'] == '') {
+		$DATA['aure69idmodulo'] = 0;
+	}
+	*/
 	// -- Seccion para validar los posibles causales de error.
 	$sSepara = ', ';
 	if (true) {
@@ -565,7 +627,11 @@ function f269_db_GuardarV2($DATA, $objDB, $bDebug = false, $idTercero = 0)
 		if ($DATA['aure69publico'] == '') {
 			$sError = $ERR['aure69publico'] . $sSepara . $sError;
 		}
-		//if ($DATA['aure69detalle']==''){$sError=$ERR['aure69detalle'].$sSepara.$sError;}
+		/*
+		if ($DATA['aure69detalle'] == '') {
+			$sError = $ERR['aure69detalle'] . $sSepara . $sError;
+		}
+		*/
 		if ($DATA['aure69idgrupo'] == '') {
 			$sError = $ERR['aure69idgrupo'] . $sSepara . $sError;
 		}
@@ -591,6 +657,16 @@ function f269_db_GuardarV2($DATA, $objDB, $bDebug = false, $idTercero = 0)
 		//Fin de las valiaciones NO LLAVE.
 	}
 	//Valiaciones de campos obligatorios en todo guardar.
+	if ($sError == '') {
+		$aListaCampos = array('', 'aure69enlace');
+		$aLargoCampos = array(0, 200);
+		for ($k = 1; $k <= 1; $k++) {
+			$iLargoCampo = strlen($DATA[$aListaCampos[$k]]);
+			if ($iLargoCampo > $aLargoCampos[$k]) {
+				$sError = $ETI['error_cadena_1'] . $ETI[$aListaCampos[$k]] . $ETI['error_cadena_2'] . ' [' . $iLargoCampo . '/' . $aLargoCampos[$k] . ']' . $sSepara . $sError;
+			}
+		}
+	}
 	// -- Se verifican los valores de campos de otras tablas.
 	$bQuitarCodigo = false;
 	$sCampoCodigo = '';
@@ -618,7 +694,7 @@ function f269_db_GuardarV2($DATA, $objDB, $bDebug = false, $idTercero = 0)
 				} else {
 					list($bDevuelve, $sDebugP) = seg_revisa_permisoV3($iCodModulo, 2, $idTercero, $objDB);
 					if (!$bDevuelve) {
-						$sError = $ERR['2'];
+						$sError = $ERR['2'] . ' [Mod ' . $iCodModulo . ']';
 					}
 				}
 			}
@@ -770,11 +846,12 @@ function f269_db_Eliminar($aure69id, $objDB, $bDebug = false)
 	$iCodModulo = 269;
 	$bAudita[4] = true;
 	require './app.php';
-	$mensajes_todas = $APP->rutacomun . 'lg/lg_todas_' . $_SESSION['unad_idioma'] . '.php';
+	$sIdioma = AUREA_Idioma();
+	$mensajes_todas = $APP->rutacomun . 'lg/lg_todas_' . $sIdioma . '.php';
 	if (!file_exists($mensajes_todas)) {
 		$mensajes_todas = $APP->rutacomun . 'lg/lg_todas_es.php';
 	}
-	$mensajes_269 = $APP->rutacomun . 'lg/lg_269_' . $_SESSION['unad_idioma'] . '.php';
+	$mensajes_269 = $APP->rutacomun . 'lg/lg_269_' . $sIdioma . '.php';
 	if (!file_exists($mensajes_269)) {
 		$mensajes_269 = $APP->rutacomun . 'lg/lg_269_es.php';
 	}
@@ -800,7 +877,7 @@ function f269_db_Eliminar($aure69id, $objDB, $bDebug = false)
 		}
 		list($bDevuelve, $sDebugP) = seg_revisa_permisoV3($iCodModulo, 4, $idTercero, $objDB);
 		if (!$bDevuelve) {
-			$sError = $ERR['4'];
+			$sError = $ERR['4'] . ' [Mod ' . $iCodModulo . ']';
 		}
 	}
 	if ($sError == '') {
@@ -835,206 +912,7 @@ function f269_db_Eliminar($aure69id, $objDB, $bDebug = false)
 	}
 	return array($sError, $iTipoError, $sDebug);
 }
-function f269_TituloBusqueda()
-{
-	require './app.php';
-	$mensajes_269 = 'lg/lg_269_' . $_SESSION['unad_idioma'] . '.php';
-	if (!file_exists($mensajes_269)) {
-		$mensajes_269 = 'lg/lg_269_es.php';
-	}
-	require $mensajes_269;
-	return $ETI['titulo_busca_269'];
-}
-function f269_ParametrosBusqueda()
-{
-	require './app.php';
-	$mensajes_todas = $APP->rutacomun . 'lg/lg_todas_' . $_SESSION['unad_idioma'] . '.php';
-	if (!file_exists($mensajes_todas)) {
-		$mensajes_todas = $APP->rutacomun . 'lg/lg_todas_es.php';
-	}
-	$mensajes_269 = $APP->rutacomun . 'lg/lg_269_' . $_SESSION['unad_idioma'] . '.php';
-	if (!file_exists($mensajes_269)) {
-		$mensajes_269 = $APP->rutacomun . 'lg/lg_269_es.php';
-	}
-	require $mensajes_todas;
-	require $mensajes_269;
-	$sParams = '<label class="Label90">
-	' . $ETI['msg_bnombre'] . '
-	</label>
-	<label>
-	<input id="b269nombre" name="b269nombre" type="text" value="" onchange="paginarbusqueda()" />
-	</label>';
-	return $sParams;
-}
-function f269_JavaScriptBusqueda($iModuloBusca)
-{
-	$sRes = 'let sCampo = window.document.frmedita.scampobusca.value;
-	let params = new Array();
-	params[100] = sCampo;
-	params[101] = window.document.frmedita.paginabusqueda.value;
-	params[102] = window.document.frmedita.lppfbusqueda.value;
-	params[103] = window.document.frmedita.b269nombre.value;
-	xajax_f' . $iModuloBusca . '_HtmlBusqueda(params);';
-	return $sRes;
-}
-function f269_TablaDetalleBusquedas($aParametros, $objDB)
-{
-	$res = '';
-	require './app.php';
-	$mensajes_todas = $APP->rutacomun . 'lg/lg_todas_' . $_SESSION['unad_idioma'] . '.php';
-	if (!file_exists($mensajes_todas)) {
-		$mensajes_todas = $APP->rutacomun . 'lg/lg_todas_es.php';
-	}
-	$mensajes_269 = $APP->rutacomun . 'lg/lg_269_' . $_SESSION['unad_idioma'] . '.php';
-	if (!file_exists($mensajes_269)) {
-		$mensajes_269 = $APP->rutacomun . 'lg/lg_269_es.php';
-	}
-	require $mensajes_todas;
-	require $mensajes_269;
-	if (!is_array($aParametros)) {
-		$aParametros = json_decode(str_replace('\"', '"', $aParametros), true);
-	}
-	if (isset($aParametros[100]) == 0) {
-		$aParametros[100] = $_SESSION['unad_id_tercero'];
-	}
-	if (isset($aParametros[101]) == 0) {
-		$aParametros[101] = 1;
-	}
-	if (isset($aParametros[102]) == 0) {
-		$aParametros[102] = 20;
-	}
-	if (isset($aParametros[103]) == 0) {
-		$aParametros[103] = '';
-	}
-	if (isset($aParametros[104]) == 0) {
-		$aParametros[104] = '';
-	}
-	$idTercero = $aParametros[100];
-	$pagina = $aParametros[101];
-	$lineastabla = $aParametros[102];
-	//$bNombre=trim($aParametros[103]);
-	//$bListar = numeros_validar($aParametros[104]);
-	$bAbierta = true;
-	/*
-	$sSQL = 'SELECT Campo FROM Tabla WHERE Id=' . $sValorId;
-	$tabla = $objDB->ejecutasql($sSQL);
-	if ($objDB->nf($tabla) > 0) {
-		$fila = $objDB->sf($tabla);
-		if ($fila['Campo'] != 'S') {
-			$bAbierta = true;
-		}
-	}
-	*/
-	$sLeyenda = '';
-	$sBotones = '<input id="paginaf269" name="paginaf269" type="hidden" value="' . $pagina . '" />
-	<input id="lppf269" name="lppf269" type="hidden" value="' . $lineastabla . '" />';
-	if ($sLeyenda != '') {
-		$sLeyenda = '<div class="salto1px"></div>
-		<div class="GrupoCamposAyuda">
-		' . $sLeyenda . '
-		<div class="salto1px"></div>
-		</div>';
-		return array($sLeyenda . $sBotones, $sDebug);
-		die();
-	}
-	$iPiel = iDefinirPiel($APP, 2);
-	$sSQLadd = '';
-	$sSQLadd1 = '';
-	//if ($aParametros[103]!=''){$sSQLadd1=$sSQLadd1.'TB.campo2 LIKE "%'.$aParametros[103].'%" AND ';}
-	//if ($aParametros[103]!=''){$sSQLadd=$sSQLadd.' AND TB.campo2 LIKE "%'.$aParametros[103].'%"';}
-	/*
-	if ($aParametros[104]!=''){
-		$sBase=trim(strtoupper($aParametros[104]));
-		$aNoms=explode(' ', $sBase);
-		for ($k=1;$k<=count($aNoms);$k++){
-			$sCadena=$aNoms[$k-1];
-			if ($sCadena!=''){
-				$sSQLadd=$sSQLadd.' AND T6.unad11razonsocial LIKE "%'.$sCadena.'%"';
-				//$sSQLadd1=$sSQLadd1.'T1.unad11razonsocial LIKE "%'.$sCadena.'%" AND ';
-				}
-			}
-		}
-	*/
-	$sTitulos = 'Consec, Id, Sistema, Fecha, Verupd, Mayor, Menor, Correccion, Grupo, Detalle, Publico';
-	$sSQL = 'SELECT TB.aure69consec, TB.aure69id, T3.unad01nombre, TB.aure69fecha, TB.aure69verupd, TB.aure69mayor, TB.aure69menor, TB.aure69correccion, T9.aure68nombre, TB.aure69detalle, TB.aure69publico, TB.aure69idsistema, TB.aure69idgrupo 
-	FROM aure69versionado AS TB, unad01sistema AS T3, aure68grupoversion AS T9 
-	WHERE ' . $sSQLadd1 . ' TB.aure69idsistema=T3.unad01id AND TB.aure69idgrupo=T9.aure68id ' . $sSQLadd . '
-	ORDER BY TB.aure69consec';
-	$sSQLlista = str_replace("'", "|", $sSQL);
-	$sSQLlista = str_replace('"', "|", $sSQLlista);
-	$sErrConsulta = '<input id="consulta_busqueda" name="consulta_busqueda" type="hidden" value="' . $sSQLlista . '"/>
-	<input id="titulos_busqueda" name="titulos_busqueda" type="hidden" value="' . $sTitulos . '"/>';
-	$tabladetalle = $objDB->ejecutasql($sSQL);
-	if ($tabladetalle == false) {
-		$registros = 0;
-		$sErrConsulta = $sErrConsulta . '..<input id="err" name="err" type="hidden" value="' . $sSQL . ' ' . $objDB->serror . '"/>';
-		//$sLeyenda=$sSQL;
-	} else {
-		$registros = $objDB->nf($tabladetalle);
-		if ($registros == 0) {
-			//return array(cadena_codificar($sErrConsulta.'<input id="paginaf269" name="paginaf269" type="hidden" value="'.$pagina.'"/><input id="lppf269" name="lppf269" type="hidden" value="'.$lineastabla.'"/>'), $sDebug);
-		}
-		if ((($registros - 1) / $lineastabla) < ($pagina - 1)) {
-			$pagina = (int)(($registros - 1) / $lineastabla) + 1;
-		}
-		if ($registros > $lineastabla) {
-			$rbase = ($pagina - 1) * $lineastabla;
-			$sLimite = ' LIMIT ' . $rbase . ', ' . $lineastabla;
-			$tabladetalle = $objDB->ejecutasql($sSQL . $sLimite);
-		}
-	}
-	$res = $sErrConsulta . $sLeyenda;
-	$sClaseTabla = 'table--primary';
-	if ($iPiel == 1) {
-		$sClaseTabla = 'tablaapp';
-	}
-	$res = $res . '<div class="table-responsive">
-	<table border="0" align="center" cellpadding="0" cellspacing="2" class="' . $sClaseTabla . '">
-	<thead class="fondoazul"><tr>
-	<td><b>' . $ETI['aure69consec'] . '</b></td>
-	<td><b>' . $ETI['aure69idsistema'] . '</b></td>
-	<td><b>' . $ETI['aure69fecha'] . '</b></td>
-	<td><b>' . $ETI['aure69verupd'] . '</b></td>
-	<td><b>' . $ETI['aure69mayor'] . '</b></td>
-	<td><b>' . $ETI['aure69menor'] . '</b></td>
-	<td><b>' . $ETI['aure69correccion'] . '</b></td>
-	<td><b>' . $ETI['aure69idgrupo'] . '</b></td>
-	<td><b>' . $ETI['aure69detalle'] . '</b></td>
-	<td><b>' . $ETI['aure69publico'] . '</b></td>
-	<td align="right">
-	' . html_paginador('paginabusqueda', $registros, $lineastabla, $pagina, 'paginarbusqueda()') . '
-	' . html_lpp('lppfbusqueda', $lineastabla, 'paginarbusqueda()') . '
-	</td>
-	</tr></thead>';
-	$tlinea = 1;
-	while ($filadet = $objDB->sf($tabladetalle)) {
-		$sPrefijo = '<a href="javascript:Devuelve(\'' . $filadet['aure69id'] . '\');">';
-		$sSufijo = '</a>';
-		$tlinea++;
-		$et_aure69fecha = '';
-		if ($filadet['aure69fecha'] != '00/00/0000') {
-			$et_aure69fecha = $filadet['aure69fecha'];
-		}
-		$res = $res . '<tr onmouseover="cambia_color_over(this);" onmouseout="cambia_color_out(this);">
-		<td>' . $sPrefijo . $filadet['aure69consec'] . $sSufijo . '</td>
-		<td>' . $sPrefijo . cadena_notildes($filadet['unad01nombre']) . $sSufijo . '</td>
-		<td>' . $sPrefijo . $et_aure69fecha . $sSufijo . '</td>
-		<td>' . $sPrefijo . $filadet['aure69verupd'] . $sSufijo . '</td>
-		<td>' . $sPrefijo . $filadet['aure69mayor'] . $sSufijo . '</td>
-		<td>' . $sPrefijo . $filadet['aure69menor'] . $sSufijo . '</td>
-		<td>' . $sPrefijo . $filadet['aure69correccion'] . $sSufijo . '</td>
-		<td>' . $sPrefijo . cadena_notildes($filadet['aure68nombre']) . $sSufijo . '</td>
-		<td>' . $sPrefijo . $filadet['aure69detalle'] . $sSufijo . '</td>
-		<td>' . $sPrefijo . $filadet['aure69publico'] . $sSufijo . '</td>
-		<td></td>
-		</tr>';
-	}
-	$res = $res . '</table>
-	<div class="salto5px"></div>
-	</div>';
-	$objDB->liberar($tabladetalle);
-	return cadena_codificar($res);
-}
+
 // -----------------------------------
 // ---- Funciones personalizadas  ----
 // -----------------------------------

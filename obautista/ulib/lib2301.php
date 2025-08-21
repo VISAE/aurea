@@ -115,6 +115,9 @@ function f2301_IniciarEncuesta($idTercero, $idPeriodo, $objDB, $bDebug = false, 
 	FROM core16actamatricula 
 	WHERE core16tercero=' . $idTercero . $sCondiMat . '
 	ORDER BY core16peraca DESC';
+	if ($bDebug) {
+		$sDebug = $sDebug . fecha_microtiempo() . ' <b>Caracterizaci&oacute;n</b> Verificando datos de matricula: ' . $sSQL . '<br>';
+	}
 	$tabla = $objDB->ejecutasql($sSQL);
 	if ($objDB->nf($tabla) > 0) {
 		$fila = $objDB->sf($tabla);
@@ -123,7 +126,12 @@ function f2301_IniciarEncuesta($idTercero, $idPeriodo, $objDB, $bDebug = false, 
 		if ($idPrograma == 0) {
 			$sError = 'No se encuentra el programa acad&eacute;mico.';
 		} else {
-			$sSQL = 'SELECT core09idtipocaracterizacion, core09ofrecetitulo FROM core09programa WHERE core09id=' . $idPrograma . '';
+			$sSQL = 'SELECT core09idtipocaracterizacion, core09ofrecetitulo 
+			FROM core09programa
+			WHERE core09id=' . $idPrograma . '';
+			if ($bDebug) {
+				$sDebug = $sDebug . fecha_microtiempo() . ' <b>Caracterizaci&oacute;n</b> Datos del programa: ' . $sSQL . '<br>';
+			}
 			$tabla = $objDB->ejecutasql($sSQL);
 			if ($objDB->nf($tabla) > 0) {
 				$fila = $objDB->sf($tabla);
@@ -149,7 +157,7 @@ function f2301_IniciarEncuesta($idTercero, $idPeriodo, $objDB, $bDebug = false, 
 		}
 		$tabla = $objDB->ejecutasql($sSQL);
 		if ($objDB->nf($tabla) == 0) {
-			$bInsertarEncuesta = true;		
+			$bInsertarEncuesta = true;
 		} else {
 			// Febrero 24 Se deja inhabilitado hasta que se monte la nueva versión de la caracterización. 
 			//(No olvidar retirar la restriccion a 1143)
@@ -391,6 +399,9 @@ function f2301_IniciarEncuesta($idTercero, $idPeriodo, $objDB, $bDebug = false, 
 			}
 		}
 	}
+	if ($bDebug) {
+		$sDebug = $sDebug . fecha_microtiempo() . ' <b>Caracterizaci&oacute;n</b> Termina de iniciar la encuesta<br>';
+	}
 	return array($sError, $sDebug);
 }
 function f2301_IniciarPreguntas($cara01id, $objDB, $bDebug = false)
@@ -497,7 +508,8 @@ function f2301_HTMLComboV2_cara01idperaca($objDB, $objCombos, $valor, $idTercero
 		while ($fila = $objDB->sf($tabla)) {
 			$sIds = $sIds . ',' . $fila['cara01idperaca'];
 		}
-		if ($sIds == '-99') {}
+		if ($sIds == '-99') {
+		}
 		if (!$bEstudiante) {
 			// Puede que no tenga caracterizaciones, pero que sea estudiante, entonces le dejamos los periodos donde inicio.
 			$sSQL = 'SELECT core01peracainicial 
@@ -515,7 +527,7 @@ function f2301_HTMLComboV2_cara01idperaca($objDB, $objCombos, $valor, $idTercero
 				die();
 			}
 		}
-		$sCondi='exte02id IN ('.$sIds.')';
+		$sCondi = 'exte02id IN (' . $sIds . ')';
 		//$sCondi = $sIds;
 	}
 	$objCombos->nuevo('cara01idperaca', $valor, true, '{' . $ETI['msg_seleccione'] . '}');
@@ -931,6 +943,7 @@ function f2301_TablaDetalleV2($aParametros, $objDB, $bDebug = false)
 	$sSQLadd1 = '';
 	$sFrom = '';
 	$sWhere = '';
+	$iPiel = iDefinirPiel($APP);
 	//if ((int)$aParametros[103]!=-1){$sSQLadd=$sSQLadd.' AND TB.campo='.$aParametros[103];}
 	if ($aParametros[103] != '') {
 		if ($sFrom == '') {
@@ -1075,24 +1088,30 @@ function f2301_TablaDetalleV2($aParametros, $objDB, $bDebug = false)
 			$aPeriodos[$fila['cara13peraca']] = $fila['cara01cargaasignada'];
 		}
 	}
-	$res = $sErrConsulta . $sLeyenda . $res . '<table border="0" align="center" cellpadding="0" cellspacing="2" class="tablaapp">
-	<thead class="fondoazul"><tr>
-	<td colspan="2"><b>' . $ETI['cara01idtercero'] . '</b></td>
-	<td><b>' . $ETI['cara01completa'] . '</b></td>
-	<td><b>' . $ETI['cara01fechaencuesta'] . '</b></td>
-	<td align="right" colspan="2">
-	' . html_paginador('paginaf2301', $registros, $lineastabla, $pagina, 'paginarf2301()') . '
-	' . html_lpp('lppf2301', $lineastabla, 'paginarf2301()', 100) . '
-	</td>
-	</tr></thead>';
+	$res = $sErrConsulta . $sLeyenda;
+	$sClaseTabla = 'table--primary';
+	if ($iPiel == 1) {
+		$sClaseTabla = 'tablaapp';
+	}
+	$res = $res . '<div class="table-responsive">';
+	$res = $res . '<table border="0" align="center" cellpadding="0" cellspacing="2" class="' . $sClaseTabla . '">';
+	$res = $res . '<thead class="fondoazul"><tr>';
+	$res = $res . '<th colspan="2"><b>' . $ETI['cara01idtercero'] . '</b></th>';
+	$res = $res . '<th><b>' . $ETI['cara01completa'] . '</b></th>';
+	$res = $res . '<th><b>' . $ETI['cara01fechaencuesta'] . '</b></th>';
+	$res = $res . '<th align="right" colspan="2">';
+	$res = $res . html_paginador('paginaf2301', $registros, $lineastabla, $pagina, 'paginarf2301()') . '';
+	$res = $res . html_lpp('lppf2301', $lineastabla, 'paginarf2301()', 100) . '';
+	$res = $res . '</th>';
+	$res = $res . '</tr></thead><tbody>';
 	$tlinea = 1;
 	$idPeriodo = -1;
 	while ($filadet = $objDB->sf($tabladetalle)) {
 		if ($idPeriodo != $filadet['cara01idperaca']) {
 			$idPeriodo = $filadet['cara01idperaca'];
-			$res = $res . '<tr class="fondoazul">
-			<td colspan="6">' . $ETI['cara01idperaca'] . ' <b>' . cadena_notildes($filadet['exte02nombre']) . '</b></td>
-			</tr>';
+			$res = $res . '<tr class="fondoazul">';
+			$res = $res . '<td colspan="6">' . $ETI['cara01idperaca'] . ' <b>' . cadena_notildes($filadet['exte02nombre']) . '</b></td>';
+			$res = $res . '</tr>';
 		}
 		$sPrefijo = '';
 		$sSufijo = '';
@@ -1136,16 +1155,18 @@ function f2301_TablaDetalleV2($aParametros, $objDB, $bDebug = false)
 				$et_cara01idtercero_rs = cadena_notildes($fila11['C2_nombre']);
 			}
 		}
-		$res = $res . '<tr' . $sClass . '>
-		<td>' . $sPrefijo . $et_cara01idtercero_doc . $sSufijo . '</td>
-		<td>' . $sPrefijo . cadena_notildes($et_cara01idtercero_rs) . $sSufijo . '</td>
-		<td>' . $sPrefijo . $et_cara01completa . $sSufijo . '</td>
-		<td>' . $sPrefijo . $et_cara01fechaencuesta . $sSufijo . '</td>
-		<td><div id="div_lnkconsejero' . $filadet['cara01id'] . '">' . $sLink2 . '</div></td>
-		<td>' . $sLink . '</td>
-		</tr>';
+		$res = $res . '<tr' . $sClass . '>';
+		$res = $res . '<td>' . $sPrefijo . $et_cara01idtercero_doc . $sSufijo . '</td>';
+		$res = $res . '<td>' . $sPrefijo . cadena_notildes($et_cara01idtercero_rs) . $sSufijo . '</td>';
+		$res = $res . '<td>' . $sPrefijo . $et_cara01completa . $sSufijo . '</td>';
+		$res = $res . '<td>' . $sPrefijo . $et_cara01fechaencuesta . $sSufijo . '</td>';
+		$res = $res . '<td><div id="div_lnkconsejero' . $filadet['cara01id'] . '">' . $sLink2 . '</div></td>';
+		$res = $res . '<td>' . $sLink . '</td>';
+		$res = $res . '</tr>';
 	}
-	$res = $res . '</table>' . $sHTMLConsejero;
+	$res = $res . '</tbody></table>' . $sHTMLConsejero;
+	$res = $res . '<div class="salto5px"></div>';
+	$res = $res . '</div>';
 	$objDB->liberar($tabladetalle);
 	return array(cadena_codificar($res), $sDebug);
 }
@@ -1530,6 +1551,9 @@ function f2301_db_CargarPadre($DATA, $objDB, $bDebug = false)
 			$DATA['cara44campus_usocorreounadnodetalle'] = $fila['cara44campus_usocorreounadnodetalle'];
 			$DATA['cara44campus_medioactivunad'] = $fila['cara44campus_medioactivunad'];
 			$DATA['cara44campus_medioactivunaddetalle'] = $fila['cara44campus_medioactivunaddetalle'];
+			$DATA['cara44frontera'] = $fila['cara44frontera'];
+			$DATA['cara44med_tratamiento'] = $fila['cara44med_tratamiento'];
+			$DATA['cara44med_trat_cual'] = $fila['cara44med_trat_cual'];
 		}
 		$bcargo = true;
 		$DATA['paso'] = 2;
@@ -2131,6 +2155,16 @@ function f2301_db_GuardarV2($DATA, $objDB, $bDebug = false)
 	if (isset($DATA['cara44campus_medioactivunaddetalle']) == 0) {
 		$DATA['cara44campus_medioactivunaddetalle'] = '';
 	}
+	if (isset($DATA['cara44frontera']) == 0) {
+		$DATA['cara44frontera'] = 0;
+	}
+	if (isset($DATA['cara44med_tratamiento']) == 0) {
+		$DATA['cara44med_tratamiento'] = 0;
+	}
+	if (isset($DATA['cara44med_trat_cual']) == 0) {
+		$DATA['cara44med_trat_cual'] = '';
+	}
+	// -- Se inicia validando todas las posibles entradas de usuario.
 	$DATA['cara01idperaca'] = numeros_validar($DATA['cara01idperaca']);
 	$DATA['cara01fichaper'] = numeros_validar($DATA['cara01fichaper']);
 	$DATA['cara01fichafam'] = numeros_validar($DATA['cara01fichafam']);
@@ -2404,6 +2438,9 @@ function f2301_db_GuardarV2($DATA, $objDB, $bDebug = false)
 	$DATA['cara44campus_usocorreounadnodetalle'] = htmlspecialchars(trim($DATA['cara44campus_usocorreounadnodetalle']));
 	$DATA['cara44campus_medioactivunad'] = numeros_validar($DATA['cara44campus_medioactivunad']);
 	$DATA['cara44campus_medioactivunaddetalle'] = htmlspecialchars(trim($DATA['cara44campus_medioactivunaddetalle']));
+	$DATA['cara44frontera'] = numeros_validar($DATA['cara44frontera']);
+	$DATA['cara44med_tratamiento'] = numeros_validar($DATA['cara44med_tratamiento']);
+	$DATA['cara44med_trat_cual'] = htmlspecialchars(trim($DATA['cara44med_trat_cual']));
 	// -- Se inicializan las variables que puedan pasar vacias {Especialmente números}.
 	if ($DATA['cara01completa'] == '') {
 		$DATA['cara01completa'] = 'N';
@@ -3456,8 +3493,10 @@ function f2301_db_GuardarV2($DATA, $objDB, $bDebug = false)
 		if ($DATA['cara01acad_ultnivelest'] == '') {
 			$sError = $ERR['cara01acad_ultnivelest'] . $sSepara . $sError;
 		}
-		if ($DATA['cara01acad_estudioprev'] == '') {
-			$sError = $ERR['cara01acad_estudioprev'] . $sSepara . $sError;
+		if ($DATA['cara01tipocaracterizacion'] != 12) {
+			if ($DATA['cara01acad_estudioprev'] == '') {
+				$sError = $ERR['cara01acad_estudioprev'] . $sSepara . $sError;
+			}
 		}
 		if (!$bAntiguo) {
 			if ($DATA['cara01campus_usocorreo'] == '') {
@@ -3482,7 +3521,7 @@ function f2301_db_GuardarV2($DATA, $objDB, $bDebug = false)
 				$sError = $ERR['cara01acad_tipocolegio'] . $sSepara . $sError;
 			}
 		} else {
-/*
+			/*
 // -- 23 de Agosto de 2022 - Esta opcion se maneja aqui, el error era de la forma....
 */
 			if ($DATA['cara44acadhatenidorecesos'] == '') {
@@ -3498,7 +3537,7 @@ function f2301_db_GuardarV2($DATA, $objDB, $bDebug = false)
 					}
 				}
 			}
-/*
+			/*
 */
 			if ($DATA['cara44campus_usocorreounad'] == 0) {
 				$sError = $ERR['cara44campus_usocorreounad'] . $sSepara . $sError;
@@ -3521,8 +3560,13 @@ function f2301_db_GuardarV2($DATA, $objDB, $bDebug = false)
 					$sError = $ERR['cara44campus_medioactivunaddetalle'] . $sSepara . $sError;
 				}
 			}
+			if ($DATA['cara44med_tratamiento'] == 1) {
+				if ($DATA['cara44med_trat_cual'] == '') {
+					$sError = $ERR['cara44med_trat_cual'] . $sSepara . $sError;
+				}
+			}
 		}
-/*
+		/*
 // -- 23 de Agosto de 2022 - Se retira la opcion y paso unas lineas arriba....
 		//El de los recesos
 		if (!$bAntiguo) {
@@ -3872,6 +3916,16 @@ function f2301_db_GuardarV2($DATA, $objDB, $bDebug = false)
 		}
 	}
 	// -- Fin del cerrado.
+	if ($sError == '') {
+		$aListaCampos = array('', 'cara44med_trat_cual', 'cara44campus_medioactivunaddetalle');
+		$aLargoCampos = array(0, 200, 200);
+		for ($k = 1; $k <= 2; $k++) {
+			$iLargoCampo = strlen($DATA[$aListaCampos[$k]]);
+			if ($iLargoCampo > $aLargoCampos[$k]) {
+				$sError = $ETI['error_cadena_1'] . $ETI[$aListaCampos[$k]] . $ETI['error_cadena_2'] . ' [' . $iLargoCampo . '/' . $aLargoCampos[$k] . ']' . $sSepara . $sError;
+			}
+		}
+	}
 	// -- Se verifican los valores de campos de otras tablas.
 	if (false) {
 		if ($sError == '') {
@@ -4039,7 +4093,9 @@ cara44bienv2ambienfrutaverd, cara44bienv2ambienenchufa, cara44bienv2ambiengrifo,
 cara44bienv2ambiensiembra, cara44bienv2ambienconferencia, cara44bienv2ambienrecicla, cara44bienv2ambienotraactiv, cara44bienv2ambienotraactivdetalle, cara44bienv2ambienreforest, cara44bienv2ambienmovilidad, 
 cara44bienv2ambienclimatico, cara44bienv2ambienecofemin, cara44bienv2ambienbiodiver, cara44bienv2ambienecologia, cara44bienv2ambieneconomia, cara44bienv2ambienrecnatura, cara44bienv2ambienreciclaje, 
 cara44bienv2ambienmascota, cara44bienv2ambiencartohum, cara44bienv2ambienespiritu, cara44bienv2ambiencarga, cara44bienv2ambienotroenfoq, cara44bienv2ambienotroenfoqdetalle, cara44fam_madrecabeza, 
-cara44acadhatenidorecesos, cara44acadrazonreceso, cara44acadrazonrecesodetalle, cara44campus_usocorreounad, cara44campus_usocorreounadno, cara44campus_usocorreounadnodetalle, cara44campus_medioactivunad, cara44campus_medioactivunaddetalle';
+cara44acadhatenidorecesos, cara44acadrazonreceso, cara44acadrazonrecesodetalle, cara44campus_usocorreounad, cara44campus_usocorreounadno, 
+cara44campus_usocorreounadnodetalle, cara44campus_medioactivunad, cara44campus_medioactivunaddetalle, cara44frontera, cara44med_tratamiento, 
+cara44med_trat_cual';
 			$sValores2301 = '' . $DATA['cara01idperaca'] . ', ' . $DATA['cara01idtercero'] . ', ' . $DATA['cara01id'] . ', "' . $DATA['cara01completa'] . '", ' . $DATA['cara01fichaper'] . ', 
 ' . $DATA['cara01fichafam'] . ', ' . $DATA['cara01fichaaca'] . ', ' . $DATA['cara01fichalab'] . ', ' . $DATA['cara01fichabien'] . ', ' . $DATA['cara01fichapsico'] . ', 
 ' . $DATA['cara01fichadigital'] . ', ' . $DATA['cara01fichalectura'] . ', ' . $DATA['cara01ficharazona'] . ', ' . $DATA['cara01fichaingles'] . ', "' . $DATA['cara01fechaencuesta'] . '", 
@@ -4104,20 +4160,22 @@ cara44acadhatenidorecesos, cara44acadrazonreceso, cara44acadrazonrecesodetalle, 
 "' . $DATA['cara44bienv2ambienrecnatura'] . '", "' . $DATA['cara44bienv2ambienreciclaje'] . '", "' . $DATA['cara44bienv2ambienmascota'] . '", "' . $DATA['cara44bienv2ambiencartohum'] . '", "' . $DATA['cara44bienv2ambienespiritu'] . '", 
 "' . $DATA['cara44bienv2ambiencarga'] . '", "' . $DATA['cara44bienv2ambienotroenfoq'] . '", "' . $DATA['cara44bienv2ambienotroenfoqdetalle'] . '", "' . $DATA['cara44fam_madrecabeza'] . '", "' . $DATA['cara44acadhatenidorecesos'] . '", 
 ' . $DATA['cara44acadrazonreceso'] . ', "' . $DATA['cara44acadrazonrecesodetalle'] . '", ' . $DATA['cara44campus_usocorreounad'] . ', ' . $DATA['cara44campus_usocorreounadno'] . ', "' . $DATA['cara44campus_usocorreounadnodetalle'] . '", 
-' . $DATA['cara44campus_medioactivunad'] . ', "' . $DATA['cara44campus_medioactivunaddetalle'] . '';
+' . $DATA['cara44campus_medioactivunad'] . ', "' . $DATA['cara44campus_medioactivunaddetalle'] . ', ' . $DATA['cara44frontera'] . ', ' . $DATA['cara44med_tratamiento'] . ', 
+"' . $DATA['cara44med_trat_cual'] . '"';
 			if ($APP->utf8 == 1) {
 				$sSQL = 'INSERT INTO cara01encuesta (' . $sCampos2301 . ') VALUES (' . cadena_codificar($sValores2301) . ');';
 				$sdetalle = $sCampos2301 . '[' . cadena_codificar($sValores2301) . ']';
-				$sSQL1 = 'INSERT INTO cara44encuesta (' . $sCampos2344 . ') VALUES (' . cadena_codificar($sValores2344) . ');';
-				$sdetalle1 = $sCampos2344 . '[' . cadena_codificar($sValores2344) . ']';
+				$sSQL44 = 'INSERT INTO cara44encuesta (' . $sCampos2344 . ') VALUES (' . cadena_codificar($sValores2344) . ');';
+				$sdetalle44 = $sCampos2344 . '[' . cadena_codificar($sValores2344) . ']';
 			} else {
 				$sSQL = 'INSERT INTO cara01encuesta (' . $sCampos2301 . ') VALUES (' . $sValores2301 . ');';
 				$sdetalle = $sCampos2301 . '[' . $sValores2301 . ']';
-				$sSQL1 = 'INSERT INTO cara44encuesta (' . $sCampos2344 . ') VALUES (' . $sValores2344 . ');';
-				$sdetalle1 = $sCampos2344 . '[' . $sValores2344 . ']';
+				$sSQL44 = 'INSERT INTO cara44encuesta (' . $sCampos2344 . ') VALUES (' . $sValores2344 . ');';
+				$sdetalle44 = $sCampos2344 . '[' . $sValores2344 . ']';
 			}
 			$idAccion = 2;
 			$bPasa = true;
+			$bPasa44 = true;
 		} else {
 			$scampo[1] = 'cara01completa';
 			$scampo[2] = 'cara01fichaper';
@@ -4545,10 +4603,10 @@ cara44acadhatenidorecesos, cara44acadrazonreceso, cara44acadrazonrecesodetalle, 
 				$sValores2344 = '' . $DATA['cara01id'] . ', ' . $cara44sexoversion . ', ' . $cara44bienversion . '';
 				if ($APP->utf8 == 1) {
 					$sSQL = 'INSERT INTO cara44encuesta (' . $sCampos2344 . ') VALUES (' . cadena_codificar($sValores2344) . ');';
-					$sdetalle = $sCampos2344 . '[' . cadena_codificar($sValores2344) . ']';
+					$sdetalle44 = $sCampos2344 . '[' . cadena_codificar($sValores2344) . ']';
 				} else {
 					$sSQL = 'INSERT INTO cara44encuesta (' . $sCampos2344 . ') VALUES (' . $sValores2344 . ');';
-					$sdetalle = $sCampos2344 . '[' . $sValores2344 . ']';
+					$sdetalle44 = $sCampos2344 . '[' . $sValores2344 . ']';
 				}
 				$tabla = $objDB->ejecutasql($sSQL44);
 			}
@@ -4661,6 +4719,9 @@ cara44acadhatenidorecesos, cara44acadrazonreceso, cara44acadrazonrecesodetalle, 
 			$scampo[105] = 'cara44campus_usocorreounadnodetalle';
 			$scampo[106] = 'cara44campus_medioactivunad';
 			$scampo[107] = 'cara44campus_medioactivunaddetalle';
+			$scampo[108] = 'cara44frontera';
+			$scampo[109] = 'cara44med_tratamiento';
+			$scampo[110] = 'cara44med_trat_cual';
 			//
 			$sdato[1] = $DATA['cara44campesinado'];
 			$sdato[2] = $DATA['cara44sexoversion'];
@@ -4769,7 +4830,10 @@ cara44acadhatenidorecesos, cara44acadrazonreceso, cara44acadrazonrecesodetalle, 
 			$sdato[105] = $DATA['cara44campus_usocorreounadnodetalle'];
 			$sdato[106] = $DATA['cara44campus_medioactivunad'];
 			$sdato[107] = $DATA['cara44campus_medioactivunaddetalle'];
-			$iNumCamposMod44 = 107;
+			$sdato[108] = $DATA['cara44frontera'];
+			$sdato[109] = $DATA['cara44med_tratamiento'];
+			$sdato[110] = $DATA['cara44med_trat_cual'];
+			$iNumCamposMod44 = 110;
 			$sWhere = 'cara44id=' . $DATA['cara01id'] . '';
 			$sSQL44 = 'SELECT * FROM cara44encuesta WHERE ' . $sWhere;
 			$sdatos = '';
@@ -4799,10 +4863,10 @@ cara44acadhatenidorecesos, cara44acadrazonreceso, cara44acadrazonrecesodetalle, 
 			}
 			if ($bPasa44) {
 				if ($APP->utf8 == 1) {
-					$sdetalle = cadena_codificar($sdatos) . '[' . $sWhere . ']';
+					$sdetalle44 = cadena_codificar($sdatos) . '[' . $sWhere . ']';
 					$sSQL44 = 'UPDATE cara44encuesta SET ' . cadena_codificar($sdatos) . ' WHERE ' . $sWhere . ';';
 				} else {
-					$sdetalle = $sdatos . '[' . $sWhere . ']';
+					$sdetalle44 = $sdatos . '[' . $sWhere . ']';
 					$sSQL44 = 'UPDATE cara44encuesta SET ' . $sdatos . ' WHERE ' . $sWhere . ';';
 				}
 				$idAccion = 3;
@@ -4823,6 +4887,7 @@ cara44acadhatenidorecesos, cara44acadrazonreceso, cara44acadrazonrecesodetalle, 
 					$DATA['paso'] = 2;
 				}
 				$bCerrando = false;
+				$bPasa44 = false;
 			} else {
 				if ($bAudita[$idAccion]) {
 					seg_auditar($iCodModulo, $_SESSION['unad_id_tercero'], $idAccion, $DATA['cara01id'], $sdetalle, $objDB);
@@ -4849,7 +4914,7 @@ cara44acadhatenidorecesos, cara44acadrazonreceso, cara44acadrazonrecesodetalle, 
 				$bCerrando = false;
 			} else {
 				if ($bAudita[$idAccion]) {
-					seg_auditar($iCodModulo, $_SESSION['unad_id_tercero'], $idAccion, $DATA['cara01id'], $sdetalle, $objDB);
+					seg_auditar($iCodModulo, $_SESSION['unad_id_tercero'], $idAccion, $DATA['cara01id'], $sdetalle44, $objDB);
 				}
 				$DATA['paso'] = 2;
 			}
@@ -4956,8 +5021,8 @@ function f2301_ParametrosBusqueda()
 }
 function f2301_JavaScriptBusqueda($iModuloBusca)
 {
-	$sRes = 'var sCampo=window.document.frmedita.scampobusca.value;
-let params=new Array();
+	$sRes = 'let sCampo = window.document.frmedita.scampobusca.value;
+let params = new Array();
 params[100]=sCampo;
 params[101]=window.document.frmedita.paginabusqueda.value;
 params[102]=window.document.frmedita.lppfbusqueda.value;
@@ -5430,14 +5495,16 @@ function f2301_HTMLComboV2_bprograma($objDB, $objCombos, $valor, $vrbescuela)
 		$mensajes_todas = $APP->rutacomun . 'lg/lg_todas_es.php';
 	}
 	require $mensajes_todas;
-	//@@ Se debe arreglar la condicion..
-	$sCondi = 'core09idescuela="' . $vrbescuela . '"';
-	if ($sCondi != '') {
-		$sCondi = ' WHERE ' . $sCondi;
-	}
 	$objCombos->nuevo('bprograma', $valor, true, '{' . $ETI['msg_todos'] . '}');
 	$objCombos->sAccion = 'paginarf2301()';
-	$res = $objCombos->html('SELECT core09id AS id, core09nombre AS nombre FROM core09programa' . $sCondi, $objDB);
+	$sSQL = '';
+	if ((int)$vrbescuela != 0) {
+		$sSQL = 'SELECT core09id AS id, CONCAT(core09nombre, " [", core09codigo, "]") AS nombre 
+		FROM core09programa 
+		WHERE core09idescuela=' . $vrbescuela . '
+		ORDER BY core09nombre';
+	}
+	$res = $objCombos->html($sSQL, $objDB);
 	return $res;
 }
 function f2301_Combobprograma($aParametros)
@@ -5587,6 +5654,7 @@ function f2301_TablaDetalleV2Consejero($aParametros, $objDB, $bDebug = false)
 	$sSQLadd = '';
 	$sSQLadd1 = '';
 	$sLeyenda = '';
+	$iPiel = iDefinirPiel($APP);
 	$sBotones = '<input id="paginaf2301" name="paginaf2301" type="hidden" value="' . $pagina . '"/>
 	<input id="lppf2301" name="lppf2301" type="hidden" value="' . $lineastabla . '"/>';
 	if ($cara13idconsejero == 0) {
@@ -5650,16 +5718,22 @@ function f2301_TablaDetalleV2Consejero($aParametros, $objDB, $bDebug = false)
 			$tabladetalle = $objDB->ejecutasql($sSQL . $sLimite);
 		}
 	}
-	$res = $sErrConsulta . $sLeyenda . '<table border="0" align="center" cellpadding="0" cellspacing="2" class="tablaapp">
-	<tr class="fondoazul">
-	<td colspan="2"><b>' . $ETI['cara01idtercero'] . '</b></td>
-	<td><b>' . $ETI['cara01completa'] . '</b></td>
-	<td><b>' . $ETI['cara01tipocaracterizacion'] . '</b></td>
-	<td align="right">
-	' . html_paginador('paginaf2301', $registros, $lineastabla, $pagina, 'paginarf2301()') . '
-	' . html_lpp('lppf2301', $lineastabla, 'paginarf2301()', 500) . '
-	</td>
-	</tr>';
+	$res = $sErrConsulta . $sLeyenda;
+	$sClaseTabla = 'table--primary';
+	if ($iPiel == 1) {
+		$sClaseTabla = 'tablaapp';
+	}
+	$res = $res . '<div class="table-responsive">';
+	$res = $res . '<table border="0" align="center" cellpadding="0" cellspacing="2" class="' . $sClaseTabla . '">';
+	$res = $res . '<thead class="fondoazul"><tr>';
+	$res = $res . '<th colspan="2"><b>' . $ETI['cara01idtercero'] . '</b></th>';
+	$res = $res . '<th><b>' . $ETI['cara01completa'] . '</b></th>';
+	$res = $res . '<th><b>' . $ETI['cara01tipocaracterizacion'] . '</b></th>';
+	$res = $res . '<th class="flex gap-1 justify-end">';
+	$res = $res . html_paginador('paginaf2301', $registros, $lineastabla, $pagina, 'paginarf2301()') . '';
+	$res = $res . html_lpp('lppf2301', $lineastabla, 'paginarf2301()', 500) . '';
+	$res = $res . '</th>';
+	$res = $res . '</tr></thead><tbody>';
 	$tlinea = 1;
 	while ($filadet = $objDB->sf($tabladetalle)) {
 		$sPrefijo = '';
@@ -5684,14 +5758,16 @@ function f2301_TablaDetalleV2Consejero($aParametros, $objDB, $bDebug = false)
 		if ($bAbierta) {
 			//$sLink='<a href="javascript:cargaridf2301('.$filadet['cara01id'].')" class="lnkresalte">'.$ETI['lnk_cargar'].'</a>';
 		}
-		$res = $res . '<tr' . $sClass . '>
-		<td>' . $sPrefijo . $filadet['C2_td'] . ' ' . $filadet['C2_doc'] . $sSufijo . '</td>
-		<td>' . $sPrefijo . cadena_notildes($filadet['C2_nombre']) . $sSufijo . '</td>
-		<td>' . $sPrefijo . $et_cara01completa . $sSufijo . '</td>
-		<td colspan="2">' . $et_cara01tipocaracterizacion . '</td>
-		</tr>';
+		$res = $res . '<tr' . $sClass . '>';
+		$res = $res . '<td>' . $sPrefijo . $filadet['C2_td'] . ' ' . $filadet['C2_doc'] . $sSufijo . '</td>';
+		$res = $res . '<td>' . $sPrefijo . cadena_notildes($filadet['C2_nombre']) . $sSufijo . '</td>';
+		$res = $res . '<td>' . $sPrefijo . $et_cara01completa . $sSufijo . '</td>';
+		$res = $res . '<td colspan="2">' . $et_cara01tipocaracterizacion . '</td>';
+		$res = $res . '</tr>';
 	}
-	$res = $res . '</table>';
+	$res = $res . '</tbody></table>';
+	$res = $res . '<div class="salto5px"></div>';
+	$res = $res . '</div>';
 	$objDB->liberar($tabladetalle);
 	return array(cadena_codificar($res), $sDebug);
 }
@@ -6075,7 +6151,7 @@ function f2301_Actualizaedad($aParametros)
 					$sSQL = 'UPDATE cara01encuesta SET cara01agnos="' . $cara01agnos . '" WHERE cara01id=' . $cara01id . '';
 					$tabla = $objDB->ejecutasql($sSQL);
 				}
-			}			
+			}
 		}
 	}
 	if ($cara01agnos > 0) {
@@ -6084,10 +6160,9 @@ function f2301_Actualizaedad($aParametros)
 	if ($cara01agnos == 0) {
 		$et_cara01agnos = '<span class="rojo">Sin Fecha de Nacimiento</span>';
 	}
-	$et_cara01agnos = '<input name="cara01agnos" type="hidden" id="cara01agnos" value="'.$cara01agnos.'"><b>'.$et_cara01agnos.'</b>';
+	$et_cara01agnos = '<input name="cara01agnos" type="hidden" id="cara01agnos" value="' . $cara01agnos . '"><b>' . $et_cara01agnos . '</b>';
 	$objDB->CerrarConexion();
 	$objResponse = new xajaxResponse();
 	$objResponse->assign('div_cara01agnos', 'innerHTML', $et_cara01agnos);
 	return $objResponse;
 }
-

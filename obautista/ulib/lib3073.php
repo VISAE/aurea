@@ -125,7 +125,7 @@ function f3073_HTMLComboV2_saiu73idcentro($objDB, $objCombos, $valor, $vrsaiu73i
 		//$objCombos->addItem('0', '[Sin Dato]');
 		$sSQL = 'SELECT TB.unad24id AS id, TB.unad24nombre AS nombre 
 		FROM unad24sede AS TB
-		WHERE TB.unad24idzona=' . $vrsaiu73idzona . ' 
+		WHERE TB.unad24idzona=' . $vrsaiu73idzona . ' AND TB.unad24activa="S" 
 		ORDER BY TB.unad24nombre';
 	}
 	$res = $objCombos->html($sSQL, $objDB);

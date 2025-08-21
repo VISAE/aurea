@@ -728,6 +728,10 @@ saiu05fecharespprob, saiu05respuesta, saiu05idmoduloproc, saiu05identificadormod
 					$DATA['paso'] = 2;
 				}
 			} else {
+				$DATA['saiu05idunidadresp'] = $saiu05idunidadresp;
+				$DATA['saiu05idequiporesp'] = $saiu05idequiporesp;
+				$DATA['saiu05idsupervisor'] = $saiu05idsupervisor;
+				$DATA['saiu05idresponsable'] = $saiu05idresponsable;
 				list($sErrorC, $sDebugC) = f3007_CargarDocumentos($DATA['saiu05agno'], $DATA['saiu05mes'], $DATA['saiu05id'], $objDB, $bDebug);
 				if ($DATA['saiu05estado'] != $saiu05estadoorigen) {
 					$saiu09consec = tabla_consecutivo($sTabla09, 'saiu09consec', '', $objDB);
@@ -757,6 +761,8 @@ saiu05fecharespprob, saiu05respuesta, saiu05idmoduloproc, saiu05identificadormod
 						case 7:
 							if ($saiu05estadoorigen == -1) {
 								list($sMensaje, $sErrorE, $sDebugE) = f3005_EnviaCorreosSolicitudExt($DATA, $sContenedor, $objDB, $bDebug, true);
+								$sError = $sError . $sErrorE;
+								$sDebug = $sDebug . $sDebugE;
 							}
 							list($sMensaje, $sErrorE, $sDebugE) = f3005_EnviaCorreosSolicitudExt($DATA, $sContenedor, $objDB, $bDebug);
 							$sError = $sError . $sErrorE;
@@ -897,12 +903,13 @@ function f3005_EnviaCorreosSolicitudExt($DATA, $sContenedor, $objDB, $bDebug = f
 				list($unad11razonsocial, $sErrorDet) = tabla_campoxid('unad11terceros', 'unad11razonsocial', 'unad11id', $idTercero, '{' . 'An&oacute;nimo' . '}', $objDB);
 				if ($bResponsable) {
 					$sTituloMensaje = $ETI['mail_asig_titulo'] . ' ' . $sNomEntidad . '';
-					$et_NumSol = f3000_NumSolicitud($DATA['saiu05agno'], $DATA['saiu05mes'], $DATA['saiu05consec']);
-					$sCuerpo = 'Cordial saludo.<br>
-					Estimado(a) <b>' . $unad11razonsocial . '</b><br><br>
-					El Sistema de Atenci&oacute;n Integral (SAI) le informa que le ha sido asignada una PQRS radicada el d&iacute;a ' . $sFechaLarga . '; 
-					con el n&uacute;mero de solicitud: <span style="color: rgb(255, 0, 0); font-size: 16px;"><strong>' . $et_NumSol . '</strong></span>.<br><br>
-					Le invitamos a ingresar al m&oacute;dulo de Peticiones, Quejas, Reclamos y Sugerencias para iniciar el tr&aacute;mite de la solicitud.<br><br>';
+					$sArgs = url_encode($DATA['saiu05agno'] . '|' . $DATA['saiu05mes'] . '|' . $DATA['saiu05id']);
+					$sUrlNumRef = 'https://aurea2.unad.edu.co/sai/saiusolcitudes.php?u='.$sArgs;					
+					$sCuerpo = 'Cordial saludo.<br>';
+					$sCuerpo = $sCuerpo. 'Estimado(a) <b>' . $unad11razonsocial . '</b><br><br>';
+					$sCuerpo = $sCuerpo. 'El Sistema de Atenci&oacute;n Integral (SAI) le informa que le ha sido asignada una PQRS radicada el d&iacute;a ' . $sFechaLarga . '; ';
+					$sCuerpo = $sCuerpo. 'con la referencia de consulta: <a href="' . $sUrlNumRef . '" target="_blank">' . $DATA['saiu05numref'] . '</a>.<br><br>';
+					$sCuerpo = $sCuerpo. 'Le invitamos a ingresar al m&oacute;dulo de Peticiones, Quejas, Reclamos y Sugerencias para iniciar el tr&aacute;mite de la solicitud.<br><br>';
 				} else {
 					if ($DATA['saiu05estado'] == 0) {
 						$sTituloMensaje = $ETI['mail_solic_titulo'] . ' ' . $sNomEntidad . '';
@@ -911,67 +918,64 @@ function f3005_EnviaCorreosSolicitudExt($DATA, $sContenedor, $objDB, $bDebug = f
 						$sTituloMensaje = $ETI['mail_resp_titulo'] . ' ' . $sNomEntidad . '';
 						$sConRespuesta = $sConRespuesta . ' la respuesta a ';
 					}
-					$sCuerpo = 'Cordial saludo.<br>
-					Estimado(a) <b>' . $unad11razonsocial . '</b><br><br>
-					Para la universidad Nacional Abierta y a Distancia - UNAD es muy importante atender sus solicitudes. 
-					Acorde con lo anterior le informamos que' . $sConRespuesta . 'su solicitud radicada el día ' . $sFechaLarga . '; 
-					puede ser consultada en el siguiente enlace:<br><a href="' . $sURLDestino . '" target="_blank">' . $sURLDestino . '</a><br>
-					usando el código de radicado: <span style="color: rgb(255, 0, 0); font-size: 16px;"><strong>' . $DATA['saiu05numref'] . '</strong></span><br><br>';
+					$sCuerpo = 'Cordial saludo.<br>';
+					$sCuerpo = $sCuerpo. 'Estimado(a) <b>' . $unad11razonsocial . '</b><br><br>';
+					$sCuerpo = $sCuerpo. 'Para la universidad Nacional Abierta y a Distancia - UNAD es muy importante atender sus solicitudes. ';
+					$sCuerpo = $sCuerpo. 'Acorde con lo anterior le informamos que' . $sConRespuesta . 'su solicitud radicada el día ' . $sFechaLarga . '; ';
+					$sCuerpo = $sCuerpo. 'puede ser consultada en el siguiente enlace:<br><a href="' . $sURLDestino . '" target="_blank">' . $sURLDestino . '</a><br>';
+					$sCuerpo = $sCuerpo. 'usando el código de radicado: <span style="color: rgb(255, 0, 0); font-size: 16px;"><strong>' . $DATA['saiu05numref'] . '</strong></span><br><br>';
 					if ($DATA['saiu05estado'] == 7) {
-						$sCuerpo = $sCuerpo . '<hr><p style="padding:0 5px;">' . $ETI['mail_enc'] . '</p>
-
-				<table border="0" cellpadding="10" cellspacing="0" width="80%" style="width: 80%; max-width: 80%; min-width: 80%;">
-					<tbody>
-						<tr>
-							<td align="center" bgcolor="#F0B429" style="font-size:22px;">
-								<font face="Arial, Helvetica, sans-serif" color="#005883">
-									<a style="padding: 10px 20px; color: #005883; font-size: 12px; text-decoration: none; word-wrap: break-word;" target="_blank"
-									href="' . $sURLDestinoEnc . '?u=' . $sURL . '">
-										<span style="font-size: 24px;">RESPONDER</span>
-									</a>
-								</font>
-							</td>
-						</tr>
-						<tr>
-							<td height="5">
-							</td>
-						</tr>
-					</tbody>
-				</table>
-
-				<table border="0" cellpadding="10" cellspacing="0" width="60%" style="width: 60%; max-width: 60%; min-width: 60%;">
-					<tbody>
-						<tr>
-							<td align="center" bgcolor="#005883" style="font-size:14px;">
-								<font face="Arial, Helvetica, sans-serif" color="#ffffff">
-									<a style="padding: 10px 20px; color: #ffffff; font-size: 12px; text-decoration: none; word-wrap: break-word;" target="_blank"
-									href="' . $sURLDestinoEnc . '?n=' . $sURL . '">
-										Si no desea responder, por favor haga clic aqu&iacute;
-									</a>
-								</font>
-							</td>
-						</tr>
-						<tr>
-							<td height="5">
-							</td>
-						</tr>
-					</tbody>
-				</table>
-
-				<font face="Arial, Helvetica, sans-serif">
-					<p>
-						En caso de que no pueda acceder desde este correo, por favor ingrese a<br>
-						<a style="padding: 10px 20px; color: #005883; word-wrap: break-word;" target="_blank"
-							href="' . $sURLDestinoEnc . '">' . $sURLDestinoEnc . '
-						</a><br>
-						digite su n&uacute;mero de documento <br> y el c&oacute;digo <b>' . $DATA['saiu05numref'] . '</b>
-					</p>
-					<br>
-				</font>';
+						$sCuerpo = $sCuerpo . '<hr><p style="padding:0 5px;">' . $ETI['mail_enc'] . '</p>';
+						$sCuerpo = $sCuerpo . '<table border="0" cellpadding="10" cellspacing="0" width="80%" style="width: 80%; max-width: 80%; min-width: 80%;">';
+						$sCuerpo = $sCuerpo . '<tbody>';
+						$sCuerpo = $sCuerpo . '<tr>';
+						$sCuerpo = $sCuerpo . '<td align="center" bgcolor="#F0B429" style="font-size:22px;">';
+						$sCuerpo = $sCuerpo . '<font face="Arial, Helvetica, sans-serif" color="#005883">';
+						$sCuerpo = $sCuerpo . '<a style="padding: 10px 20px; color: #005883; font-size: 12px; text-decoration: none; word-wrap: break-word;" target="_blank"';
+						$sCuerpo = $sCuerpo . 'href="' . $sURLDestinoEnc . '?u=' . $sURL . '">';
+						$sCuerpo = $sCuerpo . '<span style="font-size: 24px;">RESPONDER</span>';
+						$sCuerpo = $sCuerpo . '</a>';
+						$sCuerpo = $sCuerpo . '</font>';
+						$sCuerpo = $sCuerpo . '</td>';
+						$sCuerpo = $sCuerpo . '</tr>';
+						$sCuerpo = $sCuerpo . '<tr>';
+						$sCuerpo = $sCuerpo . '<td height="5">';
+						$sCuerpo = $sCuerpo . '</td>';
+						$sCuerpo = $sCuerpo . '</tr>';
+						$sCuerpo = $sCuerpo . '</tbody>';
+						$sCuerpo = $sCuerpo . '</table>';
+						$sCuerpo = $sCuerpo . '<table border="0" cellpadding="10" cellspacing="0" width="60%" style="width: 60%; max-width: 60%; min-width: 60%;">';
+						$sCuerpo = $sCuerpo . '<tbody>';
+						$sCuerpo = $sCuerpo . '<tr>';
+						$sCuerpo = $sCuerpo . '<td align="center" bgcolor="#005883" style="font-size:14px;">';
+						$sCuerpo = $sCuerpo . '<font face="Arial, Helvetica, sans-serif" color="#ffffff">';
+						$sCuerpo = $sCuerpo . '<a style="padding: 10px 20px; color: #ffffff; font-size: 12px; text-decoration: none; word-wrap: break-word;" target="_blank"';
+						$sCuerpo = $sCuerpo . 'href="' . $sURLDestinoEnc . '?n=' . $sURL . '">';
+						$sCuerpo = $sCuerpo . 'Si no desea responder, por favor haga clic aqu&iacute;';
+						$sCuerpo = $sCuerpo . '</a>';
+						$sCuerpo = $sCuerpo . '</font>';
+						$sCuerpo = $sCuerpo . '</td>';
+						$sCuerpo = $sCuerpo . '</tr>';
+						$sCuerpo = $sCuerpo . '<tr>';
+						$sCuerpo = $sCuerpo . '<td height="5">';
+						$sCuerpo = $sCuerpo . '</td>';
+						$sCuerpo = $sCuerpo . '</tr>';
+						$sCuerpo = $sCuerpo . '</tbody>';
+						$sCuerpo = $sCuerpo . '</table>';
+						$sCuerpo = $sCuerpo . '<font face="Arial, Helvetica, sans-serif">';
+						$sCuerpo = $sCuerpo . '<p>';
+						$sCuerpo = $sCuerpo . 'En caso de que no pueda acceder desde este correo, por favor ingrese a<br>';
+						$sCuerpo = $sCuerpo . '<a style="padding: 10px 20px; color: #005883; word-wrap: break-word;" target="_blank"';
+						$sCuerpo = $sCuerpo . 'href="' . $sURLDestinoEnc . '">' . $sURLDestinoEnc . '';
+						$sCuerpo = $sCuerpo . '</a><br>';
+						$sCuerpo = $sCuerpo . 'digite su n&uacute;mero de documento <br> y el c&oacute;digo <b>' . $DATA['saiu05numref'] . '</b>';
+						$sCuerpo = $sCuerpo . '</p>';
+						$sCuerpo = $sCuerpo . '<br>';
+						$sCuerpo = $sCuerpo . '</font>';
 					}
 				}
-				$sCuerpo = $sCuerpo . 'Cordialmente,<br>
-				<b>Sistema de Atención Integral - SAI</b><br>';
+				$sCuerpo = $sCuerpo . 'Cordialmente,<br>';
+				$sCuerpo = $sCuerpo . '<b>Sistema de Atención Integral - SAI</b><br>';
 				$sCuerpo = AUREA_HTML_EncabezadoCorreo($sTituloMensaje) . $sCuerpo . AUREA_HTML_NoResponder() . AUREA_NotificaPieDePagina() . AUREA_HTML_PieCorreo();
 				$objMail->sAsunto = cadena_codificar($sTituloMensaje);
 				$sMensaje = 'Se notifica al correo ' . $sCorreoMensajes;
