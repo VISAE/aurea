@@ -370,7 +370,7 @@ function f2301_IniciarEncuesta($idTercero, $idPeriodo, $objDB, $bDebug = false, 
 			} else {
 				$cara44id = $cara01id;
 				$cara44sexoversion = 1;
-				$cara44bienversion = 2;
+				$cara44bienversion = 3;
 				$sCampos2344 = 'cara44id, cara44sexoversion, cara44bienversion';
 				$sValores2344 = '' . $cara01id . ', ' . $cara44sexoversion . ', ' . $cara44bienversion . '';
 				if ($APP->utf8 == 1) {
@@ -494,7 +494,8 @@ function f2301_IniciarPreguntas($cara01id, $objDB, $bDebug = false)
 function f2301_HTMLComboV2_cara01idperaca($objDB, $objCombos, $valor, $idTercero = 0, $bEstudiante = false)
 {
 	require './app.php';
-	$mensajes_todas = $APP->rutacomun . 'lg/lg_todas_' . $_SESSION['unad_idioma'] . '.php';
+	$sIdioma = AUREA_Idioma();
+	$mensajes_todas = $APP->rutacomun . 'lg/lg_todas_' . $sIdioma . '.php';
 	if (!file_exists($mensajes_todas)) {
 		$mensajes_todas = $APP->rutacomun . 'lg/lg_todas_es.php';
 	}
@@ -540,7 +541,8 @@ function f2301_HTMLComboV2_cara01idperaca($objDB, $objCombos, $valor, $idTercero
 function f2301_HTMLComboV2_cara01depto($objDB, $objCombos, $valor, $vrcara01pais)
 {
 	require './app.php';
-	$mensajes_todas = $APP->rutacomun . 'lg/lg_todas_' . $_SESSION['unad_idioma'] . '.php';
+	$sIdioma = AUREA_Idioma();
+	$mensajes_todas = $APP->rutacomun . 'lg/lg_todas_' . $sIdioma . '.php';
 	if (!file_exists($mensajes_todas)) {
 		$mensajes_todas = $APP->rutacomun . 'lg/lg_todas_es.php';
 	}
@@ -561,7 +563,8 @@ function f2301_HTMLComboV2_cara01depto($objDB, $objCombos, $valor, $vrcara01pais
 function f2301_HTMLComboV2_cara01ciudad($objDB, $objCombos, $valor, $vrcara01depto)
 {
 	require './app.php';
-	$mensajes_todas = $APP->rutacomun . 'lg/lg_todas_' . $_SESSION['unad_idioma'] . '.php';
+	$sIdioma = AUREA_Idioma();
+	$mensajes_todas = $APP->rutacomun . 'lg/lg_todas_' . $sIdioma . '.php';
 	if (!file_exists($mensajes_todas)) {
 		$mensajes_todas = $APP->rutacomun . 'lg/lg_todas_es.php';
 	}
@@ -582,7 +585,8 @@ function f2301_HTMLComboV2_cara01ciudad($objDB, $objCombos, $valor, $vrcara01dep
 function f2301_HTMLComboV2_cara01idzona($objDB, $objCombos, $valor)
 {
 	require './app.php';
-	$mensajes_todas = $APP->rutacomun . 'lg/lg_todas_' . $_SESSION['unad_idioma'] . '.php';
+	$sIdioma = AUREA_Idioma();
+	$mensajes_todas = $APP->rutacomun . 'lg/lg_todas_' . $sIdioma . '.php';
 	if (!file_exists($mensajes_todas)) {
 		$mensajes_todas = $APP->rutacomun . 'lg/lg_todas_es.php';
 	}
@@ -595,7 +599,8 @@ function f2301_HTMLComboV2_cara01idzona($objDB, $objCombos, $valor)
 function f2301_HTMLComboV2_cara01idcead($objDB, $objCombos, $valor, $vrcara01idzona)
 {
 	require './app.php';
-	$mensajes_todas = $APP->rutacomun . 'lg/lg_todas_' . $_SESSION['unad_idioma'] . '.php';
+	$sIdioma = AUREA_Idioma();
+	$mensajes_todas = $APP->rutacomun . 'lg/lg_todas_' . $sIdioma . '.php';
 	if (!file_exists($mensajes_todas)) {
 		$mensajes_todas = $APP->rutacomun . 'lg/lg_todas_es.php';
 	}
@@ -612,7 +617,8 @@ function f2301_HTMLComboV2_cara01idcead($objDB, $objCombos, $valor, $vrcara01idz
 function f2301_HTMLComboV2_cara01tipocaracterizacion($objDB, $objCombos, $valor)
 {
 	require './app.php';
-	$mensajes_todas = $APP->rutacomun . 'lg/lg_todas_' . $_SESSION['unad_idioma'] . '.php';
+	$sIdioma = AUREA_Idioma();
+	$mensajes_todas = $APP->rutacomun . 'lg/lg_todas_' . $sIdioma . '.php';
 	if (!file_exists($mensajes_todas)) {
 		$mensajes_todas = $APP->rutacomun . 'lg/lg_todas_es.php';
 	}
@@ -751,11 +757,12 @@ function f2301_Busquedas($aParametros)
 		$objDB->dbPuerto = $APP->dbpuerto;
 	}
 	$objDB->xajax();
-	$mensajes_todas = $APP->rutacomun . 'lg/lg_todas_' . $_SESSION['unad_idioma'] . '.php';
+	$sIdioma = AUREA_Idioma();
+	$mensajes_todas = $APP->rutacomun . 'lg/lg_todas_' . $sIdioma . '.php';
 	if (!file_exists($mensajes_todas)) {
 		$mensajes_todas = $APP->rutacomun . 'lg/lg_todas_es.php';
 	}
-	$mensajes_2301 = $APP->rutacomun . 'lg/lg_2301_' . $_SESSION['unad_idioma'] . '.php';
+	$mensajes_2301 = $APP->rutacomun . 'lg/lg_2301_' . $sIdioma . '.php';
 	if (!file_exists($mensajes_2301)) {
 		$mensajes_2301 = $APP->rutacomun . 'lg/lg_2301_es.php';
 	}
@@ -867,11 +874,12 @@ function f2301_HtmlBusqueda($aParametros)
 function f2301_TablaDetalleV2($aParametros, $objDB, $bDebug = false)
 {
 	require './app.php';
-	$mensajes_todas = $APP->rutacomun . 'lg/lg_todas_' . $_SESSION['unad_idioma'] . '.php';
+	$sIdioma = AUREA_Idioma();
+	$mensajes_todas = $APP->rutacomun . 'lg/lg_todas_' . $sIdioma . '.php';
 	if (!file_exists($mensajes_todas)) {
 		$mensajes_todas = $APP->rutacomun . 'lg/lg_todas_es.php';
 	}
-	$mensajes_2301 = $APP->rutacomun . 'lg/lg_2301_' . $_SESSION['unad_idioma'] . '.php';
+	$mensajes_2301 = $APP->rutacomun . 'lg/lg_2301_' . $sIdioma . '.php';
 	if (!file_exists($mensajes_2301)) {
 		$mensajes_2301 = $APP->rutacomun . 'lg/lg_2301_es.php';
 	}
@@ -1554,6 +1562,85 @@ function f2301_db_CargarPadre($DATA, $objDB, $bDebug = false)
 			$DATA['cara44frontera'] = $fila['cara44frontera'];
 			$DATA['cara44med_tratamiento'] = $fila['cara44med_tratamiento'];
 			$DATA['cara44med_trat_cual'] = $fila['cara44med_trat_cual'];
+			$DATA['cara44bienv3emprenetapa'] = $fila['cara44bienv3emprenetapa'];
+			$DATA['cara44bienv3emprennecesita'] = $fila['cara44bienv3emprennecesita'];
+			$DATA['cara44bienv3emprenanioini'] = $fila['cara44bienv3emprenanioini'];
+			$DATA['cara44bienv3emprensector'] = $fila['cara44bienv3emprensector'];
+			$DATA['cara44bienv3emprensectorotro'] = $fila['cara44bienv3emprensectorotro'];
+			$DATA['cara44bienv3emprentemas'] = $fila['cara44bienv3emprentemas'];
+			$DATA['cara44bienv3ambienclima'] = $fila['cara44bienv3ambienclima'];
+			$DATA['cara44bienv3ambienjusticia'] = $fila['cara44bienv3ambienjusticia'];
+			$DATA['cara44bienv3ambienagroeco'] = $fila['cara44bienv3ambienagroeco'];
+			$DATA['cara44bienv3ambieneconomia'] = $fila['cara44bienv3ambieneconomia'];
+			$DATA['cara44bienv3ambieneducacion'] = $fila['cara44bienv3ambieneducacion'];
+			$DATA['cara44bienv3ambienbiodiverso'] = $fila['cara44bienv3ambienbiodiverso'];
+			$DATA['cara44bienv3ambienecoturismo'] = $fila['cara44bienv3ambienecoturismo'];
+			$DATA['cara44bienv3ambienotro'] = $fila['cara44bienv3ambienotro'];
+			$DATA['cara44bienv3ambienotrodetalle'] = $fila['cara44bienv3ambienotrodetalle'];
+			$DATA['cara44bienv3ambienexper'] = $fila['cara44bienv3ambienexper'];
+			$DATA['cara44bienv3ambienaprende'] = $fila['cara44bienv3ambienaprende'];
+			$DATA['cara44bienv3ambienestudiante'] = $fila['cara44bienv3ambienestudiante'];
+			$DATA['cara44bienv3ambienactividad'] = $fila['cara44bienv3ambienactividad'];
+			$DATA['cara44bienv3pyphabitoalim'] = $fila['cara44bienv3pyphabitoalim'];
+			$DATA['cara44bienv3pypsustanciapsico'] = $fila['cara44bienv3pypsustanciapsico'];
+			$DATA['cara44bienv3pypsaludvisual'] = $fila['cara44bienv3pypsaludvisual'];
+			$DATA['cara44bienv3pypsaludbucal'] = $fila['cara44bienv3pypsaludbucal'];
+			$DATA['cara44bienv3pypsaludsexual'] = $fila['cara44bienv3pypsaludsexual'];
+			$DATA['cara44bienv3deportenivel'] = $fila['cara44bienv3deportenivel'];
+			$DATA['cara44bienv3deportefrec'] = $fila['cara44bienv3deportefrec'];
+			$DATA['cara44bienv3deportecual'] = $fila['cara44bienv3deportecual'];
+			$DATA['cara44bienv3deportecualotro'] = $fila['cara44bienv3deportecualotro'];
+			$DATA['cara44bienv3deporterecrea'] = $fila['cara44bienv3deporterecrea'];
+			$DATA['cara44bienv3deporteunad'] = $fila['cara44bienv3deporteunad'];
+			$DATA['cara44bienv3creciminclusion'] = $fila['cara44bienv3creciminclusion'];
+			$DATA['cara44bienv3crecimfamilia'] = $fila['cara44bienv3crecimfamilia'];
+			$DATA['cara44bienv3crecimhabilidad'] = $fila['cara44bienv3crecimhabilidad'];
+			$DATA['cara44bienv3crecimempleable'] = $fila['cara44bienv3crecimempleable'];
+			$DATA['cara44bienv3crecimhabilvida'] = $fila['cara44bienv3crecimhabilvida'];
+			$DATA['cara44bienv3crecimespiritual'] = $fila['cara44bienv3crecimespiritual'];
+			$DATA['cara44bienv3crecimpractica'] = $fila['cara44bienv3crecimpractica'];
+			$DATA['cara44bienv3crecimliderazgo'] = $fila['cara44bienv3crecimliderazgo'];
+			$DATA['cara44bienv3crecimtrabequipo'] = $fila['cara44bienv3crecimtrabequipo'];
+			$DATA['cara44bienv3crecimasertiva'] = $fila['cara44bienv3crecimasertiva'];
+			$DATA['cara44bienv3crecimgesttiempo'] = $fila['cara44bienv3crecimgesttiempo'];
+			$DATA['cara44bienv3crecimconflictos'] = $fila['cara44bienv3crecimconflictos'];
+			$DATA['cara44bienv3crecimadapcambio'] = $fila['cara44bienv3crecimadapcambio'];
+			$DATA['cara44bienv3crecimempatia'] = $fila['cara44bienv3crecimempatia'];
+			$DATA['cara44bienv3crecimgestionser'] = $fila['cara44bienv3crecimgestionser'];
+			$DATA['cara44bienv3crecimtomadecide'] = $fila['cara44bienv3crecimtomadecide'];
+			$DATA['cara44bienv3crecimpenscreativo'] = $fila['cara44bienv3crecimpenscreativo'];
+			$DATA['cara44bienv3crecimpenscritico'] = $fila['cara44bienv3crecimpenscritico'];
+			$DATA['cara44bienv3crecimhabilotro'] = $fila['cara44bienv3crecimhabilotro'];
+			$DATA['cara44bienv3crecimhabilotrodetalle'] = $fila['cara44bienv3crecimhabilotrodetalle'];
+			$DATA['cara44bienv3crecimalcancemeta'] = $fila['cara44bienv3crecimalcancemeta'];
+			$DATA['cara44bienv3crecimsatifpersonal'] = $fila['cara44bienv3crecimsatifpersonal'];
+			$DATA['cara44bienv3crecimaccesolaboral'] = $fila['cara44bienv3crecimaccesolaboral'];
+			$DATA['cara44bienv3crecimotramotiv'] = $fila['cara44bienv3crecimotramotiv'];
+			$DATA['cara44bienv3crecimotramotivdetalle'] = $fila['cara44bienv3crecimotramotivdetalle'];
+			$DATA['cara44bienv3crecimapoyo'] = $fila['cara44bienv3crecimapoyo'];
+			$DATA['cara44bienv3crecimlaboral'] = $fila['cara44bienv3crecimlaboral'];
+			$DATA['cara44bienv3mentalcuidado'] = $fila['cara44bienv3mentalcuidado'];
+			$DATA['cara44bienv3mentalestrategia'] = $fila['cara44bienv3mentalestrategia'];
+			$DATA['cara44bienv3mentalestres'] = $fila['cara44bienv3mentalestres'];
+			$DATA['cara44bienv3mentalansiedad'] = $fila['cara44bienv3mentalansiedad'];
+			$DATA['cara44bienv3mentaldepresion'] = $fila['cara44bienv3mentaldepresion'];
+			$DATA['cara44bienv3mentalautoconoc'] = $fila['cara44bienv3mentalautoconoc'];
+			$DATA['cara44bienv3mentalmindfulness'] = $fila['cara44bienv3mentalmindfulness'];
+			$DATA['cara44bienv3mentalautoestima'] = $fila['cara44bienv3mentalautoestima'];
+			$DATA['cara44bienv3mentalcrisis'] = $fila['cara44bienv3mentalcrisis'];
+			$DATA['cara44bienv3mentalburnout'] = $fila['cara44bienv3mentalburnout'];
+			$DATA['cara44bienv3mentalsexualidad'] = $fila['cara44bienv3mentalsexualidad'];
+			$DATA['cara44bienv3mentalusoredes'] = $fila['cara44bienv3mentalusoredes'];
+			$DATA['cara44bienv3mentalinclusion'] = $fila['cara44bienv3mentalinclusion'];
+			$DATA['cara44bienv3mentalactividad'] = $fila['cara44bienv3mentalactividad'];
+			$DATA['cara44bienv3mentalacompana'] = $fila['cara44bienv3mentalacompana'];
+			$DATA['cara44bienv3mentaldiagnostico'] = $fila['cara44bienv3mentaldiagnostico'];
+			$DATA['cara44bienv3mentaldiagcual'] = $fila['cara44bienv3mentaldiagcual'];
+			$DATA['cara44bienv3mentaldiagotro'] = $fila['cara44bienv3mentaldiagotro'];
+			$DATA['cara44bienv3arteintegrar'] = $fila['cara44bienv3arteintegrar'];
+			$DATA['cara44bienv3arteformacion'] = $fila['cara44bienv3arteformacion'];
+			$DATA['cara44bienv3arteunad'] = $fila['cara44bienv3arteunad'];
+			$DATA['cara44bienv3arteinformacion'] = $fila['cara44bienv3arteinformacion'];
 		}
 		$bcargo = true;
 		$DATA['paso'] = 2;
@@ -1598,15 +1685,16 @@ function f2301_db_GuardarV2($DATA, $objDB, $bDebug = false)
 	$bAudita[2] = true;
 	$bAudita[3] = true;
 	require './app.php';
-	$mensajes_todas = $APP->rutacomun . 'lg/lg_todas_' . $_SESSION['unad_idioma'] . '.php';
+	$sIdioma = AUREA_Idioma();
+	$mensajes_todas = $APP->rutacomun . 'lg/lg_todas_' . $sIdioma . '.php';
 	if (!file_exists($mensajes_todas)) {
 		$mensajes_todas = $APP->rutacomun . 'lg/lg_todas_es.php';
 	}
-	$mensajes_2301 = $APP->rutacomun . 'lg/lg_2301_' . $_SESSION['unad_idioma'] . '.php';
+	$mensajes_2301 = $APP->rutacomun . 'lg/lg_2301_' . $sIdioma . '.php';
 	if (!file_exists($mensajes_2301)) {
 		$mensajes_2301 = $APP->rutacomun . 'lg/lg_2301_es.php';
 	}
-	$mensajes_2344 = $APP->rutacomun . 'lg/lg_2344_' . $_SESSION['unad_idioma'] . '.php';
+	$mensajes_2344 = $APP->rutacomun . 'lg/lg_2344_' . $sIdioma . '.php';
 	if (!file_exists($mensajes_2344)) {
 		$mensajes_2344 = $APP->rutacomun . 'lg/lg_2344_es.php';
 	}
@@ -1847,7 +1935,7 @@ function f2301_db_GuardarV2($DATA, $objDB, $bDebug = false)
 		$DATA['cara44sexov1orientasexo'] = 0;
 	}
 	if (isset($DATA['cara44bienversion']) == 0) {
-		$DATA['cara44bienversion'] = 2;
+		$DATA['cara44bienversion'] = 3;
 	}
 	if (isset($DATA['cara44bienv2altoren']) == 0) {
 		$DATA['cara44bienv2altoren'] = '';
@@ -2164,6 +2252,243 @@ function f2301_db_GuardarV2($DATA, $objDB, $bDebug = false)
 	if (isset($DATA['cara44med_trat_cual']) == 0) {
 		$DATA['cara44med_trat_cual'] = '';
 	}
+	if (isset($DATA['cara44bienv3emprenetapa']) == 0) {
+		$DATA['cara44bienv3emprenetapa'] = '';
+	}
+	if (isset($DATA['cara44bienv3emprennecesita']) == 0) {
+		$DATA['cara44bienv3emprennecesita'] = '';
+	}
+	if (isset($DATA['cara44bienv3emprenanioini']) == 0) {
+		$DATA['cara44bienv3emprenanioini'] = '';
+	}
+	if (isset($DATA['cara44bienv3emprensector']) == 0) {
+		$DATA['cara44bienv3emprensector'] = '';
+	}
+	if (isset($DATA['cara44bienv3emprensectorotro']) == 0) {
+		$DATA['cara44bienv3emprensectorotro'] = '';
+	}
+	if (isset($DATA['cara44bienv3emprentemas']) == 0) {
+		$DATA['cara44bienv3emprentemas'] = '';
+	}
+	if (isset($DATA['cara44bienv3ambienclima']) == 0) {
+		$DATA['cara44bienv3ambienclima'] = '';
+	}
+	if (isset($DATA['cara44bienv3ambienjusticia']) == 0) {
+		$DATA['cara44bienv3ambienjusticia'] = '';
+	}
+	if (isset($DATA['cara44bienv3ambienagroeco']) == 0) {
+		$DATA['cara44bienv3ambienagroeco'] = '';
+	}
+	if (isset($DATA['cara44bienv3ambieneconomia']) == 0) {
+		$DATA['cara44bienv3ambieneconomia'] = '';
+	}
+	if (isset($DATA['cara44bienv3ambieneducacion']) == 0) {
+		$DATA['cara44bienv3ambieneducacion'] = '';
+	}
+	if (isset($DATA['cara44bienv3ambienbiodiverso']) == 0) {
+		$DATA['cara44bienv3ambienbiodiverso'] = '';
+	}
+	if (isset($DATA['cara44bienv3ambienecoturismo']) == 0) {
+		$DATA['cara44bienv3ambienecoturismo'] = '';
+	}
+	if (isset($DATA['cara44bienv3ambienotro']) == 0) {
+		$DATA['cara44bienv3ambienotro'] = '';
+	}
+	if (isset($DATA['cara44bienv3ambienotrodetalle']) == 0) {
+		$DATA['cara44bienv3ambienotrodetalle'] = '';
+	}
+	if (isset($DATA['cara44bienv3ambienexper']) == 0) {
+		$DATA['cara44bienv3ambienexper'] = '';
+	}
+	if (isset($DATA['cara44bienv3ambienaprende']) == 0) {
+		$DATA['cara44bienv3ambienaprende'] = '';
+	}
+	if (isset($DATA['cara44bienv3ambienestudiante']) == 0) {
+		$DATA['cara44bienv3ambienestudiante'] = '';
+	}
+	if (isset($DATA['cara44bienv3ambienactividad']) == 0) {
+		$DATA['cara44bienv3ambienactividad'] = '';
+	}
+	if (isset($DATA['cara44bienv3pyphabitoalim']) == 0) {
+		$DATA['cara44bienv3pyphabitoalim'] = '';
+	}
+	if (isset($DATA['cara44bienv3pypsustanciapsico']) == 0) {
+		$DATA['cara44bienv3pypsustanciapsico'] = '';
+	}
+	if (isset($DATA['cara44bienv3pypsaludvisual']) == 0) {
+		$DATA['cara44bienv3pypsaludvisual'] = '';
+	}
+	if (isset($DATA['cara44bienv3pypsaludbucal']) == 0) {
+		$DATA['cara44bienv3pypsaludbucal'] = '';
+	}
+	if (isset($DATA['cara44bienv3pypsaludsexual']) == 0) {
+		$DATA['cara44bienv3pypsaludsexual'] = '';
+	}
+	if (isset($DATA['cara44bienv3deportenivel']) == 0) {
+		$DATA['cara44bienv3deportenivel'] = '';
+	}
+	if (isset($DATA['cara44bienv3deportefrec']) == 0) {
+		$DATA['cara44bienv3deportefrec'] = '';
+	}
+	if (isset($DATA['cara44bienv3deportecual']) == 0) {
+		$DATA['cara44bienv3deportecual'] = '';
+	}
+	if (isset($DATA['cara44bienv3deportecualotro']) == 0) {
+		$DATA['cara44bienv3deportecualotro'] = '';
+	}
+	if (isset($DATA['cara44bienv3deporterecrea']) == 0) {
+		$DATA['cara44bienv3deporterecrea'] = '';
+	}
+	if (isset($DATA['cara44bienv3deporteunad']) == 0) {
+		$DATA['cara44bienv3deporteunad'] = '';
+	}
+	if (isset($DATA['cara44bienv3creciminclusion']) == 0) {
+		$DATA['cara44bienv3creciminclusion'] = '';
+	}
+	if (isset($DATA['cara44bienv3crecimfamilia']) == 0) {
+		$DATA['cara44bienv3crecimfamilia'] = '';
+	}
+	if (isset($DATA['cara44bienv3crecimhabilidad']) == 0) {
+		$DATA['cara44bienv3crecimhabilidad'] = '';
+	}
+	if (isset($DATA['cara44bienv3crecimempleable']) == 0) {
+		$DATA['cara44bienv3crecimempleable'] = '';
+	}
+	if (isset($DATA['cara44bienv3crecimhabilvida']) == 0) {
+		$DATA['cara44bienv3crecimhabilvida'] = '';
+	}
+	if (isset($DATA['cara44bienv3crecimespiritual']) == 0) {
+		$DATA['cara44bienv3crecimespiritual'] = '';
+	}
+	if (isset($DATA['cara44bienv3crecimpractica']) == 0) {
+		$DATA['cara44bienv3crecimpractica'] = '';
+	}
+	if (isset($DATA['cara44bienv3crecimliderazgo']) == 0) {
+		$DATA['cara44bienv3crecimliderazgo'] = '';
+	}
+	if (isset($DATA['cara44bienv3crecimtrabequipo']) == 0) {
+		$DATA['cara44bienv3crecimtrabequipo'] = '';
+	}
+	if (isset($DATA['cara44bienv3crecimasertiva']) == 0) {
+		$DATA['cara44bienv3crecimasertiva'] = '';
+	}
+	if (isset($DATA['cara44bienv3crecimgesttiempo']) == 0) {
+		$DATA['cara44bienv3crecimgesttiempo'] = '';
+	}
+	if (isset($DATA['cara44bienv3crecimconflictos']) == 0) {
+		$DATA['cara44bienv3crecimconflictos'] = '';
+	}
+	if (isset($DATA['cara44bienv3crecimadapcambio']) == 0) {
+		$DATA['cara44bienv3crecimadapcambio'] = '';
+	}
+	if (isset($DATA['cara44bienv3crecimempatia']) == 0) {
+		$DATA['cara44bienv3crecimempatia'] = '';
+	}
+	if (isset($DATA['cara44bienv3crecimgestionser']) == 0) {
+		$DATA['cara44bienv3crecimgestionser'] = '';
+	}
+	if (isset($DATA['cara44bienv3crecimtomadecide']) == 0) {
+		$DATA['cara44bienv3crecimtomadecide'] = '';
+	}
+	if (isset($DATA['cara44bienv3crecimpenscreativo']) == 0) {
+		$DATA['cara44bienv3crecimpenscreativo'] = '';
+	}
+	if (isset($DATA['cara44bienv3crecimpenscritico']) == 0) {
+		$DATA['cara44bienv3crecimpenscritico'] = '';
+	}
+	if (isset($DATA['cara44bienv3crecimhabilotro']) == 0) {
+		$DATA['cara44bienv3crecimhabilotro'] = '';
+	}
+	if (isset($DATA['cara44bienv3crecimhabilotrodetalle']) == 0) {
+		$DATA['cara44bienv3crecimhabilotrodetalle'] = '';
+	}
+	if (isset($DATA['cara44bienv3crecimalcancemeta']) == 0) {
+		$DATA['cara44bienv3crecimalcancemeta'] = '';
+	}
+	if (isset($DATA['cara44bienv3crecimsatifpersonal']) == 0) {
+		$DATA['cara44bienv3crecimsatifpersonal'] = '';
+	}
+	if (isset($DATA['cara44bienv3crecimaccesolaboral']) == 0) {
+		$DATA['cara44bienv3crecimaccesolaboral'] = '';
+	}
+	if (isset($DATA['cara44bienv3crecimotramotiv']) == 0) {
+		$DATA['cara44bienv3crecimotramotiv'] = '';
+	}
+	if (isset($DATA['cara44bienv3crecimotramotivdetalle']) == 0) {
+		$DATA['cara44bienv3crecimotramotivdetalle'] = '';
+	}
+	if (isset($DATA['cara44bienv3crecimapoyo']) == 0) {
+		$DATA['cara44bienv3crecimapoyo'] = '';
+	}
+	if (isset($DATA['cara44bienv3crecimlaboral']) == 0) {
+		$DATA['cara44bienv3crecimlaboral'] = '';
+	}
+	if (isset($DATA['cara44bienv3mentalcuidado']) == 0) {
+		$DATA['cara44bienv3mentalcuidado'] = '';
+	}
+	if (isset($DATA['cara44bienv3mentalestrategia']) == 0) {
+		$DATA['cara44bienv3mentalestrategia'] = '';
+	}
+	if (isset($DATA['cara44bienv3mentalestres']) == 0) {
+		$DATA['cara44bienv3mentalestres'] = '';
+	}
+	if (isset($DATA['cara44bienv3mentalansiedad']) == 0) {
+		$DATA['cara44bienv3mentalansiedad'] = '';
+	}
+	if (isset($DATA['cara44bienv3mentaldepresion']) == 0) {
+		$DATA['cara44bienv3mentaldepresion'] = '';
+	}
+	if (isset($DATA['cara44bienv3mentalautoconoc']) == 0) {
+		$DATA['cara44bienv3mentalautoconoc'] = '';
+	}
+	if (isset($DATA['cara44bienv3mentalmindfulness']) == 0) {
+		$DATA['cara44bienv3mentalmindfulness'] = '';
+	}
+	if (isset($DATA['cara44bienv3mentalautoestima']) == 0) {
+		$DATA['cara44bienv3mentalautoestima'] = '';
+	}
+	if (isset($DATA['cara44bienv3mentalcrisis']) == 0) {
+		$DATA['cara44bienv3mentalcrisis'] = '';
+	}
+	if (isset($DATA['cara44bienv3mentalburnout']) == 0) {
+		$DATA['cara44bienv3mentalburnout'] = '';
+	}
+	if (isset($DATA['cara44bienv3mentalsexualidad']) == 0) {
+		$DATA['cara44bienv3mentalsexualidad'] = '';
+	}
+	if (isset($DATA['cara44bienv3mentalusoredes']) == 0) {
+		$DATA['cara44bienv3mentalusoredes'] = '';
+	}
+	if (isset($DATA['cara44bienv3mentalinclusion']) == 0) {
+		$DATA['cara44bienv3mentalinclusion'] = '';
+	}
+	if (isset($DATA['cara44bienv3mentalactividad']) == 0) {
+		$DATA['cara44bienv3mentalactividad'] = '';
+	}
+	if (isset($DATA['cara44bienv3mentalacompana']) == 0) {
+		$DATA['cara44bienv3mentalacompana'] = '';
+	}
+	if (isset($DATA['cara44bienv3mentaldiagnostico']) == 0) {
+		$DATA['cara44bienv3mentaldiagnostico'] = '';
+	}
+	if (isset($DATA['cara44bienv3mentaldiagcual']) == 0) {
+		$DATA['cara44bienv3mentaldiagcual'] = '';
+	}
+	if (isset($DATA['cara44bienv3mentaldiagotro']) == 0) {
+		$DATA['cara44bienv3mentaldiagotro'] = '';
+	}
+	if (isset($DATA['cara44bienv3arteintegrar']) == 0) {
+		$DATA['cara44bienv3arteintegrar'] = '';
+	}
+	if (isset($DATA['cara44bienv3arteformacion']) == 0) {
+		$DATA['cara44bienv3arteformacion'] = '';
+	}
+	if (isset($DATA['cara44bienv3arteunad']) == 0) {
+		$DATA['cara44bienv3arteunad'] = '';
+	}
+	if (isset($DATA['cara44bienv3arteinformacion']) == 0) {
+		$DATA['cara44bienv3arteinformacion'] = '';
+	}
 	// -- Se inicia validando todas las posibles entradas de usuario.
 	$DATA['cara01idperaca'] = numeros_validar($DATA['cara01idperaca']);
 	$DATA['cara01fichaper'] = numeros_validar($DATA['cara01fichaper']);
@@ -2176,74 +2501,74 @@ function f2301_db_GuardarV2($DATA, $objDB, $bDebug = false)
 	$DATA['cara01fichalectura'] = numeros_validar($DATA['cara01fichalectura']);
 	$DATA['cara01ficharazona'] = numeros_validar($DATA['cara01ficharazona']);
 	$DATA['cara01fichaingles'] = numeros_validar($DATA['cara01fichaingles']);
-	$DATA['cara01sexo'] = htmlspecialchars(trim($DATA['cara01sexo']));
-	$DATA['cara01pais'] = htmlspecialchars(trim($DATA['cara01pais']));
-	$DATA['cara01depto'] = htmlspecialchars(trim($DATA['cara01depto']));
-	$DATA['cara01ciudad'] = htmlspecialchars(trim($DATA['cara01ciudad']));
-	$DATA['cara01nomciudad'] = htmlspecialchars(trim($DATA['cara01nomciudad']));
-	$DATA['cara01direccion'] = htmlspecialchars(trim($DATA['cara01direccion']));
+	$DATA['cara01sexo'] = cadena_Validar(trim($DATA['cara01sexo']));
+	$DATA['cara01pais'] = cadena_Validar(trim($DATA['cara01pais']));
+	$DATA['cara01depto'] = cadena_Validar(trim($DATA['cara01depto']));
+	$DATA['cara01ciudad'] = cadena_Validar(trim($DATA['cara01ciudad']));
+	$DATA['cara01nomciudad'] = cadena_Validar(trim($DATA['cara01nomciudad']));
+	$DATA['cara01direccion'] = cadena_Validar(trim($DATA['cara01direccion']));
 	$DATA['cara01estrato'] = numeros_validar($DATA['cara01estrato']);
-	$DATA['cara01zonares'] = htmlspecialchars(trim($DATA['cara01zonares']));
-	$DATA['cara01estcivil'] = htmlspecialchars(trim($DATA['cara01estcivil']));
-	$DATA['cara01nomcontacto'] = htmlspecialchars(trim($DATA['cara01nomcontacto']));
-	$DATA['cara01parentezcocontacto'] = htmlspecialchars(trim($DATA['cara01parentezcocontacto']));
-	$DATA['cara01celcontacto'] = htmlspecialchars(trim($DATA['cara01celcontacto']));
-	$DATA['cara01correocontacto'] = htmlspecialchars(trim($DATA['cara01correocontacto']));
+	$DATA['cara01zonares'] = cadena_Validar(trim($DATA['cara01zonares']));
+	$DATA['cara01estcivil'] = cadena_Validar(trim($DATA['cara01estcivil']));
+	$DATA['cara01nomcontacto'] = cadena_Validar(trim($DATA['cara01nomcontacto']));
+	$DATA['cara01parentezcocontacto'] = cadena_Validar(trim($DATA['cara01parentezcocontacto']));
+	$DATA['cara01celcontacto'] = cadena_Validar(trim($DATA['cara01celcontacto']));
+	$DATA['cara01correocontacto'] = cadena_Validar(trim($DATA['cara01correocontacto']));
 	$DATA['cara01idzona'] = numeros_validar($DATA['cara01idzona']);
 	$DATA['cara01idcead'] = numeros_validar($DATA['cara01idcead']);
-	$DATA['cara01matconvenio'] = htmlspecialchars(trim($DATA['cara01matconvenio']));
-	$DATA['cara01raizal'] = htmlspecialchars(trim($DATA['cara01raizal']));
-	$DATA['cara01palenquero'] = htmlspecialchars(trim($DATA['cara01palenquero']));
-	$DATA['cara01afrocolombiano'] = htmlspecialchars(trim($DATA['cara01afrocolombiano']));
-	$DATA['cara01otracomunnegras'] = htmlspecialchars(trim($DATA['cara01otracomunnegras']));
-	$DATA['cara01rom'] = htmlspecialchars(trim($DATA['cara01rom']));
+	$DATA['cara01matconvenio'] = cadena_Validar(trim($DATA['cara01matconvenio']));
+	$DATA['cara01raizal'] = cadena_Validar(trim($DATA['cara01raizal']));
+	$DATA['cara01palenquero'] = cadena_Validar(trim($DATA['cara01palenquero']));
+	$DATA['cara01afrocolombiano'] = cadena_Validar(trim($DATA['cara01afrocolombiano']));
+	$DATA['cara01otracomunnegras'] = cadena_Validar(trim($DATA['cara01otracomunnegras']));
+	$DATA['cara01rom'] = cadena_Validar(trim($DATA['cara01rom']));
 	$DATA['cara01indigenas'] = numeros_validar($DATA['cara01indigenas']);
-	$DATA['cara01victimadesplazado'] = htmlspecialchars(trim($DATA['cara01victimadesplazado']));
-	$DATA['cara01victimaacr'] = htmlspecialchars(trim($DATA['cara01victimaacr']));
-	$DATA['cara01inpecfuncionario'] = htmlspecialchars(trim($DATA['cara01inpecfuncionario']));
-	$DATA['cara01inpecrecluso'] = htmlspecialchars(trim($DATA['cara01inpecrecluso']));
+	$DATA['cara01victimadesplazado'] = cadena_Validar(trim($DATA['cara01victimadesplazado']));
+	$DATA['cara01victimaacr'] = cadena_Validar(trim($DATA['cara01victimaacr']));
+	$DATA['cara01inpecfuncionario'] = cadena_Validar(trim($DATA['cara01inpecfuncionario']));
+	$DATA['cara01inpecrecluso'] = cadena_Validar(trim($DATA['cara01inpecrecluso']));
 	$DATA['cara01inpectiempocondena'] = numeros_validar($DATA['cara01inpectiempocondena']);
 	$DATA['cara01centroreclusion'] = numeros_validar($DATA['cara01centroreclusion']);
-	$DATA['cara01discsensorial'] = htmlspecialchars(trim($DATA['cara01discsensorial']));
-	$DATA['cara01discfisica'] = htmlspecialchars(trim($DATA['cara01discfisica']));
-	$DATA['cara01disccognitiva'] = htmlspecialchars(trim($DATA['cara01disccognitiva']));
+	$DATA['cara01discsensorial'] = cadena_Validar(trim($DATA['cara01discsensorial']));
+	$DATA['cara01discfisica'] = cadena_Validar(trim($DATA['cara01discfisica']));
+	$DATA['cara01disccognitiva'] = cadena_Validar(trim($DATA['cara01disccognitiva']));
 	$DATA['cara01fam_tipovivienda'] = numeros_validar($DATA['cara01fam_tipovivienda']);
 	$DATA['cara01fam_vivecon'] = numeros_validar($DATA['cara01fam_vivecon']);
 	$DATA['cara01fam_numpersgrupofam'] = numeros_validar($DATA['cara01fam_numpersgrupofam']);
 	$DATA['cara01fam_hijos'] = numeros_validar($DATA['cara01fam_hijos']);
 	$DATA['cara01fam_personasacargo'] = numeros_validar($DATA['cara01fam_personasacargo']);
-	$DATA['cara01fam_dependeecon'] = htmlspecialchars(trim($DATA['cara01fam_dependeecon']));
+	$DATA['cara01fam_dependeecon'] = cadena_Validar(trim($DATA['cara01fam_dependeecon']));
 	$DATA['cara01fam_escolaridadpadre'] = numeros_validar($DATA['cara01fam_escolaridadpadre']);
 	$DATA['cara01fam_escolaridadmadre'] = numeros_validar($DATA['cara01fam_escolaridadmadre']);
 	$DATA['cara01fam_numhermanos'] = numeros_validar($DATA['cara01fam_numhermanos']);
 	$DATA['cara01fam_posicionherm'] = numeros_validar($DATA['cara01fam_posicionherm']);
-	$DATA['cara01fam_familiaunad'] = htmlspecialchars(trim($DATA['cara01fam_familiaunad']));
+	$DATA['cara01fam_familiaunad'] = cadena_Validar(trim($DATA['cara01fam_familiaunad']));
 	$DATA['cara01acad_tipocolegio'] = numeros_validar($DATA['cara01acad_tipocolegio']);
 	$DATA['cara01acad_modalidadbach'] = numeros_validar($DATA['cara01acad_modalidadbach']);
-	$DATA['cara01acad_estudioprev'] = htmlspecialchars(trim($DATA['cara01acad_estudioprev']));
+	$DATA['cara01acad_estudioprev'] = cadena_Validar(trim($DATA['cara01acad_estudioprev']));
 	$DATA['cara01acad_ultnivelest'] = numeros_validar($DATA['cara01acad_ultnivelest']);
-	$DATA['cara01acad_obtubodiploma'] = htmlspecialchars(trim($DATA['cara01acad_obtubodiploma']));
-	$DATA['cara01acad_hatomadovirtual'] = htmlspecialchars(trim($DATA['cara01acad_hatomadovirtual']));
+	$DATA['cara01acad_obtubodiploma'] = cadena_Validar(trim($DATA['cara01acad_obtubodiploma']));
+	$DATA['cara01acad_hatomadovirtual'] = cadena_Validar(trim($DATA['cara01acad_hatomadovirtual']));
 	$DATA['cara01acad_tiemposinest'] = numeros_validar($DATA['cara01acad_tiemposinest']);
 	$DATA['cara01acad_razonestudio'] = numeros_validar($DATA['cara01acad_razonestudio']);
-	$DATA['cara01acad_primeraopc'] = htmlspecialchars(trim($DATA['cara01acad_primeraopc']));
-	$DATA['cara01acad_programagusto'] = htmlspecialchars(trim($DATA['cara01acad_programagusto']));
+	$DATA['cara01acad_primeraopc'] = cadena_Validar(trim($DATA['cara01acad_primeraopc']));
+	$DATA['cara01acad_programagusto'] = cadena_Validar(trim($DATA['cara01acad_programagusto']));
 	$DATA['cara01acad_razonunad'] = numeros_validar($DATA['cara01acad_razonunad']);
-	$DATA['cara01campus_compescrito'] = htmlspecialchars(trim($DATA['cara01campus_compescrito']));
-	$DATA['cara01campus_portatil'] = htmlspecialchars(trim($DATA['cara01campus_portatil']));
-	$DATA['cara01campus_tableta'] = htmlspecialchars(trim($DATA['cara01campus_tableta']));
-	$DATA['cara01campus_telefono'] = htmlspecialchars(trim($DATA['cara01campus_telefono']));
+	$DATA['cara01campus_compescrito'] = cadena_Validar(trim($DATA['cara01campus_compescrito']));
+	$DATA['cara01campus_portatil'] = cadena_Validar(trim($DATA['cara01campus_portatil']));
+	$DATA['cara01campus_tableta'] = cadena_Validar(trim($DATA['cara01campus_tableta']));
+	$DATA['cara01campus_telefono'] = cadena_Validar(trim($DATA['cara01campus_telefono']));
 	$DATA['cara01campus_energia'] = numeros_validar($DATA['cara01campus_energia']);
 	$DATA['cara01campus_internetreside'] = numeros_validar($DATA['cara01campus_internetreside']);
-	$DATA['cara01campus_expvirtual'] = htmlspecialchars(trim($DATA['cara01campus_expvirtual']));
-	$DATA['cara01campus_ofimatica'] = htmlspecialchars(trim($DATA['cara01campus_ofimatica']));
-	$DATA['cara01campus_foros'] = htmlspecialchars(trim($DATA['cara01campus_foros']));
-	$DATA['cara01campus_conversiones'] = htmlspecialchars(trim($DATA['cara01campus_conversiones']));
+	$DATA['cara01campus_expvirtual'] = cadena_Validar(trim($DATA['cara01campus_expvirtual']));
+	$DATA['cara01campus_ofimatica'] = cadena_Validar(trim($DATA['cara01campus_ofimatica']));
+	$DATA['cara01campus_foros'] = cadena_Validar(trim($DATA['cara01campus_foros']));
+	$DATA['cara01campus_conversiones'] = cadena_Validar(trim($DATA['cara01campus_conversiones']));
 	$DATA['cara01campus_usocorreo'] = numeros_validar($DATA['cara01campus_usocorreo']);
-	$DATA['cara01campus_aprendtexto'] = htmlspecialchars(trim($DATA['cara01campus_aprendtexto']));
-	$DATA['cara01campus_aprendvideo'] = htmlspecialchars(trim($DATA['cara01campus_aprendvideo']));
-	$DATA['cara01campus_aprendmapas'] = htmlspecialchars(trim($DATA['cara01campus_aprendmapas']));
-	$DATA['cara01campus_aprendeanima'] = htmlspecialchars(trim($DATA['cara01campus_aprendeanima']));
+	$DATA['cara01campus_aprendtexto'] = cadena_Validar(trim($DATA['cara01campus_aprendtexto']));
+	$DATA['cara01campus_aprendvideo'] = cadena_Validar(trim($DATA['cara01campus_aprendvideo']));
+	$DATA['cara01campus_aprendmapas'] = cadena_Validar(trim($DATA['cara01campus_aprendmapas']));
+	$DATA['cara01campus_aprendeanima'] = cadena_Validar(trim($DATA['cara01campus_aprendeanima']));
 	$DATA['cara01campus_mediocomunica'] = numeros_validar($DATA['cara01campus_mediocomunica']);
 	$DATA['cara01lab_situacion'] = numeros_validar($DATA['cara01lab_situacion']);
 	$DATA['cara01lab_sector'] = numeros_validar($DATA['cara01lab_sector']);
@@ -2255,49 +2580,49 @@ function f2301_db_GuardarV2($DATA, $objDB, $bDebug = false)
 	$DATA['cara01lab_tiempoacadem'] = numeros_validar($DATA['cara01lab_tiempoacadem']);
 	$DATA['cara01lab_tipoempresa'] = numeros_validar($DATA['cara01lab_tipoempresa']);
 	$DATA['cara01lab_tiempoindepen'] = numeros_validar($DATA['cara01lab_tiempoindepen']);
-	$DATA['cara01lab_debebusctrab'] = htmlspecialchars(trim($DATA['cara01lab_debebusctrab']));
+	$DATA['cara01lab_debebusctrab'] = cadena_Validar(trim($DATA['cara01lab_debebusctrab']));
 	$DATA['cara01lab_origendinero'] = numeros_validar($DATA['cara01lab_origendinero']);
-	$DATA['cara01bien_baloncesto'] = htmlspecialchars(trim($DATA['cara01bien_baloncesto']));
-	$DATA['cara01bien_voleibol'] = htmlspecialchars(trim($DATA['cara01bien_voleibol']));
-	$DATA['cara01bien_futbolsala'] = htmlspecialchars(trim($DATA['cara01bien_futbolsala']));
-	$DATA['cara01bien_artesmarc'] = htmlspecialchars(trim($DATA['cara01bien_artesmarc']));
-	$DATA['cara01bien_tenisdemesa'] = htmlspecialchars(trim($DATA['cara01bien_tenisdemesa']));
-	$DATA['cara01bien_ajedrez'] = htmlspecialchars(trim($DATA['cara01bien_ajedrez']));
-	$DATA['cara01bien_juegosautoc'] = htmlspecialchars(trim($DATA['cara01bien_juegosautoc']));
-	$DATA['cara01bien_interesrepdeporte'] = htmlspecialchars(trim($DATA['cara01bien_interesrepdeporte']));
-	$DATA['cara01bien_deporteint'] = htmlspecialchars(trim($DATA['cara01bien_deporteint']));
-	$DATA['cara01bien_teatro'] = htmlspecialchars(trim($DATA['cara01bien_teatro']));
-	$DATA['cara01bien_danza'] = htmlspecialchars(trim($DATA['cara01bien_danza']));
-	$DATA['cara01bien_musica'] = htmlspecialchars(trim($DATA['cara01bien_musica']));
-	$DATA['cara01bien_circo'] = htmlspecialchars(trim($DATA['cara01bien_circo']));
-	$DATA['cara01bien_artplast'] = htmlspecialchars(trim($DATA['cara01bien_artplast']));
-	$DATA['cara01bien_cuenteria'] = htmlspecialchars(trim($DATA['cara01bien_cuenteria']));
-	$DATA['cara01bien_interesreparte'] = htmlspecialchars(trim($DATA['cara01bien_interesreparte']));
-	$DATA['cara01bien_arteint'] = htmlspecialchars(trim($DATA['cara01bien_arteint']));
+	$DATA['cara01bien_baloncesto'] = cadena_Validar(trim($DATA['cara01bien_baloncesto']));
+	$DATA['cara01bien_voleibol'] = cadena_Validar(trim($DATA['cara01bien_voleibol']));
+	$DATA['cara01bien_futbolsala'] = cadena_Validar(trim($DATA['cara01bien_futbolsala']));
+	$DATA['cara01bien_artesmarc'] = cadena_Validar(trim($DATA['cara01bien_artesmarc']));
+	$DATA['cara01bien_tenisdemesa'] = cadena_Validar(trim($DATA['cara01bien_tenisdemesa']));
+	$DATA['cara01bien_ajedrez'] = cadena_Validar(trim($DATA['cara01bien_ajedrez']));
+	$DATA['cara01bien_juegosautoc'] = cadena_Validar(trim($DATA['cara01bien_juegosautoc']));
+	$DATA['cara01bien_interesrepdeporte'] = cadena_Validar(trim($DATA['cara01bien_interesrepdeporte']));
+	$DATA['cara01bien_deporteint'] = cadena_Validar(trim($DATA['cara01bien_deporteint']));
+	$DATA['cara01bien_teatro'] = cadena_Validar(trim($DATA['cara01bien_teatro']));
+	$DATA['cara01bien_danza'] = cadena_Validar(trim($DATA['cara01bien_danza']));
+	$DATA['cara01bien_musica'] = cadena_Validar(trim($DATA['cara01bien_musica']));
+	$DATA['cara01bien_circo'] = cadena_Validar(trim($DATA['cara01bien_circo']));
+	$DATA['cara01bien_artplast'] = cadena_Validar(trim($DATA['cara01bien_artplast']));
+	$DATA['cara01bien_cuenteria'] = cadena_Validar(trim($DATA['cara01bien_cuenteria']));
+	$DATA['cara01bien_interesreparte'] = cadena_Validar(trim($DATA['cara01bien_interesreparte']));
+	$DATA['cara01bien_arteint'] = cadena_Validar(trim($DATA['cara01bien_arteint']));
 	$DATA['cara01bien_interpreta'] = numeros_validar($DATA['cara01bien_interpreta']);
 	$DATA['cara01bien_nivelinter'] = numeros_validar($DATA['cara01bien_nivelinter']);
-	$DATA['cara01bien_danza_mod'] = htmlspecialchars(trim($DATA['cara01bien_danza_mod']));
-	$DATA['cara01bien_danza_clas'] = htmlspecialchars(trim($DATA['cara01bien_danza_clas']));
-	$DATA['cara01bien_danza_cont'] = htmlspecialchars(trim($DATA['cara01bien_danza_cont']));
-	$DATA['cara01bien_danza_folk'] = htmlspecialchars(trim($DATA['cara01bien_danza_folk']));
+	$DATA['cara01bien_danza_mod'] = cadena_Validar(trim($DATA['cara01bien_danza_mod']));
+	$DATA['cara01bien_danza_clas'] = cadena_Validar(trim($DATA['cara01bien_danza_clas']));
+	$DATA['cara01bien_danza_cont'] = cadena_Validar(trim($DATA['cara01bien_danza_cont']));
+	$DATA['cara01bien_danza_folk'] = cadena_Validar(trim($DATA['cara01bien_danza_folk']));
 	$DATA['cara01bien_niveldanza'] = numeros_validar($DATA['cara01bien_niveldanza']);
-	$DATA['cara01bien_emprendedor'] = htmlspecialchars(trim($DATA['cara01bien_emprendedor']));
-	$DATA['cara01bien_nombreemp'] = htmlspecialchars(trim($DATA['cara01bien_nombreemp']));
-	$DATA['cara01bien_capacempren'] = htmlspecialchars(trim($DATA['cara01bien_capacempren']));
-	$DATA['cara01bien_tipocapacita'] = htmlspecialchars(trim($DATA['cara01bien_tipocapacita']));
-	$DATA['cara01bien_impvidasalud'] = htmlspecialchars(trim($DATA['cara01bien_impvidasalud']));
-	$DATA['cara01bien_estraautocuid'] = htmlspecialchars(trim($DATA['cara01bien_estraautocuid']));
-	$DATA['cara01bien_pv_personal'] = htmlspecialchars(trim($DATA['cara01bien_pv_personal']));
-	$DATA['cara01bien_pv_familiar'] = htmlspecialchars(trim($DATA['cara01bien_pv_familiar']));
-	$DATA['cara01bien_pv_academ'] = htmlspecialchars(trim($DATA['cara01bien_pv_academ']));
-	$DATA['cara01bien_pv_labora'] = htmlspecialchars(trim($DATA['cara01bien_pv_labora']));
-	$DATA['cara01bien_pv_pareja'] = htmlspecialchars(trim($DATA['cara01bien_pv_pareja']));
-	$DATA['cara01bien_amb'] = htmlspecialchars(trim($DATA['cara01bien_amb']));
-	$DATA['cara01bien_amb_agu'] = htmlspecialchars(trim($DATA['cara01bien_amb_agu']));
-	$DATA['cara01bien_amb_bom'] = htmlspecialchars(trim($DATA['cara01bien_amb_bom']));
-	$DATA['cara01bien_amb_car'] = htmlspecialchars(trim($DATA['cara01bien_amb_car']));
-	$DATA['cara01bien_amb_info'] = htmlspecialchars(trim($DATA['cara01bien_amb_info']));
-	$DATA['cara01bien_amb_temas'] = htmlspecialchars(trim($DATA['cara01bien_amb_temas']));
+	$DATA['cara01bien_emprendedor'] = cadena_Validar(trim($DATA['cara01bien_emprendedor']));
+	$DATA['cara01bien_nombreemp'] = cadena_Validar(trim($DATA['cara01bien_nombreemp']));
+	$DATA['cara01bien_capacempren'] = cadena_Validar(trim($DATA['cara01bien_capacempren']));
+	$DATA['cara01bien_tipocapacita'] = cadena_Validar(trim($DATA['cara01bien_tipocapacita']));
+	$DATA['cara01bien_impvidasalud'] = cadena_Validar(trim($DATA['cara01bien_impvidasalud']));
+	$DATA['cara01bien_estraautocuid'] = cadena_Validar(trim($DATA['cara01bien_estraautocuid']));
+	$DATA['cara01bien_pv_personal'] = cadena_Validar(trim($DATA['cara01bien_pv_personal']));
+	$DATA['cara01bien_pv_familiar'] = cadena_Validar(trim($DATA['cara01bien_pv_familiar']));
+	$DATA['cara01bien_pv_academ'] = cadena_Validar(trim($DATA['cara01bien_pv_academ']));
+	$DATA['cara01bien_pv_labora'] = cadena_Validar(trim($DATA['cara01bien_pv_labora']));
+	$DATA['cara01bien_pv_pareja'] = cadena_Validar(trim($DATA['cara01bien_pv_pareja']));
+	$DATA['cara01bien_amb'] = cadena_Validar(trim($DATA['cara01bien_amb']));
+	$DATA['cara01bien_amb_agu'] = cadena_Validar(trim($DATA['cara01bien_amb_agu']));
+	$DATA['cara01bien_amb_bom'] = cadena_Validar(trim($DATA['cara01bien_amb_bom']));
+	$DATA['cara01bien_amb_car'] = cadena_Validar(trim($DATA['cara01bien_amb_car']));
+	$DATA['cara01bien_amb_info'] = cadena_Validar(trim($DATA['cara01bien_amb_info']));
+	$DATA['cara01bien_amb_temas'] = cadena_Validar(trim($DATA['cara01bien_amb_temas']));
 	$DATA['cara01psico_costoemocion'] = numeros_validar($DATA['cara01psico_costoemocion']);
 	$DATA['cara01psico_reaccionimpre'] = numeros_validar($DATA['cara01psico_reaccionimpre']);
 	$DATA['cara01psico_estres'] = numeros_validar($DATA['cara01psico_estres']);
@@ -2308,9 +2633,9 @@ function f2301_db_GuardarV2($DATA, $objDB, $bDebug = false)
 	$DATA['cara01psico_satisfaccion'] = numeros_validar($DATA['cara01psico_satisfaccion']);
 	$DATA['cara01psico_discusiones'] = numeros_validar($DATA['cara01psico_discusiones']);
 	$DATA['cara01psico_atencion'] = numeros_validar($DATA['cara01psico_atencion']);
-	$DATA['cara01telefono1'] = htmlspecialchars(trim($DATA['cara01telefono1']));
-	$DATA['cara01telefono2'] = htmlspecialchars(trim($DATA['cara01telefono2']));
-	$DATA['cara01correopersonal'] = htmlspecialchars(trim($DATA['cara01correopersonal']));
+	$DATA['cara01telefono1'] = cadena_Validar(trim($DATA['cara01telefono1']));
+	$DATA['cara01telefono2'] = cadena_Validar(trim($DATA['cara01telefono2']));
+	$DATA['cara01correopersonal'] = cadena_Validar(trim($DATA['cara01correopersonal']));
 	$DATA['cara01fichabiolog'] = numeros_validar($DATA['cara01fichabiolog']);
 	$DATA['cara01fichafisica'] = numeros_validar($DATA['cara01fichafisica']);
 	$DATA['cara01fichaquimica'] = numeros_validar($DATA['cara01fichaquimica']);
@@ -2320,9 +2645,9 @@ function f2301_db_GuardarV2($DATA, $objDB, $bDebug = false)
 	$DATA['cara02discv2fisica'] = numeros_validar($DATA['cara02discv2fisica']);
 	$DATA['cara02discv2psico'] = numeros_validar($DATA['cara02discv2psico']);
 	$DATA['cara02discv2sistemica'] = numeros_validar($DATA['cara02discv2sistemica']);
-	$DATA['cara02discv2sistemicaotro'] = htmlspecialchars(trim($DATA['cara02discv2sistemicaotro']));
+	$DATA['cara02discv2sistemicaotro'] = cadena_Validar(trim($DATA['cara02discv2sistemicaotro']));
 	$DATA['cara02discv2multiple'] = numeros_validar($DATA['cara02discv2multiple']);
-	$DATA['cara02discv2multipleotro'] = htmlspecialchars(trim($DATA['cara02discv2multipleotro']));
+	$DATA['cara02discv2multipleotro'] = cadena_Validar(trim($DATA['cara02discv2multipleotro']));
 	$DATA['cara02talentoexcepcional'] = numeros_validar($DATA['cara02talentoexcepcional']);
 	$DATA['cara01discv2tiene'] = numeros_validar($DATA['cara01discv2tiene']);
 	$DATA['cara01discv2trastaprende'] = numeros_validar($DATA['cara01discv2trastaprende']);
@@ -2331,116 +2656,195 @@ function f2301_db_GuardarV2($DATA, $objDB, $bDebug = false)
 	$DATA['cara01discv2trastornos'] = numeros_validar($DATA['cara01discv2trastornos']);
 	$DATA['cara01discv2contalento'] = numeros_validar($DATA['cara01discv2contalento']);
 	$DATA['cara01discv2condicionmedica'] = numeros_validar($DATA['cara01discv2condicionmedica']);
-	$DATA['cara01discv2condmeddet'] = htmlspecialchars(trim($DATA['cara01discv2condmeddet']));
+	$DATA['cara01discv2condmeddet'] = cadena_Validar(trim($DATA['cara01discv2condmeddet']));
 	$DATA['cara01discv2pruebacoeficiente'] = numeros_validar($DATA['cara01discv2pruebacoeficiente']);
-	$DATA['cara44campesinado'] = htmlspecialchars(trim($DATA['cara44campesinado']));
+	$DATA['cara44campesinado'] = cadena_Validar(trim($DATA['cara44campesinado']));
 	$DATA['cara44sexov1identidadgen'] = numeros_validar($DATA['cara44sexov1identidadgen']);
 	$DATA['cara44sexov1orientasexo'] = numeros_validar($DATA['cara44sexov1orientasexo']);
-	$DATA['cara44bienv2altoren'] = htmlspecialchars(trim($DATA['cara44bienv2altoren']));
-	$DATA['cara44bienv2atletismo'] = htmlspecialchars(trim($DATA['cara44bienv2atletismo']));
-	$DATA['cara44bienv2baloncesto'] = htmlspecialchars(trim($DATA['cara44bienv2baloncesto']));
-	$DATA['cara44bienv2futbol'] = htmlspecialchars(trim($DATA['cara44bienv2futbol']));
-	$DATA['cara44bienv2gimnasia'] = htmlspecialchars(trim($DATA['cara44bienv2gimnasia']));
-	$DATA['cara44bienv2natacion'] = htmlspecialchars(trim($DATA['cara44bienv2natacion']));
-	$DATA['cara44bienv2voleibol'] = htmlspecialchars(trim($DATA['cara44bienv2voleibol']));
-	$DATA['cara44bienv2tenis'] = htmlspecialchars(trim($DATA['cara44bienv2tenis']));
-	$DATA['cara44bienv2paralimpico'] = htmlspecialchars(trim($DATA['cara44bienv2paralimpico']));
-	$DATA['cara44bienv2otrodeporte'] = htmlspecialchars(trim($DATA['cara44bienv2otrodeporte']));
-	$DATA['cara44bienv2otrodeportedetalle'] = htmlspecialchars(trim($DATA['cara44bienv2otrodeportedetalle']));
-	$DATA['cara44bienv2activdanza'] = htmlspecialchars(trim($DATA['cara44bienv2activdanza']));
-	$DATA['cara44bienv2activmusica'] = htmlspecialchars(trim($DATA['cara44bienv2activmusica']));
-	$DATA['cara44bienv2activteatro'] = htmlspecialchars(trim($DATA['cara44bienv2activteatro']));
-	$DATA['cara44bienv2activartes'] = htmlspecialchars(trim($DATA['cara44bienv2activartes']));
-	$DATA['cara44bienv2activliteratura'] = htmlspecialchars(trim($DATA['cara44bienv2activliteratura']));
-	$DATA['cara44bienv2activculturalotra'] = htmlspecialchars(trim($DATA['cara44bienv2activculturalotra']));
-	$DATA['cara44bienv2activculturalotradetalle'] = htmlspecialchars(trim($DATA['cara44bienv2activculturalotradetalle']));
-	$DATA['cara44bienv2evenfestfolc'] = htmlspecialchars(trim($DATA['cara44bienv2evenfestfolc']));
-	$DATA['cara44bienv2evenexpoarte'] = htmlspecialchars(trim($DATA['cara44bienv2evenexpoarte']));
-	$DATA['cara44bienv2evenhistarte'] = htmlspecialchars(trim($DATA['cara44bienv2evenhistarte']));
-	$DATA['cara44bienv2evengalfoto'] = htmlspecialchars(trim($DATA['cara44bienv2evengalfoto']));
-	$DATA['cara44bienv2evenliteratura'] = htmlspecialchars(trim($DATA['cara44bienv2evenliteratura']));
-	$DATA['cara44bienv2eventeatro'] = htmlspecialchars(trim($DATA['cara44bienv2eventeatro']));
-	$DATA['cara44bienv2evencine'] = htmlspecialchars(trim($DATA['cara44bienv2evencine']));
-	$DATA['cara44bienv2evenculturalotro'] = htmlspecialchars(trim($DATA['cara44bienv2evenculturalotro']));
-	$DATA['cara44bienv2evenculturalotrodetalle'] = htmlspecialchars(trim($DATA['cara44bienv2evenculturalotrodetalle']));
-	$DATA['cara44bienv2emprendimiento'] = htmlspecialchars(trim($DATA['cara44bienv2emprendimiento']));
-	$DATA['cara44bienv2empresa'] = htmlspecialchars(trim($DATA['cara44bienv2empresa']));
-	$DATA['cara44bienv2emprenrecursos'] = htmlspecialchars(trim($DATA['cara44bienv2emprenrecursos']));
-	$DATA['cara44bienv2emprenconocim'] = htmlspecialchars(trim($DATA['cara44bienv2emprenconocim']));
-	$DATA['cara44bienv2emprenplan'] = htmlspecialchars(trim($DATA['cara44bienv2emprenplan']));
-	$DATA['cara44bienv2emprenejecutar'] = htmlspecialchars(trim($DATA['cara44bienv2emprenejecutar']));
-	$DATA['cara44bienv2emprenfortconocim'] = htmlspecialchars(trim($DATA['cara44bienv2emprenfortconocim']));
-	$DATA['cara44bienv2emprenidentproblema'] = htmlspecialchars(trim($DATA['cara44bienv2emprenidentproblema']));
-	$DATA['cara44bienv2emprenotro'] = htmlspecialchars(trim($DATA['cara44bienv2emprenotro']));
-	$DATA['cara44bienv2emprenotrodetalle'] = htmlspecialchars(trim($DATA['cara44bienv2emprenotrodetalle']));
-	$DATA['cara44bienv2emprenmarketing'] = htmlspecialchars(trim($DATA['cara44bienv2emprenmarketing']));
-	$DATA['cara44bienv2emprenplannegocios'] = htmlspecialchars(trim($DATA['cara44bienv2emprenplannegocios']));
-	$DATA['cara44bienv2emprenideas'] = htmlspecialchars(trim($DATA['cara44bienv2emprenideas']));
-	$DATA['cara44bienv2emprencreacion'] = htmlspecialchars(trim($DATA['cara44bienv2emprencreacion']));
-	$DATA['cara44bienv2saludfacteconom'] = htmlspecialchars(trim($DATA['cara44bienv2saludfacteconom']));
-	$DATA['cara44bienv2saludpreocupacion'] = htmlspecialchars(trim($DATA['cara44bienv2saludpreocupacion']));
-	$DATA['cara44bienv2saludconsumosust'] = htmlspecialchars(trim($DATA['cara44bienv2saludconsumosust']));
-	$DATA['cara44bienv2saludinsomnio'] = htmlspecialchars(trim($DATA['cara44bienv2saludinsomnio']));
-	$DATA['cara44bienv2saludclimalab'] = htmlspecialchars(trim($DATA['cara44bienv2saludclimalab']));
-	$DATA['cara44bienv2saludalimenta'] = htmlspecialchars(trim($DATA['cara44bienv2saludalimenta']));
-	$DATA['cara44bienv2saludemocion'] = htmlspecialchars(trim($DATA['cara44bienv2saludemocion']));
-	$DATA['cara44bienv2saludestado'] = htmlspecialchars(trim($DATA['cara44bienv2saludestado']));
-	$DATA['cara44bienv2saludmedita'] = htmlspecialchars(trim($DATA['cara44bienv2saludmedita']));
-	$DATA['cara44bienv2crecimedusexual'] = htmlspecialchars(trim($DATA['cara44bienv2crecimedusexual']));
-	$DATA['cara44bienv2crecimcultciudad'] = htmlspecialchars(trim($DATA['cara44bienv2crecimcultciudad']));
-	$DATA['cara44bienv2crecimrelpareja'] = htmlspecialchars(trim($DATA['cara44bienv2crecimrelpareja']));
-	$DATA['cara44bienv2crecimrelinterp'] = htmlspecialchars(trim($DATA['cara44bienv2crecimrelinterp']));
-	$DATA['cara44bienv2crecimdinamicafam'] = htmlspecialchars(trim($DATA['cara44bienv2crecimdinamicafam']));
-	$DATA['cara44bienv2crecimautoestima'] = htmlspecialchars(trim($DATA['cara44bienv2crecimautoestima']));
-	$DATA['cara44bienv2creciminclusion'] = htmlspecialchars(trim($DATA['cara44bienv2creciminclusion']));
-	$DATA['cara44bienv2creciminteliemoc'] = htmlspecialchars(trim($DATA['cara44bienv2creciminteliemoc']));
-	$DATA['cara44bienv2crecimcultural'] = htmlspecialchars(trim($DATA['cara44bienv2crecimcultural']));
-	$DATA['cara44bienv2crecimartistico'] = htmlspecialchars(trim($DATA['cara44bienv2crecimartistico']));
-	$DATA['cara44bienv2crecimdeporte'] = htmlspecialchars(trim($DATA['cara44bienv2crecimdeporte']));
-	$DATA['cara44bienv2crecimambiente'] = htmlspecialchars(trim($DATA['cara44bienv2crecimambiente']));
-	$DATA['cara44bienv2crecimhabsocio'] = htmlspecialchars(trim($DATA['cara44bienv2crecimhabsocio']));
-	$DATA['cara44bienv2ambienbasura'] = htmlspecialchars(trim($DATA['cara44bienv2ambienbasura']));
-	$DATA['cara44bienv2ambienreutiliza'] = htmlspecialchars(trim($DATA['cara44bienv2ambienreutiliza']));
-	$DATA['cara44bienv2ambienluces'] = htmlspecialchars(trim($DATA['cara44bienv2ambienluces']));
-	$DATA['cara44bienv2ambienfrutaverd'] = htmlspecialchars(trim($DATA['cara44bienv2ambienfrutaverd']));
-	$DATA['cara44bienv2ambienenchufa'] = htmlspecialchars(trim($DATA['cara44bienv2ambienenchufa']));
-	$DATA['cara44bienv2ambiengrifo'] = htmlspecialchars(trim($DATA['cara44bienv2ambiengrifo']));
-	$DATA['cara44bienv2ambienbicicleta'] = htmlspecialchars(trim($DATA['cara44bienv2ambienbicicleta']));
-	$DATA['cara44bienv2ambientranspub'] = htmlspecialchars(trim($DATA['cara44bienv2ambientranspub']));
-	$DATA['cara44bienv2ambienducha'] = htmlspecialchars(trim($DATA['cara44bienv2ambienducha']));
-	$DATA['cara44bienv2ambiencaminata'] = htmlspecialchars(trim($DATA['cara44bienv2ambiencaminata']));
-	$DATA['cara44bienv2ambiensiembra'] = htmlspecialchars(trim($DATA['cara44bienv2ambiensiembra']));
-	$DATA['cara44bienv2ambienconferencia'] = htmlspecialchars(trim($DATA['cara44bienv2ambienconferencia']));
-	$DATA['cara44bienv2ambienrecicla'] = htmlspecialchars(trim($DATA['cara44bienv2ambienrecicla']));
-	$DATA['cara44bienv2ambienotraactiv'] = htmlspecialchars(trim($DATA['cara44bienv2ambienotraactiv']));
-	$DATA['cara44bienv2ambienotraactivdetalle'] = htmlspecialchars(trim($DATA['cara44bienv2ambienotraactivdetalle']));
-	$DATA['cara44bienv2ambienreforest'] = htmlspecialchars(trim($DATA['cara44bienv2ambienreforest']));
-	$DATA['cara44bienv2ambienmovilidad'] = htmlspecialchars(trim($DATA['cara44bienv2ambienmovilidad']));
-	$DATA['cara44bienv2ambienclimatico'] = htmlspecialchars(trim($DATA['cara44bienv2ambienclimatico']));
-	$DATA['cara44bienv2ambienecofemin'] = htmlspecialchars(trim($DATA['cara44bienv2ambienecofemin']));
-	$DATA['cara44bienv2ambienbiodiver'] = htmlspecialchars(trim($DATA['cara44bienv2ambienbiodiver']));
-	$DATA['cara44bienv2ambienecologia'] = htmlspecialchars(trim($DATA['cara44bienv2ambienecologia']));
-	$DATA['cara44bienv2ambieneconomia'] = htmlspecialchars(trim($DATA['cara44bienv2ambieneconomia']));
-	$DATA['cara44bienv2ambienrecnatura'] = htmlspecialchars(trim($DATA['cara44bienv2ambienrecnatura']));
-	$DATA['cara44bienv2ambienreciclaje'] = htmlspecialchars(trim($DATA['cara44bienv2ambienreciclaje']));
-	$DATA['cara44bienv2ambienmascota'] = htmlspecialchars(trim($DATA['cara44bienv2ambienmascota']));
-	$DATA['cara44bienv2ambiencartohum'] = htmlspecialchars(trim($DATA['cara44bienv2ambiencartohum']));
-	$DATA['cara44bienv2ambienespiritu'] = htmlspecialchars(trim($DATA['cara44bienv2ambienespiritu']));
-	$DATA['cara44bienv2ambiencarga'] = htmlspecialchars(trim($DATA['cara44bienv2ambiencarga']));
-	$DATA['cara44bienv2ambienotroenfoq'] = htmlspecialchars(trim($DATA['cara44bienv2ambienotroenfoq']));
-	$DATA['cara44bienv2ambienotroenfoqdetalle'] = htmlspecialchars(trim($DATA['cara44bienv2ambienotroenfoqdetalle']));
-	$DATA['cara44fam_madrecabeza'] = htmlspecialchars(trim($DATA['cara44fam_madrecabeza']));
-	$DATA['cara44acadhatenidorecesos'] = htmlspecialchars(trim($DATA['cara44acadhatenidorecesos']));
+	$DATA['cara44bienv2altoren'] = cadena_Validar(trim($DATA['cara44bienv2altoren']));
+	$DATA['cara44bienv2atletismo'] = cadena_Validar(trim($DATA['cara44bienv2atletismo']));
+	$DATA['cara44bienv2baloncesto'] = cadena_Validar(trim($DATA['cara44bienv2baloncesto']));
+	$DATA['cara44bienv2futbol'] = cadena_Validar(trim($DATA['cara44bienv2futbol']));
+	$DATA['cara44bienv2gimnasia'] = cadena_Validar(trim($DATA['cara44bienv2gimnasia']));
+	$DATA['cara44bienv2natacion'] = cadena_Validar(trim($DATA['cara44bienv2natacion']));
+	$DATA['cara44bienv2voleibol'] = cadena_Validar(trim($DATA['cara44bienv2voleibol']));
+	$DATA['cara44bienv2tenis'] = cadena_Validar(trim($DATA['cara44bienv2tenis']));
+	$DATA['cara44bienv2paralimpico'] = cadena_Validar(trim($DATA['cara44bienv2paralimpico']));
+	$DATA['cara44bienv2otrodeporte'] = cadena_Validar(trim($DATA['cara44bienv2otrodeporte']));
+	$DATA['cara44bienv2otrodeportedetalle'] = cadena_Validar(trim($DATA['cara44bienv2otrodeportedetalle']));
+	$DATA['cara44bienv2activdanza'] = cadena_Validar(trim($DATA['cara44bienv2activdanza']));
+	$DATA['cara44bienv2activmusica'] = cadena_Validar(trim($DATA['cara44bienv2activmusica']));
+	$DATA['cara44bienv2activteatro'] = cadena_Validar(trim($DATA['cara44bienv2activteatro']));
+	$DATA['cara44bienv2activartes'] = cadena_Validar(trim($DATA['cara44bienv2activartes']));
+	$DATA['cara44bienv2activliteratura'] = cadena_Validar(trim($DATA['cara44bienv2activliteratura']));
+	$DATA['cara44bienv2activculturalotra'] = cadena_Validar(trim($DATA['cara44bienv2activculturalotra']));
+	$DATA['cara44bienv2activculturalotradetalle'] = cadena_Validar(trim($DATA['cara44bienv2activculturalotradetalle']));
+	$DATA['cara44bienv2evenfestfolc'] = cadena_Validar(trim($DATA['cara44bienv2evenfestfolc']));
+	$DATA['cara44bienv2evenexpoarte'] = cadena_Validar(trim($DATA['cara44bienv2evenexpoarte']));
+	$DATA['cara44bienv2evenhistarte'] = cadena_Validar(trim($DATA['cara44bienv2evenhistarte']));
+	$DATA['cara44bienv2evengalfoto'] = cadena_Validar(trim($DATA['cara44bienv2evengalfoto']));
+	$DATA['cara44bienv2evenliteratura'] = cadena_Validar(trim($DATA['cara44bienv2evenliteratura']));
+	$DATA['cara44bienv2eventeatro'] = cadena_Validar(trim($DATA['cara44bienv2eventeatro']));
+	$DATA['cara44bienv2evencine'] = cadena_Validar(trim($DATA['cara44bienv2evencine']));
+	$DATA['cara44bienv2evenculturalotro'] = cadena_Validar(trim($DATA['cara44bienv2evenculturalotro']));
+	$DATA['cara44bienv2evenculturalotrodetalle'] = cadena_Validar(trim($DATA['cara44bienv2evenculturalotrodetalle']));
+	$DATA['cara44bienv2emprendimiento'] = cadena_Validar(trim($DATA['cara44bienv2emprendimiento']));
+	$DATA['cara44bienv2empresa'] = cadena_Validar(trim($DATA['cara44bienv2empresa']));
+	$DATA['cara44bienv2emprenrecursos'] = cadena_Validar(trim($DATA['cara44bienv2emprenrecursos']));
+	$DATA['cara44bienv2emprenconocim'] = cadena_Validar(trim($DATA['cara44bienv2emprenconocim']));
+	$DATA['cara44bienv2emprenplan'] = cadena_Validar(trim($DATA['cara44bienv2emprenplan']));
+	$DATA['cara44bienv2emprenejecutar'] = cadena_Validar(trim($DATA['cara44bienv2emprenejecutar']));
+	$DATA['cara44bienv2emprenfortconocim'] = cadena_Validar(trim($DATA['cara44bienv2emprenfortconocim']));
+	$DATA['cara44bienv2emprenidentproblema'] = cadena_Validar(trim($DATA['cara44bienv2emprenidentproblema']));
+	$DATA['cara44bienv2emprenotro'] = cadena_Validar(trim($DATA['cara44bienv2emprenotro']));
+	$DATA['cara44bienv2emprenotrodetalle'] = cadena_Validar(trim($DATA['cara44bienv2emprenotrodetalle']));
+	$DATA['cara44bienv2emprenmarketing'] = cadena_Validar(trim($DATA['cara44bienv2emprenmarketing']));
+	$DATA['cara44bienv2emprenplannegocios'] = cadena_Validar(trim($DATA['cara44bienv2emprenplannegocios']));
+	$DATA['cara44bienv2emprenideas'] = cadena_Validar(trim($DATA['cara44bienv2emprenideas']));
+	$DATA['cara44bienv2emprencreacion'] = cadena_Validar(trim($DATA['cara44bienv2emprencreacion']));
+	$DATA['cara44bienv2saludfacteconom'] = cadena_Validar(trim($DATA['cara44bienv2saludfacteconom']));
+	$DATA['cara44bienv2saludpreocupacion'] = cadena_Validar(trim($DATA['cara44bienv2saludpreocupacion']));
+	$DATA['cara44bienv2saludconsumosust'] = cadena_Validar(trim($DATA['cara44bienv2saludconsumosust']));
+	$DATA['cara44bienv2saludinsomnio'] = cadena_Validar(trim($DATA['cara44bienv2saludinsomnio']));
+	$DATA['cara44bienv2saludclimalab'] = cadena_Validar(trim($DATA['cara44bienv2saludclimalab']));
+	$DATA['cara44bienv2saludalimenta'] = cadena_Validar(trim($DATA['cara44bienv2saludalimenta']));
+	$DATA['cara44bienv2saludemocion'] = cadena_Validar(trim($DATA['cara44bienv2saludemocion']));
+	$DATA['cara44bienv2saludestado'] = cadena_Validar(trim($DATA['cara44bienv2saludestado']));
+	$DATA['cara44bienv2saludmedita'] = cadena_Validar(trim($DATA['cara44bienv2saludmedita']));
+	$DATA['cara44bienv2crecimedusexual'] = cadena_Validar(trim($DATA['cara44bienv2crecimedusexual']));
+	$DATA['cara44bienv2crecimcultciudad'] = cadena_Validar(trim($DATA['cara44bienv2crecimcultciudad']));
+	$DATA['cara44bienv2crecimrelpareja'] = cadena_Validar(trim($DATA['cara44bienv2crecimrelpareja']));
+	$DATA['cara44bienv2crecimrelinterp'] = cadena_Validar(trim($DATA['cara44bienv2crecimrelinterp']));
+	$DATA['cara44bienv2crecimdinamicafam'] = cadena_Validar(trim($DATA['cara44bienv2crecimdinamicafam']));
+	$DATA['cara44bienv2crecimautoestima'] = cadena_Validar(trim($DATA['cara44bienv2crecimautoestima']));
+	$DATA['cara44bienv2creciminclusion'] = cadena_Validar(trim($DATA['cara44bienv2creciminclusion']));
+	$DATA['cara44bienv2creciminteliemoc'] = cadena_Validar(trim($DATA['cara44bienv2creciminteliemoc']));
+	$DATA['cara44bienv2crecimcultural'] = cadena_Validar(trim($DATA['cara44bienv2crecimcultural']));
+	$DATA['cara44bienv2crecimartistico'] = cadena_Validar(trim($DATA['cara44bienv2crecimartistico']));
+	$DATA['cara44bienv2crecimdeporte'] = cadena_Validar(trim($DATA['cara44bienv2crecimdeporte']));
+	$DATA['cara44bienv2crecimambiente'] = cadena_Validar(trim($DATA['cara44bienv2crecimambiente']));
+	$DATA['cara44bienv2crecimhabsocio'] = cadena_Validar(trim($DATA['cara44bienv2crecimhabsocio']));
+	$DATA['cara44bienv2ambienbasura'] = cadena_Validar(trim($DATA['cara44bienv2ambienbasura']));
+	$DATA['cara44bienv2ambienreutiliza'] = cadena_Validar(trim($DATA['cara44bienv2ambienreutiliza']));
+	$DATA['cara44bienv2ambienluces'] = cadena_Validar(trim($DATA['cara44bienv2ambienluces']));
+	$DATA['cara44bienv2ambienfrutaverd'] = cadena_Validar(trim($DATA['cara44bienv2ambienfrutaverd']));
+	$DATA['cara44bienv2ambienenchufa'] = cadena_Validar(trim($DATA['cara44bienv2ambienenchufa']));
+	$DATA['cara44bienv2ambiengrifo'] = cadena_Validar(trim($DATA['cara44bienv2ambiengrifo']));
+	$DATA['cara44bienv2ambienbicicleta'] = cadena_Validar(trim($DATA['cara44bienv2ambienbicicleta']));
+	$DATA['cara44bienv2ambientranspub'] = cadena_Validar(trim($DATA['cara44bienv2ambientranspub']));
+	$DATA['cara44bienv2ambienducha'] = cadena_Validar(trim($DATA['cara44bienv2ambienducha']));
+	$DATA['cara44bienv2ambiencaminata'] = cadena_Validar(trim($DATA['cara44bienv2ambiencaminata']));
+	$DATA['cara44bienv2ambiensiembra'] = cadena_Validar(trim($DATA['cara44bienv2ambiensiembra']));
+	$DATA['cara44bienv2ambienconferencia'] = cadena_Validar(trim($DATA['cara44bienv2ambienconferencia']));
+	$DATA['cara44bienv2ambienrecicla'] = cadena_Validar(trim($DATA['cara44bienv2ambienrecicla']));
+	$DATA['cara44bienv2ambienotraactiv'] = cadena_Validar(trim($DATA['cara44bienv2ambienotraactiv']));
+	$DATA['cara44bienv2ambienotraactivdetalle'] = cadena_Validar(trim($DATA['cara44bienv2ambienotraactivdetalle']));
+	$DATA['cara44bienv2ambienreforest'] = cadena_Validar(trim($DATA['cara44bienv2ambienreforest']));
+	$DATA['cara44bienv2ambienmovilidad'] = cadena_Validar(trim($DATA['cara44bienv2ambienmovilidad']));
+	$DATA['cara44bienv2ambienclimatico'] = cadena_Validar(trim($DATA['cara44bienv2ambienclimatico']));
+	$DATA['cara44bienv2ambienecofemin'] = cadena_Validar(trim($DATA['cara44bienv2ambienecofemin']));
+	$DATA['cara44bienv2ambienbiodiver'] = cadena_Validar(trim($DATA['cara44bienv2ambienbiodiver']));
+	$DATA['cara44bienv2ambienecologia'] = cadena_Validar(trim($DATA['cara44bienv2ambienecologia']));
+	$DATA['cara44bienv2ambieneconomia'] = cadena_Validar(trim($DATA['cara44bienv2ambieneconomia']));
+	$DATA['cara44bienv2ambienrecnatura'] = cadena_Validar(trim($DATA['cara44bienv2ambienrecnatura']));
+	$DATA['cara44bienv2ambienreciclaje'] = cadena_Validar(trim($DATA['cara44bienv2ambienreciclaje']));
+	$DATA['cara44bienv2ambienmascota'] = cadena_Validar(trim($DATA['cara44bienv2ambienmascota']));
+	$DATA['cara44bienv2ambiencartohum'] = cadena_Validar(trim($DATA['cara44bienv2ambiencartohum']));
+	$DATA['cara44bienv2ambienespiritu'] = cadena_Validar(trim($DATA['cara44bienv2ambienespiritu']));
+	$DATA['cara44bienv2ambiencarga'] = cadena_Validar(trim($DATA['cara44bienv2ambiencarga']));
+	$DATA['cara44bienv2ambienotroenfoq'] = cadena_Validar(trim($DATA['cara44bienv2ambienotroenfoq']));
+	$DATA['cara44bienv2ambienotroenfoqdetalle'] = cadena_Validar(trim($DATA['cara44bienv2ambienotroenfoqdetalle']));
+	$DATA['cara44fam_madrecabeza'] = cadena_Validar(trim($DATA['cara44fam_madrecabeza']));
+	$DATA['cara44acadhatenidorecesos'] = cadena_Validar(trim($DATA['cara44acadhatenidorecesos']));
 	$DATA['cara44acadrazonreceso'] = numeros_validar($DATA['cara44acadrazonreceso']);
-	$DATA['cara44acadrazonrecesodetalle'] = htmlspecialchars(trim($DATA['cara44acadrazonrecesodetalle']));
+	$DATA['cara44acadrazonrecesodetalle'] = cadena_Validar(trim($DATA['cara44acadrazonrecesodetalle']));
 	$DATA['cara44campus_usocorreounad'] = numeros_validar($DATA['cara44campus_usocorreounad']);
 	$DATA['cara44campus_usocorreounadno'] = numeros_validar($DATA['cara44campus_usocorreounadno']);
-	$DATA['cara44campus_usocorreounadnodetalle'] = htmlspecialchars(trim($DATA['cara44campus_usocorreounadnodetalle']));
+	$DATA['cara44campus_usocorreounadnodetalle'] = cadena_Validar(trim($DATA['cara44campus_usocorreounadnodetalle']));
 	$DATA['cara44campus_medioactivunad'] = numeros_validar($DATA['cara44campus_medioactivunad']);
-	$DATA['cara44campus_medioactivunaddetalle'] = htmlspecialchars(trim($DATA['cara44campus_medioactivunaddetalle']));
+	$DATA['cara44campus_medioactivunaddetalle'] = cadena_Validar(trim($DATA['cara44campus_medioactivunaddetalle']));
 	$DATA['cara44frontera'] = numeros_validar($DATA['cara44frontera']);
 	$DATA['cara44med_tratamiento'] = numeros_validar($DATA['cara44med_tratamiento']);
-	$DATA['cara44med_trat_cual'] = htmlspecialchars(trim($DATA['cara44med_trat_cual']));
+	$DATA['cara44med_trat_cual'] = cadena_Validar(trim($DATA['cara44med_trat_cual']));
+	$DATA['cara44bienv3emprenetapa'] = numeros_validar($DATA['cara44bienv3emprenetapa']);
+	$DATA['cara44bienv3emprennecesita'] = numeros_validar($DATA['cara44bienv3emprennecesita']);
+	$DATA['cara44bienv3emprenanioini'] = numeros_validar($DATA['cara44bienv3emprenanioini']);
+	$DATA['cara44bienv3emprensector'] = numeros_validar($DATA['cara44bienv3emprensector']);
+	$DATA['cara44bienv3emprensectorotro'] = cadena_Validar(trim($DATA['cara44bienv3emprensectorotro']));
+	$DATA['cara44bienv3emprentemas'] = numeros_validar($DATA['cara44bienv3emprentemas']);
+	$DATA['cara44bienv3ambienclima'] = numeros_validar($DATA['cara44bienv3ambienclima']);
+	$DATA['cara44bienv3ambienjusticia'] = numeros_validar($DATA['cara44bienv3ambienjusticia']);
+	$DATA['cara44bienv3ambienagroeco'] = numeros_validar($DATA['cara44bienv3ambienagroeco']);
+	$DATA['cara44bienv3ambieneconomia'] = numeros_validar($DATA['cara44bienv3ambieneconomia']);
+	$DATA['cara44bienv3ambieneducacion'] = numeros_validar($DATA['cara44bienv3ambieneducacion']);
+	$DATA['cara44bienv3ambienbiodiverso'] = numeros_validar($DATA['cara44bienv3ambienbiodiverso']);
+	$DATA['cara44bienv3ambienecoturismo'] = numeros_validar($DATA['cara44bienv3ambienecoturismo']);
+	$DATA['cara44bienv3ambienotro'] = numeros_validar($DATA['cara44bienv3ambienotro']);
+	$DATA['cara44bienv3ambienotrodetalle'] = cadena_Validar(trim($DATA['cara44bienv3ambienotrodetalle']));
+	$DATA['cara44bienv3ambienexper'] = numeros_validar($DATA['cara44bienv3ambienexper']);
+	$DATA['cara44bienv3ambienaprende'] = numeros_validar($DATA['cara44bienv3ambienaprende']);
+	$DATA['cara44bienv3ambienestudiante'] = numeros_validar($DATA['cara44bienv3ambienestudiante']);
+	$DATA['cara44bienv3ambienactividad'] = numeros_validar($DATA['cara44bienv3ambienactividad']);
+	$DATA['cara44bienv3pyphabitoalim'] = numeros_validar($DATA['cara44bienv3pyphabitoalim']);
+	$DATA['cara44bienv3pypsustanciapsico'] = numeros_validar($DATA['cara44bienv3pypsustanciapsico']);
+	$DATA['cara44bienv3pypsaludvisual'] = numeros_validar($DATA['cara44bienv3pypsaludvisual']);
+	$DATA['cara44bienv3pypsaludbucal'] = numeros_validar($DATA['cara44bienv3pypsaludbucal']);
+	$DATA['cara44bienv3pypsaludsexual'] = numeros_validar($DATA['cara44bienv3pypsaludsexual']);
+	$DATA['cara44bienv3deportenivel'] = numeros_validar($DATA['cara44bienv3deportenivel']);
+	$DATA['cara44bienv3deportefrec'] = numeros_validar($DATA['cara44bienv3deportefrec']);
+	$DATA['cara44bienv3deportecual'] = numeros_validar($DATA['cara44bienv3deportecual']);
+	$DATA['cara44bienv3deportecualotro'] = cadena_Validar(trim($DATA['cara44bienv3deportecualotro']));
+	$DATA['cara44bienv3deporterecrea'] = numeros_validar($DATA['cara44bienv3deporterecrea']);
+	$DATA['cara44bienv3deporteunad'] = numeros_validar($DATA['cara44bienv3deporteunad']);
+	$DATA['cara44bienv3creciminclusion'] = numeros_validar($DATA['cara44bienv3creciminclusion']);
+	$DATA['cara44bienv3crecimfamilia'] = numeros_validar($DATA['cara44bienv3crecimfamilia']);
+	$DATA['cara44bienv3crecimhabilidad'] = numeros_validar($DATA['cara44bienv3crecimhabilidad']);
+	$DATA['cara44bienv3crecimempleable'] = numeros_validar($DATA['cara44bienv3crecimempleable']);
+	$DATA['cara44bienv3crecimhabilvida'] = numeros_validar($DATA['cara44bienv3crecimhabilvida']);
+	$DATA['cara44bienv3crecimespiritual'] = numeros_validar($DATA['cara44bienv3crecimespiritual']);
+	$DATA['cara44bienv3crecimpractica'] = numeros_validar($DATA['cara44bienv3crecimpractica']);
+	$DATA['cara44bienv3crecimliderazgo'] = numeros_validar($DATA['cara44bienv3crecimliderazgo']);
+	$DATA['cara44bienv3crecimtrabequipo'] = numeros_validar($DATA['cara44bienv3crecimtrabequipo']);
+	$DATA['cara44bienv3crecimasertiva'] = numeros_validar($DATA['cara44bienv3crecimasertiva']);
+	$DATA['cara44bienv3crecimgesttiempo'] = numeros_validar($DATA['cara44bienv3crecimgesttiempo']);
+	$DATA['cara44bienv3crecimconflictos'] = numeros_validar($DATA['cara44bienv3crecimconflictos']);
+	$DATA['cara44bienv3crecimadapcambio'] = numeros_validar($DATA['cara44bienv3crecimadapcambio']);
+	$DATA['cara44bienv3crecimempatia'] = numeros_validar($DATA['cara44bienv3crecimempatia']);
+	$DATA['cara44bienv3crecimgestionser'] = numeros_validar($DATA['cara44bienv3crecimgestionser']);
+	$DATA['cara44bienv3crecimtomadecide'] = numeros_validar($DATA['cara44bienv3crecimtomadecide']);
+	$DATA['cara44bienv3crecimpenscreativo'] = numeros_validar($DATA['cara44bienv3crecimpenscreativo']);
+	$DATA['cara44bienv3crecimpenscritico'] = numeros_validar($DATA['cara44bienv3crecimpenscritico']);
+	$DATA['cara44bienv3crecimhabilotro'] = numeros_validar($DATA['cara44bienv3crecimhabilotro']);
+	$DATA['cara44bienv3crecimhabilotrodetalle'] = cadena_Validar(trim($DATA['cara44bienv3crecimhabilotrodetalle']));
+	$DATA['cara44bienv3crecimalcancemeta'] = numeros_validar($DATA['cara44bienv3crecimalcancemeta']);
+	$DATA['cara44bienv3crecimsatifpersonal'] = numeros_validar($DATA['cara44bienv3crecimsatifpersonal']);
+	$DATA['cara44bienv3crecimaccesolaboral'] = numeros_validar($DATA['cara44bienv3crecimaccesolaboral']);
+	$DATA['cara44bienv3crecimotramotiv'] = numeros_validar($DATA['cara44bienv3crecimotramotiv']);
+	$DATA['cara44bienv3crecimotramotivdetalle'] = cadena_Validar(trim($DATA['cara44bienv3crecimotramotivdetalle']));
+	$DATA['cara44bienv3crecimapoyo'] = numeros_validar($DATA['cara44bienv3crecimapoyo']);
+	$DATA['cara44bienv3crecimlaboral'] = numeros_validar($DATA['cara44bienv3crecimlaboral']);
+	$DATA['cara44bienv3mentalcuidado'] = numeros_validar($DATA['cara44bienv3mentalcuidado']);
+	$DATA['cara44bienv3mentalestrategia'] = numeros_validar($DATA['cara44bienv3mentalestrategia']);
+	$DATA['cara44bienv3mentalestres'] = numeros_validar($DATA['cara44bienv3mentalestres']);
+	$DATA['cara44bienv3mentalansiedad'] = numeros_validar($DATA['cara44bienv3mentalansiedad']);
+	$DATA['cara44bienv3mentaldepresion'] = numeros_validar($DATA['cara44bienv3mentaldepresion']);
+	$DATA['cara44bienv3mentalautoconoc'] = numeros_validar($DATA['cara44bienv3mentalautoconoc']);
+	$DATA['cara44bienv3mentalmindfulness'] = numeros_validar($DATA['cara44bienv3mentalmindfulness']);
+	$DATA['cara44bienv3mentalautoestima'] = numeros_validar($DATA['cara44bienv3mentalautoestima']);
+	$DATA['cara44bienv3mentalcrisis'] = numeros_validar($DATA['cara44bienv3mentalcrisis']);
+	$DATA['cara44bienv3mentalburnout'] = numeros_validar($DATA['cara44bienv3mentalburnout']);
+	$DATA['cara44bienv3mentalsexualidad'] = numeros_validar($DATA['cara44bienv3mentalsexualidad']);
+	$DATA['cara44bienv3mentalusoredes'] = numeros_validar($DATA['cara44bienv3mentalusoredes']);
+	$DATA['cara44bienv3mentalinclusion'] = numeros_validar($DATA['cara44bienv3mentalinclusion']);
+	$DATA['cara44bienv3mentalactividad'] = numeros_validar($DATA['cara44bienv3mentalactividad']);
+	$DATA['cara44bienv3mentalacompana'] = numeros_validar($DATA['cara44bienv3mentalacompana']);
+	$DATA['cara44bienv3mentaldiagnostico'] = numeros_validar($DATA['cara44bienv3mentaldiagnostico']);
+	$DATA['cara44bienv3mentaldiagcual'] = numeros_validar($DATA['cara44bienv3mentaldiagcual']);
+	$DATA['cara44bienv3mentaldiagotro'] = cadena_Validar(trim($DATA['cara44bienv3mentaldiagotro']));
+	$DATA['cara44bienv3arteintegrar'] = numeros_validar($DATA['cara44bienv3arteintegrar']);
+	$DATA['cara44bienv3arteformacion'] = numeros_validar($DATA['cara44bienv3arteformacion']);
+	$DATA['cara44bienv3arteunad'] = numeros_validar($DATA['cara44bienv3arteunad']);
+	$DATA['cara44bienv3arteinformacion'] = numeros_validar($DATA['cara44bienv3arteinformacion']);
 	// -- Se inicializan las variables que puedan pasar vacias {Especialmente números}.
 	if ($DATA['cara01completa'] == '') {
 		$DATA['cara01completa'] = 'N';
@@ -3041,7 +3445,8 @@ function f2301_db_GuardarV2($DATA, $objDB, $bDebug = false)
 			if ($DATA['cara01bien_baloncesto'] == '') {
 				$sError = $ERR['cara01bien_baloncesto'] . $sSepara . $sError;
 			}
-		} else {
+		} 
+		if ($DATA['cara44bienversion'] == 2) {
 			if ($DATA['cara44bienv2altoren'] == '') {
 				$sError = $ERR['cara44bienv2altoren'] . $sSepara . $sError;
 			}
@@ -3332,6 +3737,261 @@ function f2301_db_GuardarV2($DATA, $objDB, $bDebug = false)
 				if ($DATA['cara44bienv2ambienotroenfoqdetalle'] == '') {
 					$sError = $ERR['cara44bienv2ambienotroenfoqdetalle'] . $sSepara . $sError;
 				}
+			}
+		}
+		if ($DATA['cara44bienversion'] == 3) {
+			if ($DATA['cara44bienv3emprenetapa'] == '') {
+				$sError = $ERR['cara44bienv3emprenetapa'] . $sSepara . $sError;
+			}
+			if ($DATA['cara44bienv3emprennecesita'] == '') {
+				$sError = $ERR['cara44bienv3emprennecesita'] . $sSepara . $sError;
+			}
+			if ($DATA['cara44bienv3emprenanioini'] == '') {
+				$sError = $ERR['cara44bienv3emprenanioini'] . $sSepara . $sError;
+			}
+			if ($DATA['cara44bienv3emprensector'] == '') {
+				$sError = $ERR['cara44bienv3emprensector'] . $sSepara . $sError;
+			}
+			if ($DATA['cara44bienv3emprensector'] == 5) {
+				if ($DATA['cara44bienv3emprensectorotro'] == '') {
+					$sError = $ERR['cara44bienv3emprensectorotro'] . $sSepara . $sError;
+				}
+			}
+			if ($DATA['cara44bienv3emprentemas'] == '') {
+				$sError = $ERR['cara44bienv3emprentemas'] . $sSepara . $sError;
+			}
+			if ($DATA['cara44bienv3ambienclima'] == '') {
+				$sError = $ERR['cara44bienv3ambienclima'] . $sSepara . $sError;
+			}
+			if ($DATA['cara44bienv3ambienjusticia'] == '') {
+				$sError = $ERR['cara44bienv3ambienjusticia'] . $sSepara . $sError;
+			}
+			if ($DATA['cara44bienv3ambienagroeco'] == '') {
+				$sError = $ERR['cara44bienv3ambienagroeco'] . $sSepara . $sError;
+			}
+			if ($DATA['cara44bienv3ambieneconomia'] == '') {
+				$sError = $ERR['cara44bienv3ambieneconomia'] . $sSepara . $sError;
+			}
+			if ($DATA['cara44bienv3ambieneducacion'] == '') {
+				$sError = $ERR['cara44bienv3ambieneducacion'] . $sSepara . $sError;
+			}
+			if ($DATA['cara44bienv3ambienbiodiverso'] == '') {
+				$sError = $ERR['cara44bienv3ambienbiodiverso'] . $sSepara . $sError;
+			}
+			if ($DATA['cara44bienv3ambienecoturismo'] == '') {
+				$sError = $ERR['cara44bienv3ambienecoturismo'] . $sSepara . $sError;
+			}
+			if ($DATA['cara44bienv3ambienotro'] == '') {
+				$sError = $ERR['cara44bienv3ambienotro'] . $sSepara . $sError;
+			}
+			if ($DATA['cara44bienv3ambienotro'] == 1) {
+				if ($DATA['cara44bienv3ambienotrodetalle'] == '') {
+					$sError = $ERR['cara44bienv3ambienotrodetalle'] . $sSepara . $sError;
+				}
+			}
+			if ($DATA['cara44bienv3ambienexper'] == '') {
+				$sError = $ERR['cara44bienv3ambienexper'] . $sSepara . $sError;
+			}
+			if ($DATA['cara44bienv3ambienaprende'] == '') {
+				$sError = $ERR['cara44bienv3ambienaprende'] . $sSepara . $sError;
+			}
+			if ($DATA['cara44bienv3ambienestudiante'] == '') {
+				$sError = $ERR['cara44bienv3ambienestudiante'] . $sSepara . $sError;
+			}
+			if ($DATA['cara44bienv3ambienactividad'] == '') {
+				$sError = $ERR['cara44bienv3ambienactividad'] . $sSepara . $sError;
+			}
+			if ($DATA['cara44bienv3pyphabitoalim'] == '') {
+				$sError = $ERR['cara44bienv3pyphabitoalim'] . $sSepara . $sError;
+			}
+			if ($DATA['cara44bienv3pypsustanciapsico'] == '') {
+				$sError = $ERR['cara44bienv3pypsustanciapsico'] . $sSepara . $sError;
+			}
+			if ($DATA['cara44bienv3pypsaludvisual'] == '') {
+				$sError = $ERR['cara44bienv3pypsaludvisual'] . $sSepara . $sError;
+			}
+			if ($DATA['cara44bienv3pypsaludbucal'] == '') {
+				$sError = $ERR['cara44bienv3pypsaludbucal'] . $sSepara . $sError;
+			}
+			if ($DATA['cara44bienv3pypsaludsexual'] == '') {
+				$sError = $ERR['cara44bienv3pypsaludsexual'] . $sSepara . $sError;
+			}
+			if ($DATA['cara44bienv3deportenivel'] == '') {
+				$sError = $ERR['cara44bienv3deportenivel'] . $sSepara . $sError;
+			}
+			if ($DATA['cara44bienv3deportenivel'] != 4) {
+				if ($DATA['cara44bienv3deportefrec'] == '') {
+					$sError = $ERR['cara44bienv3deportefrec'] . $sSepara . $sError;
+				}
+				if ($DATA['cara44bienv3deportecual'] == '') {
+					$sError = $ERR['cara44bienv3deportecual'] . $sSepara . $sError;
+				}
+				if ($DATA['cara44bienv3deportecual'] == 13) {
+					if ($DATA['cara44bienv3deportecualotro'] == '') {
+						$sError = $ERR['cara44bienv3deportecualotro'] . $sSepara . $sError;
+					}
+				}
+			}
+			if ($DATA['cara44bienv3deporterecrea'] == '') {
+				$sError = $ERR['cara44bienv3deporterecrea'] . $sSepara . $sError;
+			}
+			if ($DATA['cara44bienv3deporteunad'] == '') {
+				$sError = $ERR['cara44bienv3deporteunad'] . $sSepara . $sError;
+			}
+			if ($DATA['cara44bienv3creciminclusion'] == '') {
+				$sError = $ERR['cara44bienv3creciminclusion'] . $sSepara . $sError;
+			}
+			if ($DATA['cara44bienv3crecimfamilia'] == '') {
+				$sError = $ERR['cara44bienv3crecimfamilia'] . $sSepara . $sError;
+			}
+			if ($DATA['cara44bienv3crecimhabilidad'] == '') {
+				$sError = $ERR['cara44bienv3crecimhabilidad'] . $sSepara . $sError;
+			}
+			if ($DATA['cara44bienv3crecimempleable'] == '') {
+				$sError = $ERR['cara44bienv3crecimempleable'] . $sSepara . $sError;
+			}
+			if ($DATA['cara44bienv3crecimhabilvida'] == '') {
+				$sError = $ERR['cara44bienv3crecimhabilvida'] . $sSepara . $sError;
+			}
+			if ($DATA['cara44bienv3crecimespiritual'] == '') {
+				$sError = $ERR['cara44bienv3crecimespiritual'] . $sSepara . $sError;
+			}
+			if ($DATA['cara44bienv3crecimpractica'] == '') {
+				$sError = $ERR['cara44bienv3crecimpractica'] . $sSepara . $sError;
+			}
+			if ($DATA['cara44bienv3crecimliderazgo'] == '') {
+				$sError = $ERR['cara44bienv3crecimliderazgo'] . $sSepara . $sError;
+			}
+			if ($DATA['cara44bienv3crecimtrabequipo'] == '') {
+				$sError = $ERR['cara44bienv3crecimtrabequipo'] . $sSepara . $sError;
+			}
+			if ($DATA['cara44bienv3crecimasertiva'] == '') {
+				$sError = $ERR['cara44bienv3crecimasertiva'] . $sSepara . $sError;
+			}
+			if ($DATA['cara44bienv3crecimgesttiempo'] == '') {
+				$sError = $ERR['cara44bienv3crecimgesttiempo'] . $sSepara . $sError;
+			}
+			if ($DATA['cara44bienv3crecimconflictos'] == '') {
+				$sError = $ERR['cara44bienv3crecimconflictos'] . $sSepara . $sError;
+			}
+			if ($DATA['cara44bienv3crecimadapcambio'] == '') {
+				$sError = $ERR['cara44bienv3crecimadapcambio'] . $sSepara . $sError;
+			}
+			if ($DATA['cara44bienv3crecimempatia'] == '') {
+				$sError = $ERR['cara44bienv3crecimempatia'] . $sSepara . $sError;
+			}
+			if ($DATA['cara44bienv3crecimgestionser'] == '') {
+				$sError = $ERR['cara44bienv3crecimgestionser'] . $sSepara . $sError;
+			}
+			if ($DATA['cara44bienv3crecimtomadecide'] == '') {
+				$sError = $ERR['cara44bienv3crecimtomadecide'] . $sSepara . $sError;
+			}
+			if ($DATA['cara44bienv3crecimpenscreativo'] == '') {
+				$sError = $ERR['cara44bienv3crecimpenscreativo'] . $sSepara . $sError;
+			}
+			if ($DATA['cara44bienv3crecimpenscritico'] == '') {
+				$sError = $ERR['cara44bienv3crecimpenscritico'] . $sSepara . $sError;
+			}
+			if ($DATA['cara44bienv3crecimhabilotro'] == '') {
+				$sError = $ERR['cara44bienv3crecimhabilotro'] . $sSepara . $sError;
+			}
+			if ($DATA['cara44bienv3crecimhabilotro'] == 1) {
+				if ($DATA['cara44bienv3crecimhabilotrodetalle'] == '') {
+					$sError = $ERR['cara44bienv3crecimhabilotrodetalle'] . $sSepara . $sError;
+				}
+			}
+			if ($DATA['cara44bienv3crecimalcancemeta'] == '') {
+				$sError = $ERR['cara44bienv3crecimalcancemeta'] . $sSepara . $sError;
+			}
+			if ($DATA['cara44bienv3crecimsatifpersonal'] == '') {
+				$sError = $ERR['cara44bienv3crecimsatifpersonal'] . $sSepara . $sError;
+			}
+			if ($DATA['cara44bienv3crecimaccesolaboral'] == '') {
+				$sError = $ERR['cara44bienv3crecimaccesolaboral'] . $sSepara . $sError;
+			}
+			if ($DATA['cara44bienv3crecimotramotiv'] == '') {
+				$sError = $ERR['cara44bienv3crecimotramotiv'] . $sSepara . $sError;
+			}
+			if ($DATA['cara44bienv3crecimotramotiv'] == 1) {
+				if ($DATA['cara44bienv3crecimotramotivdetalle'] == '') {
+					$sError = $ERR['cara44bienv3crecimotramotivdetalle'] . $sSepara . $sError;
+				}
+			}
+			if ($DATA['cara44bienv3crecimapoyo'] == '') {
+				$sError = $ERR['cara44bienv3crecimapoyo'] . $sSepara . $sError;
+			}
+			if ($DATA['cara44bienv3crecimlaboral'] == '') {
+				$sError = $ERR['cara44bienv3crecimlaboral'] . $sSepara . $sError;
+			}
+			if ($DATA['cara44bienv3mentalcuidado'] == '') {
+				$sError = $ERR['cara44bienv3mentalcuidado'] . $sSepara . $sError;
+			}
+			if ($DATA['cara44bienv3mentalestrategia'] == '') {
+				$sError = $ERR['cara44bienv3mentalestrategia'] . $sSepara . $sError;
+			}
+			if ($DATA['cara44bienv3mentalestres'] == '') {
+				$sError = $ERR['cara44bienv3mentalestres'] . $sSepara . $sError;
+			}
+			if ($DATA['cara44bienv3mentalansiedad'] == '') {
+				$sError = $ERR['cara44bienv3mentalansiedad'] . $sSepara . $sError;
+			}
+			if ($DATA['cara44bienv3mentaldepresion'] == '') {
+				$sError = $ERR['cara44bienv3mentaldepresion'] . $sSepara . $sError;
+			}
+			if ($DATA['cara44bienv3mentalautoconoc'] == '') {
+				$sError = $ERR['cara44bienv3mentalautoconoc'] . $sSepara . $sError;
+			}
+			if ($DATA['cara44bienv3mentalmindfulness'] == '') {
+				$sError = $ERR['cara44bienv3mentalmindfulness'] . $sSepara . $sError;
+			}
+			if ($DATA['cara44bienv3mentalautoestima'] == '') {
+				$sError = $ERR['cara44bienv3mentalautoestima'] . $sSepara . $sError;
+			}
+			if ($DATA['cara44bienv3mentalcrisis'] == '') {
+				$sError = $ERR['cara44bienv3mentalcrisis'] . $sSepara . $sError;
+			}
+			if ($DATA['cara44bienv3mentalburnout'] == '') {
+				$sError = $ERR['cara44bienv3mentalburnout'] . $sSepara . $sError;
+			}
+			if ($DATA['cara44bienv3mentalsexualidad'] == '') {
+				$sError = $ERR['cara44bienv3mentalsexualidad'] . $sSepara . $sError;
+			}
+			if ($DATA['cara44bienv3mentalusoredes'] == '') {
+				$sError = $ERR['cara44bienv3mentalusoredes'] . $sSepara . $sError;
+			}
+			if ($DATA['cara44bienv3mentalinclusion'] == '') {
+				$sError = $ERR['cara44bienv3mentalinclusion'] . $sSepara . $sError;
+			}
+			if ($DATA['cara44bienv3mentalactividad'] == '') {
+				$sError = $ERR['cara44bienv3mentalactividad'] . $sSepara . $sError;
+			}
+			if ($DATA['cara44bienv3mentalacompana'] == '') {
+				$sError = $ERR['cara44bienv3mentalacompana'] . $sSepara . $sError;
+			}
+			if ($DATA['cara44bienv3mentaldiagnostico'] == '') {
+				$sError = $ERR['cara44bienv3mentaldiagnostico'] . $sSepara . $sError;
+			}
+			if ($DATA['cara44bienv3mentaldiagnostico'] == 1) {
+				if ($DATA['cara44bienv3mentaldiagcual'] == '') {
+					$sError = $ERR['cara44bienv3mentaldiagcual'] . $sSepara . $sError;
+				}
+				if ($DATA['cara44bienv3mentaldiagcual'] == 11) {
+					if ($DATA['cara44bienv3mentaldiagotro'] == '') {
+						$sError = $ERR['cara44bienv3mentaldiagotro'] . $sSepara . $sError;
+					}
+				}
+			}
+			if ($DATA['cara44bienv3arteintegrar'] == '') {
+				$sError = $ERR['cara44bienv3arteintegrar'] . $sSepara . $sError;
+			}
+			if ($DATA['cara44bienv3arteformacion'] == '') {
+				$sError = $ERR['cara44bienv3arteformacion'] . $sSepara . $sError;
+			}
+			if ($DATA['cara44bienv3arteunad'] == '') {
+				$sError = $ERR['cara44bienv3arteunad'] . $sSepara . $sError;
+			}
+			if ($DATA['cara44bienv3arteinformacion'] == '') {
+				$sError = $ERR['cara44bienv3arteinformacion'] . $sSepara . $sError;
 			}
 		}
 		if ($sError != '') {
@@ -4079,23 +4739,44 @@ cara02discv2sistemicaotro, cara02discv2multiple, cara02discv2multipleotro, cara0
 cara01discv2tiene, cara01discv2trastaprende, cara01discv2soporteorigen, 
 cara01discv2archivoorigen, cara01discv2trastornos, cara01discv2contalento, cara01discv2condicionmedica, cara01discv2condmeddet, 
 cara01discv2pruebacoeficiente';
-			$sCampos2344 = 'cara44id, cara44campesinado, cara44sexoversion, cara44sexov1identidadgen, cara44sexov1orientasexo, cara44bienversion, cara44bienv2altoren, 
-cara44bienv2atletismo, cara44bienv2baloncesto, cara44bienv2futbol, cara44bienv2gimnasia, cara44bienv2natacion, cara44bienv2voleibol, cara44bienv2tenis, cara44bienv2paralimpico, cara44bienv2otrodeporte, 
-cara44bienv2otrodeportedetalle, cara44bienv2activdanza, cara44bienv2activmusica, cara44bienv2activteatro, cara44bienv2activartes, cara44bienv2activliteratura, cara44bienv2activculturalotra, 
-cara44bienv2activculturalotradetalle, cara44bienv2evenfestfolc, cara44bienv2evenexpoarte, cara44bienv2evenhistarte, cara44bienv2evengalfoto, cara44bienv2evenliteratura, cara44bienv2eventeatro, 
-cara44bienv2evencine, cara44bienv2evenculturalotro, cara44bienv2evenculturalotrodetalle, cara44bienv2emprendimiento, cara44bienv2empresa, cara44bienv2emprenrecursos, cara44bienv2emprenconocim, 
-cara44bienv2emprenplan, cara44bienv2emprenejecutar, cara44bienv2emprenfortconocim, cara44bienv2emprenidentproblema, cara44bienv2emprenotro, cara44bienv2emprenotrodetalle, cara44bienv2emprenmarketing, 
-cara44bienv2emprenplannegocios, cara44bienv2emprenideas, cara44bienv2emprencreacion, cara44bienv2saludfacteconom, cara44bienv2saludpreocupacion, cara44bienv2saludconsumosust, cara44bienv2saludinsomnio, 
-cara44bienv2saludclimalab, cara44bienv2saludalimenta, cara44bienv2saludemocion, cara44bienv2saludestado, cara44bienv2saludmedita, cara44bienv2crecimedusexual, cara44bienv2crecimcultciudad, 
-cara44bienv2crecimrelpareja, cara44bienv2crecimrelinterp, cara44bienv2crecimdinamicafam, cara44bienv2crecimautoestima, cara44bienv2creciminclusion, cara44bienv2creciminteliemoc, cara44bienv2crecimcultural, 
-cara44bienv2crecimartistico, cara44bienv2crecimdeporte, cara44bienv2crecimambiente, cara44bienv2crecimhabsocio, cara44bienv2ambienbasura, cara44bienv2ambienreutiliza, cara44bienv2ambienluces, 
-cara44bienv2ambienfrutaverd, cara44bienv2ambienenchufa, cara44bienv2ambiengrifo, cara44bienv2ambienbicicleta, cara44bienv2ambientranspub, cara44bienv2ambienducha, cara44bienv2ambiencaminata, 
-cara44bienv2ambiensiembra, cara44bienv2ambienconferencia, cara44bienv2ambienrecicla, cara44bienv2ambienotraactiv, cara44bienv2ambienotraactivdetalle, cara44bienv2ambienreforest, cara44bienv2ambienmovilidad, 
-cara44bienv2ambienclimatico, cara44bienv2ambienecofemin, cara44bienv2ambienbiodiver, cara44bienv2ambienecologia, cara44bienv2ambieneconomia, cara44bienv2ambienrecnatura, cara44bienv2ambienreciclaje, 
-cara44bienv2ambienmascota, cara44bienv2ambiencartohum, cara44bienv2ambienespiritu, cara44bienv2ambiencarga, cara44bienv2ambienotroenfoq, cara44bienv2ambienotroenfoqdetalle, cara44fam_madrecabeza, 
+			$sCampos2344 = 'cara44id, cara44campesinado, cara44sexoversion, cara44sexov1identidadgen, cara44sexov1orientasexo, 
+cara44bienversion, cara44bienv2altoren, cara44bienv2atletismo, cara44bienv2baloncesto, cara44bienv2futbol, 
+cara44bienv2gimnasia, cara44bienv2natacion, cara44bienv2voleibol, cara44bienv2tenis, cara44bienv2paralimpico, 
+cara44bienv2otrodeporte, cara44bienv2otrodeportedetalle, cara44bienv2activdanza, cara44bienv2activmusica, cara44bienv2activteatro, 
+cara44bienv2activartes, cara44bienv2activliteratura, cara44bienv2activculturalotra, cara44bienv2activculturalotradetalle, cara44bienv2evenfestfolc, 
+cara44bienv2evenexpoarte, cara44bienv2evenhistarte, cara44bienv2evengalfoto, cara44bienv2evenliteratura, cara44bienv2eventeatro, 
+cara44bienv2evencine, cara44bienv2evenculturalotro, cara44bienv2evenculturalotrodetalle, cara44bienv2emprendimiento, cara44bienv2empresa, 
+cara44bienv2emprenrecursos, cara44bienv2emprenconocim, cara44bienv2emprenplan, cara44bienv2emprenejecutar, cara44bienv2emprenfortconocim, 
+cara44bienv2emprenidentproblema, cara44bienv2emprenotro, cara44bienv2emprenotrodetalle, cara44bienv2emprenmarketing, cara44bienv2emprenplannegocios, 
+cara44bienv2emprenideas, cara44bienv2emprencreacion, cara44bienv2saludfacteconom, cara44bienv2saludpreocupacion, cara44bienv2saludconsumosust, 
+cara44bienv2saludinsomnio, cara44bienv2saludclimalab, cara44bienv2saludalimenta, cara44bienv2saludemocion, cara44bienv2saludestado, 
+cara44bienv2saludmedita, cara44bienv2crecimedusexual, cara44bienv2crecimcultciudad, cara44bienv2crecimrelpareja, cara44bienv2crecimrelinterp, 
+cara44bienv2crecimdinamicafam, cara44bienv2crecimautoestima, cara44bienv2creciminclusion, cara44bienv2creciminteliemoc, cara44bienv2crecimcultural, 
+cara44bienv2crecimartistico, cara44bienv2crecimdeporte, cara44bienv2crecimambiente, cara44bienv2crecimhabsocio, cara44bienv2ambienbasura, 
+cara44bienv2ambienreutiliza, cara44bienv2ambienluces, cara44bienv2ambienfrutaverd, cara44bienv2ambienenchufa, cara44bienv2ambiengrifo, 
+cara44bienv2ambienbicicleta, cara44bienv2ambientranspub, cara44bienv2ambienducha, cara44bienv2ambiencaminata, cara44bienv2ambiensiembra, 
+cara44bienv2ambienconferencia, cara44bienv2ambienrecicla, cara44bienv2ambienotraactiv, cara44bienv2ambienotraactivdetalle, cara44bienv2ambienreforest, 
+cara44bienv2ambienmovilidad, cara44bienv2ambienclimatico, cara44bienv2ambienecofemin, cara44bienv2ambienbiodiver, cara44bienv2ambienecologia, 
+cara44bienv2ambieneconomia, cara44bienv2ambienrecnatura, cara44bienv2ambienreciclaje, cara44bienv2ambienmascota, cara44bienv2ambiencartohum, 
+cara44bienv2ambienespiritu, cara44bienv2ambiencarga, cara44bienv2ambienotroenfoq, cara44bienv2ambienotroenfoqdetalle, cara44fam_madrecabeza, 
 cara44acadhatenidorecesos, cara44acadrazonreceso, cara44acadrazonrecesodetalle, cara44campus_usocorreounad, cara44campus_usocorreounadno, 
 cara44campus_usocorreounadnodetalle, cara44campus_medioactivunad, cara44campus_medioactivunaddetalle, cara44frontera, cara44med_tratamiento, 
-cara44med_trat_cual';
+cara44med_trat_cual, cara44bienv3emprenetapa, cara44bienv3emprennecesita, cara44bienv3emprenanioini, cara44bienv3emprensector, 
+cara44bienv3emprensectorotro, cara44bienv3emprentemas, cara44bienv3ambienclima, cara44bienv3ambienjusticia, cara44bienv3ambienagroeco, 
+cara44bienv3ambieneconomia, cara44bienv3ambieneducacion, cara44bienv3ambienbiodiverso, cara44bienv3ambienecoturismo, cara44bienv3ambienotro, 
+cara44bienv3ambienotrodetalle, cara44bienv3ambienexper, cara44bienv3ambienaprende, cara44bienv3ambienestudiante, cara44bienv3ambienactividad, 
+cara44bienv3pyphabitoalim, cara44bienv3pypsustanciapsico, cara44bienv3pypsaludvisual, cara44bienv3pypsaludbucal, cara44bienv3pypsaludsexual, 
+cara44bienv3deportenivel, cara44bienv3deportefrec, cara44bienv3deportecual, cara44bienv3deportecualotro, cara44bienv3deporterecrea, 
+cara44bienv3deporteunad, cara44bienv3creciminclusion, cara44bienv3crecimfamilia, cara44bienv3crecimhabilidad, cara44bienv3crecimempleable, 
+cara44bienv3crecimhabilvida, cara44bienv3crecimespiritual, cara44bienv3crecimpractica, cara44bienv3crecimliderazgo, cara44bienv3crecimtrabequipo, 
+cara44bienv3crecimasertiva, cara44bienv3crecimgesttiempo, cara44bienv3crecimconflictos, cara44bienv3crecimadapcambio, cara44bienv3crecimempatia, 
+cara44bienv3crecimgestionser, cara44bienv3crecimtomadecide, cara44bienv3crecimpenscreativo, cara44bienv3crecimpenscritico, cara44bienv3crecimhabilotro, 
+cara44bienv3crecimhabilotrodetalle, cara44bienv3crecimalcancemeta, cara44bienv3crecimsatifpersonal, cara44bienv3crecimaccesolaboral, cara44bienv3crecimotramotiv, 
+cara44bienv3crecimotramotivdetalle, cara44bienv3crecimapoyo, cara44bienv3crecimlaboral, cara44bienv3mentalcuidado, cara44bienv3mentalestrategia, 
+cara44bienv3mentalestres, cara44bienv3mentalansiedad, cara44bienv3mentaldepresion, cara44bienv3mentalautoconoc, cara44bienv3mentalmindfulness, 
+cara44bienv3mentalautoestima, cara44bienv3mentalcrisis, cara44bienv3mentalburnout, cara44bienv3mentalsexualidad, cara44bienv3mentalusoredes, 
+cara44bienv3mentalinclusion, cara44bienv3mentalactividad, cara44bienv3mentalacompana, cara44bienv3mentaldiagnostico, cara44bienv3mentaldiagcual, 
+cara44bienv3mentaldiagotro, cara44bienv3arteintegrar, cara44bienv3arteformacion, cara44bienv3arteunad, cara44bienv3arteinformacion';
 			$sValores2301 = '' . $DATA['cara01idperaca'] . ', ' . $DATA['cara01idtercero'] . ', ' . $DATA['cara01id'] . ', "' . $DATA['cara01completa'] . '", ' . $DATA['cara01fichaper'] . ', 
 ' . $DATA['cara01fichafam'] . ', ' . $DATA['cara01fichaaca'] . ', ' . $DATA['cara01fichalab'] . ', ' . $DATA['cara01fichabien'] . ', ' . $DATA['cara01fichapsico'] . ', 
 ' . $DATA['cara01fichadigital'] . ', ' . $DATA['cara01fichalectura'] . ', ' . $DATA['cara01ficharazona'] . ', ' . $DATA['cara01fichaingles'] . ', "' . $DATA['cara01fechaencuesta'] . '", 
@@ -4140,28 +4821,44 @@ cara44med_trat_cual';
 ' . $DATA['cara01discv2tiene'] . ', ' . $DATA['cara01discv2trastaprende'] . ', ' . $DATA['cara01discv2soporteorigen'] . ', 
 ' . $DATA['cara01discv2archivoorigen'] . ', ' . $DATA['cara01discv2trastornos'] . ', ' . $DATA['cara01discv2contalento'] . ', ' . $DATA['cara01discv2condicionmedica'] . ', "' . $DATA['cara01discv2condmeddet'] . '", 
 ' . $DATA['cara01discv2pruebacoeficiente'] . '';
-			$sValores2344 = '' . $DATA['cara44id'] . ', ' . $DATA['cara44campesinado'] . ', ' . $DATA['cara44sexoversion'] . ', ' . $DATA['cara44sexov1identidadgen'] . ', ' . $DATA['cara44sexov1orientasexo'] . ', ' . $DATA['cara44bienversion'] . ', "' . $DATA['cara44bienv2altoren'] . '", "' . $DATA['cara44bienv2atletismo'] . '", "' . $DATA['cara44bienv2baloncesto'] . '", "' . $DATA['cara44bienv2futbol'] . '", 
-"' . $DATA['cara44bienv2gimnasia'] . '", "' . $DATA['cara44bienv2natacion'] . '", "' . $DATA['cara44bienv2voleibol'] . '", "' . $DATA['cara44bienv2tenis'] . '", "' . $DATA['cara44bienv2paralimpico'] . '", "' . $DATA['cara44bienv2otrodeporte'] . '", 
-"' . $DATA['cara44bienv2otrodeportedetalle'] . '", "' . $DATA['cara44bienv2activdanza'] . '", "' . $DATA['cara44bienv2activmusica'] . '", "' . $DATA['cara44bienv2activteatro'] . '", "' . $DATA['cara44bienv2activartes'] . '", 
-"' . $DATA['cara44bienv2activliteratura'] . '", "' . $DATA['cara44bienv2activculturalotra'] . '", "' . $DATA['cara44bienv2activculturalotradetalle'] . '", "' . $DATA['cara44bienv2evenfestfolc'] . '", "' . $DATA['cara44bienv2evenexpoarte'] . '", 
-"' . $DATA['cara44bienv2evenhistarte'] . '", "' . $DATA['cara44bienv2evengalfoto'] . '", "' . $DATA['cara44bienv2evenliteratura'] . '", "' . $DATA['cara44bienv2eventeatro'] . '", "' . $DATA['cara44bienv2evencine'] . '", 
-"' . $DATA['cara44bienv2evenculturalotro'] . '", "' . $DATA['cara44bienv2evenculturalotrodetalle'] . '", "' . $DATA['cara44bienv2emprendimiento'] . '", "' . $DATA['cara44bienv2empresa'] . '", "' . $DATA['cara44bienv2emprenrecursos'] . '", 
-"' . $DATA['cara44bienv2emprenconocim'] . '", "' . $DATA['cara44bienv2emprenplan'] . '", "' . $DATA['cara44bienv2emprenejecutar'] . '", "' . $DATA['cara44bienv2emprenfortconocim'] . '", "' . $DATA['cara44bienv2emprenidentproblema'] . '", 
-"' . $DATA['cara44bienv2emprenotro'] . '", "' . $DATA['cara44bienv2emprenotrodetalle'] . '", "' . $DATA['cara44bienv2emprenmarketing'] . '", "' . $DATA['cara44bienv2emprenplannegocios'] . '", "' . $DATA['cara44bienv2emprenideas'] . '", 
-"' . $DATA['cara44bienv2emprencreacion'] . '", "' . $DATA['cara44bienv2saludfacteconom'] . '", "' . $DATA['cara44bienv2saludpreocupacion'] . '", "' . $DATA['cara44bienv2saludconsumosust'] . '", "' . $DATA['cara44bienv2saludinsomnio'] . '", 
-"' . $DATA['cara44bienv2saludclimalab'] . '", "' . $DATA['cara44bienv2saludalimenta'] . '", "' . $DATA['cara44bienv2saludemocion'] . '", "' . $DATA['cara44bienv2saludestado'] . '", "' . $DATA['cara44bienv2saludmedita'] . '", 
-"' . $DATA['cara44bienv2crecimedusexual'] . '", "' . $DATA['cara44bienv2crecimcultciudad'] . '", "' . $DATA['cara44bienv2crecimrelpareja'] . '", "' . $DATA['cara44bienv2crecimrelinterp'] . '", "' . $DATA['cara44bienv2crecimdinamicafam'] . '", 
-"' . $DATA['cara44bienv2crecimautoestima'] . '", "' . $DATA['cara44bienv2creciminclusion'] . '", "' . $DATA['cara44bienv2creciminteliemoc'] . '", "' . $DATA['cara44bienv2crecimcultural'] . '", "' . $DATA['cara44bienv2crecimartistico'] . '", 
-"' . $DATA['cara44bienv2crecimdeporte'] . '", "' . $DATA['cara44bienv2crecimambiente'] . '", "' . $DATA['cara44bienv2crecimhabsocio'] . '", "' . $DATA['cara44bienv2ambienbasura'] . '", "' . $DATA['cara44bienv2ambienreutiliza'] . '", 
-"' . $DATA['cara44bienv2ambienluces'] . '", "' . $DATA['cara44bienv2ambienfrutaverd'] . '", "' . $DATA['cara44bienv2ambienenchufa'] . '", "' . $DATA['cara44bienv2ambiengrifo'] . '", "' . $DATA['cara44bienv2ambienbicicleta'] . '", 
-"' . $DATA['cara44bienv2ambientranspub'] . '", "' . $DATA['cara44bienv2ambienducha'] . '", "' . $DATA['cara44bienv2ambiencaminata'] . '", "' . $DATA['cara44bienv2ambiensiembra'] . '", "' . $DATA['cara44bienv2ambienconferencia'] . '", 
-"' . $DATA['cara44bienv2ambienrecicla'] . '", "' . $DATA['cara44bienv2ambienotraactiv'] . '", "' . $DATA['cara44bienv2ambienotraactivdetalle'] . '", "' . $DATA['cara44bienv2ambienreforest'] . '", "' . $DATA['cara44bienv2ambienmovilidad'] . '", 
-"' . $DATA['cara44bienv2ambienclimatico'] . '", "' . $DATA['cara44bienv2ambienecofemin'] . '", "' . $DATA['cara44bienv2ambienbiodiver'] . '", "' . $DATA['cara44bienv2ambienecologia'] . '", "' . $DATA['cara44bienv2ambieneconomia'] . '", 
-"' . $DATA['cara44bienv2ambienrecnatura'] . '", "' . $DATA['cara44bienv2ambienreciclaje'] . '", "' . $DATA['cara44bienv2ambienmascota'] . '", "' . $DATA['cara44bienv2ambiencartohum'] . '", "' . $DATA['cara44bienv2ambienespiritu'] . '", 
-"' . $DATA['cara44bienv2ambiencarga'] . '", "' . $DATA['cara44bienv2ambienotroenfoq'] . '", "' . $DATA['cara44bienv2ambienotroenfoqdetalle'] . '", "' . $DATA['cara44fam_madrecabeza'] . '", "' . $DATA['cara44acadhatenidorecesos'] . '", 
-' . $DATA['cara44acadrazonreceso'] . ', "' . $DATA['cara44acadrazonrecesodetalle'] . '", ' . $DATA['cara44campus_usocorreounad'] . ', ' . $DATA['cara44campus_usocorreounadno'] . ', "' . $DATA['cara44campus_usocorreounadnodetalle'] . '", 
-' . $DATA['cara44campus_medioactivunad'] . ', "' . $DATA['cara44campus_medioactivunaddetalle'] . ', ' . $DATA['cara44frontera'] . ', ' . $DATA['cara44med_tratamiento'] . ', 
-"' . $DATA['cara44med_trat_cual'] . '"';
+			$sValores2344 = '' . $DATA['cara44id'] . ', ' . $DATA['cara44campesinado'] . ', ' . $DATA['cara44sexoversion'] . ', ' . $DATA['cara44sexov1identidadgen'] . ', ' . $DATA['cara44sexov1orientasexo'] . ', 
+' . $DATA['cara44bienversion'] . ', "' . $DATA['cara44bienv2altoren'] . '", "' . $DATA['cara44bienv2atletismo'] . '", "' . $DATA['cara44bienv2baloncesto'] . '", "' . $DATA['cara44bienv2futbol'] . '", 
+"' . $DATA['cara44bienv2gimnasia'] . '", "' . $DATA['cara44bienv2natacion'] . '", "' . $DATA['cara44bienv2voleibol'] . '", "' . $DATA['cara44bienv2tenis'] . '", "' . $DATA['cara44bienv2paralimpico'] . '", 
+"' . $DATA['cara44bienv2otrodeporte'] . '", "' . $DATA['cara44bienv2otrodeportedetalle'] . '", "' . $DATA['cara44bienv2activdanza'] . '", "' . $DATA['cara44bienv2activmusica'] . '", "' . $DATA['cara44bienv2activteatro'] . '", 
+"' . $DATA['cara44bienv2activartes'] . '", "' . $DATA['cara44bienv2activliteratura'] . '", "' . $DATA['cara44bienv2activculturalotra'] . '", "' . $DATA['cara44bienv2activculturalotradetalle'] . '", "' . $DATA['cara44bienv2evenfestfolc'] . '", 
+"' . $DATA['cara44bienv2evenexpoarte'] . '", "' . $DATA['cara44bienv2evenhistarte'] . '", "' . $DATA['cara44bienv2evengalfoto'] . '", "' . $DATA['cara44bienv2evenliteratura'] . '", "' . $DATA['cara44bienv2eventeatro'] . '", 
+"' . $DATA['cara44bienv2evencine'] . '", "' . $DATA['cara44bienv2evenculturalotro'] . '", "' . $DATA['cara44bienv2evenculturalotrodetalle'] . '", "' . $DATA['cara44bienv2emprendimiento'] . '", "' . $DATA['cara44bienv2empresa'] . '", 
+"' . $DATA['cara44bienv2emprenrecursos'] . '", "' . $DATA['cara44bienv2emprenconocim'] . '", "' . $DATA['cara44bienv2emprenplan'] . '", "' . $DATA['cara44bienv2emprenejecutar'] . '", "' . $DATA['cara44bienv2emprenfortconocim'] . '", 
+"' . $DATA['cara44bienv2emprenidentproblema'] . '", "' . $DATA['cara44bienv2emprenotro'] . '", "' . $DATA['cara44bienv2emprenotrodetalle'] . '", "' . $DATA['cara44bienv2emprenmarketing'] . '", "' . $DATA['cara44bienv2emprenplannegocios'] . '", 
+"' . $DATA['cara44bienv2emprenideas'] . '", "' . $DATA['cara44bienv2emprencreacion'] . '", "' . $DATA['cara44bienv2saludfacteconom'] . '", "' . $DATA['cara44bienv2saludpreocupacion'] . '", "' . $DATA['cara44bienv2saludconsumosust'] . '", 
+"' . $DATA['cara44bienv2saludinsomnio'] . '", "' . $DATA['cara44bienv2saludclimalab'] . '", "' . $DATA['cara44bienv2saludalimenta'] . '", "' . $DATA['cara44bienv2saludemocion'] . '", "' . $DATA['cara44bienv2saludestado'] . '", 
+"' . $DATA['cara44bienv2saludmedita'] . '", "' . $DATA['cara44bienv2crecimedusexual'] . '", "' . $DATA['cara44bienv2crecimcultciudad'] . '", "' . $DATA['cara44bienv2crecimrelpareja'] . '", "' . $DATA['cara44bienv2crecimrelinterp'] . '", 
+"' . $DATA['cara44bienv2crecimdinamicafam'] . '", "' . $DATA['cara44bienv2crecimautoestima'] . '", "' . $DATA['cara44bienv2creciminclusion'] . '", "' . $DATA['cara44bienv2creciminteliemoc'] . '", "' . $DATA['cara44bienv2crecimcultural'] . '", 
+"' . $DATA['cara44bienv2crecimartistico'] . '", "' . $DATA['cara44bienv2crecimdeporte'] . '", "' . $DATA['cara44bienv2crecimambiente'] . '", "' . $DATA['cara44bienv2crecimhabsocio'] . '", "' . $DATA['cara44bienv2ambienbasura'] . '", 
+"' . $DATA['cara44bienv2ambienreutiliza'] . '", "' . $DATA['cara44bienv2ambienluces'] . '", "' . $DATA['cara44bienv2ambienfrutaverd'] . '", "' . $DATA['cara44bienv2ambienenchufa'] . '", "' . $DATA['cara44bienv2ambiengrifo'] . '", 
+"' . $DATA['cara44bienv2ambienbicicleta'] . '", "' . $DATA['cara44bienv2ambientranspub'] . '", "' . $DATA['cara44bienv2ambienducha'] . '", "' . $DATA['cara44bienv2ambiencaminata'] . '", "' . $DATA['cara44bienv2ambiensiembra'] . '", 
+"' . $DATA['cara44bienv2ambienconferencia'] . '", "' . $DATA['cara44bienv2ambienrecicla'] . '", "' . $DATA['cara44bienv2ambienotraactiv'] . '", "' . $DATA['cara44bienv2ambienotraactivdetalle'] . '", "' . $DATA['cara44bienv2ambienreforest'] . '", 
+"' . $DATA['cara44bienv2ambienmovilidad'] . '", "' . $DATA['cara44bienv2ambienclimatico'] . '", "' . $DATA['cara44bienv2ambienecofemin'] . '", "' . $DATA['cara44bienv2ambienbiodiver'] . '", "' . $DATA['cara44bienv2ambienecologia'] . '", 
+"' . $DATA['cara44bienv2ambieneconomia'] . '", "' . $DATA['cara44bienv2ambienrecnatura'] . '", "' . $DATA['cara44bienv2ambienreciclaje'] . '", "' . $DATA['cara44bienv2ambienmascota'] . '", "' . $DATA['cara44bienv2ambiencartohum'] . '", 
+"' . $DATA['cara44bienv2ambienespiritu'] . '", "' . $DATA['cara44bienv2ambiencarga'] . '", "' . $DATA['cara44bienv2ambienotroenfoq'] . '", "' . $DATA['cara44bienv2ambienotroenfoqdetalle'] . '", "' . $DATA['cara44fam_madrecabeza'] . '", 
+"' . $DATA['cara44acadhatenidorecesos'] . '", ' . $DATA['cara44acadrazonreceso'] . ', "' . $DATA['cara44acadrazonrecesodetalle'] . '", ' . $DATA['cara44campus_usocorreounad'] . ', ' . $DATA['cara44campus_usocorreounadno'] . ', 
+"' . $DATA['cara44campus_usocorreounadnodetalle'] . '", ' . $DATA['cara44campus_medioactivunad'] . ', "' . $DATA['cara44campus_medioactivunaddetalle'] . ', ' . $DATA['cara44frontera'] . ', ' . $DATA['cara44med_tratamiento'] . ', 
+"' . $DATA['cara44med_trat_cual'] . '", ' . $DATA['cara44bienv3emprenetapa'] . ', ' . $DATA['cara44bienv3emprennecesita'] . ', ' . $DATA['cara44bienv3emprenanioini'] . ', ' . $DATA['cara44bienv3emprensector'] . ', 
+"' . $DATA['cara44bienv3emprensectorotro'] . '", ' . $DATA['cara44bienv3emprentemas'] . ', "' . $DATA['cara44bienv3ambienclima'] . '", "' . $DATA['cara44bienv3ambienjusticia'] . '", "' . $DATA['cara44bienv3ambienagroeco'] . '", 
+"' . $DATA['cara44bienv3ambieneconomia'] . '", "' . $DATA['cara44bienv3ambieneducacion'] . '", "' . $DATA['cara44bienv3ambienbiodiverso'] . '", "' . $DATA['cara44bienv3ambienecoturismo'] . '", "' . $DATA['cara44bienv3ambienotro'] . '", 
+"' . $DATA['cara44bienv3ambienotrodetalle'] . '", ' . $DATA['cara44bienv3ambienexper'] . ', ' . $DATA['cara44bienv3ambienaprende'] . ', ' . $DATA['cara44bienv3ambienestudiante'] . ', ' . $DATA['cara44bienv3ambienactividad'] . ', 
+' . $DATA['cara44bienv3pyphabitoalim'] . ', ' . $DATA['cara44bienv3pypsustanciapsico'] . ', ' . $DATA['cara44bienv3pypsaludvisual'] . ', ' . $DATA['cara44bienv3pypsaludbucal'] . ', ' . $DATA['cara44bienv3pypsaludsexual'] . ', 
+' . $DATA['cara44bienv3deportenivel'] . ', ' . $DATA['cara44bienv3deportefrec'] . ', ' . $DATA['cara44bienv3deportecual'] . ', "' . $DATA['cara44bienv3deportecualotro'] . '", ' . $DATA['cara44bienv3deporterecrea'] . ', 
+"' . $DATA['cara44bienv3deporteunad'] . '", "' . $DATA['cara44bienv3creciminclusion'] . '", "' . $DATA['cara44bienv3crecimfamilia'] . '", "' . $DATA['cara44bienv3crecimhabilidad'] . '", "' . $DATA['cara44bienv3crecimempleable'] . '", 
+"' . $DATA['cara44bienv3crecimhabilvida'] . '", "' . $DATA['cara44bienv3crecimespiritual'] . '", "' . $DATA['cara44bienv3crecimpractica'] . '", "' . $DATA['cara44bienv3crecimliderazgo'] . '", "' . $DATA['cara44bienv3crecimtrabequipo'] . '", 
+"' . $DATA['cara44bienv3crecimasertiva'] . '", "' . $DATA['cara44bienv3crecimgesttiempo'] . '", "' . $DATA['cara44bienv3crecimconflictos'] . '", "' . $DATA['cara44bienv3crecimadapcambio'] . '", "' . $DATA['cara44bienv3crecimempatia'] . '", 
+"' . $DATA['cara44bienv3crecimgestionser'] . '", "' . $DATA['cara44bienv3crecimtomadecide'] . '", "' . $DATA['cara44bienv3crecimpenscreativo'] . '", "' . $DATA['cara44bienv3crecimpenscritico'] . '", "' . $DATA['cara44bienv3crecimhabilotro'] . '", 
+"' . $DATA['cara44bienv3crecimhabilotrodetalle'] . '", "' . $DATA['cara44bienv3crecimalcancemeta'] . '", "' . $DATA['cara44bienv3crecimsatifpersonal'] . '", "' . $DATA['cara44bienv3crecimaccesolaboral'] . '", "' . $DATA['cara44bienv3crecimotramotiv'] . '", 
+"' . $DATA['cara44bienv3crecimotramotivdetalle'] . '", ' . $DATA['cara44bienv3crecimapoyo'] . ', ' . $DATA['cara44bienv3crecimlaboral'] . ', ' . $DATA['cara44bienv3mentalcuidado'] . ', ' . $DATA['cara44bienv3mentalestrategia'] . ', 
+"' . $DATA['cara44bienv3mentalestres'] . '", "' . $DATA['cara44bienv3mentalansiedad'] . '", "' . $DATA['cara44bienv3mentaldepresion'] . '", "' . $DATA['cara44bienv3mentalautoconoc'] . '", "' . $DATA['cara44bienv3mentalmindfulness'] . '", 
+"' . $DATA['cara44bienv3mentalautoestima'] . '", "' . $DATA['cara44bienv3mentalcrisis'] . '", "' . $DATA['cara44bienv3mentalburnout'] . '", "' . $DATA['cara44bienv3mentalsexualidad'] . '", "' . $DATA['cara44bienv3mentalusoredes'] . '", 
+"' . $DATA['cara44bienv3mentalinclusion'] . '", ' . $DATA['cara44bienv3mentalactividad'] . ', "' . $DATA['cara44bienv3mentalacompana'] . '", "' . $DATA['cara44bienv3mentaldiagnostico'] . '", ' . $DATA['cara44bienv3mentaldiagcual'] . ', 
+"' . $DATA['cara44bienv3mentaldiagotro'] . '", ' . $DATA['cara44bienv3arteintegrar'] . ', ' . $DATA['cara44bienv3arteformacion'] . ', "' . $DATA['cara44bienv3arteunad'] . '", ' . $DATA['cara44bienv3arteinformacion'] . '';
 			if ($APP->utf8 == 1) {
 				$sSQL = 'INSERT INTO cara01encuesta (' . $sCampos2301 . ') VALUES (' . cadena_codificar($sValores2301) . ');';
 				$sdetalle = $sCampos2301 . '[' . cadena_codificar($sValores2301) . ']';
@@ -4599,6 +5296,9 @@ cara44med_trat_cual';
 					$cara44sexoversion = 1;
 					$cara44bienversion = 2;
 				}
+				if ($DATA['cara01idperaca'] > 2034) {
+					$cara44bienversion = 3;
+				}
 				$sCampos2344 = 'cara44id, cara44sexoversion, cara44bienversion';
 				$sValores2344 = '' . $DATA['cara01id'] . ', ' . $cara44sexoversion . ', ' . $cara44bienversion . '';
 				if ($APP->utf8 == 1) {
@@ -4722,6 +5422,85 @@ cara44med_trat_cual';
 			$scampo[108] = 'cara44frontera';
 			$scampo[109] = 'cara44med_tratamiento';
 			$scampo[110] = 'cara44med_trat_cual';
+			$scampo[111] = 'cara44bienv3emprenetapa';
+			$scampo[112] = 'cara44bienv3emprennecesita';
+			$scampo[113] = 'cara44bienv3emprenanioini';
+			$scampo[114] = 'cara44bienv3emprensector';
+			$scampo[115] = 'cara44bienv3emprensectorotro';
+			$scampo[116] = 'cara44bienv3emprentemas';
+			$scampo[117] = 'cara44bienv3ambienclima';
+			$scampo[118] = 'cara44bienv3ambienjusticia';
+			$scampo[119] = 'cara44bienv3ambienagroeco';
+			$scampo[120] = 'cara44bienv3ambieneconomia';
+			$scampo[121] = 'cara44bienv3ambieneducacion';
+			$scampo[122] = 'cara44bienv3ambienbiodiverso';
+			$scampo[123] = 'cara44bienv3ambienecoturismo';
+			$scampo[124] = 'cara44bienv3ambienotro';
+			$scampo[125] = 'cara44bienv3ambienotrodetalle';
+			$scampo[126] = 'cara44bienv3ambienexper';
+			$scampo[127] = 'cara44bienv3ambienaprende';
+			$scampo[128] = 'cara44bienv3ambienestudiante';
+			$scampo[129] = 'cara44bienv3ambienactividad';
+			$scampo[130] = 'cara44bienv3pyphabitoalim';
+			$scampo[131] = 'cara44bienv3pypsustanciapsico';
+			$scampo[132] = 'cara44bienv3pypsaludvisual';
+			$scampo[133] = 'cara44bienv3pypsaludbucal';
+			$scampo[134] = 'cara44bienv3pypsaludsexual';
+			$scampo[135] = 'cara44bienv3deportenivel';
+			$scampo[136] = 'cara44bienv3deportefrec';
+			$scampo[137] = 'cara44bienv3deportecual';
+			$scampo[138] = 'cara44bienv3deportecualotro';
+			$scampo[139] = 'cara44bienv3deporterecrea';
+			$scampo[140] = 'cara44bienv3deporteunad';
+			$scampo[141] = 'cara44bienv3creciminclusion';
+			$scampo[142] = 'cara44bienv3crecimfamilia';
+			$scampo[143] = 'cara44bienv3crecimhabilidad';
+			$scampo[144] = 'cara44bienv3crecimempleable';
+			$scampo[145] = 'cara44bienv3crecimhabilvida';
+			$scampo[146] = 'cara44bienv3crecimespiritual';
+			$scampo[147] = 'cara44bienv3crecimpractica';
+			$scampo[148] = 'cara44bienv3crecimliderazgo';
+			$scampo[149] = 'cara44bienv3crecimtrabequipo';
+			$scampo[150] = 'cara44bienv3crecimasertiva';
+			$scampo[151] = 'cara44bienv3crecimgesttiempo';
+			$scampo[152] = 'cara44bienv3crecimconflictos';
+			$scampo[153] = 'cara44bienv3crecimadapcambio';
+			$scampo[154] = 'cara44bienv3crecimempatia';
+			$scampo[155] = 'cara44bienv3crecimgestionser';
+			$scampo[156] = 'cara44bienv3crecimtomadecide';
+			$scampo[157] = 'cara44bienv3crecimpenscreativo';
+			$scampo[158] = 'cara44bienv3crecimpenscritico';
+			$scampo[159] = 'cara44bienv3crecimhabilotro';
+			$scampo[160] = 'cara44bienv3crecimhabilotrodetalle';
+			$scampo[161] = 'cara44bienv3crecimalcancemeta';
+			$scampo[162] = 'cara44bienv3crecimsatifpersonal';
+			$scampo[163] = 'cara44bienv3crecimaccesolaboral';
+			$scampo[164] = 'cara44bienv3crecimotramotiv';
+			$scampo[165] = 'cara44bienv3crecimotramotivdetalle';
+			$scampo[166] = 'cara44bienv3crecimapoyo';
+			$scampo[167] = 'cara44bienv3crecimlaboral';
+			$scampo[168] = 'cara44bienv3mentalcuidado';
+			$scampo[169] = 'cara44bienv3mentalestrategia';
+			$scampo[170] = 'cara44bienv3mentalestres';
+			$scampo[171] = 'cara44bienv3mentalansiedad';
+			$scampo[172] = 'cara44bienv3mentaldepresion';
+			$scampo[173] = 'cara44bienv3mentalautoconoc';
+			$scampo[174] = 'cara44bienv3mentalmindfulness';
+			$scampo[175] = 'cara44bienv3mentalautoestima';
+			$scampo[176] = 'cara44bienv3mentalcrisis';
+			$scampo[177] = 'cara44bienv3mentalburnout';
+			$scampo[178] = 'cara44bienv3mentalsexualidad';
+			$scampo[179] = 'cara44bienv3mentalusoredes';
+			$scampo[180] = 'cara44bienv3mentalinclusion';
+			$scampo[181] = 'cara44bienv3mentalactividad';
+			$scampo[182] = 'cara44bienv3mentalacompana';
+			$scampo[183] = 'cara44bienv3mentaldiagnostico';
+			$scampo[184] = 'cara44bienv3mentaldiagcual';
+			$scampo[185] = 'cara44bienv3mentaldiagotro';
+			$scampo[186] = 'cara44bienv3arteintegrar';
+			$scampo[187] = 'cara44bienv3arteformacion';
+			$scampo[188] = 'cara44bienv3arteunad';
+			$scampo[189] = 'cara44bienv3arteinformacion';
 			//
 			$sdato[1] = $DATA['cara44campesinado'];
 			$sdato[2] = $DATA['cara44sexoversion'];
@@ -4833,7 +5612,86 @@ cara44med_trat_cual';
 			$sdato[108] = $DATA['cara44frontera'];
 			$sdato[109] = $DATA['cara44med_tratamiento'];
 			$sdato[110] = $DATA['cara44med_trat_cual'];
-			$iNumCamposMod44 = 110;
+			$sdato[111] = $DATA['cara44bienv3emprenetapa'];
+			$sdato[112] = $DATA['cara44bienv3emprennecesita'];
+			$sdato[113] = $DATA['cara44bienv3emprenanioini'];
+			$sdato[114] = $DATA['cara44bienv3emprensector'];
+			$sdato[115] = $DATA['cara44bienv3emprensectorotro'];
+			$sdato[116] = $DATA['cara44bienv3emprentemas'];
+			$sdato[117] = $DATA['cara44bienv3ambienclima'];
+			$sdato[118] = $DATA['cara44bienv3ambienjusticia'];
+			$sdato[119] = $DATA['cara44bienv3ambienagroeco'];
+			$sdato[120] = $DATA['cara44bienv3ambieneconomia'];
+			$sdato[121] = $DATA['cara44bienv3ambieneducacion'];
+			$sdato[122] = $DATA['cara44bienv3ambienbiodiverso'];
+			$sdato[123] = $DATA['cara44bienv3ambienecoturismo'];
+			$sdato[124] = $DATA['cara44bienv3ambienotro'];
+			$sdato[125] = $DATA['cara44bienv3ambienotrodetalle'];
+			$sdato[126] = $DATA['cara44bienv3ambienexper'];
+			$sdato[127] = $DATA['cara44bienv3ambienaprende'];
+			$sdato[128] = $DATA['cara44bienv3ambienestudiante'];
+			$sdato[129] = $DATA['cara44bienv3ambienactividad'];
+			$sdato[130] = $DATA['cara44bienv3pyphabitoalim'];
+			$sdato[131] = $DATA['cara44bienv3pypsustanciapsico'];
+			$sdato[132] = $DATA['cara44bienv3pypsaludvisual'];
+			$sdato[133] = $DATA['cara44bienv3pypsaludbucal'];
+			$sdato[134] = $DATA['cara44bienv3pypsaludsexual'];
+			$sdato[135] = $DATA['cara44bienv3deportenivel'];
+			$sdato[136] = $DATA['cara44bienv3deportefrec'];
+			$sdato[137] = $DATA['cara44bienv3deportecual'];
+			$sdato[138] = $DATA['cara44bienv3deportecualotro'];
+			$sdato[139] = $DATA['cara44bienv3deporterecrea'];
+			$sdato[140] = $DATA['cara44bienv3deporteunad'];
+			$sdato[141] = $DATA['cara44bienv3creciminclusion'];
+			$sdato[142] = $DATA['cara44bienv3crecimfamilia'];
+			$sdato[143] = $DATA['cara44bienv3crecimhabilidad'];
+			$sdato[144] = $DATA['cara44bienv3crecimempleable'];
+			$sdato[145] = $DATA['cara44bienv3crecimhabilvida'];
+			$sdato[146] = $DATA['cara44bienv3crecimespiritual'];
+			$sdato[147] = $DATA['cara44bienv3crecimpractica'];
+			$sdato[148] = $DATA['cara44bienv3crecimliderazgo'];
+			$sdato[149] = $DATA['cara44bienv3crecimtrabequipo'];
+			$sdato[150] = $DATA['cara44bienv3crecimasertiva'];
+			$sdato[151] = $DATA['cara44bienv3crecimgesttiempo'];
+			$sdato[152] = $DATA['cara44bienv3crecimconflictos'];
+			$sdato[153] = $DATA['cara44bienv3crecimadapcambio'];
+			$sdato[154] = $DATA['cara44bienv3crecimempatia'];
+			$sdato[155] = $DATA['cara44bienv3crecimgestionser'];
+			$sdato[156] = $DATA['cara44bienv3crecimtomadecide'];
+			$sdato[157] = $DATA['cara44bienv3crecimpenscreativo'];
+			$sdato[158] = $DATA['cara44bienv3crecimpenscritico'];
+			$sdato[159] = $DATA['cara44bienv3crecimhabilotro'];
+			$sdato[160] = $DATA['cara44bienv3crecimhabilotrodetalle'];
+			$sdato[161] = $DATA['cara44bienv3crecimalcancemeta'];
+			$sdato[162] = $DATA['cara44bienv3crecimsatifpersonal'];
+			$sdato[163] = $DATA['cara44bienv3crecimaccesolaboral'];
+			$sdato[164] = $DATA['cara44bienv3crecimotramotiv'];
+			$sdato[165] = $DATA['cara44bienv3crecimotramotivdetalle'];
+			$sdato[166] = $DATA['cara44bienv3crecimapoyo'];
+			$sdato[167] = $DATA['cara44bienv3crecimlaboral'];
+			$sdato[168] = $DATA['cara44bienv3mentalcuidado'];
+			$sdato[169] = $DATA['cara44bienv3mentalestrategia'];
+			$sdato[170] = $DATA['cara44bienv3mentalestres'];
+			$sdato[171] = $DATA['cara44bienv3mentalansiedad'];
+			$sdato[172] = $DATA['cara44bienv3mentaldepresion'];
+			$sdato[173] = $DATA['cara44bienv3mentalautoconoc'];
+			$sdato[174] = $DATA['cara44bienv3mentalmindfulness'];
+			$sdato[175] = $DATA['cara44bienv3mentalautoestima'];
+			$sdato[176] = $DATA['cara44bienv3mentalcrisis'];
+			$sdato[177] = $DATA['cara44bienv3mentalburnout'];
+			$sdato[178] = $DATA['cara44bienv3mentalsexualidad'];
+			$sdato[179] = $DATA['cara44bienv3mentalusoredes'];
+			$sdato[180] = $DATA['cara44bienv3mentalinclusion'];
+			$sdato[181] = $DATA['cara44bienv3mentalactividad'];
+			$sdato[182] = $DATA['cara44bienv3mentalacompana'];
+			$sdato[183] = $DATA['cara44bienv3mentaldiagnostico'];
+			$sdato[184] = $DATA['cara44bienv3mentaldiagcual'];
+			$sdato[185] = $DATA['cara44bienv3mentaldiagotro'];
+			$sdato[186] = $DATA['cara44bienv3arteintegrar'];
+			$sdato[187] = $DATA['cara44bienv3arteformacion'];
+			$sdato[188] = $DATA['cara44bienv3arteunad'];
+			$sdato[189] = $DATA['cara44bienv3arteinformacion'];
+			$iNumCamposMod44 = 189;
 			$sWhere = 'cara44id=' . $DATA['cara01id'] . '';
 			$sSQL44 = 'SELECT * FROM cara44encuesta WHERE ' . $sWhere;
 			$sdatos = '';
@@ -4947,11 +5805,12 @@ function f2301_db_Eliminar($cara01id, $objDB, $bDebug = false)
 	$iCodModulo = 2301;
 	$bAudita[4] = true;
 	require './app.php';
-	$mensajes_todas = $APP->rutacomun . 'lg/lg_todas_' . $_SESSION['unad_idioma'] . '.php';
+	$sIdioma = AUREA_Idioma();
+	$mensajes_todas = $APP->rutacomun . 'lg/lg_todas_' . $sIdioma . '.php';
 	if (!file_exists($mensajes_todas)) {
 		$mensajes_todas = $APP->rutacomun . 'lg/lg_todas_es.php';
 	}
-	$mensajes_2301 = $APP->rutacomun . 'lg/lg_2301_' . $_SESSION['unad_idioma'] . '.php';
+	$mensajes_2301 = $APP->rutacomun . 'lg/lg_2301_' . $sIdioma . '.php';
 	if (!file_exists($mensajes_2301)) {
 		$mensajes_2301 = $APP->rutacomun . 'lg/lg_2301_es.php';
 	}
@@ -5034,11 +5893,12 @@ function f2301_TablaDetalleBusquedas($aParametros, $objDB)
 {
 	$res = '';
 	require './app.php';
-	$mensajes_todas = $APP->rutacomun . 'lg/lg_todas_' . $_SESSION['unad_idioma'] . '.php';
+	$sIdioma = AUREA_Idioma();
+	$mensajes_todas = $APP->rutacomun . 'lg/lg_todas_' . $sIdioma . '.php';
 	if (!file_exists($mensajes_todas)) {
 		$mensajes_todas = $APP->rutacomun . 'lg/lg_todas_es.php';
 	}
-	$mensajes_2301 = $APP->rutacomun . 'lg/lg_2301_' . $_SESSION['unad_idioma'] . '.php';
+	$mensajes_2301 = $APP->rutacomun . 'lg/lg_2301_' . $sIdioma . '.php';
 	if (!file_exists($mensajes_2301)) {
 		$mensajes_2301 = $APP->rutacomun . 'lg/lg_2301_es.php';
 	}
@@ -5490,7 +6350,8 @@ ORDER BY TB.cara01idperaca, TB.cara01idtercero';
 function f2301_HTMLComboV2_bprograma($objDB, $objCombos, $valor, $vrbescuela)
 {
 	require './app.php';
-	$mensajes_todas = $APP->rutacomun . 'lg/lg_todas_' . $_SESSION['unad_idioma'] . '.php';
+	$sIdioma = AUREA_Idioma();
+	$mensajes_todas = $APP->rutacomun . 'lg/lg_todas_' . $sIdioma . '.php';
 	if (!file_exists($mensajes_todas)) {
 		$mensajes_todas = $APP->rutacomun . 'lg/lg_todas_es.php';
 	}
@@ -5530,7 +6391,8 @@ function f2301_Combobprograma($aParametros)
 function f2301_HTMLComboV2_bcead($objDB, $objCombos, $valor, $vrcara01idzona)
 {
 	require './app.php';
-	$mensajes_todas = $APP->rutacomun . 'lg/lg_todas_' . $_SESSION['unad_idioma'] . '.php';
+	$sIdioma = AUREA_Idioma();
+	$mensajes_todas = $APP->rutacomun . 'lg/lg_todas_' . $sIdioma . '.php';
 	if (!file_exists($mensajes_todas)) {
 		$mensajes_todas = $APP->rutacomun . 'lg/lg_todas_es.php';
 	}
@@ -5615,11 +6477,12 @@ function f2301_MarcarConsejero($aParametros)
 function f2301_TablaDetalleV2Consejero($aParametros, $objDB, $bDebug = false)
 {
 	require './app.php';
-	$mensajes_todas = $APP->rutacomun . 'lg/lg_todas_' . $_SESSION['unad_idioma'] . '.php';
+	$sIdioma = AUREA_Idioma();
+	$mensajes_todas = $APP->rutacomun . 'lg/lg_todas_' . $sIdioma . '.php';
 	if (!file_exists($mensajes_todas)) {
 		$mensajes_todas = $APP->rutacomun . 'lg/lg_todas_es.php';
 	}
-	$mensajes_2301 = $APP->rutacomun . 'lg/lg_2301_' . $_SESSION['unad_idioma'] . '.php';
+	$mensajes_2301 = $APP->rutacomun . 'lg/lg_2301_' . $sIdioma . '.php';
 	if (!file_exists($mensajes_2301)) {
 		$mensajes_2301 = $APP->rutacomun . 'lg/lg_2301_es.php';
 	}
@@ -6104,6 +6967,88 @@ function f2301_AlimentarEncuesta($idUltimaEncuesta, $idNuevaEncuesta, $objDB, $b
 				. 'cara44campus_usocorreounadnodetalle="' . $fila['cara44campus_usocorreounadnodetalle'] . '", '
 				. 'cara44campus_medioactivunad="' . $fila['cara44campus_medioactivunad'] . '", '
 				. 'cara44campus_medioactivunaddetalle="' . $fila['cara44campus_medioactivunaddetalle'] . '" '
+				. 'cara44frontera="' . $fila['cara44frontera'] . '", '
+				. 'cara44med_tratamiento="' . $fila['cara44med_tratamiento'] . '", '
+				. 'cara44med_trat_cual="' . $fila['cara44med_trat_cual'] . '", '
+				. 'cara44bienv3emprenetapa="' . $fila['cara44bienv3emprenetapa'] . '", '
+				. 'cara44bienv3emprennecesita="' . $fila['cara44bienv3emprennecesita'] . '", '
+				. 'cara44bienv3emprenanioini="' . $fila['cara44bienv3emprenanioini'] . '", '
+				. 'cara44bienv3emprensector="' . $fila['cara44bienv3emprensector'] . '", '
+				. 'cara44bienv3emprensectorotro="' . $fila['cara44bienv3emprensectorotro'] . '", '
+				. 'cara44bienv3emprentemas="' . $fila['cara44bienv3emprentemas'] . '", '
+				. 'cara44bienv3ambienclima="' . $fila['cara44bienv3ambienclima'] . '", '
+				. 'cara44bienv3ambienjusticia="' . $fila['cara44bienv3ambienjusticia'] . '", '
+				. 'cara44bienv3ambienagroeco="' . $fila['cara44bienv3ambienagroeco'] . '", '
+				. 'cara44bienv3ambieneconomia="' . $fila['cara44bienv3ambieneconomia'] . '", '
+				. 'cara44bienv3ambieneducacion="' . $fila['cara44bienv3ambieneducacion'] . '", '
+				. 'cara44bienv3ambienbiodiverso="' . $fila['cara44bienv3ambienbiodiverso'] . '", '
+				. 'cara44bienv3ambienecoturismo="' . $fila['cara44bienv3ambienecoturismo'] . '", '
+				. 'cara44bienv3ambienotro="' . $fila['cara44bienv3ambienotro'] . '", '
+				. 'cara44bienv3ambienotrodetalle="' . $fila['cara44bienv3ambienotrodetalle'] . '", '
+				. 'cara44bienv3ambienexper="' . $fila['cara44bienv3ambienexper'] . '", '
+				. 'cara44bienv3ambienaprende="' . $fila['cara44bienv3ambienaprende'] . '", '
+				. 'cara44bienv3ambienestudiante="' . $fila['cara44bienv3ambienestudiante'] . '", '
+				. 'cara44bienv3ambienactividad="' . $fila['cara44bienv3ambienactividad'] . '", '
+				. 'cara44bienv3pyphabitoalim="' . $fila['cara44bienv3pyphabitoalim'] . '", '
+				. 'cara44bienv3pypsustanciapsico="' . $fila['cara44bienv3pypsustanciapsico'] . '", '
+				. 'cara44bienv3pypsaludvisual="' . $fila['cara44bienv3pypsaludvisual'] . '", '
+				. 'cara44bienv3pypsaludbucal="' . $fila['cara44bienv3pypsaludbucal'] . '", '
+				. 'cara44bienv3pypsaludsexual="' . $fila['cara44bienv3pypsaludsexual'] . '", '
+				. 'cara44bienv3deportenivel="' . $fila['cara44bienv3deportenivel'] . '", '
+				. 'cara44bienv3deportefrec="' . $fila['cara44bienv3deportefrec'] . '", '
+				. 'cara44bienv3deportecual="' . $fila['cara44bienv3deportecual'] . '", '
+				. 'cara44bienv3deportecualotro="' . $fila['cara44bienv3deportecualotro'] . '", '
+				. 'cara44bienv3deporterecrea="' . $fila['cara44bienv3deporterecrea'] . '", '
+				. 'cara44bienv3deporteunad="' . $fila['cara44bienv3deporteunad'] . '", '
+				. 'cara44bienv3creciminclusion="' . $fila['cara44bienv3creciminclusion'] . '", '
+				. 'cara44bienv3crecimfamilia="' . $fila['cara44bienv3crecimfamilia'] . '", '
+				. 'cara44bienv3crecimhabilidad="' . $fila['cara44bienv3crecimhabilidad'] . '", '
+				. 'cara44bienv3crecimempleable="' . $fila['cara44bienv3crecimempleable'] . '", '
+				. 'cara44bienv3crecimhabilvida="' . $fila['cara44bienv3crecimhabilvida'] . '", '
+				. 'cara44bienv3crecimespiritual="' . $fila['cara44bienv3crecimespiritual'] . '", '
+				. 'cara44bienv3crecimpractica="' . $fila['cara44bienv3crecimpractica'] . '", '
+				. 'cara44bienv3crecimliderazgo="' . $fila['cara44bienv3crecimliderazgo'] . '", '
+				. 'cara44bienv3crecimtrabequipo="' . $fila['cara44bienv3crecimtrabequipo'] . '", '
+				. 'cara44bienv3crecimasertiva="' . $fila['cara44bienv3crecimasertiva'] . '", '
+				. 'cara44bienv3crecimgesttiempo="' . $fila['cara44bienv3crecimgesttiempo'] . '", '
+				. 'cara44bienv3crecimconflictos="' . $fila['cara44bienv3crecimconflictos'] . '", '
+				. 'cara44bienv3crecimadapcambio="' . $fila['cara44bienv3crecimadapcambio'] . '", '
+				. 'cara44bienv3crecimempatia="' . $fila['cara44bienv3crecimempatia'] . '", '
+				. 'cara44bienv3crecimgestionser="' . $fila['cara44bienv3crecimgestionser'] . '", '
+				. 'cara44bienv3crecimtomadecide="' . $fila['cara44bienv3crecimtomadecide'] . '", '
+				. 'cara44bienv3crecimpenscreativo="' . $fila['cara44bienv3crecimpenscreativo'] . '", '
+				. 'cara44bienv3crecimpenscritico="' . $fila['cara44bienv3crecimpenscritico'] . '", '
+				. 'cara44bienv3crecimhabilotro="' . $fila['cara44bienv3crecimhabilotro'] . '", '
+				. 'cara44bienv3crecimhabilotrodetalle="' . $fila['cara44bienv3crecimhabilotrodetalle'] . '", '
+				. 'cara44bienv3crecimalcancemeta="' . $fila['cara44bienv3crecimalcancemeta'] . '", '
+				. 'cara44bienv3crecimsatifpersonal="' . $fila['cara44bienv3crecimsatifpersonal'] . '", '
+				. 'cara44bienv3crecimaccesolaboral="' . $fila['cara44bienv3crecimaccesolaboral'] . '", '
+				. 'cara44bienv3crecimotramotiv="' . $fila['cara44bienv3crecimotramotiv'] . '", '
+				. 'cara44bienv3crecimotramotivdetalle="' . $fila['cara44bienv3crecimotramotivdetalle'] . '", '
+				. 'cara44bienv3crecimapoyo="' . $fila['cara44bienv3crecimapoyo'] . '", '
+				. 'cara44bienv3crecimlaboral="' . $fila['cara44bienv3crecimlaboral'] . '", '
+				. 'cara44bienv3mentalcuidado="' . $fila['cara44bienv3mentalcuidado'] . '", '
+				. 'cara44bienv3mentalestrategia="' . $fila['cara44bienv3mentalestrategia'] . '", '
+				. 'cara44bienv3mentalestres="' . $fila['cara44bienv3mentalestres'] . '", '
+				. 'cara44bienv3mentalansiedad="' . $fila['cara44bienv3mentalansiedad'] . '", '
+				. 'cara44bienv3mentaldepresion="' . $fila['cara44bienv3mentaldepresion'] . '", '
+				. 'cara44bienv3mentalautoconoc="' . $fila['cara44bienv3mentalautoconoc'] . '", '
+				. 'cara44bienv3mentalmindfulness="' . $fila['cara44bienv3mentalmindfulness'] . '", '
+				. 'cara44bienv3mentalautoestima="' . $fila['cara44bienv3mentalautoestima'] . '", '
+				. 'cara44bienv3mentalcrisis="' . $fila['cara44bienv3mentalcrisis'] . '", '
+				. 'cara44bienv3mentalburnout="' . $fila['cara44bienv3mentalburnout'] . '", '
+				. 'cara44bienv3mentalsexualidad="' . $fila['cara44bienv3mentalsexualidad'] . '", '
+				. 'cara44bienv3mentalusoredes="' . $fila['cara44bienv3mentalusoredes'] . '", '
+				. 'cara44bienv3mentalinclusion="' . $fila['cara44bienv3mentalinclusion'] . '", '
+				. 'cara44bienv3mentalactividad="' . $fila['cara44bienv3mentalactividad'] . '", '
+				. 'cara44bienv3mentalacompana="' . $fila['cara44bienv3mentalacompana'] . '", '
+				. 'cara44bienv3mentaldiagnostico="' . $fila['cara44bienv3mentaldiagnostico'] . '", '
+				. 'cara44bienv3mentaldiagcual="' . $fila['cara44bienv3mentaldiagcual'] . '", '
+				. 'cara44bienv3mentaldiagotro="' . $fila['cara44bienv3mentaldiagotro'] . '", '
+				. 'cara44bienv3arteintegrar="' . $fila['cara44bienv3arteintegrar'] . '", '
+				. 'cara44bienv3arteformacion="' . $fila['cara44bienv3arteformacion'] . '", '
+				. 'cara44bienv3arteunad="' . $fila['cara44bienv3arteunad'] . '", '
+				. 'cara44bienv3arteinformacion="' . $fila['cara44bienv3arteinformacion'] . '", '
 				. 'WHERE cara44id=' . $idNuevaEncuesta . '';
 			if ($bDebug) {
 				$sDebug = $sDebug . fecha_microtiempo() . ' Precargue 2344 ' . $sSQL . '<br>';
@@ -6165,4 +7110,137 @@ function f2301_Actualizaedad($aParametros)
 	$objResponse = new xajaxResponse();
 	$objResponse->assign('div_cara01agnos', 'innerHTML', $et_cara01agnos);
 	return $objResponse;
+}
+function f2301_NomEstrato($sId)
+{
+	$res = '[Sin dato]';
+	switch ($sId) {
+		case 1:
+			$res = 'Uno';
+			break;
+		case 2:
+			$res = 'Dos';
+			break;
+		case 3:
+			$res = 'Tres';
+			break;
+		case 4:
+			$res = 'Cuatro';
+			break;
+		case 5:
+			$res = 'Cinco';
+			break;
+		case 6:
+			$res = 'Seis';
+			break;
+	}
+	return $res;
+}
+function f2301_NombrePuntaje($sCompetencia, $iValor)
+{
+	$sValor = '';
+	switch ($sCompetencia) {
+		case 'puntaje':
+			if ($iValor >= 24 && $iValor <= 30) {
+				$sValor = 'Bajo';
+			} else {
+				if ($iValor >= 17 && $iValor <= 23) {
+					$sValor = 'Medio';
+				} else {
+					if ($iValor >= 10 && $iValor <= 16) {
+						$sValor = 'Alto';
+					} else {
+						$sValor = 'Sin definir';
+					}
+				}
+			}
+			break;
+		case 'lectura':
+			if ($iValor >= 0 && $iValor <= 40) {
+				$sValor = 'Bajo';
+			} else {
+				if ($iValor >= 50 && $iValor <= 90) {
+					$sValor = 'Medio';
+				} else {
+					if ($iValor >= 100 && $iValor <= 150) {
+						$sValor = 'Alto';
+					} else {
+						$sValor = 'Sin definir';
+					}
+				}
+			}
+			break;
+		case 'digital':
+		case 'ingles':
+			if ($iValor >= 0 && $iValor <= 40) {
+				$sValor = 'Bajo';
+			} else {
+				if ($iValor >= 50 && $iValor <= 80) {
+					$sValor = 'Medio';
+				} else {
+					if ($iValor >= 90 && $iValor <= 120) {
+						$sValor = 'Alto';
+					} else {
+						$sValor = 'Sin definir';
+					}
+				}
+			}
+			break;
+		case 'razona':
+		case 'biolog':
+		case 'fisica':
+		case 'quimica':
+			if ($iValor >= 0 && $iValor <= 30) {
+				$sValor = 'Bajo';
+			} else {
+				if ($iValor >= 40 && $iValor <= 60) {
+					$sValor = 'Medio';
+				} else {
+					if ($iValor >= 70 && $iValor <= 100) {
+						$sValor = 'Alto';
+					} else {
+						$sValor = 'Sin definir';
+					}
+				}
+			}
+			break;
+	}
+	return $sValor;
+}
+function f2301_InfoParaPlano($iTer, $objDB)
+{
+	$sTD = '';
+	$sDoc = '';
+	$sRazonSocial = '';
+	$iUltimoAcceso = 0;
+	$sSQL = 'SELECT unad11tipodoc, unad11doc, unad11razonsocial, unad11fechaultingreso FROM unad11terceros WHERE unad11id=' . $iTer . '';
+	$tabla11 = $objDB->ejecutasql($sSQL);
+	if ($objDB->nf($tabla11) > 0) {
+		$fila11 = $objDB->sf($tabla11);
+		$sTD = $fila11['unad11tipodoc'];
+		$sDoc = $fila11['unad11doc'];
+		$sRazonSocial = $fila11['unad11razonsocial'];
+		$iUltimoAcceso = $fila11['unad11fechaultingreso'];
+	}
+	return array($sTD, $sDoc, $sRazonSocial, $iUltimoAcceso);
+}
+function f2301_VerBienestarVersion($idPeriodo)
+{
+	$bVerBienV1 = false;
+	$bVerBienV2 = false;
+	$bVerBienV3 = false;
+	if ($idPeriodo < 1142) { // 1142 (2022 I PERIODO 16-02)
+		$bVerBienV1 = true;
+	} else if ($idPeriodo <= 1143) { // 1143 (2022 I PERIODO 8-03)
+		$bVerBienV1 = true;
+		$bVerBienV2 = true;
+	} else if ($idPeriodo <= 2034) { // 2034 (2025 II PERIODO 16-04)
+		$bVerBienV2 = true;
+	} else if ($idPeriodo == 2035) { // 2035 (2025 II PERIODO 16-05)
+		$bVerBienV2 = true;
+		$bVerBienV3 = true;
+	} else {
+		$bVerBienV3 = true;
+	}
+	return array($bVerBienV1, $bVerBienV2, $bVerBienV3);
 }
