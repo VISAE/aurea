@@ -530,8 +530,26 @@ function f3005_db_Guardar($DATA, $objDB, $bDebug = false)
 		}
 	}
 	if ($sError == '') {
+		$sSQL = 'SELECT core01idzona AS idzona, core011idcead AS idcead, core01idescuela AS idescuela, core01idprograma AS idprograma, core01peracainicial as idperiodo 
+		FROM core01estprograma
+		WHERE core01idtercero = ' . $DATA['saiu05idsolicitante'] . ' AND core01idestado NOT IN (11, 12) 
+		UNION
+		SELECT unad11idzona AS idzona, unad11idcead AS idcead, unad11idescuela AS idescuela, unad11idprograma AS idprograma, 0 as idperiodo 
+		FROM unad11terceros
+		WHERE unad11id = ' . $DATA['saiu05idsolicitante'] . '
+		ORDER BY idperiodo DESC' . '';
+		$result = $objDB->ejecutasql($sSQL);
+		if ($objDB->nf($result) > 0) {
+			$fila = $objDB->sf($result);
+			$saiu05idzona = $fila['idzona'];
+			$saiu05cead = $fila['idcead'];
+			$saiu05idescuela = $fila['idescuela'];
+			$saiu05idprograma = $fila['idprograma'];
+		}
+	}
+	if ($sError == '') {
 		if ($DATA['saiu05estado'] == 0) {
-			list($aParametros, $sError, $iTipoError, $sDebugF) = f3000_ConsultaResponsable($DATA['saiu05idtemaorigen'], $DATA['saiu05idzona'], $DATA['saiu05cead'], $objDB, $bDebug);
+			list($aParametros, $sError, $iTipoError, $sDebugF) = f3000_ConsultaResponsable($DATA['saiu05idtemaorigen'], $saiu05idzona, $saiu05cead, $saiu05idescuela, $objDB, $bDebug);
 			if ($sError == '') {
 				$saiu05idunidadresp = $aParametros['idunidad'];
 				$saiu05idequiporesp = $aParametros['idequipo'];
@@ -546,23 +564,6 @@ function f3005_db_Guardar($DATA, $objDB, $bDebug = false)
 			if ($bDebug) {
 				$sDebug = $sDebug . $sDebugF;
 			}
-		}
-	}
-	if ($sError == '') {
-		$sSQL = 'SELECT core01idzona AS idzona, core011idcead AS idcead, core01idescuela AS idescuela, core01idprograma AS idprograma
-		FROM core01estprograma
-		WHERE core01idtercero = ' . $DATA['saiu05idsolicitante'] . '
-		UNION
-		SELECT unad11idzona AS idzona, unad11idcead AS idcead, unad11idescuela AS idescuela, unad11idprograma AS idprograma
-		FROM unad11terceros
-		WHERE unad11id = ' . $DATA['saiu05idsolicitante'] . '';
-		$result = $objDB->ejecutasql($sSQL);
-		if ($objDB->nf($result) > 0) {
-			$fila = $objDB->sf($result);
-			$saiu05idzona = $fila['idzona'];
-			$saiu05cead = $fila['idcead'];
-			$saiu05idescuela = $fila['idescuela'];
-			$saiu05idprograma = $fila['idprograma'];
 		}
 	}
 	$bCalularTotales = false;
@@ -651,15 +652,18 @@ saiu05fecharespprob, saiu05respuesta, saiu05idmoduloproc, saiu05identificadormod
 			$scampo[7] = 'saiu05rptacorreo';
 			$scampo[8] = 'saiu05rptadireccion';
 			$scampo[9] = 'saiu05detalle';
-			$scampo[10] = 'saiu05idunidadresp';
-			$scampo[11] = 'saiu05idequiporesp';
-			$scampo[12] = 'saiu05idsupervisor';
-			$scampo[13] = 'saiu05idresponsable';
-			$scampo[14] = 'saiu05estado';
-			$scampo[15] = 'saiu05respuesta';
-			$scampo[16] = 'saiu05fecharespdef';
-			$scampo[17] = 'saiu05horarespdef';
-			$scampo[18] = 'saiu05minrespdef';
+			$scampo[10] = 'saiu05tiemprespdias';
+			$scampo[11] = 'saiu05tiempresphoras';
+			$scampo[12] = 'saiu05fecharespprob';
+			$scampo[13] = 'saiu05idunidadresp';
+			$scampo[14] = 'saiu05idequiporesp';
+			$scampo[15] = 'saiu05idsupervisor';
+			$scampo[16] = 'saiu05idresponsable';
+			$scampo[17] = 'saiu05estado';
+			$scampo[18] = 'saiu05respuesta';
+			$scampo[19] = 'saiu05fecharespdef';
+			$scampo[20] = 'saiu05horarespdef';
+			$scampo[21] = 'saiu05minrespdef';
 			$sdato[1] = $DATA['saiu05dia'];
 			$sdato[2] = $DATA['saiu05idcategoria'];
 			$sdato[3] = $DATA['saiu05idtiposolorigen'];
@@ -669,16 +673,19 @@ saiu05fecharespprob, saiu05respuesta, saiu05idmoduloproc, saiu05identificadormod
 			$sdato[7] = $DATA['saiu05rptacorreo'];
 			$sdato[8] = $DATA['saiu05rptadireccion'];
 			$sdato[9] = $saiu05detalle;
-			$sdato[10] = $saiu05idunidadresp;
-			$sdato[11] = $saiu05idequiporesp;
-			$sdato[12] = $saiu05idsupervisor;
-			$sdato[13] = $saiu05idresponsable;
-			$sdato[14] = $DATA['saiu05estado'];
-			$sdato[15] = '';
-			$sdato[16] = $saiu05fecharespdef;
-			$sdato[17] = $saiu05horarespdef;
-			$sdato[18] = $saiu05minrespdef;
-			$numcmod = 18;
+			$sdato[10] = $saiu05tiemprespdias;
+			$sdato[11] = $saiu05tiempresphoras;
+			$sdato[12] = $saiu05fecharespprob;
+			$sdato[13] = $saiu05idunidadresp;
+			$sdato[14] = $saiu05idequiporesp;
+			$sdato[15] = $saiu05idsupervisor;
+			$sdato[16] = $saiu05idresponsable;
+			$sdato[17] = $DATA['saiu05estado'];
+			$sdato[18] = '';
+			$sdato[19] = $saiu05fecharespdef;
+			$sdato[20] = $saiu05horarespdef;
+			$sdato[21] = $saiu05minrespdef;
+			$numcmod = 21;
 			$sWhere = 'saiu05id=' . $DATA['saiu05id'] . '';
 			$sSQL = 'SELECT * FROM ' . $sTabla05 . ' WHERE ' . $sWhere;
 			$sdatos = '';

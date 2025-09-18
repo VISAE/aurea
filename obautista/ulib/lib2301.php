@@ -3972,7 +3972,7 @@ function f2301_db_GuardarV2($DATA, $objDB, $bDebug = false)
 				$sError = $ERR['cara44bienv3mentaldiagnostico'] . $sSepara . $sError;
 			}
 			if ($DATA['cara44bienv3mentaldiagnostico'] == 1) {
-				if ($DATA['cara44bienv3mentaldiagcual'] == '') {
+				if ($DATA['cara44bienv3mentaldiagcual'] == 0) {
 					$sError = $ERR['cara44bienv3mentaldiagcual'] . $sSepara . $sError;
 				}
 				if ($DATA['cara44bienv3mentaldiagcual'] == 11) {

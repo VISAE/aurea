@@ -180,6 +180,7 @@ $ERR['tabla']='Necesita el dato Referencia a BD';
 $ERR['saiu00noexiste']='La encuesta no existe.&lt;br&gt;Verifique que el documento no contenga puntos, comas o espacios&lt;br&gt;verifique que el código de sea correcto.';
 $ERR['saiu00idzona'] = 'Necesita el dato ' . $ETI['saiu00idzona'];
 $ERR['saiu00idcentro'] = 'Necesita el dato ' . $ETI['saiu00idcentro'];
+$ERR['saiu00idescuela'] = 'Necesita el dato ' . $ETI['saiu00idescuela'];
 $ERR['saiu00idtema'] = 'Necesita el dato ' . $ETI['saiu00idtema'];
 $ERR['saiu00noidtema'] = 'No se ha configurado el tema de solicitud.';
 

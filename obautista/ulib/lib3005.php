@@ -1212,7 +1212,7 @@ function f3005_db_GuardarV2($DATA, $objDB, $bDebug = false, $idTercero = 0)
 	}
 	if ($sError == '') {
 		if ($DATA['saiu05estado'] < 0 || $DATA['bCambiaEst'] == 0) {
-			list($aParametros, $sError, $iTipoError, $sDebugF) = f3000_ConsultaResponsable($DATA['saiu05idtemaorigen'], $DATA['saiu05idzona'], $DATA['saiu05cead'], $objDB, $bDebug);
+			list($aParametros, $sError, $iTipoError, $sDebugF) = f3000_ConsultaResponsable($DATA['saiu05idtemaorigen'], $DATA['saiu05idzona'], $DATA['saiu05cead'], $DATA['saiu05idescuela'], $objDB, $bDebug);
 			if ($sError == '') {
 				$saiu05idunidadresp = $aParametros['idunidad'];
 				$saiu05idequiporesp = $aParametros['idequipo'];
@@ -1230,13 +1230,14 @@ function f3005_db_GuardarV2($DATA, $objDB, $bDebug = false, $idTercero = 0)
 		}
 	}
 	if ($sError == '') {
-		$sSQL = 'SELECT core01idzona AS idzona, core011idcead AS idcead, core01idescuela AS idescuela, core01idprograma AS idprograma
+		$sSQL = 'SELECT core01idzona AS idzona, core011idcead AS idcead, core01idescuela AS idescuela, core01idprograma AS idprograma, core01peracainicial as idperiodo 
 		FROM core01estprograma
-		WHERE core01idtercero = ' . $DATA['saiu05idsolicitante'] . '
+		WHERE core01idtercero = ' . $DATA['saiu05idsolicitante'] . ' AND core01idestado NOT IN (11, 12) 
 		UNION
-		SELECT unad11idzona AS idzona, unad11idcead AS idcead, unad11idescuela AS idescuela, unad11idprograma AS idprograma
+		SELECT unad11idzona AS idzona, unad11idcead AS idcead, unad11idescuela AS idescuela, unad11idprograma AS idprograma, 0 as idperiodo 
 		FROM unad11terceros
-		WHERE unad11id = ' . $DATA['saiu05idsolicitante'] . '';
+		WHERE unad11id = ' . $DATA['saiu05idsolicitante'] . '
+		ORDER BY idperiodo DESC' . '';
 		$result = $objDB->ejecutasql($sSQL);
 		if ($objDB->nf($result) > 0) {
 			$fila = $objDB->sf($result);
@@ -1265,7 +1266,7 @@ function f3005_db_GuardarV2($DATA, $objDB, $bDebug = false, $idTercero = 0)
 				$iDiasBorrador = $iDiasBorrador + 2;
 			}
 			if ($saiu05tiemprespdias == 0) {
-				list($aParametros, $sError, $iTipoError, $sDebugF) = f3000_ConsultaResponsable($DATA['saiu05idtemaorigen'], $DATA['saiu05idzona'], $DATA['saiu05cead'], $objDB, $bDebug);
+				list($aParametros, $sError, $iTipoError, $sDebugF) = f3000_ConsultaResponsable($DATA['saiu05idtemaorigen'], $saiu05idzona, $saiu05cead, $saiu05idescuela, $objDB, $bDebug);
 				if ($sError == '') {
 					$saiu05idunidadresp = $aParametros['idunidad'];
 					$saiu05idequiporesp = $aParametros['idequipo'];
@@ -2580,11 +2581,11 @@ function f3005_ActualizarAtiende($DATA, $objDB, $bDebug = false, $idTercero)
 		$sError = $sError . $ERR['contenedor'];
 	}
 	if ($sError == '') {
-		$sSQL = 'SELECT saiu05idzona, saiu05cead, saiu05idtemaorigen FROM ' . $sTabla05 . ' WHERE saiu05id=' . $DATA['saiu05id'] . '';
+		$sSQL = 'SELECT saiu05idescuela, saiu05idzona, saiu05cead, saiu05idtemaorigen FROM ' . $sTabla05 . ' WHERE saiu05id=' . $DATA['saiu05id'] . '';
 		$tabla = $objDB->ejecutasql($sSQL);
 		if ($objDB->nf($tabla) > 0) {
 			$fila = $objDB->sf($tabla);
-			list($aParametros, $sError, $iTipoError, $sDebugF) = f3000_ConsultaResponsable($fila['saiu05idtemaorigen'], $fila['saiu05idzona'], $fila['saiu05cead'], $objDB, $bDebug);
+			list($aParametros, $sError, $iTipoError, $sDebugF) = f3000_ConsultaResponsable($fila['saiu05idtemaorigen'], $fila['saiu05idzona'], $fila['saiu05cead'], $fila['saiu05idescuela'], $objDB, $bDebug);
 			if ($bDebug) {
 				$sDebug = $sDebug . $sDebugF;
 			}

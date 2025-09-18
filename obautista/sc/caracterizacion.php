@@ -4094,7 +4094,7 @@ if ($bEntra) {
 	$objCombos->sino($ETI['si'], $ETI['no'], 1, 0);
 	$objCombos->sAccion = 'ajustar_cara44bienv3mentaldiagnostico()';
 	$html_cara44bienv3mentaldiagnostico = $objCombos->html('', $objDB);
-	$objCombos->nuevo('cara44bienv3mentaldiagcual', $_REQUEST['cara44bienv3mentaldiagcual'], true, '{' . $ETI['msg_seleccione'] . '}');
+	$objCombos->nuevo('cara44bienv3mentaldiagcual', $_REQUEST['cara44bienv3mentaldiagcual'], true, '{' . $ETI['msg_seleccione'] . '}', 0);
 	$objCombos->addArreglo($acara44bienv3mentaldiagcual, $icara44bienv3mentaldiagcual);
 	$objCombos->sAccion = 'ajustar_cara44bienv3mentaldiagcual()';
 	$html_cara44bienv3mentaldiagcual = $objCombos->html('', $objDB);

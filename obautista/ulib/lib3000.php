@@ -2144,7 +2144,7 @@ function f3000_NotificarResponsables($aParametros) {
 }
 
 // -- Devolver el responsable de una red de servicio.
-function f3074_ActorRedServicio($id73, $idZona, $idCentro, $objDB, $bDebug = false) 
+function f3074_ActorRedServicio($id73, $idZona, $idCentro, $idEscuela, $objDB, $bDebug = false) 
 {
 	$idUnidad = 0;
 	$idGrupoTrabajo = 0;
@@ -2154,12 +2154,28 @@ function f3074_ActorRedServicio($id73, $idZona, $idCentro, $objDB, $bDebug = fal
 	$bResuelve = false;
 	$bTraerLider = false;
 	$idAdministrador = 0;
-	$sSQL = 'SELECT saiu74idunidad, saiu74idadministrador, saiu74activa FROM saiu74reddeservicio WHERE saiu74id=' . $id73 . '';
+	$saiu74id = $id73;
+	$sSQL = 'SELECT saiu74consec, saiu74idunidad, saiu74idadministrador, saiu74activa FROM saiu74reddeservicio WHERE saiu74id=' . $id73 . '';
 	$tabla = $objDB->ejecutasql($sSQL);
 	if ($objDB->nf($tabla) > 0) {
 		$fila = $objDB->sf($tabla);
+		$saiu74consec = $fila['saiu74consec'];
 		$idUnidad = $fila['saiu74idunidad'];
 		$idAdministrador = $fila['saiu74idadministrador'];
+		if ((int)$idEscuela != 0) {
+			//Buscamos a ver si hay una red para esa escuela
+			$sSQL = 'SELECT saiu74id, saiu74idunidad, saiu74idadministrador, saiu74activa 
+			FROM saiu74reddeservicio 
+			WHERE saiu74consec=' . $saiu74consec . ' AND saiu74idescuela=' . $idEscuela . '';
+			$tabla = $objDB->ejecutasql($sSQL);
+			if ($objDB->nf($tabla) > 0) {
+				$fila = $objDB->sf($tabla);
+				$saiu74id = $fila['saiu74id'];
+				$idUnidad = $fila['saiu74idunidad'];
+				$idAdministrador = $fila['saiu74idadministrador'];
+				$bTraerLider = true;
+			}
+		}
 		if ($fila['saiu74activa'] == 0) {
 			$sError = 'La red de servicio no se encuentra activa.';
 		}
@@ -2168,7 +2184,7 @@ function f3074_ActorRedServicio($id73, $idZona, $idCentro, $objDB, $bDebug = fal
 	}
 	if (($sError == '') && ((int)$idCentro > 0)) {
 		//Si el centro es mayor a 0 buscamos para el centro.
-		$sSQL = 'SELECT saiu75idequipo FROM saiu75redequipo WHERE saiu75idred=' . $id73 . ' AND saiu75idcentro=' . $idCentro . ' AND saiu75idequipo>0';
+		$sSQL = 'SELECT saiu75idequipo FROM saiu75redequipo WHERE saiu75idred=' . $saiu74id . ' AND saiu75idcentro=' . $idCentro . ' AND saiu75idequipo>0';
 		$tabla = $objDB->ejecutasql($sSQL);
 		if ($objDB->nf($tabla) > 0) {
 			$fila = $objDB->sf($tabla);
@@ -2179,7 +2195,7 @@ function f3074_ActorRedServicio($id73, $idZona, $idCentro, $objDB, $bDebug = fal
 	}
 	if ((!$bResuelve) && ($sError == '') && ((int)$idZona > 0)) {
 		//No lo ha encontrado por centro, vamos por zona
-		$sSQL = 'SELECT saiu75idequipo FROM saiu75redequipo WHERE saiu75idred=' . $id73 . ' AND saiu75idzona=' . $idZona . ' AND saiu75idcentro=0 AND saiu75idequipo>0';
+		$sSQL = 'SELECT saiu75idequipo FROM saiu75redequipo WHERE saiu75idred=' . $saiu74id . ' AND saiu75idzona=' . $idZona . ' AND saiu75idcentro=0 AND saiu75idequipo>0';
 		$tabla = $objDB->ejecutasql($sSQL);
 		if ($objDB->nf($tabla) > 0) {
 			$fila = $objDB->sf($tabla);
@@ -2192,14 +2208,14 @@ function f3074_ActorRedServicio($id73, $idZona, $idCentro, $objDB, $bDebug = fal
 		//Si no hay datos, se envia al administrador
 		$idResponsable = $idAdministrador;
 		//busca equipo de líderes nacionales
-		$sSQL = 'SELECT saiu75idequipo FROM saiu75redequipo WHERE saiu75idred=' . $id73 . ' AND saiu75idzona=0 AND saiu75idcentro=0 AND saiu75idequipo>0';
+		$sSQL = 'SELECT saiu75idequipo FROM saiu75redequipo WHERE saiu75idred=' . $saiu74id . ' AND saiu75idzona=0 AND saiu75idcentro=0 AND saiu75idequipo>0';
 		$tabla = $objDB->ejecutasql($sSQL);
 		if ($objDB->nf($tabla) > 0) {
 			$fila = $objDB->sf($tabla);
 			$idGrupoTrabajo = $fila['saiu75idequipo'];
 		}
 	}
-	if ($bTraerLider) {
+	if (($bTraerLider) && ($sError == '')) {
 		//Traer el lider del equipo de trabajo.
 		$sSQL = 'SELECT bita27idlider FROM bita27equipotrabajo WHERE bita27id=' . $idGrupoTrabajo . ' AND bita27idlider>0';
 		$tabla = $objDB->ejecutasql($sSQL);
@@ -2225,7 +2241,7 @@ function f3074_ActorRedServicio($id73, $idZona, $idCentro, $objDB, $bDebug = fal
 	}
 	return array($idUnidad, $idGrupoTrabajo, $idAdministrador, $idResponsable, $sError, $sDebug);
 }
-function f3000_ConsultaResponsable($idTema, $idZona, $idCentro, $objDB, $bDebug = false)
+function f3000_ConsultaResponsable($idTema, $idZona, $idCentro, $idEscuela, $objDB, $bDebug = false)
 {
 	require './app.php';
 	$sIdioma = AUREA_Idioma();
@@ -2242,6 +2258,7 @@ function f3000_ConsultaResponsable($idTema, $idZona, $idCentro, $objDB, $bDebug 
 	$idTema = numeros_validar($idTema);
 	$idZona = numeros_validar($idZona);
 	$idCentro = numeros_validar($idCentro);
+	$idEscuela = numeros_validar($idEscuela);
 	$sError = '';
 	$iTipoError = 0;
 	$sDebug = '';
@@ -2263,6 +2280,9 @@ function f3000_ConsultaResponsable($idTema, $idZona, $idCentro, $objDB, $bDebug 
 	if ($idCentro == '') {
 		$sError = $sError. $ERR['saiu00idcentro'] . $sSepara;
 	}
+	if ($idEscuela == '') {
+		$sError = $sError. $ERR['saiu00idescuela'] . $sSepara;
+	}
 	if ($sError == '') {
 		$sSQL = 'SELECT saiu03idunidadresp1, saiu03idequiporesp1, saiu03idliderrespon1, saiu03tiemprespdias1, saiu03tiempresphoras1, 
 		saiu03reddeservicio
@@ -2281,7 +2301,7 @@ function f3000_ConsultaResponsable($idTema, $idZona, $idCentro, $objDB, $bDebug 
 			$aParametros['tiemprespdias'] = $fila['saiu03tiemprespdias1'];
 			$aParametros['tiempresphoras'] = $fila['saiu03tiempresphoras1'];
 			if ($fila['saiu03reddeservicio'] != 0) {
-				list($idUnidad, $idEquipo, $idSupervisor, $idResponsable, $sError, $sDebug) = f3074_ActorRedServicio($fila['saiu03reddeservicio'], $idZona, $idCentro, $objDB, $bDebug);
+				list($idUnidad, $idEquipo, $idSupervisor, $idResponsable, $sError, $sDebug) = f3074_ActorRedServicio($fila['saiu03reddeservicio'], $idZona, $idCentro, $idEscuela, $objDB, $bDebug);
 				$aParametros['idunidad'] = $idUnidad;
 				$aParametros['idequipo'] = $idEquipo;
 				$aParametros['idsupervisor'] = $idSupervisor;

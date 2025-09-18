@@ -1459,7 +1459,7 @@ function f3073_db_GuardarV2($DATA, $objDB, $bDebug = false, $idTercero = 0, $iCo
 				$DATA['saiu73idresponsablecaso'] = 0;
 			}
 			if ($DATA['saiu73idresponsablecaso'] == 0) {
-				list($aParametros, $sErrorF, $iTipoError, $sDebugF) = f3000_ConsultaResponsable($DATA['saiu73temasolicitud'], $DATA['saiu73idzona'], $DATA['saiu73idcentro'], $objDB, $bDebug);
+				list($aParametros, $sErrorF, $iTipoError, $sDebugF) = f3000_ConsultaResponsable($DATA['saiu73temasolicitud'], $DATA['saiu73idzona'], $DATA['saiu73idcentro'], $DATA['saiu73idescuela'], $objDB, $bDebug);
 				if ($sErrorF != '') {
 					$sError = $sError . '<br>' . $sErrorF;
 				}
@@ -2447,11 +2447,11 @@ function f3073_ActualizaAtiendeSolicitud($saiu73id, $iAgno, $objDB, $bDebug = fa
 		$sError = 'No ha sido posible acceder al contenedor de datos';
 	}
 	if ($sError == '') {
-		$sSQL = 'SELECT saiu73temasolicitud, saiu73idzona, saiu73idcentro FROM ' . $sTabla73 . ' WHERE saiu73id=' . $saiu73id . '';
+		$sSQL = 'SELECT saiu73temasolicitud, saiu73idzona, saiu73idcentro, saiu73idescuela FROM ' . $sTabla73 . ' WHERE saiu73id=' . $saiu73id . '';
 		$tabla = $objDB->ejecutasql($sSQL);
 		if ($objDB->nf($tabla) > 0) {
 			$fila = $objDB->sf($tabla);
-			list($aParametros, $sError, $iTipoError, $sDebugF) = f3000_ConsultaResponsable($fila['saiu73temasolicitud'], $fila['saiu73idzona'], $fila['saiu73idcentro'], $objDB, $bDebug);
+			list($aParametros, $sError, $iTipoError, $sDebugF) = f3000_ConsultaResponsable($fila['saiu73temasolicitud'], $fila['saiu73idzona'], $fila['saiu73idcentro'], $fila['saiu73idescuela'], $objDB, $bDebug);
 			if ($bDebug) {
 				$sDebug = $sDebug . fecha_microtiempo() . ' Consulta Responsable: ' . $sDebugF . '<br>';
 			}
