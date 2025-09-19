@@ -3752,7 +3752,7 @@ function f2301_db_GuardarV2($DATA, $objDB, $bDebug = false)
 			if ($DATA['cara44bienv3emprensector'] == '') {
 				$sError = $ERR['cara44bienv3emprensector'] . $sSepara . $sError;
 			}
-			if ($DATA['cara44bienv3emprensector'] == 5) {
+			if ($DATA['cara44bienv3emprensector'] == 9) {
 				if ($DATA['cara44bienv3emprensectorotro'] == '') {
 					$sError = $ERR['cara44bienv3emprensectorotro'] . $sSepara . $sError;
 				}

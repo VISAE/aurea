@@ -339,6 +339,7 @@ $ERR['cara44bienv3emprenetapa'] = 'Necesita el dato ' . $ETI['cara44bienv3empren
 $ERR['cara44bienv3emprennecesita'] = 'Necesita el dato ' . $ETI['cara44bienv3emprennecesita'];
 $ERR['cara44bienv3emprenanioini'] = 'Necesita el dato ' . $ETI['cara44bienv3emprenanioini'];
 $ERR['cara44bienv3emprensector'] = 'Necesita el dato ' . $ETI['cara44bienv3emprensector'];
+$ERR['cara44bienv3emprensectorotro'] = 'Necesita el dato ' . $ETI['cara44bienv3emprensectorotro'];
 $ERR['cara44bienv3emprentemas'] = 'Necesita el dato ' . $ETI['cara44bienv3emprentemas'];
 $ERR['cara44bienv3ambientema'] = 'Necesita el dato ' . $ETI['cara44bienv3ambientema'];
 $ERR['cara44bienv3ambienexper'] = 'Necesita el dato ' . $ETI['cara44bienv3ambienexper'];

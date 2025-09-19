@@ -2173,7 +2173,6 @@ function f3074_ActorRedServicio($id73, $idZona, $idCentro, $idEscuela, $objDB, $
 				$saiu74id = $fila['saiu74id'];
 				$idUnidad = $fila['saiu74idunidad'];
 				$idAdministrador = $fila['saiu74idadministrador'];
-				$bTraerLider = true;
 			}
 		}
 		if ($fila['saiu74activa'] == 0) {
