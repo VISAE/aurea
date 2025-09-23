@@ -50,14 +50,14 @@ if (isset($_REQUEST['rdebug']) == 0) {
 $aNombres = array(
 	'', '', '', 'Nombre', 'Listar',
 	'Estado', 'Documento', 'Tipo', 'Motivo', 'Unidad',
-	'Responsable', 'Zona'
+	'Responsable', 'Zona', 'Agno'
 );
 $aTipos = array(
 	0, 0, 0, 1, 0,
 	0, 1, 0, 0, 0,
-	0, 0
+	0, 0, 0
 );
-$iNumVariables = 11;
+$iNumVariables = 12;
 for ($k = 3; $k <= $iNumVariables; $k++) {
 	if (isset($_REQUEST['v' . $k]) == 0) {
 		$_REQUEST['v' . $k] = '';
@@ -116,6 +116,7 @@ if ($sError == '') {
 	// Leemos los parametros de entrada.
 	// ------------------------------------------------
 	$bNombre = cadena_Validar(trim($_REQUEST['v3']));
+	$bListar = numeros_validar($_REQUEST['v4']);
 	$bEstado = numeros_validar($_REQUEST['v5']);
 	$bDoc = cadena_Validar($_REQUEST['v6']);
 	$bTipo = numeros_validar($_REQUEST['v7']);
@@ -168,6 +169,9 @@ if ($sError == '') {
 	if ($bZona != '') {
 		$sSQLadd1 = $sSQLadd1 . 'TB.saiu47idzona=' . $bZona . ' AND ';
 	}
+	if ($bAgno != '') {
+		$sSQLadd1 = $sSQLadd1 . 'TB.saiu47agno=' . $bAgno . ' AND ';
+	}
 	if ($bNombre != '') {
 		$sBase = mb_strtoupper($bNombre);
 		$aNoms = explode(' ', $sBase);
@@ -191,11 +195,10 @@ if ($sError == '') {
 		if ($sBase != '') {
 			$sBase = $sBase . ' UNION ';
 		}
-		$sBase = $sBase . 'SELECT TB.saiu47agno, TB.saiu47mes, TB.saiu47dia, TB.saiu47estado, TB.saiu47consec, 
-		TB.saiu47id, TB.saiu47origenagno, TB.saiu47origenmes, TB.saiu47origenid, TB.saiu47dia, 
-		TB.saiu47hora, TB.saiu47minuto, TB.saiu47tiporadicado, TB.saiu47tipotramite, TB.saiu47t1idmotivo, 
-		TB.saiu47idsolicitante, TB.saiu47idresponsable, TB.saiu47t1vrsolicitado, TB.saiu47idperiodo, TB.saiu47idescuela, 
-		TB.saiu47idprograma, TB.saiu47idzona, TB.saiu47idcentro, TB.saiu47idunidad, TB.saiu47tem_radicado
+		$sBase = $sBase . 'SELECT TB.saiu47agno, TB.saiu47mes, TB.saiu47dia, TB.saiu47consec, TB.saiu47estado, 
+		TB.saiu47tiporadicado, TB.saiu47tipotramite, TB.saiu47t1idmotivo, TB.saiu47idsolicitante, TB.saiu47idresponsable, 
+		TB.saiu47t1vrsolicitado, TB.saiu47idperiodo, TB.saiu47idescuela, TB.saiu47fechaultestado, TB.saiu47idprograma, 
+		TB.saiu47idzona, TB.saiu47idcentro, TB.saiu47idunidad
 		FROM ' . $sTabla . ' AS TB
 		WHERE TB.saiu47tipotramite=' . $bTipo . ' AND ' . $sSQLadd1 . ' TB.saiu47id>0 ' . $sSQLadd . '';
 	}
@@ -287,8 +290,6 @@ if ($sError == '') {
 	PHPExcel_Formato_Fuente_Celda($objContenedor, 'A' . $iFila . ':' . $sColTope . $iFila, '10', 'Yu Gothic', 'Ne', true, false, false);
 	$iFila++;
 	$asaiu47estado = array();
-	$asaiu47tiporadicado = array();
-	$asaiu47tipotramite = array();
 	$aTercero = array();
 	$asaiu47motivotramite = array();
 	$asaiu47periodo = array();
@@ -297,6 +298,7 @@ if ($sError == '') {
 	$asaiu47zona = array();
 	$asaiu47centro = array();
 	$asaiu47unidad = array();
+	$asaiu47idresponsable = array();
 	$tabla = $objDB->ejecutasql($sSQLReporte);
 	if ($bDebug) {
 		PHPEXCEL_Escribir($objHoja, 1, $iFila, $sSQLReporte);
@@ -311,9 +313,8 @@ if ($sError == '') {
 	//
 	while ($fila = $objDB->sf($tabla)) {
 		$iAgno = $fila['saiu47agno'];
-		$sTabla2 = 'saiu48anotaciones_' . $iAgno;
 		$et_fecha = fecha_Armar($fila['saiu47dia'], $fila['saiu47mes'], $fila['saiu47agno']);
-		$et_saiu47tem_radicado = fecha_desdenumero($fila['saiu47tem_radicado']);
+		$et_saiu47fechaultestado = fecha_desdenumero($fila['saiu47fechaultestado']);
 		if (isset($aTercero[$fila['saiu47idsolicitante']]) == 0) {
 			$sSQL = 'SELECT unad11tipodoc, unad11doc, unad11razonsocial
 			FROM unad11terceros WHERE unad11id=' . $fila['saiu47idsolicitante'] . '';
@@ -325,7 +326,6 @@ if ($sError == '') {
 				$aTercero[$fila['saiu47idsolicitante']]['razonsocial'] = $fila11['unad11razonsocial'];
 			}
 		}
-		$et_saiu47estado = '';
 		if (isset($asaiu47estado[$fila['saiu47estado']]) == 0) {
 			$sDato = '{' . $fila['saiu47estado'] . '}';
 			$sSQL = 'SELECT saiu60nombre FROM saiu60estadotramite WHERE saiu60id=' . $fila['saiu47estado'] . '';
@@ -336,19 +336,6 @@ if ($sError == '') {
 			}
 			$asaiu47estado[$fila['saiu47estado']] = $sDato;
 		}
-		
-		$et_saiu48idtramite = '';
-		if (isset($asaiu48fecha[$fila['saiu47fecha']]) == 0) {
-			$sDato = '{' . $fila['saiu47fecha'] . '}';
-			$sSQL = 'SELECT saiu48fecha FROM ' . $sTabla2 . '  WHERE saiu48idtramite=' . $fila['saiu47id'] . '';
-			$tabla48 = $objDB->ejecutasql($sSQL);
-			if ($objDB->nf($tabla48) > 0) {
-				$fila48 = $objDB->sf($tabla48);
-				$sDato = $fila48['saiu48fecha'];
-			}
-			$asaiu48idtramite[$fila['saiu48fecha']] = $sDato;
-		}
-		$et_saiu47motivotramite = '';
 		if (isset($asaiu47motivotramite[$fila['saiu47t1idmotivo']]) == 0) {
 			$sDato = '{' . $fila['saiu47t1idmotivo'] . '}';
 			$sSQL = 'SELECT saiu50nombre FROM saiu50motivotramite WHERE saiu50id=' . $fila['saiu47t1idmotivo'] . '';
@@ -359,7 +346,6 @@ if ($sError == '') {
 			}
 			$asaiu47motivotramite[$fila['saiu47t1idmotivo']] = $sDato;
 		}
-		$et_saiu47periodo = '';
 		if (isset($asaiu47periodo[$fila['saiu47idperiodo']]) == 0) {
 			$sDato = '{' . $fila['saiu47idperiodo'] . '}';
 			$sSQL = 'SELECT exte02nombre FROM exte02per_aca WHERE exte02id=' . $fila['saiu47idperiodo'] . '';
@@ -370,7 +356,6 @@ if ($sError == '') {
 			}
 			$asaiu47periodo[$fila['saiu47idperiodo']] = $sDato;
 		}
-		$et_saiu47escuela = '';
 		if (isset($asaiu47escuela[$fila['saiu47idescuela']]) == 0) {
 			$sDato = '{' . $fila['saiu47idescuela'] . '}';
 			$sSQL = 'SELECT core12sigla FROM core12escuela WHERE core12id=' . $fila['saiu47idescuela'] . '';
@@ -381,7 +366,6 @@ if ($sError == '') {
 			}
 			$asaiu47escuela[$fila['saiu47idescuela']] = $sDato;
 		}
-		$et_saiu47programa = '';
 		if (isset($asaiu47programa[$fila['saiu47idprograma']]) == 0) {
 			$sDato = '{' . $fila['saiu47idprograma'] . '}';
 			$sSQL = 'SELECT core09nombre FROM core09programa WHERE core09id=' . $fila['saiu47idprograma'] . '';
@@ -392,7 +376,6 @@ if ($sError == '') {
 			}
 			$asaiu47programa[$fila['saiu47idprograma']] = $sDato;
 		}
-		$et_saiu47zona = '';
 		if (isset($asaiu47zona[$fila['saiu47idzona']]) == 0) {
 			$sDato = '{' . $fila['saiu47idzona'] . '}';
 			$sSQL = 'SELECT unad23sigla FROM unad23zona WHERE unad23id=' . $fila['saiu47idzona'] . '';
@@ -403,7 +386,6 @@ if ($sError == '') {
 			}
 			$asaiu47zona[$fila['saiu47idzona']] = $sDato;
 		}
-		$et_saiu47centro = '';
 		if (isset($asaiu47centro[$fila['saiu47idcentro']]) == 0) {
 			$sDato = '{' . $fila['saiu47idcentro'] . '}';
 			$sSQL = 'SELECT unad24nombre FROM unad24sede WHERE unad24id=' . $fila['saiu47idcentro'] . '';
@@ -414,7 +396,6 @@ if ($sError == '') {
 			}
 			$asaiu47centro[$fila['saiu47idcentro']] = $sDato;
 		}
-		$et_saiu47unidad = '';
 		if (isset($asaiu47unidad[$fila['saiu47idunidad']]) == 0) {
 			$sDato = '{' . $fila['saiu47idunidad'] . '}';
 			$sSQL = 'SELECT unae26nombre FROM unae26unidadesfun WHERE unae26id=' . $fila['saiu47idunidad'] . '';
@@ -425,13 +406,13 @@ if ($sError == '') {
 			}
 			$asaiu47unidad[$fila['saiu47idunidad']] = $sDato;
 		}
-		if (isset($aTercero[$fila['saiu47idresponsable']]) == 0) {
+		if (isset($asaiu47idresponsable[$fila['saiu47idresponsable']]) == 0) {
 			$sSQL = 'SELECT unad11tipodoc, unad11doc, unad11razonsocial
 			FROM unad11terceros WHERE unad11id=' . $fila['saiu47idresponsable'] . '';
 			$tabla11 = $objDB->ejecutasql($sSQL);
 			if ($objDB->nf($tabla11) > 0) {
 				$fila11 = $objDB->sf($tabla11);
-				$aTercero[$fila['saiu47idresponsable']] = $fila11['unad11razonsocial'];
+				$asaiu47idresponsable[$fila['saiu47idresponsable']] = $fila11['unad11razonsocial'];
 			}
 		}
 		PHPEXCEL_Escribir($objHoja, 0, $iFila, $et_fecha);
@@ -440,22 +421,16 @@ if ($sError == '') {
 		PHPEXCEL_Escribir($objHoja, 3, $iFila, $aTercero[$fila['saiu47idsolicitante']]['doc']);
 		PHPEXCEL_Escribir($objHoja, 4, $iFila, $aTercero[$fila['saiu47idsolicitante']]['razonsocial']);
 		PHPEXCEL_Escribir($objHoja, 5, $iFila, $asaiu47estado[$fila['saiu47estado']]);
-		PHPEXCEL_Escribir($objHoja, 6, $iFila, $et_saiu47tem_radicado);
+		PHPEXCEL_Escribir($objHoja, 6, $iFila, $et_saiu47fechaultestado);
 		PHPEXCEL_Escribir($objHoja, 7, $iFila, $asaiu47motivotramite[$fila['saiu47t1idmotivo']]);
 		PHPEXCEL_Escribir($objHoja, 8, $iFila, formato_moneda($fila['saiu47t1vrsolicitado']));
-		$et_saiu47periodo = $asaiu47periodo[$fila['saiu47idperiodo']];
-		PHPEXCEL_Escribir($objHoja, 9, $iFila, $et_saiu47periodo);
-		$et_saiu47escuela = $asaiu47escuela[$fila['saiu47idescuela']];
-		PHPEXCEL_Escribir($objHoja, 10, $iFila, $et_saiu47escuela);
-		$et_saiu47programa = $asaiu47programa[$fila['saiu47idprograma']];
-		PHPEXCEL_Escribir($objHoja, 11, $iFila, $et_saiu47programa);
-		$et_saiu47zona = $asaiu47zona[$fila['saiu47idzona']];
-		PHPEXCEL_Escribir($objHoja, 12, $iFila, $et_saiu47zona);
-		$et_saiu47centro = $asaiu47centro[$fila['saiu47idcentro']];
-		PHPEXCEL_Escribir($objHoja, 13, $iFila, $et_saiu47centro);
-		$et_saiu47unidad = $asaiu47unidad[$fila['saiu47idunidad']];
-		PHPEXCEL_Escribir($objHoja, 14, $iFila, $et_saiu47unidad);
-		PHPEXCEL_Escribir($objHoja, 15, $iFila, $aTercero[$fila['saiu47idresponsable']]);
+		PHPEXCEL_Escribir($objHoja, 9, $iFila, $asaiu47periodo[$fila['saiu47idperiodo']]);
+		PHPEXCEL_Escribir($objHoja, 10, $iFila, $asaiu47escuela[$fila['saiu47idescuela']]);
+		PHPEXCEL_Escribir($objHoja, 11, $iFila, $asaiu47programa[$fila['saiu47idprograma']]);
+		PHPEXCEL_Escribir($objHoja, 12, $iFila, $asaiu47zona[$fila['saiu47idzona']]);
+		PHPEXCEL_Escribir($objHoja, 13, $iFila, $asaiu47centro[$fila['saiu47idcentro']]);
+		PHPEXCEL_Escribir($objHoja, 14, $iFila, $asaiu47unidad[$fila['saiu47idunidad']]);
+		PHPEXCEL_Escribir($objHoja, 15, $iFila, $asaiu47idresponsable[$fila['saiu47idresponsable']]);
 		$iFila++;
 	}
 	$objDB->CerrarConexion();

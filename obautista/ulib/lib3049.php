@@ -345,6 +345,7 @@ function f3049_TablaDetalleV2($aParametros, $objDB, $bDebug = false)
 		return array($sLeyenda . '<input id="paginaf3049" name="paginaf3049" type="hidden" value="' . $pagina . '"/><input id="lppf3049" name="lppf3049" type="hidden" value="' . $lineastabla . '"/>', $sDebug);
 		die();
 	}
+	$iPiel = iDefinirPiel($APP, 2);
 	$aEstado = array();
 	$sSQL = 'SELECT saiu60id, saiu60nombre FROM saiu60estadotramite';
 	$tabla = $objDB->ejecutasql($sSQL);
@@ -401,8 +402,12 @@ function f3049_TablaDetalleV2($aParametros, $objDB, $bDebug = false)
 		}
 	}
 	$res = $sErrConsulta . $sLeyenda;
+	$sClaseTabla = 'table--primary';
+	if ($iPiel == 1) {
+		$sClaseTabla = 'tablaapp';
+	}
 	$res = $res . '<div class="table-responsive">
-	<table border="0" align="center" cellpadding="0" cellspacing="2" class="tablaapp">
+	<table border="0" align="center" cellpadding="0" cellspacing="2" class="' . $sClaseTabla . '">
 	<thead class="fondoazul"><tr>
 	<td><b>' . $ETI['saiu49consec'] . '</b></td>
 	<td><b>' . $ETI['saiu49idestadorigen'] . '</b></td>

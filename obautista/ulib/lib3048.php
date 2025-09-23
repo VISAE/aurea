@@ -335,6 +335,7 @@ function f3048_TablaDetalleV2($aParametros, $objDB, $bDebug = false)
 		return array($sLeyenda . '<input id="paginaf3048" name="paginaf3048" type="hidden" value="' . $pagina . '"/><input id="lppf3048" name="lppf3048" type="hidden" value="' . $lineastabla . '"/>', $sDebug);
 		die();
 	}
+	$iPiel = iDefinirPiel($APP, 2);
 	/*
 	$aEstado=array();
 	$sSQL='SELECT id, nombre FROM tabla';
@@ -392,8 +393,12 @@ function f3048_TablaDetalleV2($aParametros, $objDB, $bDebug = false)
 		}
 	}
 	$res = $sErrConsulta . $sLeyenda;
+	$sClaseTabla = 'table--primary';
+	if ($iPiel == 1) {
+		$sClaseTabla = 'tablaapp';
+	}
 	$res = $res . '<div class="table-responsive">
-	<table border="0" align="center" cellpadding="0" cellspacing="2" class="tablaapp">
+	<table border="0" align="center" cellpadding="0" cellspacing="2" class="' . $sClaseTabla . '">
 	<thead class="fondoazul"><tr>
 	<td><b>' . $ETI['saiu48consec'] . '</b></td>
 	<td colspan="2"><b>' . $ETI['saiu48idusuario'] . '</b></td>
@@ -744,10 +749,6 @@ function f3048_PintarLlaves($aParametros)
 		$mensajes_todas = $APP->rutacomun . 'lg/lg_todas_es.php';
 	}
 	require $mensajes_todas;
-	if (isset($APP->piel) == 0) {
-		$APP->piel = 1;
-	}
-	$iPiel = $APP->piel;
 	$html_saiu48consec = '<input id="saiu48consec" name="saiu48consec" type="text" value="" onchange="revisaf3048()" class="cuatro"/>';
 	$html_saiu48id = '<input id="saiu48id" name="saiu48id" type="hidden" value=""/>';
 	$et_saiu48fecha = '00/00/0000';
@@ -832,6 +833,7 @@ function f3048_TablaDetalleV2Campus($aParametros, $objDB, $bDebug = false)
 		return array($sLeyenda . '<input id="paginaf3048" name="paginaf3048" type="hidden" value="' . $pagina . '"/><input id="lppf3048" name="lppf3048" type="hidden" value="' . $lineastabla . '"/>', $sDebug);
 		die();
 	}
+	$iPiel = iDefinirPiel($APP, 2);
 	/*
 	$aEstado=array();
 	$sSQL='SELECT id, nombre FROM tabla';
@@ -889,8 +891,12 @@ function f3048_TablaDetalleV2Campus($aParametros, $objDB, $bDebug = false)
 		}
 	}
 	$res = $sErrConsulta . $sLeyenda;
+	$sClaseTabla = 'table--primary';
+	if ($iPiel == 1) {
+		$sClaseTabla = 'tablaapp';
+	}
 	$res = $res . '<div class="table-responsive">
-	<table border="0" align="center" cellpadding="0" cellspacing="2" class="tablaapp">
+	<table border="0" align="center" cellpadding="0" cellspacing="2" class="' . $sClaseTabla . '">
 	<thead class="fondoazul"><tr>
 	<td><b>' . $ETI['saiu48consec'] . '</b></td>
 	<td><b>' . $ETI['saiu48idusuario'] . '</b></td>

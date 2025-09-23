@@ -76,6 +76,11 @@ function f3059_db_Guardar($valores, $objDB, $bDebug = false)
 					case 8: // En aprobación de la GAF
 					case 11: // En firma de la GAF
 					case 12: // En proceso de pago
+					case 21: // En proyeccion de respuesta
+					case 31: // En ajustes RCONT
+					case 36: // En ajustes de resolución-acto administrativo
+					case 41: // Numeración SGENERAL
+					case 46: // En firma de la VISAE
 						break;
 					default:
 						$sError = 'No se permite editar archivos en este estado del proceso [' . $fila['saiu47estado'] . '].';
@@ -307,6 +312,7 @@ function f3059_TablaDetalleV2($aParametros, $objDB, $bDebug = false)
 	if (isset($aParametros[102]) == 0) {
 		$aParametros[102] = 20;
 	}
+	$iPiel = iDefinirPiel($APP);
 	//if (isset($aParametros[103])==0){$aParametros[103]='';}
 	//if (isset($aParametros[104])==0){$aParametros[104]='';}
 	//$aParametros[103]=numeros_validar($aParametros[103]);
@@ -349,6 +355,11 @@ function f3059_TablaDetalleV2($aParametros, $objDB, $bDebug = false)
 				case 8: // En aprobación de la GAF
 				case 11: // En firma de la GAF
 				case 12: // En proceso de pago
+				case 21: // En proyeccion de respuesta
+				case 31: // En ajustes RCONT
+				case 36: // En ajustes de resolución-acto administrativo
+				case 41: // Numeración SGENERAL
+				case 46: // En firma de la VISAE
 					$bConEditar = true;
 					break;
 			}
@@ -422,19 +433,23 @@ function f3059_TablaDetalleV2($aParametros, $objDB, $bDebug = false)
 		}
 	}
 	$res = $sErrConsulta . $sLeyenda;
+	$sClaseTabla = 'table--primary';
+	if ($iPiel == 1) {
+		$sClaseTabla = 'tablaapp';
+	}
 	$res = $res . '<div class="table-responsive">';
-	$res = $res . '<table border="0" align="center" cellpadding="0" cellspacing="2" class="tablaapp">';
+	$res = $res . '<table border="0" align="center" cellpadding="0" cellspacing="2" class="' . $sClaseTabla . '">';
 	$res = $res . '<thead class="fondoazul"><tr>';
-	$res = $res . '<td><b>' . $ETI['saiu59consec'] . '</b></td>';
-	$res = $res . '<td><b>' . $ETI['saiu59idtipodoc'] . '</b></td>';
-	$res = $res . '<td><b>' . $ETI['saiu59opcional'] . '</b></td>';
-	$res = $res . '<td colspan="2"><b>' . $ETI['saiu59idarchivo'] . '</b></td>';
-	$res = $res . '<td><b>' . $ETI['saiu59fecharevisa'] . '</b></td>';
-	$res = $res . '<td align="right" colspan="2">';
-	$res = $res . '' . html_paginador('paginaf3059', $registros, $lineastabla, $pagina, 'paginarf3059()') . '';
-	$res = $res . '' . html_lpp('lppf3059', $lineastabla, 'paginarf3059()') . '';
-	$res = $res . '</td>';
-	$res = $res . '</tr></thead>';
+	$res = $res . '<th><b>' . $ETI['saiu59consec'] . '</b></th>';
+	$res = $res . '<th><b>' . $ETI['saiu59idtipodoc'] . '</b></th>';
+	$res = $res . '<th><b>' . $ETI['saiu59opcional'] . '</b></th>';
+	$res = $res . '<th colspan="2"><b>' . $ETI['saiu59idarchivo'] . '</b></th>';
+	$res = $res . '<th><b>' . $ETI['saiu59fecharevisa'] . '</b></th>';
+	$res = $res . '<th align="right" colspan="2">';
+	$res = $res . html_paginador('paginaf3059', $registros, $lineastabla, $pagina, 'paginarf3059()') . '';
+	$res = $res . html_lpp('lppf3059', $lineastabla, 'paginarf3059()') . '';
+	$res = $res . '</th>';
+	$res = $res . '</tr></thead><tbody>';
 	$tlinea = 1;
 	while ($filadet = $objDB->sf($tabladetalle)) {
 		$sPrefijo = '';
@@ -510,7 +525,7 @@ function f3059_TablaDetalleV2($aParametros, $objDB, $bDebug = false)
 		$res = $res . '<td>' . $sLink2 . '</td>';
 		$res = $res . '</tr>';
 	}
-	$res = $res . '</table>';
+	$res = $res . '</tbody></table>';
 	$res = $res . '<div class="salto5px"></div>';
 	$res = $res . '</div>';
 	$objDB->liberar($tabladetalle);
@@ -1033,8 +1048,12 @@ function f3059_TablaDetalleV2Campus($aParametros, $objDB, $bDebug = false)
 		}
 	}
 	$res = $sErrConsulta . $sLeyenda;
+	$sClaseTabla = 'table--primary';
+	if ($iPiel == 1) {
+		$sClaseTabla = 'tablaapp';
+	}
 	$res = $res . '<div class="table-responsive">
-	<table border="0" align="center" cellpadding="0" cellspacing="2" class="tablaapp">
+	<table border="0" align="center" cellpadding="0" cellspacing="2" class="' . $sClaseTabla . '">
 	<thead class="fondoazul"><tr>
 	<td><b>' . $ETI['saiu59consec'] . '</b></td>
 	<td colspan="2"><b>' . $ETI['saiu59idtipodoc'] . '</b></td>

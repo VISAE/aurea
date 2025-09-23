@@ -46,6 +46,7 @@ $ETI['saiu47dia']='Dia';
 $ETI['saiu47hora']='Hora';
 $ETI['saiu47minuto']='Minuto';
 $ETI['saiu47idsolicitante']='Solicitante';
+$ETI['saiu47idsolicitante_busca'] = 'Busqueda de Solicitante';
 $ETI['saiu47idperiodo']='Periodo';
 $ETI['saiu47idescuela']='Escuela';
 $ETI['saiu47idprograma']='Programa';
@@ -58,7 +59,9 @@ $ETI['saiu47t1vraprobado']='T1vraprobado';
 $ETI['saiu47t1vrsaldoafavor']='T1vrsaldoafavor';
 $ETI['saiu47t1vrdevolucion']='T1vrdevolucion';
 $ETI['saiu47idbenefdevol']='Benefdevol';
+$ETI['saiu47idbenefdevol_busca'] = 'Busqueda de Benefdevol';
 $ETI['saiu47idaprueba']='Aprueba';
+$ETI['saiu47idaprueba_busca'] = 'Busqueda de Aprueba';
 $ETI['saiu47fechaaprueba']='Fecha';
 $ETI['saiu47horaaprueba']='Hora';
 $ETI['saiu47minutoaprueba']='Minuto';
@@ -71,6 +74,8 @@ $ETI['saiu47t707formarecaudo'] = 'Forma recaudo';
 $ETI['saiu47t707identidadconv'] = 'En convenio con';
 $ETI['saiu47t707idbanco'] = 'Banco';
 $ETI['saiu47t707idcuenta'] = 'Cuenta';
+$ETI['saiu47prob_abandono'] = 'Posible abandono';
+$ETI['saiu47tem_radicado'] = 'Radicado en';
 $ETI['msg_cierre3047'] = '&iquest;Est&aacute; seguro de cerrar el registro?<br>luego de cerrado no se permite modificar.';
 
 $ERR['saiu47agno']='Is necessary the data '.$ETI['saiu47agno'];
@@ -112,10 +117,23 @@ $ERR['saiu47t707identidadconv'] = 'Necesita el dato ' . $ETI['saiu47t707identida
 $ERR['saiu47t707idbanco'] = 'Necesita el dato ' . $ETI['saiu47t707idbanco'];
 $ERR['saiu47t707idcuenta'] = 'Necesita el dato ' . $ETI['saiu47t707idcuenta'];
 
-
+$ETI['msg_confirma36'] = 'Se va a enviar la solicitud a <b>Ajustes de resoluci&oacute;n</b>, <br>Esta seguro de continuar?';
+$ETI['msg_confirma41'] = 'Se va a enviar la solicitud a <b>Numeraci&oacute; SGENERAL</b>, <br>Esta seguro de continuar?';
+$ETI['msg_confirma46'] = 'Se va a enviar la solicitud a <b>Firma de la VISAE</b>, <br>Esta seguro de continuar?';
+$ETI['msg_confirma51'] = 'Se va a enviar la solicitud a <b>Contabilidad</b>, <br>Esta seguro de continuar?';
+$ETI['msg_confirmaresuelto'] = 'Se va a enviar la solicitud a <b>Solicitud Resuelta</b>, <br>Esta seguro de continuar?';
+$ETI['msg_aprobardoc'] = 'El documento ser&aacute; aprobado,<br>Esta seguro de continuar?';
+$ETI['msg_confirmaproyeccion'] = 'Se cambiar&aacute; el estado a <b>En Proyecci&oacute;n de Resoluci&oacute;n</b>, <br>Esta seguro de continuar?';
+$ETI['msg_confirmacptojur'] = 'Se va a enviar la solicitud a <b>Concepto Jur&iacute;dico</b>, <br>Esta seguro de continuar?';
+$ETI['msg_confirmacptotecnico'] = 'Se va a enviar la solicitud a <b>Concepto T&eacute;cnico</b>, <br>Esta seguro de continuar?';
+$ETI['msg_confirmadevrca'] = 'Se va a devolver la solicitud a <b>Ajustes por parte de RCONT</b>, <br>Esta seguro de continuar?';
+$ETI['msg_confirmafirma'] = 'Se va a enviar la solicitud a <b>Firma de la GAF</b>, <br>Esta seguro de continuar?';
 $ETI['msg_confirmarnoprocedente'] = 'Se va a marcar la solicitud como <b>NO PROCEDENTE</b>, <br>Esta seguro de continuar?';
-$ETI['msg_confirmaresuelto'] = 'Se va a marcar la solicitud como <b>RESUELTA</b>, <br>Esta seguro de continuar?';
+$ETI['msg_confirmapago'] = 'Se va a enviar la solicitud a <b>Proceso de Pago</b>, <br>Esta seguro de continuar?';
+$ETI['msg_confirmaproyrta'] = 'Se va a enviar la solicitud a <b>Proyecci&oacute;n de respuesta</b>, <br>Esta seguro de continuar?';
+$ETI['msg_confirmagaf'] = 'Se va a enviar la solicitud a <b>Aprobaci&oacute;n de la GAF</b>, <br>Esta seguro de continuar?';
 $ETI['msg_devolver'] = 'Se va a marcar la solicitud como <b>DEVUELTA</b>, <br>Esta seguro de continuar?';
+$ETI['msg_enrevision'] = 'Se va a marcar la solicitud a <b>En Aprobaci&oacute;n de Documentos</b>,<br>esta seguro de continuar?';
 $ETI['msg_fecha']='Fecha';
 $ETI['msg_historial']='Historial de solicitudes';
 $ETI['msg_notadevol']='Nota de devoluci&oacute;n';
@@ -133,4 +151,6 @@ Favor describir en el detalle la forma de pago.';
 
 $ETI['saiu47asignado'] = 'Asignado';
 $ETI['titulo_sector2_saiu47'] = 'Reasignar responsable';
+
+$ETI['msg_bagno'] = 'A&ntilde;o';
 

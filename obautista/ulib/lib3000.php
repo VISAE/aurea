@@ -559,7 +559,14 @@ function f3000_TablaDetalleAcad($aParametros, $objDB, $bDebug = false)
 				$iTotalCursos = $filadet['core16numcursos'] + $filadet['cara16numcursosext'] + $filadet['cara16numcursospost'];
 				if ($iFechaTopeCancela >= $iHoy) {
 					if ($iTotalCursos > 0) {
-						if ($filadet['exte02tipoperiodo'] == 0) {
+						$bPuedeGestionar = false;
+						switch ($filadet['exte02tipoperiodo']) {
+							case 0: // Regular
+							case 5: // Ed Permanente
+								$bPuedeGestionar = true;
+								break;
+						}
+						if ($bPuedeGestionar) {
 							$bPuedeAplazar = true;
 							$bPuedeCancelar = true;
 							$sBotonAplaza = '<td><input id="CmdAplazarTodo" name="CmdAplazarTodo" type="button" class="BotonAzul" value="Aplazar" onclick="aplazasem(' . $idPeriodo . ')" title="Aplazar periodo"/></td>';

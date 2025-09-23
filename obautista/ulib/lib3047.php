@@ -473,7 +473,7 @@ function f3047_TablaDetalleV2($aParametros, $objDB, $bDebug = false)
 	if (isset($aParametros[102]) == 0) {
 		$aParametros[102] = 20;
 	}
-	$iNumVariables = 111;
+	$iNumVariables = 112;
 	for ($k = 103; $k <= $iNumVariables; $k++) {
 		if (isset($aParametros[$k]) == 0) {
 			$aParametros[$k] = '';
@@ -495,6 +495,7 @@ function f3047_TablaDetalleV2($aParametros, $objDB, $bDebug = false)
 	$bUnidad = numeros_validar($aParametros[109]);
 	$bResponsable = numeros_validar($aParametros[110]);
 	$bzona = numeros_validar($aParametros[111]);
+	$bagno = numeros_validar($aParametros[112]);
 	$bAbierta = true;
 	/*
 	$sSQL = 'SELECT Campo FROM Tabla WHERE Id=' . $sValorId;
@@ -506,7 +507,16 @@ function f3047_TablaDetalleV2($aParametros, $objDB, $bDebug = false)
 		}
 	}
 	*/
+	$iHoy = fecha_DiaMod();
 	$sLeyenda = '';
+	switch ($bTipo) {
+		case 1: // Saldos a favor
+		case 707: // Confirmacion de recaudos
+			break;
+		default:
+			$sLeyenda = 'No se ha definido el tipo de reporte.';
+			break;
+	}
 	$sBotones = '<input id="paginaf3047" name="paginaf3047" type="hidden" value="' . $pagina . '"/>';
 	$sBotones = $sBotones . '<input id="lppf3047" name="lppf3047" type="hidden" value="' . $lineastabla . '"/>';
 	if ($sLeyenda != '') {
@@ -531,10 +541,6 @@ function f3047_TablaDetalleV2($aParametros, $objDB, $bDebug = false)
 	}
 	if ($bMotivo != '') {
 		$sSQLadd1 = $sSQLadd1 . 'TB.saiu47t1idmotivo=' . $bMotivo . ' AND ';
-	} else {
-		if ($bTipo != '') {
-			$sSQLadd1 = $sSQLadd1 . 'TB.saiu47tipotramite=' . $bTipo . ' AND ';
-		}
 	}
 	if ($bUnidad != '') {
 		$sSQLadd1 = $sSQLadd1 . 'TB.saiu47idunidad=' . $bUnidad . ' AND ';
@@ -572,7 +578,12 @@ function f3047_TablaDetalleV2($aParametros, $objDB, $bDebug = false)
 	$bGigante = false; //En caso de que la tabla sea muy grande pasarlo a true
 	$sLimite = '';
 	$sBase = '';
-	$sSQL = 'SHOW TABLES LIKE "saiu47tramites%"';
+	//$bagno
+	$sComplemento = '';
+	if ($bagno != '') {
+		$sComplemento = '_' . $bagno;
+	}
+	$sSQL = 'SHOW TABLES LIKE "saiu47tramites' . $sComplemento . '%"';
 	$tabla = $objDB->ejecutasql($sSQL);
 	while ($fila = $objDB->sf($tabla)) {
 		if ($sBase != '') {
@@ -581,9 +592,9 @@ function f3047_TablaDetalleV2($aParametros, $objDB, $bDebug = false)
 		$sTabla = $fila[0];
 		$sBase = $sBase . 'SELECT TB.saiu47agno, TB.saiu47mes, TB.saiu47dia, TB.saiu47consec, TB.saiu47estado, TB.saiu47t1idmotivo, 
 		TB.saiu47t1vrsolicitado, TB.saiu47id, TB.saiu47idsolicitante, TB.saiu47tipotramite, T11.unad11razonsocial, T11.unad11tipodoc,
-		T11.unad11doc 
+		T11.unad11doc, TB.saiu47fechaultestado 
 		FROM ' . $sTabla . ' AS TB, unad11terceros AS T11 
-		WHERE ' . $sSQLadd1 . ' TB.saiu47idsolicitante=T11.unad11id ' . $sSQLadd . '';
+		WHERE TB.saiu47tipotramite=' . $bTipo . ' AND ' . $sSQLadd1 . ' TB.saiu47idsolicitante=T11.unad11id ' . $sSQLadd . '';
 	}
 	$sSQL = '' . $sBase . '
 	ORDER BY saiu47tipotramite, saiu47agno DESC, saiu47mes DESC, saiu47consec DESC';
@@ -621,7 +632,7 @@ function f3047_TablaDetalleV2($aParametros, $objDB, $bDebug = false)
 		}
 	}
 	$res = $sErrConsulta . $sLeyenda;
-	$sClaseTabla = 'table-primary';
+	$sClaseTabla = 'table--primary';
 	if ($iPiel == 1) {
 		$sClaseTabla = 'tablaapp';
 	}
@@ -631,9 +642,9 @@ function f3047_TablaDetalleV2($aParametros, $objDB, $bDebug = false)
 	$res = $res . '<th><b>' . $ETI['msg_fecha'] . '</b></th>';
 	$res = $res . '<th><b>' . $ETI['saiu47consec'] . '</b></th>';
 	$res = $res . '<th colspan="2"><b>' . $ETI['saiu47idsolicitante'] . '</b></th>';
-	$res = $res . '<th><b>' . $ETI['saiu47estado'] . '</b></th>';
+	$res = $res . '<th colspan="3"><b>' . $ETI['saiu47estado'] . '</b></th>';
 	$res = $res . '<th><b>' . $ETI['saiu47t1vrsolicitado'] . '</b></th>';
-	$res = $res . '<th class="text-right">';
+	$res = $res . '<th class="flex gap-1 justify-end">';
 	$res = $res . html_paginador('paginaf3047', $registros, $lineastabla, $pagina, 'paginarf3047()');
 	$res = $res . html_lpp('lppf3047', $lineastabla, 'paginarf3047()');
 	$res = $res . '</th>';
@@ -675,6 +686,35 @@ function f3047_TablaDetalleV2($aParametros, $objDB, $bDebug = false)
 		}
 		$et_saiu47estado = $sPrefijo . $aEstado[$filadet['saiu47estado']] . $sSufijo;
 		$et_saiu47t1vrsolicitado = $sPrefijo . formato_moneda($filadet['saiu47t1vrsolicitado']) . $sSufijo;
+		$et_saiu47fechaultestado = '';
+		$et_dias = '';
+		if ($filadet['saiu47fechaultestado'] != 0) {
+			$sPrefijo2 = '';
+			$sSufijo2 = '';
+			if ($filadet['saiu47fechaultestado'] < $iHoy) {
+				$iDias = fecha_DiasEntreFechasDesdeNumero($filadet['saiu47fechaultestado'], $iHoy);
+				if ($iDias > 1) {
+					switch ($filadet['saiu47estado']) {
+						case 6: // Concepto tecnico Y analisis financiero
+							if ($iDias > 3) {
+								$sPrefijo2 = '<span class="rojo">';
+								$sSufijo2 = '</span>';
+							}
+							break;
+						case 31: // ajustes RCONT
+							if ($iDias > 1) {
+								$sPrefijo2 = '<span class="rojo">';
+								$sSufijo2 = '</span>';
+							}
+							break;
+					}
+					$et_dias = $sPrefijo2 . formato_numero($iDias) . ' d&iacute;as' . $sSufijo2;
+				} else {
+					$et_dias = formato_numero($iDias) . ' d&iacute;a';
+				}
+			}
+			$et_saiu47fechaultestado = $sPrefijo2 . fecha_desdenumero($filadet['saiu47fechaultestado']) . $sSufijo2;
+		}
 		if ($bAbierta) {
 			$sLink = '<a href="javascript:cargaridf3047(' . $filadet['saiu47agno'] . ', ' . $filadet['saiu47id'] . ')" class="lnkresalte">' . $ETI['lnk_cargar'] . '</a>';
 		}
@@ -684,6 +724,8 @@ function f3047_TablaDetalleV2($aParametros, $objDB, $bDebug = false)
 		$res = $res . '<td>' . $et_saiu47idsolicitante_doc . '</td>';
 		$res = $res . '<td>' . $et_saiu47idsolicitante_nombre . '</td>';
 		$res = $res . '<td>' . $et_saiu47estado . '</td>';
+		$res = $res . '<td>' . $et_saiu47fechaultestado . '</td>';
+		$res = $res . '<td>' . $et_dias . '</td>';
 		$res = $res . '<td align="right">' . $et_saiu47t1vrsolicitado . '</td>';
 		$res = $res . '<td align="right">' . $sLink . '</td>';
 		$res = $res . '</tr>';
@@ -1057,14 +1099,22 @@ function f3047_db_GuardarV2($DATA, $objDB, $bDebug = false, $idTercero = 0)
 				//Mayo 17 de 2024 - No se permite guardar mas de una activa por usuario
 				$sCondiEstado = ' AND saiu47estado NOT IN (9,10,99)';
 			}
-			$sSQL = 'SELECT 1 FROM ' . $sTabla47 . ' 
-			WHERE saiu47tipotramite=' . $DATA['saiu47tipotramite'] . ' AND saiu47idsolicitante=' . $DATA['saiu47idsolicitante'] . '' . $sCondiEstado;
+			$sSQL = 'SHOW TABLES LIKE "saiu47tramites%"';
 			$tabla = $objDB->ejecutasql($sSQL);
-			if ($objDB->nf($tabla) > 0) {
-				if ($idTercero == $_SESSION['unad_id_tercero']) {
-					$sError = 'Ya existe una solicitud previa en proceso, no se permite crear nuevas solicitudes hasta tanto no sea resulta la solicitud actual.';
-				} else {
-					$sError = 'Ya existe una solicitud previa en estado borrador, no se permite crear nuevas solicitudes hasta tanto no se completen los borradores.';
+			while ($fila = $objDB->sf($tabla)) {
+				$sTabla = $fila[0];
+				$sAgno = substr($sTabla, 15);
+				if ($sError == '') {
+					$sSQL = 'SELECT 1 FROM ' . $sTabla . ' 
+					WHERE saiu47tipotramite=' . $DATA['saiu47tipotramite'] . ' AND saiu47idsolicitante=' . $DATA['saiu47idsolicitante'] . '' . $sCondiEstado;
+					$tablarev = $objDB->ejecutasql($sSQL);
+					if ($objDB->nf($tablarev) > 0) {
+						if ($idTercero == $_SESSION['unad_id_tercero']) {
+							$sError = 'Ya existe una solicitud previa en proceso (A&ntilde;o ' . $sAgno . '), no se permite crear nuevas solicitudes hasta tanto no sea resulta la solicitud actual.';
+						} else {
+							$sError = 'Ya existe una solicitud previa en estado borrador (A&ntilde;o ' . $sAgno . '), no se permite crear nuevas solicitudes hasta tanto no se completen los borradores.';
+						}
+					}
 				}
 			}
 		}
@@ -1529,7 +1579,7 @@ function f3047_TablaDetalleBusquedas($aParametros, $objDB)
 		return array($sLeyenda . $sBotones, $sDebug);
 		die();
 	}
-	$iPiel = iDefinirPiel($APP, 1);
+	$iPiel = iDefinirPiel($APP, 2);
 	$sSQLadd = '';
 	$sSQLadd1 = '';
 	/*
@@ -1582,8 +1632,12 @@ function f3047_TablaDetalleBusquedas($aParametros, $objDB)
 		}
 	}
 	$res = $sErrConsulta . $sLeyenda;
+	$sClaseTabla = 'table--primary';
+	if ($iPiel == 1) {
+		$sClaseTabla = 'tablaapp';
+	}
 	$res = $res . '<div class="table-responsive">
-	<table border="0" align="center" cellpadding="0" cellspacing="2" class="tablaapp">
+	<table border="0" align="center" cellpadding="0" cellspacing="2" class="' . $sClaseTabla . '">
 	<thead class="fondoazul"><tr>
 	<td><b>' . $ETI['saiu47agno'] . '</b></td>
 	<td><b>' . $ETI['saiu47mes'] . '</b></td>
@@ -1745,6 +1799,8 @@ function f3047_NotificarEvento($saiu47agno, $saiu47id, $objDB, $bDebug = false, 
 	if (!$objDB->bexistetabla($sTabla47)) {
 		$sError = 'No ha sido posible acceder al contenedor de datos';
 	}
+	$iHoy = fecha_DiaMod();
+	$iFechaTopeDescarga = fecha_NumSumarDias($iHoy, 7);
 	if ($sError == '') {
 		$sSQL = 'SELECT TB.saiu47consec, TB.saiu47tipotramite, TB.saiu47idsolicitante, TB.saiu47estado 
 		FROM ' . $sTabla47 . ' AS TB
@@ -1851,12 +1907,14 @@ function f3047_NotificarEvento($saiu47agno, $saiu47id, $objDB, $bDebug = false, 
 				//$sCuerpo = $sCuerpo . $sSQL . '<br>';
 				$tabla21 = $objDB->ejecutasql($sSQL);
 				while ($fila21 = $objDB->sf($tabla21)) {
-					$sRaiz = 'https://aurea.unad.edu.co/dp.php';
+					//$sRaiz = 'https://aurea.unad.edu.co/d p.php';
 					$sNombreActoAdmin = cadena_notildes($fila21['saiu51nombre']);
 					if ($sLinks != '') {
 						$sLinks = $sLinks . '<br>';
 					}
-					$sLinks = $sLinks . html_LnkArchivoV2((int)$fila21['saiu59idorigen'], (int)$fila21['saiu59idarchivo'], $sNombreActoAdmin, $sRaiz, '');
+					//$sLinks = $sLinks . html_LnkArchivoV2((int)$fila21['saiu59idorigen'], (int)$fila21['saiu59idarchivo'], $sNombreActoAdmin, $sRaiz, '');
+					list($sEnlaceArvhivo, $sMensajeArchivo) = html_LnkArchivoPublico((int)$fila21['saiu59idorigen'], (int)$fila21['saiu59idarchivo'], $iFechaTopeDescarga, $sNombreActoAdmin);
+					$sLinks = $sLinks . $sEnlaceArvhivo . ' ' . $sMensajeArchivo;
 				}
 			}
 			if ($sLinks != '') {
@@ -2092,6 +2150,9 @@ function f3047_CambiaEstado($iAgno, $saiu47id, $idOrigen, $idDestino, $saiu49det
 	if ($bNotificar) {
 		list($sError, $sDebugE, $sMensaje) = f3047_NotificarEvento($iAgno, $saiu47id, $objDB, $bDebug, $bNotificaFuncionario);
 		$sDebug = $sDebug . $sDebugE;
+	}
+	if ($sError == '') {
+		list($saiu47prob_abandono, $saiu47tem_radicado, $sDebugT) = f3047_TiemposProceso($iAgno, $saiu47id, $objDB);//, $bDebug
 	}
 	return array($sError, $sDebug, $sMensaje);
 }
