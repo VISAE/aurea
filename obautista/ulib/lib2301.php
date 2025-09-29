@@ -2253,241 +2253,241 @@ function f2301_db_GuardarV2($DATA, $objDB, $bDebug = false)
 		$DATA['cara44med_trat_cual'] = '';
 	}
 	if (isset($DATA['cara44bienv3emprenetapa']) == 0) {
-		$DATA['cara44bienv3emprenetapa'] = '';
+		$DATA['cara44bienv3emprenetapa'] = 0; 
 	}
 	if (isset($DATA['cara44bienv3emprennecesita']) == 0) {
-		$DATA['cara44bienv3emprennecesita'] = '';
+		$DATA['cara44bienv3emprennecesita'] = 0; 
 	}
 	if (isset($DATA['cara44bienv3emprenanioini']) == 0) {
-		$DATA['cara44bienv3emprenanioini'] = '';
+		$DATA['cara44bienv3emprenanioini'] = 0; 
 	}
 	if (isset($DATA['cara44bienv3emprensector']) == 0) {
-		$DATA['cara44bienv3emprensector'] = '';
+		$DATA['cara44bienv3emprensector'] = 0; 
 	}
 	if (isset($DATA['cara44bienv3emprensectorotro']) == 0) {
 		$DATA['cara44bienv3emprensectorotro'] = '';
 	}
 	if (isset($DATA['cara44bienv3emprentemas']) == 0) {
-		$DATA['cara44bienv3emprentemas'] = '';
+		$DATA['cara44bienv3emprentemas'] = 0; 
 	}
 	if (isset($DATA['cara44bienv3ambienclima']) == 0) {
-		$DATA['cara44bienv3ambienclima'] = '';
+		$DATA['cara44bienv3ambienclima'] = 0; 
 	}
 	if (isset($DATA['cara44bienv3ambienjusticia']) == 0) {
-		$DATA['cara44bienv3ambienjusticia'] = '';
+		$DATA['cara44bienv3ambienjusticia'] = 0; 
 	}
 	if (isset($DATA['cara44bienv3ambienagroeco']) == 0) {
-		$DATA['cara44bienv3ambienagroeco'] = '';
+		$DATA['cara44bienv3ambienagroeco'] = 0; 
 	}
 	if (isset($DATA['cara44bienv3ambieneconomia']) == 0) {
-		$DATA['cara44bienv3ambieneconomia'] = '';
+		$DATA['cara44bienv3ambieneconomia'] = 0; 
 	}
 	if (isset($DATA['cara44bienv3ambieneducacion']) == 0) {
-		$DATA['cara44bienv3ambieneducacion'] = '';
+		$DATA['cara44bienv3ambieneducacion'] = 0; 
 	}
 	if (isset($DATA['cara44bienv3ambienbiodiverso']) == 0) {
-		$DATA['cara44bienv3ambienbiodiverso'] = '';
+		$DATA['cara44bienv3ambienbiodiverso'] = 0; 
 	}
 	if (isset($DATA['cara44bienv3ambienecoturismo']) == 0) {
-		$DATA['cara44bienv3ambienecoturismo'] = '';
+		$DATA['cara44bienv3ambienecoturismo'] = 0; 
 	}
 	if (isset($DATA['cara44bienv3ambienotro']) == 0) {
-		$DATA['cara44bienv3ambienotro'] = '';
+		$DATA['cara44bienv3ambienotro'] = 0; 
 	}
 	if (isset($DATA['cara44bienv3ambienotrodetalle']) == 0) {
 		$DATA['cara44bienv3ambienotrodetalle'] = '';
 	}
 	if (isset($DATA['cara44bienv3ambienexper']) == 0) {
-		$DATA['cara44bienv3ambienexper'] = '';
+		$DATA['cara44bienv3ambienexper'] = 0; 
 	}
 	if (isset($DATA['cara44bienv3ambienaprende']) == 0) {
-		$DATA['cara44bienv3ambienaprende'] = '';
+		$DATA['cara44bienv3ambienaprende'] = 0; 
 	}
 	if (isset($DATA['cara44bienv3ambienestudiante']) == 0) {
-		$DATA['cara44bienv3ambienestudiante'] = '';
+		$DATA['cara44bienv3ambienestudiante'] = 0; 
 	}
 	if (isset($DATA['cara44bienv3ambienactividad']) == 0) {
-		$DATA['cara44bienv3ambienactividad'] = '';
+		$DATA['cara44bienv3ambienactividad'] = 0; 
 	}
 	if (isset($DATA['cara44bienv3pyphabitoalim']) == 0) {
-		$DATA['cara44bienv3pyphabitoalim'] = '';
+		$DATA['cara44bienv3pyphabitoalim'] = 0; 
 	}
 	if (isset($DATA['cara44bienv3pypsustanciapsico']) == 0) {
-		$DATA['cara44bienv3pypsustanciapsico'] = '';
+		$DATA['cara44bienv3pypsustanciapsico'] = 0; 
 	}
 	if (isset($DATA['cara44bienv3pypsaludvisual']) == 0) {
-		$DATA['cara44bienv3pypsaludvisual'] = '';
+		$DATA['cara44bienv3pypsaludvisual'] = 0; 
 	}
 	if (isset($DATA['cara44bienv3pypsaludbucal']) == 0) {
-		$DATA['cara44bienv3pypsaludbucal'] = '';
+		$DATA['cara44bienv3pypsaludbucal'] = 0; 
 	}
 	if (isset($DATA['cara44bienv3pypsaludsexual']) == 0) {
-		$DATA['cara44bienv3pypsaludsexual'] = '';
+		$DATA['cara44bienv3pypsaludsexual'] = 0; 
 	}
 	if (isset($DATA['cara44bienv3deportenivel']) == 0) {
-		$DATA['cara44bienv3deportenivel'] = '';
+		$DATA['cara44bienv3deportenivel'] = 0; 
 	}
 	if (isset($DATA['cara44bienv3deportefrec']) == 0) {
-		$DATA['cara44bienv3deportefrec'] = '';
+		$DATA['cara44bienv3deportefrec'] = 0; 
 	}
 	if (isset($DATA['cara44bienv3deportecual']) == 0) {
-		$DATA['cara44bienv3deportecual'] = '';
+		$DATA['cara44bienv3deportecual'] = 0; 
 	}
 	if (isset($DATA['cara44bienv3deportecualotro']) == 0) {
 		$DATA['cara44bienv3deportecualotro'] = '';
 	}
 	if (isset($DATA['cara44bienv3deporterecrea']) == 0) {
-		$DATA['cara44bienv3deporterecrea'] = '';
+		$DATA['cara44bienv3deporterecrea'] = 0; 
 	}
 	if (isset($DATA['cara44bienv3deporteunad']) == 0) {
-		$DATA['cara44bienv3deporteunad'] = '';
+		$DATA['cara44bienv3deporteunad'] = 0; 
 	}
 	if (isset($DATA['cara44bienv3creciminclusion']) == 0) {
-		$DATA['cara44bienv3creciminclusion'] = '';
+		$DATA['cara44bienv3creciminclusion'] = 0; 
 	}
 	if (isset($DATA['cara44bienv3crecimfamilia']) == 0) {
-		$DATA['cara44bienv3crecimfamilia'] = '';
+		$DATA['cara44bienv3crecimfamilia'] = 0; 
 	}
 	if (isset($DATA['cara44bienv3crecimhabilidad']) == 0) {
-		$DATA['cara44bienv3crecimhabilidad'] = '';
+		$DATA['cara44bienv3crecimhabilidad'] = 0; 
 	}
 	if (isset($DATA['cara44bienv3crecimempleable']) == 0) {
-		$DATA['cara44bienv3crecimempleable'] = '';
+		$DATA['cara44bienv3crecimempleable'] = 0; 
 	}
 	if (isset($DATA['cara44bienv3crecimhabilvida']) == 0) {
-		$DATA['cara44bienv3crecimhabilvida'] = '';
+		$DATA['cara44bienv3crecimhabilvida'] = 0; 
 	}
 	if (isset($DATA['cara44bienv3crecimespiritual']) == 0) {
-		$DATA['cara44bienv3crecimespiritual'] = '';
+		$DATA['cara44bienv3crecimespiritual'] = 0; 
 	}
 	if (isset($DATA['cara44bienv3crecimpractica']) == 0) {
-		$DATA['cara44bienv3crecimpractica'] = '';
+		$DATA['cara44bienv3crecimpractica'] = 0; 
 	}
 	if (isset($DATA['cara44bienv3crecimliderazgo']) == 0) {
-		$DATA['cara44bienv3crecimliderazgo'] = '';
+		$DATA['cara44bienv3crecimliderazgo'] = 0; 
 	}
 	if (isset($DATA['cara44bienv3crecimtrabequipo']) == 0) {
-		$DATA['cara44bienv3crecimtrabequipo'] = '';
+		$DATA['cara44bienv3crecimtrabequipo'] = 0; 
 	}
 	if (isset($DATA['cara44bienv3crecimasertiva']) == 0) {
-		$DATA['cara44bienv3crecimasertiva'] = '';
+		$DATA['cara44bienv3crecimasertiva'] = 0; 
 	}
 	if (isset($DATA['cara44bienv3crecimgesttiempo']) == 0) {
-		$DATA['cara44bienv3crecimgesttiempo'] = '';
+		$DATA['cara44bienv3crecimgesttiempo'] = 0; 
 	}
 	if (isset($DATA['cara44bienv3crecimconflictos']) == 0) {
-		$DATA['cara44bienv3crecimconflictos'] = '';
+		$DATA['cara44bienv3crecimconflictos'] = 0; 
 	}
 	if (isset($DATA['cara44bienv3crecimadapcambio']) == 0) {
-		$DATA['cara44bienv3crecimadapcambio'] = '';
+		$DATA['cara44bienv3crecimadapcambio'] = 0; 
 	}
 	if (isset($DATA['cara44bienv3crecimempatia']) == 0) {
-		$DATA['cara44bienv3crecimempatia'] = '';
+		$DATA['cara44bienv3crecimempatia'] = 0; 
 	}
 	if (isset($DATA['cara44bienv3crecimgestionser']) == 0) {
-		$DATA['cara44bienv3crecimgestionser'] = '';
+		$DATA['cara44bienv3crecimgestionser'] = 0; 
 	}
 	if (isset($DATA['cara44bienv3crecimtomadecide']) == 0) {
-		$DATA['cara44bienv3crecimtomadecide'] = '';
+		$DATA['cara44bienv3crecimtomadecide'] = 0; 
 	}
 	if (isset($DATA['cara44bienv3crecimpenscreativo']) == 0) {
-		$DATA['cara44bienv3crecimpenscreativo'] = '';
+		$DATA['cara44bienv3crecimpenscreativo'] = 0; 
 	}
 	if (isset($DATA['cara44bienv3crecimpenscritico']) == 0) {
-		$DATA['cara44bienv3crecimpenscritico'] = '';
+		$DATA['cara44bienv3crecimpenscritico'] = 0; 
 	}
 	if (isset($DATA['cara44bienv3crecimhabilotro']) == 0) {
-		$DATA['cara44bienv3crecimhabilotro'] = '';
+		$DATA['cara44bienv3crecimhabilotro'] = 0; 
 	}
 	if (isset($DATA['cara44bienv3crecimhabilotrodetalle']) == 0) {
 		$DATA['cara44bienv3crecimhabilotrodetalle'] = '';
 	}
 	if (isset($DATA['cara44bienv3crecimalcancemeta']) == 0) {
-		$DATA['cara44bienv3crecimalcancemeta'] = '';
+		$DATA['cara44bienv3crecimalcancemeta'] = 0; 
 	}
 	if (isset($DATA['cara44bienv3crecimsatifpersonal']) == 0) {
-		$DATA['cara44bienv3crecimsatifpersonal'] = '';
+		$DATA['cara44bienv3crecimsatifpersonal'] = 0; 
 	}
 	if (isset($DATA['cara44bienv3crecimaccesolaboral']) == 0) {
-		$DATA['cara44bienv3crecimaccesolaboral'] = '';
+		$DATA['cara44bienv3crecimaccesolaboral'] = 0; 
 	}
 	if (isset($DATA['cara44bienv3crecimotramotiv']) == 0) {
-		$DATA['cara44bienv3crecimotramotiv'] = '';
+		$DATA['cara44bienv3crecimotramotiv'] = 0; 
 	}
 	if (isset($DATA['cara44bienv3crecimotramotivdetalle']) == 0) {
 		$DATA['cara44bienv3crecimotramotivdetalle'] = '';
 	}
 	if (isset($DATA['cara44bienv3crecimapoyo']) == 0) {
-		$DATA['cara44bienv3crecimapoyo'] = '';
+		$DATA['cara44bienv3crecimapoyo'] = 0; 
 	}
 	if (isset($DATA['cara44bienv3crecimlaboral']) == 0) {
-		$DATA['cara44bienv3crecimlaboral'] = '';
+		$DATA['cara44bienv3crecimlaboral'] = 0; 
 	}
 	if (isset($DATA['cara44bienv3mentalcuidado']) == 0) {
-		$DATA['cara44bienv3mentalcuidado'] = '';
+		$DATA['cara44bienv3mentalcuidado'] = 0; 
 	}
 	if (isset($DATA['cara44bienv3mentalestrategia']) == 0) {
-		$DATA['cara44bienv3mentalestrategia'] = '';
+		$DATA['cara44bienv3mentalestrategia'] = 0; 
 	}
 	if (isset($DATA['cara44bienv3mentalestres']) == 0) {
-		$DATA['cara44bienv3mentalestres'] = '';
+		$DATA['cara44bienv3mentalestres'] = 0; 
 	}
 	if (isset($DATA['cara44bienv3mentalansiedad']) == 0) {
-		$DATA['cara44bienv3mentalansiedad'] = '';
+		$DATA['cara44bienv3mentalansiedad'] = 0; 
 	}
 	if (isset($DATA['cara44bienv3mentaldepresion']) == 0) {
-		$DATA['cara44bienv3mentaldepresion'] = '';
+		$DATA['cara44bienv3mentaldepresion'] = 0; 
 	}
 	if (isset($DATA['cara44bienv3mentalautoconoc']) == 0) {
-		$DATA['cara44bienv3mentalautoconoc'] = '';
+		$DATA['cara44bienv3mentalautoconoc'] = 0; 
 	}
 	if (isset($DATA['cara44bienv3mentalmindfulness']) == 0) {
-		$DATA['cara44bienv3mentalmindfulness'] = '';
+		$DATA['cara44bienv3mentalmindfulness'] = 0; 
 	}
 	if (isset($DATA['cara44bienv3mentalautoestima']) == 0) {
-		$DATA['cara44bienv3mentalautoestima'] = '';
+		$DATA['cara44bienv3mentalautoestima'] = 0; 
 	}
 	if (isset($DATA['cara44bienv3mentalcrisis']) == 0) {
-		$DATA['cara44bienv3mentalcrisis'] = '';
+		$DATA['cara44bienv3mentalcrisis'] = 0; 
 	}
 	if (isset($DATA['cara44bienv3mentalburnout']) == 0) {
-		$DATA['cara44bienv3mentalburnout'] = '';
+		$DATA['cara44bienv3mentalburnout'] = 0; 
 	}
 	if (isset($DATA['cara44bienv3mentalsexualidad']) == 0) {
-		$DATA['cara44bienv3mentalsexualidad'] = '';
+		$DATA['cara44bienv3mentalsexualidad'] = 0; 
 	}
 	if (isset($DATA['cara44bienv3mentalusoredes']) == 0) {
-		$DATA['cara44bienv3mentalusoredes'] = '';
+		$DATA['cara44bienv3mentalusoredes'] = 0; 
 	}
 	if (isset($DATA['cara44bienv3mentalinclusion']) == 0) {
-		$DATA['cara44bienv3mentalinclusion'] = '';
+		$DATA['cara44bienv3mentalinclusion'] = 0; 
 	}
 	if (isset($DATA['cara44bienv3mentalactividad']) == 0) {
-		$DATA['cara44bienv3mentalactividad'] = '';
+		$DATA['cara44bienv3mentalactividad'] = 0; 
 	}
 	if (isset($DATA['cara44bienv3mentalacompana']) == 0) {
-		$DATA['cara44bienv3mentalacompana'] = '';
+		$DATA['cara44bienv3mentalacompana'] = 0; 
 	}
 	if (isset($DATA['cara44bienv3mentaldiagnostico']) == 0) {
-		$DATA['cara44bienv3mentaldiagnostico'] = '';
+		$DATA['cara44bienv3mentaldiagnostico'] = 0; 
 	}
 	if (isset($DATA['cara44bienv3mentaldiagcual']) == 0) {
-		$DATA['cara44bienv3mentaldiagcual'] = '';
+		$DATA['cara44bienv3mentaldiagcual'] = 0; 
 	}
 	if (isset($DATA['cara44bienv3mentaldiagotro']) == 0) {
 		$DATA['cara44bienv3mentaldiagotro'] = '';
 	}
 	if (isset($DATA['cara44bienv3arteintegrar']) == 0) {
-		$DATA['cara44bienv3arteintegrar'] = '';
+		$DATA['cara44bienv3arteintegrar'] = 0; 
 	}
 	if (isset($DATA['cara44bienv3arteformacion']) == 0) {
-		$DATA['cara44bienv3arteformacion'] = '';
+		$DATA['cara44bienv3arteformacion'] = 0; 
 	}
 	if (isset($DATA['cara44bienv3arteunad']) == 0) {
-		$DATA['cara44bienv3arteunad'] = '';
+		$DATA['cara44bienv3arteunad'] = 0; 
 	}
 	if (isset($DATA['cara44bienv3arteinformacion']) == 0) {
-		$DATA['cara44bienv3arteinformacion'] = '';
+		$DATA['cara44bienv3arteinformacion'] = 0; 
 	}
 	// -- Se inicia validando todas las posibles entradas de usuario.
 	$DATA['cara01idperaca'] = numeros_validar($DATA['cara01idperaca']);
@@ -3117,6 +3117,225 @@ function f2301_db_GuardarV2($DATA, $objDB, $bDebug = false)
 	if ($DATA['cara44campus_medioactivunad'] == '') {
 		$DATA['cara44campus_medioactivunad'] = 0;
 	}
+	if ($DATA['cara44bienv3emprenetapa'] == '') {
+		$DATA['cara44bienv3emprenetapa'] = 0;
+	}
+	if ($DATA['cara44bienv3emprennecesita'] == '') {
+		$DATA['cara44bienv3emprennecesita'] = 0;
+	}
+	if ($DATA['cara44bienv3emprenanioini'] == '') {
+		$DATA['cara44bienv3emprenanioini'] = 0;
+	}
+	if ($DATA['cara44bienv3emprensector'] == '') {
+		$DATA['cara44bienv3emprensector'] = 0;
+	}
+	if ($DATA['cara44bienv3emprentemas'] == '') {
+		$DATA['cara44bienv3emprentemas'] = 0;
+	}
+	if ($DATA['cara44bienv3ambienclima'] == '') {
+		$DATA['cara44bienv3ambienclima'] = 0;
+	}
+	if ($DATA['cara44bienv3ambienjusticia'] == '') {
+		$DATA['cara44bienv3ambienjusticia'] = 0;
+	}
+	if ($DATA['cara44bienv3ambienagroeco'] == '') {
+		$DATA['cara44bienv3ambienagroeco'] = 0;
+	}
+	if ($DATA['cara44bienv3ambieneconomia'] == '') {
+		$DATA['cara44bienv3ambieneconomia'] = 0;
+	}
+	if ($DATA['cara44bienv3ambieneducacion'] == '') {
+		$DATA['cara44bienv3ambieneducacion'] = 0;
+	}
+	if ($DATA['cara44bienv3ambienbiodiverso'] == '') {
+		$DATA['cara44bienv3ambienbiodiverso'] = 0;
+	}
+	if ($DATA['cara44bienv3ambienecoturismo'] == '') {
+		$DATA['cara44bienv3ambienecoturismo'] = 0;
+	}
+	if ($DATA['cara44bienv3ambienotro'] == '') {
+		$DATA['cara44bienv3ambienotro'] = 0;
+	}
+	if ($DATA['cara44bienv3ambienexper'] == '') {
+		$DATA['cara44bienv3ambienexper'] = 0;
+	}
+	if ($DATA['cara44bienv3ambienaprende'] == '') {
+		$DATA['cara44bienv3ambienaprende'] = 0;
+	}
+	if ($DATA['cara44bienv3ambienestudiante'] == '') {
+		$DATA['cara44bienv3ambienestudiante'] = 0;
+	}
+	if ($DATA['cara44bienv3ambienactividad'] == '') {
+		$DATA['cara44bienv3ambienactividad'] = 0;
+	}
+	if ($DATA['cara44bienv3pyphabitoalim'] == '') {
+		$DATA['cara44bienv3pyphabitoalim'] = 0;
+	}
+	if ($DATA['cara44bienv3pypsustanciapsico'] == '') {
+		$DATA['cara44bienv3pypsustanciapsico'] = 0;
+	}
+	if ($DATA['cara44bienv3pypsaludvisual'] == '') {
+		$DATA['cara44bienv3pypsaludvisual'] = 0;
+	}
+	if ($DATA['cara44bienv3pypsaludbucal'] == '') {
+		$DATA['cara44bienv3pypsaludbucal'] = 0;
+	}
+	if ($DATA['cara44bienv3pypsaludsexual'] == '') {
+		$DATA['cara44bienv3pypsaludsexual'] = 0;
+	}
+	if ($DATA['cara44bienv3deportenivel'] == '') {
+		$DATA['cara44bienv3deportenivel'] = 0;
+	}
+	if ($DATA['cara44bienv3deportefrec'] == '') {
+		$DATA['cara44bienv3deportefrec'] = 0;
+	}
+	if ($DATA['cara44bienv3deportecual'] == '') {
+		$DATA['cara44bienv3deportecual'] = 0;
+	}
+	if ($DATA['cara44bienv3deporterecrea'] == '') {
+		$DATA['cara44bienv3deporterecrea'] = 0;
+	}
+	if ($DATA['cara44bienv3deporteunad'] == '') {
+		$DATA['cara44bienv3deporteunad'] = 0;
+	}
+	if ($DATA['cara44bienv3creciminclusion'] == '') {
+		$DATA['cara44bienv3creciminclusion'] = 0;
+	}
+	if ($DATA['cara44bienv3crecimfamilia'] == '') {
+		$DATA['cara44bienv3crecimfamilia'] = 0;
+	}
+	if ($DATA['cara44bienv3crecimhabilidad'] == '') {
+		$DATA['cara44bienv3crecimhabilidad'] = 0;
+	}
+	if ($DATA['cara44bienv3crecimempleable'] == '') {
+		$DATA['cara44bienv3crecimempleable'] = 0;
+	}
+	if ($DATA['cara44bienv3crecimhabilvida'] == '') {
+		$DATA['cara44bienv3crecimhabilvida'] = 0;
+	}
+	if ($DATA['cara44bienv3crecimespiritual'] == '') {
+		$DATA['cara44bienv3crecimespiritual'] = 0;
+	}
+	if ($DATA['cara44bienv3crecimpractica'] == '') {
+		$DATA['cara44bienv3crecimpractica'] = 0;
+	}
+	if ($DATA['cara44bienv3crecimliderazgo'] == '') {
+		$DATA['cara44bienv3crecimliderazgo'] = 0;
+	}
+	if ($DATA['cara44bienv3crecimtrabequipo'] == '') {
+		$DATA['cara44bienv3crecimtrabequipo'] = 0;
+	}
+	if ($DATA['cara44bienv3crecimasertiva'] == '') {
+		$DATA['cara44bienv3crecimasertiva'] = 0;
+	}
+	if ($DATA['cara44bienv3crecimgesttiempo'] == '') {
+		$DATA['cara44bienv3crecimgesttiempo'] = 0;
+	}
+	if ($DATA['cara44bienv3crecimconflictos'] == '') {
+		$DATA['cara44bienv3crecimconflictos'] = 0;
+	}
+	if ($DATA['cara44bienv3crecimadapcambio'] == '') {
+		$DATA['cara44bienv3crecimadapcambio'] = 0;
+	}
+	if ($DATA['cara44bienv3crecimempatia'] == '') {
+		$DATA['cara44bienv3crecimempatia'] = 0;
+	}
+	if ($DATA['cara44bienv3crecimgestionser'] == '') {
+		$DATA['cara44bienv3crecimgestionser'] = 0;
+	}
+	if ($DATA['cara44bienv3crecimtomadecide'] == '') {
+		$DATA['cara44bienv3crecimtomadecide'] = 0;
+	}
+	if ($DATA['cara44bienv3crecimpenscreativo'] == '') {
+		$DATA['cara44bienv3crecimpenscreativo'] = 0;
+	}
+	if ($DATA['cara44bienv3crecimpenscritico'] == '') {
+		$DATA['cara44bienv3crecimpenscritico'] = 0;
+	}
+	if ($DATA['cara44bienv3crecimhabilotro'] == '') {
+		$DATA['cara44bienv3crecimhabilotro'] = 0;
+	}
+	if ($DATA['cara44bienv3crecimalcancemeta'] == '') {
+		$DATA['cara44bienv3crecimalcancemeta'] = 0;
+	}
+	if ($DATA['cara44bienv3crecimsatifpersonal'] == '') {
+		$DATA['cara44bienv3crecimsatifpersonal'] = 0;
+	}
+	if ($DATA['cara44bienv3crecimaccesolaboral'] == '') {
+		$DATA['cara44bienv3crecimaccesolaboral'] = 0;
+	}
+	if ($DATA['cara44bienv3crecimotramotiv'] == '') {
+		$DATA['cara44bienv3crecimotramotiv'] = 0;
+	}
+	if ($DATA['cara44bienv3crecimapoyo'] == '') {
+		$DATA['cara44bienv3crecimapoyo'] = 0;
+	}
+	if ($DATA['cara44bienv3crecimlaboral'] == '') {
+		$DATA['cara44bienv3crecimlaboral'] = 0;
+	}
+	if ($DATA['cara44bienv3mentalcuidado'] == '') {
+		$DATA['cara44bienv3mentalcuidado'] = 0;
+	}
+	if ($DATA['cara44bienv3mentalestrategia'] == '') {
+		$DATA['cara44bienv3mentalestrategia'] = 0;
+	}
+	if ($DATA['cara44bienv3mentalestres'] == '') {
+		$DATA['cara44bienv3mentalestres'] = 0;
+	}
+	if ($DATA['cara44bienv3mentalansiedad'] == '') {
+		$DATA['cara44bienv3mentalansiedad'] = 0;
+	}
+	if ($DATA['cara44bienv3mentaldepresion'] == '') {
+		$DATA['cara44bienv3mentaldepresion'] = 0;
+	}
+	if ($DATA['cara44bienv3mentalautoconoc'] == '') {
+		$DATA['cara44bienv3mentalautoconoc'] = 0;
+	}
+	if ($DATA['cara44bienv3mentalmindfulness'] == '') {
+		$DATA['cara44bienv3mentalmindfulness'] = 0;
+	}
+	if ($DATA['cara44bienv3mentalautoestima'] == '') {
+		$DATA['cara44bienv3mentalautoestima'] = 0;
+	}
+	if ($DATA['cara44bienv3mentalcrisis'] == '') {
+		$DATA['cara44bienv3mentalcrisis'] = 0;
+	}
+	if ($DATA['cara44bienv3mentalburnout'] == '') {
+		$DATA['cara44bienv3mentalburnout'] = 0;
+	}
+	if ($DATA['cara44bienv3mentalsexualidad'] == '') {
+		$DATA['cara44bienv3mentalsexualidad'] = 0;
+	}
+	if ($DATA['cara44bienv3mentalusoredes'] == '') {
+		$DATA['cara44bienv3mentalusoredes'] = 0;
+	}
+	if ($DATA['cara44bienv3mentalinclusion'] == '') {
+		$DATA['cara44bienv3mentalinclusion'] = 0;
+	}
+	if ($DATA['cara44bienv3mentalactividad'] == '') {
+		$DATA['cara44bienv3mentalactividad'] = 0;
+	}
+	if ($DATA['cara44bienv3mentalacompana'] == '') {
+		$DATA['cara44bienv3mentalacompana'] = 0;
+	}
+	if ($DATA['cara44bienv3mentaldiagnostico'] == '') {
+		$DATA['cara44bienv3mentaldiagnostico'] = 0;
+	}
+	if ($DATA['cara44bienv3mentaldiagcual'] == '') {
+		$DATA['cara44bienv3mentaldiagcual'] = 0;
+	}
+	if ($DATA['cara44bienv3arteintegrar'] == '') {
+		$DATA['cara44bienv3arteintegrar'] = 0;
+	}
+	if ($DATA['cara44bienv3arteformacion'] == '') {
+		$DATA['cara44bienv3arteformacion'] = 0;
+	}
+	if ($DATA['cara44bienv3arteunad'] == '') {
+		$DATA['cara44bienv3arteunad'] = 0;
+	}
+	if ($DATA['cara44bienv3arteinformacion'] == '') {
+		$DATA['cara44bienv3arteinformacion'] = 0;
+	}
 	// -- Seccion para validar los posibles causales de error.
 	//Primero hacer un caso de revision de los encabezados.
 	if ($DATA['ficha'] == 1) {
@@ -3740,16 +3959,16 @@ function f2301_db_GuardarV2($DATA, $objDB, $bDebug = false)
 			}
 		}
 		if ($DATA['cara44bienversion'] == 3) {
-			if ($DATA['cara44bienv3emprenetapa'] == '') {
+			if ($DATA['cara44bienv3emprenetapa'] == 0) {
 				$sError = $ERR['cara44bienv3emprenetapa'] . $sSepara . $sError;
 			}
-			if ($DATA['cara44bienv3emprennecesita'] == '') {
+			if ($DATA['cara44bienv3emprennecesita'] == 0) {
 				$sError = $ERR['cara44bienv3emprennecesita'] . $sSepara . $sError;
 			}
-			if ($DATA['cara44bienv3emprenanioini'] == '') {
+			if ($DATA['cara44bienv3emprenanioini'] == 0) {
 				$sError = $ERR['cara44bienv3emprenanioini'] . $sSepara . $sError;
 			}
-			if ($DATA['cara44bienv3emprensector'] == '') {
+			if ($DATA['cara44bienv3emprensector'] == 0) {
 				$sError = $ERR['cara44bienv3emprensector'] . $sSepara . $sError;
 			}
 			if ($DATA['cara44bienv3emprensector'] == 9) {
@@ -3757,7 +3976,7 @@ function f2301_db_GuardarV2($DATA, $objDB, $bDebug = false)
 					$sError = $ERR['cara44bienv3emprensectorotro'] . $sSepara . $sError;
 				}
 			}
-			if ($DATA['cara44bienv3emprentemas'] == '') {
+			if ($DATA['cara44bienv3emprentemas'] == 0) {
 				$sError = $ERR['cara44bienv3emprentemas'] . $sSepara . $sError;
 			}
 			if ($DATA['cara44bienv3ambienclima'] == '') {
@@ -3789,41 +4008,41 @@ function f2301_db_GuardarV2($DATA, $objDB, $bDebug = false)
 					$sError = $ERR['cara44bienv3ambienotrodetalle'] . $sSepara . $sError;
 				}
 			}
-			if ($DATA['cara44bienv3ambienexper'] == '') {
+			if ($DATA['cara44bienv3ambienexper'] == 0) {
 				$sError = $ERR['cara44bienv3ambienexper'] . $sSepara . $sError;
 			}
-			if ($DATA['cara44bienv3ambienaprende'] == '') {
+			if ($DATA['cara44bienv3ambienaprende'] == 0) {
 				$sError = $ERR['cara44bienv3ambienaprende'] . $sSepara . $sError;
 			}
-			if ($DATA['cara44bienv3ambienestudiante'] == '') {
+			if ($DATA['cara44bienv3ambienestudiante'] == 0) {
 				$sError = $ERR['cara44bienv3ambienestudiante'] . $sSepara . $sError;
 			}
-			if ($DATA['cara44bienv3ambienactividad'] == '') {
+			if ($DATA['cara44bienv3ambienactividad'] == 0) {
 				$sError = $ERR['cara44bienv3ambienactividad'] . $sSepara . $sError;
 			}
-			if ($DATA['cara44bienv3pyphabitoalim'] == '') {
+			if ($DATA['cara44bienv3pyphabitoalim'] == 0) {
 				$sError = $ERR['cara44bienv3pyphabitoalim'] . $sSepara . $sError;
 			}
-			if ($DATA['cara44bienv3pypsustanciapsico'] == '') {
+			if ($DATA['cara44bienv3pypsustanciapsico'] == 0) {
 				$sError = $ERR['cara44bienv3pypsustanciapsico'] . $sSepara . $sError;
 			}
-			if ($DATA['cara44bienv3pypsaludvisual'] == '') {
+			if ($DATA['cara44bienv3pypsaludvisual'] == 0) {
 				$sError = $ERR['cara44bienv3pypsaludvisual'] . $sSepara . $sError;
 			}
-			if ($DATA['cara44bienv3pypsaludbucal'] == '') {
+			if ($DATA['cara44bienv3pypsaludbucal'] == 0) {
 				$sError = $ERR['cara44bienv3pypsaludbucal'] . $sSepara . $sError;
 			}
-			if ($DATA['cara44bienv3pypsaludsexual'] == '') {
+			if ($DATA['cara44bienv3pypsaludsexual'] == 0) {
 				$sError = $ERR['cara44bienv3pypsaludsexual'] . $sSepara . $sError;
 			}
-			if ($DATA['cara44bienv3deportenivel'] == '') {
+			if ($DATA['cara44bienv3deportenivel'] == 0) {
 				$sError = $ERR['cara44bienv3deportenivel'] . $sSepara . $sError;
 			}
 			if ($DATA['cara44bienv3deportenivel'] != 4) {
-				if ($DATA['cara44bienv3deportefrec'] == '') {
+				if ($DATA['cara44bienv3deportefrec'] == 0) {
 					$sError = $ERR['cara44bienv3deportefrec'] . $sSepara . $sError;
 				}
-				if ($DATA['cara44bienv3deportecual'] == '') {
+				if ($DATA['cara44bienv3deportecual'] == 0) {
 					$sError = $ERR['cara44bienv3deportecual'] . $sSepara . $sError;
 				}
 				if ($DATA['cara44bienv3deportecual'] == 13) {
@@ -3832,7 +4051,7 @@ function f2301_db_GuardarV2($DATA, $objDB, $bDebug = false)
 					}
 				}
 			}
-			if ($DATA['cara44bienv3deporterecrea'] == '') {
+			if ($DATA['cara44bienv3deporterecrea'] == 0) {
 				$sError = $ERR['cara44bienv3deporterecrea'] . $sSepara . $sError;
 			}
 			if ($DATA['cara44bienv3deporteunad'] == '') {
@@ -3917,16 +4136,16 @@ function f2301_db_GuardarV2($DATA, $objDB, $bDebug = false)
 					$sError = $ERR['cara44bienv3crecimotramotivdetalle'] . $sSepara . $sError;
 				}
 			}
-			if ($DATA['cara44bienv3crecimapoyo'] == '') {
+			if ($DATA['cara44bienv3crecimapoyo'] == 0) {
 				$sError = $ERR['cara44bienv3crecimapoyo'] . $sSepara . $sError;
 			}
-			if ($DATA['cara44bienv3crecimlaboral'] == '') {
+			if ($DATA['cara44bienv3crecimlaboral'] == 0) {
 				$sError = $ERR['cara44bienv3crecimlaboral'] . $sSepara . $sError;
 			}
-			if ($DATA['cara44bienv3mentalcuidado'] == '') {
+			if ($DATA['cara44bienv3mentalcuidado'] == 0) {
 				$sError = $ERR['cara44bienv3mentalcuidado'] . $sSepara . $sError;
 			}
-			if ($DATA['cara44bienv3mentalestrategia'] == '') {
+			if ($DATA['cara44bienv3mentalestrategia'] == 0) {
 				$sError = $ERR['cara44bienv3mentalestrategia'] . $sSepara . $sError;
 			}
 			if ($DATA['cara44bienv3mentalestres'] == '') {
@@ -3962,7 +4181,7 @@ function f2301_db_GuardarV2($DATA, $objDB, $bDebug = false)
 			if ($DATA['cara44bienv3mentalinclusion'] == '') {
 				$sError = $ERR['cara44bienv3mentalinclusion'] . $sSepara . $sError;
 			}
-			if ($DATA['cara44bienv3mentalactividad'] == '') {
+			if ($DATA['cara44bienv3mentalactividad'] == 0) {
 				$sError = $ERR['cara44bienv3mentalactividad'] . $sSepara . $sError;
 			}
 			if ($DATA['cara44bienv3mentalacompana'] == '') {
@@ -3981,16 +4200,16 @@ function f2301_db_GuardarV2($DATA, $objDB, $bDebug = false)
 					}
 				}
 			}
-			if ($DATA['cara44bienv3arteintegrar'] == '') {
+			if ($DATA['cara44bienv3arteintegrar'] == 0) {
 				$sError = $ERR['cara44bienv3arteintegrar'] . $sSepara . $sError;
 			}
-			if ($DATA['cara44bienv3arteformacion'] == '') {
+			if ($DATA['cara44bienv3arteformacion'] == 0) {
 				$sError = $ERR['cara44bienv3arteformacion'] . $sSepara . $sError;
 			}
-			if ($DATA['cara44bienv3arteunad'] == '') {
+			if ($DATA['cara44bienv3arteunad'] == 0) {
 				$sError = $ERR['cara44bienv3arteunad'] . $sSepara . $sError;
 			}
-			if ($DATA['cara44bienv3arteinformacion'] == '') {
+			if ($DATA['cara44bienv3arteinformacion'] == 0) {
 				$sError = $ERR['cara44bienv3arteinformacion'] . $sSepara . $sError;
 			}
 		}

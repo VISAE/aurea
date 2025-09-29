@@ -1,8 +1,9 @@
 <?php
 /*
---- © Angel Mauro Avellaneda Barreto - UNAD - 2018 ---
+--- © Angel Mauro Avellaneda Barreto - UNAD - 2018 - 2024 ---
 --- angel.avellaneda@unad.edu.co - http://www.unad.edu.co
 --- Modelo Version 2.22.2 lunes, 16 de julio de 2018
+--- Modelo 3.0.9 martes, 16 de julio de 2024
 */
 $ETI['app_nombre']='APP';
 $ETI['grupo_nombre']='Grupo';
@@ -10,6 +11,7 @@ $ETI['titulo']='Tipos de ficha';
 $ETI['titulo_sector2']='Tipos de caracterizaciones';
 $ETI['titulo_sector93']='Cambio de consecutivo';
 $ETI['titulo_2311']='Tipos de caracterizaciones';
+$ETI['titulo_busca_2311'] = 'Busqueda de Tipos de ficha';
 $ETI['sigla_2311']='Tipos de caracterizaciones';
 $ETI['lnk_cargar']='Editar';
 $ETI['cara11consec']='Consecutivo';
@@ -29,16 +31,22 @@ $ETI['cara11ficha3pregprof']='Ficha3pregprof';
 $ETI['cara11ficha4']='Ingl&eacute;s';
 $ETI['cara11ficha4pregbas']='Ficha4pregbas';
 $ETI['cara11ficha4pregprof']='Ficha4pregprof';
-$ETI['cara11ficha5']='Qu&iacute;mica';
+$ETI['cara11ficha5']='Biolog&iacute;a';
 $ETI['cara11ficha5pregbas']='Ficha5pregbas';
 $ETI['cara11ficha5pregprof']='Ficha5pregprof';
-$ETI['cara11ficha6']='Biolog&iacute;a';
+$ETI['cara11ficha6']='F&iacute;sica';
 $ETI['cara11ficha6pregbas']='Ficha6pregbas';
 $ETI['cara11ficha6pregprof']='Ficha6pregprof';
-$ETI['cara11ficha7']='F&iacute;sica';
+$ETI['cara11ficha7']='Qu&iacute;mica';
 $ETI['cara11ficha7pregbas']='Ficha7pregbas';
 $ETI['cara11ficha7pregprof']='Ficha7pregprof';
 $ETI['cara11fichafamilia']='Fichas generales';
+$ETI['cara11resultadovisible'] = 'Resultado visible';
+$ETI['cara11nivelforma'] = 'Nivel de formaci&oacute;n';
+$ETI['cara11fichasinep'] = 'Ficha SINEP';
+$ETI['cara11ficha8'] = 'Competencias Ciudadanas';
+$ETI['cara11ficha8pregbas'] = 'Ficha8pregbas';
+$ETI['cara11ficha8pregprof'] = 'Ficha8pregprof';
 
 $ERR['cara11consec']='Necesita el dato '.$ETI['cara11consec'];
 $ERR['cara11id']='Necesita el dato '.$ETI['cara11id'];
@@ -65,6 +73,12 @@ $ERR['cara11ficha7']='Necesita el dato '.$ETI['cara11ficha7'];
 $ERR['cara11ficha7pregbas']='Necesita el dato '.$ETI['cara11ficha7pregbas'];
 $ERR['cara11ficha7pregprof']='Necesita el dato '.$ETI['cara11ficha7pregprof'];
 $ERR['cara11fichafamilia']='Necesita el dato '.$ETI['cara11fichafamilia'];
+$ERR['cara11resultadovisible'] = 'Necesita el dato ' . $ETI['cara11resultadovisible'];
+$ERR['cara11nivelforma'] = 'Necesita el dato ' . $ETI['cara11nivelforma'];
+$ERR['cara11fichasinep'] = 'Necesita el dato ' . $ETI['cara11fichasinep'];
+$ERR['cara11ficha8'] = 'Necesita el dato ' . $ETI['cara11ficha8'];
+$ERR['cara11ficha8pregbas'] = 'Necesita el dato ' . $ETI['cara11ficha8pregbas'];
+$ERR['cara11ficha8pregprof'] = 'Necesita el dato ' . $ETI['cara11ficha8pregprof'];
 
 $ETI['msg_incluir']='Incluir';
 $ETI['msg_preguntas']='N&deg; de preguntas';
@@ -72,4 +86,3 @@ $ETI['msg_basicas']='B&aacute;sicas';
 $ETI['msg_profundizacion']='De profundizaci&oacute;n';
 $ETI['msg_fichas']='Fichas';
 
-?>

@@ -4596,13 +4596,13 @@ switch ($iPiel) {
 	}
 
 	function ter_retorna() {
-		let sRetorna = window.document.frmedita.div96v2.value;
+		var sRetorna = window.document.frmedita.div96v2.value;
 		if (sRetorna != '') {
-			let idcampo = window.document.frmedita.div96campo.value;
-			let illave = window.document.frmedita.div96llave.value;
-			let did = document.getElementById(idcampo);
-			let dtd = document.getElementById(idcampo + '_td');
-			let ddoc = document.getElementById(idcampo + '_doc');
+			var idcampo = window.document.frmedita.div96campo.value;
+			var illave = window.document.frmedita.div96llave.value;
+			var did = document.getElementById(idcampo);
+			var dtd = document.getElementById(idcampo + '_td');
+			var ddoc = document.getElementById(idcampo + '_doc');
 			dtd.value = window.document.frmedita.div96v1.value;
 			ddoc.value = sRetorna;
 			did.value = window.document.frmedita.div96v3.value;
@@ -4613,7 +4613,7 @@ switch ($iPiel) {
 	}
 
 	function ter_muestra(idcampo, illave) {
-		let params = new Array();
+		var params = new Array();
 		params[1] = document.getElementById(idcampo + '_doc').value;
 		if (params[1] != '') {
 			params[0] = document.getElementById(idcampo + '_td').value;
@@ -4632,7 +4632,7 @@ switch ($iPiel) {
 	}
 
 	function ter_traerxid(idcampo, vrcampo) {
-		let params = new Array();
+		var params = new Array();
 		params[0] = vrcampo;
 		params[1] = idcampo;
 		if (params[0] != 0) {
@@ -4662,7 +4662,7 @@ switch ($iPiel) {
 	}
 
 	function imprimeexcel() {
-		let sError = '';
+		var sError = '';
 		if (window.document.frmedita.seg_6.value != 1) {
 			sError = "<?php echo $ERR['6']; ?>";
 		}
@@ -4706,7 +4706,7 @@ switch ($iPiel) {
 	}
 
 	function RevisaLlave() {
-		let datos = new Array();
+		var datos = new Array();
 		datos[1] = window.document.frmedita.cara01idperaca.value;
 		datos[2] = window.document.frmedita.cara01idtercero.value;
 		if ((datos[1] != '') && (datos[2] != '')) {
@@ -4728,7 +4728,7 @@ switch ($iPiel) {
 	}
 
 	function carga_combo_cara01depto() {
-		let params = new Array();
+		var params = new Array();
 		params[0] = window.document.frmedita.cara01pais.value;
 		document.getElementById('div_cara01depto').innerHTML = '<b>Procesando datos, por favor espere...</b><input id="cara01depto" name="cara01depto" type="hidden" value="" />';
 		xajax_f2301_Combocara01depto(params);
@@ -4740,14 +4740,14 @@ switch ($iPiel) {
 	}
 
 	function carga_combo_cara01ciudad() {
-		let params = new Array();
+		var params = new Array();
 		params[0] = window.document.frmedita.cara01depto.value;
 		document.getElementById('div_cara01ciudad').innerHTML = '<b>Procesando datos, por favor espere...</b><input id="cara01ciudad" name="cara01ciudad" type="hidden" value="" />';
 		xajax_f2301_Combocara01ciudad(params);
 	}
 
 	function carga_combo_cara01idcead() {
-		let params = new Array();
+		var params = new Array();
 		params[0] = window.document.frmedita.cara01idzona.value;
 		document.getElementById('div_cara01idcead').innerHTML = '<b>Procesando datos, por favor espere...</b><input id="cara01idcead" name="cara01idcead" type="hidden" value="" />';
 		xajax_f2301_Combocara01idcead(params);
@@ -4756,7 +4756,7 @@ switch ($iPiel) {
 	function limpia_cara01discv2archivoorigen() {
 		window.document.frmedita.cara01discv2soporteorigen.value = 0;
 		window.document.frmedita.cara01discv2archivoorigen.value = 0;
-		let da_Discv2archivoorigen = document.getElementById('div_cara01discv2archivoorigen');
+		var da_Discv2archivoorigen = document.getElementById('div_cara01discv2archivoorigen');
 		da_Discv2archivoorigen.innerHTML = '&nbsp;';
 		verboton('beliminacara01discv2archivoorigen', 'none');
 		//paginarf0000();
@@ -4781,7 +4781,7 @@ switch ($iPiel) {
 	?>
 
 		function eliminacara01discv2archivoorigen() {
-			let did = window.document.frmedita.cara01id;
+			var did = window.document.frmedita.cara01id;
 			if (confirm("Esta seguro de eliminar el archivo?")) {
 				xajax_elimina_archivo_cara01discv2archivoorigen(did.value);
 				//paginarf0000();
@@ -4792,7 +4792,7 @@ switch ($iPiel) {
 	?>
 
 	function paginarf2301() {
-		let params = new Array();
+		var params = new Array();
 		params[99] = window.document.frmedita.debug.value;
 		params[100] = <?php echo $idTercero; ?>;
 		params[101] = window.document.frmedita.paginaf2301.value;
@@ -4865,7 +4865,7 @@ switch ($iPiel) {
 		window.document.frmedita.iscroll.value = window.pageYOffset;
 		expandesector(98);
 		window.document.frmedita.scampobusca.value = sCampo;
-		let params = new Array();
+		var params = new Array();
 		params[1] = sCampo;
 		//params[2]=window.document.frmedita.iagno.value;
 		//params[3]=window.document.frmedita.itipo.value;
@@ -4878,7 +4878,7 @@ switch ($iPiel) {
 	}
 
 	function Devuelve(sValor) {
-		let sCampo = window.document.frmedita.scampobusca.value;
+		var sCampo = window.document.frmedita.scampobusca.value;
 		if (sCampo == 'cara01idtercero') {
 			ter_traerxid('cara01idtercero', sValor);
 		}
@@ -4903,7 +4903,7 @@ switch ($iPiel) {
 	setInterval('xajax_sesion_abandona_V2();', 60000);
 
 	function AyudaLocal(sCampo) {
-		let divAyuda = document.getElementById('div_ayuda_' + sCampo);
+		var divAyuda = document.getElementById('div_ayuda_' + sCampo);
 		if (typeof divAyuda === 'undefined') {} else {
 			verboton('cmdAyuda_' + sCampo, 'none');
 			// var sMensaje='Lo que quiera decir.';
@@ -4914,7 +4914,7 @@ switch ($iPiel) {
 	}
 
 	function cierraDiv96(ref) {
-		let sRetorna = window.document.frmedita.div96v2.value;
+		var sRetorna = window.document.frmedita.div96v2.value;
 		if (ref == 2301) {
 			if (sRetorna != '') {
 				window.document.frmedita.cara01discv2soporteorigen.value = window.document.frmedita.div96v1.value;
@@ -4995,7 +4995,7 @@ switch ($iPiel) {
 	?>
 
 	function verrecluso() {
-		let sMuestra = 'none';
+		sMuestra = 'none';
 		if (window.document.frmedita.cara01inpecrecluso.value == 'S') {
 			sMuestra = 'block';
 		}
@@ -5003,7 +5003,7 @@ switch ($iPiel) {
 	}
 
 	function ajustarinteresrepdeporte() {
-		let sMuestra = 'none';
+		sMuestra = 'none';
 		if (window.document.frmedita.cara01bien_interesrepdeporte.value == 'S') {
 			sMuestra = 'block';
 		}
@@ -5011,7 +5011,7 @@ switch ($iPiel) {
 	}
 
 	function ajustarinteresreparte() {
-		let sMuestra = 'none';
+		sMuestra = 'none';
 		if (window.document.frmedita.cara01bien_interesreparte.value == 'S') {
 			sMuestra = 'block';
 		}
@@ -5019,7 +5019,7 @@ switch ($iPiel) {
 	}
 
 	function ajustarprimeraopc() {
-		let sMuestra = 'none';
+		sMuestra = 'none';
 		if (window.document.frmedita.cara01acad_primeraopc.value == 'N') {
 			sMuestra = 'block';
 		}
@@ -5027,7 +5027,7 @@ switch ($iPiel) {
 	}
 
 	function ajustarnivelinterpreta() {
-		let sMuestra = 'none';
+		sMuestra = 'none';
 		if (window.document.frmedita.cara01bien_interpreta.value != '') {
 			if (window.document.frmedita.cara01bien_interpreta.value != '-1') {
 				sMuestra = 'block';
@@ -5037,7 +5037,7 @@ switch ($iPiel) {
 	}
 
 	function ajustardanza() {
-		let sMuestra = 'none';
+		sMuestra = 'none';
 		if (window.document.frmedita.cara01bien_danza_mod.value == 'S') {
 			sMuestra = 'block';
 		}
@@ -5054,7 +5054,7 @@ switch ($iPiel) {
 	}
 
 	function ajustarnombreemp() {
-		let sMuestra = 'none';
+		sMuestra = 'none';
 		if (window.document.frmedita.cara01bien_emprendedor.value == 'S') {
 			sMuestra = 'block';
 		}
@@ -5062,7 +5062,7 @@ switch ($iPiel) {
 	}
 
 	function ajustartipocapacita() {
-		let sMuestra = 'none';
+		sMuestra = 'none';
 		if (window.document.frmedita.cara01bien_capacempren.value == 'S') {
 			sMuestra = 'block';
 		}
@@ -5070,7 +5070,7 @@ switch ($iPiel) {
 	}
 
 	function ajustaramb_temas() {
-		let sMuestra = 'none';
+		sMuestra = 'none';
 		if (window.document.frmedita.cara01bien_amb_info.value == 'S') {
 			sMuestra = 'block';
 		}
@@ -5078,12 +5078,12 @@ switch ($iPiel) {
 	}
 
 	function ajustarlaboral() {
-		let sMuestra1 = 'none';
-		let sMuestra2 = 'none';
-		let sMuestra3 = 'none';
-		let sMuestra4 = 'none';
-		let sMuestra5 = 'none';
-		let sMuestra6 = 'none';
+		sMuestra1 = 'none';
+		sMuestra2 = 'none';
+		sMuestra3 = 'none';
+		sMuestra4 = 'none';
+		sMuestra5 = 'none';
+		sMuestra6 = 'none';
 		if (window.document.frmedita.cara01lab_situacion.value == 1) {
 			sMuestra1 = 'block';
 			sMuestra2 = 'block';
@@ -5113,7 +5113,7 @@ switch ($iPiel) {
 	}
 
 	function ajustar_cara01criteriodesc() {
-		let sMuestra1 = 'none';
+		sMuestra1 = 'none';
 		if (window.document.frmedita.cara01perayuda.value == -1) {
 			sMuestra1 = 'block';
 		}
@@ -5124,7 +5124,7 @@ switch ($iPiel) {
 	}
 
 	function ajustar_discsensorial() {
-		let sMuestra1 = 'none';
+		sMuestra1 = 'none';
 		if (window.document.frmedita.cara01discsensorial.value == 9) {
 			sMuestra1 = 'block';
 		}
@@ -5132,7 +5132,7 @@ switch ($iPiel) {
 	}
 
 	function ajustar_discfisica() {
-		let sMuestra1 = 'none';
+		sMuestra1 = 'none';
 		if (window.document.frmedita.cara01discfisica.value == 9) {
 			sMuestra1 = 'block';
 		}
@@ -5140,7 +5140,7 @@ switch ($iPiel) {
 	}
 
 	function ajustar_disccognitiva() {
-		let sMuestra1 = 'none';
+		sMuestra1 = 'none';
 		if (window.document.frmedita.cara01disccognitiva.value == 9) {
 			sMuestra1 = 'block';
 		}
@@ -5148,7 +5148,7 @@ switch ($iPiel) {
 	}
 
 	function ajustarbienv2otrodeporte() {
-		let sMuestra1 = 'none';
+		sMuestra1 = 'none';
 		if (window.document.frmedita.cara44bienv2otrodeporte.value == 'S') {
 			sMuestra1 = 'block';
 		}
@@ -5156,7 +5156,7 @@ switch ($iPiel) {
 	}
 
 	function ajustarcara44bienv2activculturalotra() {
-		let sMuestra1 = 'none';
+		sMuestra1 = 'none';
 		if (window.document.frmedita.cara44bienv2activculturalotra.value == 'S') {
 			sMuestra1 = 'block';
 		}
@@ -5164,7 +5164,7 @@ switch ($iPiel) {
 	}
 
 	function ajustarcara44bienv2evenculturalotro() {
-		let sMuestra1 = 'none';
+		sMuestra1 = 'none';
 		if (window.document.frmedita.cara44bienv2evenculturalotro.value == 'S') {
 			sMuestra1 = 'block';
 		}
@@ -5172,7 +5172,7 @@ switch ($iPiel) {
 	}
 
 	function ajustarcara44bienv2emprenotro() {
-		let sMuestra1 = 'none';
+		sMuestra1 = 'none';
 		if (window.document.frmedita.cara44bienv2emprenotro.value == 'S') {
 			sMuestra1 = 'block';
 		}
@@ -5180,7 +5180,7 @@ switch ($iPiel) {
 	}
 
 	function ajustarcara44bienv2ambienotraactiv() {
-		let sMuestra1 = 'none';
+		sMuestra1 = 'none';
 		if (window.document.frmedita.cara44bienv2ambienotraactiv.value == 'S') {
 			sMuestra1 = 'block';
 		}
@@ -5188,7 +5188,7 @@ switch ($iPiel) {
 	}
 
 	function ajustarcara44bienv2ambienotroenfoq() {
-		let sMuestra1 = 'none';
+		sMuestra1 = 'none';
 		if (window.document.frmedita.cara44bienv2ambienotroenfoq.value == 'S') {
 			sMuestra1 = 'block';
 		}
@@ -5196,7 +5196,7 @@ switch ($iPiel) {
 	}
 
 	function ajustar_fam_hijos() {
-		let sMuestra1 = 'none';
+		sMuestra1 = 'none';
 		if (window.document.frmedita.cara01sexo.value == 'F' && window.document.frmedita.cara01fam_hijos.value >= 1 && window.document.frmedita.cara01fam_hijos.value <= 4) {
 			sMuestra1 = 'block';
 		}
@@ -5204,7 +5204,7 @@ switch ($iPiel) {
 	}
 
 	function ajustar_acadhatenidorecesos() {
-		let sMuestra1 = 'none';
+		sMuestra1 = 'none';
 		if (window.document.frmedita.cara44acadhatenidorecesos.value == 'S') {
 			sMuestra1 = 'block';
 		}
@@ -5212,7 +5212,7 @@ switch ($iPiel) {
 	}
 
 	function ajustar_acadrazonreceso() {
-		let sMuestra1 = 'none';
+		sMuestra1 = 'none';
 		if (window.document.frmedita.cara44acadrazonreceso.value == 10) {
 			sMuestra1 = 'block';
 		}
@@ -5220,7 +5220,7 @@ switch ($iPiel) {
 	}
 
 	function ajustar_campus_usocorreounad() {
-		let sMuestra1 = 'none';
+		sMuestra1 = 'none';
 		if (window.document.frmedita.cara44campus_usocorreounad.value == 4) {
 			sMuestra1 = 'block';
 		}
@@ -5228,7 +5228,7 @@ switch ($iPiel) {
 	}
 
 	function ajustar_campus_usocorreounadno() {
-		let sMuestra1 = 'none';
+		sMuestra1 = 'none';
 		if (window.document.frmedita.cara44campus_usocorreounadno.value == 5) {
 			sMuestra1 = 'block';
 		}
@@ -5236,7 +5236,7 @@ switch ($iPiel) {
 	}
 
 	function ajustar_campus_medioactivunad() {
-		let sMuestra1 = 'none';
+		sMuestra1 = 'none';
 		if (window.document.frmedita.cara44campus_medioactivunad.value == 6) {
 			sMuestra1 = 'block';
 		}
@@ -5244,14 +5244,14 @@ switch ($iPiel) {
 	}
 
 	function ajustar_cara44med_tratamiento() {
-		let sMuestra1 = 'none';
+		sMuestra1 = 'none';
 		if (window.document.frmedita.cara44med_tratamiento.value != 0) {
 			sMuestra1 = 'block';
 		}
 		document.getElementById('lbl_cara44med_trat_cual').style.display = sMuestra1;
 	}
 		function ajustar_cara44bienv3emprensector() {
-		let sMuestra1 = 'none';
+		sMuestra1 = 'none';
 		if (window.document.frmedita.cara44bienv3emprensector.value == 9) {
 			sMuestra1 = 'block';
 		}
@@ -5259,7 +5259,7 @@ switch ($iPiel) {
 	}
 
 	function ajustar_cara44bienv3ambienotro() {
-		let sMuestra1 = 'none';
+		sMuestra1 = 'none';
 		if (window.document.frmedita.cara44bienv3ambienotro.value == 1) {
 			sMuestra1 = 'block';
 		}
@@ -5267,7 +5267,7 @@ switch ($iPiel) {
 	}
 
 	function ajustar_cara44bienv3deportenivel() {
-		let sMuestra1 = 'none';
+		sMuestra1 = 'none';
 		if (window.document.frmedita.cara44bienv3deportenivel.value != 4) {
 			sMuestra1 = 'block';
 		}
@@ -5275,7 +5275,7 @@ switch ($iPiel) {
 	}
 	
 	function ajustar_cara44bienv3deportecual() {
-		let sMuestra1 = 'none';
+		sMuestra1 = 'none';
 		if (window.document.frmedita.cara44bienv3deportecual.value == 13) {
 			sMuestra1 = 'block';
 		}
@@ -5283,7 +5283,7 @@ switch ($iPiel) {
 	}
 
 	function ajustar_cara44bienv3crecimhabilotro() {
-		let sMuestra1 = 'none';
+		sMuestra1 = 'none';
 		if (window.document.frmedita.cara44bienv3crecimhabilotro.value == 1) {
 			sMuestra1 = 'block';
 		}
@@ -5291,7 +5291,7 @@ switch ($iPiel) {
 	}
 
 	function ajustar_cara44bienv3crecimotramotiv() {
-		let sMuestra1 = 'none';
+		sMuestra1 = 'none';
 		if (window.document.frmedita.cara44bienv3crecimotramotiv.value == 1) {
 			sMuestra1 = 'block';
 		}
@@ -5299,7 +5299,7 @@ switch ($iPiel) {
 	}
 
 	function ajustar_cara44bienv3mentaldiagnostico() {
-		let sMuestra1 = 'none';
+		sMuestra1 = 'none';
 		if (window.document.frmedita.cara44bienv3mentaldiagnostico.value == 1) {
 			sMuestra1 = 'block';
 		}
@@ -5307,7 +5307,7 @@ switch ($iPiel) {
 	}
 
 	function ajustar_cara44bienv3mentaldiagcual() {
-		let sMuestra1 = 'none';
+		sMuestra1 = 'none';
 		if (window.document.frmedita.cara44bienv3mentaldiagcual.value == 11) {
 			sMuestra1 = 'block';
 		}
@@ -5323,19 +5323,19 @@ if (!$bEstudiante) {
 		}
 
 		function carga_combo_bprograma() {
-			let params = new Array();
+			var params = new Array();
 			params[0] = window.document.frmedita.bescuela.value;
 			xajax_f2301_Combobprograma(params);
 		}
 
 		function carga_combo_bcead() {
-			let params = new Array();
+			var params = new Array();
 			params[0] = window.document.frmedita.bzona.value;
 			xajax_f2301_Combobcead(params);
 		}
 
 		function soyconsejeroidf2301(cara01id) {
-			let params = new Array();
+			var params = new Array();
 			params[0] = cara01id;
 			params[1] = <?php echo $idTercero; ?>;
 			xajax_f2301_MarcarConsejero(params);
@@ -5350,7 +5350,7 @@ if (!$bEstudiante) {
 		}
 
 		function vermatricula() {
-			let sError = '';
+			var sError = '';
 			if (window.document.frmedita.bperiodo.value == '') {
 				sError = 'Por favor seleccione un periodo para revisar los datos de matricula.';
 			}
@@ -5364,7 +5364,7 @@ if (!$bEstudiante) {
 		}
 
 		function actualizaedad() {
-			let params = new Array();
+			var params = new Array();
 			params[0] = window.document.frmedita.cara01id.value;
 			params[1] = window.document.frmedita.cara01idtercero.value;
 			xajax_f2301_Actualizaedad(params);
@@ -5375,7 +5375,7 @@ if (!$bEstudiante) {
 	?>
 
 		function ajustar_cara01discv2tiene() {
-			let sMuestra1 = 'none';
+			sMuestra1 = 'none';
 			if (window.document.frmedita.cara01discv2tiene.value == 1) {
 				sMuestra1 = 'block';
 			}
@@ -5383,7 +5383,7 @@ if (!$bEstudiante) {
 		}
 
 		function ajustar_cara02discv2multiple() {
-			let sMuestra1 = 'none';
+			sMuestra1 = 'none';
 			if (window.document.frmedita.cara02discv2multiple.value == 1) {
 				sMuestra1 = 'block';
 			}
@@ -5391,7 +5391,7 @@ if (!$bEstudiante) {
 		}
 
 		function ajustar_cara01discv2trastornos() {
-			let sMuestra1 = 'none';
+			sMuestra1 = 'none';
 			if (window.document.frmedita.cara01discv2trastornos.value == 1) {
 				sMuestra1 = 'block';
 			}
@@ -5399,7 +5399,7 @@ if (!$bEstudiante) {
 		}
 
 		function ajustar_cara01discv2condicionmedica() {
-			let sMuestra1 = 'none';
+			sMuestra1 = 'none';
 			if (window.document.frmedita.cara01discv2condicionmedica.value == 1) {
 				sMuestra1 = 'block';
 			}
