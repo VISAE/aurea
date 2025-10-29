@@ -20,6 +20,7 @@ $ETI['cara10idpregunta']='Pregunta';
 $ETI['cara10idrpta']='Rpta';
 $ETI['cara10puntaje']='Puntaje';
 $ETI['cara10nivelpregunta']='Nivelpregunta';
+$ETI['cara10retroalimenta'] = 'Retroalimentaci&oacute;n';
 
 $ERR['cara10idcara']='Is necessary the data '.$ETI['cara10idcara'];
 $ERR['cara10idbloque']='Is necessary the data '.$ETI['cara10idbloque'];
@@ -29,4 +30,6 @@ $ERR['cara10idpregunta']='Is necessary the data '.$ETI['cara10idpregunta'];
 $ERR['cara10idrpta']='Is necessary the data '.$ETI['cara10idrpta'];
 $ERR['cara10puntaje']='Is necessary the data '.$ETI['cara10puntaje'];
 $ERR['cara10nivelpregunta']='Is necessary the data '.$ETI['cara10nivelpregunta'];
-?>
+$ERR['cara10retroalimenta']='Is necessary the data '.$ETI['cara10retroalimenta'];
+
+$ETI['msg_cierre2312'] = 'Se va a cerrar el registro.';

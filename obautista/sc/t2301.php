@@ -588,12 +588,12 @@ if ($bEntra) {
 	$sBloque6 = '' . $cSepara . cadena_codificar('Le cuesta expresar sus emociones con palabras' . $cSepara . 'Como reacciona ante un cambio imprevisto aparentemente negativo' . $cSepara . 'Cuando esta estresado o tienes varias preocupaciones ¿como lo maneja'
 		. $cSepara . 'Cuando tiene poco tiempo para el desarrollo de sus actividades academicas laborales y familiares ¿como lo asume?' . $cSepara . 'Con respecto a su actitud frente la vida ¿como se describiria?' . $cSepara . 'Que hace cuando presenta alguna dificultad o duda frente a una tarea asignada'
 		. $cSepara . 'Cuando esta afrontando una dificultad personal laboral emocional o familiar ¿cual es su actitud?' . $cSepara . 'En terminos generales ¿esta satisfecho con quien es?' . $cSepara . 'Como actua frente a una discusion'
-		. $cSepara . 'Como reacciona ante las siguientes situaciones sociales' . $cSepara . 'Puntaje');
+		. $cSepara . 'Como reacciona ante las siguientes situaciones sociales' . $cSepara . 'Puntaje Psicosocial');
 	$sTitulo7 = 'Competencias';
-	for ($l = 1; $l <= 7; $l++) {
+	for ($l = 1; $l <= 8; $l++) {
 		$sTitulo7 = $sTitulo7 . $cSepara;
 	}
-	$sBloque7 = '' . $cSepara . 'Competencias digitales' . $cSepara . cadena_codificar('Lectura critica' . $cSepara . 'Razonamiento cuantitativo' . $cSepara . 'Ingles' . $cSepara . 'Biologia' . $cSepara . 'Fisica' . $cSepara . 'Quimica');
+	$sBloque7 = '' . $cSepara . 'Competencias digitales' . $cSepara . cadena_codificar('Lectura critica' . $cSepara . 'Razonamiento cuantitativo' . $cSepara . 'Ingles' . $cSepara . 'Biologia' . $cSepara . 'Fisica' . $cSepara . 'Quimica' . $cSepara . 'Competencias ciudadanas');
 
 	$sDato = '';
 	$objplano->AdicionarLinea($sDato);
@@ -817,6 +817,8 @@ if ($bEntra) {
 			$lin_cara01nivelfisica = $cSepara;
 			$lin_cara01fichaquimica = $cSepara;
 			$lin_cara01nivelquimica = $cSepara;
+			$lin_cara01fichaciudad = $cSepara;
+			$lin_cara01nivelciudad = $cSepara;
 			$lin_cara01perayuda = $cSepara;
 			$lin_cara01perotraayuda = $cSepara;
 			$lin_cara01discsensorialotra = $cSepara;
@@ -2085,6 +2087,9 @@ if ($bEntra) {
 			if ($fila['cara01fichabiolog'] != -1) {
 				$lin_cara01fichabiolog = $cSepara . f2301_NombrePuntaje('biolog', $fila['cara01nivelbiolog']);
 			}
+			if ($fila['cara01fichaciudad'] != -1) {
+				$lin_cara01fichaciudad = $cSepara . f2301_NombrePuntaje('ciudadanas', $fila['cara01nivelciudad']);
+			}
 		}
 		if ($bConConsejero) {
 			if ($fila['cara01idconsejero'] == 0) {
@@ -2214,7 +2219,7 @@ if ($bEntra) {
 		$sBloque5 = $sBienV1 . $sBienV2 . $sBienV3;
 		$sBloque6 = $lin_cara01psico_costoemocion . $lin_cara01psico_reaccionimpre . $lin_cara01psico_estres . $lin_cara01psico_pocotiempo
 			. $lin_cara01psico_actitudvida . $lin_cara01psico_duda . $lin_cara01psico_problemapers . $lin_cara01psico_satisfaccion . $lin_cara01psico_discusiones . $lin_cara01psico_atencion . $lin_cara01psico_puntaje;
-		$sBloque7 = $lin_cara01fichadigital . $lin_cara01fichalectura . $lin_cara01ficharazona . $lin_cara01fichaingles . $lin_cara01fichafisica . $lin_cara01fichaquimica . $lin_cara01fichabiolog;
+		$sBloque7 = $lin_cara01fichadigital . $lin_cara01fichalectura . $lin_cara01ficharazona . $lin_cara01fichaingles . $lin_cara01fichafisica . $lin_cara01fichaquimica . $lin_cara01fichabiolog . $lin_cara01fichaciudad;
 		$sBloqueConsejero = '';
 		if ($bConConsejero) {
 			$sBloqueConsejero = $lin_cara01idconsejero;

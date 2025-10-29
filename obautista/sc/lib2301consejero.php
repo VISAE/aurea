@@ -10,11 +10,12 @@ function f2301_db_GuardarDiscapacidad($DATA, $objDB, $bDebug = false)
 	$iCodModulo = 2301;
 	$bAudita[3] = true;
 	require './app.php';
-	$mensajes_todas = $APP->rutacomun . 'lg/lg_todas_' . $_SESSION['unad_idioma'] . '.php';
+	$sIdioma = AUREA_Idioma();
+	$mensajes_todas = $APP->rutacomun . 'lg/lg_todas_' . $sIdioma . '.php';
 	if (!file_exists($mensajes_todas)) {
 		$mensajes_todas = $APP->rutacomun . 'lg/lg_todas_es.php';
 	}
-	$mensajes_2301 = $APP->rutacomun . 'lg/lg_2301_' . $_SESSION['unad_idioma'] . '.php';
+	$mensajes_2301 = $APP->rutacomun . 'lg/lg_2301_' . $sIdioma . '.php';
 	if (!file_exists($mensajes_2301)) {
 		$mensajes_2301 = $APP->rutacomun . 'lg/lg_2301_es.php';
 	}
@@ -32,7 +33,7 @@ function f2301_db_GuardarDiscapacidad($DATA, $objDB, $bDebug = false)
 	// -- Se inicializan las variables que puedan pasar vacias {Especialmente n�meros}.
 	// -- Seccion para validar los posibles causales de error.
 	//Primero hacer un caso de revision de los encabezados.
-	$aFicha = array('', 'cara01fichaper', 'cara01fichafam', 'cara01fichaaca', 'cara01fichalab', 'cara01fichabien', 'cara01fichapsico', 'cara01fichadigital', 'cara01fichalectura', 'cara01ficharazona', 'cara01fichaingles', 'cara01fichabiolog', 'cara01fichafisica', 'cara01fichaquimica');
+	$aFicha = array('', 'cara01fichaper', 'cara01fichafam', 'cara01fichaaca', 'cara01fichalab', 'cara01fichabien', 'cara01fichapsico', 'cara01fichadigital', 'cara01fichalectura', 'cara01ficharazona', 'cara01fichaingles', 'cara01fichabiolog', 'cara01fichafisica', 'cara01fichaquimica', 'cara01fichaciudad');
 	//Fin de revisar los casos de revision de encabezados
 	$sSepara = ', ';
 	switch ($DATA['cara01discversion']) {

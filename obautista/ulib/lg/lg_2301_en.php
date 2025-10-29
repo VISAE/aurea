@@ -212,6 +212,8 @@ $ETI['cara01fichafisica'] = 'F&iacute;sica';
 $ETI['cara01nivelfisica'] = 'Nivelfisica';
 $ETI['cara01fichaquimica'] = 'Qu&iacute;mica';
 $ETI['cara01nivelquimica'] = 'Nivelquimica';
+$ETI['cara01fichaciudad'] = 'Competencias ciudadanas';
+$ETI['cara01nivelciudad'] = 'Nivel';
 $ETI['cara01tipocaracterizacion'] = 'Tipo de caracterizaci&oacute;n';
 $ETI['cara01perayuda'] = '&iquest;Qu&eacute; tipo de Ajustes Razonables o apoyos requiere para llevar a cabo su proceso de formaci&oacute;n?';
 $ETI['cara01perotraayuda'] = 'Por favor especifique';
@@ -446,6 +448,8 @@ $ERR['cara01fichafisica'] = 'Necesita el dato ' . $ETI['cara01fichafisica'];
 $ERR['cara01nivelfisica'] = 'Necesita el dato ' . $ETI['cara01nivelfisica'];
 $ERR['cara01fichaquimica'] = 'Necesita el dato ' . $ETI['cara01fichaquimica'];
 $ERR['cara01nivelquimica'] = 'Necesita el dato ' . $ETI['cara01nivelquimica'];
+$ERR['cara01fichaciudad'] = 'Necesita el dato ' . $ETI['cara01fichaciudad'];
+$ERR['cara01nivelciudad'] = 'Necesita el dato ' . $ETI['cara01nivelciudad'];
 $ERR['cara01tipocaracterizacion'] = 'Necesita el dato ' . $ETI['cara01tipocaracterizacion'];
 $ERR['cara01perayuda'] = 'Necesita el dato ' . $ETI['cara01perayuda'];
 $ERR['cara01perotraayuda'] = 'Necesita el dato ' . $ETI['cara01perotraayuda'];
@@ -489,7 +493,7 @@ $ERR['cara01discv2condicionmedica'] = 'Necesita el dato ' . $ETI['cara01discv2co
 $ERR['cara01discv2condmeddet'] = 'Necesita el dato ' . $ETI['cara01discv2condmeddet'];
 $ERR['cara01discv2pruebacoeficiente'] = 'Necesita el dato ' . $ETI['cara01discv2pruebacoeficiente'];
 
-$ERR['msg_noresueltas'] = 'No se han resueltas las preguntas: ';
+$ERR['msg_noresueltas'] = 'No se han resuelto las preguntas: ';
 $ETI['lnk_acargo'] = 'A CARGO';
 $ETI['lnk_soyconsejero'] = 'Soy Su Consejero';
 $ETI['msg_contacto'] = 'Datos de contacto';
@@ -520,7 +524,29 @@ $aacad_tipocolegio = array('', 'Público', 'Privado');
 $iacad_tipocolegio = 2;
 $aacad_modalidadbach = array('', 'Presencial', 'A distancia', 'Virtual', 'Validación');
 $iacad_modalidadbach = 4;
-$aacad_ultnivelest = array('', 'Cursos o diplomados', 'Técnico', 'Tecnológico', 'Profesional', 'Especialista', 'Maestría', 'Doctorado', 'Bachiller');
+$aacad_ultnivelest = array(
+    '',
+    'Cursos o diplomados',
+    'Técnico',
+    'Tecnológico',
+    'Profesional',
+    'Especialista',
+    'Maestría',
+    'Doctorado',
+    'Bachiller',
+    '',
+    'No he cursado ningún grado',
+    'Primero de primaria',
+    'Segundo de primaria',
+    'Tercero de primaria',
+    'Cuarto de primaria',
+    'Quinto de primaria',
+    'Sexto',
+    'Septimo',
+    'Octavo',
+    'Noveno',
+    'Decimo'
+);
 $iacad_ultnivelest = 8;
 $acara01acad_tiemposinest = array('', 'Menos de 1 año', '', 'De 1 a 3 años', '', 'De 3 a 5 años', 'Más de 5 años');
 $icara01acad_tiemposinest = 6;
@@ -631,10 +657,14 @@ $ETI['fisica_bajo'] = 'De alg&uacute;n modo la f&iacute;sica puede ser un desaf&
 $ETI['quimica_alto'] = 'Tus conocimientos en qu&iacute;mica son excepcionales. Tu comprensi&oacute;n de los principios y tu capacidad para aplicarlos son impresionantes. Contin&uacute;a explorando desaf&iacute;os qu&iacute;micos avanzados y considera compartir tus conocimientos con otros. Tu experiencia en qu&iacute;mica es una habilidad valiosa y te prepara para futuros &eacute;xitos en este campo. ¡Enhorabuena&excl;';
 $ETI['quimica_medio'] = 'Tienes una base s&oacute;lida en qu&iacute;mica, lo cual es un buen punto de partida. Para mejorar, te recomendar&iacute;a seguir practicando y explorar conceptos qu&iacute;micos m&aacute;s avanzados. Puedes utilizar recursos en l&iacute;nea y trabajar en problemas pr&aacute;cticos para fortalecer tu comprensi&oacute;n. Con un compromiso continuo y estudio, puedes elevar tus conocimientos en qu&iacute;mica a un nivel superior.';
 $ETI['quimica_bajo'] = 'La qu&iacute;mica puede ser un tema desafiante, pero est&aacute;s en el camino correcto al buscar mejorar. Comienza con los conceptos m&aacute;s b&aacute;sicos y trabaja en comprenderlos de manera s&oacute;lida. No dudes en buscar recursos en l&iacute;nea, consultar libros de texto y considerar la ayuda de un tutor o clases adicionales. Con esfuerzo constante y determinaci&oacute;n, puedes fortalecer tus conocimientos en qu&iacute;mica con el tiempo.';
+$ETI['ciudadanas_alto'] = 'Demostrar una comprensi&oacute;n profunda de los valores democr&aacute;ticos, la convivencia y el respeto por los dem&aacute;s refleja una destacada competencia ciudadana. Contin&uacute;a fortaleciendo tu capacidad para dialogar, participar activamente y contribuir a la construcci&oacute;n de una sociedad m&aacute;s justa e incluyente. Felicitaciones, tu nivel de desempe&ntilde;o ha sido alto.';
+$ETI['ciudadanas_medio'] = 'Has demostrado un manejo aceptable de las competencias ciudadanas, reconociendo la importancia del respeto, la participaci&oacute;n y la resoluci&oacute;n pac&iacute;fica de conflictos. Te invitamos a seguir fortaleciendo tu reflexi&oacute;n cr&iacute;tica y tu compromiso con la convivencia y la responsabilidad social para alcanzar un nivel de desempe&ntilde;o a&uacute;n m&aacute;s alto.';
+$ETI['ciudadanas_bajo'] = 'Es importante continuar desarrollando tus competencias ciudadanas, en especial aquellas relacionadas con la empat&iacute;a, el respeto por la diferencia y la resoluci&oacute;n pac&iacute;fica de conflictos. Dedicar tiempo a reflexionar sobre tus acciones y a fortalecer el trabajo colaborativo te ayudar&aacute; a mejorar tu desempe&ntilde;o y a contribuir positivamente en tu entorno.';
 $ETI['bt_invita_papc'] = 'Invitaci&oacute;n Talleres PAPC';
 $ETI['msg_encuestaabierta'] = '<b>Atenci&oacute;n:</b> La encuesta se encuentra abierta.<br>Finalice el diligenciamiento para obtener los resultados.';
 $ETI['msg_procesocarac'] = '<h1>Proceso de caracterizaci&oacute;n</h1>';
 $ETI['msg_noresultados'] = '<b>Atenci&oacute;n:</b> No se encuentran resultados de la encuesta.';
+$ETI['msg_noconsiderado'] = 'Usted no esta considerado para adelantar el proceso de caracterizaci&oacute;n, gracias por su tiempo.';
 $ETI['bt_volver'] = 'Volver';
 $ETI['msg_infocontacto'] = 'Ingrese los datos de una persona a la que podamos contactar desde la universidad en caso de que sea necesario:';
 $ETI['msg_grupospobla'] = 'Pertenece a alguno de estos grupos de poblaci&oacute;n:';

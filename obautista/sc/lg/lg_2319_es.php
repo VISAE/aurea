@@ -38,6 +38,6 @@ $ETI['cara11ficha4']='Ingl&eacute;s';
 $ETI['cara11ficha5']='Qu&iacute;mica';
 $ETI['cara11ficha6']='Biolog&iacute;a';
 $ETI['cara11ficha7']='F&iacute;sica';
+$ETI['cara11ficha8']='Competencias ciudadanas';
 
 $ETI['lnk_procesar']='Procesar';
-?>

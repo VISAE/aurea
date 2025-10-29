@@ -19,6 +19,9 @@ $ETI['No'] = 'No';
 $ETI['definir'] = 'Por Definir';
 $ETI['Definir'] = 'Por Definir';
 
+$ETI['bt_aceptar'] = 'Aceptar';
+$ETI['bt_siguiente'] = 'Siguiente';
+
 $ETI['bt_abrir'] = 'Abrir';
 $ETI['bt_actualizar'] = 'Actualizar';
 $ETI['bt_anular'] = 'Anular';
@@ -50,7 +53,7 @@ $ETI['confirma_eliminar'] = 'Esta seguro de eliminar el dato';
 $ETI['confirma_clonar'] = 'Esta seguro de que desea hacer una copia del registro';
 $ETI['bloque1'] = 'Datos existentes';
 
-$ETI['msg_doccontable']='Documento contable';
+$ETI['msg_doccontable'] = 'Documento contable';
 
 $ETI['lnk_add'] = 'Agregar';
 $ETI['lnk_anexar'] = 'Anexar';
@@ -79,7 +82,8 @@ $ETI['msg_confirmamodconsec'] = '&iquest;Est&aacute; seguro de cambiar el consec
 $ETI['msg_contabiliza'] = 'Se ha procesado el documento contable';
 $ETI['msg_contrasena'] = 'Contrase&ntilde;a';
 $ETI['msg_descargar'] = 'Descargar';
-$ETI['msg_de'] = 'De';
+$ETI['msg_De'] = 'De';
+$ETI['msg_de'] = 'de';
 $ETI['msg_desde'] = 'Desde';
 $ETI['msg_detallar'] = 'Detallar';
 $ETI['msg_dias'] = 'D&iacute;as';
@@ -88,6 +92,7 @@ $ETI['msg_doccontable'] = 'Documento contable';
 $ETI['msg_ejecutando'] = 'Ejecutando proceso...';
 $ETI['msg_espere'] = 'Este proceso puede tomar algunos momentos, por favor espere...';
 $ETI['msg_estado'] = 'Estado';
+$ETI['msg_escuela'] = 'Escuela';
 $ETI['msg_fecha'] = 'Fecha';
 $ETI['msg_formato'] = 'Formato';
 $ETI['msg_general'] = 'General';
@@ -116,7 +121,9 @@ $ETI['msg_otras'] = 'Otras';
 $ETI['msg_pesos'] = 'Pesos [COP]';
 $ETI['msg_pdf'] = 'PDF';
 $ETI['msg_pendiente'] = 'Pendiente';
+$ETI['msg_periodo'] = 'Periodo';
 $ETI['msg_procesoterminado'] = 'Proceso completado con &eacute;xito.';
+$ETI['msg_programa'] = 'Programa';
 $ETI['msg_puntoycoma'] = 'Punto y coma';
 $ETI['msg_salir'] = 'Salir';
 $ETI['msg_seleccione'] = 'Seleccione Uno';
@@ -171,3 +178,89 @@ $ETI['ing_contrasena'] = 'Ingrese su contrase&ntilde;a';
 $ETI['titulo_login'] = 'Retomar la sesi&oacute;n';
 $ETI['titulo_sector94'] = 'Formato para el reporte';
 
+$ETI['msg_aula'] = 'Aula';
+
+$ETI['msg_sin_asignar'] = 'Sin asignar';
+
+$ETI['msg_archivo_anexar'] = 'Adjuntar archivo';
+$ETI['msg_archivo_eliminar'] = 'Eliminar archivo';
+$ETI['msg_archivo_no_existe'] = 'No hay documento';
+$ETI['msg_archivo_no_aplica'] = 'No aplica';
+$ETI['msg_aprobar'] = 'Aprobar';
+$ETI['msg_rechazar'] = 'Rechazar';
+
+$ETI['msg_ayuda'] = 'Ayuda';
+$ETI['menu_accesibilidad'] = 'Accesibilidad';
+$ETI['menu_reiniciar'] = 'Reiniciar';
+$ETI['menu_reducir'] = 'Reducir Zoom';
+$ETI['menu_aumentar'] = 'Aumentar Zoom';
+$ETI['menu_contraste'] = 'Contraste';
+$ETI['menu_oscuro'] = 'Modo oscuro';
+$ETI['menu_claro'] = 'Modo claro';
+$ETI['menu_manuales'] = 'Manuales';
+$ETI['menu_acerdade'] = 'Acerca de...';
+$ETI['menu_salir'] = 'Salir';
+
+// Widget
+
+$ETI['label_abrir_opciones_accesibilidad'] = 'Abrir opciones de accesibilidad';
+$ETI['msg_aumentar'] = 'Aumentar';
+$ETI['label_aumentar_tamano_tipografia'] = 'Aumentar tamaño de tipografía';
+$ETI['msg_disminuir'] = 'Disminuir';
+$ETI['label_disminuir_tamano_tipografia'] = 'Disminuir tamaño de tipografía';
+$ETI['label_activar_tema_claro'] = 'Activar tema claro';
+$ETI['msg_claro'] = 'Claro';
+$ETI['label_activar_tema_oscuro'] = 'Activar tema oscuro';
+$ETI['msg_oscuro'] = 'Oscuro';
+$ETI['label_activar_modos_contraste'] = 'Activar modos de contraste';
+$ETI['msg_contraste'] = 'Contraste';
+$ETI['label_activar_modos_saturacion'] = 'Activar modos de saturación';
+$ETI['msg_saturacion'] = 'Saturación';
+$ETI['label_activar_modo_gran_cursor'] = 'Activar modo gran cursor';
+$ETI['label_activar_modo_guia_lectura'] = 'Activar modo guía lectura';
+$ETI['label_restablecer_ajustes_accesibilidad'] = 'Restablecer ajustes de accesibilidad';
+$ETI['msg_restablecer_configuraciones'] = 'Restablecer Configuraciones';
+$ETI['label_abrir_web_descarga_jaws'] = 'Abrir web de descarga de Jaws en nueva ventana';
+$ETI['msg_descargar_jaws_convertic'] = 'Descargar Jaws Convertic';
+$ETI['label_abrir_web_descarga_zoomtext'] = 'Abrir web de descarga de ZoomText en nueva ventana';
+$ETI['msg_descargar_zoomtext_convertic'] = 'Descargar ZoomText Convertic';
+$ETI['label_cerrar_panel_accesibilidad'] = 'Cerrar panel de accesibilidad';
+$ETI['msg_menu_accesibilidad'] = 'Menú de accesibilidad';
+
+// Forma
+
+$ETI['label_logo_campus_unad'] = 'Logo del Campus de la Universidad Nacional Abierta y a Distancia';
+$ETI['label_logo_unad'] = 'Logo de la Universidad Nacional Abierta y a Distancia';
+$ETI['label_info_contacto_unad'] = 'Información de contacto de la Universidad Nacional Abierta y a Distancia';
+
+$ETI['label_ver_mapa_ubicacion_unad'] = 'Ver mapa de ubicaci&oacute;n Sede nacional Jos&eacute; Celestino Mutis';
+$ETI['label_llamar_pbx_bogota'] = 'Llamar a PBX Bogot&aacute; DC Colombia +1 954 389 2277';
+$ETI['label_enviar_correo_info_unad'] = 'Enviar correo a info@unad.us';
+
+$ETI['msg_espanol'] = 'Espa&ntilde;ol';
+$ETI['msg_ingles'] = 'Ingl&eacute;s';
+$ETI['label_selector'] = 'Selector de idioma del sitio web';
+
+// Unad_librerias
+
+$ETI['msg_fecha_incorrecta'] = 'Fecha incorrecta';
+$ETI['msg_sin_fecha'] = 'Sin fecha';
+
+// Generales
+
+$ETI['msg_procesando'] = 'Este proceso puede tomar algunos momentos, por favor espere.';
+$ETI['msg_error_db'] = 'Se ha producido un error en la base de datos. <br>Por favor informa al administrador del sistema.';
+
+$ETI['msg_correo_invalido_usuario'] = 'No se ha establecido un correo electr&oacute;nico v&aacute;lido para el usuario.';
+
+$ETI['msg_lista_caracteres'] = 'Asterisco, punto, guion bajo, guion, signo de exclamaci&oacute;n inicial, signo de exclamaci&oacute;n, m&aacute;s, numeral, arroba, par&eacute;ntesis, igual.';
+
+$ETI['msg_caracteres_permitidos'] = '* . _ - ¡ ! + # @ ( ) =';
+
+// Errores
+
+$ERR['correo_invalido'] = 'No existe una direcci&oacute;n de correo electr&oacute;nico v&aacute;lida.';
+
+// Accesit
+
+$ETI['msg_accesit'] = 'ACCESIT';

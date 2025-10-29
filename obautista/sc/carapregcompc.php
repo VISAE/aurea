@@ -6,8 +6,8 @@
 --- omar.bautista@unad.edu.co
 --- Modelo Versión 3.0.17 martes, 16 de septiembre de 2025
 */
-/** Archivo carapregrc.php.
- * Modulo 2308 cara08pregunta. Razonamiento Cuantitativo
+/** Archivo carapregcd.php.
+ * Modulo 2308 cara08pregunta. Competencias Ciudadanas
  * @author Angel Mauro Avellaneda Barreto - angel.avellaneda@unad.edu.co
  * @param debug = 1  (Opcional), bandera para indicar si se generan datos de depuración
  * @date martes, 16 de septiembre de 2025
@@ -105,7 +105,7 @@ if (($bPeticionXAJAX) && ($_SESSION['unad_id_tercero'] == 0)) {
 }
 $iConsecutivoMenu = 1;
 $iMinVerDB = 8963;
-$iCodModulo = 2352;
+$iCodModulo = 2359;
 $iCodModuloConsulta = $iCodModulo;
 $sIdioma = AUREA_Idioma();
 $audita[1] = false;
@@ -149,7 +149,7 @@ $sOcultaConsec = ''; //' style="display:none;"';
 list($sGrupoModulo, $sPaginaModulo) = f109_GrupoModulo($iCodModuloConsulta, $iConsecutivoMenu, $objDB);
 $sOcultaId = ' style="display:none;"';
 $sTituloApp = $APP->siglasistema; //f101_SiglaModulo($APP->idsistema, $objDB);
-$sTituloModulo = $ETI['titulo_2352'];
+$sTituloModulo = $ETI['titulo_2359'];
 switch ($iPiel) {
 	case 2:
 		$sAnchoExpandeContrae = '';
@@ -340,7 +340,7 @@ $bLimpiaHijos = false;
 $bMueveScroll = false;
 $iSector = 1;
 $iHoy = fecha_DiaMod();
-$cara08idbloque=3;
+$cara08idbloque=8;
 // -- Se inicializan las variables, primero las que controlan la visualización de la página.
 if (isset($_REQUEST['iscroll']) == 0) {
 	$_REQUEST['iscroll'] = 0;

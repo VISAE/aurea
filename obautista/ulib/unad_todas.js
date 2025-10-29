@@ -3,20 +3,35 @@
 // --- angel.avellaneda@unad.edu.co - http://www.unad.edu.co
 // --- Variante 4 se agrega hora_asignar
 // --- Jueves 23 de Junio de 2016 - Se agrega MensajeAlarmaV2.
+
+const currentLang = document.getElementById('lang-config')?.dataset?.lang;
+const i18n = {
+	"es": {
+		"downloadLink": "Descargar",
+		"waitMessage": "Procesando datos, por favor espere..."
+	},
+	"en": {
+		"downloadLink": "Download",
+		"waitMessage": "Processing data, please wait..."
+	}
+};
+
 function accion_enter(e, accion) {
 	tecla = (document.all) ? e.keyCode : e.which;
 	if (tecla == 13) {
 		if (accion != '') { eval(accion); }
 	}
 }
+
 function archivo_lnk(origen, id, div) {
 	var odiv = document.getElementById(div);
 	var sres = '&nbsp;';
 	if (id != 0) {
-		sres = '<a href="verarchivo.php?cont=' + origen + '&id=' + id + '" target="_blank" class="lnkresalte">Descargar</a>';
+		sres = '<a href="verarchivo.php?cont=' + origen + '&id=' + id + '" target="_blank" class="lnkresalte">' + i18n[currentLang].downloadLink + '</a>';
 	}
 	odiv.innerHTML = sres;
 }
+
 function cadena_reemplazar(sCadena, sMuestra, sReemplazo) {
 	var sNueva = '';
 	while (sCadena.indexOf(sMuestra) >= 0) {
@@ -25,13 +40,17 @@ function cadena_reemplazar(sCadena, sMuestra, sReemplazo) {
 	}
 	return sCadena;
 }
+
 function cambia_color_over(celda) { celda.style.backgroundColor = "#A2F178" }
+
 function cambia_color_out(celda) { celda.style.backgroundColor = "#ffffff" }
+
 function combo_tono(objcombo) {
 	sColor = '000000';
 	if (objcombo.value != '') { sColor = '000000'; }
 	objcombo.style.color = sColor;
 }
+
 function fecha_ajusta(obj, code) {
 	var objfecha = document.getElementById(obj);
 	var objd = document.getElementById(obj + '_dia');
@@ -50,6 +69,7 @@ function fecha_ajusta(obj, code) {
 		if (code != '') { eval(code); }
 	}
 }
+
 function fecha_AjustaNum(obj, code) {
 	var iValor = 0;
 	var iAgno = 0;
@@ -70,6 +90,7 @@ function fecha_AjustaNum(obj, code) {
 		if (code != '') { eval(code); }
 	}
 }
+
 function fecha_asignar(obj, vr) {
 	var objfecha = document.getElementById(obj);
 	var objd = document.getElementById(obj + '_dia');
@@ -85,6 +106,7 @@ function fecha_asignar(obj, vr) {
 		obja.value = et.substr(6, 4);
 	}
 }
+
 function fecha_AsignarNum(obj, vr) {
 	var objfecha = document.getElementById(obj);
 	var objd = document.getElementById(obj + '_dia');
@@ -96,9 +118,11 @@ function fecha_AsignarNum(obj, vr) {
 	objm.value = et.substr(4, 2);
 	obja.value = et.substr(0, 4);
 }
+
 function formatea_moneda(sObj) {
 	xajax_formatear_moneda(sObj.id, sObj.value);
 }
+
 function hora_ajusta(sObjHora) {
 	var objHora = document.getElementById(sObjHora);
 	var objHN = document.getElementById(sObjHora + '_Num');
@@ -111,6 +135,7 @@ function hora_ajusta(sObjHora) {
 		objHora.value = iHora;
 	}
 }
+
 function hora_asignar(obj, vr) {
 	document.getElementById(obj).value = vr;
 	var hc = 'A';
@@ -122,6 +147,7 @@ function hora_asignar(obj, vr) {
 	document.getElementById(obj + '_Num').value = vr;
 	document.getElementById(obj + '_Ciclo').value = hc;
 }
+
 function MensajeAlarmaV2(sHTML, sClase) {
 	var divAlarma = document.getElementById('div_alarma');
 	if (sHTML == '') {
@@ -144,6 +170,7 @@ function MensajeAlarmaV2(sHTML, sClase) {
 		objte.value = sClase;
 	}
 }
+
 function ModalMensaje(sHTML) {
 	var objCuerpo = document.getElementById('ModalCuerpoAdv');
 	jQuery.noConflict();
@@ -151,6 +178,7 @@ function ModalMensaje(sHTML) {
 	// Cargo el mensaje
 	objCuerpo.innerHTML = sHTML;
 }
+
 function ModalConfirm(sHTML) {
 	var objCuerpo = document.getElementById('ModalCuerpoCon');
 	jQuery.noConflict();
@@ -162,6 +190,7 @@ function ModalConfirm(sHTML) {
 		jQuery("#modal-btn-si").focus();
 	}, 500);
 }
+
 function ModalConfirmV2(sHTML, callback) {
 	var objCuerpo = document.getElementById('ModalCuerpoCon');
 	var btnSi = document.getElementById('modal-btn-si');
@@ -172,6 +201,14 @@ function ModalConfirmV2(sHTML, callback) {
 	objCuerpo.innerHTML = sHTML;
 	// Focus
 	setTimeout(function () {
-		$("#modal-btn-si").focus();
+		jQuery("#modal-btn-si").focus();
 	}, 500);
+}
+
+function htmlEspereV2() {
+	var sSpinner = '<div class="spinner"></div>';
+	var sStyle = 'style="padding-top: 8px; padding-left: 5px;"';
+	var sStyle2 = 'style="height: 45px; padding-top: 4px; padding-left: 5px;"';
+	var sRes = '<div class="GrupoCamposAyuda" ' + sStyle2 + '><div class="MarquesinaMedia">' + sSpinner + '<div ' + sStyle + '>' + i18n[currentLang].waitMessage + '</div></div></div>';
+	return sRes;
 }

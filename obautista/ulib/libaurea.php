@@ -22,7 +22,7 @@ function AUREA_DatosPersonales($objDB, $bDebug = false)
 	}
 	*/
 	//Marzo 18 de 2023 - Pilas con los que consiguen confirmar el correo mas de una vez.
-	$sSQL = 'SELECT unad11correonotifica,COUNT(1) AS Total
+	$sSQL = 'SELECT unad11correonotifica, COUNT(1) AS Total
 	FROM unad11terceros
 	WHERE unad11fechaconfmail<>0
 	GROUP BY unad11correonotifica
@@ -196,22 +196,36 @@ function AUREA_ClavePermitidos()
 }
 function AUREA_ClaveLimpiar($sValor, $sPermitidos = '')
 {
+	require './app.php';
+	$sIdioma = AUREA_Idioma();
+	$mensajes_1 = $APP->rutacomun . 'lg/lg_1_' . $sIdioma . '.php';
+	if (!file_exists($mensajes_1)) {
+		$mensajes_1 = $APP->rutacomun . 'lg/lg_1_es.php';
+	}
+	require $mensajes_1;
 	$sError = '';
 	if ($sPermitidos == '') {
 		$sPermitidos = AUREA_ClavePermitidos();
 	}
 	$sValidado = cadena_letrasynumeros($sValor, $sPermitidos);
 	if ($sValidado != $sValor) {
-		$sError = 'La contrase&ntilde;a contiene caracteres no permitidos.';
+		$sError = $ETI['msg_contrasena_caracteres_invalidos'];
 	}
 	return $sError;
 }
 function AUREA_ClaveValidaV3($sValor, $idTercero, $objDB, $sPermitidos = '', $bDebug = false)
 {
+	require './app.php';
+	$sIdioma = AUREA_Idioma();
+	$mensajes_1011 = $APP->rutacomun . 'lg/lg_1011_' . $sIdioma . '.php';
+	if (!file_exists($mensajes_1011)) {
+		$mensajes_1011 = $APP->rutacomun . 'lg/lg_1011_es.php';
+	}
+	require $mensajes_1011;
 	$sError = '';
 	$sDebug = '';
 	if (strlen($sValor) < 6) {
-		$sError = 'La contrase&ntilde;a debe ser de m&iacute;nimo 6 caracteres.';
+		$sError = $ETI['msg_clave_minima'];
 	}
 	if ($sError == '') {
 		if ($sPermitidos == '') {
@@ -224,26 +238,26 @@ function AUREA_ClaveValidaV3($sValor, $idTercero, $objDB, $sPermitidos = '', $bD
 		//una mayuscula.
 		$sValidado = cadena_limpiar($sValor, 'ABCDEFGHIJKLMNÑOPQRSTUVWXYZ');
 		if ($sValidado == '') {
-			$sError = 'La contrase&ntilde;a ingresada no contiene may&uacute;sculas';
+			$sError = $ETI['msg_clave_sin_mayuscula'];
 		}
 	}
 	if ($sError == '') {
 		//una mayuscula.
 		$sValidado = cadena_limpiar($sValor, 'abcdefghijklmnñopqrstuvwxyz');
 		if ($sValidado == '') {
-			$sError = 'La contrase&ntilde;a ingresada no contiene min&uacute;scula';
+			$sError = $ETI['msg_clave_sin_minuscula'];
 		}
 	}
 	if ($sError == '') {
 		$sValidado = cadena_limpiar($sValor, '1234567890');
 		if ($sValidado == '') {
-			$sError = 'La contrase&ntilde;a ingresada no contiene numeros';
+			$sError = $ETI['msg_clave_sin_numero'];
 		}
 	}
 	if ($sError == '') {
 		$sValidado = cadena_limpiar($sValor, $sPermitidos);
 		if ($sValidado == '') {
-			$sError = 'La contrase&ntilde;a ingresada no contiene caracteres especiales';
+			$sError = $ETI['msg_clave_sin_especial'];
 		}
 	}
 	if ($sError == '') {
@@ -258,7 +272,7 @@ function AUREA_ClaveValidaV3($sValor, $idTercero, $objDB, $sPermitidos = '', $bD
 			if ($objDB->nf($tabla) > 0) {
 				$fila = $objDB->sf($tabla);
 				if (password_verify($sValor, $fila['unad11clave'])) {
-					$sError = 'La contrase&ntilde;a ingresada es la misma que usa actualmente. Debe cambiarla.';
+					$sError = $ETI['msg_clave_igual_anterior'];
 				}
 			}
 		}
@@ -277,7 +291,7 @@ function AUREA_ClaveValidaV3($sValor, $idTercero, $objDB, $sPermitidos = '', $bD
 					$sDebug = $sDebug . fecha_microtiempo() . ' Verficando hash del ' . $fila['unae10fecha'] . '<br>';
 				}
 				if (password_verify($sValor, $fila['unae10hash'])) {
-					$sError = 'La contrase&ntilde;a ingresada ha sido usada recientemente';
+					$sError = $ETI['msg_clave_usada_recientemente'];
 				}
 			}
 		}
@@ -293,6 +307,12 @@ function AUREA_ConfirmarCorreoNotifica($idTercero, $objDB, $sFrase = '', $bDebug
 	$unad11idgrupocorreo = -1;
 	$sCorreoDestino = '';
 	require __DIR__ . '/app.php';
+	$sIdioma = AUREA_Idioma();
+	$mensajes_1011 = $APP->rutacomun . 'lg/lg_1011_' . $sIdioma . '.php';
+	if (!file_exists($mensajes_1011)) {
+		$mensajes_1011 = $APP->rutacomun . 'lg/lg_1011_es.php';
+	}
+	require $mensajes_1011;
 	$sMes = date('Ym');
 	$sTabla = 'aure01login' . $sMes;
 	$bexiste = $objDB->bexistetabla($sTabla);
@@ -323,7 +343,7 @@ function AUREA_ConfirmarCorreoNotifica($idTercero, $objDB, $sFrase = '', $bDebug
 			}
 		}
 		if ($sCorreoUsuario == '') {
-			$sError = 'No se ha establecido un correo electr&oacute;nico de notificaciones v&aacute;lido.';
+			$sError = $ETI['msg_correo_notificacion_invalido'];
 		} else {
 			$aCorreo = explode('@', $sCorreoUsuario);
 			if (count($aCorreo) > 1) {
@@ -365,7 +385,8 @@ function AUREA_ConfirmarCorreoNotifica($idTercero, $objDB, $sFrase = '', $bDebug
 		}
 		$aure01fecha = fecha_DiaMod();
 		$aure01min = fecha_MinutoMod();
-		$aure01codigo = md5($aure01fecha . $aure01min . $idTercero . $sTabla);
+		$sLlave = 'A#U' . rand(0, 1000) . 'R34.';
+		$aure01codigo = md5($aure01fecha . $aure01min . $idTercero . $sTabla . $sLlave);
 		$aure01codigo = numeros_validar($aure01codigo);
 		$aure01codigo = substr($aure01codigo, 0, 10);
 		$aure01ip = sys_traeripreal();
@@ -462,8 +483,23 @@ function AUREA_GrupoDominio($sDominio, $objDB, $bDebug = false)
 function AUREA_CorreoNotificaV2($idTercero, $objDB, $bDebug = false)
 {
 	// Octubre 31 de 2022 - Se considera el grupo correo, que se carga a partir del dominio que tenga el correo del usuario.
+	$sRutaBase = __DIR__ . '/';
+	require $sRutaBase . 'app.php';
+	$sRutaComun = $sRutaBase . $APP->rutacomun;
+	$sIdioma = AUREA_Idioma();
+	$mensajes_todas = $sRutaComun . 'lg/lg_todas_' . $sIdioma . '.php';
+	if (!file_exists($mensajes_todas)) {
+		$mensajes_todas = $sRutaComun . 'lg/lg_todas_es.php';
+	}
+	$mensajes_1 = $sRutaComun . 'lg/lg_1_' . $sIdioma . '.php';
+	if (!file_exists($mensajes_1)) {
+		$mensajes_1 = $sRutaComun . 'lg/lg_1_es.php';
+	}
+	require $mensajes_1;
+	require $mensajes_todas;
 	$sError = '';
 	$sCorreoUsuario = '';
+	$sCorreoFuncionario = '';
 	$sDebug = '';
 	$unad11idgrupocorreo = -1;
 	$sSQL = 'SELECT unad11correo, unad11aceptanotificacion, unad11correonotifica, unad11correoinstitucional, unad11fechaconfmail, 
@@ -477,6 +513,9 @@ function AUREA_CorreoNotificaV2($idTercero, $objDB, $bDebug = false)
 	if ($objDB->nf($tabla) > 0) {
 		$fila = $objDB->sf($tabla);
 		$unad11idgrupocorreo = $fila['unad11idgrupocorreo'];
+		if (correo_VerificarDireccion(trim($fila['unad11correofuncionario']))) {
+			$sCorreoFuncionario = trim($fila['unad11correofuncionario']);
+		}
 		$bHayCorreo = false;
 		if ($fila['unad11fechaconfmail'] != 0) {
 			//Este proceso es independiente de que acepte notificaciones o no....
@@ -570,12 +609,19 @@ function AUREA_CorreoNotificaV2($idTercero, $objDB, $bDebug = false)
 		}
 	}
 	if ($sCorreoUsuario == '') {
-		$sError = 'No se ha establecido un correo electr&oacute;nico v&aacute;lido para el usuario.';
+		$sError = $ETI['msg_correo_usuario_invalido'];
 	}
-	return array($sCorreoUsuario, $unad11idgrupocorreo, $sError, $sDebug);
+	return array($sCorreoUsuario, $unad11idgrupocorreo, $sError, $sDebug, $sCorreoFuncionario);
 }
 function AUREA_CorreoPrimario($idTercero, $objDB, $bDebug = false)
 {
+	require './app.php';
+	$sIdioma = AUREA_Idioma();
+	$mensajes_1 = $APP->rutacomun . 'lg/lg_1_' . $sIdioma . '.php';
+	if (!file_exists($mensajes_1)) {
+		$mensajes_1 = $APP->rutacomun . 'lg/lg_1_es.php';
+	}
+	require $mensajes_1;
 	$sError = '';
 	$sCorreoUsuario = '';
 	$sCorreoInstitucional = '';
@@ -652,7 +698,7 @@ function AUREA_CorreoPrimario($idTercero, $objDB, $bDebug = false)
 		}
 	}
 	if ($sCorreoUsuario == '') {
-		$sError = 'No se ha establecido un correo electr&oacute;nico v&aacute;lido para el usuario.';
+		$sError = $ETI['msg_correo_usuario_invalido'];
 	}
 	return array($sCorreoUsuario, $sError, $sDebug, $sCorreoInstitucional);
 }
@@ -662,6 +708,13 @@ function AUREA_CorreoPrimario($idTercero, $objDB, $bDebug = false)
  */
 function AUREA_CorreoRecupera($idTercero, $objDB, $bDebug = false)
 {
+	require './app.php';
+	$sIdioma = AUREA_Idioma();
+	$mensajes_1 = $APP->rutacomun . 'lg/lg_1_' . $sIdioma . '.php';
+	if (!file_exists($mensajes_1)) {
+		$mensajes_1 = $APP->rutacomun . 'lg/lg_1_es.php';
+	}
+	require $mensajes_1;
 	$sError = '';
 	$sCorreoUsuario = '';
 	$sDebug = '';
@@ -725,12 +778,19 @@ function AUREA_CorreoRecupera($idTercero, $objDB, $bDebug = false)
 		}
 	}
 	if ($sCorreoUsuario == '') {
-		$sError = 'No se ha establecido un correo electr&oacute;nico v&aacute;lido para el usuario.';
+		$sError = $ETI['msg_correo_usuario_invalido'];
 	}
 	return array($sCorreoUsuario, $sError, $sDebug);
 }
 function AUREA_CrearTabla_aure01login($sMes, $objDB, $bDebug = false)
 {
+	require './app.php';
+	$sIdioma = AUREA_Idioma();
+	$mensajes_1 = $APP->rutacomun . 'lg/lg_1_' . $sIdioma . '.php';
+	if (!file_exists($mensajes_1)) {
+		$mensajes_1 = $APP->rutacomun . 'lg/lg_1_es.php';
+	}
+	require $mensajes_1;
 	// Diciembre 10 de 2022 - Se agrega el id de origen que se usará para firmar documentos.
 	$sError = '';
 	$sDebug = '';
@@ -744,7 +804,7 @@ function AUREA_CrearTabla_aure01login($sMes, $objDB, $bDebug = false)
 		aure01idorigen int NULL DEFAULT 0)";
 		$result = $objDB->ejecutasql($sSQL);
 		if ($result == false) {
-			$sError = 'No es posible iniciar el codigo de acceso para  ' . $sMes;
+			$sError = $ETI['msg_error_inicio_codigo'] . $sMes;
 		} else {
 			$sSQL = "ALTER TABLE " . $sTabla . " ADD PRIMARY KEY(aure01id)";
 			$result = $objDB->ejecutasql($sSQL);
@@ -764,6 +824,13 @@ function AUREA_CrearTabla_aure01login($sMes, $objDB, $bDebug = false)
 // LA aure02intentos
 function AUREA_CrearTabla_aure02intentos($sMes, $objDB, $bDebug = false)
 {
+	require './app.php';
+	$sIdioma = AUREA_Idioma();
+	$mensajes_1 = $APP->rutacomun . 'lg/lg_1_' . $sIdioma . '.php';
+	if (!file_exists($mensajes_1)) {
+		$mensajes_1 = $APP->rutacomun . 'lg/lg_1_es.php';
+	}
+	require $mensajes_1;
 	// Diciembre 10 de 2022 - Se agrega el id de origen que se usará para firmar documentos.
 	$sError = '';
 	$sDebug = '';
@@ -775,7 +842,7 @@ function AUREA_CrearTabla_aure02intentos($sMes, $objDB, $bDebug = false)
 		aure02seg int NOT NULL DEFAULT 0, aure02ip varchar(50) NULL, aure02punto varchar(100) NULL)";
 		$result = $objDB->ejecutasql($sSQL);
 		if ($result == false) {
-			$sError = 'No es posible iniciar el codigo de acceso para  ' . $sMes;
+			$sError = $ETI['msg_error_inicio_codigo'] . $sMes;
 		} else {
 			$sSQL = "ALTER TABLE " . $sTabla . " ADD PRIMARY KEY(aure02id)";
 			$result = $objDB->ejecutasql($sSQL);
@@ -788,6 +855,13 @@ function AUREA_CrearTabla_aure02intentos($sMes, $objDB, $bDebug = false)
 //
 function AUREA_CrearTabla_aure73encuesta($sMes, $objDB, $bDebug = false)
 {
+	require './app.php';
+	$sIdioma = AUREA_Idioma();
+	$mensajes_1 = $APP->rutacomun . 'lg/lg_1_' . $sIdioma . '.php';
+	if (!file_exists($mensajes_1)) {
+		$mensajes_1 = $APP->rutacomun . 'lg/lg_1_es.php';
+	}
+	require $mensajes_1;
 	$sError = '';
 	$sDebug = '';
 	$sTabla = 'aure73encuesta' . $sMes;
@@ -804,7 +878,7 @@ function AUREA_CrearTabla_aure73encuesta($sMes, $objDB, $bDebug = false)
 		aure73t2_comentario varchar(250) NULL, aure73fecharespuesta int NULL DEFAULT 0)";
 		$result = $objDB->ejecutasql($sSQL);
 		if ($result == false) {
-			$sError = 'No es posible iniciar el contenedor de encuesta para  ' . $sMes;
+			$sError = $ETI['msg_error_inicio_contenedor'] . $sMes;
 		} else {
 			$sSQL = "ALTER TABLE " . $sTabla . " ADD PRIMARY KEY(aure73id)";
 			$result = $objDB->ejecutasql($sSQL);
@@ -832,6 +906,56 @@ function AUREA_CrearTabla_aure73encuesta($sMes, $objDB, $bDebug = false)
 	}
 	return array($sError, $sDebug);
 }
+//Firma local, es para dejar un rastro para poder controlar las sesiones, el rastro es unico en cada maquina
+function AUREA_FirmaLocal()
+{
+	$sRes = '';
+	if (isset($_COOKIE['idPC']) != 0) {
+		$sVarRev = substr($_SERVER['HTTP_USER_AGENT'], 0, 20);
+		$sHost = $_COOKIE['idPC'];
+		//$sBase = md5($sHost . '@' . substr($_SERVER['HTTP_USER_AGENT'], 0, 20));
+		//$sRes = 'R.' . base64_encode(substr($sBase, 0, 32));
+		$sBase = ($sHost . '@' . $sVarRev);
+		$sRes = 'L.' . base64_encode($sBase);
+	} else {
+		$sRes = 'T.' . base64_encode(random_int(1, 1000) . microtime(true));
+	}
+	return $sRes;
+}
+function AUREA_FirmaLocalV4i()
+{
+	// Esta funcion se debe sincronizar con la AUREA_FirmaLocalV4() de la libaurea.php
+	$sRes = '';
+	if (isset($_COOKIE['idPC']) != 0) {
+		$sVarRev = AUREA_Leer_Navegador();
+		$sHost = $_COOKIE['idPC'];
+		//$sBase = md5($sHost . '@' . substr($_SERVER['HTTP_USER_AGENT'], 0, 20));
+		//$sRes = 'R.' . base64_encode(substr($sBase, 0, 32));
+		$sBase = ($sHost . '@' . $sVarRev);
+		$sRes = 'L.' . base64_encode($sBase);
+	} else {
+		if (isset($_SESSION['unad_token_base']) == 0) {
+			$sRes = 'T.' . base64_encode(random_int(1, 1000) . microtime(true));
+		} else {
+			$sRes = 'D.' . base64_encode($_SESSION['unad_token_base']);
+		}
+	}
+	return $sRes;
+}
+function AUREA_Leer_Navegador()
+{
+	$sRes = substr($_SERVER['HTTP_USER_AGENT'], 0, 100);
+	require './app.php';
+	require $APP->rutacomun . 'unad_login.lib.nav.php';
+	//require 'https://aurea2.unad.edu.co/ulib/unad_login.lib.nav.dat';
+	$items = count($aDestino);
+	$browserMap = array();
+	for ($k = 0; $k < $items; $k++) {
+		$browserMap[$aOrigen[$k]] = $aDestino[$k];
+		$browserMap[$aDestino[$k]] = $aDestino[$k];
+	}
+	return $browserMap[$sRes] ?? $sRes;
+}
 //
 function AUREA_RevTabla_aure01login($sMes, $objDB, $bDebug = false)
 {
@@ -858,15 +982,7 @@ function AUREA_RevTabla_aure01login($sMes, $objDB, $bDebug = false)
 function AUREA_HTML_EncabezadoCorreo($sTituloCorreo)
 {
 	require __DIR__ . '/app.php';
-	$idEntidad = 0;
-	if (isset($APP->entidad) != 0) {
-		switch ($APP->entidad) {
-			case 1: // Unad Florida
-			case 2: // Union Europea
-				$idEntidad = $APP->entidad;
-				break;
-		}
-	}
+	$idEntidad = Traer_Entidad();
 	$sProtocolo = 'https://';
 	$sDominio = 'unad.edu.co';
 	$sNomEntidad = 'Universidad Nacional Abierta y a Distancia - UNAD';
@@ -890,170 +1006,170 @@ function AUREA_HTML_EncabezadoCorreo($sTituloCorreo)
 			$sImgCabeza2 = 'correo/unad-ue.png';
 			break;
 	}
-	$sRes = '<!DOCTYPE html>
-<html xmlns:v="urn:schemas-microsoft-com:vml" xmlns="http://www.w3.org/148/xhtml">
-<head>
-<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
-<meta name="format-detection" content="telephone=no" />
-<title>' . $sNomEntidad . '</title>
-<style type="text/css">
-html {margin: 0;padding: 0;}
-body,#bodyTable,
-#bodyCell {height: 100% !important;margin: 0;padding: 0;width: 100% !important;}
-table {border-collapse: collapse;}
-table[id=bodyTable] {width: 100% !important;margin: auto;max-width: 600px !important;font-weight: normal;}
-table,
-td {mso-table-lspace: 0pt;mso-table-rspace: 0pt;}
-img {-ms-interpolation-mode: bicubic;outline: none;text-decoration: none;}
-body,table,td,p,a,li,
-blockquote {-ms-text-size-adjust: 100%;-webkit-text-size-adjust: 100%;font-weight: normal !important;}
-body,
-#bodyTable {background-color: #E1E1E1;}
-#emailBody {background-color: #e5e5e5;}
-.text-black {color: #000000 !important;}
-.text-white {color: #e5e5e5 !important;}
-.text-blue {color: #01385f !important;}
-.text-red {color: #ed3833 !important;}
-.hidden-lg {display: none !important;mso-hide: all !important;}
-@media only screen and (max-width: 599px) {
-body {width: 100% !important;min-width: 100% !important;}
-table[id="emailBody"] {width: 100% !important;}
-.hidden {display: none;}
-.hidden-sm {display: none !important;}
-.hidden-lg {display: table !important;overflow: visible !important;max-height: inherit !important;}
-.hidden-lg-inline {display: inline-block !important;overflow: visible !important;max-height: inherit !important;}
-.textbody {padding: 47px 38px !important;font-size: 14px !important;line-height: 18px !important;width: 100%;}
-.textbody #personalizacion {font-size: 18px !important;}
-.text-center {text-align: center !important;height: auto !important;}
-.text-right {text-align: right !important;}
-.text-left {text-align: left !important;}
-.text-justify {text-align: justify !important;}
-.margin-auto {margin-left: auto !important;margin-right: auto !important;}
-.center-image {margin: 0 auto !important;text-align: center !important;}
-.right-image {margin-right: 0 !important;text-align: right !important;}
-.left-image {margin-left: 0 !important;text-align: left !important;}
-.block {display: block !important;margin: 0 auto !important;}
-.block-auto {display: block !important;height: auto !important;margin-left: auto !important;margin-right: auto !important;float: none !important;}
-.height-auto {height: auto !important;}
-.scale-95 {width: 95% !important;}
-.scale-90 {width: 90% !important;}
-.scale-85 {width: 85% !important;}
-.p-5 {padding: 5% !important;}
-.p-10 {padding: 10% !important;}
-.p-15 {padding: 15% !important;}
-.p-20 {padding: 20% !important;}
-.p-30 {padding: 30% !important;}
-.p-40 {padding: 40% !important;}
-.p-50 {padding: 50% !important;}
-.pv-5 {padding-top: 5% !important;padding-bottom: 5% !important;}
-.pv-10 {padding-top: 10% !important;padding-bottom: 10% !important;}
-.pv-20 {padding-top: 20% !important;padding-bottom: 20% !important;}
-.pv-30 {padding-top: 30% !important;padding-bottom: 30% !important;}
-.pv-40 {padding-top: 40% !important;padding-bottom: 40% !important;}
-.pv-50 {padding-top: 50% !important;padding-bottom: 50% !important;}
-.pt-0 {padding-top: 0% !important;}
-.pt-5 {padding-top: 5% !important;}
-.pt-10 {padding-top: 10% !important;}
-.pt-20 {padding-top: 20% !important;}
-.pt-30 {padding-top: 30% !important;}
-.pt-40 {padding-top: 40% !important;}
-.pb-0 {padding-bottom: 0% !important;}
-.pb-5 {padding-bottom: 5% !important;}
-.pb-10 {padding-bottom: 10% !important;}
-.pb-20 {padding-bottom: 20% !important;}
-.pb-30 {padding-bottom: 30% !important;}
-.pb-40 {padding-bottom: 40% !important;}
-.pl-0 {padding-left: 0% !important;}
-.pl-5 {padding-left: 5% !important;}
-.pl-10 {padding-left: 10% !important;}
-.pl-20 {padding-left: 20% !important;}
-.pl-30 {padding-left: 30% !important;}
-.pl-40 {padding-left: 40% !important;}
-.pr-0 {padding-right: 0% !important;}
-.pr-5 {padding-right: 5% !important;}
-.pr-10 {padding-right: 10% !important;}
-.pr-20 {padding-right: 20% !important;}
-.pr-30 {padding-right: 30% !important;}
-.pr-40 {padding-left: 40% !important;}
-.ph-5 {padding-right: 5% !important;padding-left: 5% !important;}
-.ph-10 {padding-right: 10% !important;padding-left: 10% !important;}
-.ph-20 {padding-right: 20% !important;padding-left: 20% !important;}
-.ph-30 {padding-right: 30% !important;padding-left: 30% !important;}
-.ph-40 {padding-right: 40% !important;padding-left: 40% !important;}
-.mt-0 {margin-top: 0% !important;}
-.mt-5 {margin-top: 5% !important;}
-.mt-10 {margin-top: 10% !important;}
-.mt-20 {margin-top: 20% !important;}
-.mt-30 {margin-top: 30% !important;}
-.mt-40 {margin-top: 40% !important;}
-.mb-0 {margin-bottom: 0% !important;}
-.mb-5 {margin-bottom: 5% !important;}
-.mb-10 {margin-bottom: 10% !important;}
-.mb-20 {margin-bottom: 20% !important;}
-.mb-30 {margin-bottom: 30% !important;}
-.mb-40 {margin-bottom: 40% !important;}
-.col-sm-auto {width: auto !important;}
-.col-sm-0 {width: 2.33333333% !important;}
-.col-sm-1 {width: 8.33333333% !important;}
-.col-sm-2 {width: 16.66666667% !important;}
-.col-sm-3 {width: 25% !important;}
-.col-sm-4 {width: 33.33333333% !important;}
-.col-sm-5 {width: 41.66666667% !important;}
-.col-sm-6 {width: 50% !important;}
-.col-sm-7 {width: 58.33333333% !important;}
-.col-sm-8 {width: 66.66666667% !important;}
-.col-sm-9 {width: 75% !important;}
-.col-sm-10 {width: 83.333333% !important;}
-.col-sm-11 {width: 91.666667% !important;}
-.col-sm-12 {width: 100% !important;}
-.border-none {border: 0 !important;}
-@media only screen and (max-width: 400px) {
-.scale-sm-95 {width: 95% !important;}
-.scale-sm-90 {width: 90% !important;}
-.scale-sm-85 {width: 85% !important;}.height-px {height: 108px !important;}}} 
-@media only screen and (max-width: 470px) {}
-</style>
-</head>
-<body bgcolor="#e5e5e5" leftmargin="0" marginwidth="0" topmargin="0" marginheight="0" offset="0">
-<center style="background-color:#e5e5e5;">
-<table border="0" cellpadding="0" cellspacing="0" height="100%" width="100%" id="bodyTable" style="table-layout: fixed;max-width:100% !important;width: 100% !important;min-width: 100% !important; background-color:#e5e5e5;">
-<tr>
-<td align="center" valign="top" id="bodyCell">
-<table bgcolor="#e5e5e5" border="0" cellpadding="0" cellspacing="0" width="600" id="emailBody">
-<tr>
-<td align="center">
-<table border="0" cellpadding="0" cellspacing="0" width="100%" bgcolor="#ffffff">
-<tr>
-<td align="center" valign="top">
-<table class="hidden-lg" border="0" cellpadding="0" cellspacing="0" width="100%" style="width: 100%; max-width: 100%; min-width: 100%;" bgcolor="#ffffff">
-<tbody>
-<tr>
-<td class="hidden-lg col-sm-12 text-center" align="center" style="text-align:center; margin: 15px 0 15px 0;">
-<a target="_blank" href="' . $sProtocolo . $sDominio . '/"><img width="197" src="' . $sRutaImg . $sImgCabeza . '"  alt="UNAD"></a>
-</td>
-</tr>
-</tbody>
-</table>
-<table border="0" class="hidden-sm" cellpadding="30" cellspacing="0" width="100%" style="width: 100%; max-width: 100%; min-width: 100%;">
-<tbody>
-<tr>
-<td valign="bottom" class="hidden-sm" align="center" style="width: 600px;">
-<a target="_blank" href="' . $sProtocolo . $sDominio . '/"><img class="hidden-sm" width="540" src="' . $sRutaImg . $sImgCabeza2 . '"  alt="UNAD"></a>
-</td>
-</tr>
-</tbody>
-</table>
-<table border="0" cellpadding="10" cellspacing="0" width="100%" style="width: 100%; max-width: 100%; min-width: 100%;">
-<tbody>
-<tr>
-<td align="center" bgcolor="#005883" style="font-size:22px;">
-<font face="Arial, Helvetica, sans-serif" color="#ffffff">' . $sTituloCorreo . '</font>
-</td>
-</tr>
-</tbody>
-</table>';
+	$sRes = '<!DOCTYPE html>';
+	$sRes = $sRes . '<html xmlns:v="urn:schemas-microsoft-com:vml" xmlns="http://www.w3.org/148/xhtml">';
+	$sRes = $sRes . '<head>';
+	$sRes = $sRes . '<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />';
+	$sRes = $sRes . '<meta name="viewport" content="width=device-width, initial-scale=1.0">';
+	$sRes = $sRes . '<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">';
+	$sRes = $sRes . '<meta name="format-detection" content="telephone=no" />';
+	$sRes = $sRes . '<title>' . $sNomEntidad . '</title>';
+	$sRes = $sRes . '<style type="text/css">';
+	$sRes = $sRes . 'html {margin: 0;padding: 0;}';
+	$sRes = $sRes . 'body,#bodyTable,';
+	$sRes = $sRes . '#bodyCell {height: 100% !important;margin: 0;padding: 0;width: 100% !important;}';
+	$sRes = $sRes . 'table {border-collapse: collapse;}';
+	$sRes = $sRes . 'table[id=bodyTable] {width: 100% !important;margin: auto;max-width: 600px !important;font-weight: normal;}';
+	$sRes = $sRes . 'table,';
+	$sRes = $sRes . 'td {mso-table-lspace: 0pt;mso-table-rspace: 0pt;}';
+	$sRes = $sRes . 'img {-ms-interpolation-mode: bicubic;outline: none;text-decoration: none;}';
+	$sRes = $sRes . 'body,table,td,p,a,li,';
+	$sRes = $sRes . 'blockquote {-ms-text-size-adjust: 100%;-webkit-text-size-adjust: 100%;font-weight: normal !important;}';
+	$sRes = $sRes . 'body,';
+	$sRes = $sRes . '#bodyTable {background-color: #E1E1E1;}';
+	$sRes = $sRes . '#emailBody {background-color: #e5e5e5;}';
+	$sRes = $sRes . '.text-black {color: #000000 !important;}';
+	$sRes = $sRes . '.text-white {color: #e5e5e5 !important;}';
+	$sRes = $sRes . '.text-blue {color: #01385f !important;}';
+	$sRes = $sRes . '.text-red {color: #ed3833 !important;}';
+	$sRes = $sRes . '.hidden-lg {display: none !important;mso-hide: all !important;}';
+	$sRes = $sRes . '@media only screen and (max-width: 599px) {';
+	$sRes = $sRes . 'body {width: 100% !important;min-width: 100% !important;}';
+	$sRes = $sRes . 'table[id="emailBody"] {width: 100% !important;}';
+	$sRes = $sRes . '.hidden {display: none;}';
+	$sRes = $sRes . '.hidden-sm {display: none !important;}';
+	$sRes = $sRes . '.hidden-lg {display: table !important;overflow: visible !important;max-height: inherit !important;}';
+	$sRes = $sRes . '.hidden-lg-inline {display: inline-block !important;overflow: visible !important;max-height: inherit !important;}';
+	$sRes = $sRes . '.textbody {padding: 47px 38px !important;font-size: 14px !important;line-height: 18px !important;width: 100%;}';
+	$sRes = $sRes . '.textbody #personalizacion {font-size: 18px !important;}';
+	$sRes = $sRes . '.text-center {text-align: center !important;height: auto !important;}';
+	$sRes = $sRes . '.text-right {text-align: right !important;}';
+	$sRes = $sRes . '.text-left {text-align: left !important;}';
+	$sRes = $sRes . '.text-justify {text-align: justify !important;}';
+	$sRes = $sRes . '.margin-auto {margin-left: auto !important;margin-right: auto !important;}';
+	$sRes = $sRes . '.center-image {margin: 0 auto !important;text-align: center !important;}';
+	$sRes = $sRes . '.right-image {margin-right: 0 !important;text-align: right !important;}';
+	$sRes = $sRes . '.left-image {margin-left: 0 !important;text-align: left !important;}';
+	$sRes = $sRes . '.block {display: block !important;margin: 0 auto !important;}';
+	$sRes = $sRes . '.block-auto {display: block !important;height: auto !important;margin-left: auto !important;margin-right: auto !important;float: none !important;}';
+	$sRes = $sRes . '.height-auto {height: auto !important;}';
+	$sRes = $sRes . '.scale-95 {width: 95% !important;}';
+	$sRes = $sRes . '.scale-90 {width: 90% !important;}';
+	$sRes = $sRes . '.scale-85 {width: 85% !important;}';
+	$sRes = $sRes . '.p-5 {padding: 5% !important;}';
+	$sRes = $sRes . '.p-10 {padding: 10% !important;}';
+	$sRes = $sRes . '.p-15 {padding: 15% !important;}';
+	$sRes = $sRes . '.p-20 {padding: 20% !important;}';
+	$sRes = $sRes . '.p-30 {padding: 30% !important;}';
+	$sRes = $sRes . '.p-40 {padding: 40% !important;}';
+	$sRes = $sRes . '.p-50 {padding: 50% !important;}';
+	$sRes = $sRes . '.pv-5 {padding-top: 5% !important;padding-bottom: 5% !important;}';
+	$sRes = $sRes . '.pv-10 {padding-top: 10% !important;padding-bottom: 10% !important;}';
+	$sRes = $sRes . '.pv-20 {padding-top: 20% !important;padding-bottom: 20% !important;}';
+	$sRes = $sRes . '.pv-30 {padding-top: 30% !important;padding-bottom: 30% !important;}';
+	$sRes = $sRes . '.pv-40 {padding-top: 40% !important;padding-bottom: 40% !important;}';
+	$sRes = $sRes . '.pv-50 {padding-top: 50% !important;padding-bottom: 50% !important;}';
+	$sRes = $sRes . '.pt-0 {padding-top: 0% !important;}';
+	$sRes = $sRes . '.pt-5 {padding-top: 5% !important;}';
+	$sRes = $sRes . '.pt-10 {padding-top: 10% !important;}';
+	$sRes = $sRes . '.pt-20 {padding-top: 20% !important;}';
+	$sRes = $sRes . '.pt-30 {padding-top: 30% !important;}';
+	$sRes = $sRes . '.pt-40 {padding-top: 40% !important;}';
+	$sRes = $sRes . '.pb-0 {padding-bottom: 0% !important;}';
+	$sRes = $sRes . '.pb-5 {padding-bottom: 5% !important;}';
+	$sRes = $sRes . '.pb-10 {padding-bottom: 10% !important;}';
+	$sRes = $sRes . '.pb-20 {padding-bottom: 20% !important;}';
+	$sRes = $sRes . '.pb-30 {padding-bottom: 30% !important;}';
+	$sRes = $sRes . '.pb-40 {padding-bottom: 40% !important;}';
+	$sRes = $sRes . '.pl-0 {padding-left: 0% !important;}';
+	$sRes = $sRes . '.pl-5 {padding-left: 5% !important;}';
+	$sRes = $sRes . '.pl-10 {padding-left: 10% !important;}';
+	$sRes = $sRes . '.pl-20 {padding-left: 20% !important;}';
+	$sRes = $sRes . '.pl-30 {padding-left: 30% !important;}';
+	$sRes = $sRes . '.pl-40 {padding-left: 40% !important;}';
+	$sRes = $sRes . '.pr-0 {padding-right: 0% !important;}';
+	$sRes = $sRes . '.pr-5 {padding-right: 5% !important;}';
+	$sRes = $sRes . '.pr-10 {padding-right: 10% !important;}';
+	$sRes = $sRes . '.pr-20 {padding-right: 20% !important;}';
+	$sRes = $sRes . '.pr-30 {padding-right: 30% !important;}';
+	$sRes = $sRes . '.pr-40 {padding-left: 40% !important;}';
+	$sRes = $sRes . '.ph-5 {padding-right: 5% !important;padding-left: 5% !important;}';
+	$sRes = $sRes . '.ph-10 {padding-right: 10% !important;padding-left: 10% !important;}';
+	$sRes = $sRes . '.ph-20 {padding-right: 20% !important;padding-left: 20% !important;}';
+	$sRes = $sRes . '.ph-30 {padding-right: 30% !important;padding-left: 30% !important;}';
+	$sRes = $sRes . '.ph-40 {padding-right: 40% !important;padding-left: 40% !important;}';
+	$sRes = $sRes . '.mt-0 {margin-top: 0% !important;}';
+	$sRes = $sRes . '.mt-5 {margin-top: 5% !important;}';
+	$sRes = $sRes . '.mt-10 {margin-top: 10% !important;}';
+	$sRes = $sRes . '.mt-20 {margin-top: 20% !important;}';
+	$sRes = $sRes . '.mt-30 {margin-top: 30% !important;}';
+	$sRes = $sRes . '.mt-40 {margin-top: 40% !important;}';
+	$sRes = $sRes . '.mb-0 {margin-bottom: 0% !important;}';
+	$sRes = $sRes . '.mb-5 {margin-bottom: 5% !important;}';
+	$sRes = $sRes . '.mb-10 {margin-bottom: 10% !important;}';
+	$sRes = $sRes . '.mb-20 {margin-bottom: 20% !important;}';
+	$sRes = $sRes . '.mb-30 {margin-bottom: 30% !important;}';
+	$sRes = $sRes . '.mb-40 {margin-bottom: 40% !important;}';
+	$sRes = $sRes . '.col-sm-auto {width: auto !important;}';
+	$sRes = $sRes . '.col-sm-0 {width: 2.33333333% !important;}';
+	$sRes = $sRes . '.col-sm-1 {width: 8.33333333% !important;}';
+	$sRes = $sRes . '.col-sm-2 {width: 16.66666667% !important;}';
+	$sRes = $sRes . '.col-sm-3 {width: 25% !important;}';
+	$sRes = $sRes . '.col-sm-4 {width: 33.33333333% !important;}';
+	$sRes = $sRes . '.col-sm-5 {width: 41.66666667% !important;}';
+	$sRes = $sRes . '.col-sm-6 {width: 50% !important;}';
+	$sRes = $sRes . '.col-sm-7 {width: 58.33333333% !important;}';
+	$sRes = $sRes . '.col-sm-8 {width: 66.66666667% !important;}';
+	$sRes = $sRes . '.col-sm-9 {width: 75% !important;}';
+	$sRes = $sRes . '.col-sm-10 {width: 83.333333% !important;}';
+	$sRes = $sRes . '.col-sm-11 {width: 91.666667% !important;}';
+	$sRes = $sRes . '.col-sm-12 {width: 100% !important;}';
+	$sRes = $sRes . '.border-none {border: 0 !important;}';
+	$sRes = $sRes . '@media only screen and (max-width: 400px) {';
+	$sRes = $sRes . '.scale-sm-95 {width: 95% !important;}';
+	$sRes = $sRes . '.scale-sm-90 {width: 90% !important;}';
+	$sRes = $sRes . '.scale-sm-85 {width: 85% !important;}.height-px {height: 108px !important;}}} ';
+	$sRes = $sRes . '@media only screen and (max-width: 470px) {}';
+	$sRes = $sRes . '</style>';
+	$sRes = $sRes . '</head>';
+	$sRes = $sRes . '<body bgcolor="#e5e5e5" leftmargin="0" marginwidth="0" topmargin="0" marginheight="0" offset="0">';
+	$sRes = $sRes . '<center style="background-color:#e5e5e5;">';
+	$sRes = $sRes . '<table border="0" cellpadding="0" cellspacing="0" height="100%" width="100%" id="bodyTable" style="table-layout: fixed;max-width:100% !important;width: 100% !important;min-width: 100% !important; background-color:#e5e5e5;">';
+	$sRes = $sRes . '<tr>';
+	$sRes = $sRes . '<td align="center" valign="top" id="bodyCell">';
+	$sRes = $sRes . '<table bgcolor="#e5e5e5" border="0" cellpadding="0" cellspacing="0" width="600" id="emailBody">';
+	$sRes = $sRes . '<tr>';
+	$sRes = $sRes . '<td align="center">';
+	$sRes = $sRes . '<table border="0" cellpadding="0" cellspacing="0" width="100%" bgcolor="#ffffff">';
+	$sRes = $sRes . '<tr>';
+	$sRes = $sRes . '<td align="center" valign="top">';
+	$sRes = $sRes . '<table class="hidden-lg" border="0" cellpadding="0" cellspacing="0" width="100%" style="width: 100%; max-width: 100%; min-width: 100%;" bgcolor="#ffffff">';
+	$sRes = $sRes . '<tbody>';
+	$sRes = $sRes . '<tr>';
+	$sRes = $sRes . '<td class="hidden-lg col-sm-12 text-center" align="center" style="text-align:center; margin: 15px 0 15px 0;">';
+	$sRes = $sRes . '<a target="_blank" href="' . $sProtocolo . $sDominio . '/"><img width="197" src="' . $sRutaImg . $sImgCabeza . '"  alt="UNAD"></a>';
+	$sRes = $sRes . '</td>';
+	$sRes = $sRes . '</tr>';
+	$sRes = $sRes . '</tbody>';
+	$sRes = $sRes . '</table>';
+	$sRes = $sRes . '<table border="0" class="hidden-sm" cellpadding="30" cellspacing="0" width="100%" style="width: 100%; max-width: 100%; min-width: 100%;">';
+	$sRes = $sRes . '<tbody>';
+	$sRes = $sRes . '<tr>';
+	$sRes = $sRes . '<td valign="bottom" class="hidden-sm" align="center" style="width: 600px;">';
+	$sRes = $sRes . '<a target="_blank" href="' . $sProtocolo . $sDominio . '/"><img class="hidden-sm" width="540" src="' . $sRutaImg . $sImgCabeza2 . '"  alt="UNAD"></a>';
+	$sRes = $sRes . '</td>';
+	$sRes = $sRes . '</tr>';
+	$sRes = $sRes . '</tbody>';
+	$sRes = $sRes . '</table>';
+	$sRes = $sRes . '<table border="0" cellpadding="10" cellspacing="0" width="100%" style="width: 100%; max-width: 100%; min-width: 100%;">';
+	$sRes = $sRes . '<tbody>';
+	$sRes = $sRes . '<tr>';
+	$sRes = $sRes . '<td align="center" bgcolor="#005883" style="font-size:22px;">';
+	$sRes = $sRes . '<font face="Arial, Helvetica, sans-serif" color="#ffffff">' . $sTituloCorreo . '</font>';
+	$sRes = $sRes . '</td>';
+	$sRes = $sRes . '</tr>';
+	$sRes = $sRes . '</tbody>';
+	$sRes = $sRes . '</table>';
 	return $sRes;
 }
 // Codigo de confirmacion del correo de notificaciones.
@@ -1063,10 +1179,7 @@ function AUREA_HTML_CodigoConfirma($sCodigo)
 	$sRutaBase = __DIR__ . '/';
 	require $sRutaBase . 'app.php';
 	$sRutaComun = $sRutaBase . $APP->rutacomun;
-	$sIdioma = 'es';
-	if (isset($_SESSION['unad_idioma']) != 0) {
-		$sIdioma = $_SESSION['unad_idioma'];
-	}
+	$sIdioma = AUREA_Idioma();
 	$mensajes_17 = $sRutaComun . 'lg/lg_17_' . $sIdioma . '.php';
 	if (!file_exists($mensajes_17)) {
 		$mensajes_17 = $sRutaComun . 'lg/lg_17_es.php';
@@ -1098,38 +1211,38 @@ function AUREA_HTML_CodigoConfirma($sCodigo)
 			$sNumImage = '_' . $sLinea;
 			break;
 	}
-	$sInfoCentro = '<font face="Arial, Helvetica, sans-serif" color="#333333" size="12">
-<p style="padding: 10px 20px; background: #F0B429;">' . $sCodigo . '</p>
-</font>';
-	$sRes = '<table border="0" cellpadding="0" cellspacing="0" width="100%" style="width: 100%; max-width: 100%; min-width: 100%;">
-<tbody>
-<tr>
-<td align="right" bgcolor="#F1F1F1" valign="bottom" width="268" height="290" class="hidden-sm">
-<img class="text-center" style="max-width: 100%; display: block;" width="260" src="' . $sRutaImg . 'correo2022/estudiante' . $sNumImage . '.jpg">
-</td>
-<td bgcolor="#F1F1F1">
-<font face="Arial, Helvetica, sans-serif" color="#333333">
-<p>&nbsp;Su c&oacute;digo de confirmaci&oacute;n es:</p>
-</font>' . $sInfoCentro . '
-
-<font face="Arial, Helvetica, sans-serif" color="#333333">
-<p>Este c&oacute;digo estar&aacute; vigente durante todo el d&iacute;a.<br>
-<b>Comedidamente:</b><br>
-Equipo de Soporte T&eacute;cnico.</p>
-</font>
-</td>
-</tr>
-</tbody>
-</table>';
+	$sInfoCentro = '<font face="Arial, Helvetica, sans-serif" color="#333333" size="12">';
+	$sInfoCentro = $sInfoCentro . '<p style="padding: 10px 20px; background: #F0B429;">' . $sCodigo . '</p>';
+	$sInfoCentro = $sInfoCentro . '</font>';
+	$sRes = '<table border="0" cellpadding="0" cellspacing="0" width="100%" style="width: 100%; max-width: 100%; min-width: 100%;">';
+	$sRes = $sRes . '<tbody>';
+	$sRes = $sRes . '<tr>';
+	$sRes = $sRes . '<td align="right" bgcolor="#F1F1F1" valign="bottom" width="268" height="290" class="hidden-sm">';
+	$sRes = $sRes . '<img class="text-center" style="max-width: 100%; display: block;" width="260" src="' . $sRutaImg . 'correo2022/estudiante' . $sNumImage . '.jpg">';
+	$sRes = $sRes . '</td>';
+	$sRes = $sRes . '<td bgcolor="#F1F1F1">';
+	$sRes = $sRes . '<font face="Arial, Helvetica, sans-serif" color="#333333">';
+	$sRes = $sRes . '<p>&nbsp;Su c&oacute;digo de confirmaci&oacute;n es:</p>';
+	$sRes = $sRes . '</font>' . $sInfoCentro . '';
+	$sRes = $sRes . '<font face="Arial, Helvetica, sans-serif" color="#333333">';
+	$sRes = $sRes . '<p>Este c&oacute;digo estar&aacute; vigente durante todo el d&iacute;a.<br>';
+	$sRes = $sRes . '<b>Comedidamente:</b><br>';
+	$sRes = $sRes . 'Equipo de Soporte T&eacute;cnico.</p>';
+	$sRes = $sRes . '</font>';
+	$sRes = $sRes . '</td>';
+	$sRes = $sRes . '</tr>';
+	$sRes = $sRes . '</tbody>';
+	$sRes = $sRes . '</table>';
 	return $sRes;
 }
 // Cuerpo del correo de codigo de envio
 function AUREA_HTML_CodigoCorreo($sCodigo, $sURL)
 {
 	$sRutaBase = __DIR__ . '/';
-	require './app.php';
-	$sRutaComun = $APP->rutacomun;
-	$mensajes_17 = $sRutaComun . 'lg/lg_17_' . $_SESSION['unad_idioma'] . '.php';
+	require $sRutaBase . 'app.php';
+	$sRutaComun = $sRutaBase . $APP->rutacomun;
+	$sIdioma = AUREA_Idioma();
+	$mensajes_17 = $sRutaComun . 'lg/lg_17_' . $sIdioma . '.php';
 	if (!file_exists($mensajes_17)) {
 		$mensajes_17 = $sRutaComun . 'lg/lg_17_es.php';
 	}
@@ -1160,29 +1273,28 @@ function AUREA_HTML_CodigoCorreo($sCodigo, $sURL)
 			$sNumImage = '_' . $sLinea;
 			break;
 	}
-	$sRes = '<table border="0" cellpadding="0" cellspacing="0" width="100%" style="width: 100%; max-width: 100%; min-width: 100%;">
-<tbody>
-<tr>
-<td align="right" bgcolor="#F1F1F1" valign="bottom" width="268" height="290" class="hidden-sm">
-<img class="text-center" style="max-width: 100%; display: block;" width="260" src="' . $sRutaImg . 'estudiante' . $sNumImage . '.jpg">
-</td>
-<td align="center" bgcolor="#F1F1F1">
-<font face="Arial, Helvetica, sans-serif" color="#333333">
-<p>' . $ETI['mail_login_parte2'] . ':</p>
-</font>
-<font face="Arial, Helvetica, sans-serif" color="#333333" size="12">
-<p style="padding: 10px 20px; background: #F0B429;">' . $sCodigo . '</p>
-</font>
-
-<font face="Arial, Helvetica, sans-serif" color="#333333">
-<p><div style="word-wrap: break-word; width: 100%; max-width: 330px; padding: 0 10px;">' . $ETI['mail_login_parte3'] . ':
-<a style="color: #005883;" href="' . $sURL . '" target="_blank">' . $sURL . '</a>
-</div></p>
-</font>
-</td>
-</tr>
-</tbody>
-</table>';
+	$sRes = '<table border="0" cellpadding="0" cellspacing="0" width="100%" style="width: 100%; max-width: 100%; min-width: 100%;">';
+	$sRes = $sRes . '<tbody>';
+	$sRes = $sRes . '<tr>';
+	$sRes = $sRes . '<td align="right" bgcolor="#F1F1F1" valign="bottom" width="268" height="290" class="hidden-sm">';
+	$sRes = $sRes . '<img class="text-center" style="max-width: 100%; display: block;" width="260" src="' . $sRutaImg . 'estudiante' . $sNumImage . '.jpg">';
+	$sRes = $sRes . '</td>';
+	$sRes = $sRes . '<td align="center" bgcolor="#F1F1F1">';
+	$sRes = $sRes . '<font face="Arial, Helvetica, sans-serif" color="#333333">';
+	$sRes = $sRes . '<p>' . $ETI['mail_login_parte2'] . ':</p>';
+	$sRes = $sRes . '</font>';
+	$sRes = $sRes . '<font face="Arial, Helvetica, sans-serif" color="#333333" size="12">';
+	$sRes = $sRes . '<p style="padding: 10px 20px; background: #F0B429;">' . $sCodigo . '</p>';
+	$sRes = $sRes . '</font>';
+	$sRes = $sRes . '<font face="Arial, Helvetica, sans-serif" color="#333333">';
+	$sRes = $sRes . '<p><div style="word-wrap: break-word; width: 100%; max-width: 330px; padding: 0 10px;">' . $ETI['mail_login_parte3'] . ':';
+	$sRes = $sRes . '<a style="color: #005883;" href="' . $sURL . '" target="_blank">' . $sURL . '</a>';
+	$sRes = $sRes . '</div></p>';
+	$sRes = $sRes . '</font>';
+	$sRes = $sRes . '</td>';
+	$sRes = $sRes . '</tr>';
+	$sRes = $sRes . '</tbody>';
+	$sRes = $sRes . '</table>';
 	return $sRes;
 }
 //
@@ -1192,10 +1304,7 @@ function AUREA_HTML_CodigoRecupera($sCabeza, $sCodigo, $aure01punto, $URL, $sPie
 	$sRutaBase = __DIR__ . '/';
 	require $sRutaBase . 'app.php';
 	$sRutaComun = $sRutaBase . $APP->rutacomun;
-	$sIdioma = 'es';
-	if (isset($_SESSION['unad_idioma']) != 0) {
-		$sIdioma = $_SESSION['unad_idioma'];
-	}
+	$sIdioma = AUREA_Idioma();
 	$mensajes_17 = $sRutaComun . 'lg/lg_17_' . $sIdioma . '.php';
 	if (!file_exists($mensajes_17)) {
 		$mensajes_17 = $sRutaComun . 'lg/lg_17_es.php';
@@ -1224,33 +1333,32 @@ function AUREA_HTML_CodigoRecupera($sCabeza, $sCodigo, $aure01punto, $URL, $sPie
 			$sNumImage = '_' . $sLinea;
 			break;
 	}
-	$sInfoCentro = '<font face="Arial, Helvetica, sans-serif" color="#333333" size="12">
-<p style="padding: 10px 20px; background: #F0B429;">' . $sCodigo . '</p>
-</font>';
+	$sInfoCentro = '<font face="Arial, Helvetica, sans-serif" color="#333333" size="12">';
+	$sInfoCentro = $sInfoCentro . '<p style="padding: 10px 20px; background: #F0B429;">' . $sCodigo . '</p>';
+	$sInfoCentro = $sInfoCentro . '</font>';
 	if ($aure01punto != '') {
-		$sInfoCentro = '<font face="Arial, Helvetica, sans-serif" color="#333333">
-<p><div style="word-wrap: break-word; width: 100%; max-width: 330px; padding: 0 10px;"><a style="color: #005883;" href="' . $aure01punto . '?u=' . $URL . '" target="_blank">' . $URL . '</a>
-</div></p>
-</font>';
+		$sInfoCentro = '<font face="Arial, Helvetica, sans-serif" color="#333333">';
+		$sInfoCentro = $sInfoCentro . '<p><div style="word-wrap: break-word; width: 100%; max-width: 330px; padding: 0 10px;"><a style="color: #005883;" href="' . $aure01punto . '?u=' . $URL . '" target="_blank">' . $URL . '</a>';
+		$sInfoCentro = $sInfoCentro . '</div></p>';
+		$sInfoCentro = $sInfoCentro . '</font>';
 	}
-	$sRes = '<table border="0" cellpadding="0" cellspacing="0" width="100%" style="width: 100%; max-width: 100%; min-width: 100%;">
-<tbody>
-<tr>
-<td align="right" bgcolor="#F1F1F1" valign="bottom" width="268" height="290" class="hidden-sm">
-<img class="text-center" style="max-width: 100%; display: block;" width="260" src="' . $sRutaImg . 'correo2022/estudiante' . $sNumImage . '.jpg">
-</td>
-<td bgcolor="#F1F1F1">
-<font face="Arial, Helvetica, sans-serif" color="#333333">
-<p>' . $sCabeza . '</p>
-</font>' . $sInfoCentro . '
-
-<font face="Arial, Helvetica, sans-serif" color="#333333">
-<p>' . $sPie . '</p>
-</font>
-</td>
-</tr>
-</tbody>
-</table>';
+	$sRes = '<table border="0" cellpadding="0" cellspacing="0" width="100%" style="width: 100%; max-width: 100%; min-width: 100%;">';
+	$sRes = $sRes . '<tbody>';
+	$sRes = $sRes . '<tr>';
+	$sRes = $sRes . '<td align="right" bgcolor="#F1F1F1" valign="bottom" width="268" height="290" class="hidden-sm">';
+	$sRes = $sRes . '<img class="text-center" style="max-width: 100%; display: block;" width="260" src="' . $sRutaImg . 'correo2022/estudiante' . $sNumImage . '.jpg">';
+	$sRes = $sRes . '</td>';
+	$sRes = $sRes . '<td bgcolor="#F1F1F1">';
+	$sRes = $sRes . '<font face="Arial, Helvetica, sans-serif" color="#333333">';
+	$sRes = $sRes . '<p>' . $sCabeza . '</p>';
+	$sRes = $sRes . '</font>' . $sInfoCentro . '';
+	$sRes = $sRes . '<font face="Arial, Helvetica, sans-serif" color="#333333">';
+	$sRes = $sRes . '<p>' . $sPie . '</p>';
+	$sRes = $sRes . '</font>';
+	$sRes = $sRes . '</td>';
+	$sRes = $sRes . '</tr>';
+	$sRes = $sRes . '</tbody>';
+	$sRes = $sRes . '</table>';
 	return $sRes;
 }
 // Correo de encuesta de publica.
@@ -1259,10 +1367,8 @@ function AUREA_HTML_CuerpoCorreoEncuesta($sCodigo, $idImagen, $sURL, $iFechaServ
 	$sRutaBase = __DIR__ . '/';
 	require $sRutaBase . 'app.php';
 	$sRutaComun = $sRutaBase . $APP->rutacomun;
-	if (isset($_SESSION['unad_idioma']) == 0) {
-		$_SESSION['unad_idioma'] = 'es';
-	}
-	$mensajes_17 = $sRutaComun . 'lg/lg_17_' . $_SESSION['unad_idioma'] . '.php';
+	$sIdioma = AUREA_Idioma();
+	$mensajes_17 = $sRutaComun . 'lg/lg_17_' . $sIdioma . '.php';
 	if (!file_exists($mensajes_17)) {
 		$mensajes_17 = $sRutaComun . 'lg/lg_17_es.php';
 	}
@@ -1294,68 +1400,67 @@ function AUREA_HTML_CuerpoCorreoEncuesta($sCodigo, $idImagen, $sURL, $iFechaServ
 			break;
 	}
 	$sFechaLarga = formato_FechaLargaDesdeNumero($iFechaServicio, true);
-	$sRes = '<table border="0" cellpadding="0" cellspacing="0" width="100%" style="width: 100%; max-width: 100%; min-width: 100%;">
-<tbody>
-<tr>
-<td align="right" bgcolor="#F1F1F1" valign="bottom" width="268" height="290" class="hidden-sm">
-<img class="text-center" style="max-width: 100%; display: block;" width="260" src="' . $sRutaImg . 'correo2022/estudiante' . $sNumImage . '.jpg">
-</td>
-<td align="center" bgcolor="#F1F1F1">';
-	$sRes = $sRes . '<font face="Arial, Helvetica, sans-serif" color="#333333">
-<p>' . $ETI['mail_enc_parte1'] . $sFechaLarga . $ETI['mail_enc_parte2'] . '</p>
-</font>
-<table border="0" cellpadding="10" cellspacing="0" width="80%" style="width: 80%; max-width: 80%; min-width: 80%;">
-<tbody>
-<tr>
-<td align="center" bgcolor="#F0B429" style="font-size:22px;">
-<font face="Arial, Helvetica, sans-serif" color="#005883">
-<a style="padding: 10px 20px; color: #005883; font-size: 12px; text-decoration: none; word-wrap: break-word;" target="_blank"
-href="' . $sURLDestino . '?u=' . $sURL . '">
-<span style="font-size: 24px;">RESPONDER</span>
-</a>
-</font>
-</td>
-</tr>
-<tr>
-<td height="5">
-</td>
-</tr>
-</tbody>
-</table>
-
-<table border="0" cellpadding="10" cellspacing="0" width="60%" style="width: 60%; max-width: 60%; min-width: 60%;">
-<tbody>
-<tr>
-<td align="center" bgcolor="#005883" style="font-size:14px;">
-<font face="Arial, Helvetica, sans-serif" color="#ffffff">
-<a style="padding: 10px 20px; color: #ffffff; font-size: 12px; text-decoration: none; word-wrap: break-word;" target="_blank"
-href="' . $sURLDestino . '?n=' . $sURL . '">
-Si no desea responder, por favor haga clic aqu&iacute;
-</a>
-</font>
-</td>
-</tr>
-<tr>
-<td height="5">
-</td>
-</tr>
-</tbody>
-</table>
-
-<font face="Arial, Helvetica, sans-serif">
-<p>
-En caso de que no pueda acceder desde este correo, por favor ingrese a<br>
-<a style="padding: 10px 20px; color: #005883; word-wrap: break-word;" target="_blank"
-href="' . $sURLDestino . '">' . $sURLDestino . '
-</a><br>
-e ingrese su n&uacute;mero de documento y el c&oacute;digo <b>' . $sCodigo . '</b>
-</p>
-<br>
-</font>';
-	$sRes = $sRes . '</td>
-</tr>
-</tbody>
-</table>';
+	$sRes = '<table border="0" cellpadding="0" cellspacing="0" width="100%" style="width: 100%; max-width: 100%; min-width: 100%;">';
+	$sRes = $sRes . '<tbody>';
+	$sRes = $sRes . '<tr>';
+	$sRes = $sRes . '<td align="right" bgcolor="#F1F1F1" valign="bottom" width="268" height="290" class="hidden-sm">';
+	$sRes = $sRes . '<img class="text-center" style="max-width: 100%; display: block;" width="260" src="' . $sRutaImg . 'correo2022/estudiante' . $sNumImage . '.jpg">';
+	$sRes = $sRes . '</td>';
+	$sRes = $sRes . '<td align="center" bgcolor="#F1F1F1">';
+	$sRes = $sRes . '<font face="Arial, Helvetica, sans-serif" color="#333333">';
+	$sRes = $sRes . '<p>' . $ETI['mail_enc_parte1'] . $sFechaLarga . $ETI['mail_enc_parte2'] . '</p>';
+	$sRes = $sRes . '</font>';
+	$sRes = $sRes . '<table border="0" cellpadding="10" cellspacing="0" width="80%" style="width: 80%; max-width: 80%; min-width: 80%;">';
+	$sRes = $sRes . '<tbody>';
+	$sRes = $sRes . '<tr>';
+	$sRes = $sRes . '<td align="center" bgcolor="#F0B429" style="font-size:22px;">';
+	$sRes = $sRes . '<font face="Arial, Helvetica, sans-serif" color="#005883">';
+	$sRes = $sRes . '<a style="padding: 10px 20px; color: #005883; font-size: 12px; text-decoration: none; word-wrap: break-word;" target="_blank"';
+	$sRes = $sRes . 'href="' . $sURLDestino . '?u=' . $sURL . '">';
+	$sRes = $sRes . '<span style="font-size: 24px;">RESPONDER</span>';
+	$sRes = $sRes . '</a>';
+	$sRes = $sRes . '</font>';
+	$sRes = $sRes . '</td>';
+	$sRes = $sRes . '</tr>';
+	$sRes = $sRes . '<tr>';
+	$sRes = $sRes . '<td height="5">';
+	$sRes = $sRes . '</td>';
+	$sRes = $sRes . '</tr>';
+	$sRes = $sRes . '</tbody>';
+	$sRes = $sRes . '</table>';
+	$sRes = $sRes . '<table border="0" cellpadding="10" cellspacing="0" width="60%" style="width: 60%; max-width: 60%; min-width: 60%;">';
+	$sRes = $sRes . '<tbody>';
+	$sRes = $sRes . '<tr>';
+	$sRes = $sRes . '<td align="center" bgcolor="#005883" style="font-size:14px;">';
+	$sRes = $sRes . '<font face="Arial, Helvetica, sans-serif" color="#ffffff">';
+	$sRes = $sRes . '<a style="padding: 10px 20px; color: #ffffff; font-size: 12px; text-decoration: none; word-wrap: break-word;" target="_blank"';
+	$sRes = $sRes . 'href="' . $sURLDestino . '?n=' . $sURL . '">';
+	$sRes = $sRes . 'Si no desea responder, por favor haga clic aqu&iacute;';
+	$sRes = $sRes . '</a>';
+	$sRes = $sRes . '</font>';
+	$sRes = $sRes . '</td>';
+	$sRes = $sRes . '</tr>';
+	$sRes = $sRes . '<tr>';
+	$sRes = $sRes . '<td height="5">';
+	$sRes = $sRes . '</td>';
+	$sRes = $sRes . '</tr>';
+	$sRes = $sRes . '</tbody>';
+	$sRes = $sRes . '</table>';
+	$sRes = $sRes . '';
+	$sRes = $sRes . '<font face="Arial, Helvetica, sans-serif">';
+	$sRes = $sRes . '<p>';
+	$sRes = $sRes . 'En caso de que no pueda acceder desde este correo, por favor ingrese a<br>';
+	$sRes = $sRes . '<a style="padding: 10px 20px; color: #005883; word-wrap: break-word;" target="_blank"';
+	$sRes = $sRes . 'href="' . $sURLDestino . '">' . $sURLDestino . '';
+	$sRes = $sRes . '</a><br>';
+	$sRes = $sRes . 'e ingrese su n&uacute;mero de documento y el c&oacute;digo <b>' . $sCodigo . '</b>';
+	$sRes = $sRes . '</p>';
+	$sRes = $sRes . '<br>';
+	$sRes = $sRes . '</font>';
+	$sRes = $sRes . '</td>';
+	$sRes = $sRes . '</tr>';
+	$sRes = $sRes . '</tbody>';
+	$sRes = $sRes . '</table>';
 	return $sRes;
 }
 // Correo de desercion
@@ -1364,10 +1469,8 @@ function AUREA_HTML_CuerpoCorreoDesercion($sCodigo, $idImagen, $sMes, $aure73id,
 	$sRutaBase = __DIR__ . '/';
 	require $sRutaBase . 'app.php';
 	$sRutaComun = $sRutaBase . $APP->rutacomun;
-	if (isset($_SESSION['unad_idioma']) == 0) {
-		$_SESSION['unad_idioma'] = 'es';
-	}
-	$mensajes_17 = $sRutaComun . 'lg/lg_17_' . $_SESSION['unad_idioma'] . '.php';
+	$sIdioma = AUREA_Idioma();
+	$mensajes_17 = $sRutaComun . 'lg/lg_17_' . $sIdioma . '.php';
 	if (!file_exists($mensajes_17)) {
 		$mensajes_17 = $sRutaComun . 'lg/lg_17_es.php';
 	}
@@ -1413,16 +1516,16 @@ function AUREA_HTML_CuerpoCorreoDesercion($sCodigo, $idImagen, $sMes, $aure73id,
 	</tbody>
 	</table>';
 	*/
-	$sRes = $sRes . '<font face="Arial, Helvetica, sans-serif" color="#333333">
-<table border="0" cellpadding="20" cellspacing="0" width="100%" style="width: 100%; max-width: 100%; min-width: 100%;">
-<span style="font-size:18px;">
-Apreciado estudiante, para la UNAD es muy importante conocer las razones por las cuales no continu&oacute; su proceso formativo con nosotros.<br><br>
-Por lo anterior le solicitamos seleccionar la alternativa que explica sus razones.
-</span>
-<tbody>
-<tr>
-<td align="center">
-<table border="0" cellpadding="0" cellspacing="0" width="80%" style="width: 80%; max-width: 80%; min-width: 80%;">';
+	$sRes = $sRes . '<font face="Arial, Helvetica, sans-serif" color="#333333">';
+	$sRes = $sRes . '<table border="0" cellpadding="20" cellspacing="0" width="100%" style="width: 100%; max-width: 100%; min-width: 100%;">';
+	$sRes = $sRes . '<span style="font-size:18px;">';
+	$sRes = $sRes . 'Apreciado estudiante, para la UNAD es muy importante conocer las razones por las cuales no continu&oacute; su proceso formativo con nosotros.<br><br>';
+	$sRes = $sRes . 'Por lo anterior le solicitamos seleccionar la alternativa que explica sus razones.';
+	$sRes = $sRes . '</span>';
+	$sRes = $sRes . '<tbody>';
+	$sRes = $sRes . '<tr>';
+	$sRes = $sRes . '<td align="center">';
+	$sRes = $sRes . '<table border="0" cellpadding="0" cellspacing="0" width="80%" style="width: 80%; max-width: 80%; min-width: 80%;">';
 	$sCuerpo = '';
 	$iFilas = 12;
 	$aValor = array(
@@ -1489,34 +1592,34 @@ Por lo anterior le solicitamos seleccionar la alternativa que explica sus razone
 		}
 		$URL = url_encode('' . $sMes . '|' . $aure73id . '|' . md5($iFechaServicio) . '|' . $aValor[$k]);
 		$sURL = '' . $URL . '';
-		$sCuerpo = $sCuerpo . '<tr style="padding:5px 0 5px 0 !important">
-<td width="80" align="center" valign="baseline">
-<a href="' . $sURLDestino . '?u=' . $sURL . '"><img src="' . $sRutaImg . 'ico-encuestas/' . $aIconos[$k] . '"  width="50"></a>
-</td>
-<td valign="middle">
-<a style="text-decoration: none; padding: 30px 0; color: #333333;font-size:16px;" target="_blank" href="' . $sURLDestino . '?u=' . $sURL . '">
-' . $aEtiquetas[$k] . '
-</a>
-</td>
-</tr>';
+		$sCuerpo = $sCuerpo . '<tr style="padding:5px 0 5px 0 !important">';
+		$sCuerpo = $sCuerpo . '<td width="80" align="center" valign="baseline">';
+		$sCuerpo = $sCuerpo . '<a href="' . $sURLDestino . '?u=' . $sURL . '"><img src="' . $sRutaImg . 'ico-encuestas/' . $aIconos[$k] . '"  width="50"></a>';
+		$sCuerpo = $sCuerpo . '</td>';
+		$sCuerpo = $sCuerpo . '<td valign="middle">';
+		$sCuerpo = $sCuerpo . '<a style="text-decoration: none; padding: 30px 0; color: #333333;font-size:16px;" target="_blank" href="' . $sURLDestino . '?u=' . $sURL . '">';
+		$sCuerpo = $sCuerpo . '' . $aEtiquetas[$k] . '';
+		$sCuerpo = $sCuerpo . '</a>';
+		$sCuerpo = $sCuerpo . '</td>';
+		$sCuerpo = $sCuerpo . '</tr>';
 	}
 	$sRes = $sRes . $sCuerpo;
-	$sRes = $sRes . '</table>
-<font face="Arial, Helvetica, sans-serif">
-<p>
-En caso de que no pueda acceder desde este correo, por favor ingrese a<br>
-<a style="padding: 10px 20px; color: #005883; word-wrap: break-word;" target="_blank" 
-href="' . $sURLDestino . '">' . $sURLDestino . '
-</a><br>
-e ingrese su n&uacute;mero de documento y el c&oacute;digo <b>' . $sCodigo . '</b>
-</p>
-<br>
-</font>	
-</td>
-</tr>
-</tbody>
-</table>
-</font>';
+	$sRes = $sRes . '</table>';
+	$sRes = $sRes . '<font face="Arial, Helvetica, sans-serif">';
+	$sRes = $sRes . '<p>';
+	$sRes = $sRes . 'En caso de que no pueda acceder desde este correo, por favor ingrese a<br>';
+	$sRes = $sRes . '<a style="padding: 10px 20px; color: #005883; word-wrap: break-word;" target="_blank" ';
+	$sRes = $sRes . 'href="' . $sURLDestino . '">' . $sURLDestino . '';
+	$sRes = $sRes . '</a><br>';
+	$sRes = $sRes . 'e ingrese su n&uacute;mero de documento y el c&oacute;digo <b>' . $sCodigo . '</b>';
+	$sRes = $sRes . '</p>';
+	$sRes = $sRes . '<br>';
+	$sRes = $sRes . '</font>	';
+	$sRes = $sRes . '</td>';
+	$sRes = $sRes . '</tr>';
+	$sRes = $sRes . '</tbody>';
+	$sRes = $sRes . '</table>';
+	$sRes = $sRes . '</font>';
 	return $sRes;
 }
 //Firma del codigo de correo.
@@ -1526,10 +1629,7 @@ function AUREA_HTML_FirmaDocumento($sCodigo, $idModulo, $iSubProceso, $idRegistr
 	$sRutaBase = __DIR__ . '/';
 	require $sRutaBase . 'app.php';
 	$sRutaComun = $sRutaBase . $APP->rutacomun;
-	$sIdioma = 'es';
-	if (isset($_SESSION['unad_idioma']) != 0) {
-		$sIdioma = $_SESSION['unad_idioma'];
-	}
+	$sIdioma = AUREA_Idioma();
 	$mensajes_17 = $sRutaComun . 'lg/lg_17_' . $sIdioma . '.php';
 	if (!file_exists($mensajes_17)) {
 		$mensajes_17 = $sRutaComun . 'lg/lg_17_es.php';
@@ -1573,50 +1673,64 @@ function AUREA_HTML_FirmaDocumento($sCodigo, $idModulo, $iSubProceso, $idRegistr
 						$sNomSubProceso = 'firmando';
 						break;
 				}
-				$sDetalleProceso = '<p><b>Usted esta ' . $sNomSubProceso . ' la solicitud de disponiblidad presupuestal N&deg; ' . formato_numero($fila['ppto08consec']) . ' de la vigencia ' . cadena_notildes($fila['ppto03codigo']) . '</b><br>
-				con objeto: ' . cadena_notildes($fila['ppto08objeto']) . '<br>
-				por valor de: <b>' . numeros_enletras($fila['ppto08vrtotal']) . '</b> (' . formato_moneda($fila['ppto08vrtotal']) . ')</p>';
+				$sDetalleProceso = '<p><b>Usted esta ' . $sNomSubProceso . ' la solicitud de disponiblidad presupuestal N&deg; ' . formato_numero($fila['ppto08consec']) . ' de la vigencia ' . cadena_notildes($fila['ppto03codigo']) . '</b><br>';
+				$sDetalleProceso = $sDetalleProceso . 'con objeto: ' . cadena_notildes($fila['ppto08objeto']) . '<br>';
+				$sDetalleProceso = $sDetalleProceso . 'por valor de: <b>' . numeros_enletras($fila['ppto08vrtotal']) . '</b> (' . formato_moneda($fila['ppto08vrtotal']) . ')</p>';
 			}
 			break;
 	}
-	$sInfoCentro = '<font face="Arial, Helvetica, sans-serif" color="#333333" size="12">
-<p style="padding: 10px 20px; background: #F0B429;">' . $sCodigo . '</p>
-</font>';
-	$sRes = '<table border="0" cellpadding="0" cellspacing="0" width="100%" style="width: 100%; max-width: 100%; min-width: 100%;">
-<tbody>
-<tr>
-<td align="right" bgcolor="#F1F1F1" valign="bottom" width="268" height="290" class="hidden-sm">
-<img class="text-center" style="max-width: 100%; display: block;" width="260" src="' . $sRutaImg . 'correo2022/estudiante' . $sNumImage . '.jpg">
-</td>
-<td bgcolor="#F1F1F1">
-<font face="Arial, Helvetica, sans-serif" color="#333333">' . $sDetalleProceso . '
-<p>&nbsp;Su c&oacute;digo de confirmaci&oacute;n es:</p>
-</font>' . $sInfoCentro . '
-
-<font face="Arial, Helvetica, sans-serif" color="#333333">
-<p>Este c&oacute;digo estar&aacute; vigente durante todo el d&iacute;a.</p>
-</font>
-</td>
-</tr>
-</tbody>
-</table>';
+	$sInfoCentro = '<font face="Arial, Helvetica, sans-serif" color="#333333" size="12">';
+	$sInfoCentro = $sInfoCentro . '<p style="padding: 10px 20px; background: #F0B429;">' . $sCodigo . '</p>';
+	$sInfoCentro = $sInfoCentro . '</font>';
+	$sRes = '<table border="0" cellpadding="0" cellspacing="0" width="100%" style="width: 100%; max-width: 100%; min-width: 100%;">';
+	$sRes = $sRes . '<tbody>';
+	$sRes = $sRes . '<tr>';
+	$sRes = $sRes . '<td align="right" bgcolor="#F1F1F1" valign="bottom" width="268" height="290" class="hidden-sm">';
+	$sRes = $sRes . '<img class="text-center" style="max-width: 100%; display: block;" width="260" src="' . $sRutaImg . 'correo2022/estudiante' . $sNumImage . '.jpg">';
+	$sRes = $sRes . '</td>';
+	$sRes = $sRes . '<td bgcolor="#F1F1F1">';
+	$sRes = $sRes . '<font face="Arial, Helvetica, sans-serif" color="#333333">' . $sDetalleProceso . '';
+	$sRes = $sRes . '<p>&nbsp;Su c&oacute;digo de confirmaci&oacute;n es:</p>';
+	$sRes = $sRes . '</font>' . $sInfoCentro . '';
+	$sRes = $sRes . '<font face="Arial, Helvetica, sans-serif" color="#333333">';
+	$sRes = $sRes . '<p>Este c&oacute;digo estar&aacute; vigente durante todo el d&iacute;a.</p>';
+	$sRes = $sRes . '</font>';
+	$sRes = $sRes . '</td>';
+	$sRes = $sRes . '</tr>';
+	$sRes = $sRes . '</tbody>';
+	$sRes = $sRes . '</table>';
 	return $sRes;
 }
 //
 function AUREA_HTML_NoResponder()
 {
-	return 'Por favor no responder este mensaje, esta es una notificaci&oacute;n del Sistema de Atenci&oacute;n Integral - SAI<br>';
+	require './app.php';
+	$sIdioma = AUREA_Idioma();
+	$mensajes_1 = $APP->rutacomun . 'lg/lg_1_' . $sIdioma . '.php';
+	if (!file_exists($mensajes_1)) {
+		$mensajes_1 = $APP->rutacomun . 'lg/lg_1_es.php';
+	}
+	require $mensajes_1;
+	return $ETI['msg_no_responder_sai'];
+}
+function AUREA_HTML_NoResponderSII()
+{
+	require './app.php';
+	$sIdioma = AUREA_Idioma();
+	$mensajes_1 = $APP->rutacomun . 'lg/lg_1_' . $sIdioma . '.php';
+	if (!file_exists($mensajes_1)) {
+		$mensajes_1 = $APP->rutacomun . 'lg/lg_1_es.php';
+	}
+	require $mensajes_1;
+	return $ETI['msg_no_responder_sii'];
 }
 //
 function AUREA_HTML_PieCorreo()
 {
-	$sIdioma = 'es';
-	if (isset($_SESSION['unad_idioma']) != 0) {
-		$sIdioma = $_SESSION['unad_idioma'];
-	}
+	$sIdioma = AUREA_Idioma();
 	$sRutaBase = __DIR__ . '/';
-	require './app.php';
-	$sRutaComun = $APP->rutacomun;
+	require $sRutaBase . 'app.php';
+	$sRutaComun = $sRutaBase . $APP->rutacomun;
 	$mensajes_17 = $sRutaComun . 'lg/lg_17_' . $sIdioma . '.php';
 	if (!file_exists($mensajes_17)) {
 		$mensajes_17 = $sRutaComun . 'lg/lg_17_es.php';
@@ -1655,40 +1769,38 @@ function AUREA_HTML_PieCorreo()
 			L&iacute;nea gratuita nacional: <a style="color: #005883;">01 8000 115223</a>';
 			break;
 	}
-	$sRes = '<table border="0" cellpadding="0" cellspacing="0" width="100%" style="width: 100%; max-width: 100%; min-width: 100%;">
-<tr>
-<td bgcolor="#F0B429" height="10"></td>
-</tr>
-</table>
-
-<table border="0" cellpadding="10" cellspacing="0" width="100%" style="width: 100%; max-width: 100%; min-width: 100%;">
-<tr>
-<td align="center">
-<font face="Arial, Helvetica, sans-serif" color="#333333">
-<p>
-<strong>' . $sNomEntidad . '</strong>
-<br>' . $sDato1 . '
-</p>
-<p>' . $sDato2 . '</p>
-</font>
-<a target="_blank" href="' . $sProtocolo . $sDominio . '/">
-</a>
-</td>
-</tr>
-</table>
-
-</td>
-</tr>
-</table>
-</td>
-</tr>
-</table>
-</td>
-</tr>
-</table>
-</center>
-</body>
-</html>';
+	$sRes = '<table border="0" cellpadding="0" cellspacing="0" width="100%" style="width: 100%; max-width: 100%; min-width: 100%;">';
+	$sRes = $sRes . '<tr>';
+	$sRes = $sRes . '<td bgcolor="#F0B429" height="10"></td>';
+	$sRes = $sRes . '</tr>';
+	$sRes = $sRes . '</table>';
+	$sRes = $sRes . '<table border="0" cellpadding="10" cellspacing="0" width="100%" style="width: 100%; max-width: 100%; min-width: 100%;">';
+	$sRes = $sRes . '<tr>';
+	$sRes = $sRes . '<td align="center">';
+	$sRes = $sRes . '<font face="Arial, Helvetica, sans-serif" color="#333333">';
+	$sRes = $sRes . '<p>';
+	$sRes = $sRes . '<strong>' . $sNomEntidad . '</strong>';
+	$sRes = $sRes . '<br>' . $sDato1 . '';
+	$sRes = $sRes . '</p>';
+	$sRes = $sRes . '<p>' . $sDato2 . '</p>';
+	$sRes = $sRes . '</font>';
+	$sRes = $sRes . '<a target="_blank" href="' . $sProtocolo . $sDominio . '/">';
+	$sRes = $sRes . '</a>';
+	$sRes = $sRes . '</td>';
+	$sRes = $sRes . '</tr>';
+	$sRes = $sRes . '</table>';
+	$sRes = $sRes . '</td>';
+	$sRes = $sRes . '</tr>';
+	$sRes = $sRes . '</table>';
+	$sRes = $sRes . '</td>';
+	$sRes = $sRes . '</tr>';
+	$sRes = $sRes . '</table>';
+	$sRes = $sRes . '</td>';
+	$sRes = $sRes . '</tr>';
+	$sRes = $sRes . '</table>';
+	$sRes = $sRes . '</center>';
+	$sRes = $sRes . '</body>';
+	$sRes = $sRes . '</html>';
 	return $sRes;
 }
 //Fin de las html de notificaciones.
@@ -1709,6 +1821,11 @@ function AUREA_Protocolo($idEntidad)
 }
 function AUREA_Idioma()
 {
+	$sRutaBase = __DIR__ . '/';
+	require $sRutaBase . 'app.php';
+	if (!function_exists('Traer_Entidad')) {
+		require $APP->rutacomun . 'libdatos.php';
+	}
 	$idEntidad = Traer_Entidad();
 	$sIdioma = 'es';
 	switch ($idEntidad) {
@@ -1739,6 +1856,13 @@ function AUREA_Idioma()
 }
 function AUREA_ExisteCodigo($idTercero, $objDB, $iUso = 1, $sCodigo = '', $bDebug = false)
 {
+	require './app.php';
+	$sIdioma = AUREA_Idioma();
+	$mensajes_1 = $APP->rutacomun . 'lg/lg_1_' . $sIdioma . '.php';
+	if (!file_exists($mensajes_1)) {
+		$mensajes_1 = $APP->rutacomun . 'lg/lg_1_es.php';
+	}
+	require $mensajes_1;
 	$bRes = false;
 	$sError = '';
 	$sDebug = '';
@@ -1746,7 +1870,7 @@ function AUREA_ExisteCodigo($idTercero, $objDB, $iUso = 1, $sCodigo = '', $bDebu
 	$sTabla = 'aure01login' . $sMes;
 	$bexiste = $objDB->bexistetabla($sTabla);
 	if (!$bexiste) {
-		$sError = 'No se ha creado la tabla';
+		$sError = $ETI['msg_tabla_no_creada'];
 	}
 	if ($sError == '') {
 		$idEntidad = Traer_Entidad();
@@ -1791,13 +1915,10 @@ function AUREA_IniciarLogin($idTercero, $objDB, $sFrase = '', $iUso = 0, $bDebug
 			break;
 	}
 	$sInfoRastro = 'Se inicia envio de codigo de acceso';
-	$sIdioma = 'es';
-	if (isset($_SESSION['unad_idioma']) != 0) {
-		$sIdioma = $_SESSION['unad_idioma'];
-	}
+	$sIdioma = AUREA_Idioma();
 	$sRutaBase = __DIR__ . '/';
-	require './app.php';
-	$sRutaComun = $APP->rutacomun;
+	require $sRutaBase . 'app.php';
+	$sRutaComun = $sRutaBase . $APP->rutacomun;
 	$mensajes_17 = $sRutaComun . 'lg/lg_17_' . $sIdioma . '.php';
 	if (!file_exists($mensajes_17)) {
 		$mensajes_17 = $sRutaComun . 'lg/lg_17_es.php';
@@ -1872,7 +1993,8 @@ function AUREA_IniciarLogin($idTercero, $objDB, $sFrase = '', $iUso = 0, $bDebug
 			$aure01consec = tabla_consecutivo($sTabla, 'aure01consec', 'aure01idtercero=' . $idTercero . '', $objDB);
 			$aure01fecha = fecha_DiaMod();
 			$aure01min = fecha_MinutoMod();
-			$aure01codigo = md5($aure01fecha . $aure01min . $idTercero . $sTabla);
+			$sLlave = 'A#U' . rand(0, 1000) . 'R34.';
+			$aure01codigo = md5($aure01fecha . $aure01min . $idTercero . $sTabla . $sLlave);
 			$aure01codigo = numeros_validar($aure01codigo);
 			$aure01codigo = substr($aure01codigo, 0, 10);
 			$aure01ip = sys_traeripreal();
@@ -1989,6 +2111,13 @@ function AUREA_IniciarLogin($idTercero, $objDB, $sFrase = '', $iUso = 0, $bDebug
 // Marcar codigo 
 function AUREA_MarcarCodigo($idTercero, $iUso, $sCodigo, $objDB, $bDebug = false)
 {
+	require './app.php';
+	$sIdioma = AUREA_Idioma();
+	$mensajes_1 = $APP->rutacomun . 'lg/lg_1_' . $sIdioma . '.php';
+	if (!file_exists($mensajes_1)) {
+		$mensajes_1 = $APP->rutacomun . 'lg/lg_1_es.php';
+	}
+	require $mensajes_1;
 	$bRes = false;
 	$sError = '';
 	$sDebug = '';
@@ -1996,7 +2125,7 @@ function AUREA_MarcarCodigo($idTercero, $iUso, $sCodigo, $objDB, $bDebug = false
 	$sTabla = 'aure01login' . $sMes;
 	$bexiste = $objDB->bexistetabla($sTabla);
 	if (!$bexiste) {
-		$sError = 'No se ha creado la tabla';
+		$sError = $ETI['msg_tabla_no_creada'];
 	}
 	if ($sError == '') {
 		$idEntidad = Traer_Entidad();
@@ -2040,90 +2169,125 @@ function AUREA_NotificaPieDePagina()
 }
 function AUREA_RequiereDobleAutenticacion($idTercero, $objDB)
 {
-	list($bRes, $sInfoRastro) = AUREA_RequiereDobleAutenticacionV2($idTercero, $objDB);
+	$bRes = false;
+	list($iTipoAutenticacion, $sInfoRastro) = AUREA_RequiereDobleAutenticacionV3($idTercero, $objDB);
+	if ($iTipoAutenticacion > 0) {
+		$bRes = true;
+	}
 	return $bRes;
 }
 function AUREA_RequiereDobleAutenticacionV2($idTercero, $objDB)
 {
-	require './app.php';
-	if (isset($APP->idserver) != 0) {
-		if ($APP->idserver == 1) {
-			$bDepurador = false;
-			switch ($idTercero) {
-				case 4:
-				case 6: //
-					$bDepurador = true;
-			}
-			if ($bDepurador) {
-				$bRes = true;
-				$sInfoRastro = 'Modo depurador';
-				return array($bRes, $sInfoRastro);
-			}
-		}
-	}
 	$bRes = false;
-	$bConAlumnos = false;
+	list($iTipoAutenticacion, $sInfoRastro) = AUREA_RequiereDobleAutenticacionV3($idTercero, $objDB);
+	if ($iTipoAutenticacion > 0) {
+		$bRes = true;
+	}
+	return array($bRes, $sInfoRastro);
+}
+function AUREA_RequiereDobleAutenticacionV3($idTercero, $objDB)
+{
+	require './app.php';
+	$bRes = false;
+	$bAutenticacionActiva = false;
+	$bAutenticaEstudiantes = false;
+	$bAplicarExclusion = false;
+	$iTipoAutenticacion = 0; // 0 - Default , 1 - Correo, 2 - Themis
 	$sInfoRastro = '';
+	$iHoy = fecha_DiaMod();
+	$iFechaLimite = fecha_armar(fecha_dia(), fecha_mes(), fecha_agno() + 1);
 	//Primero ver si esta habilitado el servicio.
 	$sSQL = 'SELECT unad88loginmail, unad88doblelogest FROM unad88opciones WHERE unad88id=1';
 	$tabla = $objDB->ejecutasql($sSQL);
 	if ($objDB->nf($tabla) > 0) {
 		$fila = $objDB->sf($tabla);
 		if ($fila['unad88loginmail'] == 'S') {
-			$bRes = true;
+			$bAutenticacionActiva = true;
 			if ($fila['unad88doblelogest'] == 'S') {
-				$bConAlumnos = true;
+				$bAutenticaEstudiantes = true;
 			}
 		} else {
+			$bRes = true;
 			$sInfoRastro = ' [Servicio Desactivado]';
 		}
 	}
-	if ($bRes) {
-		$bPermite = false;
-		$bNiega = false;
-		$sSQL = 'SELECT T9.core09excluirdobleaut 
-		FROM core01estprograma AS TB, core09programa AS T9 
-		WHERE TB.core01idtercero=' . $idTercero . ' AND TB.core01idprograma=T9.core09id
-		GROUP BY T9.core09excluirdobleaut';
+	if ($bAutenticacionActiva) {
+		$sSQL = 'SELECT unad95doblefactor, unad95doblefactor_limexcl, unad95doblefactor_motivoexcl
+		FROM unad95entorno 
+		WHERE unad95id=' . $idTercero . '';
 		$tabla = $objDB->ejecutasql($sSQL);
-		while ($fila = $objDB->sf($tabla)) {
-			if ($fila['core09excluirdobleaut'] == 0) {
-				$bNiega = true;
-			} else {
-				$bPermite = true;
-			}
-		}
-		if ($bPermite) {
-			if (!$bNiega) {
-				$bRes = false;
+		if ($objDB->nf($tabla) == 0) {
+			$sCampos195 = 'unad95id, unad95periodo, unad95escuela, unad95programa, unad95zona, 
+			unad95centro, unad95vigencia, unad95doblefactor, unad95doblefactor_limexcl, unad95doblefactor_motivoexcl';
+			$sValores195 = '' . $idTercero . ', 0, 0, 0, 0, 
+			0, 0, 0, 0, ""';
+			$sSQL = 'INSERT INTO unad95entorno (' . $sCampos195 . ') VALUES (' . $sValores195 . ')';
+			$objDB->ejecutasql($sSQL);
+		} else {
+			$fila = $objDB->sf($tabla);
+			switch ($fila['unad95doblefactor']) {
+				case -1: // No requiere - Excluido
+					if ($fila['unad95doblefactor_limexcl'] >= $iHoy) {
+						$bRes = true;
+						$sInfoRastro = $fila['unad95doblefactor_motivoexcl'];
+					} else {
+						$sSQL = 'UPDATE unad95params SET unad95doblefactor=0 WHERE unad95id=' . $idTercero . '';
+						$objDB->ejecutasql($sSQL);
+					}
+					break;
+				case 1:	// Correo
+					$bRes = true;
+					$iTipoAutenticacion = $fila['unad95doblefactor'];
+					$sInfoRastro = '[Requiere doble autenticación por Correo]';
+					break; // Themis
+				case 2: //
+					$bRes = true;
+					$iTipoAutenticacion = $fila['unad95doblefactor'];
+					$sInfoRastro = '[Requiere doble autenticación por Themis]';
+					break;
+				case 0: // Por defecto
+				default:
+					break;
 			}
 		}
 	}
-	if ($bRes) {
-		$bPermite = false;
-		$bNiega = false;
+	// Hay programas por defecto que excluyen la doble autenticacion
+	// Solamente si la configuracion esta por defecto para ese estudiante se intenta resolver
+	if (!$bRes) {
+		$sSQL = 'SELECT T9.core09excluirdobleaut 
+		FROM core01estprograma AS TB, core09programa AS T9 
+		WHERE TB.core01idtercero=' . $idTercero . ' AND TB.core01idestado=0 AND TB.core01idprograma=T9.core09id AND T9.core09activo="S"
+		GROUP BY T9.core09excluirdobleaut';
+		$tabla = $objDB->ejecutasql($sSQL);
+		while ($fila = $objDB->sf($tabla)) { // Muchos a muchos
+			if ($fila['core09excluirdobleaut'] == 0) {
+				$bRes = true;
+				$bAplicarExclusion = true;
+				$sInfoRastro = ' [Servicio excluido desde el programa]';
+			}
+		}
+	}
+	if (!$bRes) {
 		$sSQL = 'SELECT T2.exte02saltardobleaut 
 		FROM core16actamatricula AS TB, exte02per_aca AS T2 
-		WHERE TB.core16tercero=' . $idTercero . ' AND TB.core16peraca=T2.exte02id
+		WHERE TB.core16tercero=' . $idTercero . ' AND TB.core16peraca=T2.exte02id AND T2.exte02vigente="S"
 		GROUP BY T2.exte02saltardobleaut';
 		$tabla = $objDB->ejecutasql($sSQL);
 		while ($fila = $objDB->sf($tabla)) {
 			if ($fila['exte02saltardobleaut'] == 0) {
-				$bNiega = true;
-			} else {
-				$bPermite = true;
-			}
-		}
-		if ($bPermite) {
-			if (!$bNiega) {
-				$bRes = false;
+				$bRes = true;
+				$bAplicarExclusion = true;
+				$sInfoRastro = ' [Servicio excluido desde la matricula]';
 			}
 		}
 	}
-	if ($bRes) {
+	if (!$bRes) {
 		//Ahora descartamos que sea un usuario especial
-		$iDia = fecha_DiaMod();
-		$sSQL = 'SELECT cara40accesoainternet, cara40consec FROM cara40padrinos WHERE cara40idtercero=' . $idTercero . ' AND cara40estado=1 AND cara40estudiadesde<=' . $iDia . ' AND cara40estudiahasta>=' . $iDia . ' ORDER BY cara40estudiahasta DESC';
+		$sSQL = 'SELECT cara40accesoainternet, cara40consec 
+		FROM cara40padrinos 
+		WHERE cara40idtercero=' . $idTercero . ' AND cara40estado=1 AND cara40estudiadesde<=' . $iHoy . ' 
+		AND cara40estudiahasta>=' . $iHoy . ' 
+		ORDER BY cara40estudiahasta DESC';
 		$tabla = $objDB->ejecutasql($sSQL);
 		if ($objDB->nf($tabla) > 0) {
 			$fila = $objDB->sf($tabla);
@@ -2131,7 +2295,8 @@ function AUREA_RequiereDobleAutenticacionV2($idTercero, $objDB)
 			switch ($fila['cara40accesoainternet']) {
 				case 0: // Sin Acceso a Internet
 				case 1: // Acceso Limitado
-					$bRes = false;
+					$bRes = true;
+					$bAplicarExclusion = true;
 					$sTipoAcceso = 'sin acceso a internet';
 					if ($fila['cara40accesoainternet'] == 1) {
 						$sTipoAcceso = 'con acceso a internet limitado';
@@ -2141,55 +2306,106 @@ function AUREA_RequiereDobleAutenticacionV2($idTercero, $objDB)
 			}
 		}
 	}
-	if ($bRes) {
-		$sSQL = 'SELECT unad11exluirdobleaut, unad11fechaconfmail, unad11correonotifica, unad11correofuncionario, unad11fechaclave FROM unad11terceros WHERE unad11id=' . $idTercero . '';
+	if (!$bRes) {
+		$sSQL = 'SELECT 1 FROM unad11terceros WHERE unad11id=' . $idTercero . ' AND unad11exluirdobleaut="S"';
 		$tabla = $objDB->ejecutasql($sSQL);
 		if ($objDB->nf($tabla) > 0) {
-			$fila = $objDB->sf($tabla);
-			if ($fila['unad11exluirdobleaut'] == 'S') {
-				$bRes = false;
-				$sInfoRastro = ' [Usuario Excludio - Modulo Usuarios Especiales]';
-			}
-			if ($bRes) {
-				if ($fila['unad11fechaconfmail'] == 0) {
-					if (trim($fila['unad11correofuncionario']) == '') {
-						$bRes = false;
-						$sInfoRastro = ' [Usuario sin correo confirmado]';
-						if ($fila['unad11fechaclave'] != $iDia) {
-							//Febrero 13 de 2020 se dejan rastros para poder hacer seguimiento.
-							seg_rastroV2(17, 7, 0, 0, $idTercero, 'Se forza a cambiar la contraseña por falta de confirmación del correo de notificaciones.', $objDB);
-							//Se modifica esta restricción  porque los usaurios nuevos no han confirmado correo y cambiaraon la contraseña el mismo dia...
-							$sSQL = 'UPDATE unad11terceros SET unad11debeactualizarclave=1 WHERE unad11id=' . $idTercero . '';
-							$result = $objDB->ejecutasql($sSQL);
-						}
-					}
-				} else {
-					//Bloquear los correos que sean restringidos...
-					list($sErrorC, $sDebugC) = AUREA_ValidaCuentaCorreo($fila['unad11correonotifica'], $objDB);
-					if ($sErrorC != '') {
-						$bRes = false;
-						//Febrero 13 de 2020 se dejan rastros para poder hacer seguimiento.
-						seg_rastroV2(17, 7, 0, 0, $idTercero, 'Se forza a cambiar la contraseña por error en la validación del correo de notificaciones.', $objDB);
-						$sSQL = 'UPDATE unad11terceros SET unad11fechaconfmail=0, unad11debeactualizarclave=1 WHERE unad11id=' . $idTercero . '';
-						$result = $objDB->ejecutasql($sSQL);
-					}
+			$bRes = true;
+			$bAplicarExclusion = true;
+			$sInfoRastro = ' [Usuario Excludio - Modulo Usuarios Especiales]';
+		}
+	}
+	if (!$bRes) {
+		if (!$bAutenticaEstudiantes) {
+			// Saber si la persona tiene un rol dentro del sistema
+			$sSQL = 'SELECT 1 FROM unad07usuarios WHERE unad07idtercero=' . $idTercero . ' AND unad07vigente="S"';
+			$tabla = $objDB->ejecutasql($sSQL);
+			if ($objDB->nf($tabla) == 0) {
+				// Verificar a traves de la core01estprograma si realmente es un estudiante
+				$sSQL = 'SELECT 1 FROM core01estprograma WHERE core01idtercero=' . $idTercero . ' AND core01idestado=0';
+				$tabla = $objDB->ejecutasql($sSQL);
+				if ($objDB->nf($tabla) > 0) {
+					// Si es estudiante
+					$bRes = true;
+					$iTipoAutenticacion = -1;
+					$sInfoRastro = ' [Servicio Inactivo para Estudiantes]';
 				}
 			}
 		}
 	}
-	if ($bRes) {
-		if (!$bConAlumnos) {
-			//Saber si la persona tiene un rol dentro del sistema
-			$sSQL = 'SELECT 1 FROM unad07usuarios WHERE unad07idtercero=' . $idTercero . ' AND unad07vigente="S"';
-			$tabla = $objDB->ejecutasql($sSQL);
-			if ($objDB->nf($tabla) == 0) {
-				//Es un alumno....
-				$bRes = false;
-				$sInfoRastro = ' [Servicio Inactivo para Estudiantes]';
+	if ($bRes && $iTipoAutenticacion == 1) {
+		$sSQL = 'SELECT unad11fechaconfmail, unad11correonotifica, unad11correofuncionario, unad11fechaclave 
+		FROM unad11terceros WHERE unad11id=' . $idTercero . '';
+		$tabla = $objDB->ejecutasql($sSQL);
+		if ($objDB->nf($tabla) > 0) {
+			$fila = $objDB->sf($tabla);
+			if ($fila['unad11fechaconfmail'] == 0) {
+				if (!correo_VerificarDireccion($fila['unad11correofuncionario'])) {
+					$bRes = false;
+					$iTipoAutenticacion = 0;
+					$sInfoRastro = ' [Usuario sin correo confirmado]';
+					if ($fila['unad11fechaclave'] != $iHoy) {
+						//Febrero 13 de 2020 se dejan rastros para poder hacer seguimiento.
+						seg_rastroV2(17, 7, 0, 0, $idTercero, 'Se forza a cambiar la contraseña por falta de confirmación del correo de notificaciones.', $objDB);
+						//Se modifica esta restricción  porque los usaurios nuevos no han confirmado correo y cambiaraon la contraseña el mismo dia...
+						$sSQL = 'UPDATE unad11terceros SET unad11debeactualizarclave=1 WHERE unad11id=' . $idTercero . '';
+						$result = $objDB->ejecutasql($sSQL);
+					}
+				}
+			} else {
+				//Bloquear los correos que sean restringidos...
+				list($sErrorC, $sDebugC) = AUREA_ValidaCuentaCorreo($fila['unad11correonotifica'], $objDB);
+				if ($sErrorC != '') {
+					$bRes = false;
+					$iTipoAutenticacion = 0;
+					//Febrero 13 de 2020 se dejan rastros para poder hacer seguimiento.
+					seg_rastroV2(17, 7, 0, 0, $idTercero, 'Se forza a cambiar la contraseña por error en la validación del correo de notificaciones.', $objDB);
+					$sSQL = 'UPDATE unad11terceros SET unad11fechaconfmail=0, unad11debeactualizarclave=1 WHERE unad11id=' . $idTercero . '';
+					$result = $objDB->ejecutasql($sSQL);
+				}
 			}
 		}
 	}
-	return array($bRes, $sInfoRastro);
+	if ($bAplicarExclusion) {
+		$iTipoAutenticacion = -1;
+		$sSQL = 'UPDATE unad95entorno SET unad95doblefactor=-1, unad95doblefactor_limexcl=' . $iFechaLimite . ', 
+		unad95doblefactor_motivoexcl="' . $sInfoRastro . '" 
+		WHERE unad95id=' . $idTercero . '';
+		$objDB->ejecutasql($sSQL);
+	}
+	if ($bRes && $iTipoAutenticacion == 0) {
+		// De alguna manera, llegaron a acá
+		// Lo fuerzo a autenticarse con correo
+		$iTipoAutenticacion = 1;
+		// Buscar si es tester // Themis
+		$sSQL = 'SELECT 1 FROM aurf12tester WHERE aurf12idtercero=' . $idTercero . ' AND aurf12idcomponente=31 AND aurf12activo=1';
+		$tabla = $objDB->ejecutasql($sSQL);
+		if ($objDB->nf($tabla) > 0) {
+			$iTipoAutenticacion = 2;
+			$sSQL = 'UPDATE unad95params SET unad95doblefactor=2 WHERE unad95id=' . $idTercero . '';
+			$objDB->ejecutasql($sSQL);
+		}
+	}
+	if (($iTipoAutenticacion == 1) && !$bAutenticacionActiva) {
+		$iTipoAutenticacion = -1;
+	}
+	return array($iTipoAutenticacion, $sInfoRastro);
+}
+//En que servidor estamos
+function AUREA_Servidor($APP) 
+{
+	$iUso = 0;
+	if ($APP->idsistema == 0) {
+		$iUso = 17; // Campus
+		if (isset($APP->uso) != 0) {
+			switch($APP->uso) {
+				case 46: // Portal de proveedores
+					$iUso = $APP->uso; // Campus
+					break;
+				}
+		}
+	}
+	return $iUso;
 }
 function AUREA_SmtpMejor($sTabla, $objDB, $bDebug = false)
 {
@@ -2270,7 +2486,8 @@ function AUREA_ValidaCuentaCorreo($sCorreo, $objDB, $bDebug = false)
 	$sRutaBase = __DIR__ . '/';
 	require $sRutaBase . 'app.php';
 	$sRutaComun = $sRutaBase . $APP->rutacomun;
-	$mensajes_todas = $sRutaComun . 'lg/lg_todas_' . $_SESSION['unad_idioma'] . '.php';
+	$sIdioma = AUREA_Idioma();
+	$mensajes_todas = $sRutaComun . 'lg/lg_todas_' . $sIdioma . '.php';
 	if (!file_exists($mensajes_todas)) {
 		$mensajes_todas = $sRutaComun . 'lg/lg_todas_es.php';
 	}
@@ -2293,7 +2510,15 @@ function AUREA_ValidaCuentaCorreo($sCorreo, $objDB, $bDebug = false)
 // --------------- ENCUESTAS PUBLICAS (DE SATISFACCION - DESERCION)
 function AUREA_IniciarEncuestaPublica($idTercero, $iTipoEncuesta, $idModulo, $idTabla, $idRegistro, $objDB, $bDebug = false, $sCopiaA = '')
 {
-	//
+	$sRutaBase = __DIR__ . '/';
+	require $sRutaBase . 'app.php';
+	$sIdioma = AUREA_Idioma();
+	$APP->rutacomun = $sRutaBase;
+	$mensajes_1 = $APP->rutacomun . 'lg/lg_1_' . $sIdioma . '.php';
+	if (!file_exists($mensajes_1)) {
+		$mensajes_1 = $APP->rutacomun . 'lg/lg_1_es.php';
+	}
+	require $mensajes_1;
 	$sError = '';
 	$sDebug = '';
 	$aure73codigo = '';
@@ -2308,15 +2533,12 @@ function AUREA_IniciarEncuestaPublica($idTercero, $iTipoEncuesta, $idModulo, $id
 			$sNomTipoEncuesta = 'Deserción';
 			break;
 		default:
-			$sError = 'Tipo de encuenta no reconocida [' . $iTipoEncuesta . '].';
+			$sError = $ETI['msg_tipo_encuesta_no_reconocido'] . ' [' . $iTipoEncuesta . '].';
 			break;
 	}
 	if ($sError == '') {
 		$sInfoRastro = 'Se genera encuesta de ' . $sNomTipoEncuesta;
-		$sIdioma = 'es';
-		if (isset($_SESSION['unad_idioma']) != 0) {
-			$sIdioma = $_SESSION['unad_idioma'];
-		}
+		$sIdioma = AUREA_Idioma();
 		$sRutaBase = __DIR__ . '/';
 		require $sRutaBase . 'app.php';
 		$sRutaComun = $sRutaBase . $APP->rutacomun;
@@ -2382,7 +2604,7 @@ function AUREA_IniciarEncuestaPublica($idTercero, $iTipoEncuesta, $idModulo, $id
 						$aure73idperiodo = $fila['core01peracainicial'];
 						$sNomPrograma = $fila['core09nombre'];
 						if ($fila['core01desc_fecharesp'] != 0) {
-							$sError = 'La encuesta ya se encuentra respondida.';
+							$sError = $ETI['msg_encuesta_ya_respondida'];
 						}
 						if ($fila['core01desc_id_encuesta'] != 0) {
 							$bExisteEncuesta = true;
@@ -2402,7 +2624,7 @@ function AUREA_IniciarEncuestaPublica($idTercero, $iTipoEncuesta, $idModulo, $id
 							}
 						}
 					} else {
-						$sError = 'No se ha encontrado el registro de referencia.';
+						$sError = $ETI['msg_referencia_no_encontrada'];
 					}
 					break;
 				case 3018: // Solicitudes telefonicas...
@@ -2517,7 +2739,6 @@ function AUREA_IniciarEncuestaPublica($idTercero, $iTipoEncuesta, $idModulo, $id
 				$sMsg = $sMsg . AUREA_HTML_CuerpoCorreoEncuesta($aure73codigo, $idImagenCorreo, $sURL, $aure73fechagenera);
 				break;
 			case 2: // Deserción.
-
 				$sTituloCorreo = $ETI['mail_enc_titulo_2'] . ' ' . $sNomPrograma . ' ' . $ETI['mail_enc_titulo_2b'] . ' ' . $sNomEntidad . '';
 				//$sMsg=AUREA_HTML_EncabezadoCorreo($sTituloCorreo);
 				$sMsg = AUREA_HTML_EncabezadoCorreo($ETI['mail_enc_titulo_2'] . ' ' . $sNomPrograma . ' ' . $ETI['mail_enc_titulo_2b']);
@@ -2589,7 +2810,7 @@ function AUREA_IniciarFirma($idTercero, $idModulo, $iSubProceso, $idRegistro, $o
 			}
 			break;
 		default:
-			$sError = 'Proceso no reconocido [' . $idModulo . ']';
+			$sError = $ETI['msg_proceso_no_reconocido'] . ' [' . $idModulo . ']';
 			break;
 	}
 	if ($sError == '') {
@@ -2604,7 +2825,7 @@ function AUREA_IniciarFirma($idTercero, $idModulo, $iSubProceso, $idRegistro, $o
 			}
 		}
 		if ($sCorreoUsuario == '') {
-			$sError = 'No se ha establecido un correo electr&oacute;nico de v&aacute;lido.';
+			$sError = $ETI['msg_correo_no_establecido'];
 		} else {
 			$aCorreo = explode('@', $sCorreoUsuario);
 			if (count($aCorreo) > 1) {
@@ -2616,24 +2837,8 @@ function AUREA_IniciarFirma($idTercero, $idModulo, $iSubProceso, $idRegistro, $o
 	if ($sError == '') {
 		list($idSMTP, $sDebugS) = AUREA_SmtpMejorV2($sTabla, $unad11idgrupocorreo, $objDB, $bDebug);
 		//Agregar el punto.
-		$sProtocolo = 'http';
-		$idEntidad = 0;
-		if (isset($APP->entidad) != 0) {
-			if ($APP->entidad == 1) {
-				$idEntidad = 1;
-			}
-		}
-		switch ($idEntidad) {
-			case 1:
-				break;
-			default:
-				if (isset($_SERVER['HTTPS']) != 0) {
-					if ($_SERVER['HTTPS'] == 'on') {
-						$sProtocolo = 'https';
-					}
-				}
-				break;
-		}
+		$idEntidad = Traer_Entidad();
+		$sProtocolo = AUREA_Protocolo($idEntidad);
 		$aure01punto = $sProtocolo . '://' . $_SERVER['SERVER_NAME'] . formato_UrlLimpia($_SERVER['REQUEST_URI']);
 		$bInserta = true;
 		$aure01fecha = fecha_DiaMod();
@@ -2651,7 +2856,8 @@ function AUREA_IniciarFirma($idTercero, $idModulo, $iSubProceso, $idRegistro, $o
 		$aure01min = fecha_MinutoMod();
 		$aure01ip = sys_traeripreal();
 		if ($bInserta) {
-			$aure01codigo = md5($aure01fecha . $aure01min . $idTercero . $sTabla);
+			$sLlave = 'A#U' . rand(0, 1000) . 'R34.';
+			$aure01codigo = md5($aure01fecha . $aure01min . $idTercero . $sTabla . $sLlave);
 			$aure01codigo = numeros_validar($aure01codigo);
 			$aure01codigo = substr($aure01codigo, 0, 6);
 			$aure01consec = tabla_consecutivo($sTabla, 'aure01consec', 'aure01idtercero=' . $idTercero . '', $objDB);
@@ -2799,4 +3005,17 @@ function f2202_EnviarEncuestaDesercion($objDB, $bDebug = false, $sCorreoCopia = 
 	}
 	$objDBGrados->CerrarConexion();
 	return array($iEnvios, $sError, $sDebug);
+}
+function AUREA_CorreoSoporte($idEntidad)
+{
+	$sCorreoSoporte = 'soporte.campus@unad.edu.co';
+	switch ($idEntidad) {
+		case 1: // Florida
+			$sCorreoSoporte = 'support@unad.us';
+			break;
+		case 2: // Union Europea
+			$sCorreoSoporte = 'informacion@unad-ue.es';
+			break;
+	}
+	return $sCorreoSoporte;
 }

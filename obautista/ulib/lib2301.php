@@ -26,6 +26,7 @@ function f2301_AjustarTipoEncuesta($cara01id, $objDB, $bDebug = false)
 	$cara01fichaquimica = -1;
 	$cara01fichabiolog = -1;
 	$cara01fichafisica = -1;
+	$cara01fichaciudad = -1;
 	$cara01tipocaracterizacion = 0;
 	//Ver que tipo de caracterizacion es.
 	$sSQL = 'SELECT cara01tipocaracterizacion FROM cara01encuesta WHERE cara01id=' . $cara01id . '';
@@ -36,7 +37,7 @@ function f2301_AjustarTipoEncuesta($cara01id, $objDB, $bDebug = false)
 	}
 	//Segun el tipo de caracterizacion algunos campus pueden pasar a 0
 	if ($cara01tipocaracterizacion != 0) {
-		$sSQL = 'SELECT cara11fichafamilia, cara11ficha1, cara11ficha2, cara11ficha3, cara11ficha4, cara11ficha5, cara11ficha6, cara11ficha7 FROM cara11tipocaract WHERE cara11id=' . $cara01tipocaracterizacion . '';
+		$sSQL = 'SELECT cara11fichafamilia, cara11ficha1, cara11ficha2, cara11ficha3, cara11ficha4, cara11ficha5, cara11ficha6, cara11ficha7, cara11ficha8 FROM cara11tipocaract WHERE cara11id=' . $cara01tipocaracterizacion . '';
 		if ($bDebug) {
 			$sDebug = $sDebug . fecha_microtiempo() . ' Se cargan los datos del tipo de caracterizacion: ' . $sSQL . '<br>';
 		}
@@ -71,12 +72,16 @@ function f2301_AjustarTipoEncuesta($cara01id, $objDB, $bDebug = false)
 			if ($fila['cara11ficha7'] == 'S') {
 				$cara01fichafisica = 0;
 			}
+			if ($fila['cara11ficha8'] == 'S') {
+				$cara01fichaciudad = 0;
+			}
 		}
 	}
 	$sSQL = 'UPDATE cara01encuesta SET cara01fichafam=' . $cara01fichafam . ', cara01fichaaca=' . $cara01fichaaca . ', 
 	cara01fichalab=' . $cara01fichalab . ', cara01fichabien=' . $cara01fichabien . ', cara01fichapsico=' . $cara01fichapsico . ', 
 	cara01fichadigital=' . $cara01fichadigital . ', cara01fichalectura=' . $cara01fichalectura . ', cara01ficharazona=' . $cara01ficharazona . ', 
-	cara01fichaingles=' . $cara01fichaingles . ', cara01fichabiolog=' . $cara01fichabiolog . ', cara01fichafisica=' . $cara01fichafisica . ', cara01fichaquimica=' . $cara01fichaquimica . ' WHERE cara01id=' . $cara01id . '';
+	cara01fichaingles=' . $cara01fichaingles . ', cara01fichabiolog=' . $cara01fichabiolog . ', cara01fichafisica=' . $cara01fichafisica . ', 
+	cara01fichaquimica=' . $cara01fichaquimica . ', cara01fichaciudad=' . $cara01fichaciudad . ' WHERE cara01id=' . $cara01id . '';
 	$tabla = $objDB->ejecutasql($sSQL);
 	return array($sError, $sDebug);
 }
@@ -410,23 +415,24 @@ function f2301_IniciarPreguntas($cara01id, $objDB, $bDebug = false)
 	$sDebug = '';
 	//Lo que hacemos es ver cuantas preguntas hay y cuantas necesitamos
 	//Primero alistamos el juego de variables.
-	$iBloques = 14;
+	$iBloques = 15;
+	$iCompetencias = 8;
 	for ($k = 1; $k <= $iBloques; $k++) {
 		$aPreguntas[$k] = 0;
 		$aCarga[$k] = 0;
 		$aIds[$k] = '-99';
 	}
 	//Ahora basados en el tipo de caracterizacion. cargamos cuanta preguntas necesitamos.
-	$sSQL = 'SELECT TB.cara01tipocaracterizacion, T1.cara11ficha1, T1.cara11ficha1pregbas, T1.cara11ficha1pregprof, T1.cara11ficha2, T1.cara11ficha2pregbas, T1.cara11ficha2pregprof, T1.cara11ficha3, T1.cara11ficha3pregbas, T1.cara11ficha3pregprof, T1.cara11ficha4, T1.cara11ficha4pregbas, T1.cara11ficha4pregprof, T1.cara11ficha5, T1.cara11ficha5pregbas, T1.cara11ficha5pregprof, T1.cara11ficha6, T1.cara11ficha6pregbas, T1.cara11ficha6pregprof, T1.cara11ficha7, T1.cara11ficha7pregbas, T1.cara11ficha7pregprof 
+	$sSQL = 'SELECT TB.cara01tipocaracterizacion, T1.cara11ficha1, T1.cara11ficha1pregbas, T1.cara11ficha1pregprof, T1.cara11ficha2, T1.cara11ficha2pregbas, T1.cara11ficha2pregprof, T1.cara11ficha3, T1.cara11ficha3pregbas, T1.cara11ficha3pregprof, T1.cara11ficha4, T1.cara11ficha4pregbas, T1.cara11ficha4pregprof, T1.cara11ficha5, T1.cara11ficha5pregbas, T1.cara11ficha5pregprof, T1.cara11ficha6, T1.cara11ficha6pregbas, T1.cara11ficha6pregprof, T1.cara11ficha7, T1.cara11ficha7pregbas, T1.cara11ficha7pregprof , T1.cara11ficha8, T1.cara11ficha8pregbas, T1.cara11ficha8pregprof 
 	FROM cara01encuesta AS TB, cara11tipocaract AS T1 
 	WHERE TB.cara01id=' . $cara01id . ' AND TB.cara01tipocaracterizacion=T1.cara11id';
 	$tabla = $objDB->ejecutasql($sSQL);
 	if ($objDB->nf($tabla) > 0) {
 		$fila = $objDB->sf($tabla);
-		for ($k = 1; $k <= 7; $k++) {
+		for ($k = 1; $k <= $iCompetencias; $k++) {
 			if ($fila['cara11ficha' . $k] == 'S') {
 				$aPreguntas[$k] = $fila['cara11ficha' . $k . 'pregbas'];
-				$aPreguntas[$k + 7] = $fila['cara11ficha' . $k . 'pregprof'];
+				$aPreguntas[$k + $iCompetencias] = $fila['cara11ficha' . $k . 'pregprof'];
 			}
 		}
 	}
@@ -436,7 +442,7 @@ function f2301_IniciarPreguntas($cara01id, $objDB, $bDebug = false)
 	while ($fila = $objDB->sf($tabla)) {
 		$k = $fila['cara10idbloque'];
 		if ($fila['cara10nivelpregunta'] == 1) {
-			$k = $k + 7;
+			$k = $k + $iCompetencias;
 		}
 		$aCarga[$k]++;
 		$aIds[$k] = $aIds[$k] . ',' . $fila['cara10idpregunta'];
@@ -453,8 +459,8 @@ function f2301_IniciarPreguntas($cara01id, $objDB, $bDebug = false)
 			$svalores2310 = '';
 			$iBloqueReal = $k;
 			$iNivelPreg = 0;
-			if ($k > 7) {
-				$iBloqueReal = $k - 7;
+			if ($k > $iCompetencias) {
+				$iBloqueReal = $k - $iCompetencias;
 				$iNivelPreg = 1;
 			}
 			$cara10consec = tabla_consecutivo('cara10pregprueba', 'cara10consec', 'cara10idcara=' . $cara01id . ' AND cara10idbloque=' . $iBloqueReal . '', $objDB);
@@ -1405,6 +1411,8 @@ function f2301_db_CargarPadre($DATA, $objDB, $bDebug = false)
 		$DATA['cara01nivelfisica'] = $fila['cara01nivelfisica'];
 		$DATA['cara01fichaquimica'] = $fila['cara01fichaquimica'];
 		$DATA['cara01nivelquimica'] = $fila['cara01nivelquimica'];
+		$DATA['cara01fichaciudad'] = $fila['cara01fichaciudad'];
+		$DATA['cara01nivelciudad'] = $fila['cara01nivelciudad'];
 		$DATA['cara01tipocaracterizacion'] = $fila['cara01tipocaracterizacion'];
 		$DATA['cara01perayuda'] = $fila['cara01perayuda'];
 		$DATA['cara01perotraayuda'] = $fila['cara01perotraayuda'];
@@ -2639,6 +2647,7 @@ function f2301_db_GuardarV2($DATA, $objDB, $bDebug = false)
 	$DATA['cara01fichabiolog'] = numeros_validar($DATA['cara01fichabiolog']);
 	$DATA['cara01fichafisica'] = numeros_validar($DATA['cara01fichafisica']);
 	$DATA['cara01fichaquimica'] = numeros_validar($DATA['cara01fichaquimica']);
+	$DATA['cara01fichaciudad'] = numeros_validar($DATA['cara01fichaciudad']);
 	$DATA['cara01tipocaracterizacion'] = numeros_validar($DATA['cara01tipocaracterizacion']);
 	$DATA['cara01discv2sensorial'] = numeros_validar($DATA['cara01discv2sensorial']);
 	$DATA['cara02discv2intelectura'] = numeros_validar($DATA['cara02discv2intelectura']);
@@ -3059,6 +3068,10 @@ function f2301_db_GuardarV2($DATA, $objDB, $bDebug = false)
 	if ($DATA['cara01nivelquimica'] == '') {
 		$DATA['cara01nivelquimica'] = 0;
 	}
+	//if ($DATA['cara01fichaciudad']==''){$DATA['cara01fichaciudad']=0;}
+	if ($DATA['cara01nivelciudad'] == '') {
+		$DATA['cara01nivelciudad'] = 0;
+	}
 	//if ($DATA['cara01tipocaracterizacion']==''){$DATA['cara01tipocaracterizacion']=0;}
 	if ($DATA['cara01discv2sensorial'] == '') {
 		$DATA['cara01discv2sensorial'] = 0;
@@ -3401,13 +3414,28 @@ function f2301_db_GuardarV2($DATA, $objDB, $bDebug = false)
 			$DATA['cara01fichaquimica'] = 1;
 		}
 	}
-	$aFicha = array('', 'cara01fichaper', 'cara01fichafam', 'cara01fichaaca', 'cara01fichalab', 'cara01fichabien', 'cara01fichapsico', 'cara01fichadigital', 'cara01fichalectura', 'cara01ficharazona', 'cara01fichaingles', 'cara01fichabiolog', 'cara01fichafisica', 'cara01fichaquimica');
+	if ($DATA['ficha'] == 14) {
+		if ($DATA['cara01fichaciudad'] != -1) {
+			$DATA['cara01fichaciudad'] = 1;
+		}
+	}
+	$aFicha = array('', 'cara01fichaper', 'cara01fichafam', 'cara01fichaaca', 'cara01fichalab', 'cara01fichabien', 'cara01fichapsico', 'cara01fichadigital', 'cara01fichalectura', 'cara01ficharazona', 'cara01fichaingles', 'cara01fichabiolog', 'cara01fichafisica', 'cara01fichaquimica', 'cara01fichaciudad');
 	//Fin de revisar los casos de revision de encabezados
 	$bAntiguo = false;
 	if ($DATA['cara01tipocaracterizacion'] == 3) {
 		$bAntiguo = true;
 	}
 	$sSepara = ', ';
+	if ($DATA['ficha'] == 14) {
+		list($sPreguntas, $DATA['cara01nivelciudad'], $sDebugP) = f2301_VerificarPreguntas($DATA['cara01id'], 8, $objDB, $bDebug);
+		if ($sPreguntas != '') {
+			$sDebug = $sDebug . $sDebugP;
+			$sError = $ERR['msg_noresueltas'] . ' ' . $sPreguntas;
+		}
+		if ($sError != '') {
+			$DATA['cara01fichaciudad'] = 0;
+		}
+	}
 	if ($DATA['ficha'] == 13) {
 		list($sPreguntas, $DATA['cara01nivelquimica'], $sDebugP) = f2301_VerificarPreguntas($DATA['cara01id'], 7, $objDB, $bDebug);
 		if ($sPreguntas != '') {
@@ -4206,7 +4234,7 @@ function f2301_db_GuardarV2($DATA, $objDB, $bDebug = false)
 			if ($DATA['cara44bienv3arteformacion'] == 0) {
 				$sError = $ERR['cara44bienv3arteformacion'] . $sSepara . $sError;
 			}
-			if ($DATA['cara44bienv3arteunad'] == 0) {
+			if ($DATA['cara44bienv3arteunad'] == '') {
 				$sError = $ERR['cara44bienv3arteunad'] . $sSepara . $sError;
 			}
 			if ($DATA['cara44bienv3arteinformacion'] == 0) {
@@ -4728,6 +4756,9 @@ function f2301_db_GuardarV2($DATA, $objDB, $bDebug = false)
 		}
 	}
 	if ($DATA['cara01completa'] == 'S') {
+		if ($DATA['cara01fichaciudad'] == 0) {
+			$sError = $ERR['cara01fichaciudad'] . $sSepara . $sError;
+		}
 		if ($DATA['cara01fichaquimica'] == 0) {
 			$sError = $ERR['cara01fichaquimica'] . $sSepara . $sError;
 		}
@@ -4913,6 +4944,7 @@ function f2301_db_GuardarV2($DATA, $objDB, $bDebug = false)
 			$DATA['cara01nivelbiolog'] = 0;
 			$DATA['cara01nivelfisica'] = 0;
 			$DATA['cara01nivelquimica'] = 0;
+			$DATA['cara01nivelciudad'] = 0;
 			$DATA['cara01discversion'] = 1;
 			$sCampos2301 = 'cara01idperaca, cara01idtercero, cara01id, cara01completa, cara01fichaper, 
 cara01fichafam, cara01fichaaca, cara01fichalab, cara01fichabien, cara01fichapsico, 
@@ -4948,7 +4980,7 @@ cara01psico_problemapers, cara01psico_satisfaccion, cara01psico_discusiones, car
 cara01nivellectura, cara01nivelrazona, cara01nivelingles, cara01idconsejero, cara01fechainicio, 
 cara01telefono1, cara01telefono2, cara01correopersonal, cara01idprograma, cara01idescuela, 
 cara01fichabiolog, cara01nivelbiolog, cara01fichafisica, cara01nivelfisica, cara01fichaquimica, 
-cara01nivelquimica, cara01tipocaracterizacion,
+cara01nivelquimica, cara01fichaciudad, cara01nivelciudad, cara01tipocaracterizacion,
 
 
 
@@ -5030,7 +5062,7 @@ cara44bienv3mentaldiagotro, cara44bienv3arteintegrar, cara44bienv3arteformacion,
 ' . $DATA['cara01nivellectura'] . ', ' . $DATA['cara01nivelrazona'] . ', ' . $DATA['cara01nivelingles'] . ', ' . $DATA['cara01idconsejero'] . ', "' . $DATA['cara01fechainicio'] . '", 
 "' . $DATA['cara01telefono1'] . '", "' . $DATA['cara01telefono2'] . '", "' . $DATA['cara01correopersonal'] . '", ' . $DATA['cara01idprograma'] . ', ' . $DATA['cara01idescuela'] . ', 
 ' . $DATA['cara01fichabiolog'] . ', ' . $DATA['cara01nivelbiolog'] . ', ' . $DATA['cara01fichafisica'] . ', ' . $DATA['cara01nivelfisica'] . ', ' . $DATA['cara01fichaquimica'] . ', 
-' . $DATA['cara01nivelquimica'] . ', ' . $DATA['cara01tipocaracterizacion'] . ', 
+' . $DATA['cara01nivelquimica'] . ', ' . $DATA['cara01fichaciudad'] . ', ' . $DATA['cara01nivelciudad'] . ', ' . $DATA['cara01tipocaracterizacion'] . ', 
 
 
 
@@ -5246,39 +5278,41 @@ cara44bienv3mentaldiagotro, cara44bienv3arteintegrar, cara44bienv3arteformacion,
 			$scampo[151] = 'cara01fichabiolog';
 			$scampo[152] = 'cara01fichafisica';
 			$scampo[153] = 'cara01fichaquimica';
+			$scampo[154] = 'cara01fichaciudad';
 
 			//Los niveles.
-			$scampo[154] = 'cara01niveldigital';
-			$scampo[155] = 'cara01nivellectura';
-			$scampo[156] = 'cara01nivelrazona';
-			$scampo[157] = 'cara01nivelingles';
-			$scampo[158] = 'cara01nivelbiolog';
-			$scampo[159] = 'cara01nivelfisica';
-			$scampo[160] = 'cara01nivelquimica';
-			$scampo[161] = 'cara01psico_puntaje';
+			$scampo[155] = 'cara01niveldigital';
+			$scampo[156] = 'cara01nivellectura';
+			$scampo[157] = 'cara01nivelrazona';
+			$scampo[158] = 'cara01nivelingles';
+			$scampo[159] = 'cara01nivelbiolog';
+			$scampo[160] = 'cara01nivelfisica';
+			$scampo[161] = 'cara01nivelquimica';
+			$scampo[162] = 'cara01nivelciudad';
+			$scampo[163] = 'cara01psico_puntaje';
 			//Los faltantes de discapacidad
-			$scampo[162] = 'cara01perayuda';
-			$scampo[163] = 'cara01discsensorialotra';
-			$scampo[164] = 'cara01discv2sensorial';
-			$scampo[165] = 'cara02discv2intelectura';
-			$scampo[166] = 'cara02discv2fisica';
-			$scampo[167] = 'cara02discv2psico';
-			$scampo[168] = 'cara02discv2sistemica';
-			$scampo[169] = 'cara02discv2sistemicaotro';
-			$scampo[170] = 'cara02discv2multiple';
-			$scampo[171] = 'cara02discv2multipleotro';
-			$scampo[172] = 'cara02talentoexcepcional';
+			$scampo[164] = 'cara01perayuda';
+			$scampo[165] = 'cara01discsensorialotra';
+			$scampo[166] = 'cara01discv2sensorial';
+			$scampo[167] = 'cara02discv2intelectura';
+			$scampo[168] = 'cara02discv2fisica';
+			$scampo[169] = 'cara02discv2psico';
+			$scampo[170] = 'cara02discv2sistemica';
+			$scampo[171] = 'cara02discv2sistemicaotro';
+			$scampo[172] = 'cara02discv2multiple';
+			$scampo[173] = 'cara02discv2multipleotro';
+			$scampo[174] = 'cara02talentoexcepcional';
 			//Aqui esta alterado el orden...
-			$scampo[173] = 'cara01discfisicaotra';
-			$scampo[174] = 'cara01disccognitivaotra';
-			$scampo[175] = 'cara01perotraayuda';
-			$scampo[176] = 'cara01discv2tiene';
-			$scampo[177] = 'cara01discv2trastaprende';
-			$scampo[178] = 'cara01discv2trastornos';
-			$scampo[179] = 'cara01discv2contalento';
-			$scampo[180] = 'cara01discv2condicionmedica';
-			$scampo[181] = 'cara01discv2condmeddet';
-			$scampo[182] = 'cara01discv2pruebacoeficiente';
+			$scampo[175] = 'cara01discfisicaotra';
+			$scampo[176] = 'cara01disccognitivaotra';
+			$scampo[177] = 'cara01perotraayuda';
+			$scampo[178] = 'cara01discv2tiene';
+			$scampo[179] = 'cara01discv2trastaprende';
+			$scampo[180] = 'cara01discv2trastornos';
+			$scampo[181] = 'cara01discv2contalento';
+			$scampo[182] = 'cara01discv2condicionmedica';
+			$scampo[183] = 'cara01discv2condmeddet';
+			$scampo[184] = 'cara01discv2pruebacoeficiente';
 			//
 			$sdato[1] = $DATA['cara01completa'];
 			$sdato[2] = $DATA['cara01fichaper'];
@@ -5433,40 +5467,42 @@ cara44bienv3mentaldiagotro, cara44bienv3arteintegrar, cara44bienv3arteformacion,
 			$sdato[151] = $DATA['cara01fichabiolog'];
 			$sdato[152] = $DATA['cara01fichafisica'];
 			$sdato[153] = $DATA['cara01fichaquimica'];
+			$sdato[154] = $DATA['cara01fichaciudad'];
 			//Los niveles.
-			$sdato[154] = $DATA['cara01niveldigital'];
-			$sdato[155] = $DATA['cara01nivellectura'];
-			$sdato[156] = $DATA['cara01nivelrazona'];
-			$sdato[157] = $DATA['cara01nivelingles'];
-			$sdato[158] = $DATA['cara01nivelbiolog'];
-			$sdato[159] = $DATA['cara01nivelfisica'];
-			$sdato[160] = $DATA['cara01nivelquimica'];
+			$sdato[155] = $DATA['cara01niveldigital'];
+			$sdato[156] = $DATA['cara01nivellectura'];
+			$sdato[157] = $DATA['cara01nivelrazona'];
+			$sdato[158] = $DATA['cara01nivelingles'];
+			$sdato[159] = $DATA['cara01nivelbiolog'];
+			$sdato[160] = $DATA['cara01nivelfisica'];
+			$sdato[161] = $DATA['cara01nivelquimica'];
+			$sdato[162] = $DATA['cara01nivelciudad'];
 			//
-			$sdato[161] = $DATA['cara01psico_puntaje'];
+			$sdato[163] = $DATA['cara01psico_puntaje'];
 			//Los faltantes de discapacidad
-			$sdato[162] = $DATA['cara01perayuda'];
-			$sdato[163] = $DATA['cara01discsensorialotra'];
-			$sdato[164] = $DATA['cara01discv2sensorial'];
-			$sdato[165] = $DATA['cara02discv2intelectura'];
-			$sdato[166] = $DATA['cara02discv2fisica'];
-			$sdato[167] = $DATA['cara02discv2psico'];
-			$sdato[168] = $DATA['cara02discv2sistemica'];
-			$sdato[169] = $DATA['cara02discv2sistemicaotro'];
-			$sdato[170] = $DATA['cara02discv2multiple'];
-			$sdato[171] = $DATA['cara02discv2multipleotro'];
-			$sdato[172] = $DATA['cara02talentoexcepcional'];
+			$sdato[164] = $DATA['cara01perayuda'];
+			$sdato[165] = $DATA['cara01discsensorialotra'];
+			$sdato[166] = $DATA['cara01discv2sensorial'];
+			$sdato[167] = $DATA['cara02discv2intelectura'];
+			$sdato[168] = $DATA['cara02discv2fisica'];
+			$sdato[169] = $DATA['cara02discv2psico'];
+			$sdato[170] = $DATA['cara02discv2sistemica'];
+			$sdato[171] = $DATA['cara02discv2sistemicaotro'];
+			$sdato[172] = $DATA['cara02discv2multiple'];
+			$sdato[173] = $DATA['cara02discv2multipleotro'];
+			$sdato[174] = $DATA['cara02talentoexcepcional'];
 			//Aqui esta alterado el orden...
-			$sdato[173] = $DATA['cara01discfisicaotra'];
-			$sdato[174] = $DATA['cara01disccognitivaotra'];
-			$sdato[175] = $DATA['cara01perotraayuda'];
-			$sdato[176] = $DATA['cara01discv2tiene'];
-			$sdato[177] = $DATA['cara01discv2trastaprende'];
-			$sdato[178] = $DATA['cara01discv2trastornos'];
-			$sdato[179] = $DATA['cara01discv2contalento'];
-			$sdato[180] = $DATA['cara01discv2condicionmedica'];
-			$sdato[181] = $DATA['cara01discv2condmeddet'];
-			$sdato[182] = $DATA['cara01discv2pruebacoeficiente'];
-			$iNumCamposMod = 182;
+			$sdato[175] = $DATA['cara01discfisicaotra'];
+			$sdato[176] = $DATA['cara01disccognitivaotra'];
+			$sdato[177] = $DATA['cara01perotraayuda'];
+			$sdato[178] = $DATA['cara01discv2tiene'];
+			$sdato[179] = $DATA['cara01discv2trastaprende'];
+			$sdato[180] = $DATA['cara01discv2trastornos'];
+			$sdato[181] = $DATA['cara01discv2contalento'];
+			$sdato[182] = $DATA['cara01discv2condicionmedica'];
+			$sdato[183] = $DATA['cara01discv2condmeddet'];
+			$sdato[184] = $DATA['cara01discv2pruebacoeficiente'];
+			$iNumCamposMod = 184;
 			$sWhere = 'cara01id=' . $DATA['cara01id'] . '';
 			$sSQL = 'SELECT * FROM cara01encuesta WHERE ' . $sWhere;
 			$sdatos = '';
@@ -7409,6 +7445,7 @@ function f2301_NombrePuntaje($sCompetencia, $iValor)
 		case 'biolog':
 		case 'fisica':
 		case 'quimica':
+		case 'ciudadanas':
 			if ($iValor >= 0 && $iValor <= 30) {
 				$sValor = 'Bajo';
 			} else {

@@ -522,6 +522,9 @@ if (isset($_REQUEST['boculta112']) == 0) {
 if (isset($_REQUEST['boculta113']) == 0) {
 	$_REQUEST['boculta113'] = 0;
 }
+if (isset($_REQUEST['boculta114']) == 0) {
+	$_REQUEST['boculta114'] = 0;
+}
 if (isset($_REQUEST['bocultaResultados']) == 0) {
 	$_REQUEST['bocultaResultados'] = 0;
 }
@@ -1072,6 +1075,12 @@ if (isset($_REQUEST['cara01fichaquimica']) == 0) {
 }
 if (isset($_REQUEST['cara01nivelquimica']) == 0) {
 	$_REQUEST['cara01nivelquimica'] = 0;
+}
+if (isset($_REQUEST['cara01fichaciudad']) == 0) {
+	$_REQUEST['cara01fichaciudad'] = 0;
+}
+if (isset($_REQUEST['cara01nivelciudad']) == 0) {
+	$_REQUEST['cara01nivelciudad'] = 0;
 }
 if (isset($_REQUEST['cara01tipocaracterizacion']) == 0) {
 	$_REQUEST['cara01tipocaracterizacion'] = 0;
@@ -2136,6 +2145,8 @@ if (($_REQUEST['paso'] == 1) || ($_REQUEST['paso'] == 3)) {
 		$_REQUEST['cara01nivelfisica'] = $fila['cara01nivelfisica'];
 		$_REQUEST['cara01fichaquimica'] = $fila['cara01fichaquimica'];
 		$_REQUEST['cara01nivelquimica'] = $fila['cara01nivelquimica'];
+		$_REQUEST['cara01fichaciudad'] = $fila['cara01fichaciudad'];
+		$_REQUEST['cara01nivelciudad'] = $fila['cara01nivelciudad'];
 		$_REQUEST['cara01tipocaracterizacion'] = $fila['cara01tipocaracterizacion'];
 		$_REQUEST['cara01perayuda'] = $fila['cara01perayuda'];
 		$_REQUEST['cara01perotraayuda'] = $fila['cara01perotraayuda'];
@@ -2410,6 +2421,7 @@ if (($_REQUEST['paso'] == 1) || ($_REQUEST['paso'] == 3)) {
 			$_REQUEST['boculta111'] = $fila['cara01fichabiolog'];
 			$_REQUEST['boculta112'] = $fila['cara01fichafisica'];
 			$_REQUEST['boculta113'] = $fila['cara01fichaquimica'];
+			$_REQUEST['boculta114'] = $fila['cara01fichaciudad'];
 			$bDiscapacitado = false;
 			if ($_REQUEST['cara01discsensorial'] != 'N') {
 				$bDiscapacitado = true;
@@ -2554,6 +2566,11 @@ function SiguienteFicha($DATA)
 		}
 		if ($iRes == 13) {
 			if ($DATA['cara01fichaquimica'] == -1) {
+				$iRes = 14;
+			}
+		}
+		if ($iRes == 14) {
+			if ($DATA['cara01fichaciudad'] == -1) {
 				$iRes = 1;
 			}
 		}
@@ -2843,6 +2860,8 @@ if ($_REQUEST['paso'] == -1) {
 	$_REQUEST['cara01nivelfisica'] = 0;
 	$_REQUEST['cara01fichaquimica'] = -1;
 	$_REQUEST['cara01nivelquimica'] = 0;
+	$_REQUEST['cara01fichaciudad'] = -1;
+	$_REQUEST['cara01nivelciudad'] = 0;
 	$_REQUEST['cara01tipocaracterizacion'] = 0;
 	$_REQUEST['cara01perayuda'] = '';
 	$_REQUEST['cara01perotraayuda'] = '';
@@ -4419,6 +4438,7 @@ $sTabla2310_10 = '';
 $sTabla2310_11 = '';
 $sTabla2310_12 = '';
 $sTabla2310_13 = '';
+$sTabla2310_14 = '';
 if ($_REQUEST['paso'] != 0) {
 	//Preguntas de la prueba
 	$iParaEditar = 0;
@@ -4434,34 +4454,39 @@ if ($_REQUEST['paso'] != 0) {
 		list($sTabla2310_7, $sDebugTabla) = f2310_TablaDetalleV2($aParametros2310, $objDB, $bDebug);
 		$sDebug = $sDebug . $sDebugTabla;
 	}
-	if ($_REQUEST['cara01fichadigital'] != -1) {
+	if ($_REQUEST['cara01fichalectura'] != -1) {
 		$aParametros2310[100] = 2;
 		list($sTabla2310_8, $sDebugTabla) = f2310_TablaDetalleV2($aParametros2310, $objDB, $bDebug);
 		$sDebug = $sDebug . $sDebugTabla;
 	}
-	if ($_REQUEST['cara01fichadigital'] != -1) {
+	if ($_REQUEST['cara01ficharazona'] != -1) {
 		$aParametros2310[100] = 3;
 		list($sTabla2310_9, $sDebugTabla) = f2310_TablaDetalleV2($aParametros2310, $objDB, $bDebug);
 		$sDebug = $sDebug . $sDebugTabla;
 	}
-	if ($_REQUEST['cara01fichadigital'] != -1) {
+	if ($_REQUEST['cara01fichaingles'] != -1) {
 		$aParametros2310[100] = 4;
 		list($sTabla2310_10, $sDebugTabla) = f2310_TablaDetalleV2($aParametros2310, $objDB, $bDebug);
 		$sDebug = $sDebug . $sDebugTabla;
 	}
-	if ($_REQUEST['cara01fichadigital'] != -1) {
+	if ($_REQUEST['cara01fichabiolog'] != -1) {
 		$aParametros2310[100] = 5;
 		list($sTabla2310_11, $sDebugTabla) = f2310_TablaDetalleV2($aParametros2310, $objDB, $bDebug);
 		$sDebug = $sDebug . $sDebugTabla;
 	}
-	if ($_REQUEST['cara01fichadigital'] != -1) {
+	if ($_REQUEST['cara01fichafisica'] != -1) {
 		$aParametros2310[100] = 6;
 		list($sTabla2310_12, $sDebugTabla) = f2310_TablaDetalleV2($aParametros2310, $objDB, $bDebug);
 		$sDebug = $sDebug . $sDebugTabla;
 	}
-	if ($_REQUEST['cara01fichadigital'] != -1) {
+	if ($_REQUEST['cara01fichaquimica'] != -1) {
 		$aParametros2310[100] = 7;
 		list($sTabla2310_13, $sDebugTabla) = f2310_TablaDetalleV2($aParametros2310, $objDB, $bDebug);
+		$sDebug = $sDebug . $sDebugTabla;
+	}
+	if ($_REQUEST['cara01fichaciudad'] != -1) {
+		$aParametros2310[100] = 8;
+		list($sTabla2310_14, $sDebugTabla) = f2310_TablaDetalleV2($aParametros2310, $objDB, $bDebug);
 		$sDebug = $sDebug . $sDebugTabla;
 	}
 }
@@ -4965,6 +4990,7 @@ switch ($iPiel) {
 			document.getElementById('div_ficha11').style.display = 'none';
 			document.getElementById('div_ficha12').style.display = 'none';
 			document.getElementById('div_ficha13').style.display = 'none';
+			document.getElementById('div_ficha14').style.display = 'none';
 			document.getElementById('div_ficha' + num).style.display = 'block';
 			window.document.frmedita.ficha.value = num;
 		}
@@ -5563,6 +5589,10 @@ $bGrupo10 = true;
 $bGrupo11 = true;
 $bGrupo12 = true;
 $bGrupo13 = true;
+$bGrupo14 = false;
+if ($_REQUEST['cara01idperaca'] > 2035) {
+	$bGrupo14 = true;
+}
 echo $sHTMLHistorial;
 //Div para ocultar
 $bConExpande = true;
@@ -5655,12 +5685,12 @@ echo html_oculto('cara01fechaencuesta', $_REQUEST['cara01fechaencuesta'], $et_ca
 <div class="salto1px"></div>
 <?php
 if ($bEstudiante) {
-	$aTitulo = array('', 'cara01fichaper', 'cara01fichafam', 'cara01fichaaca', 'cara01fichalab', 'cara01fichabien', 'cara01fichapsico', 'cara01fichadigital', 'cara01fichalectura', 'cara01ficharazona', 'cara01fichaingles', 'cara01fichabiolog', 'cara01fichafisica', 'cara01fichaquimica');
+	$aTitulo = array('', 'cara01fichaper', 'cara01fichafam', 'cara01fichaaca', 'cara01fichalab', 'cara01fichabien', 'cara01fichapsico', 'cara01fichadigital', 'cara01fichalectura', 'cara01ficharazona', 'cara01fichaingles', 'cara01fichabiolog', 'cara01fichafisica', 'cara01fichaquimica', 'cara01fichaciudad');
 	$sPendiente = 'Pendiente';
 	$sHecho = 'Completo';
 	echo '<div class="tabuladores">';
-	$aEstado = array('', $sPendiente, $sPendiente, $sPendiente, $sPendiente, $sPendiente, $sPendiente, $sPendiente, $sPendiente, $sPendiente, $sPendiente, $sPendiente, $sPendiente, $sPendiente);
-	for ($k = 1; $k <= 13; $k++) {
+	$aEstado = array('', $sPendiente, $sPendiente, $sPendiente, $sPendiente, $sPendiente, $sPendiente, $sPendiente, $sPendiente, $sPendiente, $sPendiente, $sPendiente, $sPendiente, $sPendiente, $sPendiente);
+	for ($k = 1; $k <= 14; $k++) {
 		if ($_REQUEST[$aTitulo[$k]] != -1) {
 			//febrero 17 de 2022 - Se cambian los botones.
 			if ($_REQUEST[$aTitulo[$k]] == 1) {
@@ -5904,6 +5934,30 @@ echo html_oculto('cara01nivelquimica', $_REQUEST['cara01nivelquimica'], f2301_No
 } else {
 ?>
 <input id="cara01nivelquimica" name="cara01nivelquimica" type="hidden" value="<?php echo $_REQUEST['cara01nivelquimica']; ?>" />
+<?php
+}
+if (($bGrupo14) && ($_REQUEST['cara01fichaciudad'] != -1)){
+?>
+<div class="salto1px"></div>
+<label class="Label220">
+<?php
+echo $ETI['cara01fichaciudad'];
+?>
+</label>
+<label class="Label60">
+<?php
+echo $ETI['msg_nivel'];
+?>
+</label>
+<label class="Label60">
+<?php
+echo html_oculto('cara01nivelciudad', $_REQUEST['cara01nivelciudad'], f2301_NombrePuntaje('ciudadanas', $_REQUEST['cara01nivelciudad']));
+?>
+</label>
+<?php
+} else {
+?>
+<input id="cara01nivelciudad" name="cara01nivelciudad" type="hidden" value="<?php echo $_REQUEST['cara01nivelciudad']; ?>" />
 <?php
 }
 ?>
@@ -11933,6 +11987,96 @@ if ($_REQUEST['paso'] == 2){
 		echo html_2201Tablero(13, $objForma);
 	} else {
 		echo html_2201ContinuarCerrar(13, $objForma);
+	}
+}
+}
+?>
+<div class="salto1px"></div>
+</div>
+<div class="salto1px"></div>
+</div>
+<?php
+}
+if ($bGrupo14) {
+	$sEstilo = '';
+	if ($_REQUEST['cara01fichaciudad'] == -1) {
+		$sEstilo = ' style="display:none"';
+	}
+	if ($bEstudiante) {
+		$sEstilo = ' style="display:none"';
+		if ($_REQUEST['ficha'] == 14) {
+			$sEstilo = '';
+		}
+	}
+?>
+<div class="salto1px"></div>
+<div class="GrupoCampos" id="div_ficha14" <?php echo $sEstilo; ?>>
+<?php
+if ($bConExpande) {
+?>
+<div class="ir_derecha"<?php echo $sAnchoExpandeContrae; ?>>
+<?php
+echo $objForma->htmlExpande(114, $_REQUEST['boculta114'], $ETI['bt_mostrar'], $ETI['bt_ocultar']);
+$sEstiloDiv = '';
+if ($_REQUEST['boculta114'] != 0) {
+	$sEstiloDiv = ' style="display:none;"';
+}
+?>
+</div>
+<?php
+}
+?>
+<label class="TituloGrupo">
+<?php
+echo $ETI['cara01fichaciudad'];
+?>
+</label>
+<label class="Label130">
+<div id="div_cara01fichaciudad">
+<?php
+$sMuestra = '&nbsp;';
+if ($_REQUEST['cara01fichaciudad'] == 1) {
+$sMuestra = 'COMPLETA';
+}
+echo html_oculto('cara01fichaciudad', $_REQUEST['cara01fichaciudad'], $sMuestra);
+?>
+</div>
+</label>
+<?php
+if ($bEstudiante) {
+?>
+<input id="cara01nivelciudad" name="cara01nivelciudad" type="hidden" value="<?php echo $_REQUEST['cara01nivelciudad']; ?>" />
+<?php
+} else {
+?>
+<label class="Label60">
+<?php
+echo $ETI['msg_nivel'];
+?>
+</label>
+<label class="Label130">
+<?php
+//echo html_oculto('cara01nivelquimica', $_REQUEST['cara01nivelquimica']);
+echo html_oculto('cara01nivelciudad', $_REQUEST['cara01nivelciudad'], f2301_NombrePuntaje('ciudadanas', $_REQUEST['cara01nivelciudad']));
+?>
+</label>
+<?php
+}
+?>
+<div class="salto1px"></div>
+<div id="div_p114"<?php echo $sEstiloDiv; ?>>
+<div id="div_f2310detalle_14">
+<?php
+echo $sTabla2310_14;
+?>
+</div>
+<?php
+if ($bEstudiante) {
+if ($_REQUEST['paso'] == 2){
+	if ($bPintarTablero){
+		echo html_2201Tablero(14, $objForma);
+	} else {
+		echo html_2201ContinuarCerrar(14, $objForma);
 	}
 }
 }

@@ -253,6 +253,20 @@ function cadena_esISO($sCadena)
 {
 	return mb_detect_encoding($sCadena, "ISO-8859-1", true) == "ISO-8859-1" ? true : false;
 }
+// Leer el contenido de una cadena base64
+function cadena_DesdeBase64(string $cadena): string
+{
+	$sRes = '';
+	// Verifica que solo contenga caracteres base64 válidos y tenga longitud múltiplo de 4
+	if (preg_match('/^[a-zA-Z0-9\/\r\n+]*={0,2}$/', $cadena) && strlen($cadena) % 4 === 0) {
+		$decoded = base64_decode($cadena, true);
+		if ($decoded !== false) {
+			$sRes = $decoded;
+		}
+	}
+	return $sRes;
+}
+// Limpiar una cadena para que solo contenga letras.
 function cadena_letras($semilla, $adicionales = '')
 {
 	$cf = '';
@@ -462,6 +476,7 @@ function cadena_LimpiarXAJAX($semilla, $adicionales = '', $sComodin = '?')
 	$permitidos = $permitidos . 'áéíóúñüÁÉÍÓÚÑÜ';
 	//$permitidos = $permitidos . '°';
 	$cf = '';
+	$semilla = cadena_LimpiarNoValidos($semilla);
 	if (strlen($permitidos) > 0) {
 		$largo = strlen($semilla);
 		for ($k = 0; $k < $largo; $k++) {
@@ -853,6 +868,8 @@ function cadena_Validar($semilla, $bTolerante = false)
 		$permitidos = $permitidos . '-<>/';
 	}
 	$cf = '';
+	$semilla = cadena_LimpiarWord($semilla);
+	$semilla = cadena_LimpiarNoValidos($semilla);
 	if (strlen($permitidos) > 0) {
 		$largo = strlen($semilla);
 		for ($k = 0; $k < $largo; $k++) {
@@ -1231,12 +1248,19 @@ function fecha_diaFinMes($iAgno = '', $iMes = '')
 	$iRes = date('d', $nueva);
 	return $iRes;
 }
-function fecha_dia_nombre($iDiaSem)
+function fecha_dia_nombre($iDiaSem, $sIdioma = 'es')
 {
 	$res = '{' . $iDiaSem . '}';
 	$iData = (int)$iDiaSem;
 	if (($iData > -1) && ($iData < 7)) {
-		$sDias = array('Domingo', 'Lunes', 'Martes', 'Miercoles', 'Jueves', 'Viernes', 'Sabado');
+		switch ($sIdioma) {
+			case 'en':
+				$sDias = array('Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday');
+				break;
+			case 'es':
+				$sDias = array('Domingo', 'Lunes', 'Martes', 'Miercoles', 'Jueves', 'Viernes', 'Sabado');
+				break;
+		}
 		$res = $sDias[$iData];
 	}
 	return $res;
@@ -1486,7 +1510,14 @@ function fecha_mes_nombre($iMes, $sIdioma = 'es')
 	$res = '{' . $iMes . '}';
 	$iData = (int)$iMes;
 	if (($iData > 0) && ($iData < 13)) {
-		$smeses = array('', 'Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre');
+		switch ($sIdioma) {
+			case 'en':
+				$smeses = array('', 'January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December');
+				break;
+			case 'es':
+				$smeses = array('', 'Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre');
+				break;
+		}
 		$res = $smeses[$iData];
 	}
 	return $res;
@@ -1565,7 +1596,7 @@ function fecha_MinutosEntreFechas($iDiaIni, $iHoraIni, $iMinIni, $iDiaFin, $iHor
 			$iDias++;
 			$iPuntoIni = 1440 - (($iHoraFin * 60) + $iMinFin);
 			$iPuntoFin = ($iHoraIni * 60) + $iMinIni;
-			$iMinutos = - $iPuntoIni - $iPuntoFin;
+			$iMinutos = -$iPuntoIni - $iPuntoFin;
 			if ($iMinutos < -1439) {
 				$iDias--;
 				$iMinutos = $iMinutos + 1440;
@@ -1729,6 +1760,18 @@ function formato_anchofijo($scadena, $ilargo, $sprevio = ' ', $bizquierda = true
 	}
 	return $res;
 }
+function formato_CorreoParcialOculto($sCorreo)
+{
+	$sRes = 'Direcci&oacute;n de correo incorrecta.';
+	if (correo_VerificarDireccion($sCorreo)) {
+		list($sUsuario, $sDominio) = explode('@', $sCorreo, 2);
+		$iLargo = strlen($sUsuario);
+		$iMostrar = ($iLargo < 6) ? 3 : 5;
+		$sVisible = substr($sUsuario, -$iMostrar);
+		$sRes = $sVisible . '@' . $sDominio;
+	}
+	return $sRes;
+}
 function formato_CorreoOculto($sCorreo)
 {
 	$sRes = 'Direcci&oacute;n de correo incorrecta.';
@@ -1764,9 +1807,19 @@ function formato_CorreoOculto($sCorreo)
 }
 function formato_fechalarga($sFecha, $bConDia = false)
 {
-	$res = 'Fecha incorrecta {' . $sFecha . '}';
+	require './app.php';
+	if (!function_exists('AUREA_Idioma')) {
+		require $APP->rutacomun . 'libaurea.php';
+	}
+	$sIdioma = AUREA_Idioma();
+	$mensajes_todas = $APP->rutacomun . 'lg/lg_todas_' . $sIdioma . '.php';
+	if (!file_exists($mensajes_todas)) {
+		$mensajes_todas = $APP->rutacomun . 'lg/lg_todas_es.php';
+	}
+	require $mensajes_todas;
+	$res = $ETI['msg_fecha_incorrecta'] . ' {' . $sFecha . '}';
 	if ($sFecha == '00/00/0000') {
-		$res = 'Sin fecha';
+		$res = $ETI['msg_sin_fecha'];
 		$sFecha = '';
 	}
 	if (strlen($sFecha) == 10) {
@@ -1774,11 +1827,11 @@ function formato_fechalarga($sFecha, $bConDia = false)
 		$imes = (int)substr($sFecha, 3, 2);
 		$iagno = (int)substr($sFecha, 6, 4);
 		if (checkdate($imes, $idia, $iagno)) {
-			$res = $idia . ' de ';
-			$res = $res . fecha_mes_nombre($imes);
-			$res = $res . ' de ' . $iagno;
+			$res = $idia . ' ' . $ETI['msg_de'] . ' ';
+			$res = $res . fecha_mes_nombre($imes, $sIdioma);
+			$res = $res . ' ' . $ETI['msg_de'] . ' ' . $iagno;
 			if ($bConDia) {
-				$res = fecha_dia_nombre(fecha_diasemana($sFecha)) . ' ' . $res;
+				$res = fecha_dia_nombre(fecha_diasemana($sFecha), $sIdioma) . ' ' . $res;
 			}
 		}
 	}
@@ -1786,10 +1839,30 @@ function formato_fechalarga($sFecha, $bConDia = false)
 }
 function formato_FechaLargaDesdeNumero($iFecha, $bConDia = false)
 {
-	$res = 'Fecha incorrecta {' . $iFecha . '}';
+	$sDirBase = './';
+	$sRutaApp = $sDirBase . 'app.php';
+	if (!file_exists($sRutaApp)) {
+		$sDirBase = __DIR__ . '/';
+		$sRutaApp = $sDirBase . 'app.php';
+	}
+	require $sRutaApp;
+	if (!function_exists('AUREA_Idioma')) {
+		require $APP->rutacomun . 'libaurea.php';
+	}
+	if (!function_exists('Traer_Entidad')) {
+		require $APP->rutacomun . 'libdatos.php';
+	}
+	$sIdioma = AUREA_Idioma();
+	$mensajes_todas = $APP->rutacomun . 'lg/lg_todas_' . $sIdioma . '.php';
+	if (!file_exists($mensajes_todas)) {
+		$mensajes_todas = $APP->rutacomun . 'lg/lg_todas_es.php';
+	}
+	require $mensajes_todas;
+	$res = $ETI['msg_fecha_incorrecta'] . ' {' . $iFecha . '}';
 	$bPasa = true;
 	if ($iFecha == 0) {
-		$res = 'Sin fecha';
+		$res = $ETI['msg_sin_fecha'];
+		$res = $ETI['msg_sin_fecha'];
 		$bPasa = false;
 	}
 	if ($iFecha < 10000) {
@@ -1801,12 +1874,12 @@ function formato_FechaLargaDesdeNumero($iFecha, $bConDia = false)
 	if ($bPasa) {
 		list($iDia, $iMes, $iAgno) = fecha_DividirNumero($iFecha);
 		if (checkdate($iMes, $iDia, $iAgno)) {
-			$res = $iDia . ' de ';
-			$res = $res . fecha_mes_nombre($iMes);
-			$res = $res . ' de ' . $iAgno;
+			$res = $iDia . ' ' . $ETI['msg_de'] . ' ';
+			$res = $res . fecha_mes_nombre($iMes, $sIdioma);
+			$res = $res . ' ' . $ETI['msg_de'] . ' ' . $iAgno;
 			if ($bConDia) {
 				$sFecha = fecha_armar($iDia, $iMes, $iAgno);
-				$res = fecha_dia_nombre(fecha_diasemana($sFecha)) . ' ' . $res;
+				$res = fecha_dia_nombre(fecha_diasemana($sFecha), $sIdioma) . ' ' . $res;
 			}
 		}
 	}
@@ -3345,19 +3418,23 @@ function html_TablaTiempo($iHora, $iMin, $iSeg, $iMilecimas = 2)
 }
 //Junio 04 de 2019 - Esta funcion se deprecia, se deberia usar la libreria clsHtmlTercero->Traer
 //Septiembre 9 de 2020 - Se agrega el parametro especial incialmente para incluir necesidades es peciales (Seguro esta depreciada??? )
-function html_tercero($sTipoDoc, $sDoc, $id, $iModelo, $objDB, $iEspecial = 0)
+function html_tercero($sTipoDoc, $sDoc, $unad11id, $iModelo, $objDB, $iEspecial = 0)
 {
 	$sHTML = '';
 	$sCondi = '';
 	if ($iModelo == 1) {
 		$sCondi = $sCondi . ' unad11tipodoc="' . $sTipoDoc . '" AND unad11doc="' . $sDoc . '"';
 	} else {
-		$sCondi = $sCondi . ' unad11id=' . $id . '';
+		$sCondi = $sCondi . ' unad11id=' . $unad11id . '';
 	}
 	$bConNecesidadesEsp = false;
+	$bBloqueProveedor = false;
 	switch ($iEspecial) {
 		case 1:
 			$bConNecesidadesEsp = true;
+			break;
+		case 46:
+			$bBloqueProveedor = true;
 			break;
 	}
 	$sSQL = 'SELECT unad11razonsocial, unad11direccion, unad11telefono, unad11id, unad11tipodoc, 
@@ -3367,6 +3444,9 @@ function html_tercero($sTipoDoc, $sDoc, $id, $iModelo, $objDB, $iEspecial = 0)
 	$tablater = $objDB->ejecutasql($sSQL);
 	if ($objDB->nf($tablater) > 0) {
 		$filater = $objDB->sf($tablater);
+		$unad11id = $filater['unad11id'];
+		$sTipoDoc = $filater['unad11tipodoc'];
+		$sDoc = $filater['unad11doc'];
 		$sPrefijo = '<b>';
 		$sSufijo = '</b>';
 		$sNombre = cadena_notildes($filater['unad11razonsocial']);
@@ -3390,11 +3470,35 @@ function html_tercero($sTipoDoc, $sDoc, $id, $iModelo, $objDB, $iEspecial = 0)
 				$sHTML = $sHTML . '<br>' . cadena_notildes($filater['unad11necesidadesp']);
 			}
 		}
-		$id = $filater['unad11id'];
-		$sTipoDoc = $filater['unad11tipodoc'];
-		$sDoc = $filater['unad11doc'];
+		if ($bBloqueProveedor) {
+			// 11 / Sep / 2025 -Se debe agregar la info como proveedor
+			$sPref = '';
+			$sSuf = '';
+			$sSQL = 'SELECT TB.gafi16estado, T73.gafi74nombre 
+			FROM gafi16proveedores AS TB, gafi73estadoprov AS T73 
+			WHERE TB.gafi16idtercero=' . $unad11id . ' AND TB.gafi16estado=T73.gafi73id';
+			$tabla46 = $objDB->ejecutasql($sSQL);
+			if ($objDB->nf($tabla46) > 0) {
+				$fila46 = $objDB->sf($tabla46);
+				switch ($fila46['gafi16estado']) {
+					case 5: //En verificación.
+						break;
+					case 7: //Activo
+						$sPref = '<b>';
+						$sSuf = '</b>';
+						break;
+					default:
+						$sPref = '<span class="rojo">';
+						$sSuf = '</span>';
+						break;
+				}
+				$sHTML = $sHTML . '<br>Registro de proveedor: ' . $sPref . cadena_notildes($fila46['gafi74nombre']) . $sSuf . '</span>';
+			} else {
+				$sHTML = $sHTML . '<br><span class="rojo">[No registrado como proveedor]</span>';
+			}
+		}
 	}
-	return array($sHTML, $id, $sTipoDoc, $sDoc);
+	return array($sHTML, $unad11id, $sTipoDoc, $sDoc);
 }
 function html_Texto($sNombre, $sValor, $sAccion = '', $sComplemento = '')
 {
@@ -3451,6 +3555,23 @@ function html_tipodocV2($nombre, $valor, $accion = '', $con_nulo = false, $bConE
 		$res = $res . html_combo_opcion('FL', $valor, 'FL');
 	}
 	$res = $res . '</select></label>';
+	return $res;
+}
+function html_tipoDoc_Login($nombre, $valor, $bConEspeciales = true)
+{
+	$res = '<select name="' . $nombre . '" id="' . $nombre . '" onChange="document.getElementById(\'txtdoc\').focus();" aria-label="Seleccione el tipo de documento">';
+	$res = $res . html_combo_opcion('CC', $valor, 'CC');
+	$res = $res . html_combo_opcion('CE', $valor, 'CE');
+	$res = $res . html_combo_opcion('TI', $valor, 'TI');
+	$res = $res . html_combo_opcion('DN', $valor, 'DNI');
+	$res = $res . html_combo_opcion('RC', $valor, 'RC');
+	$res = $res . html_combo_opcion('PA', $valor, 'PA');
+	$res = $res . html_combo_opcion('NI', $valor, 'NIT');
+	$res = $res . html_combo_opcion('SS', $valor, 'SS');
+	if ($bConEspeciales) {
+		$res = $res . html_combo_opcion('FL', $valor, 'FL');
+	}
+	$res = $res . '</select>';
 	return $res;
 }
 // Tema de licencia
@@ -3521,7 +3642,13 @@ function login_cerrarsesion_v2($idsesion, $objDB, $bDebug = false)
 }
 function login_iniciarsesion($objDB, $bDebug = false)
 {
+	list($id71, $sDebug) = login_IniciarSesionV2($_SESSION['unad_id_tercero'], $objDB, $bDebug);
+	return $sDebug;
+}
+function login_IniciarSesionV2($idUsuario, $objDB, $bDebug = false)
+{
 	$sDebug = '';
+	$id71 = 0;
 	if (isset($_SESSION['unad_agno']) == 0) {
 		$_SESSION['unad_agno'] = fecha_agno();
 	}
@@ -3571,7 +3698,7 @@ function login_iniciarsesion($objDB, $bDebug = false)
 		$bImposible = false;
 		while (!$bCreoSesion) {
 			$id71 = tabla_consecutivo($sTabla71, 'unad71id', '', $objDB);
-			$svalores = '' . $id71 . ', ' . $_SESSION['unad_id_tercero'] . ', "' . $dirip . '", "' . $fechaini . '", ' . $horaini . ', 
+			$svalores = '' . $id71 . ', ' . $idUsuario . ', "' . $dirip . '", "' . $fechaini . '", ' . $horaini . ', 
 			' . $minutoini . ', "' . $fechaini . '", ' . $horaini . ', ' . $minutoini . ', 0,
 			"' . $sNavegador . '","' . $unad71sistoperativo . '", 0, "", 0, 
 			"", 0, 0, "' . $sHost . '"';
@@ -3583,7 +3710,7 @@ function login_iniciarsesion($objDB, $bDebug = false)
 				if ($iIntentos > 10) {
 					$bCreoSesion = true;
 					$bImposible = true;
-					seg_rastro(17, 6, 0, $_SESSION['unad_id_tercero'], 'Imposible crear sesion, se cancela el inicio de sesion en ' . $sTabla71 . '', $objDB);
+					seg_rastro(17, 6, 0, $idUsuario, 'Imposible crear sesion, se cancela el inicio de sesion en ' . $sTabla71 . '', $objDB);
 				}
 			} else {
 				$bCreoSesion = true;
@@ -3597,24 +3724,27 @@ function login_iniciarsesion($objDB, $bDebug = false)
 			$_SESSION['u_ipusuario'] = $dirip;
 			$_SESSION['unad_id_sesion'] = $id71;
 			$_SESSION['unad_sesion_minuto'] = ($horaini * 60) + $minutoini;
+			$_SESSION['unad_token'] = AUREA_FirmaLocalV4i();
+			$_SESSION['unad_token_ver'] = 4;
 			//Junio 14 2018 agregamos la ultima fecha de acceso al sistema.
-			$sSQL = 'UPDATE unad11terceros SET unad11fechaultingreso=' . $fechaini . '  WHERE unad11id=' . $_SESSION['unad_id_tercero'] . '';
+			$sSQL = 'UPDATE unad11terceros SET unad11fechaultingreso=' . $fechaini . '  WHERE unad11id=' . $idUsuario . '';
 			$result = $objDB->ejecutasql($sSQL);
-			seg_rastro(17, 1, 0, $_SESSION['unad_id_tercero'], 'Inicia sesion ' . formato_numero($id71) . ' en ' . $sTabla71 . '', $objDB);
+			seg_rastro(17, 1, 0, $idUsuario, 'Inicia sesion ' . formato_numero($id71) . ' en ' . $sTabla71 . '', $objDB);
 			//Junio 28 de 2019 - Se cargan los parametros del tercero para la sesion
-			$sSQL = 'SELECT unad11idioma, unad11idvisual FROM unad11terceros WHERE unad11id=' . $_SESSION['unad_id_tercero'] . '';
+			$sSQL = 'SELECT unad11idioma, unad11idvisual FROM unad11terceros WHERE unad11id=' . $idUsuario . '';
 			$tabla = $objDB->ejecutasql($sSQL);
 			if ($objDB->nf($tabla) > 0) {
 				$fila = $objDB->sf($tabla);
-				$_SESSION['unad_idioma'] = $fila['unad11idioma'];
+				// $_SESSION['unad_idioma'] = $fila['unad11idioma'];
+				// Agosto 06 de 2025 el idioma se carga desde el index.
 				$_SESSION['u_visual'] = $fila['unad11idvisual'];
 			}
 			//Enero 23 de 2019 - Se incluye la revision de perfiles que se deja en la libdatos.
-			list($sError, $sDebugG) = f107_VerificarPerfiles($_SESSION['unad_id_tercero'], '', $objDB, $bDebug);
+			list($sError, $sDebugG) = f107_VerificarPerfiles($idUsuario, '', $objDB, $bDebug);
 			$sDebug = $sDebug . $sDebugG;
 		}
 	}
-	return $sDebug;
+	return array($id71, $sDebug);
 }
 function login_revisa_grupos_v2($idtercero, $objDB) {}
 function login_validar_v3($std, $sid, $spw, $idsistema, $objDB) {}
@@ -4514,5 +4644,34 @@ function calcularStepSize($aDatos)
 	} else {
 		return round($maxValor / 10, -1); // Aproxima a la decena más cercana
 	}
+}
+
+function cadena_LimpiarNoValidos($sCadena)
+{
+	return iconv('UTF-8', 'UTF-8//IGNORE', $sCadena);
+}
+
+function cadena_LimpiarWord($cadena) {
+    $equivalentes = [
+        "\xC2\xAB" => '',  "\xC2\xBB" => '',
+        "\xE2\x80\x98" => "'", "\xE2\x80\x99" => "'",
+        "\xE2\x80\x9C" => '', "\xE2\x80\x9D" => '',
+		"\xE2\x80\x90" => "-", "\xE2\x80\x91" => "-",
+		"\xE2\x80\x92" => "-", "\xE2\x80\x93" => "-",
+		"\xE2\x80\x94" => "-", "\xE2\x80\x95" => "-",
+		"\xE2\x88\x92" => "-", "\xE2\x81\x83" => "-",
+		"\xE2\x80\xA6" => "...", "\xE2\x80\xA2" => "*",
+        "\xC2\xA0" => '', "\xE2\x80\xA8" => "-",
+        "\xE2\x80\xA9" => "-",
+    ];
+    return strtr($cadena, $equivalentes);
+}
+
+function cadena_LimpiarExcel($cadena) {
+    if (!mb_check_encoding($cadena, 'UTF-8')) {
+        $cadena = mb_convert_encoding($cadena, 'UTF-8', 'ISO-8859-1, Windows-1252');
+    }
+    $cadena = str_replace("\xEF\xBB\xBF", '', $cadena);
+    return (string)$cadena;
 }
 

@@ -102,6 +102,7 @@ if (!$bPeticionXAJAX) {
 require $APP->rutacomun . 'unad_todas.php';
 require $APP->rutacomun . 'libs/clsdbadmin.php';
 require $APP->rutacomun . 'unad_librerias.php';
+require $APP->rutacomun . 'libaurea.php';
 require $APP->rutacomun . 'libdatos.php';
 require $APP->rutacomun . 'libhtml.php';
 require $APP->rutacomun . 'xajax/xajax_core/xajax.inc.php';
@@ -130,25 +131,26 @@ if (!$bEnSesion) {
 }
 $grupo_id = 1; //Necesita ajustarlo...
 $iCodModulo = 2301;
+$sIdioma = AUREA_Idioma();
 $audita[1] = false;
 $audita[2] = true;
 $audita[3] = true;
 $audita[4] = true;
 $audita[5] = false;
 // -- Se cargan los archivos de idioma
-$mensajes_todas = $APP->rutacomun . 'lg/lg_todas_' . $_SESSION['unad_idioma'] . '.php';
+$mensajes_todas = $APP->rutacomun . 'lg/lg_todas_' . $sIdioma . '.php';
 if (!file_exists($mensajes_todas)) {
 	$mensajes_todas = $APP->rutacomun . 'lg/lg_todas_es.php';
 }
-$mensajes_2301 = $APP->rutacomun . 'lg/lg_2301_' . $_SESSION['unad_idioma'] . '.php';
+$mensajes_2301 = $APP->rutacomun . 'lg/lg_2301_' . $sIdioma . '.php';
 if (!file_exists($mensajes_2301)) {
 	$mensajes_2301 = $APP->rutacomun . 'lg/lg_2301_es.php';
 }
-$mensajes_2344 = $APP->rutacomun . 'lg/lg_2344_' . $_SESSION['unad_idioma'] . '.php';
+$mensajes_2344 = $APP->rutacomun . 'lg/lg_2344_' . $sIdioma . '.php';
 if (!file_exists($mensajes_2344)) {
 	$mensajes_2344 = $APP->rutacomun . 'lg/lg_2344_es.php';
 }
-$mensajes_2310 = 'lg/lg_2310_' . $_SESSION['unad_idioma'] . '.php';
+$mensajes_2310 = 'lg/lg_2310_' . $sIdioma . '.php';
 if (!file_exists($mensajes_2310)) {
 	$mensajes_2310 = 'lg/lg_2310_es.php';
 }
@@ -250,11 +252,6 @@ if (isset($_REQUEST['debug']) != 0) {
 }
 //PROCESOS DE LA PAGINA
 $idEntidad = Traer_Entidad();
-$mensajes_2310 = 'lg/lg_2310_' . $_SESSION['unad_idioma'] . '.php';
-if (!file_exists($mensajes_2310)) {
-	$mensajes_2310 = 'lg/lg_2310_es.php';
-}
-require $mensajes_2310;
 // -- Si esta cargando la pagina por primer vez se revisa si requiere auditar y se manda a hacer un limpiar (paso -1)
 if (isset($_REQUEST['paso']) == 0) {
 	if ($bDebug) {
@@ -330,9 +327,8 @@ if ($bEstudiante) {
 			$_REQUEST['cara01idperaca'] = $fila['core01peracainicial'];
 			//Ver si ya tiene una caracterizacion.
 			$sSQL = 'SELECT TB.cara01id, TB.cara01idperaca, TB.cara01completa, T2.exte02titulo 
-			FROM cara01encuesta AS TB, exte02per_aca AS T2, cara11tipocaract AS T11 
-			WHERE TB.cara01idtercero=' . $idTercero . ' AND TB.cara01idperaca=T2.exte02id AND TB.cara01completa="S" 
-			AND TB.cara01tipocaracterizacion=T11.cara11id AND T11.cara11resultadovisible=1 
+			FROM cara01encuesta AS TB, exte02per_aca AS T2 
+			WHERE TB.cara01idtercero=' . $idTercero . ' AND TB.cara01idperaca=T2.exte02id AND TB.cara01completa="S" AND TB.cara01tipocaracterizacion NOT IN (3,11)
 			ORDER BY TB.cara01completa, TB.cara01idperaca DESC';
 			$tabla = $objDB->ejecutasql($sSQL);
 			$iNumFilas = $objDB->nf($tabla);
@@ -578,6 +574,12 @@ if (isset($_REQUEST['cara01fichaquimica']) == 0) {
 if (isset($_REQUEST['cara01nivelquimica']) == 0) {
 	$_REQUEST['cara01nivelquimica'] = 0;
 }
+if (isset($_REQUEST['cara01fichaciudad']) == 0) {
+	$_REQUEST['cara01fichaciudad'] = 0;
+}
+if (isset($_REQUEST['cara01nivelciudad']) == 0) {
+	$_REQUEST['cara01nivelciudad'] = 0;
+}
 if (isset($_REQUEST['cara01tipocaracterizacion']) == 0) {
 	$_REQUEST['cara01tipocaracterizacion'] = 0;
 }
@@ -663,9 +665,8 @@ if ($bEstudiante) {
 	}
 	//2022 - 08 - 19 - Le armamos el historial
 	$sSQL = 'SELECT TB.cara01id, TB.cara01idperaca, TB.cara01completa, T2.exte02titulo 
-	FROM cara01encuesta AS TB, exte02per_aca AS T2, cara11tipocaract AS T11 
-	WHERE TB.cara01idtercero=' . $idTercero . ' AND TB.cara01idperaca=T2.exte02id AND TB.cara01completa="S" 
-	AND TB.cara01tipocaracterizacion=T11.cara11id AND T11.cara11resultadovisible=1 
+	FROM cara01encuesta AS TB, exte02per_aca AS T2 
+	WHERE TB.cara01idtercero=' . $idTercero . ' AND TB.cara01idperaca=T2.exte02id AND TB.cara01completa="S" AND TB.cara01tipocaracterizacion NOT IN (3,11)
 	ORDER BY TB.cara01idperaca DESC';
 	$tabla = $objDB->ejecutasql($sSQL);
 	$iNumFilas = $objDB->nf($tabla);
@@ -689,6 +690,10 @@ if ($bEstudiante) {
 		}
 		$sHTMLHistorial = $sHTMLHistorial . html_salto().'</div></div>';
 	}
+}
+$bGrupo14 = false;
+if ($_REQUEST['cara01idperaca'] > 2035) {
+	$bGrupo14 = true;
 }
 //Si Modifica o Elimina Cargar los campos
 if (($_REQUEST['paso'] == 1) || ($_REQUEST['paso'] == 3)) {
@@ -734,6 +739,8 @@ if (($_REQUEST['paso'] == 1) || ($_REQUEST['paso'] == 3)) {
 		$_REQUEST['cara01nivelfisica'] = $fila['cara01nivelfisica'];
 		$_REQUEST['cara01fichaquimica'] = $fila['cara01fichaquimica'];
 		$_REQUEST['cara01nivelquimica'] = $fila['cara01nivelquimica'];
+		$_REQUEST['cara01fichaciudad'] = $fila['cara01fichaciudad'];
+		$_REQUEST['cara01nivelciudad'] = $fila['cara01nivelciudad'];
 		$_REQUEST['cara01tipocaracterizacion'] = $fila['cara01tipocaracterizacion'];
 		$_REQUEST['cara01psico_puntaje'] = $fila['cara01psico_puntaje'];
 		$bcargo = true;
@@ -753,6 +760,7 @@ if (($_REQUEST['paso'] == 1) || ($_REQUEST['paso'] == 3)) {
 			$_REQUEST['boculta111'] = $fila['cara01fichabiolog'];
 			$_REQUEST['boculta112'] = $fila['cara01fichafisica'];
 			$_REQUEST['boculta113'] = $fila['cara01fichaquimica'];
+			$_REQUEST['boculta114'] = $fila['cara01fichaciudad'];
 		} else {
 		}
 		$bLimpiaHijos = true;
@@ -768,7 +776,7 @@ function html_2201Tablero($id)
 	<input id="cmdTablero' . $id . '" name="cmdTablero' . $id . '" type="button" value="Mis Cursos" class="BotonAzul" onclick="javascript:irtablero()" />
 	</label>';
 }
-function f2301_NombrePuntaje($sCompetencia, $iValor, $ETI)
+function f2301_NombrePuntajeRes($sCompetencia, $iValor, $ETI)
 {
 	$sValor = '';
 	$dPorcentaje = 0;
@@ -846,6 +854,7 @@ function f2301_NombrePuntaje($sCompetencia, $iValor, $ETI)
 		case 'biolog':
 		case 'fisica':
 		case 'quimica':
+		case 'ciudadanas':
 			if ($iValor >= 0 && $iValor <= 30) {
 				$sValor = 'Bajo';
 				$sEstilo = 'danger';
@@ -931,6 +940,8 @@ if ($_REQUEST['paso'] == -1) {
 	$_REQUEST['cara01nivelfisica'] = 0;
 	$_REQUEST['cara01fichaquimica'] = -1;
 	$_REQUEST['cara01nivelquimica'] = 0;
+	$_REQUEST['cara01fichaciudad'] = -1;
+	$_REQUEST['cara01nivelciudad'] = 0;
 	$_REQUEST['cara01tipocaracterizacion'] = 0;
 	$_REQUEST['cara01psico_puntaje'] = 0;
 	$_REQUEST['paso'] = 0;
@@ -1668,7 +1679,7 @@ echo $ETI['cara01psico_puntaje'];
 <label class="Label60">
 <div id="div_cara01psico_puntaje">
 <?php
-list($sValor, $sEstilo, $dPorcentaje, $sNota, $iPuntajeMax)=f2301_NombrePuntaje('puntaje', $_REQUEST['cara01psico_puntaje'], $ETI);
+list($sValor, $sEstilo, $dPorcentaje, $sNota, $iPuntajeMax)=f2301_NombrePuntajeRes('puntaje', $_REQUEST['cara01psico_puntaje'], $ETI);
 echo html_oculto('cara01psico_puntaje', $_REQUEST['cara01psico_puntaje'], $sValor);
 ?>
 </div>
@@ -1722,7 +1733,7 @@ echo $ETI['msg_nivel'];
 </label>
 <label class="Label60">
 <?php
-list($sValor, $sEstilo, $dPorcentaje, $sNota, $iPuntajeMax)=f2301_NombrePuntaje('digital', $_REQUEST['cara01niveldigital'], $ETI);
+list($sValor, $sEstilo, $dPorcentaje, $sNota, $iPuntajeMax)=f2301_NombrePuntajeRes('digital', $_REQUEST['cara01niveldigital'], $ETI);
 echo html_oculto('cara01niveldigital', $_REQUEST['cara01niveldigital'], $sValor);
 ?>
 </label>
@@ -1774,7 +1785,7 @@ echo $ETI['msg_nivel'];
 </label>
 <label class="Label60">
 <?php
-list($sValor, $sEstilo, $dPorcentaje, $sNota, $iPuntajeMax)=f2301_NombrePuntaje('lectura', $_REQUEST['cara01nivellectura'], $ETI);
+list($sValor, $sEstilo, $dPorcentaje, $sNota, $iPuntajeMax)=f2301_NombrePuntajeRes('lectura', $_REQUEST['cara01nivellectura'], $ETI);
 echo html_oculto('cara01nivellectura', $_REQUEST['cara01nivellectura'], $sValor);
 ?>
 </label>
@@ -1825,7 +1836,7 @@ echo $ETI['msg_nivel'];
 </label>
 <label class="Label60">
 <?php
-list($sValor, $sEstilo, $dPorcentaje, $sNota, $iPuntajeMax)=f2301_NombrePuntaje('razona', $_REQUEST['cara01nivelrazona'], $ETI);
+list($sValor, $sEstilo, $dPorcentaje, $sNota, $iPuntajeMax)=f2301_NombrePuntajeRes('razona', $_REQUEST['cara01nivelrazona'], $ETI);
 echo html_oculto('cara01nivelrazona', $_REQUEST['cara01nivelrazona'], $sValor);
 ?>
 </label>
@@ -1875,7 +1886,7 @@ echo $ETI['msg_nivel'];
 </label>
 <label class="Label60">
 <?php
-list($sValor, $sEstilo, $dPorcentaje, $sNota, $iPuntajeMax)=f2301_NombrePuntaje('ingles', $_REQUEST['cara01nivelingles'], $ETI);
+list($sValor, $sEstilo, $dPorcentaje, $sNota, $iPuntajeMax)=f2301_NombrePuntajeRes('ingles', $_REQUEST['cara01nivelingles'], $ETI);
 echo html_oculto('cara01nivelingles', $_REQUEST['cara01nivelingles'], $sValor);
 ?>
 </label>
@@ -1926,7 +1937,7 @@ echo $ETI['msg_nivel'];
 </label>
 <label class="Label60">
 <?php
-list($sValor, $sEstilo, $dPorcentaje, $sNota, $iPuntajeMax)=f2301_NombrePuntaje('biolog', $_REQUEST['cara01nivelbiolog'], $ETI);
+list($sValor, $sEstilo, $dPorcentaje, $sNota, $iPuntajeMax)=f2301_NombrePuntajeRes('biolog', $_REQUEST['cara01nivelbiolog'], $ETI);
 echo html_oculto('cara01nivelbiolog', $_REQUEST['cara01nivelbiolog'], $sValor);
 ?>
 </label>
@@ -1976,7 +1987,7 @@ echo $ETI['msg_nivel'];
 </label>
 <label class="Label60">
 <?php
-list($sValor, $sEstilo, $dPorcentaje, $sNota, $iPuntajeMax)=f2301_NombrePuntaje('fisica', $_REQUEST['cara01nivelfisica'], $ETI);
+list($sValor, $sEstilo, $dPorcentaje, $sNota, $iPuntajeMax)=f2301_NombrePuntajeRes('fisica', $_REQUEST['cara01nivelfisica'], $ETI);
 echo html_oculto('cara01nivelfisica', $_REQUEST['cara01nivelfisica'], $sValor);
 ?>
 </label>
@@ -2027,7 +2038,7 @@ echo $ETI['msg_nivel'];
 </label>
 <label class="Label60">
 <?php
-list($sValor, $sEstilo, $dPorcentaje, $sNota, $iPuntajeMax)=f2301_NombrePuntaje('quimica', $_REQUEST['cara01nivelquimica'], $ETI);
+list($sValor, $sEstilo, $dPorcentaje, $sNota, $iPuntajeMax)=f2301_NombrePuntajeRes('quimica', $_REQUEST['cara01nivelquimica'], $ETI);
 echo html_oculto('cara01nivelquimica', $_REQUEST['cara01nivelquimica'], $sValor);
 ?>
 </label>
@@ -2059,27 +2070,64 @@ $('#div_cara01fichaquimica').qtip({
 <input id="cara01nivelquimica" name="cara01nivelquimica" type="hidden" value="<?php echo $_REQUEST['cara01nivelquimica']; ?>" />
 <?php
 }
+if (($bGrupo14) && ($_REQUEST['cara01fichaciudad'] != -1)) {
+$bInvitaPAPC = true;
+?>
+<div class="salto1px"></div>
+
+<div class="GrupoCampos450">
+<div style="min-width:400px">
+<label class="Label220">
+<?php
+echo $ETI['cara01fichaciudad'];
+?>
+</label>
+<label class="Label60">
+<?php
+echo $ETI['msg_nivel'];
+?>
+</label>
+<label class="Label60">
+<?php
+list($sValor, $sEstilo, $dPorcentaje, $sNota, $iPuntajeMax)=f2301_NombrePuntajeRes('ciudadanas', $_REQUEST['cara01nivelciudad'], $ETI);
+echo html_oculto('cara01nivelciudad', $_REQUEST['cara01nivelciudad'], $sValor);
+?>
+</label>
+<div class="salto1px"></div>
+<div class="progress" id="div_cara01fichaciudad">
+<div class="progress-bar progress-bar-striped progress-bar-animated" role="progressbar" aria-valuenow="<?php echo $dPorcentaje; ?>" aria-valuemin="0" aria-valuemax="100" style="width: <?php echo $dPorcentaje; ?>%"><?php echo $dPorcentaje; ?>%</div>
+</div>
+</div>
+<script>
+$('#div_cara01fichaciudad').qtip({
+	content: '<div class="card text-white bg-<?php echo $sEstilo; ?> mb-3"><div class="card-header"><?php echo $ETI['msg_puntaje'].': '.$_REQUEST['cara01nivelquimica'].'/'.$iPuntajeMax; ?></div><div class="card-body"><h5 class="card-title"><?php echo $ETI['msg_nivel'].': <b>'.$sValor.'</b>'; ?></h5><p class="card-text"><?php echo $sNota; ?></p></div></div>',
+	position: {
+      viewport: true,
+      my: 'bottom center',
+      at: 'top center',
+      target: 'mouse',
+    },
+    style: {
+      classes: 'qtip-dark qtip-personaliza'
+    }
+});
+</script>
+<div class="salto5px"></div>
+</div>
+
+<?php
+} else {
+?>
+<input id="cara01nivelciudad" name="cara01nivelciudad" type="hidden" value="<?php echo $_REQUEST['cara01nivelciudad']; ?>" />
+<?php
+}
 ?>
 <?php
 if ($bInvitaPAPC) {
 ?>
 <div class="salto1px"></div>
 <div class="GrupoCampos700">
-<?php
-if (false) {
-?>
-<a href="https://sivisae.unad.edu.co/sivisae/pages/sivisae_acceso_PAPC_cronograma.php" target="_blank">
-<?php
-}
-?>
 <img src="./img/banner_encuestares.png" alt="<?php echo $ETI['bt_invita_papc']; ?>" title="<?php echo $ETI['bt_invita_papc']; ?>" style="width:100%;" />
-<?php
-if (false) {
-?>
-</a>
-<?php
-}
-?>
 </div>
 <?php
 }

@@ -52,6 +52,19 @@ function iDefinirPiel($APP, $iMaxima = 2)
 	}
 	return $iPiel;
 }
+function iDefinirIdioma($sIdioma)
+{
+	switch ($sIdioma) {
+		case 'en':
+		case 'es':
+		case 'pt':
+			$_SESSION['unad_idioma'] = $sIdioma;
+			break;
+		default:
+			$_SESSION['unad_idioma'] = 'es';
+			break;
+	}
+}
 /**
  * Define la clase de la tabla.
  *
@@ -136,8 +149,9 @@ if (isset($APP->entidad) != 0) {
 		$idEntidad = 1;
 	}
 }
+// Se replica la inicializacion en libaurea AUREA_Idioma($idEntidad)
 switch ($idEntidad) {
-	case 1:
+	case 1: // Unad florida
 		if (isset($_SESSION['unad_pais']) == 0) {
 			$_SESSION['unad_pais'] = '001';
 		}
@@ -152,6 +166,16 @@ switch ($idEntidad) {
 		if (isset($_SESSION['unad_idioma']) == 0) {
 			$_SESSION['unad_idioma'] = 'es';
 		}
+		break;
+}
+// 2024-03-22 Se incluye switch para evitar que un usuario malintencionado cambie el valor de la variable
+switch ($_SESSION['unad_idioma']) {
+	case 'en':
+	case 'es':
+	case 'pt':
+		break;
+	default:
+		$_SESSION['unad_idioma'] = 'es';
 		break;
 }
 if (isset($_SESSION['cfg_movil']) == 0) {
