@@ -6,7 +6,7 @@ $APP->rutacomun='../ulib/';
 $APP->tipo_doc='CC';
 $APP->tiempolimite=120;
 $APP->utf8=0;
-$APP->piel=1;
+$APP->piel=2;
 
 $APP->dbhost='172.21.1.40';
 $APP->dbpuerto='30001';

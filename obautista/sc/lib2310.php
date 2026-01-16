@@ -420,7 +420,7 @@ function f2310_TablaDetalleV2($aParametros, $objDB, $bDebug = false)
 		}
 		$tlinea++;
 		$et_cara10consec = $sPrefijo . $filadet['cara10consec'] . $sSufijo;
-		$et_cara10idpregunta = $sPrefijo . cadena_notildes($filadet['cara08cuerpo']) . $sSufijo;
+		$et_cara10idpregunta = $sPrefijo . cadena_notildes(nl2br($filadet['cara08cuerpo'])) . $sSufijo;
 		$et_cara10idrpta = $ETI['msg_ninguna'];
 		$sClassRpta = $sClass;
 		if (!$bEstudiante) {
@@ -456,8 +456,14 @@ function f2310_TablaDetalleV2($aParametros, $objDB, $bDebug = false)
 				$sSQL = 'SELECT cara09id, cara09contenido 
 				FROM cara09pregrpta WHERE cara09idpregunta=' . $filadet['cara10idpregunta'] . ' ORDER BY cara09consec';
 				$tabla9 = $objDB->ejecutasql($sSQL);
+				$aItems = array();
 				while ($fila9 = $objDB->sf($tabla9)) {
-					$objCombos->addItem($fila9['cara09id'], cadena_notildes($fila9['cara09contenido']));
+					$aItems[$fila9['cara09id']] = cadena_notildes($fila9['cara09contenido']);					
+				}
+				$aLlaves = array_keys($aItems);
+				shuffle($aLlaves);
+				foreach($aLlaves as $iLlave) {
+					$objCombos->addItem($iLlave, $aItems[$iLlave]);
 				}
 				$et_cara10idrpta = $objCombos->html('', $objDB);
 			} else {

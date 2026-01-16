@@ -568,7 +568,7 @@ function f3073_TablaDetalleV2($aParametros, $objDB, $bDebug = false)
 	if (isset($aParametros[102]) == 0) {
 		$aParametros[102] = 20;
 	}
-	$iNumVariables = 119;
+	$iNumVariables = 120;
 	for ($k = 103; $k <= $iNumVariables; $k++) {
 		if (isset($aParametros[$k]) == 0) {
 			$aParametros[$k] = '';
@@ -600,6 +600,7 @@ function f3073_TablaDetalleV2($aParametros, $objDB, $bDebug = false)
 	$bfecharadfin = numeros_validar($aParametros[117]);
 	$bfecharptaini = numeros_validar($aParametros[118]);
 	$bfecharptafin = numeros_validar($aParametros[119]);
+	$idReservado = cadena_Validar($aParametros[120]);
 	$bAbierta = true;
 	/*
 	$sSQL = 'SELECT Campo FROM Tabla WHERE Id=' . $sValorId;
@@ -777,6 +778,12 @@ function f3073_TablaDetalleV2($aParametros, $objDB, $bDebug = false)
 	}
 	if ($bcead !== '') {
 		$sSQLadd = $sSQLadd . ' AND TB.saiu73idcentro=' . $bcead . '';
+	}
+	$iCodModulo = 3073;
+	$bEsReservado = false;
+	list($bEsReservado, $sDebugP) = seg_revisa_permisoV3($iCodModulo, 14, $_SESSION['unad_id_tercero'], $objDB);
+	if (!$bEsReservado) {
+		$sSQLadd = $sSQLadd . ' AND TB.saiu73tiposolicitud NOT IN (' . $idReservado . ')';
 	}
 	// ------------------------------------------------
 	// Fin de las condiciones de la consulta

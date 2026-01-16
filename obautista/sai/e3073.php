@@ -120,6 +120,11 @@ if ($sError == '') {
 	$iCanal = numeros_validar($_REQUEST['v8']);
 	$bdetalle = cadena_Validar(trim($_REQUEST['v14']));
 	$brespuesta = cadena_Validar(trim($_REQUEST['v15']));
+	$bfecharadini = numeros_validar($_REQUEST['v16']);
+	$bfecharadfin = numeros_validar($_REQUEST['v17']);
+	$bfecharptaini = numeros_validar($_REQUEST['v18']);
+	$bfecharptafin = numeros_validar($_REQUEST['v19']);
+	$idReservado = cadena_Validar($_REQUEST['v20']);
 	$sCanal = '';
 	$sCanalCorto = '';
 	$sSubtitulo = '';
@@ -215,6 +220,24 @@ if ($sError == '') {
 				$sSQLadd1 = $sSQLadd1 . 'TB.saiu73respuesta LIKE "%' . $sCadena . '%" AND ';
 			}
 		}
+	}
+	if (fecha_NumValido($bfecharadini)) {
+		$sSQLadd1 = $sSQLadd1 . 'TB.saiu73fecharad>=' . $bfecharadini . ' AND ';
+	}
+	if (fecha_NumValido($bfecharadfin)) {
+		$sSQLadd1 = $sSQLadd1 . 'TB.saiu73fecharad<=' . $bfecharadfin . ' AND ';
+	}
+	if (fecha_NumValido($bfecharptaini)) {
+		$sSQLadd1 = $sSQLadd1 . 'TB.saiu73fechafin>=' . $bfecharptaini . ' AND ';
+	}
+	if (fecha_NumValido($bfecharptafin)) {
+		$sSQLadd1 = $sSQLadd1 . 'TB.saiu73fechafin<=' . $bfecharptafin . ' AND ';
+	}
+	$iCodModulo = 3073;
+	$bEsReservado = false;
+	list($bEsReservado, $sDebugP) = seg_revisa_permisoV3($iCodModulo, 14, $_SESSION['unad_id_tercero'], $objDB);
+	if (!$bEsReservado) {
+		$sSQLadd1 = $sSQLadd1 . 'TB.saiu73tiposolicitud NOT IN (' . $idReservado . ') AND ';
 	}
 	// ------------------------------------------------
 	// Fin de las condiciones de la consulta

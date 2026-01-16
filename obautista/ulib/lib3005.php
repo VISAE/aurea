@@ -615,6 +615,7 @@ function f3005_TablaDetalleV2($aParametros, $objDB, $bDebug = false)
 	$registros = $iNumSolicitudes;
 	$sLimite = '';
 	$sSQL = '';
+	$sErrConsulta = '';
 	for ($k = 1; $k <= $iTablas; $k++) {
 		if ($k != 1) {
 			$sSQL = $sSQL . ' UNION ';

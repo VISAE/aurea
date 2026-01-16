@@ -521,7 +521,7 @@ ORDER BY TB.cara01idperaca DESC';
 		$sLink = '';
 		//Saber el numero de preguntas que se le hacer por cada ficha...
 		$aBloque = array();
-		for ($k = 1; $k <= 7; $k++) {
+		for ($k = 1; $k <= 8; $k++) {
 			$aBloque[$k] = 0;
 		}
 		$sSQL = 'SELECT cara10idbloque, COUNT(cara10id) AS Total FROM cara10pregprueba WHERE cara10idcara=' . $filadet['cara01id'] . ' GROUP BY cara10idbloque';

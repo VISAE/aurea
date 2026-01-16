@@ -422,7 +422,7 @@ function f3002_db_GuardarV2($DATA, $objDB, $bDebug=false){
 			}
 		}
 	if ($sError==''){
-		if (get_magic_quotes_gpc()==1){$DATA['saiu02detalle']=stripslashes($DATA['saiu02detalle']);}
+		// if (get_magic_quotes_gpc()==1){$DATA['saiu02detalle']=stripslashes($DATA['saiu02detalle']);}
 		//Si el campo saiu02detalle permite html quite la linea htmlspecialchars para el campo y habilite la siguiente linea:
 		//$saiu02detalle=addslashes($DATA['saiu02detalle']);
 		$saiu02detalle=str_replace('"', '\"', $DATA['saiu02detalle']);

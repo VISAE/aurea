@@ -203,6 +203,9 @@ function f3000_TablaDetalleV2($aParametros, $objDB, $bDebug = false)
 	if (isset($aParametros[0]) == 0) {
 		$aParametros[0] = -1;
 	}
+	if (isset($aParametros[1]) == 0) {
+		$aParametros[1] = 0;
+	}
 	if (isset($aParametros[100]) == 0) {
 		$aParametros[100] = 0;
 	}
@@ -222,6 +225,7 @@ function f3000_TablaDetalleV2($aParametros, $objDB, $bDebug = false)
 		$aParametros[0] = -1;
 	}
 	$idTercero = numeros_validar($aParametros[0]);
+	$iCodModulo = numeros_validar($aParametros[1]);
 	$sDebug = '';
 	// ------------------------------------------------
 	// Leemos los parametros de entrada.
@@ -246,6 +250,12 @@ function f3000_TablaDetalleV2($aParametros, $objDB, $bDebug = false)
 	$sSQLadd1 = '';
 	if ($idsolicitante != '') {
 		$sSQLadd1 = $sSQLadd1 . ' AND TB.saiu23idtercero=' . $idsolicitante . '';
+	}
+	$bEsReservado = false;
+	$idReservado = '72,73,74';
+	list($bEsReservado, $sDebugP) = seg_revisa_permisoV3($iCodModulo, 14, $_SESSION['unad_id_tercero'], $objDB);
+	if (!$bEsReservado) {
+		$sSQLadd1 = $sSQLadd1 . ' AND T6.saiu02id NOT IN (' . $idReservado . ')';
 	}
 	// ------------------------------------------------
 	// Fin de las condiciones de la consulta
@@ -2255,7 +2265,7 @@ function f3000_ConsultaResponsable($idTema, $idZona, $idCentro, $idEscuela, $obj
 	if (!file_exists($mensajes_todas)) {
 		$mensajes_todas = $APP->rutacomun . 'lg/lg_todas_es.php';
 	}
-	$mensajes_3000 = $APP->rutacomun . 'lg/lg_3000_' . $_SESSION['unad_idioma'] . '.php';
+	$mensajes_3000 = $APP->rutacomun . 'lg/lg_3000_' . $sIdioma . '.php';
 	if (!file_exists($mensajes_3000)) {
 		$mensajes_3000 = $APP->rutacomun . 'lg/lg_3000_es.php';
 	}
@@ -2306,6 +2316,13 @@ function f3000_ConsultaResponsable($idTema, $idZona, $idCentro, $idEscuela, $obj
 			$aParametros['idresponsable'] = $fila['saiu03idliderrespon1'];
 			$aParametros['tiemprespdias'] = $fila['saiu03tiemprespdias1'];
 			$aParametros['tiempresphoras'] = $fila['saiu03tiempresphoras1'];
+			$sSQL = 'SELECT bita28idtercero FROM bita28eqipoparte 
+			WHERE bita28activo = "S" AND bita28idequipotrab = ' . $fila['saiu03idequiporesp1'] . ' AND bita28idtercero = ' . $_SESSION['unad_id_tercero'];
+			$tabla = $objDB->ejecutasql($sSQL);
+			if ($objDB->nf($tabla) > 0) {
+				$fila1 = $objDB->sf($tabla);
+				$aParametros['idresponsable'] = $fila1['bita28idtercero'];
+			}
 			if ($fila['saiu03reddeservicio'] != 0) {
 				list($idUnidad, $idEquipo, $idSupervisor, $idResponsable, $sError, $sDebug) = f3074_ActorRedServicio($fila['saiu03reddeservicio'], $idZona, $idCentro, $idEscuela, $objDB, $bDebug);
 				$aParametros['idunidad'] = $idUnidad;

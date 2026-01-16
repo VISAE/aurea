@@ -5276,7 +5276,8 @@ switch ($iPiel) {
 		}
 		document.getElementById('lbl_cara44med_trat_cual').style.display = sMuestra1;
 	}
-		function ajustar_cara44bienv3emprensector() {
+
+	function ajustar_cara44bienv3emprensector() {
 		let sMuestra1 = 'none';
 		if (window.document.frmedita.cara44bienv3emprensector.value == 9) {
 			sMuestra1 = 'block';
@@ -5589,10 +5590,7 @@ $bGrupo10 = true;
 $bGrupo11 = true;
 $bGrupo12 = true;
 $bGrupo13 = true;
-$bGrupo14 = false;
-if ($_REQUEST['cara01idperaca'] > 2035) {
-	$bGrupo14 = true;
-}
+$bGrupo14 = true;
 echo $sHTMLHistorial;
 //Div para ocultar
 $bConExpande = true;
@@ -5685,6 +5683,9 @@ echo html_oculto('cara01fechaencuesta', $_REQUEST['cara01fechaencuesta'], $et_ca
 <div class="salto1px"></div>
 <?php
 if ($bEstudiante) {
+	if ($_REQUEST['cara01idperaca'] < 2201) { // 2026 I Periodo 16-01
+		$_REQUEST['cara01fichaciudad'] = -1;
+	}
 	$aTitulo = array('', 'cara01fichaper', 'cara01fichafam', 'cara01fichaaca', 'cara01fichalab', 'cara01fichabien', 'cara01fichapsico', 'cara01fichadigital', 'cara01fichalectura', 'cara01ficharazona', 'cara01fichaingles', 'cara01fichabiolog', 'cara01fichafisica', 'cara01fichaquimica', 'cara01fichaciudad');
 	$sPendiente = 'Pendiente';
 	$sHecho = 'Completo';
@@ -5936,7 +5937,7 @@ echo html_oculto('cara01nivelquimica', $_REQUEST['cara01nivelquimica'], f2301_No
 <input id="cara01nivelquimica" name="cara01nivelquimica" type="hidden" value="<?php echo $_REQUEST['cara01nivelquimica']; ?>" />
 <?php
 }
-if (($bGrupo14) && ($_REQUEST['cara01fichaciudad'] != -1)){
+if ($_REQUEST['cara01fichaciudad'] != -1){
 ?>
 <div class="salto1px"></div>
 <label class="Label220">

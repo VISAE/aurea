@@ -1365,6 +1365,7 @@ echo html_oculto('unad11dv', $_REQUEST['unad11dv']);
 ?>
 </div></label>
 <?php
+$objForma = new clsHtmlForma($iPiel);
 $bcondv=false;
 if ($_REQUEST['paso']==2){
 	switch($_REQUEST['unad11tipodoc']){

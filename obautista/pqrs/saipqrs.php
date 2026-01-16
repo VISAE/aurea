@@ -1,9 +1,9 @@
 <?php
 /*
---- © Omar Augusto Bautista Mora - UNAD - 2022 ---
+--- © Omar Augusto Bautista Mora - UNAD - 2022 - 2025 ---
 --- omar.bautista@unad.edu.co - http://www.unad.edu.co
 --- Modelo Versión 1.0 miércoles, 16 de noviembre de 2022
----- // Se debe sincronizar con el tablero  // ------------
+--- Modelo Versión 2.0 miércoles, 10 de diciembre de 2025
 */
 
 if (file_exists('./err_control.php')) {
@@ -78,13 +78,14 @@ if (!$bPeticionXAJAX) {
 require $APP->rutacomun . 'unad_todas.php';
 require $APP->rutacomun . 'libs/clsdbadmin.php';
 require $APP->rutacomun . 'unad_librerias.php';
+require $APP->rutacomun . 'libaurea.php';
+require $APP->rutacomun . 'libcomp.php';
 require $APP->rutacomun . 'libdatos.php';
 require $APP->rutacomun . 'libhtml.php';
 require $APP->rutacomun . 'xajax/xajax_core/xajax.inc.php';
 require $APP->rutacomun . 'unad_xajax.php';
 require $APP->rutacomun . 'libsai.php';
 require $APP->rutacomun . 'libtiempo.php';
-require $APP->rutacomun . 'libaurea.php';
 require $APP->rutacomun . 'libmail.php';
 if (($bPeticionXAJAX) && ($_SESSION['unad_id_tercero'] == 0)) {
 	// viene por xajax.
@@ -94,19 +95,21 @@ if (($bPeticionXAJAX) && ($_SESSION['unad_id_tercero'] == 0)) {
 	$xajax->processRequest();
 	die();
 }
-$grupo_id = 1; //Necesita ajustarlo...
+$iConsecutivoMenu = 1;
 $iCodModulo = 3005;
+$iCodModuloConsulta = $iCodModulo;
+$sIdioma = AUREA_Idioma();
 $audita[1] = false;
 $audita[2] = true;
 $audita[3] = true;
 $audita[4] = true;
 $audita[5] = false;
 // -- Se cargan los archivos de idioma
-$mensajes_todas = $APP->rutacomun . 'lg/lg_todas_' . $_SESSION['unad_idioma'] . '.php';
+$mensajes_todas = $APP->rutacomun . 'lg/lg_todas_' . $sIdioma . '.php';
 if (!file_exists($mensajes_todas)) {
 	$mensajes_todas = $APP->rutacomun . 'lg/lg_todas_es.php';
 }
-$mensajes_3005 = $APP->rutacomun . 'lg/lg_3005_' . $_SESSION['unad_idioma'] . '.php';
+$mensajes_3005 = $APP->rutacomun . 'lg/lg_3005_' . $sIdioma . '.php';
 if (!file_exists($mensajes_3005)) {
 	$mensajes_3005 = $APP->rutacomun . 'lg/lg_3005_es.php';
 }
@@ -117,78 +120,123 @@ $objDB = new clsdbadmin($APP->dbhost, $APP->dbuser, $APP->dbpass, $APP->dbname);
 if ($APP->dbpuerto != '') {
 	$objDB->dbPuerto = $APP->dbpuerto;
 }
-$iPiel = iDefinirPiel($APP, 1);
-$sAnchoExpandeContrae = ' style="width:62px;"';
+// --- Variables para la forma
+$bBloqueTitulo = true;
 $bCerrado = false;
+$bDebugMenu = false;
+$bOtroUsuario = false;
 $et_menu = '';
-if ($bDebug) {
-	$sDebug = $sDebug . fecha_microtiempo() . ' Probando conexi&oacute;n con la base de datos <b>' . $APP->dbname . '</b> en <b>' . $APP->dbhost . '</b><br>';
+$idTercero = $_SESSION['unad_id_tercero'];
+$iPiel = iDefinirPiel($APP, 2);
+$sAnchoExpandeContrae = ' style="width:62px;"';
+$sOcultaConsec = ''; //' style="display:none;"';
+list($sGrupoModulo, $sPaginaModulo) = f109_GrupoModulo($iCodModuloConsulta, $iConsecutivoMenu, $objDB);
+$sOcultaId = ' style="display:none;"';
+$sTituloApp = $APP->siglasistema; //f101_SiglaModulo($APP->idsistema, $objDB);
+$sTituloModulo = $ETI['titulo_3005'];
+switch ($iPiel) {
+	case 2:
+		$sAnchoExpandeContrae = '';
+		$bBloqueTitulo = false;
+		break;
 }
+// --- Final de las variables para la forma
+if ($bDebug) {
+	$sDebug = $sDebug . log_debug('Probando conexi&oacute;n con la base de datos <b>' . $APP->dbname . '</b> en <b>' . $APP->dbhost . '</b>');
+}
+$bCargaMenu = true;
 if (!$objDB->Conectar()) {
+	$bCargaMenu = false;
 	$bCerrado = true;
-	$sMsgCierre = '<div class="MarquesinaGrande">Disculpe las molestias estamos en este momento nuestros servicios no estas disponibles.<br>Por favor intente acceder mas tarde.<br>Si el problema persiste por favor informa al administrador del sistema.</div>';
+	$sMsgCierre = '<div class="MarquesinaGrande">Disculpe las molestias estamos en este momento nuestros servicios no estas disponibles.<br>Por favor intente acceder mas tarde.<br>Si el problema persiste por favor informe al administrador del sistema.</div>';
 	if ($bDebug) {
-		$sDebug = $sDebug . fecha_microtiempo() . ' Error al intentar conectar con la base de datos <b>' . $objDB->serror . '</b><br>';
+		$sDebug = $sDebug . log_debug('Error al intentar conectar con la base de datos <b>' . $objDB->serror . '</b>');
 	}
 }
 if (!$bCerrado) {
 	$bDevuelve = true;
-	if ($_SESSION['unad_id_tercero'] == 0) {
+	if ($idTercero == 0) {
 		$bDevuelve = false;
 	}
 	if (!$bDevuelve) {
 		$bCerrado = true;
-		$sMsgCierre = '<div class="MarquesinaGrande">No cuenta con permiso para acceder a este modulo [' . $iCodModulo . '].</div>';
+		$sMsgCierre = '<div class="MarquesinaGrande">No cuenta con permiso para acceder a este modulo [' . $iCodModuloConsulta . '].</div>';
 	}
 }
 if ($bCerrado) {
+	if ($bCargaMenu) {
+		switch ($iPiel) {
+			case 2:
+				list($et_menu, $sDebugM) = html_Menu2023($APP->idsistema, $objDB, $iPiel, $bDebugMenu, $idTercero);
+				break;
+			default:
+				list($et_menu, $sDebugM) = html_menuV2($APP->idsistema, $objDB, $iPiel, $bDebugMenu, $idTercero);
+				break;
+		}
+	}
 	$objDB->CerrarConexion();
-	if ($_SESSION['unad_id_tercero'] == 1) {
+	if ($idTercero == 1) {
 		$_SESSION['unad_id_tercero'] = 0;
 	}
-	require $APP->rutacomun . 'unad_forma_v2.php';
-	forma_cabeceraV3($xajax, $ETI['titulo_3005']);
-	echo $et_menu;
-	forma_mitad();
-	?>
-	<script language="javascript" src="<?php echo $APP->rutacomun; ?>js/jquery-3.3.1.min.js"></script>
-	<script language="javascript" src="<?php echo $APP->rutacomun; ?>js/popper.min.js"></script>
-	<script language="javascript" src="<?php echo $APP->rutacomun; ?>js/bootstrap.min.js"></script>
-	<link rel="stylesheet" href="<?php echo $APP->rutacomun; ?>js/bootstrap.min.css" type="text/css" />
-	<link rel="stylesheet" href="<?php echo $APP->rutacomun; ?>css/criticalPath.css" type="text/css" />
-	<link rel="stylesheet" href="<?php echo $APP->rutacomun; ?>css/principal.css" type="text/css" />
-	<link rel="stylesheet" href="<?php echo $APP->rutacomun; ?>unad_estilos2018.css" type="text/css" />
-	<?php
+	switch ($iPiel) {
+		case 2:
+			require $APP->rutacomun . 'unad_forma2024.php';
+			forma_InicioV4($xajax, $sTituloModulo);
+			$aRutas = array(
+				array('./', $sTituloApp),
+				array('./' . $sPaginaModulo, $sGrupoModulo),
+				array('', $sTituloModulo)
+			);
+			$iNumBoton = 0;
+			$aBotones[$iNumBoton] = array('muestraayuda(' . $APP->idsistema . ', ' . $iCodModulo . ')', $ETI['bt_ayuda'], 'iHelp');
+			$iNumBoton++;
+			forma_cabeceraV4b($aRutas, $aBotones, true, 1);
+			// echo $et_menu;
+			forma_mitad($idTercero);
+			break;
+		default:
+			require $APP->rutacomun . 'unad_forma_v2_2024.php';
+			forma_cabeceraV3($xajax, $sTituloModulo);
+			// echo $et_menu;
+			forma_mitad();
+			break;
+	}
+	$objForma = new clsHtmlForma($iPiel);
+	if ($bBloqueTitulo) {
+		$objForma->addBoton('cmdAyuda98', 'btSupAyuda', 'muestraayuda(' . $iCodModulo . ');', $ETI['bt_ayuda']);
+		echo $objForma->htmlTitulo($sTituloModulo, $iCodModulo);
+	}
+	echo $objForma->htmlInicioMarco();
 	echo $sMsgCierre;
 	if ($bDebug) {
-		echo $sDebug;
+		echo console_debug($sDebug);
 	}
+	echo $objForma->htmlFinMarco();
 	forma_piedepagina();
 	die();
 }
-$idTercero = $_SESSION['unad_id_tercero'];
-$bOtroUsuario = false;
 if (isset($_REQUEST['deb_tipodoc']) == 0) {
 	$_REQUEST['deb_tipodoc'] = $APP->tipo_doc;
 }
 if (isset($_REQUEST['debug']) != 0) {
 	if ($_REQUEST['debug'] == 1) {
 		$bDebug = true;
+		$sOcultaId = '';
 	}
 } else {
 	$_REQUEST['debug'] = 0;
 }
 //PROCESOS DE LA PAGINA
 $idEntidad = Traer_Entidad();
-$mensajes_3000 = $APP->rutacomun . 'lg/lg_3000_' . $_SESSION['unad_idioma'] . '.php';
+$mensajes_3000 = $APP->rutacomun . 'lg/lg_3000_' . $sIdioma . '.php';
 if (!file_exists($mensajes_3000)) {
 	$mensajes_3000 = $APP->rutacomun . 'lg/lg_3000_es.php';
 }
-$mensajes_3006 = $APP->rutacomun . 'lg/lg_3006_' . $_SESSION['unad_idioma'] . '.php';
+$mensajes_3006 = $APP->rutacomun . 'lg/lg_3006_' . $sIdioma . '.php';
 if (!file_exists($mensajes_3006)) {
 	$mensajes_3006 = $APP->rutacomun . 'lg/lg_3006_es.php';
 }
-$mensajes_3007 = $APP->rutacomun . 'lg/lg_3007_' . $_SESSION['unad_idioma'] . '.php';
+$mensajes_3007 = $APP->rutacomun . 'lg/lg_3007_' . $sIdioma . '.php';
 if (!file_exists($mensajes_3007)) {
 	$mensajes_3007 = $APP->rutacomun . 'lg/lg_3007_es.php';
 }
@@ -489,13 +537,13 @@ if (isset($_REQUEST['saiu05minhabproc']) == 0) {
 	$_REQUEST['saiu05minhabproc'] = 0;
 }
 if (isset($_REQUEST['saiu05idmoduloproc']) == 0) {
-	$_REQUEST['saiu05idmoduloproc'] = '';
+	$_REQUEST['saiu05idmoduloproc'] = 0;
 }
 if (isset($_REQUEST['saiu05identificadormod']) == 0) {
-	$_REQUEST['saiu05identificadormod'] = '';
+	$_REQUEST['saiu05identificadormod'] = 0;
 }
 if (isset($_REQUEST['saiu05numradicado']) == 0) {
-	$_REQUEST['saiu05numradicado'] = '';
+	$_REQUEST['saiu05numradicado'] = 0;
 }
 if (isset($_REQUEST['saiu05evalacepta']) == 0) {
 	$_REQUEST['saiu05evalacepta'] = 0;
@@ -634,6 +682,72 @@ if ((int)$_REQUEST['paso'] > 0) {
 		$_REQUEST['saiu07minvalida'] = '';
 	}
 }
+$_REQUEST['saiu05agno'] = numeros_validar($_REQUEST['saiu05agno']);
+$_REQUEST['saiu05mes'] = numeros_validar($_REQUEST['saiu05mes']);
+$_REQUEST['saiu05tiporadicado'] = numeros_validar($_REQUEST['saiu05tiporadicado']);
+$_REQUEST['saiu05consec'] = numeros_validar($_REQUEST['saiu05consec']);
+$_REQUEST['saiu05id'] = numeros_validar($_REQUEST['saiu05id']);
+$_REQUEST['saiu05origenagno'] = numeros_validar($_REQUEST['saiu05origenagno']);
+$_REQUEST['saiu05origenmes'] = numeros_validar($_REQUEST['saiu05origenmes']);
+$_REQUEST['saiu05origenid'] = numeros_validar($_REQUEST['saiu05origenid']);
+$_REQUEST['saiu05dia'] = numeros_validar($_REQUEST['saiu05dia']);
+$_REQUEST['saiu05hora'] = numeros_validar($_REQUEST['saiu05hora']);
+$_REQUEST['saiu05minuto'] = numeros_validar($_REQUEST['saiu05minuto']);
+$_REQUEST['saiu05estado'] = numeros_validar($_REQUEST['saiu05estado']);
+$_REQUEST['saiu05idmedio'] = numeros_validar($_REQUEST['saiu05idmedio']);
+$_REQUEST['saiu05idtiposolorigen'] = numeros_validar($_REQUEST['saiu05idtiposolorigen']);
+$_REQUEST['saiu05idtemaorigen'] = numeros_validar($_REQUEST['saiu05idtemaorigen']);
+$_REQUEST['saiu05idtiposolfin'] = numeros_validar($_REQUEST['saiu05idtiposolfin']);
+$_REQUEST['saiu05idtemafin'] = numeros_validar($_REQUEST['saiu05idtemafin']);
+$_REQUEST['saiu05idsolicitante'] = numeros_validar($_REQUEST['saiu05idsolicitante']);
+$_REQUEST['saiu05idinteresado'] = numeros_validar($_REQUEST['saiu05idinteresado']);
+$_REQUEST['saiu05tipointeresado'] = numeros_validar($_REQUEST['saiu05tipointeresado']);
+$_REQUEST['saiu05rptaforma'] = numeros_validar($_REQUEST['saiu05rptaforma']);
+$_REQUEST['saiu05rptacorreo'] = cadena_Validar($_REQUEST['saiu05rptacorreo']);
+$_REQUEST['saiu05rptadireccion'] = cadena_Validar($_REQUEST['saiu05rptadireccion']);
+$_REQUEST['saiu05costogenera'] = numeros_validar($_REQUEST['saiu05costogenera']);
+$_REQUEST['saiu05costovalor'] = numeros_validar($_REQUEST['saiu05costovalor']);
+$_REQUEST['saiu05costorefpago'] = cadena_Validar($_REQUEST['saiu05costorefpago']);
+$_REQUEST['saiu05prioridad'] = numeros_validar($_REQUEST['saiu05prioridad']);
+$_REQUEST['saiu05idzona'] = numeros_validar($_REQUEST['saiu05idzona']);
+$_REQUEST['saiu05cead'] = numeros_validar($_REQUEST['saiu05cead']);
+$_REQUEST['saiu05numref'] = cadena_Validar($_REQUEST['saiu05numref']);
+$_REQUEST['saiu05detalle'] = cadena_Validar($_REQUEST['saiu05detalle']);
+$_REQUEST['saiu05infocomplemento'] = cadena_Validar($_REQUEST['saiu05infocomplemento']);
+$_REQUEST['saiu05idunidadresp'] = numeros_validar($_REQUEST['saiu05idunidadresp']);
+$_REQUEST['saiu05idequiporesp'] = numeros_validar($_REQUEST['saiu05idequiporesp']);
+$_REQUEST['saiu05idsupervisor'] = numeros_validar($_REQUEST['saiu05idsupervisor']);
+$_REQUEST['saiu05idresponsable'] = numeros_validar($_REQUEST['saiu05idresponsable']);
+$_REQUEST['saiu05idescuela'] = numeros_validar($_REQUEST['saiu05idescuela']);
+$_REQUEST['saiu05idprograma'] = numeros_validar($_REQUEST['saiu05idprograma']);
+$_REQUEST['saiu05idperiodo'] = numeros_validar($_REQUEST['saiu05idperiodo']);
+$_REQUEST['saiu05idcurso'] = numeros_validar($_REQUEST['saiu05idcurso']);
+$_REQUEST['saiu05idgrupo'] = numeros_validar($_REQUEST['saiu05idgrupo']);
+$_REQUEST['saiu05tiemprespdias'] = numeros_validar($_REQUEST['saiu05tiemprespdias']);
+$_REQUEST['saiu05tiempresphoras'] = numeros_validar($_REQUEST['saiu05tiempresphoras']);
+$_REQUEST['saiu05fecharespprob'] = numeros_validar($_REQUEST['saiu05fecharespprob']);
+$_REQUEST['saiu05respuesta'] = cadena_Validar($_REQUEST['saiu05respuesta']);
+$_REQUEST['saiu05fecharespdef'] = numeros_validar($_REQUEST['saiu05fecharespdef']);
+$_REQUEST['saiu05horarespdef'] = numeros_validar($_REQUEST['saiu05horarespdef']);
+$_REQUEST['saiu05minrespdef'] = numeros_validar($_REQUEST['saiu05minrespdef']);
+$_REQUEST['saiu05diasproc'] = numeros_validar($_REQUEST['saiu05diasproc']);
+$_REQUEST['saiu05minproc'] = numeros_validar($_REQUEST['saiu05minproc']);
+$_REQUEST['saiu05diashabproc'] = numeros_validar($_REQUEST['saiu05diashabproc']);
+$_REQUEST['saiu05minhabproc'] = numeros_validar($_REQUEST['saiu05minhabproc']);
+$_REQUEST['saiu05idmoduloproc'] = numeros_validar($_REQUEST['saiu05idmoduloproc']);
+$_REQUEST['saiu05identificadormod'] = numeros_validar($_REQUEST['saiu05identificadormod']);
+$_REQUEST['saiu05numradicado'] = numeros_validar($_REQUEST['saiu05numradicado']);
+$_REQUEST['saiu05evalacepta'] = numeros_validar($_REQUEST['saiu05evalacepta']);
+$_REQUEST['saiu05evalfecha'] = numeros_validar($_REQUEST['saiu05evalfecha']);
+$_REQUEST['saiu05evalamabilidad'] = numeros_validar($_REQUEST['saiu05evalamabilidad']);
+$_REQUEST['saiu05evalamabmotivo'] = cadena_Validar($_REQUEST['saiu05evalamabmotivo']);
+$_REQUEST['saiu05evalrapidez'] = numeros_validar($_REQUEST['saiu05evalrapidez']);
+$_REQUEST['saiu05evalrapidmotivo'] = cadena_Validar($_REQUEST['saiu05evalrapidmotivo']);
+$_REQUEST['saiu05evalclaridad'] = numeros_validar($_REQUEST['saiu05evalclaridad']);
+$_REQUEST['saiu05evalcalridmotivo'] = cadena_Validar($_REQUEST['saiu05evalcalridmotivo']);
+$_REQUEST['saiu05evalresolvio'] = numeros_validar($_REQUEST['saiu05evalresolvio']);
+$_REQUEST['saiu05evalsugerencias'] = cadena_Validar($_REQUEST['saiu05evalsugerencias']);
+$_REQUEST['saiu05idcategoria'] = numeros_validar($_REQUEST['saiu05idcategoria']);
 // Espacio para inicializar otras variables
 if (isset($_REQUEST['csv_separa']) == 0) {
 	$_REQUEST['csv_separa'] = ';';
@@ -654,19 +768,47 @@ if (isset($_REQUEST['opcion']) == 0) {
 	$_REQUEST['opcion'] = 0;
 }
 if (isset($_REQUEST['aceptaterminos']) == 0) {
+	if ($bCargaMenu) {
+		switch ($iPiel) {
+			case 2:
+				list($et_menu, $sDebugM) = html_Menu2023($APP->idsistema, $objDB, $iPiel, $bDebugMenu, $idTercero);
+				break;
+			default:
+				list($et_menu, $sDebugM) = html_menuV2($APP->idsistema, $objDB, $iPiel, $bDebugMenu, $idTercero);
+				break;
+		}
+	}
 	$objDB->CerrarConexion();
-	require $APP->rutacomun . 'unad_forma_v2.php';
-	forma_cabeceraV3($xajax, $ETI['titulo_3005']);
-	echo $et_menu;
-	forma_mitad();
+	switch ($iPiel) {
+		case 2:
+			require $APP->rutacomun . 'unad_forma2024.php';
+			forma_InicioV4($xajax, $sTituloModulo);
+			$aRutas = array(
+				array('./', $sTituloApp),
+				array('./' . $sPaginaModulo, $sGrupoModulo),
+				array('', $sTituloModulo)
+			);
+			$iNumBoton = 0;
+			$aBotones[$iNumBoton] = array('muestraayuda(' . $APP->idsistema . ', ' . $iCodModulo . ')', $ETI['bt_ayuda'], 'iHelp');
+			$iNumBoton++;
+			forma_cabeceraV4b($aRutas, $aBotones, true, 1);
+			//echo $et_menu;
+			forma_mitad($idTercero);
+			break;
+		default:
+			require $APP->rutacomun . 'unad_forma_v2_2024.php';
+			forma_cabeceraV3($xajax, $sTituloModulo);
+			//echo $et_menu;
+			forma_mitad();
+			break;
+	}
+	$objForma = new clsHtmlForma($iPiel);
+	if ($bBloqueTitulo) {
+		$objForma->addBoton('cmdAyuda98', 'btSupAyuda', 'muestraayuda(' . $iCodModulo . ');', $ETI['bt_ayuda']);
+		echo $objForma->htmlTitulo($sTituloModulo, $iCodModulo);
+	}
+	echo $objForma->htmlInicioMarco();
 	?>
-	<script language="javascript" src="<?php echo $APP->rutacomun; ?>js/jquery-3.3.1.min.js"></script>
-	<script language="javascript" src="<?php echo $APP->rutacomun; ?>js/popper.min.js"></script>
-	<script language="javascript" src="<?php echo $APP->rutacomun; ?>js/bootstrap.min.js"></script>
-	<link rel="stylesheet" href="<?php echo $APP->rutacomun; ?>js/bootstrap.min.css" type="text/css" />
-	<link rel="stylesheet" href="<?php echo $APP->rutacomun; ?>css/criticalPath.css" type="text/css" />
-	<link rel="stylesheet" href="<?php echo $APP->rutacomun; ?>css/principal.css" type="text/css" />
-	<link rel="stylesheet" href="<?php echo $APP->rutacomun; ?>unad_estilos2018.css" type="text/css" />
 	<form id="frmterminos" name="frmterminos" method="post" action="" autocomplete="off">
 	<h1 class="TituloAzul1"><?php echo $ETI['bt_tratadatos']; ?></h1>
 	<div class="GrupoCampos700 container float-none mx-auto">
@@ -678,8 +820,9 @@ if (isset($_REQUEST['aceptaterminos']) == 0) {
 	</form>
 	<?php
 	if ($bDebug) {
-		echo $sDebug;
+		echo console_debug($sDebug);
 	}
+	echo $objForma->htmlFinMarco();
 	forma_piedepagina();
 	die();
 }
@@ -1039,9 +1182,9 @@ if ($_REQUEST['paso'] == -1) {
 	$_REQUEST['saiu05minproc'] = 0;
 	$_REQUEST['saiu05diashabproc'] = 0;
 	$_REQUEST['saiu05minhabproc'] = 0;
-	$_REQUEST['saiu05idmoduloproc'] = '';
-	$_REQUEST['saiu05identificadormod'] = '';
-	$_REQUEST['saiu05numradicado'] = '';
+	$_REQUEST['saiu05idmoduloproc'] = 0;
+	$_REQUEST['saiu05identificadormod'] = 0;
+	$_REQUEST['saiu05numradicado'] = 0;
 	$_REQUEST['saiu05evalacepta'] = -1;
 	$_REQUEST['saiu05evalfecha'] = fecha_hoy();
 	$_REQUEST['saiu05evalamabilidad'] = 0;
@@ -1097,14 +1240,21 @@ if ($bLimpiaHijos) {
 	$_REQUEST['saiu07minvalida'] = fecha_minuto();
 }
 //AQUI SE DEBEN CARGAR TODOS LOS DATOS QUE LA FORMA NECESITE.
+$bPuedeGuardar = true;
+$bConEliminar = false;
+$bHayImprimir = false;
+$bHayImprimir2 = false;
 $bConMedio = false;
+if (($_REQUEST['opcion'] != 2) || ($_REQUEST['saiu05estado'] != -1)) {
+	$bPuedeGuardar = false;
+}
 if ((int)$_REQUEST['paso'] > 0) {
 	if ($_REQUEST['saiu05idmedio'] != $iViaWeb) {
 		$bConMedio = false;
 	}
 }
-$iFechaIni=20241218;
-$iFechaFin=20250115;
+$iFechaIni=20251219;
+$iFechaFin=20260115;
 $bMuestraBotones = false;
 if ($iHoy < $iFechaIni || $iHoy > $iFechaFin) {
 	$bMuestraBotones = true;
@@ -1133,6 +1283,7 @@ if ($bDevuelve) {
 */
 //Crear los controles que requieran llamado a base de datos
 $objCombos = new clsHtmlCombos();
+$objForma = new clsHtmlForma($iPiel);
 $objTercero = new clsHtmlTercero();
 $saiu05estado_nombre = '';
 if ($_REQUEST['saiu05estado'] == -1) {
@@ -1222,7 +1373,11 @@ if (false) {
 	$objCombos->nuevo('csv_separa', $_REQUEST['csv_separa'], false);
 	$objCombos->addItem(',', $ETI['msg_coma']);
 	$objCombos->addItem(';', $ETI['msg_puntoycoma']);
-	$csv_separa = '<label class="Label90">' . $ETI['msg_separador'] . '</label><label class="Label130">' . $objCombos->html('', $objDB) . '</label>';
+	$sClaseLabel = 'Label90';
+	if ($iPiel == 2) {
+		$sClaseLabel = 'w-15';
+	}
+	$csv_separa = '<label class="' . $sClaseLabel . '">' . $ETI['msg_separador'] . '</label><label class="' . $sClaseLabel . '">' . $objCombos->html('', $objDB) . '</label>';
 } else {
 	$csv_separa = '<input id="csv_separa" name="csv_separa" type="hidden" value="," />';
 }
@@ -1263,6 +1418,14 @@ $aParametros3000[102] = $_REQUEST['lppf3000'];
 //$aParametros3000[104]=$_REQUEST['blistar3000'];
 list($sTabla3000, $sDebugTabla) = f3000_TablaDetalleV2($aParametros3000, $objDB, $bDebug);
 $sDebug = $sDebug . $sDebugTabla;
+switch ($iPiel) {
+	case 2:
+		list($et_menu, $sDebugM) = html_Menu2023($APP->idsistema, $objDB, $iPiel, $bDebugMenu, $idTercero);
+		break;
+	default:
+		list($et_menu, $sDebugM) = html_menuV2($APP->idsistema, $objDB, $iPiel, $bDebugMenu, $idTercero);
+		break;
+}
 if ($_REQUEST['paso'] != 0) {
 	//Anotaciones
 	$sNumSol = f3000_NumSolicitud($_REQUEST['saiu05agno'], $_REQUEST['saiu05mes'], $_REQUEST['saiu05consec']);
@@ -1294,47 +1457,51 @@ $bDebugMenu = false;
 // $sDebug = $sDebug . $sDebugM;
 $objDB->CerrarConexion();
 //FORMA
-require $APP->rutacomun . 'unad_forma_v2.php';
-forma_cabeceraV3($xajax, $ETI['titulo_3005']);
-// echo $et_menu;
-forma_mitad();
-if (false) {
-?>
-	<link rel="stylesheet" href="../ulib/css/criticalPath.css" type="text/css" />
-	<link rel="stylesheet" href="../ulib/css/principal.css" type="text/css" />
-	<link rel="stylesheet" href="../ulib/unad_estilos2018.css" type="text/css" />
-<?php
+switch ($iPiel) {
+	case 2:
+		require $APP->rutacomun . 'unad_forma2024.php';
+		forma_InicioV4($xajax, $sTituloModulo);
+		$aRutas = array(
+			array('./', $sTituloApp),
+			array('./' . $sPaginaModulo, $sGrupoModulo),
+			array('', $sTituloModulo)
+		);
+		$iNumBoton = 0;
+		$aBotones[$iNumBoton] = array('muestraayuda(' . $APP->idsistema . ', ' . $iCodModulo . ')', $ETI['bt_ayuda'], 'iHelp');
+		$iNumBoton++;
+		if ($bConEliminar) {
+			$aBotones[$iNumBoton] = array('eliminadato()', $ETI['bt_eliminar'], 'iDelete');
+			$iNumBoton++;
+		}
+		if ($bHayImprimir) {
+			$aBotones[$iNumBoton] = array($sScriptImprime, $ETI['bt_imprimir'], $sClaseImprime);
+			$iNumBoton++;
+		}
+		if ($bHayImprimir2) {
+			$aBotones[$iNumBoton] = array($sScriptImprime2, $ETI['bt_imprimir'], $sClaseImprime2);
+			$iNumBoton++;
+		}
+		$aBotones[$iNumBoton] = array('limpiapagina()', $ETI['bt_limpiar'], 'iDocument');
+		$iNumBoton++;
+		if ($bPuedeGuardar) {
+			$aBotones[$iNumBoton] = array('enviaguardar()', $ETI['bt_guardar'], 'iSaveFill');
+			$iNumBoton++;
+		}
+		$aBotones[$iNumBoton] = array('expandesector(1)', $ETI['bt_volver'], 'iArrowBack', 97);
+		$iNumBoton++;
+		forma_cabeceraV4b($aRutas, $aBotones, true, $iSector);
+		// echo $et_menu;
+		forma_mitad($idTercero);
+		break;
+	default:
+		require $APP->rutacomun . 'unad_forma_v2_2024.php';
+		forma_cabeceraV3($xajax, $sTituloModulo);
+		// echo $et_menu;
+		forma_mitad();
+		break;
 }
 ?>
-<script language="javascript" src="<?php echo $APP->rutacomun; ?>js/jquery-3.3.1.min.js"></script>
-<script language="javascript" src="<?php echo $APP->rutacomun; ?>js/popper.min.js"></script>
-<script language="javascript" src="<?php echo $APP->rutacomun; ?>js/bootstrap.min.js"></script>
-<link rel="stylesheet" href="<?php echo $APP->rutacomun; ?>js/bootstrap.min.css" type="text/css" />
-<link rel="stylesheet" href="<?php echo $APP->rutacomun; ?>css/criticalPath.css" type="text/css" />
-<link rel="stylesheet" href="<?php echo $APP->rutacomun; ?>css/principal.css" type="text/css" />
-<link rel="stylesheet" href="<?php echo $APP->rutacomun; ?>unad_estilos2018.css" type="text/css" />
-<?php
-?>
 <script language="javascript">
-	function limpiapagina() {
-		expandesector(98);
-		window.document.frmedita.paso.value = -1;
-		window.document.frmedita.opcion.value = 0;
-		window.document.frmedita.submit();
-	}
-
-	function enviaguardar() {
-		window.document.frmedita.iscroll.value = window.pageYOffset;
-		expandesector(98);
-		var dpaso = window.document.frmedita.paso;
-		if (dpaso.value == 0) {
-			dpaso.value = 10;
-		} else {
-			dpaso.value = 12;
-		}
-		window.document.frmedita.submit();
-	}
-
 	function enviacerrar() {
 		ModalConfirmV2('<?php echo $ETI['msg_cerrar']; ?>', () => {
 			ejecuta_enviacerrar();
@@ -1347,36 +1514,6 @@ if (false) {
 		window.document.frmedita.paso.value = 16;
 		window.document.frmedita.submit();
 	}
-
-	function cambiapagina() {
-		expandesector(98);
-		window.document.frmedita.submit();
-	}
-
-	function cambiapaginaV2() {
-		expandesector(98);
-		window.document.frmedita.paso.value = 1;
-		window.document.frmedita.submit();
-	}
-
-	function expandepanel(codigo, estado, valor) {
-		var objdiv = document.getElementById('div_p' + codigo);
-		var objban = document.getElementById('boculta' + codigo);
-		var otroestado = 'none';
-		if (estado == 'none') {
-			otroestado = 'block';
-		}
-		objdiv.style.display = estado;
-		objban.value = valor;
-		verboton('btrecoge' + codigo, estado);
-		verboton('btexpande' + codigo, otroestado);
-	}
-
-	function verboton(idboton, estado) {
-		var objbt = document.getElementById(idboton);
-		objbt.style.display = estado;
-	}
-
 	function expandesector(codigo) {
 		document.getElementById('div_sector1').style.display = 'none';
 		document.getElementById('div_sector2').style.display = 'none';
@@ -1386,27 +1523,52 @@ if (false) {
 		document.getElementById('div_sector97').style.display = 'none';
 		document.getElementById('div_sector98').style.display = 'none';
 		document.getElementById('div_sector' + codigo).style.display = 'block';
-		var sEst = 'none';
+<?php
+switch ($iPiel) {
+	case 2:
+?>
+		document.getElementById('botones_sector1').style.display = 'none';
+		switch (codigo) {
+			case 1:
+				document.getElementById('botones_sector1').style.display = 'flex';
+				break;
+			case 2:
+				document.getElementById('botones_sector2').style.display = 'flex';
+				break;
+			default:
+				//document.getElementById('botones_sector1').style.display = 'none';
+				break;
+		}
+		if (codigo == 1) {
+			document.getElementById('nav').removeAttribute('disabled');
+		} else {
+			document.getElementById('nav').setAttribute('disabled', '');
+		}
+<?php
+		break;
+	default:
+		if ($bPuedeGuardar && $bBloqueTitulo) {
+?>
+		let sEst = 'none';
 		if (codigo == 1) {
 			sEst = 'block';
 		}
-		<?php
-		if ($_REQUEST['opcion'] == 2) {
-		?>
 		document.getElementById('cmdGuardarf').style.display = sEst;
-		<?php
+<?php
 		}
-		?>
+		break;
+}
+?>
 	}
 
 	function ter_retorna() {
-		var sRetorna = window.document.frmedita.div96v2.value;
+		let sRetorna = window.document.frmedita.div96v2.value;
 		if (sRetorna != '') {
-			var idcampo = window.document.frmedita.div96campo.value;
-			var illave = window.document.frmedita.div96llave.value;
-			var did = document.getElementById(idcampo);
-			var dtd = document.getElementById(idcampo + '_td');
-			var ddoc = document.getElementById(idcampo + '_doc');
+			let idcampo = window.document.frmedita.div96campo.value;
+			let illave = window.document.frmedita.div96llave.value;
+			let did = document.getElementById(idcampo);
+			let dtd = document.getElementById(idcampo + '_td');
+			let ddoc = document.getElementById(idcampo + '_doc');
 			dtd.value = window.document.frmedita.div96v1.value;
 			ddoc.value = sRetorna;
 			did.value = window.document.frmedita.div96v3.value;
@@ -1417,7 +1579,7 @@ if (false) {
 	}
 
 	function ter_muestra(idcampo, illave) {
-		var params = new Array();
+		let params = new Array();
 		params[1] = document.getElementById(idcampo + '_doc').value;
 		if (params[1] != '') {
 			params[0] = document.getElementById(idcampo + '_td').value;
@@ -1441,7 +1603,7 @@ if (false) {
 	}
 
 	function ter_traerxid(idcampo, vrcampo) {
-		var params = new Array();
+		let params = new Array();
 		params[0] = vrcampo;
 		params[1] = idcampo;
 		if (params[0] != 0) {
@@ -1450,61 +1612,8 @@ if (false) {
 		}
 	}
 
-	function imprimelista() {
-		if (window.document.frmedita.seg_6.value == 1) {
-			window.document.frmlista.consulta.value = window.document.frmedita.consulta_3005.value;
-			window.document.frmlista.titulos.value = window.document.frmedita.titulos_3005.value;
-			window.document.frmlista.nombrearchivo.value = 'Solicitudes';
-			window.document.frmlista.submit();
-		} else {
-			ModalMensaje("<?php echo $ERR['6']; ?>");
-		}
-	}
-
-	function asignarvariables() {
-		//window.document.frmimpp.v3.value = window.document.frmedita.bnombre.value;
-		//window.document.frmimpp.v4.value = window.document.frmedita.bcodigo.value;
-		//window.document.frmimpp.separa.value = window.document.frmedita.csv_separa.value.trim();
-	}
-
-	function imprimeexcel() {
-		var sError = '';
-		if (window.document.frmedita.seg_6.value != 1) {
-			sError = "<?php echo $ERR['6']; ?>";
-		}
-		if (sError == '') {
-			/*Agregar validaciones*/
-		}
-		if (sError == '') {
-			asignarvariables();
-			window.document.frmimpp.action = '<?php echo $APP->rutacomun; ?>e3005.php';
-			window.document.frmimpp.submit();
-		} else {
-			ModalMensaje(sError);
-		}
-	}
-
-	function imprimep() {
-		if (window.document.frmedita.seg_5.value == 1) {
-			asignarvariables();
-			window.document.frmimpp.action = '<?php echo $APP->rutacomun; ?>p3005.php';
-			window.document.frmimpp.submit();
-<?php
-if ($iNumFormatosImprime>0) {
-	echo 'expandesector(1);';
-}
-?>
-		} else {
-			ModalMensaje("<?php echo $ERR['5']; ?>");
-		}
-	}
-
-	function verrpt() {
-		window.document.frmimprime.submit();
-	}
-	
 	function RevisaLlave() {
-		var datos = new Array();
+		let datos = new Array();
 		datos[1] = window.document.frmedita.saiu05agno.value;
 		datos[2] = window.document.frmedita.saiu05mes.value;
 		datos[3] = window.document.frmedita.saiu05tiporadicado.value;
@@ -1538,28 +1647,28 @@ if ($iNumFormatosImprime>0) {
 	}
 
 	function carga_combo_saiu05idtemaorigen() {
-		var params = new Array();
+		let params = new Array();
 		params[0] = window.document.frmedita.saiu05idtiposolorigen.value;
 		document.getElementById('div_saiu05idtemaorigen').innerHTML = '<b>Procesando datos, por favor espere...</b><input id="saiu05idtemaorigen" name="saiu05idtemaorigen" type="hidden" value="" />';
 		xajax_f3005_Combosaiu05idtemaorigen(params);
 	}
 
 	function carga_combo_saiu05idtemafin() {
-		var params = new Array();
+		let params = new Array();
 		params[0] = window.document.frmedita.saiu05idtiposolfin.value;
 		document.getElementById('div_saiu05idtemafin').innerHTML = '<b>Procesando datos, por favor espere...</b><input id="saiu05idtemafin" name="saiu05idtemafin" type="hidden" value="" />';
 		xajax_f3005_Combosaiu05idtemafin(params);
 	}
 
 	function carga_combo_saiu05idequiporesp() {
-		var params = new Array();
+		let params = new Array();
 		params[0] = window.document.frmedita.saiu05idzona.value;
 		document.getElementById('div_saiu05idequiporesp').innerHTML = '<b>Procesando datos, por favor espere...</b><input id="saiu05idequiporesp" name="saiu05idequiporesp" type="hidden" value="" />';
 		xajax_f3005_Combosaiu05idequiporesp(params);
 	}
 
 	function paginarf3005() {
-		var params = new Array();
+		let params = new Array();
 		params[99] = window.document.frmedita.debug.value;
 		params[100] = <?php echo $idTercero; ?>;
 		params[101] = window.document.frmedita.paginaf3005.value;
@@ -1568,12 +1677,6 @@ if ($iNumFormatosImprime>0) {
 		params[104] = window.document.frmedita.blistar.value;
 		document.getElementById('div_f3005detalle').innerHTML = '<div class="GrupoCamposAyuda"><div class="MarquesinaMedia">Procesando datos, por favor espere.</div></div><input id="paginaf3005" name="paginaf3005" type="hidden" value="' + params[101] + '" /><input id="lppf3005" name="lppf3005" type="hidden" value="' + params[102] + '" />';
 		xajax_f3005_HtmlTabla(params);
-	}
-
-	function revfoco(objeto) {
-		setTimeout(function() {
-			objeto.focus();
-		}, 10);
 	}
 
 	function siguienteobjeto() {}
@@ -1597,20 +1700,15 @@ if ($iNumFormatosImprime>0) {
 		window.document.frmedita.iscroll.value = window.pageYOffset;
 		expandesector(98);
 		window.document.frmedita.scampobusca.value = sCampo;
-		var params = new Array();
+		let params = new Array();
 		params[1] = sCampo;
 		//params[2]=window.document.frmedita.iagno.value;
 		//params[3]=window.document.frmedita.itipo.value;
 		xajax_f3005_Busquedas(params);
 	}
 
-	function retornacontrol() {
-		expandesector(1);
-		window.scrollTo(0, window.document.frmedita.iscroll.value);
-	}
-
 	function Devuelve(sValor) {
-		var sCampo = window.document.frmedita.scampobusca.value;
+		let sCampo = window.document.frmedita.scampobusca.value;
 		if (sCampo == 'saiu05idsolicitante') {
 			ter_traerxid('saiu05idsolicitante', sValor);
 		}
@@ -1638,11 +1736,11 @@ if ($iNumFormatosImprime>0) {
 	setInterval('xajax_sesion_abandona_V2();', 60000);
 
 	function AyudaLocal(sCampo) {
-		var divAyuda = document.getElementById('div_ayuda_' + sCampo);
+		let divAyuda = document.getElementById('div_ayuda_' + sCampo);
 		if (typeof divAyuda === 'undefined') {
 		} else {
 			verboton('cmdAyuda_' + sCampo, 'none');
-			var sMensaje = 'Lo que quiera decir.';
+			let sMensaje = 'Lo que quiera decir.';
 			//if (sCampo == 'sNombreCampo') {
 				//sMensaje = 'Mensaje para otro campo.';
 			//}
@@ -1652,7 +1750,7 @@ if ($iNumFormatosImprime>0) {
 	}
 
 	function cierraDiv96(ref) {
-		var sRetorna = window.document.frmedita.div96v2.value;
+		let sRetorna = window.document.frmedita.div96v2.value;
 		if (ref == 3006) {
 			if (sRetorna != '') {
 				window.document.frmedita.saiu06idorigen.value = window.document.frmedita.div96v1.value;
@@ -1691,8 +1789,8 @@ if ($iNumFormatosImprime>0) {
 	}
 
 	function ajustarformarpta() {
-		var iForma = window.document.frmedita.saiu05rptaforma.value;
-		var sMuestra = 'none';
+		let iForma = window.document.frmedita.saiu05rptaforma.value;
+		let sMuestra = 'none';
 		if (iForma == 1) {
 			sMuestra = 'block';
 		}
@@ -1705,8 +1803,8 @@ if ($iNumFormatosImprime>0) {
 	}
 
 	function ajustarcosto() {
-		var iForma = window.document.frmedita.saiu05costogenera.value;
-		var sMuestra = 'none';
+		let iForma = window.document.frmedita.saiu05costogenera.value;
+		let sMuestra = 'none';
 		if (iForma == 1) {
 			sMuestra = 'block';
 		}
@@ -1714,7 +1812,7 @@ if ($iNumFormatosImprime>0) {
 	}
 
 	function paginarf3000() {
-		var params = new Array();
+		let params = new Array();
 		params[0] = window.document.frmedita.id11.value;
 		params[1] = 3005;
 		params[2] = window.document.frmedita.saiu05agno.value;
@@ -1730,7 +1828,7 @@ if ($iNumFormatosImprime>0) {
 	}
 
 	function verinfopersonal(id) {
-		var params = new Array();
+		let params = new Array();
 		params[1] = id;
 		document.getElementById('div_infopersonal').innerHTML = '<b>Procesando datos, por favor espere...</b>';
 		xajax_f236_TraerInfoPersonal(params);
@@ -1802,11 +1900,15 @@ if ($_REQUEST['paso'] != 0) {
 <input id="idusuario" name="idusuario" type="hidden" value="<?php echo $_SESSION['unad_id_tercero']; ?>" />
 <input id="id11" name="id11" type="hidden" value="<?php echo $idTercero; ?>" />
 <input id="ipiel" name="ipiel" type="hidden" value="<?php echo $iPiel; ?>" />
+<input id="icodmodulo" name="icodmodulo" type="hidden" value="<?php echo $iCodModulo; ?>" />
 <input id="seg_5" name="seg_5" type="hidden" value="<?php echo $seg_5; ?>" />
 <input id="seg_6" name="seg_6" type="hidden" value="<?php echo $seg_6; ?>" />
 <input id="opcion" name="opcion" type="hidden" value="<?php echo $_REQUEST['opcion'] ?>" />
 <input id="aceptaterminos" name="aceptaterminos" type="hidden" value="<?php echo $_REQUEST['aceptaterminos'] ?>" />
 <div id="div_sector1">
+<?php
+if ($bBloqueTitulo) {
+?>
 <div class="titulos">
 <div class="titulosD">
 <input id="cmdAyuda" name="cmdAyuda" type="button" class="btUpAyuda" onclick="muestraayuda(<?php echo $APP->idsistema . ', ' . $iCodModulo; ?>);" title="<?php echo $ETI['bt_ayuda']; ?>" value="<?php echo $ETI['bt_ayuda']; ?>" />
@@ -1836,7 +1938,7 @@ if ($bHayImprimir) {
 ?>
 <input id="cmdLimpiar" name="cmdLimpiar" type="button" class="btUpLimpiar" onclick="limpiapagina();" title="<?php echo $ETI['bt_limpiar']; ?>" value="<?php echo $ETI['bt_limpiar']; ?>" />
 <?php
-if ($_REQUEST['opcion'] == 2 && $_REQUEST['saiu05estado'] == -1) {
+if ($bPuedeGuardar) {
 ?>
 <input id="cmdGuardar" name="cmdGuardar" type="button" class="btUpGuardar" onclick="enviaguardar();" title="<?php echo $ETI['bt_guardarb']; ?>" value="<?php echo $ETI['bt_guardarb']; ?>" />
 <?php
@@ -1846,11 +1948,14 @@ if ($_REQUEST['opcion'] == 2 && $_REQUEST['saiu05estado'] == -1) {
 </div>
 <div class="titulosI">
 <?php
-echo '<h2>' . $ETI['titulo_3005'] . '</h2>';
+echo '<h2>' . $sTituloModulo . '</h2>';
 ?>
 </div>
 </div>
-
+<?php
+	//Termina el bloque titulo
+}
+?>
 
 <div class="areaform">
 <div class="areatitulo">
@@ -1870,22 +1975,12 @@ if ($bConExpande) {
 ?>
 <div class="ir_derecha"<?php echo $sAnchoExpandeContrae; ?>>
 <?php
-$sEstiloExpande = ' style="display:none;"';
-$sEstiloRecoje = '';
+echo $objForma->htmlExpande(3005, $_REQUEST['boculta3005'], $ETI['bt_mostrar'], $ETI['bt_ocultar']);
 $sEstiloDiv = '';
 if ($_REQUEST['boculta3005'] != 0) {
-	$sEstiloExpande = '';
-	$sEstiloRecoje = ' style="display:none;"';
 	$sEstiloDiv = ' style="display:none;"';
 }
 ?>
-<input id="boculta3005" name="boculta3005" type="hidden" value="<?php echo $_REQUEST['boculta3005']; ?>" />
-<label class="Label30">
-<input id="btexpande3005" name="btexpande3005" type="button" value="Mostrar" class="btMiniExpandir" onclick="expandepanel(3005, 'block', 0);" title="<?php echo $ETI['bt_mostrar']; ?>"<?php echo $sEstiloExpande; ?>/>
-</label>
-<label class="Label30">
-<input id="btrecoge3005" name="btrecoge3005" type="button" value="Ocultar" class="btMiniRecoger" onclick="expandepanel(3005, 'none', 1);" title="<?php echo $ETI['bt_ocultar']; ?>" <?php echo $sEstiloRecoje; ?>/>
-</label>
 </div>
 <div id="div_p3005"<?php echo $sEstiloDiv; ?>>
 <?php
@@ -2068,11 +2163,8 @@ echo $ETI['saiu05idmedio'] . ' ' . $html_saiu05idmedio;
 <div class="salto1px"></div>
 <?php
 if ($_SESSION['unad_id_tercero'] > 0) {
-	$sHref = 'javascript:;';
-	$sOnclick = 'mod_tratadatos();';
-	$sTarget =  '';
+	echo $objForma->htmlBotonSolo('cmdTrataDatos', 'BotonAzul', 'mod_tratadatos();', $ETI['bt_tratadatos'], 200, 'width:420px; padding:7px 10px;');
 ?>
-<a id="cmdTrataDatos" name="cmdTrataDatos" class="BotonAzul200" title="<?php echo $ETI['bt_tratadatos']; ?>" href="<?php echo $sHref; ?>" target="<?php echo $sTarget; ?>" onclick="<?php echo $sOnclick; ?>" style="width:420px; padding:7px 10px;"><?php echo $ETI['bt_tratadatos']; ?></a>
 <div class="salto1px"></div>
 <?php
 }
@@ -2652,9 +2744,9 @@ if ($_REQUEST['paso'] == 0) {
 ?>
 <label class="Label320"></label>
 <label class="Label60"></label>
-<label class="Label160">
-<input id="cmdGuardar" name="cmdGuardar" type="button" class="BotonAzul160" value="<?php echo $ETI['bt_guardarb']; ?>" onclick="enviaguardar();" title="<?php echo $ETI['bt_guardarb']; ?>" />
-</label>
+<?php
+echo $objForma->htmlBotonSolo('cmdGuardar', 'BotonAzul', 'enviaguardar();', $ETI['bt_guardarb'], 160);
+?>
 <div class="salto1px"></div>
 <?php
 } else {
@@ -2663,9 +2755,9 @@ if ($_REQUEST['paso'] == 0) {
 ?>
 <label class="Label320"></label>
 <label class="Label60"></label>
-<label class="Label160">
-<input id="cmdSolicitar" name="cmdSolicitar" type="button" class="BotonAzul160" value="<?php echo $ETI['bt_solicitar']; ?>" onclick="enviacerrar();" title="<?php echo $ETI['bt_solicitar']; ?>" />
-</label>
+<?php
+echo $objForma->htmlBotonSolo('cmdSolicitar', 'BotonAzul', 'enviacerrar();', $ETI['bt_solicitar'], 160);
+?>
 <div class="salto1px"></div>
 <?php
 		break;
@@ -2879,6 +2971,9 @@ echo $sTabla3005;
 
 
 <div id="div_sector2" style="display:none">
+<?php
+if ($bBloqueTitulo) {
+?>
 <div class="titulos">
 <div class="titulosD">
 <input id="cmdAyuda2" name="cmdAyuda2" type="button" class="btSupAyuda" onclick="muestraayuda(<?php echo $iCodModulo; ?>);" title="<?php echo $ETI['bt_ayuda']; ?>" value="<?php echo $ETI['bt_ayuda']; ?>" />
@@ -2890,8 +2985,11 @@ echo '<h2>' . $ETI['titulo_sector2'] . '</h2>';
 ?>
 </div>
 </div>
-<div id="cargaForm">
-<div id="area">
+<?php
+}
+?>
+<div class="areaform">
+<div class="areatrabajo">
 </div>
 </div>
 <?php
@@ -2938,7 +3036,7 @@ echo $objForma->htmlFinMarco();
 
 
 <div id="div_sector95" style="display:none">
-<div id="cargaForm">
+<div class="areaform">
 <div id="div_95cuerpo"></div>
 </div>
 </div>
@@ -2950,62 +3048,75 @@ echo $objForma->htmlFinMarco();
 <input id="div96v3" name="div96v3" type="hidden" value="" />
 <input id="div96campo" name="div96campo" type="hidden" value="" />
 <input id="div96llave" name="div96llave" type="hidden" value="" />
-<input id="titulo_3005" name="titulo_3005" type="hidden" value="<?php echo $ETI['titulo_3005']; ?>" />
+<input id="titulo_3005" name="titulo_3005" type="hidden" value="<?php echo $sTituloModulo; ?>" />
+<?php
+if ($bBloqueTitulo) {
+?>
 <div class="titulos">
 <div class="titulosD">
 <input id="cmdAyuda96" name="cmdAyuda96" type="button" class="btSupAyuda" onclick="muestraayuda(<?php echo $iCodModulo; ?>);" title="<?php echo $ETI['bt_ayuda']; ?>" value="<?php echo $ETI['bt_ayuda']; ?>" />
 </div>
 <div class="titulosI" id="div_96titulo"></div>
 </div>
-<div id="cargaForm">
+<?php
+} else {
+?>
+<div id="div_96titulo" style="display:none"></div>
+<?php
+}
+?>
+<div class="areaform">
 <div id="div_96cuerpo"></div>
 </div>
 </div>
 
 
 <div id="div_sector97" style="display:none">
-<div class="titulos">
-<div class="titulosD">
-<input id="cmdAyuda97" name="cmdAyuda97" type="button" class="btSupAyuda" onclick="muestraayuda(<?php echo $iCodModulo; ?>);" title="<?php echo $ETI['bt_ayuda']; ?>" value="<?php echo $ETI['bt_ayuda']; ?>" />
-<input id="cmdVolverSec97" name="cmdVolverSec97" type="button" class="btSupVolver" onclick="retornacontrol();" title="<?php echo $ETI['bt_volver']; ?>" value="<?php echo $ETI['bt_volver']; ?>" />
-</div>
-<div class="titulosI" id="div_97titulo">
 <?php
-echo '<h2>' . $ETI['titulo_3005'] . '</h2>';
+$objForma = new clsHtmlForma($iPiel);
+if ($bBloqueTitulo) {
+	$objForma->addBoton('cmdAyuda97', 'btSupAyuda', 'muestraayuda(' . $iCodModulo . ');', $ETI['bt_ayuda']);
+	$objForma->addBoton('cmdVolverSec97', 'btSupVolver', 'retornacontrol();', $ETI['bt_volver']);
+	echo $objForma->htmlTitulo($sTituloModulo, $iCodModulo, 'div_97titulo');
+}
+echo $objForma->htmlInicioMarco();
 ?>
-</div>
-</div>
-<div id="areaform">
-<div id="areatrabajo">
 <div id="div_97params"></div>
 <div class="salto1px"></div>
 <div id="div_97tabla"></div>
-</div>
-</div>
+<?php
+echo $objForma->htmlFinMarco();
+?>
 </div>
 
 
 <div id="div_sector98" style="display:none">
+<?php
+if ($bBloqueTitulo) {
+?>
 <div class="titulos">
 <div class="titulosD">
 <input id="cmdAyuda98" name="cmdAyuda98" type="button" class="btSupAyuda" onclick="muestraayuda(<?php echo $iCodModulo; ?>);" title="<?php echo $ETI['bt_ayuda']; ?>" value="<?php echo $ETI['bt_ayuda']; ?>" />
 </div>
 <div class="titulosI">
 <?php
-echo '<h2>' . $ETI['titulo_3005'] . '</h2>';
+echo '<h2>' . $sTituloModulo . '</h2>';
 ?>
 </div>
 </div>
-<div id="cargaForm">
-<div id="area">
+<?php
+}
+?>
+<div class="areaform">
+<div class="areatrabajo">
 <div class="MarquesinaMedia">
 <?php
 echo $ETI['msg_espere'];
 ?>
-</div><!-- /Termina la marquesina -->
-</div><!-- /div_area -->
-</div><!-- /DIV_cargaForm -->
-</div><!-- /DIV_Sector98 -->
+</div>
+</div>
+</div>
+</div>
 
 
 <?php
@@ -3015,7 +3126,8 @@ if ($sDebug != '') {
 		$iSegIni = $iSegFin;
 	}
 	$iSegundos = $iSegFin-$iSegIni;
-	echo '<div class="salto1px"></div><div class="GrupoCampos" id="div_debug">' . $sDebug . fecha_microtiempo() . ' Tiempo total del proceso: <b>' . $iSegundos . '</b> Segundos' . '<div class="salto1px"></div></div>';
+	$sDebug = $sDebug . log_debug('Tiempo total del proceso: <b>' . $iSegundos . '</b> Segundos');
+	echo console_debug($sDebug);
 }
 ?>
 <input id="scampobusca" name="scampobusca" type="hidden" value="" />
@@ -3031,15 +3143,17 @@ if ($sDebug != '') {
 // Termina el bloque div_interna
 ?>
 </div>
-<div class="flotante">
 <?php
-if ($_REQUEST['opcion'] == 2 && $_REQUEST['saiu05estado'] == -1) {
+if ($bBloqueTitulo) {
+	if ($bPuedeGuardar) {
 ?>
+<div class="flotante">
 <input id="cmdGuardarf" name="cmdGuardarf" type="button" class="btSoloGuardar" onClick="enviaguardar();" value="<?php echo $ETI['bt_guardar']; ?>" />
+</div>
 <?php
+	}
 }
 ?>
-</div>
 <?php
 echo html_DivAlarmaV2($sError, $iTipoError);
 //El script que cambia el sector que se muestra
@@ -3048,11 +3162,15 @@ echo html_DivAlarmaV2($sError, $iTipoError);
 <script language="javascript">
 <?php
 if ($iSector != 1) {
-	echo 'setTimeout(function() {expandesector(' . $iSector . ');}, 10);
+	echo 'setTimeout(function() {
+		expandesector(' . $iSector . ');
+	}, 10);
 ';
 }
 if ($bMueveScroll) {
-	echo 'setTimeout(function() {retornacontrol();}, 2);
+	echo 'setTimeout(function() {
+		retornacontrol();
+	}, 2);
 ';
 }
 ?>
@@ -3082,7 +3200,7 @@ ter_muestra('saiu05idsolicitante', 0);
 }
 ?>
 <script language="javascript" src="ac_3005.js?v=1"></script>
-<script language="javascript" src="<?php echo $APP->rutacomun; ?>unad_todas.js?ver=8"></script>
+<script language="javascript" src="<?php echo $APP->rutacomun; ?>unad_todas2024v2.js"></script>
 <script>
 $().ready(function() {
 <?php
@@ -3096,4 +3214,4 @@ ModalMensaje("<?php echo $ETI['msg_anonimo']; ?>");
 </script>
 <?php
 forma_piedepagina();
-?>
+

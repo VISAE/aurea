@@ -12,5 +12,5 @@ $("#caraidtercero_doc").result(function(event, data, formatted){
 		ter_muestra('caraidtercero', 0);
 		}
 	});
-$("#bperiodo").chosen();
+$("#bperiodo").chosen({width:"100%"});
 });

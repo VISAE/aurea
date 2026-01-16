@@ -1734,9 +1734,11 @@ if ($bEntra) {
 				$lin_cara01discv2condmeddet = $cSepara . str_replace($cSepara, $cComplementa, cadena_letrasynumeros(cadena_codificar($fila['cara01discv2condmeddet']), ' '));
 			}
 			$lin_cara44med_tratamiento = $cSepara . 'No';
-			if ($fila1['cara44med_tratamiento'] != 0) {
-				$lin_cara44med_tratamiento = $cSepara . 'Si';
-				$lin_cara44med_trat_cual = $cSepara . str_replace($cSepara, $cComplementa, cadena_letrasynumeros(cadena_codificar($fila1['cara44med_trat_cual']), ' '));
+			if (isset($fila1['cara44med_tratamiento']) != 0) {
+				if ($fila1['cara44med_tratamiento'] != 0) {
+					$lin_cara44med_tratamiento = $cSepara . 'Si';
+					$lin_cara44med_trat_cual = $cSepara . str_replace($cSepara, $cComplementa, cadena_letrasynumeros(cadena_codificar($fila1['cara44med_trat_cual']), ' '));
+				}
 			}
 			$lin_cara01discv2pruebacoeficiente = $cSepara . '[' . $fila['cara01discv2pruebacoeficiente'] . ']';
 			if (isset($acara01discv2pruebacoeficiente[$fila['cara01discv2pruebacoeficiente']]) != 0) {
