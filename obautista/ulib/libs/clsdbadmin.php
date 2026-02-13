@@ -40,6 +40,7 @@ class clsdbadmin
 	var $serror = '';
 	var $bUTF8 = false;
 
+
 	function xajax()
 	{
 		$this->bxajax = true;
@@ -329,7 +330,10 @@ class clsdbadmin
 		}
 		return $sSQL;
 	}
-	function sSQLEliminarColuman($sTabla, $sColumna)
+	function sSQLEliminarColuman($sTabla, $sColumna) {
+		return $this->sSQLEliminarColumna($sTabla, $sColumna);
+	}
+	function sSQLEliminarColumna($sTabla, $sColumna)
 	{
 		$sSQL = 'ALTER TABLE ' . $sTabla . ' DROP COLUMN ' . $sColumna . '';
 		switch ($this->dbmodelo) {

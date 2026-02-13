@@ -2885,3 +2885,188 @@ function f3073_db_EliminarBorradores($aParametros)
 	}
 	return $objResponse;
 }
+function f3073_NotificarResponsables($aParametros) {
+	require './app.php';
+	$sIdioma = AUREA_Idioma();
+	$mensajes_todas = $APP->rutacomun . 'lg/lg_todas_' . $sIdioma . '.php';
+	if (!file_exists($mensajes_todas)) {
+		$mensajes_todas = $APP->rutacomun . 'lg/lg_todas_es.php';
+	}
+	$mensajes_3073 = $APP->rutacomun . 'lg/lg_3073_' . $sIdioma . '.php';
+	if (!file_exists($mensajes_3073)) {
+		$mensajes_3073 = $APP->rutacomun . 'lg/lg_3073_es.php';
+	}
+	require $mensajes_todas;
+	require $mensajes_3073;
+	$objDB = new clsdbadmin($APP->dbhost, $APP->dbuser, $APP->dbpass, $APP->dbname);
+	if ($APP->dbpuerto != '') {
+		$objDB->dbPuerto = $APP->dbpuerto;
+	}
+	$sError = '';
+	$sDebug = '';
+	$sMensaje = '';
+	// -- Se inicia validando todas las posibles entradas de usuario.
+	$_SESSION['u_ultimominuto'] = iminutoavance();
+	if (!is_array($aParametros)) {
+		$aParametros = json_decode(str_replace('\"', '"', $aParametros), true);
+	}
+	if (isset($aParametros[99]) == 0) {
+		$aParametros[99] = false;
+	}
+	if (isset($aParametros[100]) == 0) {
+		$aParametros[100] = $_SESSION['unad_id_tercero'];
+	}
+	if (isset($aParametros[101]) == 0) {
+		$aParametros[101] = 0;
+	}
+	$bDebug = $aParametros[99];
+	$idTercero = numeros_validar($aParametros[100]);
+	$iAgno = numeros_validar($aParametros[101]);
+	$iHoy = fecha_DiaMod();
+	$aPendientes = array();
+	// -- Seccion para validar los posibles causales de error.
+	$sSepara = ', ';
+	if ($iAgno == '') {
+		$sError = $ERR['saiu73agno'] . $sSepara . $sError;
+	}
+	if ($sError == '') {
+		$sTabla73 = 'saiu73solusuario_' . $iAgno;
+		$bExiste = $objDB->bexistetabla($sTabla73);
+		if ($bExiste) {
+			$sSQL = 'SELECT TB.saiu73id, TB.saiu73idcanal, TB.saiu73idresponsablecaso, TB.saiu73fecharad, TB.saiu73temasolicitud, T3.saiu03tiemprespdias1 
+			FROM ' . $sTabla73 . ' AS TB, saiu03temasol AS T3 
+			WHERE T3.saiu03id = TB.saiu73temasolicitud AND TB.saiu73estado = 1 AND TB.saiu73fecharad > 0';
+			$tabla = $objDB->ejecutasql($sSQL);
+			$iPendientes = $objDB->nf($tabla);
+			while ($fila = $objDB->sf($tabla)) {
+				$iDias = fecha_DiasEntreFechasDesdeNumero($fila['saiu73fecharad'], $iHoy);
+				if ($iDias > $fila['saiu03tiemprespdias1']) {
+					if (isset($aPendientes[$fila['saiu73idresponsablecaso']]) == 0) {
+						$aPendientes[$fila['saiu73idresponsablecaso']] = array();
+					}
+					$aPendientes[$fila['saiu73idresponsablecaso']][] = array(
+						'id' => $fila['saiu73id'],
+						'canal' => $fila['saiu73idcanal'],
+						'agno' => $iAgno,
+						'fecharad' => $fila['saiu73fecharad'],
+						'idtema' => $fila['saiu73temasolicitud'],
+						'dias' => $iDias
+					);
+				}
+			}
+			if ($iPendientes == 0) {
+				$sError = $ERR['msg_notificar'] . $sSepara . $sError;
+			}
+		} else {
+			$sError = $ERR['msg_contenedor'] . $sSepara . $sError;
+		}
+	}
+	if ($sError == '') {
+		$sNomEntidad = '';
+		$sMailSeguridad = '';
+		$sURLCampus = '';
+		$sCorreoCopia = 'sai@unad.edu.co';
+		$sMensaje = $sMensaje . $ETI['msg_notificarok'];
+		if ($sCorreoCopia != '') {
+			$sMensaje = $sMensaje . ' (con copia a ' . $sCorreoCopia . '):<br>';
+		}
+		$idEntidad = Traer_Entidad();
+		$sFechaLargaHoy = formato_FechaLargaDesdeNumero($iHoy, true);
+		switch ($idEntidad) {
+			case 1: // UNAD FLORIDA
+				$sNomEntidad = 'UNAD FLORIDA INC';
+				$sMailSeguridad = 'aluna@unad.us';
+				$sURLCampus = 'http://unad.us/campus/';
+				break;
+			default: // UNAD Colombia
+				$sNomEntidad = 'UNIVERSIDAD NACIONAL ABIERTA Y A DISTANCIA - UNAD';
+				$sMailSeguridad = 'soporte.campus@unad.edu.co';
+				$sURLCampus = 'https://campus0c.unad.edu.co/campus/';
+				break;
+		}
+		$sMes = date('Ym');
+		$sTabla = 'aure01login' . $sMes;
+		list($idSMTP, $sDebugS) = AUREA_SmtpMejor($sTabla, $objDB, $bDebug);
+		$objMail = new clsMail_Unad($objDB);
+		$objMail->TraerSMTP($idSMTP);
+		foreach($aPendientes as $idResponsable => $aLista) {
+			$bCorreoValido = false;
+			list($sCorreoMensajes, $unad11idgrupocorreo, $sError, $sDebugN) = AUREA_CorreoPrimario($idResponsable, $objDB, $bDebug);
+			if ($sError == '') {
+				list($bCorreoValido, $sDebugC) = correo_VerificarV2($sCorreoMensajes);
+			}
+			if ($bCorreoValido) {
+				list($unad11razonsocial, $sErrorDet) = tabla_campoxid('unad11terceros', 'unad11razonsocial', 'unad11id', $idResponsable, '{' . 'An&oacute;nimo' . '}', $objDB);
+				$sTituloMensaje = $ETI['mail_pend_titulo'] . $sFechaLargaHoy . ' ' . $sNomEntidad . '';
+				$sCuerpo = '<p style="text-align: justify;">Cordial saludo.<br>';
+				$sCuerpo = $sCuerpo . 'Estimado(a) <b>' . $unad11razonsocial . '</b><br><br>';
+				$sCuerpo = $sCuerpo . 'Desde el Sistema de Atenci&oacute;n Integral (SAI) queremos recordar la importancia de gestionar de manera efectiva y responsable las atenciones. ';
+				$sCuerpo = $sCuerpo . 'Al hacerlo, no solo respondemos a inquietudes y solicitudes, sino que tambi&eacute;n demostramos el compromiso de nuestra instituci&oacute;n con la calidad y excelencia en el servicio.<br>';
+				$sCuerpo = $sCuerpo . 'Por ello, le invitamos a asegurar que cada solicitud sea atendida dentro de los plazos establecidos, con empat&iacute;a, transparencia y soluciones efectivas.</p>';
+				$sCuerpo = $sCuerpo . 'A continuaci&oacute;n, se listan las atenciones pendientes por gestionar.<br><br>';
+				$sCuerpo = $sCuerpo . '<table style="border: 1px solid black; border-collapse: collapse;"><thead style="background-color: black; color: white;"><tr><th style="width: 25%;">Canal - No. de Caso</th><th>Fecha de solicitud</th><th>Tema</th><th>D&iacute;as de vencimiento</th></tr></thead><tbody>';
+				$iCuenta = 0;
+				$asaiu73temasolicitud = array();
+				foreach($aLista as $aSolicitud) {
+					$sFechaLargaIni = formato_FechaLargaDesdeNumero($aSolicitud['fecharad'], true);
+					$isaiu73temasolicitud = $aSolicitud['idtema'];
+					if (isset($asaiu73temasolicitud[$isaiu73temasolicitud]) == 0) {
+						$sSQL = 'SELECT saiu03titulo FROM saiu03temasol WHERE saiu03id=' . $isaiu73temasolicitud . '';
+						$tablae = $objDB->ejecutasql($sSQL);
+						if ($objDB->nf($tablae) > 0) {
+							$filae = $objDB->sf($tablae);
+							$asaiu73temasolicitud[$isaiu73temasolicitud] = cadena_LimpiarTildes($filae['saiu03titulo']);
+						} else {
+							$asaiu73temasolicitud[$isaiu73temasolicitud] = '';
+						}
+					}
+					$saiu73temasolicitud = ($asaiu73temasolicitud[$isaiu73temasolicitud]);
+					$sFondo = '';
+					if ($iCuenta % 2 != 0) {
+						$sFondo = 'style="background-color:lightgray;"';
+					}
+					$sArgs = url_encode($aSolicitud['agno'] . '|' . $aSolicitud['id']);
+					$sUrlNoCaso = 'https://aurea2.unad.edu.co/sai/saiusolusuario.php?u='.$sArgs;
+					$sNoCaso = $aSolicitud['agno'] . $aSolicitud['id'];
+					$sCanal = $ETI['canal' . $aSolicitud['canal'] . '_corto'];
+					$sCuerpo = $sCuerpo . '<tr ' . $sFondo .'><td style="text-align: center; font-weight:bold;"><a href="'.$sUrlNoCaso.'" target="_blank">' . $sCanal . ' - ' . $sNoCaso . '</a></td><td>' . $sFechaLargaIni . '</td><td style="text-align: center;">' . $saiu73temasolicitud . '</td><td style="text-align: center;">' . $aSolicitud['dias'] . '</td></tr>';
+					$iCuenta = $iCuenta + 1;
+				}
+				$sCuerpo = $sCuerpo . '</tbody></table><br><br>';
+				$sCuerpo = $sCuerpo . 'Agradecemos su colaboración para seguir fortaleciendo la cultura del buen servicio Unadista<br><br>';
+				$sCuerpo = $sCuerpo . 'Cordialmente,<br>';
+				$sCuerpo = $sCuerpo . '<b>Sistema de Atención Integral - SAI</b><br>';
+				$sCuerpo = AUREA_HTML_EncabezadoCorreo($sTituloMensaje) . $sCuerpo . AUREA_HTML_NoResponder() . AUREA_NotificaPieDePagina() . AUREA_HTML_PieCorreo();
+				$objMail->NuevoMensaje();
+				$objMail->sAsunto = cadena_codificar($sTituloMensaje);
+				$sMensaje = $sMensaje . '<div class="flex gap-2"><div>Se notifica al correo ' . $sCorreoMensajes . '</div><i class="icon-check"></i></div>';
+				$objMail->addCorreo($sCorreoMensajes, $sCorreoMensajes);
+				if ($sCorreoCopia != '') {
+					$objMail->addCorreo($sCorreoCopia, $sCorreoCopia, 'O');					
+				}
+				if ($sError == '') {
+					$objMail->sCuerpo = $sCuerpo;
+					if ($bDebug) {
+						$sDebug = $sDebug . fecha_microtiempo() . ' Enviando respuesta de solicitud a : ' . $sCorreoMensajes . '<br>';
+					}
+					list($sErrorM, $sDebugM) = $objMail->EnviarV2($bDebug);
+					$sError = $sError . $sErrorM;
+					$sDebug = $sDebug . $sDebugM;
+					if ($sError != '') {
+						$sMensaje = '<div class="flex gap-2"><div>' . $ERR['mail_pend_error'] . '</div><i class="icon-closed"></i></div>';
+					}
+				}
+			} else {
+				$sMensaje = '<div class="flex gap-2"><div>' . $ERR['mail_valido'] . '</div><i class="icon-closed"></i></div>';
+			}
+		}
+	}
+	$objDB->CerrarConexion();
+	$objResponse = new xajaxResponse();
+	if ($sError == '') {
+		$objResponse->call("MensajeAlarmaV2('" . $sMensaje . "', 2)");
+	} else {
+		$objResponse->call("MensajeAlarmaV2('" . $sError . "', 0)");
+	}
+	return $objResponse;
+}

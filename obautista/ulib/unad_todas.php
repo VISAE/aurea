@@ -99,6 +99,12 @@ function iminutoavance()
 {
 	return (date('W') * 1440) + (date('H') * 60) + date('i');
 }
+function IPs_Propias() 
+{
+	//186.144.41.3
+	return '"190.66.14.194", "186.144.41.3"';
+}
+//Inicio de variables globales
 if (isset($_SERVER['HTTP_USER_AGENT']) != 0) {
 	if (strpos($_SERVER['HTTP_USER_AGENT'], "MSIE")) {
 		@session_cache_limiter('public');

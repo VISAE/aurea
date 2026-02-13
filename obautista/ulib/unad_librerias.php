@@ -612,6 +612,11 @@ function cadena_notildes($origen, $butf8 = false)
 	$sResultado = cadena_LimpiarTildes($nuevo, ' ');
 	return $sResultado;
 }
+//Quitar los saltos de lines de una cadena
+function cadena_QuitarSaltos($sOrigen, $sReemplazo = ' ')
+{
+	return preg_replace("/[\r\n]+/", $sReemplazo, $sOrigen);
+}
 //La inversa a cadena_notildes
 function cadena_tildes($origen, $butf8 = false)
 {
@@ -1004,6 +1009,23 @@ function DBalterna_Traer($idAlterna, $objDB)
 }
 //Modulo de tareas
 //Termina el modulo de tareas
+// Funciones para Etiquetas
+function Etiqueta_Valor($iCodModulo, $idEtiqueta, $sIdioma, $objDB, $sVrDefecto = '', $bDebug = false)
+{
+	$sRes = $sVrDefecto;
+	$sSQL = 'SELECT unad97valor FROM unad97etiquetas WHERE unad97idmodulo=' . $iCodModulo . ' AND unad97idetiqueta=' . $idEtiqueta . ' AND unad97idioma="' . $sIdioma . '"';
+	$tabla = $objDB->ejecutasql($sSQL);
+	if ($objDB->nf($tabla) > 0) {
+		$fila = $objDB->sf($tabla);
+		$sRes = $fila['unad97valor'];
+	} else {
+		if ($bDebug) {
+			$sRes = $sVrDefecto . ' [' . $iCodModulo . ' - ' . $idEtiqueta . ']';
+		}
+	}
+	return $sRes;
+}
+// Funciones genericas
 function f00_Leer($sOpcion, $objDB, $sPredet = '')
 {
 	$sRes = $sPredet;
@@ -1385,9 +1407,13 @@ function fecha_esmenoroigualahoy($sFecha)
 {
 	$bres = false;
 	if (fecha_esvalida($sFecha)) {
-		$hoy = gregoriantojd(date("m"), date("d"), date("Y"));
-		$fparam = gregoriantojd(substr($sFecha, 3, 2), substr($sFecha, 0, 2), substr($sFecha, 6, 4));
-		if ($hoy >= $fparam) {
+		$fecha = explode('/', $sFecha);
+		$f1 = mktime(0, 0, 0, $fecha[1], $fecha[0], $fecha[2]);
+		$hoy = date('d/m/Y');
+		$fechaHoy = explode('/', $hoy);
+		$f2 = mktime(0, 0, 0, $fechaHoy[1], $fechaHoy[0], $fechaHoy[2]);
+		$dias = ($f1 - $f2) / (60 * 60 * 24);
+		if ($dias <= 0) {
 			$bres = true;
 		}
 	}
@@ -1418,6 +1444,31 @@ function fecha_esvalida($sFecha)
 	} else {
 		return false;
 	}
+}
+/**
+ * Verifica si la hora actual está entre una hora inicial y una hora final.
+ *
+ * @param int $iHora       Hora actual
+ * @param int $iMin        Minutos actuales
+ * @param int $iHoraIni    Hora inicial
+ * @param int $iMinIni     Minutos iniciales
+ * @param int $iHoraFin    Hora final
+ * @param int $iMinFin     Minutos finales
+ *
+ * @return bool True si está dentro del rango, False si no.
+ */
+function fecha_entreHoras($iHora, $iMin, $iHoraIni, $iMinIni, $iHoraFin, $iMinFin)
+{
+	// Convertir todas las horas a minutos
+	$actual = ($iHora * 60) + $iMin;
+	$inicio = ($iHoraIni * 60) + $iMinIni;
+	$fin    = ($iHoraFin * 60) + $iMinFin;
+	// Caso normal: inicio < fin
+	if ($inicio <= $fin) {
+		return ($actual >= $inicio && $actual <= $fin);
+	}
+	// Caso en que el rango cruza medianoche (ej: 22:00 a 02:00)
+	return ($actual >= $inicio || $actual <= $fin);
 }
 function fecha_Validar($sFecha, $sFormato = 'dd/mm/YYYY')
 {
@@ -1514,7 +1565,10 @@ function fecha_mes_nombre($iMes, $sIdioma = 'es')
 			case 'en':
 				$smeses = array('', 'January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December');
 				break;
-			case 'es':
+			case 'pt':
+				$smeses = array('', 'Janeiro', 'Fevereiro', 'Março', 'Abril', 'Maio', 'Junho', 'Julho', 'Agosto', 'Setembro', 'Outubro', 'Novembro', 'Dezembro');
+				break;
+			default:
 				$smeses = array('', 'Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre');
 				break;
 		}
@@ -1744,6 +1798,13 @@ function fecha_tiempoenminutos($sfechaini, $ihoraini, $iminutoini, $sfechafin, $
 function fecha_yyyy_mm_dd($sBase, $separador = '/')
 {
 	$res = substr($sBase, 6, 4) . $separador . substr($sBase, 3, 2) . $separador . substr($sBase, 0, 2);
+	return $res;
+}
+
+// 2025-11-12 Se requiere función para incluir YYYY_MM_DD desde numero con separador personalizable
+function fecha_yyyy_mm_dd_DesdeNumero($sBase, $separador = '/')
+{
+	$res = substr($sBase, 0, 4) . $separador . substr($sBase, 4, 2) . $separador . substr($sBase, 6, 2);
 	return $res;
 }
 
@@ -2217,7 +2278,21 @@ function html_ComboDia($nombre, $valor, $con_nulo = false, $accion = '')
 }
 function html_ComboMes($nombre, $valor, $con_nulo = false, $accion = '')
 {
-	$smeses = array('', 'Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre');
+	$sIdioma = 'es';
+	if (isset($_SESSION['unad_idioma']) == 0) {
+		$_SESSION['unad_idioma'] = 'es';
+	}
+	switch ($_SESSION['unad_idioma']) {
+		case 'en':
+		case 'es':
+		case 'pt':
+			$sIdioma = $_SESSION['unad_idioma'];
+			break;
+		default:
+			$_SESSION['unad_idioma'] = 'es';
+			break;
+	}
+	//$smeses = array('', 'Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre');
 	$sAccion = '';
 	if ($accion != '') {
 		$sAccion = ' onchange="' . $accion . '"';
@@ -2235,7 +2310,7 @@ function html_ComboMes($nombre, $valor, $con_nulo = false, $accion = '')
 		if ($size < 10) {
 			$svr = '0' . $svr;
 		}
-		$res = $res . '<option' . $ssel . ' value="' . $svr . '">' . $smeses[$size] . '</option>';
+		$res = $res . '<option' . $ssel . ' value="' . $svr . '">' . fecha_mes_nombre($size, $sIdioma) . '</option>';
 	}
 	$res = $res . '</select>';
 	return $res;
@@ -2563,20 +2638,27 @@ function html_idioma($nombre, $valor, $accion = '', $bvacio = false, $etvacio = 
 ';
 	return $res;
 }
-function html_lnkarchivo($origen, $id, $titulo = 'Descargar')
+function html_lnkarchivo($origen, $id, $titulo = 'Descargar', $sClase = 'lnkresalte', $sIcono = '')
 {
 	$res = '&nbsp;';
 	if ($id != 0) {
-		$res = '<a href="verarchivo.php?u=' . url_encode($origen . '|' . $id) . '" target="_blank" class="lnkresalte">' . $titulo . '</a>';
+		if ($sIcono != '') {
+			$sIcono = '<i class="' . $sIcono . '" aria-hidden="true"></i>';
+		}
+		$res = '<a href="verarchivo.php?u=' . url_encode($origen . '|' . $id) . '" target="_blank" class="' . $sClase . '">' . $sIcono . $titulo . '</a>';
 	}
 	return $res;
+}
+function html_lnkupload($origen, $id)
+{
+	return url_encode($origen . '|' . $id);
 }
 // -- Combos ...
 function html_lpp($nombre, $iactual, $saccion, $iTope = 50)
 {
 	require './app.php';
 	$iPiel = iDefinirPiel($APP, 2);
-	$res = '<select name="' . $nombre . '" id="' . $nombre . '" onChange="' . $saccion . '">';
+	$res = '<select class="w-max" name="' . $nombre . '" id="' . $nombre . '" onChange="' . $saccion . '">';
 	$iPaso = 4;
 	switch ($iTope) {
 		case 100:
@@ -3428,17 +3510,21 @@ function html_tercero($sTipoDoc, $sDoc, $unad11id, $iModelo, $objDB, $iEspecial 
 		$sCondi = $sCondi . ' unad11id=' . $unad11id . '';
 	}
 	$bConNecesidadesEsp = false;
+	$bBloqueContabilidad = false;
 	$bBloqueProveedor = false;
 	switch ($iEspecial) {
 		case 1:
 			$bConNecesidadesEsp = true;
+			break;
+		case 11:
+			$bBloqueContabilidad = true;
 			break;
 		case 46:
 			$bBloqueProveedor = true;
 			break;
 	}
 	$sSQL = 'SELECT unad11razonsocial, unad11direccion, unad11telefono, unad11id, unad11tipodoc, 
-	unad11doc, unad11necesidadesp, unad11estado 
+	unad11doc, unad11necesidadesp, unad11estado, unad11contab_idaprueba, unad11contab_fechaaprueba 
 	FROM unad11terceros 
 	WHERE ' . $sCondi . ' AND unad11id>0';
 	$tablater = $objDB->ejecutasql($sSQL);
@@ -3468,6 +3554,19 @@ function html_tercero($sTipoDoc, $sDoc, $unad11id, $iModelo, $objDB, $iEspecial 
 		if ($bConNecesidadesEsp) {
 			if ($filater['unad11necesidadesp'] != '') {
 				$sHTML = $sHTML . '<br>' . cadena_notildes($filater['unad11necesidadesp']);
+			}
+		}
+		if ($bBloqueContabilidad) {
+			switch ($filater['unad11contab_idaprueba']) {
+				case -1:
+					$sHTML = $sHTML . '<br><span class="rojo">[Pendiente de verificaci&oacute;n en contabilidad]</span>';
+					break;
+				case 0:
+					$sHTML = $sHTML . '<br><span class="rojo">No verificado por contabilidad</span>';
+					break;
+				default:
+					$sHTML = $sHTML . '<br><b>Verificado por contabilidad</b>';
+					break;
 			}
 		}
 		if ($bBloqueProveedor) {
@@ -3555,6 +3654,32 @@ function html_tipodocV2($nombre, $valor, $accion = '', $con_nulo = false, $bConE
 		$res = $res . html_combo_opcion('FL', $valor, 'FL');
 	}
 	$res = $res . '</select></label>';
+	return $res;
+}
+function html_tipodocV3($nombre, $valor, $accion = '', $con_nulo = false, $bConEspeciales = true)
+{
+	$saccion = '';
+	if ($accion != '') {
+		$saccion = ' onChange="' . $accion . '"';
+	}
+	$ssel = '';
+	$res = '<select class="w-10" name="' . $nombre . '" id="' . $nombre . '"' . $saccion . '>';
+	if ($con_nulo) {
+		$res = $res . html_combo_opcion('', $valor, '');
+	}
+	$res = $res . html_combo_opcion('CC', $valor, 'CC');
+	$res = $res . html_combo_opcion('CE', $valor, 'CE');
+	$res = $res . html_combo_opcion('TI', $valor, 'TI');
+	$res = $res . html_combo_opcion('DN', $valor, 'DNI');
+	$res = $res . html_combo_opcion('RC', $valor, 'RC');
+	$res = $res . html_combo_opcion('PA', $valor, 'PA');
+	$res = $res . html_combo_opcion('NI', $valor, 'NIT');
+	$res = $res . html_combo_opcion('SS', $valor, 'SS');
+	$res = $res . html_combo_opcion('__', $valor, '__');
+	if ($bConEspeciales) {
+		$res = $res . html_combo_opcion('FL', $valor, 'FL');
+	}
+	$res = $res . '</select>';
 	return $res;
 }
 function html_tipoDoc_Login($nombre, $valor, $bConEspeciales = true)
@@ -4321,7 +4446,7 @@ function tabla_consecutivo($stabla, $scampoconsec, $swhere, $objDB, $bNegativo =
 	return $res;
 }
 // -- Esta funcion devuelve un campo de una tabla por el id
-function tabla_campoxid($stabla, $scamponombre, $scampoid, $svalorid, $svalordefecto, $objDB)
+function tabla_campoxid($stabla, $scamponombre, $scampoid, $svalorid, $svalordefecto, $objDB, $sCampoEtiqueta = '', $iCodModulo = 0, $sIdioma = '', $bDebug = false)
 {
 	$res = $svalordefecto;
 	$sError = '';
@@ -4335,7 +4460,19 @@ function tabla_campoxid($stabla, $scamponombre, $scampoid, $svalorid, $svalordef
 		$sError = 'Sin campos nombre';
 	}
 	if ($sError == '') {
-		$sSQL = 'SELECT ' . $scamponombre . ' FROM ' . $stabla . ' WHERE ' . $scampoid . '=' . $svalorid;
+		$bEtiqueta = false;
+		$sSQLEtiqueta = '';
+		if ($sCampoEtiqueta != '') {
+			switch ($sIdioma) {
+				case 'en':
+				case 'pt':
+					//Solo aplica para los idiomas que son listados
+					$bEtiqueta = true;
+					$sSQLEtiqueta = ', ' . $sCampoEtiqueta;
+					break;
+			}
+		}
+		$sSQL = 'SELECT ' . $scamponombre . $sSQLEtiqueta . ' FROM ' . $stabla . ' WHERE ' . $scampoid . '=' . $svalorid;
 		$result = $objDB->ejecutasql($sSQL);
 		if ($result != false) {
 			if ($objDB->nf($result) > 0) {
@@ -4346,6 +4483,11 @@ function tabla_campoxid($stabla, $scamponombre, $scampoid, $svalorid, $svalordef
 					$sNombreSolo = $aPalabras[1];
 				}
 				$res = $row[$sNombreSolo];
+				if ($bEtiqueta) {
+					//Tenemos que buscar la etiqueta.
+					$idEtiqueta = $row[$sCampoEtiqueta];
+					$res = Etiqueta_Valor($iCodModulo, $idEtiqueta, $sIdioma, $objDB, $res, $bDebug);
+				}
 			}
 		} else {
 			$sError = $sSQL;
@@ -4651,27 +4793,37 @@ function cadena_LimpiarNoValidos($sCadena)
 	return iconv('UTF-8', 'UTF-8//IGNORE', $sCadena);
 }
 
-function cadena_LimpiarWord($cadena) {
-    $equivalentes = [
-        "\xC2\xAB" => '',  "\xC2\xBB" => '',
-        "\xE2\x80\x98" => "'", "\xE2\x80\x99" => "'",
-        "\xE2\x80\x9C" => '', "\xE2\x80\x9D" => '',
-		"\xE2\x80\x90" => "-", "\xE2\x80\x91" => "-",
-		"\xE2\x80\x92" => "-", "\xE2\x80\x93" => "-",
-		"\xE2\x80\x94" => "-", "\xE2\x80\x95" => "-",
-		"\xE2\x88\x92" => "-", "\xE2\x81\x83" => "-",
-		"\xE2\x80\xA6" => "...", "\xE2\x80\xA2" => "*",
-        "\xC2\xA0" => '', "\xE2\x80\xA8" => "-",
-        "\xE2\x80\xA9" => "-",
-    ];
-    return strtr($cadena, $equivalentes);
+function cadena_LimpiarWord($cadena)
+{
+	$equivalentes = [
+		"\xC2\xAB" => '',
+		"\xC2\xBB" => '',
+		"\xE2\x80\x98" => "'",
+		"\xE2\x80\x99" => "'",
+		"\xE2\x80\x9C" => '',
+		"\xE2\x80\x9D" => '',
+		"\xE2\x80\x90" => "-",
+		"\xE2\x80\x91" => "-",
+		"\xE2\x80\x92" => "-",
+		"\xE2\x80\x93" => "-",
+		"\xE2\x80\x94" => "-",
+		"\xE2\x80\x95" => "-",
+		"\xE2\x88\x92" => "-",
+		"\xE2\x81\x83" => "-",
+		"\xE2\x80\xA6" => "...",
+		"\xE2\x80\xA2" => "*",
+		"\xC2\xA0" => '',
+		"\xE2\x80\xA8" => "-",
+		"\xE2\x80\xA9" => "-",
+	];
+	return strtr($cadena, $equivalentes);
 }
 
-function cadena_LimpiarExcel($cadena) {
-    if (!mb_check_encoding($cadena, 'UTF-8')) {
-        $cadena = mb_convert_encoding($cadena, 'UTF-8', 'ISO-8859-1, Windows-1252');
-    }
-    $cadena = str_replace("\xEF\xBB\xBF", '', $cadena);
-    return (string)$cadena;
+function cadena_LimpiarExcel($cadena)
+{
+	if (!mb_check_encoding($cadena, 'UTF-8')) {
+		$cadena = mb_convert_encoding($cadena, 'UTF-8', 'ISO-8859-1, Windows-1252');
+	}
+	$cadena = str_replace("\xEF\xBB\xBF", '', $cadena);
+	return (string)$cadena;
 }
-

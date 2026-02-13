@@ -345,6 +345,7 @@ $xajax->register(XAJAX_FUNCTION, 'elimina_archivo_saiu73idarchivorta');
 $xajax->register(XAJAX_FUNCTION, 'f3073_Combobtema');
 $xajax->register(XAJAX_FUNCTION, 'f3073_Combobcead');
 $xajax->register(XAJAX_FUNCTION, 'f3073_db_EliminarBorradores');
+$xajax->register(XAJAX_FUNCTION, 'f3073_NotificarResponsables');
 if ($bEsReservado) {
 	$xajax->register(XAJAX_FUNCTION, 'elimina_archivo_saiu76idarchivo');
 	$xajax->register(XAJAX_FUNCTION, 'f3076_Guardar');
@@ -1386,6 +1387,21 @@ if ($bPuedeEditar) {
 	}
 	$html_saiu73idresponsablecaso = $objCombos->html($sSQL, $objDB);
 }
+// Cambio de soluciones dependiendo el canal
+switch ($_REQUEST['saiu73idcanal']) {
+	case 3018:
+		$asaiu73solucion = $aSolucion3018;
+		$isaiu73solucion = $iSolucion3018;
+		break;
+	case 3019:
+		$asaiu73solucion = $aSolucion3019;
+		$isaiu73solucion = $iSolucion3019;
+		break;
+	case 3020:
+		$asaiu73solucion = $aSolucion3020;
+		$isaiu73solucion = $iSolucion3020;
+		break;
+}
 if ($bEnTramite) {
 	$objCombos->nuevo('saiu73tipointeresado', $_REQUEST['saiu73tipointeresado'], true, '{' . $ETI['msg_seleccione'] . '}');
 	$sSQL = 'SELECT bita07id AS id, bita07nombre AS nombre FROM bita07tiposolicitante ORDER BY bita07orden, bita07nombre';
@@ -1417,21 +1433,6 @@ if ($bEnTramite) {
 	$objCombos->addItem(1, $ETI['si']);
 	//$objCombos->addArreglo($asaiu73paramercadeo, $isaiu73paramercadeo);
 	$html_saiu73paramercadeo = $objCombos->html('', $objDB);
-	// Cambio de soluciones dependiendo el canal
-	switch ($_REQUEST['saiu73idcanal']) {
-		case 3018:
-			$asaiu73solucion = $aSolucion3018;
-			$isaiu73solucion = $iSolucion3018;
-			break;
-		case 3019:
-			$asaiu73solucion = $aSolucion3019;
-			$isaiu73solucion = $iSolucion3019;
-			break;
-		case 3020:
-			$asaiu73solucion = $aSolucion3020;
-			$isaiu73solucion = $iSolucion3020;
-			break;
-	}
 	$objCombos->nuevo('saiu73solucion', $_REQUEST['saiu73solucion'], true, '{' . $ETI['msg_seleccione'] . '}');
 	//$objCombos->addItem(1, $ETI['si']);
 	$objCombos->sAccion = 'valida_combo_saiu73solucion();';
@@ -2384,6 +2385,21 @@ if ($bPuedeEditar) {
 			document.getElementById('div_f3073detalle').innerHTML = '<div class="GrupoCamposAyuda"><div class="MarquesinaMedia">Procesando datos, por favor espere.</div></div><input id="paginaf3073" name="paginaf3073" type="hidden" value="' + params[101] + '" /><input id="lppf3073" name="lppf3073" type="hidden" value="' + params[102] + '" />';
 			xajax_f3073_db_EliminarBorradores(params);
 		});
+	}
+
+	function notificar_responsables() {
+		ModalConfirmV2('<?php echo $ETI['msg_notificar']; ?>', () => {
+			ejecuta_notificar_responsables();
+		});
+	}
+
+	function ejecuta_notificar_responsables() {
+		let params = new Array();
+		params[99] = window.document.frmedita.debug.value;
+		params[100] = <?php echo $idTercero; ?>;
+		params[101] = window.document.frmedita.bagno.value;
+		MensajeAlarmaV2('<div class="flex gap-2"><div>Notificando responsables<br>Por favor espere... </div><div class="spinner"></div></div>', 2);		
+		xajax_f3073_NotificarResponsables(params);
 	}
 <?php
 }
@@ -3598,6 +3614,11 @@ echo $ETI['saiu73respuesta'];
 <label>
 <input id="brespuesta" name="brespuesta" type="text" value="<?php echo $_REQUEST['brespuesta']; ?>" onchange="paginarf3073()" autocomplete="off" />
 </label>
+<?php
+if ($bPuedeEditar) {
+	echo $objForma->htmlBotonSolo('cmdNotificar', 'BotonAzul200', 'notificar_responsables()', $ETI['bt_notificar'], 200);
+}
+?>
 <div class="salto1px"></div>
 <label class="Label220">
 <?php

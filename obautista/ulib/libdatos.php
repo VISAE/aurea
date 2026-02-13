@@ -35,6 +35,7 @@ function Id_PeriodoInicioC2()
 	}
 	return $res;
 }
+//Funciones para etiquetas
 //
 function f101_SiglaModulo($idSistema, $objDB)
 {
@@ -495,6 +496,17 @@ function f107_VerificarPerfiles($idTercero, $idPeriodo, $objDB, $bDebug = false,
 					$aPerfil[$id05] = 1;
 				}
 			}
+		}
+		//2025 - 11 -21 los administradores de los simuladores
+		$sSQL = 'SELECT TB.olab60perfiladmin 
+		FROM olab60simulador AS TB, olab68simulusuario AS T2 
+		WHERE TB.olab60perfiladmin>0 AND TB.olab60activo>0 AND TB.olab60id=T2.olab68idsimulador AND T2.olab68idtercero=' . $idTercero . ' AND T2.olab68idrol=12';
+		if ($bDebug) {
+			$sDebug = $sDebug . fecha_microtiempo() . ' Grupos de trabajo en BITACORA: ' . $sSQL . '<br>';
+		}
+		$tabla = $objDB->ejecutasql($sSQL);
+		while ($fila = $objDB->sf($tabla)) {
+			$aPerfil[$fila['olab60perfiladmin']] = 1;
 		}
 	}
 	// 36 - SIGMA
@@ -1457,16 +1469,39 @@ function f111_PuedeActualizarDatos($unad11id, $objDB, $bDebug = false)
 	$sError = '';
 	$sDebug = '';
 	$bPuedeEditar = true;
-	// Tabla de proveedores (gafi16proveedores)
-	// Si el proveedor está Vencido - 3 | En verificación - 5 | Activo - 7 no puede editar
-	$sSQL = 'SELECT 1 FROM gafi16proveedores WHERE gafi16idtercero=' . $unad11id . ' AND gafi16estado IN (3, 5, 7)';
-	$result = $objDB->ejecutasql($sSQL);
-	if ($objDB->nf($result) > 0) {
-		$sError = 'El tercero no se puede editar debido a que aparece registrado como proveedor';
-		$bPuedeEditar = false;
-	}
+	// Noviembre 6 de 2025 - Se define que contabilidad puede bloquear a un tercero.
+	$sSQL = 'SELECT unad11contab_idaprueba FROM unad11terceros WHERE unad11id=' . $unad11id . '';
 	if ($bDebug) {
-		$sDebug = $sDebug . fecha_microtiempo() . ' <b>Revisando si es proveedor [gafi16proveedores]</b>: ' . $sSQL . '<br>';
+		$sDebug = $sDebug . log_debug('<b>Revisando bloqueo contable</b>: ' . $sSQL . '');
+	}
+	$tabla = $objDB->ejecutasql($sSQL);
+	if ($objDB->nf($tabla) > 0) {
+		$fila = $objDB->sf($tabla);
+		switch($fila['unad11contab_idaprueba']) {
+			case 0:
+				break;
+			case -1:
+				$sError = 'El tercero no se puede editar debido a que esta en revisi&oacute;n por contabilidad.';
+				$bPuedeEditar = false;
+				break;
+			default:
+				$sError = 'El tercero no se puede editar debido a que esta bloqueado por contabilidad.';
+				$bPuedeEditar = false;
+				break;
+		}
+	}
+	if ($bPuedeEditar) {
+		// Tabla de proveedores (gafi16proveedores)
+		// Si el proveedor está Vencido - 3 | En verificación - 5 | Activo - 7 no puede editar
+		$sSQL = 'SELECT 1 FROM gafi16proveedores WHERE gafi16idtercero=' . $unad11id . ' AND gafi16estado IN (3, 5, 7)';
+		$result = $objDB->ejecutasql($sSQL);
+		if ($objDB->nf($result) > 0) {
+			$sError = 'El tercero no se puede editar debido a que aparece registrado como proveedor';
+			$bPuedeEditar = false;
+		}
+		if ($bDebug) {
+			$sDebug = $sDebug . fecha_microtiempo() . ' <b>Revisando si es proveedor [gafi16proveedores]</b>: ' . $sSQL . '<br>';
+		}
 	}
 	return array($bPuedeEditar, $sError, $sDebug);
 }
@@ -4910,11 +4945,26 @@ function f2211_ResumenCreditosV2($core10id, $objDB, $bNivelDoctorado = false)
 	$iNumCredRequisitos = 0;
 	$iLineasXEst = 0;
 	$sInfoLineas = '';
+	$core10idprograma = -99;
 	//Hay que tener en cuenta que el plan de estudio puede tener lineas de profundización
 	$sCondiLineaProf = '';
 	$bRevisaLineas = false;
+	$sCondiAprobados = ' AND core11fechaaprobado<>0';
+	$sSQL = 'SELECT core10estado, core10numlineasprof, core10idprograma 
+	FROM core10programaversion 
+	WHERE core10id=' . $core10id . '';
+	$tabla = $objDB->ejecutasql($sSQL);
+	if ($objDB->nf($tabla) > 0) {
+		$fila = $objDB->sf($tabla);
+		$core10idprograma = $fila['core10idprograma'];
+		$iLineasXEst = $fila['core10numlineasprof'];
+		if ($fila['core10estado'] != 'S') {
+			$sCondiAprobados = '';
+		}
+	}
 	if (!$bNivelDoctorado) {
-		$sSQL = 'SELECT core09codigo, core09nombre, cara09nivelformacion FROM core09programa WHERE core09id=' . $_REQUEST['core10idprograma'];
+		$sSQL = 'SELECT core09codigo, core09nombre, cara09nivelformacion 
+		FROM core09programa WHERE core09id=' . $core10idprograma;
 		$result = $objDB->ejecutasql($sSQL);
 		if ($objDB->nf($result) > 0) {
 			$fila = $objDB->sf($result);
@@ -4923,22 +4973,10 @@ function f2211_ResumenCreditosV2($core10id, $objDB, $bNivelDoctorado = false)
 			}
 		}
 	}
-	$sCondiAprobados = ' AND core11fechaaprobado<>0';
-	$sSQL = 'SELECT core10estado, core10numlineasprof 
-	FROM core10programaversion 
-	WHERE core10id=' . $core10id . '';
-	$tabla = $objDB->ejecutasql($sSQL);
-	if ($objDB->nf($tabla) > 0) {
-		$fila = $objDB->sf($tabla);
-		$iLineasXEst = $fila['core10numlineasprof'];
-		if ($fila['core10estado'] != 'S') {
-			$sCondiAprobados = '';
-		}
-	}
 	// Si es doctorado se requiere ver las rutas de formación doctoral
 	if ($bNivelDoctorado) {
 		$bRevisaLineas = true;
-		$sSQL = 'SELECT 1 FROM core21lineaprof WHERE core21idprograma=' . $_REQUEST['core10idprograma'] . '';
+		$sSQL = 'SELECT 1 FROM core21lineaprof WHERE core21idprograma=' . $core10idprograma . '';
 		$tabla = $objDB->ejecutasql($sSQL);
 		$iPendientes = $objDB->nf($tabla);
 	}
@@ -5217,23 +5255,45 @@ function f2212_ListaCentros($idTercero, $objDB, $bDebug = false)
 //Septiembre 2 de 2024 - Necesitamos tener el listado de escuelas a las que alguien pertenece
 function f2212_ListaEscuelas($idTercero, $objDB, $bDebug = false)
 {
+	list($sIds, $sDebug) = f2212_ListaEscuelasV2($idTercero, $objDB, false, $bDebug);
+	return array($sIds, $sDebug);
+}
+function f2212_ListaEscuelasV2($idTercero, $objDB, $bSoloLideres = false, $bDebug = false)
+{
 	$sIds = '-99';
 	$sDebug = '';
 	$sCondi12 = '';
 	$sCondi9 = '';
 	$sCondi26 = '';
+	$bRevisaLideres = $bSoloLideres;
 	// Primero descartamos que sea un lider nacional.
-	$sSQL = 'SELECT 1 
-	FROM core26espejos 
-	WHERE ' . $sCondi26 . 'core26idtercero=' . $idTercero . ' AND core26vigente="S" AND core26idescuela=0';
-	if ($bDebug) {
-		$sDebug = $sDebug . fecha_microtiempo() . ' Consultando Espejos de nivel nacional: ' . $sSQL . '<br>';
+	if (!$bSoloLideres) {
+		$sSQL = 'SELECT 1 
+		FROM core26espejos 
+		WHERE ' . $sCondi26 . 'core26idtercero=' . $idTercero . ' AND core26vigente="S" AND core26idescuela=0';
+		if ($bDebug) {
+			$sDebug = $sDebug . fecha_microtiempo() . ' Consultando Espejos de nivel nacional: ' . $sSQL . '<br>';
+		}
+		$tabla = $objDB->ejecutasql($sSQL);
+		if ($objDB->nf($tabla) > 0) {
+			// En caso de que no se devuelvan ids es porque tiene acceso a todo.
+			$sIds = '';
+		} else {
+			$bRevisaLideres = true;
+			//Puede ser un zonal... entonces tambien pertenece.
+			$sSQL = 'SELECT core26idescuela, core26idzona 
+			FROM core26espejos 
+			WHERE ' . $sCondi26 . 'core26idtercero=' . $idTercero . ' AND core26vigente="S" AND core26idescuela<>0';
+			if ($bDebug) {
+				$sDebug = $sDebug . fecha_microtiempo() . ' Consultando Espejos: ' . $sSQL . '<br>';
+			}
+			$tabla = $objDB->ejecutasql($sSQL);
+			while ($fila = $objDB->sf($tabla)) {
+				$sIds = $sIds . ',' . $fila['core26idescuela'];
+			}
+		}
 	}
-	$tabla = $objDB->ejecutasql($sSQL);
-	if ($objDB->nf($tabla) > 0) {
-		// En caso de que no se devuelvan ids es porque tiene acceso a todo.
-		$sIds = '';
-	} else {
+	if ($bRevisaLideres) {
 		$sSQL = 'SELECT TB.core12id 
 		FROM core12escuela AS TB
 		WHERE ' . $sCondi12 . '((TB.core12iddecano=' . $idTercero . ') OR (TB.core12idadministrador=' . $idTercero . '))';
@@ -5254,17 +5314,6 @@ function f2212_ListaEscuelas($idTercero, $objDB, $bDebug = false)
 		$tabla = $objDB->ejecutasql($sSQL);
 		while ($fila = $objDB->sf($tabla)) {
 			$sIds = $sIds . ',' . $fila['core09idescuela'];
-		}
-		//Puede ser un zonal... entonces tambien pertenece.
-		$sSQL = 'SELECT core26idescuela, core26idzona 
-		FROM core26espejos 
-		WHERE ' . $sCondi26 . 'core26idtercero=' . $idTercero . ' AND core26vigente="S" AND core26idescuela<>0';
-		if ($bDebug) {
-			$sDebug = $sDebug . fecha_microtiempo() . ' Consultando Espejos: ' . $sSQL . '<br>';
-		}
-		$tabla = $objDB->ejecutasql($sSQL);
-		while ($fila = $objDB->sf($tabla)) {
-			$sIds = $sIds . ',' . $fila['core26idescuela'];
 		}
 	}
 	return array($sIds, $sDebug);
@@ -6536,6 +6585,20 @@ function f3000_TablasMes($iAgno, $iMes, $objDB, $bDebug = false)
 			$bResultado = $objDB->ejecutasql($sSQL);
 			if ($bResultado == false) {
 				$sSQL = 'ALTER TABLE ' . $sTabla . ' ADD saiu47fechaultestado int NOT NULL DEFAULT 0';
+				$bResultado = $objDB->ejecutasql($sSQL);
+			}
+			//Noviembre 4 de 2025 - Se agregan los campos de solicitud de factura.
+			$sSQL = 'SELECT saiu47t702idproveedor FROM ' . $sTabla . ' LIMIT 0, 1';
+			$bResultado = $objDB->ejecutasql($sSQL);
+			if ($bResultado == false) {
+				$sSQL = 'ALTER TABLE ' . $sTabla . ' ADD saiu47t702idproveedor int NOT NULL DEFAULT 0, ADD saiu47t702vrauxilio int NOT NULL DEFAULT 0';
+				$bResultado = $objDB->ejecutasql($sSQL);
+			}
+			//Enero 23 de 2026 - Se agregan los campos de resolución.
+			$sSQL = 'SELECT saiu47t1vr4xmil FROM ' . $sTabla . ' LIMIT 0, 1';
+			$bResultado = $objDB->ejecutasql($sSQL);
+			if ($bResultado == false) {
+				$sSQL = 'ALTER TABLE ' . $sTabla . ' ADD saiu47t1vr4xmil Decimal(15,2) NULL DEFAULT 0, ADD saiu47t1resol_id int NOT NULL DEFAULT 0, ADD saiu47t1resol_num varchar(50) NULL, ADD saiu47t1resol_fecha int NOT NULL DEFAULT 0';
 				$bResultado = $objDB->ejecutasql($sSQL);
 			}
 		}

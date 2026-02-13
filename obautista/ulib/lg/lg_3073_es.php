@@ -132,6 +132,10 @@ $ETI['msg_revborrador'] = 'Se proceder&aacute; a cambiar al estado <b>Abandonado
 $ETI['msg_resborradorok'] = 'Se eliminaron borradores con m&aacute;s de 3 (tres) d&iacute;as en espera. Cantidad: ';
 $ETI['msg_resborradorno'] = 'No se encontraron borradores con m&aacute;s de 3 (tres) d&iacute;as en espera.';
 $ETI['msg_alertaborradores'] = '<br><b>ALERTA: </b>Existen solicitudes en estado Borrador a&uacute;n <b>SIN RADICAR</b>. Cantidad: ';
+$ETI['bt_notificar'] = 'Notificar Responsables';
+$ETI['msg_notificar'] = '¿Desea realizar el envío de la notificaci&oacute;n a los responsables de solicitudes&quest;';
+$ETI['msg_notificarok'] = 'Lista de responsables enviada correctamente';
+$ETI['mail_pend_titulo']='Atenciones Pendientes al ';
 
 $ERR['saiu73agno'] = 'Necesita el dato ' . $ETI['saiu73agno'];
 $ERR['saiu73mes'] = 'Necesita el dato ' . $ETI['saiu73mes'];
@@ -190,6 +194,9 @@ $ERR['saiu73idresponsablecasofin'] = 'No ha seleccionado un integrante del equip
 
 $ERR['msg_contenedor'] = 'No ha sido posible acceder al contenedor de datos';
 $ERR['msg_radicacion'] = 'Error al radicar solicitud';
+$ERR['msg_notificar'] = 'No existen solicitudes para notificar';
+$ERR['mail_pend_error'] = 'Ha ocurrido un error intentando enviar el mensaje de pendientes';
+$ERR['mail_valido']='No se ha definido un correo electr&oacute;nico v&aacute;lidado para notificar.';
 
 $asaiu73paramercadeo = array('', '');
 $isaiu73paramercadeo = 0;

@@ -93,7 +93,7 @@ class clsHtmlCombos
 	{
 		$this->bConDebug = $bDebug;
 	}
-	function html($sConsulta = '', $objDB = NULL, $iComun = 0, $sAriaLabel = '')
+	function html($sConsulta = '', $objDB = NULL, $iComun = 0, $sAriaLabel = '', $sCampoEtiqueta = '', $iCodModulo = 0, $sIdioma = '')
 	{
 		if ($iComun != 0) {
 			$this->comun($iComun, $objDB);
@@ -145,6 +145,18 @@ class clsHtmlCombos
 		}
 		if ($sConsulta != '') {
 			$sEstilo = '';
+			//
+			$bEtiqueta = false;
+			if ($sCampoEtiqueta != '') {
+				switch ($sIdioma) {
+					case 'en':
+					case 'pt':
+						//Solo aplica para los idiomas que son listados
+						$bEtiqueta = true;
+						break;
+				}
+			}
+			//
 			$tablac = $objDB->ejecutasql($sConsulta);
 			if ($this->bConDebug) {
 				if ($tablac == false) {
@@ -157,6 +169,11 @@ class clsHtmlCombos
 					$sSel = ' selected';
 				}
 				$sNombreOpcion = cadena_LimpiarNoValidos(cadena_notildes($fila['nombre']));
+				if ($bEtiqueta) {
+					//Tenemos que buscar la etiqueta.
+					$idEtiqueta = $fila[$sCampoEtiqueta];
+					$sNombreOpcion = Etiqueta_Valor($iCodModulo, $idEtiqueta, $sIdioma, $objDB, $sNombreOpcion, $this->bConDebug);
+				}
 				//$sNombreOpcion = cadena_LimpiarTildes($sNombreOpcion, ' ');
 				//$sRes = $sRes . '<option value="' . $fila['id'] . '"' . $sSel . $sEstilo . '>' . cadena_notildes($fila['nombre']) . '</option>';
 				$sRes = $sRes . '<option value="' . $fila['id'] . '"' . $sSel . $sEstilo . '>' . $sNombreOpcion . '</option>';
@@ -1628,8 +1645,12 @@ function html_DivTerceroV7($sNombreCampo, $sTipoDoc, $sDoc, $bOculto, $idAccion 
 function html_Combo145($sNombreCampo, $sTipoDoc, $objDB, $objCombos, $idAccion = 0, $iEspecial = 0)
 {
 	$sRes = '';
-	$sCondi = 'unad45id>=0';
+	$sCondi = 'unad45id>=0 AND unad45activo=1';
 	switch ($iEspecial) {
+		case 2: // Tipos de documentos inactivos.
+		case 243:
+			$sCondi = 'unad45id>=0';
+			break;
 		case 16: // Proveedores
 			$sCondi = 'unad45aplicaproveed>0';
 			break;
@@ -1640,7 +1661,7 @@ function html_Combo145($sNombreCampo, $sTipoDoc, $objDB, $objCombos, $idAccion =
 	}
 	$objCombos->iAncho = 60;
 	$sSQL = 'SELECT unad45codigo AS id, CONCAT(unad45titulo, " - ", unad45nombre) AS nombre 
-	FROM unad45tipodoc WHERE ' . $sCondi . ' AND unad45activo=1
+	FROM unad45tipodoc WHERE ' . $sCondi . '
 	ORDER BY unad45activo DESC, unad45orden, unad45titulo';
 	$sRes = $objCombos->html($sSQL, $objDB);
 	return $sRes;
@@ -1924,6 +1945,7 @@ function html_menuCampus($idsistema, $objDB, $iPiel = 0, $bDebug = false, $idTer
 	$et_ayuda = 'Ayuda';
 	$et_manuales = 'Manuales';
 	$et_acerca = 'Acerca de...';
+	$et_eventos = 'Eventos';
 	switch ($_SESSION['unad_idioma']) {
 		case 'en':
 			$et_inicio = 'Home';
@@ -1952,6 +1974,7 @@ function html_menuCampus($idsistema, $objDB, $iPiel = 0, $bDebug = false, $idTer
 			$et_ayuda = 'Help';
 			$et_manuales = 'Manuals';
 			$et_acerca = 'About...';
+			$et_eventos = 'Events';
 			break;
 		case 'pt':
 			$et_ayuda = 'Ajuda';
@@ -2022,6 +2045,7 @@ function html_menuCampus($idsistema, $objDB, $iPiel = 0, $bDebug = false, $idTer
 				$sHTML = $sHTML . $sInicioItem . '<a href="misprogramas.php"' . $sClaseLinkItem . $sSalto . '><span>' . $et_misprogramas . '</span></a>' . $sFinItem;
 			}
 		}
+		$sHTML = $sHTML . $sInicioItem . '<a href="eventos.php"' . $sClaseLinkItem . $sSalto . '><span>' . $et_eventos . '</span></a>' . $sFinItem;
 		$sHTML = $sHTML . $sFinBloque . '';
 		$sHTML = $sHTML . '<li' . $sClaseLiBase . '><a href="#"' . $sClaseLinkBase . '><span>' . $et_servicios . '</span></a>' . $sInicioBloque;
 		$sHTML = $sHTML . $sInicioItem . '<a href="admisiones.php"' . $sClaseLinkItem . $sSalto . '><span>' . $et_admisiones . '</span></a>' . $sFinItem;
@@ -2672,6 +2696,12 @@ function html_menuCampus2025($objDB, $bDebug = false, $idTercero = 0)
 	$sDebug = '';
 	require './app.php';
 	$idEntidad = Traer_Entidad();
+	$bUnadFlorida = false;
+	switch ($idEntidad) {
+		case 1:
+			$bUnadFlorida = true;
+			break;
+	}
 	$_SESSION['u_ultimominuto'] = iminutoavance();
 	if ($idTercero == 0) {
 		$idTercero = $_SESSION['unad_id_tercero'];
@@ -2684,7 +2714,9 @@ function html_menuCampus2025($objDB, $bDebug = false, $idTercero = 0)
 	$et_cipas = 'CIPAS';
 	$et_sai = 'Sistema de Atenci&oacute;n Integral';
 	$et_misprogramas = 'Mis programas';
+	$et_eventos = 'Eventos';
 	$et_servicios = 'Servicios';
+	$et_serviciosacad = 'Servicios acad&eacute;micos';
 	$et_admisiones = 'Admisiones';
 	$et_mooc = 'Cursos MOOC';
 	$et_oferabierta = 'Cursos Abiertos';
@@ -2697,31 +2729,49 @@ function html_menuCampus2025($objDB, $bDebug = false, $idTercero = 0)
 	$et_banner = 'Banner';
 	$et_manuales = 'Manuales';
 	$et_acerca = 'Acerca de...';
-	$et_usuario = 'Usuario';
 	$et_miperfil = 'Mi perfil';
 	$et_contrasegna = 'Cambiar contrase&ntilde;a';
 	$et_contacto = 'Datos de contacto';
-	$et_salir = 'Salir';
 	$et_iniciar_sesion = 'Iniciar sesion';
-
-
-	$et_accesit = 'ACCESIT';
-	$et_clave = 'Contrase&ntilde;a';
 	$et_misinscripciones = 'Mis inscripciones';
-	$et_soporte = 'Soporte';
-
-
 	$et_menu = 'Men&uacute; Sistema';
 	$label_menu = 'Men&uacute; principal';
 	$label_idioma = 'Seleccionar idioma';
-	$label_seleccion_idioma = 'Menú de selección de idioma';
+	$label_opcion_usuario = 'Men&uacute; de usuario';
+	$et_salir = 'Salir';
 	switch ($_SESSION['unad_idioma']) {
 		case 'en':
+			$et_inicio = 'Home';
+			$et_vida = 'Academic Life';
+			$et_miscursos = 'My Courses';
+			$et_cipas = 'CIPAS';
+			$et_sai = 'Integrated Support System';
+			$et_misprogramas = 'My Programs';
+			$et_eventos = 'Events';
+			$et_servicios = 'Services';
+			$et_serviciosacad = 'Academic services';
+			$et_admisiones = 'Admissions';
+			$et_mooc = 'MOOC Courses';
+			$et_oferabierta = 'Open Courses';
+			$et_emprendimiento = 'Entrepreneurship';
+			$et_proveedores = 'Suppliers';
+			$et_modulos = 'Academic';
+			$et_erp = 'SIGAF';
+			$et_gestion = 'Management';
 			$et_ayuda = 'Help';
-			$et_acerca = 'About...';
-			$et_miperfil = 'My profile';
+			$et_banner = 'Banner';
 			$et_manuales = 'Manuals';
-			$et_salir = 'Exit';
+			$et_acerca = 'About...';
+			$et_miperfil = 'My Profile';
+			$et_contrasegna = 'Change Password';
+			$et_contacto = 'Contact Information';
+			$et_iniciar_sesion = 'Log In';
+			$et_misinscripciones = 'My Enrollments';
+			$et_menu = 'System Menu';
+			$label_menu = 'Main Menu';
+			$label_idioma = 'Select Language';
+			$label_opcion_usuario = 'User Menu';
+			$et_salir = 'Sign Out';
 			break;
 		case 'pt':
 			$et_ayuda = 'Ajuda';
@@ -2731,13 +2781,19 @@ function html_menuCampus2025($objDB, $bDebug = false, $idTercero = 0)
 			$et_salir = 'Sair';
 			break;
 	}
-	$sHTML = $sHTML . '';
-	$sHTML = $sHTML . '<section class="nav" role="navigation" aria-label="' . $label_menu . '">';
+	$sHTML = $sHTML . '<section class="menu-toggle">';
+	$sHTML = $sHTML . '<button class="btn btn--tertiary" aria-label="Abrir menú principal">';
+	$sHTML = $sHTML . '<i class="icon-menu" aria-hidden="true"></i>';
+	$sHTML = $sHTML . '</button>';
+	$sHTML = $sHTML . '</section>';
+
+	$sHTML = $sHTML . '<div class="nav__content">';
+	$sHTML = $sHTML . '<section class="nav__main" role="navigation" aria-label="' . $label_menu . '">';
 	$sHTML = $sHTML . '<div class="nav__content">';
 	$sHTML = $sHTML . '<div class="menu">';
 	$sHTML = $sHTML . '<span class="menu__title">' . $et_menu . '</span>';
 	$sHTML = $sHTML . '<ul class="menu__content">';
-	$sHTML = $sHTML . '<li class="menu-item active">';
+	$sHTML = $sHTML . '<li class="menu-item">';
 	$sHTML = $sHTML . '<a href="./accesit.php" class="item"><i class="icon-home" aria-hidden="true"></i>' . $et_inicio . '</a>';
 	$sHTML = $sHTML . '</li>';
 	$bEspeciales = false;
@@ -2767,6 +2823,7 @@ function html_menuCampus2025($objDB, $bDebug = false, $idTercero = 0)
 		$sHTML = $sHTML . '<div class="submenu">';
 		$sHTML = $sHTML . '<ul id="submenu-2" class="submenu__content" aria-hidden="true">';
 		$sHTML = $sHTML . '<li><a href="./miscursos.php" >' . $et_miscursos . '</a></li>';
+		$sHTML = $sHTML . '<li><a href="./misinscripciones.php" >' . $et_misinscripciones . '</a></li>';
 		if ($idEntidad == 0) {
 			$sHTML = $sHTML . '<li><a href="./cipas.php" >' . $et_cipas . '</a></li>';
 			$sHTML = $sHTML . '<li><a href="./sai.php" >' . $et_sai . '</a></li>';
@@ -2774,6 +2831,7 @@ function html_menuCampus2025($objDB, $bDebug = false, $idTercero = 0)
 				$sHTML = $sHTML . '<li><a href="./misprogramas.php" >' . $et_misprogramas . '</a></li>';
 			}
 		}
+		$sHTML = $sHTML . '<li><a href="./eventos.php" >' . $et_eventos . '</a></li>';
 		$sHTML = $sHTML . '</ul>';
 		$sHTML = $sHTML . '</div>';
 		$sHTML = $sHTML . '</li>';
@@ -2785,6 +2843,7 @@ function html_menuCampus2025($objDB, $bDebug = false, $idTercero = 0)
 		$sHTML = $sHTML . '</button>';
 		$sHTML = $sHTML . '<div class="submenu">';
 		$sHTML = $sHTML . '<ul id="submenu-2" class="submenu__content" aria-hidden="true">';
+		$sHTML = $sHTML . '<li><a href="./servicios.php" >' . $et_serviciosacad . '</a></li>';
 		$sHTML = $sHTML . '<li><a href="./admisiones.php" >' . $et_admisiones . '</a></li>';
 		$sHTML = $sHTML . '<li><a href="./mooc.php" >' . $et_mooc . '</a></li>';
 		if ($idEntidad == 0) {
@@ -2951,46 +3010,41 @@ function html_menuCampus2025($objDB, $bDebug = false, $idTercero = 0)
 	$sHTML = $sHTML . '</li>';
 	$sHTML = $sHTML . '</ul>';
 	$sHTML = $sHTML . '</div>';
+	$sHTML = $sHTML . '</section>';
+	$sHTML = $sHTML . '</div>';
+	$sHTML = $sHTML . '<div class="nav__footer">';
 	// Nav user
 	$sHTML = $sHTML . '<section class="nav__user">';
 	if ((int)$idTercero > 0) {
-		$sNomUsuario1 = '';
-		$sNomUsuario2 = '';
 		$sIniciales = '';
-		$sSQL = 'SELECT unad11nombre1, unad11nombre2, unad11apellido1, unad11apellido2
+		$sSQL = 'SELECT unad11nombre1, unad11apellido1, unad11razonsocial
 			FROM unad11terceros 
 			WHERE unad11id=' . $idTercero . '';
 		$tabla = $objDB->ejecutasql($sSQL);
 		if ($objDB->nf($tabla) > 0) {
 			$fila = $objDB->sf($tabla);
-			$sNomUsuario1 = cadena_notildes($fila['unad11nombre1'] . ' ' . $fila['unad11nombre2']);
-			$sNomUsuario2 = cadena_notildes($fila['unad11apellido1'] . ' ' . $fila['unad11apellido2']);
-			$sIniciales = mb_strtoupper($fila['unad11nombre1'][0] . $fila['unad11apellido1'][0]);
+			$sNombre = cadena_notildes(trim($fila['unad11razonsocial']));
+			$sIni1 = '';
+			if ($fila['unad11nombre1'] != '') {
+				$sIni1 = $fila['unad11nombre1'][0];
+			}
+			$sIni2 = '';
+			if ($fila['unad11apellido1'] != '') {
+				$sIni2 = $fila['unad11apellido1'][0];
+			}
+			$sIniciales = mb_strtoupper($sIni1 . $sIni2);
 		}
-		$sHTML = $sHTML . '<button class="nav__user__button nav__user__button--session" onclick="toggleNavUser()" aria-haspopup="menu" aria-expanded="false" aria-controls="nav__user__dropdown" aria-label="' . $label_idioma . '" >';
+		$sHTML = $sHTML . '<button class="nav__user__button nav__user__button--session" onclick="toggleNavUser()" aria-haspopup="menu" aria-expanded="false" aria-controls="nav__user__dropdown" aria-label="' . $label_idioma . '">';
 		$sHTML = $sHTML . '<div class="nav__user__name">';
-		$sHTML = $sHTML . '<span>' . $sNomUsuario1 . '</span>';
-		$sHTML = $sHTML . '<span>' . $sNomUsuario2 . '</span>';
+		$sHTML = $sHTML . '<span>' . $sNombre . '</span>';
 		$sHTML = $sHTML . '</div>';
 		$sHTML = $sHTML . '<div class="nav__user__avatar">';
 		$sHTML = $sHTML . '<!-- <img class="nav__user__img" src="./img/user.jpg" alt="Foto de perfil"> -->';
 		$sHTML = $sHTML . '<span class="nav__user_">' . $sIniciales . '</span>';
 		$sHTML = $sHTML . '</div>';
-		$sHTML = $sHTML . '<i class="icon-expand-less" aria-hidden="true"></i>';
+		$sHTML = $sHTML . '<i class="icon-expand" aria-hidden="true"></i>';
 		$sHTML = $sHTML . '</button>';
-		$sHTML = $sHTML . '<div role="menu" aria-label="' . $label_seleccion_idioma . '" class="nav__user__dropdown">';
-		$sHTML = $sHTML . '<div class="nav__user__title">';
-		$sHTML = $sHTML . '<div class="nav__user__label">';
-		$sHTML = $sHTML . $et_usuario;
-		$sHTML = $sHTML . '</div>';
-		$sHTML = $sHTML . '<div class="nav__user__name">';
-		$sHTML = $sHTML . '<span>' . $sNomUsuario1 . ' ' . $sNomUsuario2 . '</span>';
-		$sHTML = $sHTML . '</div>';
-		$sHTML = $sHTML . '<div class="nav__user__avatar">';
-		// $sHTML = $sHTML . '<!-- <img class="nav__user__img" src="./img/user.jpg" alt="Foto de perfil"> -->';
-		$sHTML = $sHTML . '<span class="nav__user__img">' . $sIniciales . '</span>';
-		$sHTML = $sHTML . '</div>';
-		$sHTML = $sHTML . '</div>';
+		$sHTML = $sHTML . '<div role="menu" aria-label="' . $label_opcion_usuario . '" class="nav__user__dropdown nav__user__dropdown--hidden">';
 		$sHTML = $sHTML . '<ul class="nav__user__listmenu">';
 		$sHTML = $sHTML . '<li class="nav__user__item" role="menuitem">';
 		$sHTML = $sHTML . '<a class="nav__user__anchor" href="./miperfil.php">';
@@ -3010,21 +3064,32 @@ function html_menuCampus2025($objDB, $bDebug = false, $idTercero = 0)
 		$sHTML = $sHTML . $et_contacto;
 		$sHTML = $sHTML . '</a>';
 		$sHTML = $sHTML . '</li>';
-		$sHTML = $sHTML . '<li class="nav__user__item" role="menuitem">';
-		$sHTML = $sHTML . '<a class="nav__user__anchor" href="./salir.php">';
+		$sHTML = $sHTML . '</ul>';
+		$sHTML = $sHTML . '</div>';
+		$sHTML = $sHTML . '<a href="./salir.php" class="nav__user__button nav__user__button--logout" aria-label="Inicar Sesión en Campus Virtual">';
 		$sHTML = $sHTML . '<i class="icon-logout" aria-hidden="true"></i>';
 		$sHTML = $sHTML . $et_salir;
 		$sHTML = $sHTML . '</a>';
-		$sHTML = $sHTML . '</li>';
-		$sHTML = $sHTML . '</ul>';
-		$sHTML = $sHTML . '</div>';
 	} else {
-		$sHTML = $sHTML . '<a class="nav__user__button nav__user__button--login" href="../login/index.php" aria-label="Seleccionar idioma">';
+		$sRuta = './login/index.php';
+		if ($bUnadFlorida) {
+			$sRuta = './index.php';
+		}
+		$sHTML = $sHTML . '<a class="nav__user__button nav__user__button--login" href="' . $sRuta . '" aria-label="Seleccionar idioma">';
 		$sHTML = $sHTML . '<i class="icon-login" aria-hidden="true"></i>';
 		$sHTML = $sHTML . $et_iniciar_sesion;
 		$sHTML = $sHTML . '</a>';
 	}
 	$sHTML = $sHTML . '</section>';
+	$sHTML = $sHTML . '<ul class="menu">';
+	$sHTML = $sHTML . '<li class="menu-item" style="background-color: transparent;">';
+	$sHTML = $sHTML . '<button id="open-widget-access--sidebar" class="btn btn--primary h-5" title="Panel de Accesibilidad">';
+	$sHTML = $sHTML . '<i class="icon-accessibility" aria-hidden="true"></i>';
+	$sHTML = $sHTML . '<span class="tooltip">Accesibilidad</span>';
+	$sHTML = $sHTML . '</button>';
+	$sHTML = $sHTML . '</li>';
+	$sHTML = $sHTML . '</ul>';
+	$sHTML = $sHTML . '</div>';
 
 
 	return array($sHTML, $sDebug);

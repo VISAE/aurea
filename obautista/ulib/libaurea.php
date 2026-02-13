@@ -35,12 +35,13 @@ function AUREA_DatosPersonales($objDB, $bDebug = false)
 		$result = $objDB->ejecutasql($sSQL);
 	}
 }
-function AUREA_ActualizarPerfilMoodle($idTercero, $objDB, $bDebug = false)
+/*
+function AUREA_Actualizar PerfilMoodle($idTercero, $objDB, $bDebug = false)
 {
-	list($sError, $idMoodle, $sDebug) = AUREA_ActualizarPerfilMoodleV2($idTercero, $objDB, $bDebug);
+	list($sError, $idMoodle, $sDebug) = AUREA_Actualizar PerfilMoodleV2($idTercero, $objDB, $bDebug);
 	return array($sError, $sDebug);
 }
-function AUREA_ActualizarPerfilMoodleV2($idTercero, $objDB, $bDebug = false)
+function AUREA_Actualizar PerfilMoodleV2($idTercero, $objDB, $bDebug = false)
 {
 	$sError = '';
 	$sDebug = '';
@@ -167,8 +168,9 @@ function AUREA_ActualizarPerfilMoodleV2($idTercero, $objDB, $bDebug = false)
 		if ($bDebug){$sDebug=$sDebug.fecha_microtiempo().' PERFIL CAMPUS - No se ha establecido el parametro dbhostcampus en el archivo app.php por tanto no se puede actualizar el perfil del tercero.<br>';}
 		}
 	return array($sError, $idMoodle, $sDebug);
-	*/
+	* /
 }
+*/
 function AUREA_Aplicativos($idTercero, $objDB)
 {
 	$sLista = '-99';
@@ -308,10 +310,15 @@ function AUREA_ConfirmarCorreoNotifica($idTercero, $objDB, $sFrase = '', $bDebug
 	$sCorreoDestino = '';
 	require __DIR__ . '/app.php';
 	$sIdioma = AUREA_Idioma();
+	$mensajes_1 = $APP->rutacomun . 'lg/lg_1_' . $sIdioma . '.php';
+	if (!file_exists($mensajes_1)) {
+		$mensajes_1 = $APP->rutacomun . 'lg/lg_1_es.php';
+	}
 	$mensajes_1011 = $APP->rutacomun . 'lg/lg_1011_' . $sIdioma . '.php';
 	if (!file_exists($mensajes_1011)) {
 		$mensajes_1011 = $APP->rutacomun . 'lg/lg_1011_es.php';
 	}
+	require $mensajes_1;
 	require $mensajes_1011;
 	$sMes = date('Ym');
 	$sTabla = 'aure01login' . $sMes;
@@ -485,7 +492,7 @@ function AUREA_CorreoNotificaV2($idTercero, $objDB, $bDebug = false)
 	// Octubre 31 de 2022 - Se considera el grupo correo, que se carga a partir del dominio que tenga el correo del usuario.
 	$sRutaBase = __DIR__ . '/';
 	require $sRutaBase . 'app.php';
-	$sRutaComun = $sRutaBase . $APP->rutacomun;
+	$sRutaComun = $APP->rutacomun;
 	$sIdioma = AUREA_Idioma();
 	$mensajes_todas = $sRutaComun . 'lg/lg_todas_' . $sIdioma . '.php';
 	if (!file_exists($mensajes_todas)) {
@@ -1178,7 +1185,8 @@ function AUREA_HTML_CodigoConfirma($sCodigo)
 	$sRes = '';
 	$sRutaBase = __DIR__ . '/';
 	require $sRutaBase . 'app.php';
-	$sRutaComun = $sRutaBase . $APP->rutacomun;
+	//$sRutaComun = $sRuta Base . $APP->rutacomun;
+	$sRutaComun = $APP->rutacomun;
 	$sIdioma = AUREA_Idioma();
 	$mensajes_17 = $sRutaComun . 'lg/lg_17_' . $sIdioma . '.php';
 	if (!file_exists($mensajes_17)) {
@@ -1240,7 +1248,8 @@ function AUREA_HTML_CodigoCorreo($sCodigo, $sURL)
 {
 	$sRutaBase = __DIR__ . '/';
 	require $sRutaBase . 'app.php';
-	$sRutaComun = $sRutaBase . $APP->rutacomun;
+	//$sRutaComun = $sRuta Base . $APP->rutacomun;
+	$sRutaComun = $APP->rutacomun;
 	$sIdioma = AUREA_Idioma();
 	$mensajes_17 = $sRutaComun . 'lg/lg_17_' . $sIdioma . '.php';
 	if (!file_exists($mensajes_17)) {
@@ -1303,7 +1312,8 @@ function AUREA_HTML_CodigoRecupera($sCabeza, $sCodigo, $aure01punto, $URL, $sPie
 	$sRes = '';
 	$sRutaBase = __DIR__ . '/';
 	require $sRutaBase . 'app.php';
-	$sRutaComun = $sRutaBase . $APP->rutacomun;
+	//$sRutaComun = $sRuta Base . $APP->rutacomun;
+	$sRutaComun = $APP->rutacomun;
 	$sIdioma = AUREA_Idioma();
 	$mensajes_17 = $sRutaComun . 'lg/lg_17_' . $sIdioma . '.php';
 	if (!file_exists($mensajes_17)) {
@@ -1366,7 +1376,8 @@ function AUREA_HTML_CuerpoCorreoEncuesta($sCodigo, $idImagen, $sURL, $iFechaServ
 {
 	$sRutaBase = __DIR__ . '/';
 	require $sRutaBase . 'app.php';
-	$sRutaComun = $sRutaBase . $APP->rutacomun;
+	//$sRutaComun = $sRuta Base . $APP->rutacomun;
+	$sRutaComun = $APP->rutacomun;
 	$sIdioma = AUREA_Idioma();
 	$mensajes_17 = $sRutaComun . 'lg/lg_17_' . $sIdioma . '.php';
 	if (!file_exists($mensajes_17)) {
@@ -1468,7 +1479,8 @@ function AUREA_HTML_CuerpoCorreoDesercion($sCodigo, $idImagen, $sMes, $aure73id,
 {
 	$sRutaBase = __DIR__ . '/';
 	require $sRutaBase . 'app.php';
-	$sRutaComun = $sRutaBase . $APP->rutacomun;
+	//$sRutaComun = $sRuta Base . $APP->rutacomun;
+	$sRutaComun = $APP->rutacomun;
 	$sIdioma = AUREA_Idioma();
 	$mensajes_17 = $sRutaComun . 'lg/lg_17_' . $sIdioma . '.php';
 	if (!file_exists($mensajes_17)) {
@@ -1628,7 +1640,8 @@ function AUREA_HTML_FirmaDocumento($sCodigo, $idModulo, $iSubProceso, $idRegistr
 	$sRes = '';
 	$sRutaBase = __DIR__ . '/';
 	require $sRutaBase . 'app.php';
-	$sRutaComun = $sRutaBase . $APP->rutacomun;
+	//$sRutaComun = $sRuta Base . $APP->rutacomun;
+	$sRutaComun = $APP->rutacomun;
 	$sIdioma = AUREA_Idioma();
 	$mensajes_17 = $sRutaComun . 'lg/lg_17_' . $sIdioma . '.php';
 	if (!file_exists($mensajes_17)) {
@@ -1730,7 +1743,8 @@ function AUREA_HTML_PieCorreo()
 	$sIdioma = AUREA_Idioma();
 	$sRutaBase = __DIR__ . '/';
 	require $sRutaBase . 'app.php';
-	$sRutaComun = $sRutaBase . $APP->rutacomun;
+	//$sRutaComun = $sRuta Base . $APP->rutacomun;
+	$sRutaComun = $APP->rutacomun;
 	$mensajes_17 = $sRutaComun . 'lg/lg_17_' . $sIdioma . '.php';
 	if (!file_exists($mensajes_17)) {
 		$mensajes_17 = $sRutaComun . 'lg/lg_17_es.php';
@@ -1918,7 +1932,7 @@ function AUREA_IniciarLogin($idTercero, $objDB, $sFrase = '', $iUso = 0, $bDebug
 	$sIdioma = AUREA_Idioma();
 	$sRutaBase = __DIR__ . '/';
 	require $sRutaBase . 'app.php';
-	$sRutaComun = $sRutaBase . $APP->rutacomun;
+	$sRutaComun = $APP->rutacomun;
 	$mensajes_17 = $sRutaComun . 'lg/lg_17_' . $sIdioma . '.php';
 	if (!file_exists($mensajes_17)) {
 		$mensajes_17 = $sRutaComun . 'lg/lg_17_es.php';
@@ -2402,7 +2416,7 @@ function AUREA_Servidor($APP)
 				case 46: // Portal de proveedores
 					$iUso = $APP->uso; // Campus
 					break;
-				}
+			}
 		}
 	}
 	return $iUso;
@@ -2485,7 +2499,8 @@ function AUREA_ValidaCuentaCorreo($sCorreo, $objDB, $bDebug = false)
 	//--- Friday, September 6, 2019
 	$sRutaBase = __DIR__ . '/';
 	require $sRutaBase . 'app.php';
-	$sRutaComun = $sRutaBase . $APP->rutacomun;
+	//$sRutaComun = $sRuta Base . $APP->rutacomun;
+	$sRutaComun = $APP->rutacomun;
 	$sIdioma = AUREA_Idioma();
 	$mensajes_todas = $sRutaComun . 'lg/lg_todas_' . $sIdioma . '.php';
 	if (!file_exists($mensajes_todas)) {
@@ -2541,7 +2556,8 @@ function AUREA_IniciarEncuestaPublica($idTercero, $iTipoEncuesta, $idModulo, $id
 		$sIdioma = AUREA_Idioma();
 		$sRutaBase = __DIR__ . '/';
 		require $sRutaBase . 'app.php';
-		$sRutaComun = $sRutaBase . $APP->rutacomun;
+		//$sRutaComun = $sRuta Base . $APP->rutacomun;
+		$sRutaComun = $APP->rutacomun;
 		$mensajes_17 = $sRutaComun . 'lg/lg_17_' . $sIdioma . '.php';
 		if (!file_exists($mensajes_17)) {
 			$mensajes_17 = $sRutaComun . 'lg/lg_17_es.php';
@@ -3019,3 +3035,14 @@ function AUREA_CorreoSoporte($idEntidad)
 	}
 	return $sCorreoSoporte;
 }
+function AUREA_FormaLogin()
+{
+	$sRutaBase = __DIR__ . '/';
+	require $sRutaBase . 'app.php';
+	$iFormaLogin = 0;
+	if (isset($APP->formalogin) != 0) {
+		$iFormaLogin = $APP->formalogin;
+	}
+	return $iFormaLogin;
+}
+
