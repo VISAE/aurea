@@ -305,6 +305,8 @@ if ($bDevuelve) {
 if (isset($_REQUEST['deb_tipodoc']) == 0) {
 	$_REQUEST['deb_tipodoc'] = $APP->tipo_doc;
 }
+$_REQUEST['deb_tipodoc'] = cadena_Validar($_REQUEST['deb_tipodoc']);
+$_REQUEST['deb_doc'] = cadena_Validar($_REQUEST['deb_doc']);
 if ($_REQUEST['deb_doc'] != '') {
 	if ($seg_1707 == 1) {
 		$sSQL = 'SELECT unad11id, unad11razonsocial FROM unad11terceros WHERE unad11doc="' . $_REQUEST['deb_doc'] . '" AND unad11tipodoc="' . $_REQUEST['deb_tipodoc'] . '"';
@@ -3166,6 +3168,10 @@ if ($_REQUEST['cara01tipocaracterizacion'] == 3) {
 	$bAntiguo = true;
 	$bMuestraTiempoSinEstudiar = !$bPasoBachiller;
 }
+$bMuestraFinBachiller = false;
+if ((!$bAntiguo) && ($bPasoBachiller)) {
+	$bMuestraFinBachiller = true;
+}
 //Permisos adicionales
 $seg_5 = 0;
 $seg_6 = 0;
@@ -3336,12 +3342,14 @@ $html_cara01fam_posicionherm = $objCombos->html('', $objDB);
 $objCombos->nuevo('cara01fam_familiaunad', $_REQUEST['cara01fam_familiaunad'], true, '');
 $objCombos->sino();
 $html_cara01fam_familiaunad = $objCombos->html('', $objDB);
-$objCombos->nuevo('cara01acad_tipocolegio', $_REQUEST['cara01acad_tipocolegio'], true, '{' . $ETI['msg_seleccione'] . '}');
-$objCombos->addArreglo($aacad_tipocolegio, $iacad_tipocolegio);
-$html_cara01acad_tipocolegio = $objCombos->html('', $objDB);
-$objCombos->nuevo('cara01acad_modalidadbach', $_REQUEST['cara01acad_modalidadbach'], true, '{' . $ETI['msg_seleccione'] . '}');
-$objCombos->addArreglo($aacad_modalidadbach, $iacad_modalidadbach);
-$html_cara01acad_modalidadbach = $objCombos->html('', $objDB);
+if ($bPasoBachiller) {
+	$objCombos->nuevo('cara01acad_tipocolegio', $_REQUEST['cara01acad_tipocolegio'], true, '{' . $ETI['msg_seleccione'] . '}');
+	$objCombos->addArreglo($aacad_tipocolegio, $iacad_tipocolegio);
+	$html_cara01acad_tipocolegio = $objCombos->html('', $objDB);
+	$objCombos->nuevo('cara01acad_modalidadbach', $_REQUEST['cara01acad_modalidadbach'], true, '{' . $ETI['msg_seleccione'] . '}');
+	$objCombos->addArreglo($aacad_modalidadbach, $iacad_modalidadbach);
+	$html_cara01acad_modalidadbach = $objCombos->html('', $objDB);
+}
 $objCombos->nuevo('cara01acad_estudioprev', $_REQUEST['cara01acad_estudioprev'], true, '');
 $objCombos->sino();
 $html_cara01acad_estudioprev = $objCombos->html('', $objDB);
@@ -7468,7 +7476,7 @@ echo html_oculto('cara01fichaaca', $_REQUEST['cara01fichaaca'], $sMuestra);
 <div class="salto1px"></div>
 <div id="div_p103"<?php echo $sEstiloDiv; ?>>
 <?php
-if (!$bAntiguo) {
+if ($bMuestraFinBachiller) {
 ?>
 <label class="Label450">
 <?php

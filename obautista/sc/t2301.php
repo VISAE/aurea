@@ -1087,18 +1087,18 @@ if ($bEntra) {
 				if (isset($acara44acadrazonreceso[$fila1['cara44acadrazonreceso']]) != 0) {
 					$lin_cara44acadrazonreceso = $cSepara . cadena_codificar(html_entity_decode($acara44acadrazonreceso[$fila1['cara44acadrazonreceso']]));
 				}
-				$lin_cara44acadrazonrecesodetalle = $cSepara . str_replace($cSepara, $cComplementa, cadena_letrasynumeros(cadena_codificar($fila1['cara44acadrazonrecesodetalle']), ' '));
+				$lin_cara44acadrazonrecesodetalle = $cSepara . str_replace($cSepara, $cComplementa, $fila1['cara44acadrazonrecesodetalle']);
 				if (isset($acara44campus_usocorreounad[$fila1['cara44campus_usocorreounad']]) != 0) {
 					$lin_cara44campus_usocorreounad = $cSepara . cadena_codificar(html_entity_decode($acara44campus_usocorreounad[$fila1['cara44campus_usocorreounad']]));
 				}
 				if (isset($acara44campus_usocorreounadno[$fila1['cara44campus_usocorreounadno']]) != 0) {
 					$lin_cara44campus_usocorreounadno = $cSepara . cadena_codificar(html_entity_decode($acara44campus_usocorreounadno[$fila1['cara44campus_usocorreounadno']]));
 				}
-				$lin_cara44campus_usocorreounadnodetalle = $cSepara . str_replace($cSepara, $cComplementa, cadena_letrasynumeros(cadena_codificar($fila1['cara44campus_usocorreounadnodetalle']), ' '));
+				$lin_cara44campus_usocorreounadnodetalle = $cSepara . str_replace($cSepara, $cComplementa, $fila1['cara44campus_usocorreounadnodetalle']);
 				if (isset($acara44campus_medioactivunad[$fila1['cara44campus_medioactivunad']]) != 0) {
 					$lin_cara44campus_medioactivunad = $cSepara . cadena_codificar(html_entity_decode($acara44campus_medioactivunad[$fila1['cara44campus_medioactivunad']]));
 				}
-				$lin_cara44campus_medioactivunaddetalle = $cSepara . str_replace($cSepara, $cComplementa, cadena_letrasynumeros(cadena_codificar($fila1['cara44campus_medioactivunaddetalle']), ' '));
+				$lin_cara44campus_medioactivunaddetalle = $cSepara . str_replace($cSepara, $cComplementa, $fila1['cara44campus_medioactivunaddetalle']);
 			}
 			if ($aBloque[5] && $bVerBienV2) {
 				$lin_cara44bienv2altoren = $cSepara . $fila1['cara44bienv2altoren'];
@@ -1111,14 +1111,14 @@ if ($bEntra) {
 				$lin_cara44bienv2tenis = $cSepara . $fila1['cara44bienv2tenis'];
 				$lin_cara44bienv2paralimpico = $cSepara . $fila1['cara44bienv2paralimpico'];
 				$lin_cara44bienv2otrodeporte = $cSepara . $fila1['cara44bienv2otrodeporte'];
-				$lin_cara44bienv2otrodeportedetalle = $cSepara . str_replace($cSepara, $cComplementa, cadena_letrasynumeros(cadena_codificar($fila1['cara44bienv2otrodeportedetalle']), ' '));
+				$lin_cara44bienv2otrodeportedetalle = $cSepara . str_replace($cSepara, $cComplementa, $fila1['cara44bienv2otrodeportedetalle']);
 				$lin_cara44bienv2activdanza = $cSepara . $fila1['cara44bienv2activdanza'];
 				$lin_cara44bienv2activmusica = $cSepara . $fila1['cara44bienv2activmusica'];
 				$lin_cara44bienv2activteatro = $cSepara . $fila1['cara44bienv2activteatro'];
 				$lin_cara44bienv2activartes = $cSepara . $fila1['cara44bienv2activartes'];
 				$lin_cara44bienv2activliteratura = $cSepara . $fila1['cara44bienv2activliteratura'];
 				$lin_cara44bienv2activculturalotra = $cSepara . $fila1['cara44bienv2activculturalotra'];
-				$lin_cara44bienv2activculturalotradetalle = $cSepara . str_replace($cSepara, $cComplementa, cadena_letrasynumeros(cadena_codificar($fila1['cara44bienv2activculturalotradetalle']), ' '));
+				$lin_cara44bienv2activculturalotradetalle = $cSepara . str_replace($cSepara, $cComplementa, $fila1['cara44bienv2activculturalotradetalle']);
 				$lin_cara44bienv2evenfestfolc = $cSepara . $fila1['cara44bienv2evenfestfolc'];
 				$lin_cara44bienv2evenexpoarte = $cSepara . $fila1['cara44bienv2evenexpoarte'];
 				$lin_cara44bienv2evenhistarte = $cSepara . $fila1['cara44bienv2evenhistarte'];
@@ -1127,7 +1127,7 @@ if ($bEntra) {
 				$lin_cara44bienv2eventeatro = $cSepara . $fila1['cara44bienv2eventeatro'];
 				$lin_cara44bienv2evencine = $cSepara . $fila1['cara44bienv2evencine'];
 				$lin_cara44bienv2evenculturalotro = $cSepara . $fila1['cara44bienv2evenculturalotro'];
-				$lin_cara44bienv2evenculturalotrodetalle = $cSepara . str_replace($cSepara, $cComplementa, cadena_letrasynumeros(cadena_codificar($fila1['cara44bienv2evenculturalotrodetalle']), ' '));
+				$lin_cara44bienv2evenculturalotrodetalle = $cSepara . str_replace($cSepara, $cComplementa, $fila1['cara44bienv2evenculturalotrodetalle']);
 				$lin_cara44bienv2emprendimiento = $cSepara . $fila1['cara44bienv2emprendimiento'];
 				$lin_cara44bienv2empresa = $cSepara . $fila1['cara44bienv2empresa'];
 				$lin_cara44bienv2emprenrecursos = $cSepara . $fila1['cara44bienv2emprenrecursos'];
@@ -1137,7 +1137,7 @@ if ($bEntra) {
 				$lin_cara44bienv2emprenfortconocim = $cSepara . $fila1['cara44bienv2emprenfortconocim'];
 				$lin_cara44bienv2emprenidentproblema = $cSepara . $fila1['cara44bienv2emprenidentproblema'];
 				$lin_cara44bienv2emprenotro = $cSepara . $fila1['cara44bienv2emprenotro'];
-				$lin_cara44bienv2emprenotrodetalle = $cSepara . str_replace($cSepara, $cComplementa, cadena_letrasynumeros(cadena_codificar($fila1['cara44bienv2emprenotrodetalle']), ' '));
+				$lin_cara44bienv2emprenotrodetalle = $cSepara . str_replace($cSepara, $cComplementa, $fila1['cara44bienv2emprenotrodetalle']);
 				$lin_cara44bienv2emprenmarketing = $cSepara . $fila1['cara44bienv2emprenmarketing'];
 				$lin_cara44bienv2emprenplannegocios = $cSepara . $fila1['cara44bienv2emprenplannegocios'];
 				$lin_cara44bienv2emprenideas = $cSepara . $fila1['cara44bienv2emprenideas'];
@@ -1178,7 +1178,7 @@ if ($bEntra) {
 				$lin_cara44bienv2ambienconferencia = $cSepara . $fila1['cara44bienv2ambienconferencia'];
 				$lin_cara44bienv2ambienrecicla = $cSepara . $fila1['cara44bienv2ambienrecicla'];
 				$lin_cara44bienv2ambienotraactiv = $cSepara . $fila1['cara44bienv2ambienotraactiv'];
-				$lin_cara44bienv2ambienotraactivdetalle = $cSepara . str_replace($cSepara, $cComplementa, cadena_letrasynumeros(cadena_codificar($fila1['cara44bienv2ambienotraactivdetalle']), ' '));
+				$lin_cara44bienv2ambienotraactivdetalle = $cSepara . str_replace($cSepara, $cComplementa, $fila1['cara44bienv2ambienotraactivdetalle']);
 				$lin_cara44bienv2ambienreforest = $cSepara . $fila1['cara44bienv2ambienreforest'];
 				$lin_cara44bienv2ambienmovilidad = $cSepara . $fila1['cara44bienv2ambienmovilidad'];
 				$lin_cara44bienv2ambienclimatico = $cSepara . $fila1['cara44bienv2ambienclimatico'];
@@ -1193,7 +1193,7 @@ if ($bEntra) {
 				$lin_cara44bienv2ambienespiritu = $cSepara . $fila1['cara44bienv2ambienespiritu'];
 				$lin_cara44bienv2ambiencarga = $cSepara . $fila1['cara44bienv2ambiencarga'];
 				$lin_cara44bienv2ambienotroenfoq = $cSepara . $fila1['cara44bienv2ambienotroenfoq'];
-				$lin_cara44bienv2ambienotroenfoqdetalle = $cSepara . str_replace($cSepara, $cComplementa, cadena_letrasynumeros(cadena_codificar($fila1['cara44bienv2ambienotroenfoqdetalle']), ' '));
+				$lin_cara44bienv2ambienotroenfoqdetalle = $cSepara . str_replace($cSepara, $cComplementa, $fila1['cara44bienv2ambienotroenfoqdetalle']);
 			}
 			if ($aBloque[5] && $bVerBienV3) {
 				if (isset($acara44bienv3emprenetapa[$fila1['cara44bienv3emprenetapa']]) != 0) {
@@ -1208,7 +1208,7 @@ if ($bEntra) {
 				if (isset($acara44bienv3emprensector[$fila1['cara44bienv3emprensector']]) != 0) {
 					$lin_cara44bienv3emprensector = $cSepara . cadena_codificar(html_entity_decode($acara44bienv3emprensector[$fila1['cara44bienv3emprensector']]));
 				}
-				$lin_cara44bienv3emprensectorotro = $cSepara . str_replace($cSepara, $cComplementa, cadena_letrasynumeros(cadena_codificar($fila1['cara44bienv3emprensectorotro']), ' '));
+				$lin_cara44bienv3emprensectorotro = $cSepara . str_replace($cSepara, $cComplementa, $fila1['cara44bienv3emprensectorotro']);
 				if (isset($acara44bienv3emprentemas[$fila1['cara44bienv3emprentemas']]) != 0) {
 					$lin_cara44bienv3emprentemas = $cSepara . cadena_codificar(html_entity_decode($acara44bienv3emprentemas[$fila1['cara44bienv3emprentemas']]));
 				}
@@ -1244,7 +1244,7 @@ if ($bEntra) {
 				if ($fila1['cara44bienv3ambienotro'] == 0) {
 					$lin_cara44bienv3ambienotro = $cSepara . 'No';
 				}
-				$lin_cara44bienv3ambienotrodetalle = $cSepara . str_replace($cSepara, $cComplementa, cadena_letrasynumeros(cadena_codificar($fila1['cara44bienv3ambienotrodetalle']), ' '));
+				$lin_cara44bienv3ambienotrodetalle = $cSepara . str_replace($cSepara, $cComplementa, $fila1['cara44bienv3ambienotrodetalle']);
 				if (isset($acara44bienv3ambienexper[$fila1['cara44bienv3ambienexper']]) != 0) {
 					$lin_cara44bienv3ambienexper = $cSepara . cadena_codificar(html_entity_decode($acara44bienv3ambienexper[$fila1['cara44bienv3ambienexper']]));
 				}
@@ -1281,7 +1281,7 @@ if ($bEntra) {
 				if (isset($acara44bienv3deportecual[$fila1['cara44bienv3deportecual']]) != 0) {
 					$lin_cara44bienv3deportecual = $cSepara . cadena_codificar(html_entity_decode($acara44bienv3deportecual[$fila1['cara44bienv3deportecual']]));
 				}
-				$lin_cara44bienv3deportecualotro = $cSepara . str_replace($cSepara, $cComplementa, cadena_letrasynumeros(cadena_codificar($fila1['cara44bienv3deportecualotro']), ' '));
+				$lin_cara44bienv3deportecualotro = $cSepara . str_replace($cSepara, $cComplementa, $fila1['cara44bienv3deportecualotro']);
 				if (isset($acara44bienv3deporterecrea[$fila1['cara44bienv3deporterecrea']]) != 0) {
 					$lin_cara44bienv3deporterecrea = $cSepara . cadena_codificar(html_entity_decode($acara44bienv3deporterecrea[$fila1['cara44bienv3deporterecrea']]));
 				}
@@ -1365,7 +1365,7 @@ if ($bEntra) {
 				if ($fila1['cara44bienv3crecimhabilotro'] == 0) {
 					$lin_cara44bienv3crecimhabilotro = $cSepara . 'No';
 				}
-				$lin_cara44bienv3crecimhabilotrodetalle = $cSepara . str_replace($cSepara, $cComplementa, cadena_letrasynumeros(cadena_codificar($fila1['cara44bienv3crecimhabilotrodetalle']), ' '));
+				$lin_cara44bienv3crecimhabilotrodetalle = $cSepara . str_replace($cSepara, $cComplementa, $fila1['cara44bienv3crecimhabilotrodetalle']);
 				$lin_cara44bienv3crecimalcancemeta = $cSepara . 'Si';
 				if ($fila1['cara44bienv3crecimalcancemeta'] == 0) {
 					$lin_cara44bienv3crecimalcancemeta = $cSepara . 'No';
@@ -1382,7 +1382,7 @@ if ($bEntra) {
 				if ($fila1['cara44bienv3crecimotramotiv'] == 0) {
 					$lin_cara44bienv3crecimotramotiv = $cSepara . 'No';
 				}
-				$lin_cara44bienv3crecimotramotivdetalle = $cSepara . str_replace($cSepara, $cComplementa, cadena_letrasynumeros(cadena_codificar($fila1['cara44bienv3crecimotramotivdetalle']), ' '));
+				$lin_cara44bienv3crecimotramotivdetalle = $cSepara . str_replace($cSepara, $cComplementa, $fila1['cara44bienv3crecimotramotivdetalle']);
 				if (isset($acara44bienv3crecimapoyo[$fila1['cara44bienv3crecimapoyo']]) != 0) {
 					$lin_cara44bienv3crecimapoyo = $cSepara . cadena_codificar(html_entity_decode($acara44bienv3crecimapoyo[$fila1['cara44bienv3crecimapoyo']]));
 				}
@@ -1453,7 +1453,7 @@ if ($bEntra) {
 				if (isset($acara44bienv3mentaldiagcual[$fila1['cara44bienv3mentaldiagcual']]) != 0) {
 					$lin_cara44bienv3mentaldiagcual = $cSepara . cadena_codificar(html_entity_decode($acara44bienv3mentaldiagcual[$fila1['cara44bienv3mentaldiagcual']]));
 				}
-				$lin_cara44bienv3mentaldiagotro = $cSepara . str_replace($cSepara, $cComplementa, cadena_letrasynumeros(cadena_codificar($fila1['cara44bienv3mentaldiagotro']), ' '));
+				$lin_cara44bienv3mentaldiagotro = $cSepara . str_replace($cSepara, $cComplementa, $fila1['cara44bienv3mentaldiagotro']);
 				if (isset($acara44bienv3arteintegrar[$fila1['cara44bienv3arteintegrar']]) != 0) {
 					$lin_cara44bienv3arteintegrar = $cSepara . cadena_codificar(html_entity_decode($acara44bienv3arteintegrar[$fila1['cara44bienv3arteintegrar']]));
 				}
@@ -1486,7 +1486,7 @@ if ($bEntra) {
 			if (isset($aSys11[$iTer]['doc']) == 0) {
 				list($aSys11[$iTer]['td'], $aSys11[$iTer]['doc'], $aSys11[$iTer]['razon'], $aSys11[$iTer]['ult_ing']) = f2301_InfoParaPlano($iTer, $objDB);
 			}
-			$lin_cara01idtercero = $cSepara . $aSys11[$iTer]['td'] . $cSepara . $aSys11[$iTer]['doc'] . $cSepara . cadena_letrasynumeros(cadena_codificar($aSys11[$iTer]['razon']), ' ');
+			$lin_cara01idtercero = $cSepara . $aSys11[$iTer]['td'] . $cSepara . $aSys11[$iTer]['doc'] . $cSepara . $aSys11[$iTer]['razon'];
 			$lin_unad11fechaultingreso = $cSepara . $aSys11[$iTer]['ult_ing'];
 			$lin_cara01fechaencuesta = $cSepara . $fila['cara01fechaencuesta'];
 			$lin_cara01agnos = $cSepara . $fila['cara01agnos'];
@@ -1527,7 +1527,7 @@ if ($bEntra) {
 				}
 			}
 			$lin_cara01ciudad = $cSepara . cadena_codificar($acara01ciudad['"' . $i_cara01ciudad . '"']);
-			$lin_cara01direccion = $cSepara . str_replace($cSepara, $cComplementa, cadena_letrasynumeros(cadena_codificar($fila['cara01direccion']), ' '));
+			$lin_cara01direccion = $cSepara . str_replace($cSepara, $cComplementa, $fila['cara01direccion']);
 			$lin_cara01estrato = $cSepara . f2301_NomEstrato($fila['cara01estrato']);
 			if ($fila['cara01zonares'] == 'U') {
 				$lin_cara01zonares = $cSepara . 'Urbana';
@@ -1547,8 +1547,8 @@ if ($bEntra) {
 				}
 			}
 			$lin_cara01estcivil = $cSepara . cadena_codificar($acara01estcivil['"' . $i_cara01estcivil . '"']);
-			$lin_cara01nomcontacto = $cSepara . str_replace($cSepara, $cComplementa, cadena_letrasynumeros(cadena_codificar($fila['cara01nomcontacto'])));
-			$lin_cara01parentezcocontacto = $cSepara . str_replace($cSepara, $cComplementa, cadena_letrasynumeros(cadena_codificar($fila['cara01parentezcocontacto'])));
+			$lin_cara01nomcontacto = $cSepara . str_replace($cSepara, $cComplementa, $fila['cara01nomcontacto']);
+			$lin_cara01parentezcocontacto = $cSepara . str_replace($cSepara, $cComplementa, $fila['cara01parentezcocontacto']);
 			//$lin_cara01celcontacto=$cSepara.str_replace($cSepara, $cComplementa, cadena_codificar($fila['cara01celcontacto']));
 			//$lin_cara01correocontacto=$cSepara.str_replace($cSepara, $cComplementa, cadena_codificar($fila['cara01correocontacto']));
 			$i_cara01idzona = $fila['cara01idzona'];
@@ -1616,7 +1616,7 @@ if ($bEntra) {
 					$acara01indigenas[$i_cara01indigenas] = '';
 				}
 			}
-			$lin_cara01indigenas = $cSepara . cadena_codificar($acara01indigenas[$i_cara01indigenas]);
+			$lin_cara01indigenas = $cSepara . $acara01indigenas[$i_cara01indigenas];
 			$lin_cara01victimadesplazado = $cSepara . $fila['cara01victimadesplazado'];
 			$lin_cara01victimaacr = $cSepara . $fila['cara01victimaacr'];
 			$lin_cara01inpecfuncionario = $cSepara . $fila['cara01inpecfuncionario'];
@@ -1666,9 +1666,9 @@ if ($bEntra) {
 			$lin_cara02discv2fisica = $cSepara . cadena_codificar($acara37discapacidades[$fila['cara02discv2fisica']]);
 			$lin_cara02discv2psico = $cSepara . cadena_codificar($acara37discapacidades[$fila['cara02discv2psico']]);
 			$lin_cara02discv2sistemica = $cSepara . cadena_codificar($acara02discv2sistemica[$fila['cara02discv2sistemica']]);
-			$lin_cara02discv2sistemicaotro = $cSepara . str_replace($cSepara, $cComplementa, cadena_letrasynumeros(cadena_codificar($fila['cara02discv2sistemicaotro']), ' '));
+			$lin_cara02discv2sistemicaotro = $cSepara . str_replace($cSepara, $cComplementa, $fila['cara02discv2sistemicaotro']);
 			$lin_cara02discv2multiple = $cSepara . cadena_codificar($acara02discv2multiple[$fila['cara02discv2multiple']]);
-			$lin_cara02discv2multipleotro = $cSepara . str_replace($cSepara, $cComplementa, cadena_letrasynumeros(cadena_codificar($fila['cara02discv2multipleotro']), ' '));
+			$lin_cara02discv2multipleotro = $cSepara . str_replace($cSepara, $cComplementa, $fila['cara02discv2multipleotro']);
 			if ($fila['cara01discv2archivoorigen'] != 0) {
 				$lin_cara01discv2archivoorigen = $cSepara . 'Si';
 			}
@@ -1688,7 +1688,7 @@ if ($bEntra) {
 			if ($fila['cara01perayuda'] == -1) {
 				$bEntra = false;
 				$lin_cara01perayuda = $cSepara . 'Otra';
-				$lin_cara01perotraayuda = $cSepara . str_replace($cSepara, $cComplementa, cadena_letrasynumeros(cadena_codificar($fila['cara01perotraayuda']), ' '));
+				$lin_cara01perotraayuda = $cSepara . str_replace($cSepara, $cComplementa, $fila['cara01perotraayuda']);
 			}
 			if ($bEntra) {
 				$i_cara01perayuda = $fila['cara01perayuda'];
@@ -1731,13 +1731,13 @@ if ($bEntra) {
 			$lin_cara01discv2condicionmedica = $cSepara . 'No';
 			if ($fila['cara01discv2condicionmedica'] != 0) {
 				$lin_cara01discv2condicionmedica = $cSepara . 'Si';
-				$lin_cara01discv2condmeddet = $cSepara . str_replace($cSepara, $cComplementa, cadena_letrasynumeros(cadena_codificar($fila['cara01discv2condmeddet']), ' '));
+				$lin_cara01discv2condmeddet = $cSepara . str_replace($cSepara, $cComplementa, $fila['cara01discv2condmeddet']);
 			}
 			$lin_cara44med_tratamiento = $cSepara . 'No';
 			if (isset($fila1['cara44med_tratamiento']) != 0) {
 				if ($fila1['cara44med_tratamiento'] != 0) {
 					$lin_cara44med_tratamiento = $cSepara . 'Si';
-					$lin_cara44med_trat_cual = $cSepara . str_replace($cSepara, $cComplementa, cadena_letrasynumeros(cadena_codificar($fila1['cara44med_trat_cual']), ' '));
+					$lin_cara44med_trat_cual = $cSepara . str_replace($cSepara, $cComplementa, $fila1['cara44med_trat_cual']);
 				}
 			}
 			$lin_cara01discv2pruebacoeficiente = $cSepara . '[' . $fila['cara01discv2pruebacoeficiente'] . ']';
@@ -1857,7 +1857,7 @@ if ($bEntra) {
 			$lin_cara01campus_aprendeanima = $cSepara . $fila['cara01campus_aprendeanima'];
 			$lin_cara01campus_mediocomunica = $cSepara . '[' . $fila['cara01campus_mediocomunica'] . ']';
 			if (isset($acara01campus_mediocomunica[$fila['cara01campus_mediocomunica']]) != 0) {
-				$lin_cara01campus_mediocomunica = $cSepara . str_replace($cSepara, $cComplementa, cadena_letrasynumeros(cadena_codificar($acara01campus_mediocomunica[$fila['cara01campus_mediocomunica']]), ' '));
+				$lin_cara01campus_mediocomunica = $cSepara . str_replace($cSepara, $cComplementa, $acara01campus_mediocomunica[$fila['cara01campus_mediocomunica']]);
 			}
 		}
 		if ($aBloque[4]) {
@@ -1956,7 +1956,7 @@ if ($bEntra) {
 			$lin_cara01bien_ajedrez = $cSepara . $fila['cara01bien_ajedrez'];
 			$lin_cara01bien_juegosautoc = $cSepara . $fila['cara01bien_juegosautoc'];
 			$lin_cara01bien_interesrepdeporte = $cSepara . $fila['cara01bien_interesrepdeporte'];
-			$lin_cara01bien_deporteint = $cSepara . str_replace($cSepara, $cComplementa, cadena_letrasynumeros(cadena_codificar($fila['cara01bien_deporteint']), ' '));
+			$lin_cara01bien_deporteint = $cSepara . str_replace($cSepara, $cComplementa, $fila['cara01bien_deporteint']);
 			$lin_cara01bien_teatro = $cSepara . $fila['cara01bien_teatro'];
 			$lin_cara01bien_danza = $cSepara . $fila['cara01bien_danza'];
 			$lin_cara01bien_musica = $cSepara . $fila['cara01bien_musica'];
@@ -1964,7 +1964,7 @@ if ($bEntra) {
 			$lin_cara01bien_artplast = $cSepara . $fila['cara01bien_artplast'];
 			$lin_cara01bien_cuenteria = $cSepara . $fila['cara01bien_cuenteria'];
 			$lin_cara01bien_interesreparte = $cSepara . $fila['cara01bien_interesreparte'];
-			$lin_cara01bien_arteint = $cSepara . str_replace($cSepara, $cComplementa, cadena_letrasynumeros(cadena_codificar($fila['cara01bien_arteint']), ' '));
+			$lin_cara01bien_arteint = $cSepara . str_replace($cSepara, $cComplementa, $fila['cara01bien_arteint']);
 			if ($fila['cara01bien_interpreta'] == -1) {
 				$lin_cara01bien_interpreta = $cSepara . 'Ninguno';
 			} else {
@@ -2027,43 +2027,43 @@ if ($bEntra) {
 			//Psicologia.
 			$lin_cara01psico_costoemocion = $cSepara . '[' . $fila['cara01psico_costoemocion'] . ']';
 			if (isset($aCAEN[$fila['cara01psico_costoemocion']]) != 0) {
-				$lin_cara01psico_costoemocion = $cSepara . str_replace($cSepara, $cComplementa, cadena_letrasynumeros(cadena_codificar($aCAEN[$fila['cara01psico_costoemocion']]), ' '));
+				$lin_cara01psico_costoemocion = $cSepara . str_replace($cSepara, $cComplementa, $aCAEN[$fila['cara01psico_costoemocion']]);
 			}
 			$lin_cara01psico_reaccionimpre = $cSepara . '[' . $fila['cara01psico_reaccionimpre'] . ']';
 			if (isset($apsico_reaccionimpre[$fila['cara01psico_reaccionimpre']]) != 0) {
-				$lin_cara01psico_reaccionimpre = $cSepara . str_replace($cSepara, $cComplementa, cadena_letrasynumeros(cadena_codificar($apsico_reaccionimpre[$fila['cara01psico_reaccionimpre']]), ' '));
+				$lin_cara01psico_reaccionimpre = $cSepara . str_replace($cSepara, $cComplementa, $apsico_reaccionimpre[$fila['cara01psico_reaccionimpre']]);
 			}
 			$lin_cara01psico_estres = $cSepara . '[' . $fila['cara01psico_estres'] . ']';
 			if (isset($apsico_estres[$fila['cara01psico_estres']]) != 0) {
-				$lin_cara01psico_estres = $cSepara . str_replace($cSepara, $cComplementa, cadena_letrasynumeros(cadena_codificar($apsico_estres[$fila['cara01psico_estres']]), ' '));
+				$lin_cara01psico_estres = $cSepara . str_replace($cSepara, $cComplementa, $apsico_estres[$fila['cara01psico_estres']]);
 			}
 			$lin_cara01psico_pocotiempo = $cSepara . '[' . $fila['cara01psico_pocotiempo'] . ']';
 			if (isset($apsico_pocotiempo[$fila['cara01psico_pocotiempo']]) != 0) {
-				$lin_cara01psico_pocotiempo = $cSepara . str_replace($cSepara, $cComplementa, cadena_letrasynumeros(cadena_codificar($apsico_pocotiempo[$fila['cara01psico_pocotiempo']]), ' '));
+				$lin_cara01psico_pocotiempo = $cSepara . str_replace($cSepara, $cComplementa, $apsico_pocotiempo[$fila['cara01psico_pocotiempo']]);
 			}
 			$lin_cara01psico_actitudvida = $cSepara . '[' . $fila['cara01psico_actitudvida'] . ']';
 			if (isset($apsico_actitudvida[$fila['cara01psico_actitudvida']]) != 0) {
-				$lin_cara01psico_actitudvida = $cSepara . str_replace($cSepara, $cComplementa, cadena_letrasynumeros(cadena_codificar($apsico_actitudvida[$fila['cara01psico_actitudvida']]), ' '));
+				$lin_cara01psico_actitudvida = $cSepara . str_replace($cSepara, $cComplementa, $apsico_actitudvida[$fila['cara01psico_actitudvida']]);
 			}
 			$lin_cara01psico_duda = $cSepara . '[' . $fila['cara01psico_duda'] . ']';
 			if (isset($apsico_duda[$fila['cara01psico_duda']]) != 0) {
-				$lin_cara01psico_duda = $cSepara . str_replace($cSepara, $cComplementa, cadena_letrasynumeros(cadena_codificar($apsico_duda[$fila['cara01psico_duda']]), ' '));
+				$lin_cara01psico_duda = $cSepara . str_replace($cSepara, $cComplementa, $apsico_duda[$fila['cara01psico_duda']]);
 			}
 			$lin_cara01psico_problemapers = $cSepara . '[' . $fila['cara01psico_problemapers'] . ']';
 			if (isset($apsico_problemapers[$fila['cara01psico_problemapers']]) != 0) {
-				$lin_cara01psico_problemapers = $cSepara . str_replace($cSepara, $cComplementa, cadena_letrasynumeros(cadena_codificar($apsico_problemapers[$fila['cara01psico_problemapers']]), ' '));
+				$lin_cara01psico_problemapers = $cSepara . str_replace($cSepara, $cComplementa, $apsico_problemapers[$fila['cara01psico_problemapers']]);
 			}
 			$lin_cara01psico_satisfaccion = $cSepara . '[' . $fila['cara01psico_satisfaccion'] . ']';
 			if (isset($apsico_satisfaccion[$fila['cara01psico_satisfaccion']]) != 0) {
-				$lin_cara01psico_satisfaccion = $cSepara . str_replace($cSepara, $cComplementa, cadena_letrasynumeros(cadena_codificar($apsico_satisfaccion[$fila['cara01psico_satisfaccion']]), ' '));
+				$lin_cara01psico_satisfaccion = $cSepara . str_replace($cSepara, $cComplementa, $apsico_satisfaccion[$fila['cara01psico_satisfaccion']]);
 			}
 			$lin_cara01psico_discusiones = $cSepara . '[' . $fila['cara01psico_discusiones'] . ']';
 			if (isset($apsico_discusiones[$fila['cara01psico_discusiones']]) != 0) {
-				$lin_cara01psico_discusiones = $cSepara . str_replace($cSepara, $cComplementa, cadena_letrasynumeros(cadena_codificar($apsico_discusiones[$fila['cara01psico_discusiones']]), ' '));
+				$lin_cara01psico_discusiones = $cSepara . str_replace($cSepara, $cComplementa, $apsico_discusiones[$fila['cara01psico_discusiones']]);
 			}
 			$lin_cara01psico_atencion = $cSepara . '[' . $fila['cara01psico_atencion'] . ']';
 			if (isset($apsico_atencion[$fila['cara01psico_atencion']]) != 0) {
-				$lin_cara01psico_atencion = $cSepara . str_replace($cSepara, $cComplementa, cadena_letrasynumeros(cadena_codificar($apsico_atencion[$fila['cara01psico_atencion']]), ' '));
+				$lin_cara01psico_atencion = $cSepara . str_replace($cSepara, $cComplementa, $apsico_atencion[$fila['cara01psico_atencion']]);
 			}
 			$lin_cara01psico_puntaje = $cSepara . f2301_NombrePuntaje('puntaje', $fila['cara01psico_puntaje']);
 		}
