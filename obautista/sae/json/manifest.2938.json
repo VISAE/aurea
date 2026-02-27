@@ -1,0 +1,26 @@
+{
+  "code": "2938",
+  "name": "Pruebas de convocatoria",
+  "version": "1.0.0",
+  "entry": "visaepruebas.php",
+  "library": "lib2938.php",
+  "language": [
+    "lg/lg_2938_es.php",
+    "lg/lg_2938_en.php",
+    "lg/lg_2938_pt.php"
+  ],
+  "db-table": [
+    "visa38convpruebas"
+  ],
+  "dependsOn": [
+    ],
+  "lastUpdate": "2026-2-27",
+  "owner": "UNAD",
+  "version-history": [
+    {
+      "version": "1.0.0",
+      "date": "2026-2-27",
+      "notes": "Primer versión"
+    }
+  ]
+}

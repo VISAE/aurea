@@ -1,0 +1,26 @@
+{
+  "code": "2945",
+  "name": "Resultados pruebas",
+  "version": "1.0.0",
+  "entry": "visaepruebasres.php",
+  "library": "lib2945.php",
+  "language": [
+    "lg/lg_2945_es.php",
+    "lg/lg_2945_en.php",
+    "lg/lg_2945_pt.php"
+  ],
+  "db-table": [
+    "visa45convpruebares"
+  ],
+  "dependsOn": [
+    ],
+  "lastUpdate": "2026-2-27",
+  "owner": "UNAD",
+  "version-history": [
+    {
+      "version": "1.0.0",
+      "date": "2026-2-27",
+      "notes": "Primer versión"
+    }
+  ]
+}

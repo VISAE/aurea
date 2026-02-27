@@ -24,7 +24,7 @@ if ($APP->dbpuerto!=''){$objDB->dbPuerto=$APP->dbpuerto;}
 if (isset($APP->dbmodelo) == 0){
 	$APP->dbmodelo = 'M';
 }
-$versionejecutable = 9410;
+$versionejecutable = 9463;
 $procesos=0;
 $suspende=0;
 $error=0;
@@ -562,6 +562,61 @@ if (($dbversion>9400)&&($dbversion<9501)){
 	if ($dbversion==9407){$sSQL=$objDB->sSQLCrearIndice('visa35convocatoria', 'visa35convocatoria_id', 'visa35consec', true);}
 	if ($dbversion==9408){$sSQL="agregamodulo|2935|29|Convocatorias|1|2|3|4|5|6";}
 	if ($dbversion==9409){$sSQL=$u09."(2935, 1, 'Convocatorias', 'visaeconvocatoria.php', 2908, 2935, 'S', '', '')";}
+	//26 - feb - 2026
+	if ($dbversion==9410){$sSQL="CREATE TABLE gedo00config (gedo00id int NOT NULL, gedo00idexpacad int NOT NULL DEFAULT 0, gedo00idtiporesol int NOT NULL DEFAULT 0)";}
+	if ($dbversion==9411){$sSQL="ALTER TABLE gedo00config ADD PRIMARY KEY(gedo00id)";}
+	if ($dbversion==9412){$sSQL="agregamodulo|2600|26|Parametros GD|1|3";}
+	if ($dbversion==9413){$sSQL=$u09."(2600, 1, 'Parametros', 'gedoparams.php', 2, 2600, 'S', '', '')";}
+	if ($dbversion==9414){$sSQL="INSERT INTO gedo00config (gedo00id, gedo00idexpacad, gedo00idtiporesol) VALUES (1, 0, 0)";}
+	//27 - feb - 2026
+	if ($dbversion==9415){$sSQL="add_campos|visa34convtipo|visa34aplicazona int NOT NULL DEFAULT 0|visa34aplicacentro int NOT NULL DEFAULT 0|visa34aplicaescuela int NOT NULL DEFAULT 0|visa34aplicaprograma int NOT NULL DEFAULT 0";}
+	if ($dbversion==9416){$sSQL="CREATE TABLE visa42convanexo (visa42idtipo int NOT NULL, visa42consec int NOT NULL, visa42id int NOT NULL DEFAULT 0, visa42titulo varchar(50) NULL, visa42descripcion varchar(250) NULL, visa42activo int NOT NULL DEFAULT 0, visa42orden int NOT NULL DEFAULT 0, visa42obligatorio int NOT NULL DEFAULT 0, visa42tipodocumento int NOT NULL DEFAULT 0)";}
+	if ($dbversion==9417){$sSQL="ALTER TABLE visa42convanexo ADD PRIMARY KEY(visa42id)";}
+	if ($dbversion==9418){$sSQL=$objDB->sSQLCrearIndice('visa42convanexo', 'visa42convanexo_id', 'visa42idtipo, visa42consec', true);}
+	if ($dbversion==9419){$sSQL=$objDB->sSQLCrearIndice('visa42convanexo', 'visa42convanexo_padre', 'visa42idtipo');}
+	if ($dbversion==9420){$sSQL="agregamodulo|2942|29|Tipo convocatoria - Anexos|1|2|3|4|5|6|8";}
+	if ($dbversion==9421){$sSQL="CREATE TABLE visa46grupotipologia (visa46consec int NOT NULL, visa46id int NOT NULL DEFAULT 0, visa46nombre varchar(50) NULL)";}
+	if ($dbversion==9422){$sSQL="ALTER TABLE visa46grupotipologia ADD PRIMARY KEY(visa46id)";}
+	if ($dbversion==9423){$sSQL=$objDB->sSQLCrearIndice('visa46grupotipologia', 'visa46grupotipologia_id', 'visa46consec', true);}
+	if ($dbversion==9424){$sSQL="agregamodulo|2946|29|Grupos de tipologias|1|2|3|4|5|6|8";}
+	if ($dbversion==9425){$sSQL=$u09."(2946, 1, 'Grupos de tipologias', 'visaegrupotipologia.php', 2, 2946, 'S', '', '')";}
+	if ($dbversion==9426){$sSQL="CREATE TABLE visa36convtipologia (visa36idgrupo int NOT NULL, visa36consec int NOT NULL, visa36id int NOT NULL DEFAULT 0, visa36nombre varchar(50) NULL, visa36activo int NOT NULL DEFAULT 0)";}
+	if ($dbversion==9427){$sSQL="ALTER TABLE visa36convtipologia ADD PRIMARY KEY(visa36id)";}
+	if ($dbversion==9428){$sSQL=$objDB->sSQLCrearIndice('visa36convtipologia', 'visa36convtipologia_id', 'visa36idgrupo, visa36consec', true);}
+	if ($dbversion==9429){$sSQL="agregamodulo|2936|29|Tipologias de convocatoria|1|2|3|4|5|6|8";}
+	if ($dbversion==9430){$sSQL=$u09."(2936, 1, 'Tipologias de convocatoria', 'visaetipologia.php', 2908, 2936, 'S', '', '')";}
+	if ($dbversion==9431){$sSQL="CREATE TABLE visa37convsubtipo (visa37idtipologia int NOT NULL, visa37id int NOT NULL DEFAULT 0, visa37nombre varchar(50) NULL, visa37activo int NOT NULL DEFAULT 0)";}
+	if ($dbversion==9432){$sSQL="ALTER TABLE visa37convsubtipo ADD PRIMARY KEY(visa37id)";}
+	if ($dbversion==9433){$sSQL=$objDB->sSQLCrearIndice('visa37convsubtipo', 'visa37convsubtipo_id', 'visa37idtipologia', true);}
+	if ($dbversion==9434){$sSQL=$objDB->sSQLCrearIndice('visa37convsubtipo', 'visa37convsubtipo_padre', 'visa37idtipologia');}
+	if ($dbversion==9435){$sSQL="agregamodulo|2937|29|Subtipologias de convocatorias|1|2|3|4|5|6|8";}
+	if ($dbversion==9436){$sSQL="add_campos|visa35convocatoria|visa35gruponivel int NOT NULL DEFAULT 0|visa35nivelforma int NOT NULL DEFAULT 0|visa35idproducto int NOT NULL DEFAULT 0";}
+	if ($dbversion==9437){$sSQL="CREATE TABLE visa38convpruebas (visa38idtipo int NOT NULL, visa38consec int NOT NULL, visa38id int NOT NULL DEFAULT 0, visa38nombre varchar(50) NULL, visa38tipoprueba int NOT NULL DEFAULT 0, visa38puntajemaximo int NOT NULL DEFAULT 0, visa38puntajeaproba int NOT NULL DEFAULT 0, visa38activo int NOT NULL DEFAULT 0, visa38idnav int NOT NULL DEFAULT 0, visa38idmoodle int NOT NULL DEFAULT 0)";}
+	if ($dbversion==9438){$sSQL="ALTER TABLE visa38convpruebas ADD PRIMARY KEY(visa38id)";}
+	if ($dbversion==9439){$sSQL=$objDB->sSQLCrearIndice('visa38convpruebas', 'visa38convpruebas_id', 'visa38idtipo, visa38consec', true);}
+	if ($dbversion==9440){$sSQL="agregamodulo|2938|29|Pruebas de convocatoria|1|2|3|4|5|6|8";}
+	if ($dbversion==9441){$sSQL=$u09."(2938, 1, 'Pruebas de convocatoria', 'visaepruebas.php', 2908, 2938, 'S', '', '')";}
+	if ($dbversion==9442){$sSQL="CREATE TABLE visa40inscripcion (visa40idconvocatoria int NOT NULL, visa40idtercero int NOT NULL, visa40id int NOT NULL DEFAULT 0, visa40estado int NOT NULL DEFAULT 0, visa40idperiodo int NOT NULL DEFAULT 0, visa40idescuela int NOT NULL DEFAULT 0, visa40idprograma int NOT NULL DEFAULT 0, visa40idzona int NOT NULL DEFAULT 0, visa40idcentro int NOT NULL DEFAULT 0, visa40fechainsc int NOT NULL DEFAULT 0, visa40fechaadmision int NOT NULL DEFAULT 0, visa40numcupo int NOT NULL DEFAULT 0, visa40idtipologia int NOT NULL DEFAULT 0, visa40idsubtipo int NOT NULL DEFAULT 0, visa40idminuta int NOT NULL DEFAULT 0, visa40idresolucion int NOT NULL DEFAULT 0)";}
+	if ($dbversion==9443){$sSQL="ALTER TABLE visa40inscripcion ADD PRIMARY KEY(visa40id)";}
+	if ($dbversion==9444){$sSQL=$objDB->sSQLCrearIndice('visa40inscripcion', 'visa40inscripcion_id', 'visa40idconvocatoria, visa40idtercero', true);}
+	if ($dbversion==9445){$sSQL="agregamodulo|2940|29|Inscripcion convocatoria|1|2|3|4|5|6|8";}
+	if ($dbversion==9446){$sSQL=$u09."(2940, 1, 'Inscripcion convocatoria', 'visaeinscripcion.php', 2908, 2940, 'S', '', '')";}
+	if ($dbversion==9447){$sSQL="CREATE TABLE visa43inscripdocs (visa43idinscripcion int NOT NULL, visa43iddocumento int NOT NULL, visa43id int NOT NULL DEFAULT 0, visa43idorigen int NOT NULL DEFAULT 0, visa43idarchivo int NOT NULL DEFAULT 0, visa43fechaaprob int NOT NULL DEFAULT 0, visa43usuarioaprueba int NOT NULL DEFAULT 0)";}
+	if ($dbversion==9448){$sSQL="ALTER TABLE visa43inscripdocs ADD PRIMARY KEY(visa43id)";}
+	if ($dbversion==9449){$sSQL=$objDB->sSQLCrearIndice('visa43inscripdocs', 'visa43inscripdocs_id', 'visa43idinscripcion, visa43iddocumento', true);}
+	if ($dbversion==9450){$sSQL=$objDB->sSQLCrearIndice('visa43inscripdocs', 'visa43inscripdocs_padre', 'visa43idinscripcion');}
+	if ($dbversion==9451){$sSQL="agregamodulo|2943|29|Anexos|1|2|3|4|5|6|8";}
+	if ($dbversion==9452){$sSQL="CREATE TABLE visa44anotaciones (visa44idinscripcion int NOT NULL, visa44consec int NOT NULL, visa44id int NOT NULL DEFAULT 0, visa44alcance int NOT NULL DEFAULT 0, visa44nota Text NULL, visa44usuario int NOT NULL DEFAULT 0, visa44fecha int NOT NULL DEFAULT 0, visa44hora int NOT NULL DEFAULT 0, visa44minuto int NOT NULL DEFAULT 0)";}
+	if ($dbversion==9453){$sSQL="ALTER TABLE visa44anotaciones ADD PRIMARY KEY(visa44id)";}
+	if ($dbversion==9454){$sSQL=$objDB->sSQLCrearIndice('visa44anotaciones', 'visa44anotaciones_id', 'visa44idinscripcion, visa44consec', true);}
+	if ($dbversion==9455){$sSQL=$objDB->sSQLCrearIndice('visa44anotaciones', 'visa44anotaciones_padre', 'visa44idinscripcion');}
+	if ($dbversion==9456){$sSQL="agregamodulo|2944|29|Anotaciones|1|2|3|4|5|6|8";}
+	if ($dbversion==9457){$sSQL="CREATE TABLE visa45convpruebares (visa45idinscripcion int NOT NULL, visa45idprueba int NOT NULL, visa45id int NOT NULL DEFAULT 0, visa45puntaje int NOT NULL DEFAULT 0)";}
+	if ($dbversion==9458){$sSQL="ALTER TABLE visa45convpruebares ADD PRIMARY KEY(visa45id)";}
+	if ($dbversion==9459){$sSQL=$objDB->sSQLCrearIndice('visa45convpruebares', 'visa45convpruebares_id', 'visa45idinscripcion, visa45idprueba', true);}
+	if ($dbversion==9460){$sSQL=$objDB->sSQLCrearIndice('visa45convpruebares', 'visa45convpruebares_padre', 'visa45idinscripcion');}
+	if ($dbversion==9461){$sSQL="agregamodulo|2945|29|Resultados pruebas|1|2|3|4|5|6|8";}
+	if ($dbversion==9462){$sSQL=$u09."(2945, 1, 'Resultados pruebas', 'visaepruebasres.php', 2908, 2945, 'S', '', '')";}
 
 }
 if (($dbversion>9500)&&($dbversion<9601)){

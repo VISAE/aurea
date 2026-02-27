@@ -1,0 +1,38 @@
+{
+  "code": "2940",
+  "name": "Inscripcion convocatoria",
+  "version": "1.0.0",
+  "entry": "visaeinscripcion.php",
+  "library": "lib2940.php",
+  "language": [
+    "lg/lg_2940_es.php",
+    "lg/lg_2940_en.php",
+    "lg/lg_2940_pt.php",
+    "lg/lg_2943_es.php",
+    "lg/lg_2943_en.php",
+    "lg/lg_2943_pt.php",
+    "lg/lg_2944_es.php",
+    "lg/lg_2944_en.php",
+    "lg/lg_2944_pt.php",
+    "lg/lg_2945_es.php",
+    "lg/lg_2945_en.php",
+    "lg/lg_2945_pt.php"
+  ],
+  "db-table": [
+    "visa40inscripcion"
+  ],
+  "dependsOn": [
+    "lib2943.php",
+    "lib2944.php",
+    "lib2945.php"
+    ],
+  "lastUpdate": "2026-2-27",
+  "owner": "UNAD",
+  "version-history": [
+    {
+      "version": "1.0.0",
+      "date": "2026-2-27",
+      "notes": "Primer versión"
+    }
+  ]
+}

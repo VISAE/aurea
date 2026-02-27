@@ -1,0 +1,26 @@
+{
+  "code": "2946",
+  "name": "Grupos de tipologias",
+  "version": "1.0.0",
+  "entry": "visaegrupotipologia.php",
+  "library": "lib2946.php",
+  "language": [
+    "lg/lg_2946_es.php",
+    "lg/lg_2946_en.php",
+    "lg/lg_2946_pt.php"
+  ],
+  "db-table": [
+    "visa46grupotipologia"
+  ],
+  "dependsOn": [
+    ],
+  "lastUpdate": "2026-2-27",
+  "owner": "UNAD",
+  "version-history": [
+    {
+      "version": "1.0.0",
+      "date": "2026-2-27",
+      "notes": "Primer versión"
+    }
+  ]
+}

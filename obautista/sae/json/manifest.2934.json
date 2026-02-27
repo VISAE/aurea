@@ -1,0 +1,30 @@
+{
+  "code": "2934",
+  "name": "Tipo de convocatoria",
+  "version": "1.0.0",
+  "entry": "visaeconvtipo.php",
+  "library": "lib2934.php",
+  "language": [
+    "lg/lg_2934_es.php",
+    "lg/lg_2934_en.php",
+    "lg/lg_2934_pt.php",
+    "lg/lg_2942_es.php",
+    "lg/lg_2942_en.php",
+    "lg/lg_2942_pt.php"
+  ],
+  "db-table": [
+    "visa34convtipo"
+  ],
+  "dependsOn": [
+    "lib2942.php"
+    ],
+  "lastUpdate": "2026-2-27",
+  "owner": "UNAD",
+  "version-history": [
+    {
+      "version": "1.0.0",
+      "date": "2026-2-27",
+      "notes": "Primer versión"
+    }
+  ]
+}

@@ -1,0 +1,30 @@
+{
+  "code": "2936",
+  "name": "Tipologias de convocatoria",
+  "version": "1.0.0",
+  "entry": "visaetipologia.php",
+  "library": "lib2936.php",
+  "language": [
+    "lg/lg_2936_es.php",
+    "lg/lg_2936_en.php",
+    "lg/lg_2936_pt.php",
+    "lg/lg_2937_es.php",
+    "lg/lg_2937_en.php",
+    "lg/lg_2937_pt.php"
+  ],
+  "db-table": [
+    "visa36convtipologia"
+  ],
+  "dependsOn": [
+    "lib2937.php"
+    ],
+  "lastUpdate": "2026-2-27",
+  "owner": "UNAD",
+  "version-history": [
+    {
+      "version": "1.0.0",
+      "date": "2026-2-27",
+      "notes": "Primer versión"
+    }
+  ]
+}

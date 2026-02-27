@@ -1,0 +1,26 @@
+{
+  "code": "2935",
+  "name": "Convocatorias",
+  "version": "1.0.0",
+  "entry": "visaeconvocatoria.php",
+  "library": "lib2935.php",
+  "language": [
+    "lg/lg_2935_es.php",
+    "lg/lg_2935_en.php",
+    "lg/lg_2935_pt.php"
+  ],
+  "db-table": [
+    "visa35convocatoria"
+  ],
+  "dependsOn": [
+    ],
+  "lastUpdate": "2026-2-27",
+  "owner": "UNAD",
+  "version-history": [
+    {
+      "version": "1.0.0",
+      "date": "2026-2-27",
+      "notes": "Primer versión"
+    }
+  ]
+}

@@ -1,0 +1,26 @@
+{
+  "code": "2937",
+  "name": "Subtipologias de convocatorias",
+  "version": "1.0.0",
+  "entry": "visaesubtipologia.php",
+  "library": "lib2937.php",
+  "language": [
+    "lg/lg_2937_es.php",
+    "lg/lg_2937_en.php",
+    "lg/lg_2937_pt.php"
+  ],
+  "db-table": [
+    "visa37convsubtipo"
+  ],
+  "dependsOn": [
+    ],
+  "lastUpdate": "2026-2-27",
+  "owner": "UNAD",
+  "version-history": [
+    {
+      "version": "1.0.0",
+      "date": "2026-2-27",
+      "notes": "Primer versión"
+    }
+  ]
+}
