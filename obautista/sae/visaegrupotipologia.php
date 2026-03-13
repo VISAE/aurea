@@ -117,15 +117,15 @@ if (!file_exists($mensajes_todas)) {
 	$mensajes_todas = $APP->rutacomun . 'lg/lg_todas_es.php';
 }
 /*
-$mensajes_2900 = 'lg/lg_2900_' . $sIdioma . '.php';
+$mensajes_2900 = $APP->rutacomun . 'lg/lg_2900_' . $sIdioma . '.php';
 if (!file_exists($mensajes_2900)) {
-	$mensajes_2900 = 'lg/lg_2900_es.php';
+	$mensajes_2900 = $APP->rutacomun . 'lg/lg_2900_es.php';
 }
 require $mensajes_2900;
 */
-$mensajes_2946 = 'lg/lg_2946_' . $sIdioma . '.php';
+$mensajes_2946 = $APP->rutacomun . 'lg/lg_2946_' . $sIdioma . '.php';
 if (!file_exists($mensajes_2946)) {
-	$mensajes_2946 = 'lg/lg_2946_es.php';
+	$mensajes_2946 = $APP->rutacomun . 'lg/lg_2946_es.php';
 }
 require $mensajes_todas;
 require $mensajes_2946;
@@ -294,7 +294,7 @@ if (isset($_REQUEST['paso']) == 0) {
 	}
 }
 // -- 2946 visa46grupotipologia
-require 'lib2946.php';
+require $APP->rutacomun . 'lib2946.php';
 $xajax = new xajax();
 $xajax->configure('javascript URI', $APP->rutacomun . 'xajax/');
 $xajax->register(XAJAX_FUNCTION, 'sesion_abandona_V2');

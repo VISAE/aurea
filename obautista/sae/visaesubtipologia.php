@@ -117,15 +117,15 @@ if (!file_exists($mensajes_todas)) {
 	$mensajes_todas = $APP->rutacomun . 'lg/lg_todas_es.php';
 }
 /*
-$mensajes_2900 = 'lg/lg_2900_' . $sIdioma . '.php';
+$mensajes_2900 = $APP->rutacomun . 'lg/lg_2900_' . $sIdioma . '.php';
 if (!file_exists($mensajes_2900)) {
-	$mensajes_2900 = 'lg/lg_2900_es.php';
+	$mensajes_2900 = $APP->rutacomun . 'lg/lg_2900_es.php';
 }
 require $mensajes_2900;
 */
-$mensajes_2937 = 'lg/lg_2937_' . $sIdioma . '.php';
+$mensajes_2937 = $APP->rutacomun . 'lg/lg_2937_' . $sIdioma . '.php';
 if (!file_exists($mensajes_2937)) {
-	$mensajes_2937 = 'lg/lg_2937_es.php';
+	$mensajes_2937 = $APP->rutacomun . 'lg/lg_2937_es.php';
 }
 require $mensajes_todas;
 require $mensajes_2937;
@@ -294,7 +294,7 @@ if (isset($_REQUEST['paso']) == 0) {
 	}
 }
 // -- 2937 visa37convsubtipo
-require 'lib2937.php';
+require $APP->rutacomun . 'lib2937.php';
 $xajax = new xajax();
 $xajax->configure('javascript URI', $APP->rutacomun . 'xajax/');
 $xajax->register(XAJAX_FUNCTION, 'sesion_abandona_V2');

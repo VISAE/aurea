@@ -117,15 +117,15 @@ if (!file_exists($mensajes_todas)) {
 	$mensajes_todas = $APP->rutacomun . 'lg/lg_todas_es.php';
 }
 /*
-$mensajes_2900 = 'lg/lg_2900_' . $sIdioma . '.php';
+$mensajes_2900 = $APP->rutacomun . 'lg/lg_2900_' . $sIdioma . '.php';
 if (!file_exists($mensajes_2900)) {
-	$mensajes_2900 = 'lg/lg_2900_es.php';
+	$mensajes_2900 = $APP->rutacomun . 'lg/lg_2900_es.php';
 }
 require $mensajes_2900;
 */
-$mensajes_2934 = 'lg/lg_2934_' . $sIdioma . '.php';
+$mensajes_2934 = $APP->rutacomun . 'lg/lg_2934_' . $sIdioma . '.php';
 if (!file_exists($mensajes_2934)) {
-	$mensajes_2934 = 'lg/lg_2934_es.php';
+	$mensajes_2934 = $APP->rutacomun . 'lg/lg_2934_es.php';
 }
 require $mensajes_todas;
 require $mensajes_2934;
@@ -286,9 +286,9 @@ if (isset($_REQUEST['debug']) != 0) {
 }
 //PROCESOS DE LA PAGINA
 //$idEntidad = Traer_Entidad();
-$mensajes_2942 = 'lg/lg_2942_' . $sIdioma . '.php';
+$mensajes_2942 = $APP->rutacomun . 'lg/lg_2942_' . $sIdioma . '.php';
 if (!file_exists($mensajes_2942)) {
-	$mensajes_2942 = 'lg/lg_2942_es.php';
+	$mensajes_2942 = $APP->rutacomun . 'lg/lg_2942_es.php';
 }
 require $mensajes_2942;
 // -- Si esta cargando la pagina por primer vez se revisa si requiere auditar y se manda a hacer un limpiar (paso -1)
@@ -299,9 +299,9 @@ if (isset($_REQUEST['paso']) == 0) {
 	}
 }
 // -- 2934 visa34convtipo
-require 'lib2934.php';
+require $APP->rutacomun . 'lib2934.php';
 // -- 2942 Configura Anexos
-require 'lib2942.php';
+require $APP->rutacomun . 'lib2942.php';
 $xajax = new xajax();
 $xajax->configure('javascript URI', $APP->rutacomun . 'xajax/');
 $xajax->register(XAJAX_FUNCTION, 'sesion_abandona_V2');
@@ -429,13 +429,13 @@ if ((int)$_REQUEST['paso'] > 0) {
 		$_REQUEST['visa42descripcion'] = '';
 	}
 	if (isset($_REQUEST['visa42activo']) == 0) {
-		$_REQUEST['visa42activo'] = 0;
+		$_REQUEST['visa42activo'] = 1;
 	}
 	if (isset($_REQUEST['visa42orden']) == 0) {
 		$_REQUEST['visa42orden'] = '';
 	}
 	if (isset($_REQUEST['visa42obligatorio']) == 0) {
-		$_REQUEST['visa42obligatorio'] = 0;
+		$_REQUEST['visa42obligatorio'] = 1;
 	}
 	if (isset($_REQUEST['visa42tipodocumento']) == 0) {
 		$_REQUEST['visa42tipodocumento'] = '';
@@ -558,18 +558,18 @@ if ($_REQUEST['paso'] == -1) {
 	$_REQUEST['visa34consec_nuevo'] = '';
 	$_REQUEST['visa34id'] = '';
 	$_REQUEST['visa34nombre'] = '';
-	$_REQUEST['visa34rolestudiante'] = 1;
-	$_REQUEST['visa34roladministrativo'] = 1;
-	$_REQUEST['visa34rolacademico'] = 1;
-	$_REQUEST['visa34rolaspirante'] = 1;
-	$_REQUEST['visa34rolegresado'] = 1;
-	$_REQUEST['visa34rolexterno'] = 1;
+	$_REQUEST['visa34rolestudiante'] = 0;
+	$_REQUEST['visa34roladministrativo'] = 0;
+	$_REQUEST['visa34rolacademico'] = 0;
+	$_REQUEST['visa34rolaspirante'] = 0;
+	$_REQUEST['visa34rolegresado'] = 0;
+	$_REQUEST['visa34rolexterno'] = 0;
 	$_REQUEST['visa34grupotipologia'] = '';
 	$_REQUEST['visa34activo'] = 1;
-	$_REQUEST['visa34aplicazona'] = 1;
-	$_REQUEST['visa34aplicacentro'] = 1;
-	$_REQUEST['visa34aplicaescuela'] = 1;
-	$_REQUEST['visa34aplicaprograma'] = 1;
+	$_REQUEST['visa34aplicazona'] = 0;
+	$_REQUEST['visa34aplicacentro'] = 0;
+	$_REQUEST['visa34aplicaescuela'] = 0;
+	$_REQUEST['visa34aplicaprograma'] = 0;
 	$_REQUEST['paso'] = 0;
 }
 if ($bLimpiaHijos) {
@@ -980,7 +980,7 @@ switch ($iPiel) {
 <?php
 if ($_REQUEST['paso'] != 0) {
 ?>
-<script language="javascript" src="jsi/js2942.js"></script>
+<script language="javascript" src="<?php echo $APP->rutacomun; ?>jsi/js2942.js"></script>
 <?php
 }
 ?>
@@ -1160,66 +1160,7 @@ echo $ETI['visa34nombre'];
 
 <input id="visa34nombre" name="visa34nombre" type="text" value="<?php echo $_REQUEST['visa34nombre']; ?>" maxlength="100" class="L" placeholder="<?php echo $ETI['ing_campo'] . $ETI['visa34nombre']; ?>" />
 </label>
-<label class="Label130">
-<?php
-echo $ETI['visa34rolestudiante'];
-?>
-</label>
-<label>
-<?php
-echo $html_visa34rolestudiante;
-?>
-</label>
-<label class="Label130">
-<?php
-echo $ETI['visa34roladministrativo'];
-?>
-</label>
-<label>
-<?php
-echo $html_visa34roladministrativo;
-?>
-</label>
-<label class="Label130">
-<?php
-echo $ETI['visa34rolacademico'];
-?>
-</label>
-<label>
-<?php
-echo $html_visa34rolacademico;
-?>
-</label>
-<label class="Label130">
-<?php
-echo $ETI['visa34rolaspirante'];
-?>
-</label>
-<label>
-<?php
-echo $html_visa34rolaspirante;
-?>
-</label>
-<label class="Label130">
-<?php
-echo $ETI['visa34rolegresado'];
-?>
-</label>
-<label>
-<?php
-echo $html_visa34rolegresado;
-?>
-</label>
-<label class="Label130">
-<?php
-echo $ETI['visa34rolexterno'];
-?>
-</label>
-<label>
-<?php
-echo $html_visa34rolexterno;
-?>
-</label>
+<div class="salto5px"></div>
 <label class="Label130">
 <?php
 echo $ETI['visa34grupotipologia'];
@@ -1230,56 +1171,136 @@ echo $ETI['visa34grupotipologia'];
 echo $html_visa34grupotipologia;
 ?>
 </label>
-<label class="Label130">
+<label class="Label90">
 <?php
 echo $ETI['visa34activo'];
 ?>
 </label>
-<label>
+<label class="Label90">
 <?php
 echo $html_visa34activo;
 ?>
 </label>
+<div class="salto1px"></div>
+<div class="GrupoCampos520">
+<label class="TituloGrupo">
+<?php
+echo $ETI['visa34rol'];
+?>
+</label>
+<div class="salto1px"></div>
 <label class="Label130">
+<?php
+echo $ETI['visa34rolestudiante'];
+?>
+</label>
+<label class="Label90">
+<?php
+echo $html_visa34rolestudiante;
+?>
+</label>
+<label class="Label130">
+<?php
+echo $ETI['visa34rolaspirante'];
+?>
+</label>
+<label class="Label90">
+<?php
+echo $html_visa34rolaspirante;
+?>
+</label>
+<div class="salto1px"></div>
+<label class="Label130">
+<?php
+echo $ETI['visa34rolegresado'];
+?>
+</label>
+<label class="Label90">
+<?php
+echo $html_visa34rolegresado;
+?>
+</label>
+<label class="Label130">
+<?php
+echo $ETI['visa34rolacademico'];
+?>
+</label>
+<label class="Label90">
+<?php
+echo $html_visa34rolacademico;
+?>
+</label>
+<div class="salto1px"></div>
+<label class="Label130">
+<?php
+echo $ETI['visa34roladministrativo'];
+?>
+</label>
+<label class="Label90">
+<?php
+echo $html_visa34roladministrativo;
+?>
+</label>
+<label class="Label130">
+<?php
+echo $ETI['visa34rolexterno'];
+?>
+</label>
+<label class="Label90">
+<?php
+echo $html_visa34rolexterno;
+?>
+</label>
+</div>
+<div class="GrupoCampos400">
+<label class="TituloGrupo">
+<?php
+echo $ETI['visa34aplica'];
+?>
+</label>
+<div class="salto1px"></div>
+<label class="Label90">
 <?php
 echo $ETI['visa34aplicazona'];
 ?>
 </label>
-<label>
+<label class="Label90">
 <?php
 echo $html_visa34aplicazona;
 ?>
 </label>
-<label class="Label130">
+<label class="Label90">
 <?php
 echo $ETI['visa34aplicacentro'];
 ?>
 </label>
-<label>
+<label class="Label90">
 <?php
 echo $html_visa34aplicacentro;
 ?>
 </label>
-<label class="Label130">
+<div class="salto1px"></div>
+<label class="Label90">
 <?php
 echo $ETI['visa34aplicaescuela'];
 ?>
 </label>
-<label>
+<label class="Label90">
 <?php
 echo $html_visa34aplicaescuela;
 ?>
 </label>
-<label class="Label130">
+<label class="Label90">
 <?php
 echo $ETI['visa34aplicaprograma'];
 ?>
 </label>
-<label>
+<label class="Label90">
 <?php
 echo $html_visa34aplicaprograma;
 ?>
 </label>
+</div>
 <?php
 // -- Inicia Grupo campos 2942 Configura Anexos
 ?>
@@ -1356,38 +1377,38 @@ echo $ETI['visa42titulo'];
 <?php
 echo $ETI['visa42descripcion'];
 ?>
-
-<input id="visa42descripcion" name="visa42descripcion" type="text" value="<?php echo $_REQUEST['visa42descripcion']; ?>" maxlength="250" class="L" placeholder="<?php echo $ETI['ing_campo'] . $ETI['visa42descripcion']; ?>" />
+<input id="visa42descripcion" name="visa42descripcion" type="text" value="<?php echo $_REQUEST['visa42descripcion']; ?>" maxlength="250" class="L" placeholder="<?php echo $ETI['ing_campoa'] . $ETI['visa42descripcion']; ?>" />
 </label>
-<label class="Label130">
+<div class="salto1px"></div>
+<label class="Label90">
 <?php
 echo $ETI['visa42activo'];
 ?>
 </label>
-<label>
+<label class="Label90">
 <?php
 echo $html_visa42activo;
 ?>
 </label>
-<label class="Label130">
+<label class="Label90">
 <?php
 echo $ETI['visa42orden'];
 ?>
 </label>
-<label>
-
-<input id="visa42orden" name="visa42orden" type="text" value="<?php echo $_REQUEST['visa42orden']; ?>" placeholder="<?php echo $ETI['ing_campo'] . $ETI['visa42orden']; ?>" />
+<label class="Label90">
+<input id="visa42orden" name="visa42orden" type="text" value="<?php echo $_REQUEST['visa42orden']; ?>" class="tres" maxlength="3"/>
 </label>
-<label class="Label130">
+<label class="Label90">
 <?php
 echo $ETI['visa42obligatorio'];
 ?>
 </label>
-<label>
+<label class="Label90">
 <?php
 echo $html_visa42obligatorio;
 ?>
 </label>
+<div class="salto1px"></div>
 <label class="Label130">
 <?php
 echo $ETI['visa42tipodocumento'];

@@ -1403,15 +1403,13 @@ function fecha_esmenor($sfecha, $sfechatope)
 	}
 	return $bres;
 }
-function fecha_esmenoroigualahoy($sFecha)
+function fecha_esmenorigualhoy($sFecha)
 {
 	$bres = false;
 	if (fecha_esvalida($sFecha)) {
 		$fecha = explode('/', $sFecha);
 		$f1 = mktime(0, 0, 0, $fecha[1], $fecha[0], $fecha[2]);
-		$hoy = date('d/m/Y');
-		$fechaHoy = explode('/', $hoy);
-		$f2 = mktime(0, 0, 0, $fechaHoy[1], $fechaHoy[0], $fechaHoy[2]);
+		$f2 = mktime(0, 0, 0, date("m"), date("d"), date("Y"));
 		$dias = ($f1 - $f2) / (60 * 60 * 24);
 		if ($dias <= 0) {
 			$bres = true;
@@ -1419,12 +1417,16 @@ function fecha_esmenoroigualahoy($sFecha)
 	}
 	return $bres;
 }
-function fecha_esmayor($sfecha, $sfechatope)
+function fecha_esmenoroigualahoy($sFecha)
+{
+	return fecha_esmenorigualhoy($sFecha);
+}
+function fecha_esmayor($sFecha, $sfechatope)
 {
 	$bres = false;
-	if (fecha_esvalida($sfecha)) {
+	if (fecha_esvalida($sFecha)) {
 		if (fecha_esvalida($sfechatope)) {
-			$fecha = explode("/", $sfecha);
+			$fecha = explode("/", $sFecha);
 			$fecha2 = explode("/", $sfechatope);
 			$f1 = mktime(0, 0, 0, $fecha[1], $fecha[0], $fecha[2]);
 			$f2 = mktime(0, 0, 0, $fecha2[1], $fecha2[0], $fecha2[2]);
@@ -1436,6 +1438,21 @@ function fecha_esmayor($sfecha, $sfechatope)
 	}
 	return $bres;
 }
+function fecha_esmayorigualhoy($sFecha)
+{
+	$bres = false;
+	if (fecha_esvalida($sFecha)) {
+		$fecha = explode("/", $sFecha);
+		$f1 = mktime(0, 0, 0, $fecha[1], $fecha[0], $fecha[2]);
+		$f2 = mktime(0, 0, 0, date("m"), date("d"), date("Y"));
+		$dias = ($f2 - $f1) / (60 * 60 * 24);
+		if ($dias <= 0) {
+			$bres = true;
+		}
+	}
+	return $bres;
+}
+
 function fecha_esvalida($sFecha)
 {
 	list($sError) = fecha_Validar($sFecha);

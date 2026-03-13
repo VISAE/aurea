@@ -120,7 +120,7 @@ switch ($datos[0]) {
 			$iTotal++;
 		}
 		$iTotal2937 = 0;
-		$sSQL = 'SELECT visa37idtipologia, visa37id, visa37nombre, visa37activo FROM visa37convsubtipo WHERE visa37idtipologia IN (' . $sIdsPadre . ')';
+		$sSQL = 'SELECT visa37idtipologia, visa37consec, visa37id, visa37nombre, visa37activo FROM visa37convsubtipo WHERE visa37idtipologia IN (' . $sIdsPadre . ')';
 		if ($bDebug) {echo 'Ejecutando: ' . $sSQL . '<br>';
 		}
 		$tabla = $objDB->ejecutasql($sSQL);

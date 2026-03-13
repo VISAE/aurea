@@ -24,7 +24,7 @@ if ($APP->dbpuerto!=''){$objDB->dbPuerto=$APP->dbpuerto;}
 if (isset($APP->dbmodelo) == 0){
 	$APP->dbmodelo = 'M';
 }
-$versionejecutable = 9463;
+$versionejecutable = 9468;
 $procesos=0;
 $suspende=0;
 $error=0;
@@ -585,10 +585,7 @@ if (($dbversion>9400)&&($dbversion<9501)){
 	if ($dbversion==9428){$sSQL=$objDB->sSQLCrearIndice('visa36convtipologia', 'visa36convtipologia_id', 'visa36idgrupo, visa36consec', true);}
 	if ($dbversion==9429){$sSQL="agregamodulo|2936|29|Tipologias de convocatoria|1|2|3|4|5|6|8";}
 	if ($dbversion==9430){$sSQL=$u09."(2936, 1, 'Tipologias de convocatoria', 'visaetipologia.php', 2908, 2936, 'S', '', '')";}
-	if ($dbversion==9431){$sSQL="CREATE TABLE visa37convsubtipo (visa37idtipologia int NOT NULL, visa37id int NOT NULL DEFAULT 0, visa37nombre varchar(50) NULL, visa37activo int NOT NULL DEFAULT 0)";}
-	if ($dbversion==9432){$sSQL="ALTER TABLE visa37convsubtipo ADD PRIMARY KEY(visa37id)";}
-	if ($dbversion==9433){$sSQL=$objDB->sSQLCrearIndice('visa37convsubtipo', 'visa37convsubtipo_id', 'visa37idtipologia', true);}
-	if ($dbversion==9434){$sSQL=$objDB->sSQLCrearIndice('visa37convsubtipo', 'visa37convsubtipo_padre', 'visa37idtipologia');}
+	// 9431 - 9434 - Quedan libres
 	if ($dbversion==9435){$sSQL="agregamodulo|2937|29|Subtipologias de convocatorias|1|2|3|4|5|6|8";}
 	if ($dbversion==9436){$sSQL="add_campos|visa35convocatoria|visa35gruponivel int NOT NULL DEFAULT 0|visa35nivelforma int NOT NULL DEFAULT 0|visa35idproducto int NOT NULL DEFAULT 0";}
 	if ($dbversion==9437){$sSQL="CREATE TABLE visa38convpruebas (visa38idtipo int NOT NULL, visa38consec int NOT NULL, visa38id int NOT NULL DEFAULT 0, visa38nombre varchar(50) NULL, visa38tipoprueba int NOT NULL DEFAULT 0, visa38puntajemaximo int NOT NULL DEFAULT 0, visa38puntajeaproba int NOT NULL DEFAULT 0, visa38activo int NOT NULL DEFAULT 0, visa38idnav int NOT NULL DEFAULT 0, visa38idmoodle int NOT NULL DEFAULT 0)";}
@@ -617,6 +614,12 @@ if (($dbversion>9400)&&($dbversion<9501)){
 	if ($dbversion==9460){$sSQL=$objDB->sSQLCrearIndice('visa45convpruebares', 'visa45convpruebares_padre', 'visa45idinscripcion');}
 	if ($dbversion==9461){$sSQL="agregamodulo|2945|29|Resultados pruebas|1|2|3|4|5|6|8";}
 	if ($dbversion==9462){$sSQL=$u09."(2945, 1, 'Resultados pruebas', 'visaepruebasres.php', 2908, 2945, 'S', '', '')";}
+	// 2 de Marzo de 2026
+	if ($dbversion==9463){$sSQL="DROP TABLE visa37convsubtipo";}
+	if ($dbversion==9464){$sSQL="CREATE TABLE visa37convsubtipo (visa37idtipologia int NOT NULL, visa37consec int NOT NULL, visa37id int NOT NULL DEFAULT 0, visa37nombre varchar(50) NULL, visa37activo int NOT NULL DEFAULT 0)";}
+	if ($dbversion==9465){$sSQL="ALTER TABLE visa37convsubtipo ADD PRIMARY KEY(visa37id)";}
+	if ($dbversion==9466){$sSQL=$objDB->sSQLCrearIndice('visa37convsubtipo', 'visa37convsubtipo_id', 'visa37idtipologia, visa37consec', true);}
+	if ($dbversion==9467){$sSQL=$objDB->sSQLCrearIndice('visa37convsubtipo', 'visa37convsubtipo_padre', 'visa37idtipologia');}
 
 }
 if (($dbversion>9500)&&($dbversion<9601)){

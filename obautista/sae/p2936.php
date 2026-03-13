@@ -327,12 +327,15 @@ class clsPDF extends FPDF
 				$c2 = 20;
 				$c3 = 20;
 				$c4 = 20;
-				$this->Cell($c3, 5, 'Nombre');
-				$this->Cell($c4, 5, 'Activo');
+				$c5 = 20;
+				$this->Cell($c2, 5, 'Consec');
+				$this->Cell($c4, 5, 'Nombre');
+				$this->Cell($c5, 5, 'Activo');
 				$this->Ln();
 			}
 			while ($fila1 = $objDB->sf($tabla1)) {
-				$this->Cell($c1, 5, $fila1['visa37nombre']);
+				$this->Cell($c1, 5, $fila1['visa37consec']);
+				$this->Cell($c2, 5, $fila1['visa37nombre']);
 				$svisa37activo = $fila1['visa37activo'];
 				$sSQL = 'SELECT  FROM  WHERE =' . $fila1['visa37activo'];
 				$tablat = $objDB->ejecutasql($sSQL);
@@ -343,7 +346,7 @@ class clsPDF extends FPDF
 						$svisa37activo = cadena_codificar($filat['']);
 					}
 				}
-				$this->Cell($c2, 5, cadena_codificar($svisa37activo));
+				$this->Cell($c3, 5, cadena_codificar($svisa37activo));
 				$this->Ln();
 			}
 			p_Separador($this);

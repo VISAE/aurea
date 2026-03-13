@@ -117,15 +117,15 @@ if (!file_exists($mensajes_todas)) {
 	$mensajes_todas = $APP->rutacomun . 'lg/lg_todas_es.php';
 }
 /*
-$mensajes_2900 = 'lg/lg_2900_' . $sIdioma . '.php';
+$mensajes_2900 = $APP->rutacomun . 'lg/lg_2900_' . $sIdioma . '.php';
 if (!file_exists($mensajes_2900)) {
-	$mensajes_2900 = 'lg/lg_2900_es.php';
+	$mensajes_2900 = $APP->rutacomun . 'lg/lg_2900_es.php';
 }
 require $mensajes_2900;
 */
-$mensajes_2936 = 'lg/lg_2936_' . $sIdioma . '.php';
+$mensajes_2936 = $APP->rutacomun . 'lg/lg_2936_' . $sIdioma . '.php';
 if (!file_exists($mensajes_2936)) {
-	$mensajes_2936 = 'lg/lg_2936_es.php';
+	$mensajes_2936 = $APP->rutacomun . 'lg/lg_2936_es.php';
 }
 require $mensajes_todas;
 require $mensajes_2936;
@@ -286,9 +286,9 @@ if (isset($_REQUEST['debug']) != 0) {
 }
 //PROCESOS DE LA PAGINA
 //$idEntidad = Traer_Entidad();
-$mensajes_2937 = 'lg/lg_2937_' . $sIdioma . '.php';
+$mensajes_2937 = $APP->rutacomun . 'lg/lg_2937_' . $sIdioma . '.php';
 if (!file_exists($mensajes_2937)) {
-	$mensajes_2937 = 'lg/lg_2937_es.php';
+	$mensajes_2937 = $APP->rutacomun . 'lg/lg_2937_es.php';
 }
 require $mensajes_2937;
 // -- Si esta cargando la pagina por primer vez se revisa si requiere auditar y se manda a hacer un limpiar (paso -1)
@@ -299,9 +299,9 @@ if (isset($_REQUEST['paso']) == 0) {
 	}
 }
 // -- 2936 visa36convtipologia
-require 'lib2936.php';
+require $APP->rutacomun . 'lib2936.php';
 // -- 2937 Subtipologias de convocatorias
-require 'lib2937.php';
+require $APP->rutacomun . 'lib2937.php';
 $xajax = new xajax();
 $xajax->configure('javascript URI', $APP->rutacomun . 'xajax/');
 $xajax->register(XAJAX_FUNCTION, 'sesion_abandona_V2');
@@ -376,6 +376,9 @@ if ((int)$_REQUEST['paso'] > 0) {
 	if (isset($_REQUEST['visa37idtipologia']) == 0) {
 		$_REQUEST['visa37idtipologia'] = '';
 	}
+	if (isset($_REQUEST['visa37consec']) == 0) {
+		$_REQUEST['visa37consec'] = '';
+	}
 	if (isset($_REQUEST['visa37id']) == 0) {
 		$_REQUEST['visa37id'] = '';
 	}
@@ -386,6 +389,7 @@ if ((int)$_REQUEST['paso'] > 0) {
 		$_REQUEST['visa37activo'] = 0;
 	}
 	$_REQUEST['visa37idtipologia'] = numeros_validar($_REQUEST['visa37idtipologia']);
+	$_REQUEST['visa37consec'] = numeros_validar($_REQUEST['visa37consec']);
 	$_REQUEST['visa37id'] = numeros_validar($_REQUEST['visa37id']);
 	$_REQUEST['visa37nombre'] = cadena_Validar($_REQUEST['visa37nombre']);
 	$_REQUEST['visa37activo'] = numeros_validar($_REQUEST['visa37activo']);
@@ -505,6 +509,7 @@ if ($_REQUEST['paso'] == -1) {
 }
 if ($bLimpiaHijos) {
 	$_REQUEST['visa37idtipologia'] = '';
+	$_REQUEST['visa37consec'] = '';
 	$_REQUEST['visa37id'] = '';
 	$_REQUEST['visa37nombre'] = '';
 	$_REQUEST['visa37activo'] = 1;
@@ -863,7 +868,7 @@ switch ($iPiel) {
 <?php
 if ($_REQUEST['paso'] != 0) {
 ?>
-<script language="javascript" src="jsi/js2937.js"></script>
+<script language="javascript" src="<?php echo $APP->rutacomun; ?>jsi/js2937.js"></script>
 <?php
 }
 ?>
@@ -1048,13 +1053,13 @@ echo $ETI['visa36id'];
 	echo html_oculto('visa36id', $_REQUEST['visa36id'], formato_numero($_REQUEST['visa36id']));
 ?>
 </label>
+<div class="salto1px"></div>
 <label class="Label130">
 <?php
 echo $ETI['visa36nombre'];
 ?>
 </label>
 <label>
-
 <input id="visa36nombre" name="visa36nombre" type="text" value="<?php echo $_REQUEST['visa36nombre']; ?>" maxlength="50" placeholder="<?php echo $ETI['ing_campo'] . $ETI['visa36nombre']; ?>" />
 </label>
 <label class="Label130">
@@ -1100,6 +1105,24 @@ if ($_REQUEST['boculta2937'] != 0) {
 </div>
 <div class="salto1px"></div>
 <div id="div_p2937"<?php echo $sEstiloDiv; ?>>
+<label class="Label130"<?php echo $sOcultaConsec; ?>>
+<?php
+echo $ETI['visa37consec'];
+?>
+</label>
+<label class="Label130"<?php echo $sOcultaConsec; ?>>
+<div id="div_visa37consec">
+<?php
+if ((int)$_REQUEST['visa37id'] == 0) {
+?>
+<input id="visa37consec" name="visa37consec" type="text" value="<?php echo $_REQUEST['visa37consec']; ?>" onchange="revisaf2937()" class="cuatro" />
+<?php
+} else {
+	echo html_oculto('visa37consec', $_REQUEST['visa37consec'], formato_numero($_REQUEST['visa37consec']));
+}
+?>
+</div>
+</label>
 <label class="Label60"<?php echo $sOcultaId; ?>>
 <?php
 echo $ETI['visa37id'];
@@ -1121,12 +1144,12 @@ echo $ETI['visa37nombre'];
 
 <input id="visa37nombre" name="visa37nombre" type="text" value="<?php echo $_REQUEST['visa37nombre']; ?>" maxlength="50" placeholder="<?php echo $ETI['ing_campo'] . $ETI['visa37nombre']; ?>" />
 </label>
-<label class="Label130">
+<label class="Label90">
 <?php
 echo $ETI['visa37activo'];
 ?>
 </label>
-<label>
+<label class="Label90">
 <?php
 echo $html_visa37activo;
 ?>

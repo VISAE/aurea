@@ -118,15 +118,15 @@ if (!file_exists($mensajes_todas)) {
 	$mensajes_todas = $APP->rutacomun . 'lg/lg_todas_es.php';
 }
 /*
-$mensajes_2900 = 'lg/lg_2900_' . $sIdioma . '.php';
+$mensajes_2900 = $APP->rutacomun . 'lg/lg_2900_' . $sIdioma . '.php';
 if (!file_exists($mensajes_2900)) {
-	$mensajes_2900 = 'lg/lg_2900_es.php';
+	$mensajes_2900 = $APP->rutacomun . 'lg/lg_2900_es.php';
 }
 require $mensajes_2900;
 */
-$mensajes_2935 = 'lg/lg_2935_' . $sIdioma . '.php';
+$mensajes_2935 = $APP->rutacomun . 'lg/lg_2935_' . $sIdioma . '.php';
 if (!file_exists($mensajes_2935)) {
-	$mensajes_2935 = 'lg/lg_2935_es.php';
+	$mensajes_2935 = $APP->rutacomun . 'lg/lg_2935_es.php';
 }
 require $mensajes_todas;
 require $mensajes_2935;
@@ -295,7 +295,7 @@ if (isset($_REQUEST['paso']) == 0) {
 	}
 }
 // -- 2935 visa35convocatoria
-require 'lib2935.php';
+require $APP->rutacomun . 'lib2935.php';
 $xajax = new xajax();
 $xajax->configure('javascript URI', $APP->rutacomun . 'xajax/');
 $xajax->register(XAJAX_FUNCTION, 'f2935_Combovisa35idcentro');
@@ -362,7 +362,7 @@ if (isset($_REQUEST['visa35gruponivel']) == 0) {
 	$_REQUEST['visa35gruponivel'] = 0;
 }
 if (isset($_REQUEST['visa35nivelforma']) == 0) {
-	$_REQUEST['visa35nivelforma'] = '';
+	$_REQUEST['visa35nivelforma'] = 0;
 }
 if (isset($_REQUEST['visa35estado']) == 0) {
 	$_REQUEST['visa35estado'] = 0;
@@ -632,8 +632,8 @@ if ($_REQUEST['paso'] == -1) {
 	$_REQUEST['visa35idcentro'] = '';
 	$_REQUEST['visa35idescuela'] = '';
 	$_REQUEST['visa35idprograma'] = '';
-	$_REQUEST['visa35gruponivel'] = 1;
-	$_REQUEST['visa35nivelforma'] = '';
+	$_REQUEST['visa35gruponivel'] = 0;
+	$_REQUEST['visa35nivelforma'] = 0;
 	$_REQUEST['visa35estado'] = 0;
 	$_REQUEST['visa35numcupos'] = '';
 	$_REQUEST['visa35fecha_apertura'] = $iHoy;
@@ -715,20 +715,20 @@ if ($seg_1707 == 1) {
 $objCombos->nuevo('visa35idtipo', $_REQUEST['visa35idtipo'], true, '{' . $ETI['msg_seleccione'] . '}');
 $sSQL = 'SELECT visa34id AS id, visa34nombre AS nombre FROM visa34convtipo ORDER BY visa34nombre';
 $html_visa35idtipo = $objCombos->html($sSQL, $objDB);
-$objCombos->nuevo('visa35idzona', $_REQUEST['visa35idzona'], true, '{' . $ETI['msg_seleccione'] . '}');
+$objCombos->nuevo('visa35idzona', $_REQUEST['visa35idzona'], true, '{' . $ETI['msg_todas'] . '}', 0);
 $objCombos->sAccion = 'carga_combo_visa35idcentro();';
 $sSQL = 'SELECT unad23id AS id, unad23nombre AS nombre FROM unad23zona ORDER BY unad23nombre';
 $html_visa35idzona = $objCombos->html($sSQL, $objDB);
 $html_visa35idcentro = f2935_HTMLComboV2_visa35idcentro($objDB, $objCombos, $_REQUEST['visa35idcentro'], $_REQUEST['visa35idzona']);
-$objCombos->nuevo('visa35idescuela', $_REQUEST['visa35idescuela'], true, '{' . $ETI['msg_seleccione'] . '}');
+$objCombos->nuevo('visa35idescuela', $_REQUEST['visa35idescuela'], true, '{' . $ETI['msg_todas'] . '}', 0);
 $objCombos->sAccion = 'carga_combo_visa35idprograma();';
 $sSQL = 'SELECT core12id AS id, core12nombre AS nombre FROM core12escuela ORDER BY core12nombre';
 $html_visa35idescuela = $objCombos->html($sSQL, $objDB);
 $html_visa35idprograma = f2935_HTMLComboV2_visa35idprograma($objDB, $objCombos, $_REQUEST['visa35idprograma'], $_REQUEST['visa35idescuela']);
-$objCombos->nuevo('visa35gruponivel', $_REQUEST['visa35gruponivel'], true, $ETI['no'], 0);
+$objCombos->nuevo('visa35gruponivel', $_REQUEST['visa35gruponivel'], true, '{' . $ETI['msg_todos'] . '}', 0);
 $objCombos->sAccion = 'carga_combo_visa35nivelforma();';
-$objCombos->addItem(1, $ETI['si']);
-//$objCombos->addArreglo($avisa35gruponivel, $ivisa35gruponivel);
+// $objCombos->addItem(1, $ETI['si']);
+$objCombos->addArreglo($avisa35gruponivel, $ivisa35gruponivel);
 $sSQL = '';
 $html_visa35gruponivel = $objCombos->html($sSQL, $objDB);
 $html_visa35nivelforma = f2935_HTMLComboV2_visa35nivelforma($objDB, $objCombos, $_REQUEST['visa35nivelforma'], $_REQUEST['visa35gruponivel']);
@@ -743,9 +743,20 @@ if ($objDB->nf($tabla) > 0) {
 	}
 }
 $html_visa35estado = html_oculto('visa35estado', $_REQUEST['visa35estado'], $visa35estado_nombre);
-$objCombos->nuevo('visa35idproducto', $_REQUEST['visa35idproducto'], true, '{' . $ETI['msg_seleccione'] . '}');
+$html_visa35total_inscritos = html_oculto('visa35total_inscritos', $_REQUEST['visa35total_inscritos'], formato_numero($_REQUEST['visa35total_inscritos']));
+$html_visa35total_autorizados = html_oculto('visa35total_autorizados', $_REQUEST['visa35total_autorizados'], formato_numero($_REQUEST['visa35total_autorizados']));
+$html_visa35total_presentaex = html_oculto('visa35total_presentaex', $_REQUEST['visa35total_presentaex'], formato_numero($_REQUEST['visa35total_presentaex']));
+$html_visa35total_aprobados = html_oculto('visa35total_aprobados', $_REQUEST['visa35total_aprobados'], formato_numero($_REQUEST['visa35total_aprobados']));
+$html_visa35total_admitidos = html_oculto('visa35total_admitidos', $_REQUEST['visa35total_admitidos'], formato_numero($_REQUEST['visa35total_admitidos']));
+$objCombos->nuevo('visa35idproducto', $_REQUEST['visa35idproducto'], true, '{' . $ETI['msg_ninguno'] . '}');
 $sSQL = 'SELECT cart01id AS id, cart01nombre AS nombre FROM cart01productos ORDER BY cart01nombre';
 $html_visa35idproducto = $objCombos->html($sSQL, $objDB);
+$html_visa35enlace = '';
+if ((int)$_REQUEST['visa35id'] != 0) {
+	$sDatos = url_encode($_REQUEST['visa35fecha_apertura'] . '|' . $_REQUEST['visa35fecha_cierra'] . '|' . $_REQUEST['visa35id']);
+	$sEnlace = 'https://campus0b.unad.edu.co/campus/visaeinscripcampus.php?u=' . $sDatos;
+	$html_visa35enlace = '<a class="lnkresalte" href = "' . $sEnlace . '" target = "_blank">' . $ETI['visa35enlace'] . '</a>';
+}
 if ((int)$_REQUEST['paso'] == 0) {
 } else {
 }
@@ -754,7 +765,7 @@ $id_rpt = 0;
 //$id_rpt=reportes_id(_Identificador_Tipo_Reporte_, $objDB);
 $objCombos->nuevo('bestado', $_REQUEST['bestado'], true, '{' . $ETI['msg_todos'] . '}');
 $objCombos->sAccion = 'paginarf2935()';
-$sSQL = 'SELECT unad96id AS id, unad96nombre AS nombre FROM unad96estado WHERE unad96idmodulo=' . $_SESSION['u_identidad'] . ' ORDER BY unad96nombre';
+$sSQL = 'SELECT unad96id AS id, unad96nombre AS nombre FROM unad96estado WHERE unad96idmodulo=' . $iCodModulo . ' ORDER BY unad96id';
 $html_bestado = $objCombos->html($sSQL, $objDB);
 if (false) {
 	$objCombos->nuevo('csv_separa', $_REQUEST['csv_separa'], false);
@@ -1258,7 +1269,7 @@ echo $ETI['visa35id'];
 	echo html_oculto('visa35id', $_REQUEST['visa35id'], formato_numero($_REQUEST['visa35id']));
 ?>
 </label>
-<label class="Label130">
+<label class="Label160">
 <?php
 echo $ETI['visa35idtipo'];
 ?>
@@ -1268,13 +1279,61 @@ echo $ETI['visa35idtipo'];
 echo $html_visa35idtipo;
 ?>
 </label>
+<div class="salto1px"></div>
+<label class="Label90">
+<?php
+echo $ETI['visa35estado'];
+?>
+</label>
+<label class="Label220">
+<?php
+echo $html_visa35estado;
+?>
+</label>
+<label class="Label160">
+<?php
+echo $ETI['visa35numcupos'];
+?>
+</label>
+<label class="Label90">
+<input id="visa35numcupos" name="visa35numcupos" type="text" value="<?php echo $_REQUEST['visa35numcupos']; ?>" class="cuatro" maxlength="4" />
+</label>
+<?php
+echo $html_visa35enlace;
+?>
+<div class="salto1px"></div>
+<label class="Label160">
+<?php
+echo $ETI['visa35idproducto'];
+?>
+</label>
+<label>
+<?php
+echo $html_visa35idproducto;
+?>
+</label>
+<div class="salto1px"></div>
 <label class="L">
 <?php
 echo $ETI['visa35nombre'];
 ?>
-
 <input id="visa35nombre" name="visa35nombre" type="text" value="<?php echo $_REQUEST['visa35nombre']; ?>" maxlength="250" class="L" placeholder="<?php echo $ETI['ing_campo'] . $ETI['visa35nombre']; ?>" />
 </label>
+<div class="salto5px"></div>
+<label class="txtAreaS">
+<?php
+echo $ETI['visa35presentacion'];
+?>
+<textarea id="visa35presentacion" name="visa35presentacion" placeholder="<?php echo $ETI['ing_campoa'] . $ETI['visa35presentacion']; ?>"><?php echo $_REQUEST['visa35presentacion']; ?></textarea>
+</label>
+<div class="salto1px"></div>
+<div class="GrupoCampos520">
+<label class="TituloGrupo">
+<?php
+echo $ETI['visa35limite'];
+?>
+</label>
+<div class="salto1px"></div>
 <label class="Label130">
 <?php
 echo $ETI['visa35idzona'];
@@ -1285,6 +1344,7 @@ echo $ETI['visa35idzona'];
 echo $html_visa35idzona;
 ?>
 </label>
+<div class="salto1px"></div>
 <label class="Label130">
 <?php
 echo $ETI['visa35idcentro'];
@@ -1297,6 +1357,7 @@ echo $html_visa35idcentro;
 ?>
 </div>
 </label>
+<div class="salto1px"></div>
 <label class="Label130">
 <?php
 echo $ETI['visa35idescuela'];
@@ -1307,6 +1368,7 @@ echo $ETI['visa35idescuela'];
 echo $html_visa35idescuela;
 ?>
 </label>
+<div class="salto1px"></div>
 <label class="Label130">
 <?php
 echo $ETI['visa35idprograma'];
@@ -1319,6 +1381,7 @@ echo $html_visa35idprograma;
 ?>
 </div>
 </label>
+<div class="salto1px"></div>
 <label class="Label130">
 <?php
 echo $ETI['visa35gruponivel'];
@@ -1329,6 +1392,7 @@ echo $ETI['visa35gruponivel'];
 echo $html_visa35gruponivel;
 ?>
 </label>
+<div class="salto1px"></div>
 <label class="Label130">
 <?php
 echo $ETI['visa35nivelforma'];
@@ -1341,25 +1405,14 @@ echo $html_visa35nivelforma;
 ?>
 </div>
 </label>
-<label class="Label90">
+</div>
+<div class="GrupoCampos400">
+<label class="TituloGrupo">
 <?php
-echo $ETI['visa35estado'];
+echo $ETI['visa35fechas'];
 ?>
 </label>
-<label class="Label220">
-<?php
-echo $html_visa35estado;
-?>
-</label>
-<label class="Label130">
-<?php
-echo $ETI['visa35numcupos'];
-?>
-</label>
-<label class="Label130">
-
-<input id="visa35numcupos" name="visa35numcupos" type="text" value="<?php echo $_REQUEST['visa35numcupos']; ?>" class="diez" maxlength="10" placeholder="<?php echo $ETI['ing_vr']; ?>" />
-</label>
+<div class="salto1px"></div>
 <label class="Label130">
 <?php
 echo $ETI['visa35fecha_apertura'];
@@ -1375,6 +1428,7 @@ if (false) {
 	echo $objForma->htmlBotonSolo('bvisa35fecha_apertura_hoy', 'btMiniHoy', "fecha_AsignarNum('visa35fecha_apertura', " . $iHoy . ")", $ETI['bt_hoy']);
 }
 ?>
+<div class="salto1px"></div>
 <label class="Label130">
 <?php
 echo $ETI['visa35fecha_liminscrip'];
@@ -1390,6 +1444,7 @@ if (false) {
 	echo $objForma->htmlBotonSolo('bvisa35fecha_liminscrip_hoy', 'btMiniHoy', "fecha_AsignarNum('visa35fecha_liminscrip', " . $iHoy . ")", $ETI['bt_hoy']);
 }
 ?>
+<div class="salto1px"></div>
 <label class="Label130">
 <?php
 echo $ETI['visa35fecha_limrevdoc'];
@@ -1405,6 +1460,7 @@ if (false) {
 	echo $objForma->htmlBotonSolo('bvisa35fecha_limrevdoc_hoy', 'btMiniHoy', "fecha_AsignarNum('visa35fecha_limrevdoc', " . $iHoy . ")", $ETI['bt_hoy']);
 }
 ?>
+<div class="salto1px"></div>
 <label class="Label130">
 <?php
 echo $ETI['visa35fecha_examenes'];
@@ -1420,6 +1476,7 @@ if (false) {
 	echo $objForma->htmlBotonSolo('bvisa35fecha_examenes_hoy', 'btMiniHoy', "fecha_AsignarNum('visa35fecha_examenes', " . $iHoy . ")", $ETI['bt_hoy']);
 }
 ?>
+<div class="salto1px"></div>
 <label class="Label130">
 <?php
 echo $ETI['visa35fecha_seleccion'];
@@ -1435,6 +1492,7 @@ if (false) {
 	echo $objForma->htmlBotonSolo('bvisa35fecha_seleccion_hoy', 'btMiniHoy', "fecha_AsignarNum('visa35fecha_seleccion', " . $iHoy . ")", $ETI['bt_hoy']);
 }
 ?>
+<div class="salto1px"></div>
 <label class="Label130">
 <?php
 echo $ETI['visa35fecha_ratificacion'];
@@ -1450,6 +1508,7 @@ if (false) {
 	echo $objForma->htmlBotonSolo('bvisa35fecha_ratificacion_hoy', 'btMiniHoy', "fecha_AsignarNum('visa35fecha_ratificacion', " . $iHoy . ")", $ETI['bt_hoy']);
 }
 ?>
+<div class="salto1px"></div>
 <label class="Label130">
 <?php
 echo $ETI['visa35fecha_cierra'];
@@ -1465,69 +1524,73 @@ if (false) {
 	echo $objForma->htmlBotonSolo('bvisa35fecha_cierra_hoy', 'btMiniHoy', "fecha_AsignarNum('visa35fecha_cierra', " . $iHoy . ")", $ETI['bt_hoy']);
 }
 ?>
-<label class="txtAreaS">
+<div class="salto1px"></div>
+</div>
+<div class="salto1px"></div>
+<div class="GrupoCampos300">
+<label class="TituloGrupo">
 <?php
-echo $ETI['visa35presentacion'];
+echo $ETI['visa35totales'];
 ?>
-<textarea id="visa35presentacion" name="visa35presentacion" placeholder="<?php echo $ETI['ing_campo'] . $ETI['visa35presentacion']; ?>"><?php echo $_REQUEST['visa35presentacion']; ?></textarea>
 </label>
-<label class="Label130">
+<div class="salto1px"></div>
+<label class="Label200">
 <?php
 echo $ETI['visa35total_inscritos'];
 ?>
 </label>
-<label class="Label130">
-
-<input id="visa35total_inscritos" name="visa35total_inscritos" type="text" value="<?php echo $_REQUEST['visa35total_inscritos']; ?>" class="diez" maxlength="10" placeholder="<?php echo $ETI['ing_vr']; ?>" />
+<label class="Label60">
+<?php
+echo $html_visa35total_inscritos;
+?>
 </label>
-<label class="Label130">
+<div class="salto1px"></div>
+<label class="Label200">
 <?php
 echo $ETI['visa35total_autorizados'];
 ?>
 </label>
-<label class="Label130">
-
-<input id="visa35total_autorizados" name="visa35total_autorizados" type="text" value="<?php echo $_REQUEST['visa35total_autorizados']; ?>" class="diez" maxlength="10" placeholder="<?php echo $ETI['ing_vr']; ?>" />
+<label class="Label60">
+<?php
+echo $html_visa35total_autorizados;
+?>
 </label>
-<label class="Label130">
+<div class="salto1px"></div>
+<label class="Label200">
 <?php
 echo $ETI['visa35total_presentaex'];
 ?>
 </label>
-<label class="Label130">
-
-<input id="visa35total_presentaex" name="visa35total_presentaex" type="text" value="<?php echo $_REQUEST['visa35total_presentaex']; ?>" class="diez" maxlength="10" placeholder="<?php echo $ETI['ing_vr']; ?>" />
+<label class="Label60">
+<?php
+echo $html_visa35total_presentaex;
+?>
 </label>
-<label class="Label130">
+<div class="salto1px"></div>
+<label class="Label200">
 <?php
 echo $ETI['visa35total_aprobados'];
 ?>
 </label>
-<label class="Label130">
-
-<input id="visa35total_aprobados" name="visa35total_aprobados" type="text" value="<?php echo $_REQUEST['visa35total_aprobados']; ?>" class="diez" maxlength="10" placeholder="<?php echo $ETI['ing_vr']; ?>" />
+<label class="Label60">
+<?php
+echo $html_visa35total_aprobados;
+?>
 </label>
-<label class="Label130">
+<div class="salto1px"></div>
+<label class="Label200">
 <?php
 echo $ETI['visa35total_admitidos'];
 ?>
 </label>
-<label class="Label130">
-
-<input id="visa35total_admitidos" name="visa35total_admitidos" type="text" value="<?php echo $_REQUEST['visa35total_admitidos']; ?>" class="diez" maxlength="10" placeholder="<?php echo $ETI['ing_vr']; ?>" />
+<label class="Label60">
+<?php
+echo $html_visa35total_admitidos;
+?>
 </label>
+</div>
 <input id="visa35idconvenio" name="visa35idconvenio" type="hidden" value="<?php echo $_REQUEST['visa35idconvenio']; ?>" />
 <input id="visa35idresolucion" name="visa35idresolucion" type="hidden" value="<?php echo $_REQUEST['visa35idresolucion']; ?>" />
-<label class="Label130">
-<?php
-echo $ETI['visa35idproducto'];
-?>
-</label>
-<label>
-<?php
-echo $html_visa35idproducto;
-?>
-</label>
 <?php
 if (false) {
 	//Ejemplo de boton de ayuda
@@ -1554,7 +1617,7 @@ echo '<h3>' . $ETI['bloque1'] . '</h3>';
 </div>
 <div class="areatrabajo">
 <div class="ir_derecha">
-<label class="Label90">
+<label class="Label160">
 <?php
 echo $ETI['msg_bnombre'];
 ?>
@@ -1563,7 +1626,7 @@ echo $ETI['msg_bnombre'];
 <input id="bnombre" name="bnombre" type="text" value="<?php echo $_REQUEST['bnombre']; ?>" onchange="paginarf2935()" autocomplete="off" />
 </label>
 <div class="salto1px"></div>
-<label class="Label90">
+<label class="Label160">
 <?php
 echo $ETI['msg_bestado'];
 ?>
@@ -1782,7 +1845,7 @@ if ($bMueveScroll) {
 <script language="javascript" src="<?php echo $APP->rutacomun; ?>js/chosen.jquery.js"></script>
 <link rel="stylesheet" href="<?php echo $APP->rutacomun; ?>js/chosen.css" type="text/css" />
 <?php
-if (false) {
+// if (false) {
 //}
 //if ($_REQUEST['paso'] == 0) {
 ?>
@@ -1793,13 +1856,14 @@ if (false) {
 		$("#visa35idcentro").chosen({width:"100%"});
 		$("#visa35idescuela").chosen({width:"100%"});
 		$("#visa35idprograma").chosen({width:"100%"});
+		$("#visa35gruponivel").chosen({width:"100%"});
 		$("#visa35nivelforma").chosen({width:"100%"});
 		$("#visa35idproducto").chosen({width:"100%"});
 		$("#bestado").chosen({width:"100%"});
 	});
 </script>
 <?php
-}
+// }
 ?>
 <script language="javascript" src="<?php echo $APP->rutacomun; ?>unad_todas2024v2.js"></script>
 <?php

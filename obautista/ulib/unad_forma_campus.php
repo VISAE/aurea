@@ -3,7 +3,7 @@
 --- © Angel Mauro Avellaneda Barreto - UNAD - 2024 ---
 --- angel.avellaneda@unad.edu.co - http://www.unad.edu.co
 */
-function forma_cabecera($XAJAX = NULL, array $options = [])
+function forma_cabecera_campus($XAJAX = NULL, array $options = [])
 {
 	require './app.php';
 	if (!function_exists('AUREA_Idioma()')) {
@@ -24,6 +24,8 @@ function forma_cabecera($XAJAX = NULL, array $options = [])
 		'tituloModulo' => '',
 		'conMenu' => true,
 		'todosLosIdiomas' => false,
+		'conCambioIdioma' => true,
+		'conModal' => true,
 	];
 	$opts = array_replace($defaults, $options);
 	//
@@ -45,32 +47,32 @@ function forma_cabecera($XAJAX = NULL, array $options = [])
 	$sRes = $sRes . '<link rel="icon" type="image/png" sizes="16x16" href="' . $APP->rutacomun . '/img/favicon-16x16.png">';
 	$sRes = $sRes . '<link rel="icon" type="image/png" sizes="32x32" href="' . $APP->rutacomun . '/img/favicon-32x32.png">';
 	$sRes = $sRes . '<title>' . $opts['tituloModulo'] . ' - Universidad Nacional Abierta y a Distancia - UNAD</title>';
-	$sRes = $sRes . '<link rel="stylesheet" href="' . $APP->rutacomun . 'css/campus2025.css?v=2">';
+	$sRes = $sRes . '<link rel="stylesheet" href="' . $APP->rutacomun . 'css/campus2025.css?v=3">';
 	$sRes = $sRes . '<script language="javascript" src="' . $APP->rutacomun . 'js/jquery-3.3.1.min.js"></script>';
 	// Modal
-	if (true) {
+	if ($opts['conModal']) {
 		$sRes = $sRes . '<dialog id="div_modal" class="modal-bg">';
 		$sRes = $sRes . '<div id="modal-type" class="modal">';
 		$sRes = $sRes . '<div class="modal__header">';
-		$sRes = $sRes . '<button id="modal_close" class="modal-close" type="button" aria-label="Cerrar este mensaje">';
-		$sRes = $sRes . 'Cerrar';
+		$sRes = $sRes . '<button id="modal_close" class="modal-close" type="button" aria-label="' . $ETI['label_cerrar_mensaje'] . '">';
+		$sRes = $sRes . $ETI['bt_cerrar'];
 		$sRes = $sRes . '<i class="icon-closed" aria-hidden="true"></i>';
 		$sRes = $sRes . '</button>';
 		$sRes = $sRes . '<div class="modal__title">';
-		$sRes = $sRes . '<i id="modal_icon" class="icon-info" aria-hidden="true"></i>';
-		$sRes = $sRes . '<p id="modal_title">Advertencia</p>';
+		$sRes = $sRes . '<i id="modal_icon" class="icon-warning" aria-hidden="true"></i>';
+		$sRes = $sRes . '<p id="modal_title">' . $ETI['msg_advertencia'] . '</p>';
 		$sRes = $sRes . '</div>';
 		$sRes = $sRes . '</div>';
 		$sRes = $sRes . '<div id="modal_body" class="modal__body">';
 		$sRes = $sRes . '</div>';
 		$sRes = $sRes . '<div id="modal_footer" class="modal__footer">';
-		$sRes = $sRes . '<button id="boton_aceptar" class="btn btn--tertiary modal-close" type="button" aria-label="Confirmar elecci&oacute;n">';
+		$sRes = $sRes . '<button id="boton_aceptar" class="btn btn--tertiary modal-close" type="button" aria-label="' . $ETI['label_confirmar'] . '">';
 		$sRes = $sRes . '<i id="modal_aceptar_icon" class="icon-check" aria-hidden="true"></i>';
-		$sRes = $sRes . '<p id="boton_aceptar_title">Aceptar</p>';
+		$sRes = $sRes . '<p id="boton_aceptar_title">' . $ETI['bt_aceptar'] . '</p>';
 		$sRes = $sRes . '</button>';
-		$sRes = $sRes . '<button id="boton_cancelar" class="btn btn--container modal-close" type="button" aria-label="Cancelar elecci&oacute;n">';
+		$sRes = $sRes . '<button id="boton_cancelar" class="btn btn--container modal-close" type="button" aria-label="' . $ETI['label_cancelar'] . '">';
 		$sRes = $sRes . '<i id="modal_cancelar_icon" class="icon-closed" aria-hidden="true"></i>';
-		$sRes = $sRes . '<p id="boton_cancelar_title">Cancelar</p>';
+		$sRes = $sRes . '<p id="boton_cancelar_title">' . $ETI['bt_cancelar'] . '</p>';
 		$sRes = $sRes . '</button>';
 		$sRes = $sRes . '</div>';
 		$sRes = $sRes . '</div>';
@@ -78,7 +80,7 @@ function forma_cabecera($XAJAX = NULL, array $options = [])
 	}
 	$sRes = $sRes . '</head>';
 	$sRes = $sRes . '<body>';
-	if (true) {
+	if ($opts['conCambioIdioma']) {
 		// Idioma
 		$sRes = $sRes . '<section class="language-selector">';
 		$sRes = $sRes . '<button class="language-selector__button btn" aria-label="' . $ETI['label_selector'] . '" aria-haspopup="true" onclick="toggleLanguageSelector()" aria-expanded="false" id="language-selector">';
@@ -138,7 +140,7 @@ function forma_cabecera($XAJAX = NULL, array $options = [])
 	}
 	echo $sRes;
 }
-function forma_mitad($objForma = null, array $options = [])
+function forma_mitad_campus(array $options = [])
 {
 	require './app.php';
 	$sRes = '';
@@ -156,7 +158,8 @@ function forma_mitad($objForma = null, array $options = [])
 		'tituloModulo' => '',
 		'conMenu' => true,
 		'conAccess' => true,
-		'rutas' => []
+		'rutas' => [],
+		'conBanner' => true
 	];
 	$opts = array_replace($defaults, $options);
 	//
@@ -167,14 +170,16 @@ function forma_mitad($objForma = null, array $options = [])
 	if ($opts['conAccess']) {
 		$sRes = $sRes . widgetAccess();
 	}
-	$sRes = $sRes . '<header>';
-	$sRes = $sRes . '<section class="banner" role="img" aria-label="' . $ETI['label_logo_campus_unad'] . '">';
-	$sRes = $sRes . '</section>';
-	$sRes = $sRes . '</header>';
+	if ($opts['conBanner']) {
+		$sRes = $sRes . '<header>';
+		$sRes = $sRes . '<section class="banner" role="img" aria-label="' . $ETI['label_logo_campus_unad'] . '">';
+		$sRes = $sRes . '</section>';
+		$sRes = $sRes . '</header>';
+	}
 	// Acá el breadcrum
 	$iRutas = count($opts['rutas']);
 	if ($iRutas) {
-		$sRes = $sRes . '<section class="breadcrumb" role="navigation" aria-label="Ruta de navegación">';
+		$sRes = $sRes . '<section id="div_breadcrumb" class="breadcrumb" role="navigation" aria-label="Ruta de navegación">';
 		for ($i = 0; $i < $iRutas; $i++) {
 			if ($i > 0) {
 				$sRes = $sRes . '<span aria-hidden="true"> / </span>';
@@ -188,15 +193,24 @@ function forma_mitad($objForma = null, array $options = [])
 	$sRes = $sRes . '<section id="lang-config" class="hidden" aria-hidden="true" data-lang="' . $sIdioma . '"></section>';
 	echo $sRes;
 }
-function forma_piedepagina($bConTiempo = true)
+function forma_piedepagina_campus(array $options = [])
 {
 	require './app.php';
 	if (!function_exists('Traer_Entidad')) {
 		require_once $APP->rutacomun . 'libdatos.php';
 	}
 	$idEntidad = Traer_Entidad();
+	// Revisamos los options
+	$defaults = [
+		'conTiempo' => false,
+		'mostrarFooter' => true,
+		'conScripts' => true,
+		'conRadioUnad' => false
+	];
+	$opts = array_replace($defaults, $options);
+	//
 	$sMuestra = 'display:none;';
-	if ($bConTiempo) {
+	if ($opts['conTiempo']) {
 		$sMuestra = '';
 	}
 	$sRes = '';
@@ -213,35 +227,54 @@ function forma_piedepagina($bConTiempo = true)
 	$sRes = $sRes . '<div id="div_tiempo" style="width:150px;' . $sMuestra . '" class="ir_derecha"></div>';
 	$sRes = $sRes . '<div class="salto1px"></div>';
 	$sRes = $sRes . '</main>';
-	$sRes = $sRes . '<footer>';
-	$sRes = $sRes . '<span class="logo-unad" role="img" aria-label="' . $ETI['label_logo_unad'] . '"></span>';
-	$sRes = $sRes . '<address class="info-unad" aria-label="' . $ETI['label_info_contacto_unad'] . '">';
-	switch ($idEntidad) {
-		case 1: // Floridad
-			$sRes = $sRes . '<p> Unad Florida: <a href="https://maps.app.goo.gl/mC1e9Kd5mX1qLVA3A" target="_blank" aria-label="View location map of the headquarters in a new window">490 Sawgrass Corporate Parkway Suite 120 Sunrise, Florida 33325</a></p>';
-			$sRes = $sRes . '<p> PBX: <a href="tel:+19543892277" aria-label="Call to PBX Florida, USA +1 954 389 2277">+1 (954) 389-2277</a> Florida, USA</p>';
-			$sRes = $sRes . '<p> User support: <a href="mailto:info@unad.us" aria-label="Send email to info@unad.us">info@unad.us</a></p>';
-			$sRes = $sRes . '<p> UNAD Florida (#2900) is licensed by the Commission for Independent Education, Florida Department of Education.</p>';
-			break;
-		case 2: // Union Europea
-			break;
-		default:
-			$sRes = $sRes . '<p> Sede nacional Jos&eacute; Celestino Mutis: <a href="https://maps.app.goo.gl/W7eojUja2VfKHbJb7" target="_blank" aria-label="Ver mapa de ubicaci&oacute;n Sede nacional Jos&eacute; Celestino Mutis en una nueva ventana">Calle 14 sur No. 14 - 23</a></p>';
-			$sRes = $sRes . '<p> PBX: <a href="tel:+5713443700" aria-label="Llamar a PBX Bogotá DC Colombia +57 1 344 37 00">(+57 1) 344 3700</a> Bogot&aacute; D.C., Colombia</p>';
-			$sRes = $sRes . '<p> L&iacute;nea nacional gratuita desde Colombia: <a href="tel:018000115223" aria-label="Llamar a Línea nacional gratuita desde Colombia 01 8000 115 223">01 8000 115 223</a></p>';
-			$sRes = $sRes . '<p> Atenci&oacute;n al usuario: <a href="mailto:atencionalusuario@unad.edu.co" aria-label="Enviar correo a atencionalusuario@unad.edu.co">atencionalusuario@unad.edu.co</a></p>';
-			$sRes = $sRes . '<p> Instituci&oacute;n de Educaci&oacute;n Superior sujeta a inspecci&oacute;n y vigilancia por el Ministerio de Educaci&oacute;n Nacional</p>';
-			break;
+	//
+	if ($opts['mostrarFooter']) {
+		$sRes = $sRes . '<footer>';
+		$sRes = $sRes . '<span class="logo-unad" role="img" aria-label="' . $ETI['label_logo_unad'] . '"></span>';
+		$sRes = $sRes . '<address class="info-unad" aria-label="' . $ETI['label_info_contacto_unad'] . '">';
+		switch ($idEntidad) {
+			case 1: // Floridad
+				$sRes = $sRes . '<p> Unad Florida: <a href="https://maps.app.goo.gl/mC1e9Kd5mX1qLVA3A" target="_blank" aria-label="View location map of the headquarters in a new window">490 Sawgrass Corporate Parkway Suite 120 Sunrise, Florida 33325</a></p>';
+				$sRes = $sRes . '<p> PBX: <a href="tel:+19543892277" aria-label="Call to PBX Florida, USA +1 954 389 2277">+1 (954) 389-2277</a> Florida, USA</p>';
+				$sRes = $sRes . '<p> User support: <a href="mailto:info@unad.us" aria-label="Send email to info@unad.us">info@unad.us</a></p>';
+				$sRes = $sRes . '<p> UNAD Florida (#2900) is licensed by the Commission for Independent Education, Florida Department of Education.</p>';
+				break;
+			case 2: // Union Europea
+				break;
+			default:
+				$sRes = $sRes . '<p> Sede nacional Jos&eacute; Celestino Mutis: <a href="https://maps.app.goo.gl/W7eojUja2VfKHbJb7" target="_blank" aria-label="Ver mapa de ubicaci&oacute;n Sede nacional Jos&eacute; Celestino Mutis en una nueva ventana">Calle 14 sur No. 14 - 23</a></p>';
+				$sRes = $sRes . '<p> PBX: <a href="tel:+573182194645" aria-label="Llamar a PBX Bogotá DC Colombia +57 318 219 46 45">(+57) 318 219 46 45</a> Bogot&aacute; D.C., Colombia</p>';
+				$sRes = $sRes . '<p> Atenci&oacute;n al usuario: <a href="mailto:atencionalusuario@unad.edu.co" aria-label="Enviar correo a atencionalusuario@unad.edu.co">atencionalusuario@unad.edu.co</a></p>';
+				$sRes = $sRes . '<p> Instituci&oacute;n de Educaci&oacute;n Superior sujeta a inspecci&oacute;n y vigilancia por el Ministerio de Educaci&oacute;n Nacional</p>';
+				break;
+		}
+		$sRes = $sRes . '</address>';
+		$sRes = $sRes . '</footer>';
 	}
-	$sRes = $sRes . '</address>';
-	$sRes = $sRes . '</footer>';
+	// Radio Unad
+	if ($opts['conRadioUnad']) {
+		$sRes = $sRes . widget_RadioUnad();
+		$sRes = $sRes . '<script>';
+		$sRes = $sRes . 'function abrirRUV() {';
+		$sRes = $sRes . 'window.open("https://ruv.unad.edu.co/online/", "RUV", "width=400,height=400");';
+		$sRes = $sRes . '}';
+		$sRes = $sRes . '</script>';
+		// $sRes = $sRes . '<div class="playerContent">';
+		// $sRes = $sRes . '<a id="viewPlayer" class="viewPlayer" href="javascript:abrirRUV()">';
+		// $sRes = $sRes . '<img src="./player/btnRadioUnad.png" />';
+		// $sRes = $sRes . '</a>';
+		// $sRes = $sRes . '</div>';
+		$sRes = $sRes . '<script src="./player/radio-script.js?v=5"></script>';
+	}
 	// Scripts
-	$sRes = $sRes . '<script src="' . $APP->rutacomun . 'js/campus2025.js"></script>';
-	$sRes = $sRes . '<script type="text/javascript">';
-	$sRes = $sRes . 'if (window.history.replaceState) {';
-	$sRes = $sRes . 'window.history.replaceState(null, null, window.location.href);';
-	$sRes = $sRes . '}';
-	$sRes = $sRes . '</script>';
+	if ($opts['conScripts']) {
+		$sRes = $sRes . '<script src="' . $APP->rutacomun . 'js/campus2025.js"></script>';
+		$sRes = $sRes . '<script type="text/javascript">';
+		$sRes = $sRes . 'if (window.history.replaceState) {';
+		$sRes = $sRes . 'window.history.replaceState(null, null, window.location.href);';
+		$sRes = $sRes . '}';
+		$sRes = $sRes . '</script>';
+	}
 	// Fin Scripts
 	$sRes = $sRes . '</body>';
 	$sRes = $sRes . '</html>';

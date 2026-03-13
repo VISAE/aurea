@@ -117,15 +117,15 @@ if (!file_exists($mensajes_todas)) {
 	$mensajes_todas = $APP->rutacomun . 'lg/lg_todas_es.php';
 }
 /*
-$mensajes_2900 = 'lg/lg_2900_' . $sIdioma . '.php';
+$mensajes_2900 = $APP->rutacomun . 'lg/lg_2900_' . $sIdioma . '.php';
 if (!file_exists($mensajes_2900)) {
-	$mensajes_2900 = 'lg/lg_2900_es.php';
+	$mensajes_2900 = $APP->rutacomun . 'lg/lg_2900_es.php';
 }
 require $mensajes_2900;
 */
-$mensajes_2938 = 'lg/lg_2938_' . $sIdioma . '.php';
+$mensajes_2938 = $APP->rutacomun . 'lg/lg_2938_' . $sIdioma . '.php';
 if (!file_exists($mensajes_2938)) {
-	$mensajes_2938 = 'lg/lg_2938_es.php';
+	$mensajes_2938 = $APP->rutacomun . 'lg/lg_2938_es.php';
 }
 require $mensajes_todas;
 require $mensajes_2938;
@@ -294,7 +294,7 @@ if (isset($_REQUEST['paso']) == 0) {
 	}
 }
 // -- 2938 visa38convpruebas
-require 'lib2938.php';
+require $APP->rutacomun . 'lib2938.php';
 $xajax = new xajax();
 $xajax->configure('javascript URI', $APP->rutacomun . 'xajax/');
 $xajax->register(XAJAX_FUNCTION, 'sesion_abandona_V2');
