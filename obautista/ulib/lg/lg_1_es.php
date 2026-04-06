@@ -63,5 +63,5 @@ $ETI['bt_codigo']='Enviar c&oacute;digo';
 $ETI['bt_volver']='Volver';
 
 $ETI['msg_no_responder_sai']='No responder';
-
+$ETI['msg_no_responder_sii']='NO responder a este correo';
 ?>

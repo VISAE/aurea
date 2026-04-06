@@ -950,8 +950,12 @@ function f2943_AprobarDocumento($aParametros)
 	if ($idProceso == 0) {
 		$sSQL = 'UPDATE visa43inscripdocs SET visa43usuarioaprueba=0 ,visa43fechaaprob=0 WHERE visa43id=' . $visa43id . ' AND visa43idinscripcion=' . $visa40id . '';
 		$result = $objDB->ejecutasql($sSQL);
-		$sSQL = 'UPDATE visa40inscripcion SET visa40estado=3 WHERE visa40id=' . $visa40id . ' AND visa40idconvocatoria=' . $visa35id . '';
-		$result = $objDB->ejecutasql($sSQL);
+		$sSQL = 'SELECT visa40estado FROM visa40inscripcion WHERE visa40id=' . $visa40id . '';
+		$tabla = $objDB->ejecutasql($sSQL);
+		if ($fila = $objDB->sf($tabla)) {
+			list($sErrorC, $sDebugC, $sMensaje) = f2940_CambiaEstado($visa40id, $fila['visa40estado'], 3, '', 0, $objDB, $bDebug);
+			$sDebug = $sDebug . $sDebugC;
+		}
 	} else {
 		$sSQL = 'UPDATE visa43inscripdocs SET visa43usuarioaprueba=' . $_SESSION['unad_id_tercero'] . ' ,visa43fechaaprob=' . $iHoy . ' WHERE visa43id=' . $visa43id . ' AND visa43idinscripcion=' . $visa40id . '';
 		$result = $objDB->ejecutasql($sSQL);

@@ -49,12 +49,20 @@ if (isset($_REQUEST['rdebug']) == 0) {
 	$_REQUEST['rdebug'] = 0;
 }
 $aNombres = array(
-	'', '', '', 'agno', 'estado', 'listar', 'Zona', 'Centro', 'Canal'
+	'', '', '', 'agno', 'estado', 
+	'listar', 'Zona', 'Centro', 'Canal', 'Documento', 
+	'Nombre', 'Tipo', 'Tema', '', 'Detalle', 
+	'Respuesta', 'FechaRadIni', 'FechaRadFin', 'FechaRptaIni', 'FechaRptaFin', 
+	'IdReservado'
 );
 $aTipos = array(
-	0, 0, 0, 0, 0, 0, 0, 0, 0
+	0, 0, 0, 0, 0, 
+	0, 0, 0, 0, 1, 
+	1, 0, 0, 1, 1, 
+	1, 0, 0, 0, 0,
+	1
 );
-$iNumVariables = 8;
+$iNumVariables = 20;
 for ($k = 3; $k <= $iNumVariables; $k++) {
 	if (isset($_REQUEST['v' . $k]) == 0) {
 		$_REQUEST['v' . $k] = '';
@@ -71,22 +79,6 @@ for ($k = 3; $k <= $iNumVariables; $k++) {
 	}
 }
 $sDebug = '';
-if ($sError == '') {
-	for ($k = 3; $k <= $iNumVariables; $k++){
-		switch($k){
-			case 31: //Variable tipo texto
-				$iVr = cadena_Validar($_REQUEST['v' . $k]);
-				break;
-			default:
-				$iVr = numeros_validar($_REQUEST['v' . $k]);
-				break;
-		}
-		if ($iVr != $_REQUEST['v' . $k]) {
-			$sError = 'No fue posible validar el contenido de la variable ' . $k . '';
-			$k = $iNumVariables + 1;
-		}
-	}
-}
 if ($sError == '') {
 	//Validar permisos.
 	$objDB = new clsdbadmin($APP->dbhost, $APP->dbuser, $APP->dbpass, $APP->dbname);
@@ -118,6 +110,10 @@ if ($sError == '') {
 	$iZona = numeros_validar($_REQUEST['v6']);
 	$iCentro = numeros_validar($_REQUEST['v7']);
 	$iCanal = numeros_validar($_REQUEST['v8']);
+	$bDoc = cadena_Validar($_REQUEST['v9']);
+	$bNombre = cadena_Validar($_REQUEST['v10']);
+	$iCategoria = numeros_validar($_REQUEST['v11']);
+	$iTema = numeros_validar($_REQUEST['v12']);
 	$bdetalle = cadena_Validar(trim($_REQUEST['v14']));
 	$brespuesta = cadena_Validar(trim($_REQUEST['v15']));
 	$bfecharadini = numeros_validar($_REQUEST['v16']);
@@ -220,6 +216,25 @@ if ($sError == '') {
 				$sSQLadd1 = $sSQLadd1 . 'TB.saiu73respuesta LIKE "%' . $sCadena . '%" AND ';
 			}
 		}
+	}
+	if ($bDoc != '') {
+		$sSQLadd = $sSQLadd . ' AND T11.unad11doc LIKE "%' . $bDoc . '%"';
+	}
+	if ($bNombre != '') {
+		$sBase = mb_strtoupper($bNombre);
+		$aNoms = explode(' ', $sBase);
+		for ($k = 1; $k <= count($aNoms); $k++) {
+			$sCadena = $aNoms[$k - 1];
+			if ($sCadena != '') {
+				$sSQLadd = $sSQLadd . ' AND T11.unad11razonsocial LIKE "%' . $sCadena . '%"';
+			}
+		}
+	}
+	if ($iCategoria != '') {
+		$sSQLadd = $sSQLadd . ' AND TB.saiu73tiposolicitud=' . $iCategoria . '';
+	}
+	if ($iTema != '') {
+		$sSQLadd = $sSQLadd . ' AND TB.saiu73temasolicitud=' . $iTema . '';
 	}
 	if (fecha_NumValido($bfecharadini)) {
 		$sSQLadd1 = $sSQLadd1 . 'TB.saiu73fecharad>=' . $bfecharadini . ' AND ';

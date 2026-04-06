@@ -1406,7 +1406,7 @@ if ($bEnTramite) {
 	$objCombos->nuevo('saiu73tipointeresado', $_REQUEST['saiu73tipointeresado'], true, '{' . $ETI['msg_seleccione'] . '}');
 	$sSQL = 'SELECT bita07id AS id, bita07nombre AS nombre FROM bita07tiposolicitante ORDER BY bita07orden, bita07nombre';
 	$html_saiu73tipointeresado = $objCombos->html($sSQL, $objDB);
-	$html_saiu73tiposolicitud = f3073_HTMLComboV2_saiu73tiposolicitud($objDB, $objCombos, $_REQUEST['saiu73tiposolicitud']);
+	$html_saiu73tiposolicitud = f3073_HTMLComboV2_saiu73tiposolicitud($objDB, $objCombos, $_REQUEST['saiu73tiposolicitud'], $bEsReservado, $idReservado);
 	$html_saiu73temasolicitud = f3073_HTMLComboV2_saiu73temasolicitud($objDB, $objCombos, $_REQUEST['saiu73temasolicitud'], $_REQUEST['saiu73tiposolicitud']);
 	$objCombos->nuevo('saiu73idzona', $_REQUEST['saiu73idzona'], true, '{' . $ETI['msg_seleccione'] . '}');
 	$objCombos->sAccion = 'carga_combo_saiu73idcentro();';
@@ -1851,6 +1851,16 @@ switch ($iPiel) {
 		window.document.frmimpp.v6.value = window.document.frmedita.bzona.value;
 		window.document.frmimpp.v7.value = window.document.frmedita.bcead.value;
 		window.document.frmimpp.v8.value = window.document.frmedita.saiu73idcanal.value;
+		window.document.frmimpp.v9.value = window.document.frmedita.bdoc.value;
+		window.document.frmimpp.v10.value = window.document.frmedita.bnombre.value;
+		<?php
+		if (!$bEsFAV) {
+		?>
+		window.document.frmimpp.v11.value = window.document.frmedita.bcategoria.value;
+		<?php
+		}
+		?>
+		window.document.frmimpp.v12.value = window.document.frmedita.btema.value;
 		window.document.frmimpp.v14.value = window.document.frmedita.bdetalle.value;
 		window.document.frmimpp.v15.value = window.document.frmedita.brespuesta.value;
 		window.document.frmimpp.v16.value = window.document.frmedita.bfecharadini.value;
@@ -1929,6 +1939,8 @@ switch ($iPiel) {
 	function carga_combo_saiu73tiposolicitud() {
 		let params = new Array();
 		params[0] = window.document.frmedita.saiu73temasolicitud.value;
+		params[1] = window.document.frmedita.bEsResv.value;
+		params[2] = window.document.frmedita.idResv.value;
 		document.getElementById('div_saiu73tiposolicitud').innerHTML = '<b>Procesando datos, por favor espere...</b><input id="saiu73tiposolicitud" name="saiu73tiposolicitud" type="hidden" value="" />';
 		document.getElementById('div_saiu73temasolicitud').innerHTML = '<b>Procesando datos, por favor espere...</b><input id="saiu73temasolicitud" name="saiu73temasolicitud" type="hidden" value="" />';
 		xajax_f3073_Combosaiu73tiposolicitud(params);
@@ -2398,6 +2410,7 @@ if ($bPuedeEditar) {
 		params[99] = window.document.frmedita.debug.value;
 		params[100] = <?php echo $idTercero; ?>;
 		params[101] = window.document.frmedita.bagno.value;
+		params[102] = '<?php echo $idReservado; ?>';
 		MensajeAlarmaV2('<div class="flex gap-2"><div>Notificando responsables<br>Por favor espere... </div><div class="spinner"></div></div>', 2);		
 		xajax_f3073_NotificarResponsables(params);
 	}
@@ -2422,6 +2435,11 @@ if ($bEsReservado) {
 <input id="v6" name="v6" type="hidden" value="" />
 <input id="v7" name="v7" type="hidden" value="" />
 <input id="v8" name="v8" type="hidden" value="" />
+<input id="v9" name="v9" type="hidden" value="" />
+<input id="v10" name="v10" type="hidden" value="" />
+<input id="v11" name="v11" type="hidden" value="" />
+<input id="v12" name="v12" type="hidden" value="" />
+<input id="v13" name="v13" type="hidden" value="" />
 <input id="v14" name="v14" type="hidden" value="" />
 <input id="v15" name="v15" type="hidden" value="" />
 <input id="v16" name="v16" type="hidden" value="" />
@@ -2457,6 +2475,8 @@ if ($bEsReservado) {
 <input id="vdidtelefono" name="vdidtelefono" type="hidden" value="<?php echo $_REQUEST['vdidtelefono']; ?>" />
 <input id="vdidchat" name="vdidchat" type="hidden" value="<?php echo $_REQUEST['vdidchat']; ?>" />
 <input id="vdidcorreo" name="vdidcorreo" type="hidden" value="<?php echo $_REQUEST['vdidcorreo']; ?>" />
+<input id="bEsResv" name="bEsResv" type="hidden" value="<?php echo (int)$bEsReservado; ?>" />
+<input id="idResv" name="idResv" type="hidden" value="<?php echo $idReservado; ?>" />
 <div id="div_sector1">
 <div class="areaform"> 
 <div class="areatrabajo">
@@ -3496,7 +3516,7 @@ echo '<h3>'.$ETI['bloque1'].'</h3>';
 echo $ETI['msg_bdoc'];
 ?>
 </label>
-<label class="Label200">
+<label class="Label250">
 <input id="bdoc" name="bdoc" type="text" value="<?php echo $_REQUEST['bdoc']; ?>" onchange="paginarf3073()" autocomplete="off" />
 </label>
 <label class="Label90">

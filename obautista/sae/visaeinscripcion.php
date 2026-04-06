@@ -94,6 +94,7 @@ require $APP->rutacomun . 'libdatos.php';
 require $APP->rutacomun . 'libhtml.php';
 require $APP->rutacomun . 'xajax/xajax_core/xajax.inc.php';
 require $APP->rutacomun . 'unad_xajax.php';
+require $APP->rutacomun . 'libmail.php';
 if (($bPeticionXAJAX) && ($_SESSION['unad_id_tercero'] == 0)) {
 	// viene por xajax.
 	$xajax = new xajax();
@@ -605,6 +606,9 @@ if (isset($_REQUEST['btipologia']) == 0) {
 if (isset($_REQUEST['bsubtipologia']) == 0) {
 	$_REQUEST['bsubtipologia'] = '';
 }
+if (isset($_REQUEST['idestado']) == 0) {
+	$_REQUEST['idestado'] = $_REQUEST['visa40estado'];
+}
 	//Anexos
 	//Anotaciones
 	//Resultados pruebas
@@ -614,6 +618,7 @@ $_REQUEST['bconvocatoria'] = numeros_validar($_REQUEST['bconvocatoria']);
 $_REQUEST['bestado'] = numeros_validar($_REQUEST['bestado']);
 $_REQUEST['btipologia'] = numeros_validar($_REQUEST['btipologia']);
 $_REQUEST['bsubtipologia'] = numeros_validar($_REQUEST['bsubtipologia']);
+$_REQUEST['idestado'] = numeros_validar($_REQUEST['idestado']);
 	//Anexos
 	//Anotaciones
 	//Resultados pruebas
@@ -656,6 +661,11 @@ if (($_REQUEST['paso'] == 1) || ($_REQUEST['paso'] == 3)) {
 }
 //Cerrar
 $bCambiaEstado = false;
+$bEstaInscrito = false;
+$iEstadoDestino = 7; // Admitido
+if ($_REQUEST['visa40estado'] >= 5) {
+	$bEstaInscrito = true;
+}
 if ($_REQUEST['paso'] == 16) {
 	$_REQUEST['paso'] = 12;
 	if ($sError == '') {
@@ -703,13 +713,30 @@ if (($_REQUEST['paso'] == 10) || ($_REQUEST['paso'] == 12)) {
 		$bCambiaEstado = false;
 	}
 }
+// Cambia estados de cierre
+if ($_REQUEST['paso'] == 18) {
+	$_REQUEST['paso'] = 2;
+	if ($_REQUEST['idestado'] == '') {
+		$sError = $ERR['idestado'];
+	}
+	if ($sError == '') {
+		$bEsOtroEstado = false;
+		$iEstadoDestino = $_REQUEST['idestado'];
+		if ($iEstadoDestino != $_REQUEST['visa40estado']) {
+			$bEsOtroEstado = true;
+		}
+		if (($bEstaInscrito) && ($bEsOtroEstado)) {
+			$bCambiaEstado = true;
+		}
+	}
+}
 if ($bCambiaEstado) {
 	//acciones del cerrado
 	if ($sError == '') {
-		list($sError, $sDebugE, $sMensaje) = f2940_CambiaEstado($_REQUEST['visa40id'], $_REQUEST['visa40estado'], 7, '', $_SESSION['unad_id_tercero'], $objDB, $bDebug);
+		list($sError, $sDebugE, $sMensaje) = f2940_CambiaEstado($_REQUEST['visa40id'], $_REQUEST['visa40estado'], $iEstadoDestino, '', $_SESSION['unad_id_tercero'], $objDB, $bDebug);
 		$sDebug = $sDebug . $sDebugE;
 		if ($sError == '') {
-			$_REQUEST['visa40estado'] = 7;
+			$_REQUEST['visa40estado'] = $iEstadoDestino;
 			$sError = '<b>' . $ETI['msg_itemcerrado'] . '</b>';
 			$iTipoError = 1;
 		}
@@ -785,7 +812,7 @@ $bConBotonCerrar = false;
 $bPuedeAbrir = false;
 $bHayImprimir = false;
 $bHayImprimir2 = false;
-$sScriptImprime = 'imprimelista()';
+$sScriptImprime = 'imprimeexcel()';
 $sScriptImprime2 = 'imprimep()';
 $sClaseImprime = 'iExcel';
 $sClaseImprime2 = 'iPdf';
@@ -799,9 +826,7 @@ $bEdita2945 = false;
 //Permisos adicionales
 $seg_5 = 0;
 $seg_6 = 0;
-/*
 list($bHayImprimir, $sDebugP, $seg_6) = seg_revisa_permisoV3($iCodModulo, 6, $idTercero, $objDB);
-*/
 if ((int)$_REQUEST['paso'] != 0) {
 	//list($bHayImprimir2, $sDebugP, $seg_5) = seg_revisa_permisoV3($iCodModulo, 5, $idTercero, $objDB);
 	$bEdita2943 = true;
@@ -809,10 +834,18 @@ if ((int)$_REQUEST['paso'] != 0) {
 	$bEdita2945 = true;
 	switch ($_REQUEST['visa40estado']) {
 		case 0: // Abierto
+		case 1: // Preinscripcion
+		case 3: // Devolucion de documentos
 			$bConEliminar = true;
 			$bConBotonCerrar = true;
 			break;
-		case 7: // Cerrado
+		case 5: // Inscrito
+			break;
+		case 7: // Admitido
+		case 8: // Lista de espera
+		case 9: // No admitido
+		case 11: // Desistido
+		case 17: // Cupo confirmado
 			$bPuedeGuardar = false;
 			list($bPuedeAbrir, $sDebugP) = seg_revisa_permisoV3($iCodModulo, 17, $idTercero, $objDB);
 			break;
@@ -853,7 +886,7 @@ if ((int)$_REQUEST['visa40id'] == 0) {
 }
 $html_visa40idtercero = html_DivTerceroV8('visa40idtercero', $_REQUEST['visa40idtercero_td'], $_REQUEST['visa40idtercero_doc'], $bOculto, $objDB, $objCombos, 1, $ETI['ing_doc']);
 $visa40estado_nombre = '{' . $_REQUEST['visa40estado'] . '}';
-$sSQL = 'SELECT unad96nombre, unad96etiqueta FROM unad96estado WHERE unad96idmodulo=2940 AND unad96id=' . $_REQUEST['visa40estado'];
+$sSQL = 'SELECT unad96nombre, unad96etiqueta FROM unad96estado WHERE unad96idmodulo=2940 AND unad96id=' . $_REQUEST['visa40estado'] . ' ORDER BY unad96etiqueta';
 $tabla = $objDB->ejecutasql($sSQL);
 if ($objDB->nf($tabla) > 0) {
 	$fila = $objDB->sf($tabla);
@@ -914,8 +947,21 @@ $sSQL = 'SELECT visa35id AS id, visa35nombre AS nombre FROM visa35convocatoria O
 $html_bconvocatoria = $objCombos->html($sSQL, $objDB);
 $objCombos->nuevo('bestado', $_REQUEST['bestado'], true, '{' . $ETI['msg_todos'] . '}');
 $objCombos->sAccion = 'paginarf2940()';
-$sSQL = 'SELECT unad96id AS id, unad96nombre AS nombre FROM unad96estado WHERE unad96idmodulo=' . $iCodModulo . ' ORDER BY unad96nombre';
+$sSQL = 'SELECT unad96id AS id, unad96nombre AS nombre FROM unad96estado WHERE unad96idmodulo=' . $iCodModulo . '  ORDER BY unad96etiqueta';
 $html_bestado = $objCombos->html($sSQL, $objDB);
+$html_estados = '';
+if ($bEstaInscrito) {
+	$tabla = $objDB->ejecutasql($sSQL);
+	while ($fila = $objDB->sf($tabla)) {
+		if ($fila['id'] >= 5) {
+			$sClase = 'BotonAzul';
+			if ($fila['id'] == $_REQUEST['visa40estado']) {
+				$sClase = '';
+			}
+			$html_estados = $html_estados . $objForma->htmlBotonSolo('cmdEstado' . $fila['id'], $sClase, 'cambiaestado(' . $fila['id'] . ')', $fila['nombre'], 200, 'width:180px;');
+		}
+	}
+}
 $html_btipologia = f2940_HTMLComboV2_btipologia($objDB, $objCombos, $_REQUEST['btipologia'], $_REQUEST['bconvocatoria']);
 $html_bsubtipologia = f2940_HTMLComboV2_bsubtipologia($objDB, $objCombos, $_REQUEST['bsubtipologia'], $_REQUEST['btipologia']);
 if ((int)$_REQUEST['paso'] > 0) {
@@ -1416,6 +1462,20 @@ switch ($iPiel) {
 		MensajeAlarmaV2('<?php echo $ETI['msg_ejecutando']; ?>', 2);
 		xajax_f2943_AprobarDocumento(params);
 	}
+
+	function cambiaestado(idestado) {
+		ModalConfirmV2('<?php echo $ETI['msg_confirmaestado']; ?>', () => {
+			ejecuta_cambiaestado(idestado);
+		});
+	}
+
+	function ejecuta_cambiaestado(idestado) {
+		MensajeAlarmaV2('<?php echo $ETI['msg_ejecutando']; ?>', 2);
+		expandesector(98);
+		window.document.frmedita.paso.value = 18;
+		window.document.frmedita.idestado.value = idestado;
+		window.document.frmedita.submit();
+	}
 <?php
 // }
 ?>
@@ -1462,6 +1522,7 @@ if ($_REQUEST['paso'] != 0) {
 <input id="icodmodulo" name="icodmodulo" type="hidden" value="<?php echo $iCodModulo; ?>" />
 <input id="seg_5" name="seg_5" type="hidden" value="<?php echo $seg_5; ?>" />
 <input id="seg_6" name="seg_6" type="hidden" value="<?php echo $seg_6; ?>" />
+<input id="idestado" name="idestado" type="hidden" value="<?php echo $_REQUEST['idestado']; ?>" />
 <div id="div_sector1">
 <?php
 if ($bBloqueTitulo) {
@@ -1627,6 +1688,25 @@ echo $html_visa40idtercero;
 </div>
 <div class="salto1px"></div>
 <div id="div_visa40idtercero" class="L"><?php echo $visa40idtercero_rs; ?></div>
+<?php 
+if ($bEstaInscrito) {
+?>
+<div class="salto5px"></div>
+<div class="GrupoCampos">
+<label class="TituloGrupo">
+<?php
+echo $ETI['idestado'];
+?>
+</label>
+<div class="salto1px"></div>
+<?php
+echo $html_estados;
+?>
+<div class="salto1px"></div>
+</div>
+<?php 
+}
+?>
 <div class="salto1px"></div>
 </div>
 <label class="Label60"<?php echo $sOcultaId; ?>>
@@ -1827,6 +1907,7 @@ echo html_lnkarchivo((int)$_REQUEST['visa43idorigen'], (int)$_REQUEST['visa43ida
 ?>
 </div>
 <?php
+if (!$bEstaInscrito) {
 $sEstiloAnexa = '';
 $sEstiloElimina = ' style="display:none;"';
 if ((int)$_REQUEST['visa43id'] == 0) {
@@ -1837,6 +1918,7 @@ if ((int)$_REQUEST['visa43idarchivo'] != 0) {
 }
 echo $objForma->htmlBotonSolo('banexavisa43idarchivo', 'btMiniAnexar', 'carga_visa43idarchivo(window.document.frmedita.visa43idarchivo_up.value)', $ETI['bt_mini_cargararchivo'], 30, $sEstiloAnexa);
 echo $objForma->htmlBotonSolo('beliminavisa43idarchivo', 'btMiniEliminar', 'eliminavisa43idarchivo()', $ETI['bt_mini_eliminararchivo'], 30, $sEstiloElimina);
+}
 ?>
 <div class="salto1px"></div>
 </div>

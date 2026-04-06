@@ -62,7 +62,7 @@ function f3073_HTMLComboV2_saiu73tiporadicado($objDB, $objCombos, $valor)
 	$res = $objCombos->html($sSQL, $objDB);
 	return $res;
 }
-function f3073_HTMLComboV2_saiu73tiposolicitud($objDB, $objCombos, $valor)
+function f3073_HTMLComboV2_saiu73tiposolicitud($objDB, $objCombos, $valor, $bEsReservado = 0, $idReservado = '')
 {
 	require './app.php';
 	$sIdioma = AUREA_Idioma();
@@ -74,9 +74,13 @@ function f3073_HTMLComboV2_saiu73tiposolicitud($objDB, $objCombos, $valor)
 	$objCombos->nuevo('saiu73tiposolicitud', $valor, true, '{' . $ETI['msg_seleccione'] . '}');
 	$objCombos->sAccion = 'carga_combo_saiu73temasolicitud();';
 	//$objCombos->iAncho=450;
+	$sWhere = '';
+	if ($bEsReservado == 0) {
+		$sWhere = ' AND TB.saiu02id NOT IN (' . $idReservado . ') ';
+	}
 	$sSQL = 'SELECT TB.saiu02id AS id, CONCAT(TB.saiu02titulo, " [", T1.saiu01titulo, "]") AS nombre 
 	FROM saiu02tiposol AS TB, saiu01claseser AS T1 
-	WHERE TB.saiu02id>0 AND TB.saiu02ordenllamada<9 AND TB.saiu02clasesol=T1.saiu01id 
+	WHERE TB.saiu02id>0 AND TB.saiu02ordenllamada<9 AND TB.saiu02clasesol=T1.saiu01id' . $sWhere . '
 	ORDER BY TB.saiu02ordenllamada, TB.saiu02titulo';
 	$res = $objCombos->html($sSQL, $objDB);
 	return $res;
@@ -190,13 +194,15 @@ function f3073_Combosaiu73tiposolicitud($aParametros)
 	$objDB->xajax();
 	$objCombos = new clsHtmlCombos();
 	$idTema = numeros_validar($aParametros[0]);
+	$bEsReservado = numeros_validar($aParametros[1]);
+	$idReservado = cadena_Validar($aParametros[2]);
 	$idTipo = 0;
 	$sSQL = 'SELECT saiu03tiposol FROM saiu03temasol WHERE saiu03id=' . $idTema . '';
 	$tabla = $objDB->ejecutasql($sSQL);
 	if ($objDB->nf($tabla) > 0) {
 		$fila = $objDB->sf($tabla);
 		$idTipo = $fila['saiu03tiposol'];
-		$html_saiu73tiposolicitud = f3073_HTMLComboV2_saiu73tiposolicitud($objDB, $objCombos, $idTipo);
+		$html_saiu73tiposolicitud = f3073_HTMLComboV2_saiu73tiposolicitud($objDB, $objCombos, $idTipo, $bEsReservado, $idReservado);
 		$html_saiu73temasolicitud = f3073_HTMLComboV2_saiu73temasolicitud($objDB, $objCombos, $idTema, $idTipo);
 		$objDB->CerrarConexion();
 		$objResponse = new xajaxResponse();
@@ -783,7 +789,9 @@ function f3073_TablaDetalleV2($aParametros, $objDB, $bDebug = false)
 	$bEsReservado = false;
 	list($bEsReservado, $sDebugP) = seg_revisa_permisoV3($iCodModulo, 14, $_SESSION['unad_id_tercero'], $objDB);
 	if (!$bEsReservado) {
-		$sSQLadd = $sSQLadd . ' AND TB.saiu73tiposolicitud NOT IN (' . $idReservado . ')';
+		if ($idReservado != '') {
+			$sSQLadd = $sSQLadd . ' AND TB.saiu73tiposolicitud NOT IN (' . $idReservado . ')';
+		}
 	}
 	// ------------------------------------------------
 	// Fin de las condiciones de la consulta
@@ -2922,6 +2930,7 @@ function f3073_NotificarResponsables($aParametros) {
 	$bDebug = $aParametros[99];
 	$idTercero = numeros_validar($aParametros[100]);
 	$iAgno = numeros_validar($aParametros[101]);
+	$idReservado = cadena_Validar($aParametros[102]);
 	$iHoy = fecha_DiaMod();
 	$aPendientes = array();
 	// -- Seccion para validar los posibles causales de error.
@@ -2933,9 +2942,13 @@ function f3073_NotificarResponsables($aParametros) {
 		$sTabla73 = 'saiu73solusuario_' . $iAgno;
 		$bExiste = $objDB->bexistetabla($sTabla73);
 		if ($bExiste) {
+			$sWhere = '';
+			if ($idReservado != '') {
+				$sWhere = ' AND T3.saiu03tiposol NOT IN (' . $idReservado . ') ';
+			}
 			$sSQL = 'SELECT TB.saiu73id, TB.saiu73idcanal, TB.saiu73idresponsablecaso, TB.saiu73fecharad, TB.saiu73temasolicitud, T3.saiu03tiemprespdias1 
 			FROM ' . $sTabla73 . ' AS TB, saiu03temasol AS T3 
-			WHERE T3.saiu03id = TB.saiu73temasolicitud AND TB.saiu73estado = 1 AND TB.saiu73fecharad > 0';
+			WHERE T3.saiu03id = TB.saiu73temasolicitud AND TB.saiu73estado = 1 AND TB.saiu73fecharad > 0' . $sWhere . '';
 			$tabla = $objDB->ejecutasql($sSQL);
 			$iPendientes = $objDB->nf($tabla);
 			while ($fila = $objDB->sf($tabla)) {

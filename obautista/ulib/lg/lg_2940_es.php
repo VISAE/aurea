@@ -30,6 +30,7 @@ $ETI['visa40idsubtipo'] = 'Subtipolog&iacute;a';
 $ETI['visa40idminuta'] = 'Idminuta';
 $ETI['visa40idresolucion'] = 'Idresolucion';
 $ETI['msg_cierre2940'] = '&iquest;Est&aacute; seguro de cerrar el registro?<br>luego de cerrado no se permite modificar.';
+$ETI['idestado'] = 'Estado de la inscripci&oacute;n';
 
 $ERR['visa40idconvocatoria'] = 'Necesita el dato ' . $ETI['visa40idconvocatoria'];
 $ERR['visa40idtercero'] = 'Necesita el dato ' . $ETI['visa40idtercero'];
@@ -51,6 +52,9 @@ $ERR['visa40fecha_liminscrip'] = 'Ha superado la fecha l&iacute;mite de inscripc
 $ERR['visa40fecha_limrevdoc'] = 'Ha superado la fecha l&iacute;mite de revisi&oacute;n de documentos';
 $ERR['visa40numcupos'] = 'Se ha completado el total de cupos disponibles';
 $ERR['visa40faltaarchivo'] = 'Falta subir archivo ';
+$ERR['idestado'] = 'Error de estado destino';
+$ERR['visa40fecha_apertura'] = 'Convocatoria inactiva, fecha apertura: ';
+$ERR['visa40fecha_cierra'] = 'Convocatoria inactiva, fecha cierre: ';
 
 $ETI['msg_bdocumento'] = 'Documento';
 $ETI['msg_bnombre'] = 'Nombre';
@@ -58,4 +62,5 @@ $ETI['msg_bconvocatoria'] = 'Convocatoria';
 $ETI['msg_bestado'] = 'Estado';
 $ETI['msg_btipologia'] = 'Tipolog&iacute;a';
 $ETI['msg_bsubtipologia'] = 'Subtipolog&iacute;a';
+$ETI['msg_confirmaestado'] = '&iquest;Confirma el cambio de estado de la inscripci&oacute;n?';
 

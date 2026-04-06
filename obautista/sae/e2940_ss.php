@@ -37,6 +37,7 @@ $_SESSION['u_ultimominuto'] = iminutoavance();
 $sError = '';
 $iReporte = 0;
 $bDebug = false;
+$iCodModulo = 2940;
 if (isset($_REQUEST['clave']) == 0) {
 	$_REQUEST['clave'] = '';
 }
@@ -99,7 +100,7 @@ if ($sError == '') {
 	if ($_REQUEST['rdebug'] == 1) {
 		$bDebug = true;
 	}
-	$sTituloRpt = 'Reporte';
+	$sTituloRpt = 'Reporte inscripcion convocatoria';
 	$sFormato = 'formato.xlsx';
 	if (!file_exists($sFormato)) {
 		$sError = 'Formato no encontrado {' . $sFormato . '}';
@@ -119,10 +120,39 @@ if ($sError == '') {
 	$sDetalle = '';
 	$sSQLadd = '';
 	$sSQLadd1 = '';
+	if ($bdocumento != '') {
+		$sSQLadd = $sSQLadd . ' AND T3.unad11doc LIKE "%' . $bdocumento . '%"';
+	}
+	if ((int)$bconvocatoria != 0) {
+		$sSQLadd1 = $sSQLadd1 . 'TB.visa40idconvocatoria=' . $bconvocatoria . ' AND ';
+	}
+	if ($bestado != '') {
+		$sSQLadd1 = $sSQLadd1 . 'TB.visa40estado=' . $bestado . ' AND ';
+	}
+	if ((int)$btipologia != 0) {
+		$sSQLadd1 = $sSQLadd1 . 'TB.visa40idtipologia=' . $btipologia . ' AND ';
+	}
+	if ((int)$bsubtipologia != 0) {
+		$sSQLadd1 = $sSQLadd1 . 'TB.visa40idsubtipo=' . $bsubtipologia . ' AND ';
+	}
+	if ($bnombre != '') {
+		$sBase = mb_strtoupper($bnombre);
+		$aNoms = explode(' ', $sBase);
+		for ($k = 1; $k <= count($aNoms); $k++) {
+			$sCadena = $aNoms[$k - 1];
+			if ($sCadena != '') {
+				$sSQLadd = $sSQLadd . ' AND T3.unad11razonsocial LIKE "%' . $sCadena . '%"';
+				//$sSQLadd1 = $sSQLadd1 . 'TB.unad11razonsocial LIKE "%' . $sCadena . '%" AND ';
+			}
+		}
+	}
 	// ------------------------------------------------
 	// Fin de las condiciones de la consulta
 	// ------------------------------------------------
-	$sCampos = 'SELECT TB.visa40id, T2.visa35nombre, T3.unad11razonsocial AS C3_nombre, TB.visa40estado, TB.visa40fechainsc, TB.visa40idconvocatoria, TB.visa40idtercero, T3.unad11tipodoc AS C3_td, T3.unad11doc AS C3_doc';
+	$sCampos = 'SELECT TB.visa40id, T2.visa35nombre, T3.unad11razonsocial AS C3_nombre, TB.visa40estado, TB.visa40fechainsc, 
+	TB.visa40idconvocatoria, TB.visa40idtercero, T3.unad11tipodoc AS C3_td, T3.unad11doc AS C3_doc, T3.unad11correoinstitucional AS C3_correoins,
+	TB.visa40idperiodo, TB.visa40idescuela, TB.visa40idprograma, TB.visa40idzona, TB.visa40idcentro, 
+	TB.visa40idtipologia, TB.visa40idsubtipo';
 	$sConsulta = 'FROM visa40inscripcion AS TB, visa35convocatoria AS T2, unad11terceros AS T3 
 	WHERE ' . $sSQLadd1 . ' TB.visa40id>0 AND TB.visa40idconvocatoria=T2.visa35id AND TB.visa40idtercero=T3.unad11id ' . $sSQLadd . '';
 	$sOrden = 'ORDER BY TB.visa40idconvocatoria, TB.visa40idtercero';
@@ -157,7 +187,7 @@ if ($sError == '') {
 	$objHoja = $objExcel->getActiveSheet();
 	$objHoja->setTitle(substr($sTituloRpt, 0, 30));
 	$objContenedor = $objHoja;
-	$sColTope = 'J';
+	$sColTope = 'N';
 	//Imagen del encabezado
 	$sImagenSuperior = $APP->rutacomun . 'imagenes/rpt_cabeza.jpg';
 	PHPExcel_Justificar_Celda_HorizontalCentro($objContenedor, 'A1');
@@ -191,14 +221,16 @@ if ($sError == '') {
 	$iFila++;
 	$iFilaBase = $iFila;
 	$aTitulos = array(
-		'Col0', 'Col1', 'Col2', 'Col3', 'Col4',
-		'Col5', 'Col6', 'Col7', 'Col8', 'Col9'
+		'Convocatoria', 'Fecha Inscripción', 'Estado', 'Tipo Doc', 'Documento',
+		'Nombre Candidato', 'Periodo', 'Escuela', 'Programa', 'Zona',
+		'Centro', 'Tipología', 'Subtipología', 'Correo Institucional'
 	);
 	$aAnchos = array(
-		13, 13, 13, 13, 13,
-		13, 13, 13, 13, 13
+		25, 17, 13, 8, 13,
+		30, 30, 30, 30, 25,
+		15, 15, 15, 30
 	);
-	for ($k = 0; $k <= 9; $k++) {
+	for ($k = 0; $k <= 13; $k++) {
 		PHPEXCEL_Escribir($objHoja, $k, $iFila, $aTitulos[$k]);
 		$sColumna = columna_Letra($k);
 		$objHoja->getColumnDimension($sColumna)->setWidth($aAnchos[$k]);
@@ -236,8 +268,26 @@ if ($sError == '') {
 			$et_visa40idconvocatoria = $avisa40idconvocatoria[$fila['visa40idconvocatoria']];
 		}
 		PHPEXCEL_Escribir($objHoja, 0, $iFila, $et_visa40idconvocatoria);
-		PHPEXCEL_Escribir($objHoja, 1, $iFila, $fila['visa40idtercero']);
-		PHPEXCEL_Escribir($objHoja, 2, $iFila, $fila['visa40estado']);
+		$et_visa40fechainsc = fecha_desdenumero($fila['visa40fechainsc']);
+		PHPEXCEL_Escribir($objHoja, 1, $iFila, $et_visa40fechainsc);
+		$et_visa40estado = '';
+		if ($fila['visa40estado'] != '') {
+			if (isset($avisa40estado[$fila['visa40estado']]) == 0) {
+				$sDato = '{' . $fila['visa40estado'] . '}';
+				$sSQL = 'SELECT unad96nombre FROM unad96estado WHERE unad96idmodulo=' . $iCodModulo . ' AND unad96id=' . $fila['visa40estado'] . '';
+				$tablad = $objDB->ejecutasql($sSQL);
+				if ($objDB->nf($tablad) > 0) {
+					$filad = $objDB->sf($tablad);
+					$sDato = $filad['unad96nombre'];
+				}
+				$avisa40estado[$fila['visa40estado']] = $sDato;
+			}
+			$et_visa40estado = $avisa40estado[$fila['visa40estado']];
+		}
+		PHPEXCEL_Escribir($objHoja, 2, $iFila, $et_visa40estado);
+		PHPEXCEL_Escribir($objHoja, 3, $iFila, $fila['C3_td']);
+		PHPEXCEL_Escribir($objHoja, 4, $iFila, $fila['C3_doc']);
+		PHPEXCEL_Escribir($objHoja, 5, $iFila, $fila['C3_nombre']);
 		$et_visa40idperiodo = '';
 		if ($fila['visa40idperiodo'] != 0) {
 			if (isset($avisa40idperiodo[$fila['visa40idperiodo']]) == 0) {
@@ -252,7 +302,7 @@ if ($sError == '') {
 			}
 			$et_visa40idperiodo = $avisa40idperiodo[$fila['visa40idperiodo']];
 		}
-		PHPEXCEL_Escribir($objHoja, 3, $iFila, $et_visa40idperiodo);
+		PHPEXCEL_Escribir($objHoja, 6, $iFila, $et_visa40idperiodo);
 		$et_visa40idescuela = '';
 		if ($fila['visa40idescuela'] != 0) {
 			if (isset($avisa40idescuela[$fila['visa40idescuela']]) == 0) {
@@ -267,7 +317,7 @@ if ($sError == '') {
 			}
 			$et_visa40idescuela = $avisa40idescuela[$fila['visa40idescuela']];
 		}
-		PHPEXCEL_Escribir($objHoja, 4, $iFila, $et_visa40idescuela);
+		PHPEXCEL_Escribir($objHoja, 7, $iFila, $et_visa40idescuela);
 		$et_visa40idprograma = '';
 		if ($fila['visa40idprograma'] != 0) {
 			if (isset($avisa40idprograma[$fila['visa40idprograma']]) == 0) {
@@ -282,7 +332,7 @@ if ($sError == '') {
 			}
 			$et_visa40idprograma = $avisa40idprograma[$fila['visa40idprograma']];
 		}
-		PHPEXCEL_Escribir($objHoja, 5, $iFila, $et_visa40idprograma);
+		PHPEXCEL_Escribir($objHoja, 8, $iFila, $et_visa40idprograma);
 		$et_visa40idzona = '';
 		if ($fila['visa40idzona'] != 0) {
 			if (isset($avisa40idzona[$fila['visa40idzona']]) == 0) {
@@ -297,7 +347,7 @@ if ($sError == '') {
 			}
 			$et_visa40idzona = $avisa40idzona[$fila['visa40idzona']];
 		}
-		PHPEXCEL_Escribir($objHoja, 6, $iFila, $et_visa40idzona);
+		PHPEXCEL_Escribir($objHoja, 9, $iFila, $et_visa40idzona);
 		$et_visa40idcentro = '';
 		if ($fila['visa40idcentro'] != 0) {
 			if (isset($avisa40idcentro[$fila['visa40idcentro']]) == 0) {
@@ -312,10 +362,7 @@ if ($sError == '') {
 			}
 			$et_visa40idcentro = $avisa40idcentro[$fila['visa40idcentro']];
 		}
-		PHPEXCEL_Escribir($objHoja, 7, $iFila, $et_visa40idcentro);
-		PHPEXCEL_Escribir($objHoja, 8, $iFila, $fila['visa40fechainsc']);
-		PHPEXCEL_Escribir($objHoja, 9, $iFila, $fila['visa40fechaadmision']);
-		PHPEXCEL_Escribir($objHoja, 10, $iFila, $fila['visa40numcupo']);
+		PHPEXCEL_Escribir($objHoja, 10, $iFila, $et_visa40idcentro);
 		$et_visa40idtipologia = '';
 		if ($fila['visa40idtipologia'] != 0) {
 			if (isset($avisa40idtipologia[$fila['visa40idtipologia']]) == 0) {
@@ -346,8 +393,7 @@ if ($sError == '') {
 			$et_visa40idsubtipo = $avisa40idsubtipo[$fila['visa40idsubtipo']];
 		}
 		PHPEXCEL_Escribir($objHoja, 12, $iFila, $et_visa40idsubtipo);
-		PHPEXCEL_Escribir($objHoja, 13, $iFila, $fila['visa40idminuta']);
-		PHPEXCEL_Escribir($objHoja, 14, $iFila, $fila['visa40idresolucion']);
+		PHPEXCEL_Escribir($objHoja, 13, $iFila, $fila['C3_correoins']);
 		$iFila++;
 	}
 	$objDB->CerrarConexion();

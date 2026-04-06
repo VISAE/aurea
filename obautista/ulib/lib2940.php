@@ -525,7 +525,7 @@ function f2940_TablaDetalleV2($aParametros, $objDB, $bDebug = false)
 	if ((int)$bconvocatoria != 0) {
 		$sSQLadd1 = $sSQLadd1 . 'TB.visa40idconvocatoria=' . $bconvocatoria . ' AND ';
 	}
-	if ((int)$bestado != 0) {
+	if ($bestado != '') {
 		$sSQLadd1 = $sSQLadd1 . 'TB.visa40estado=' . $bestado . ' AND ';
 	}
 	if ((int)$btipologia != 0) {
@@ -859,6 +859,19 @@ function f2940_db_GuardarV2b($DATA, $objDB, $bDebug = false, $idTercero = 0, $iC
 	if ($DATA['visa40estado'] == '') {
 		$DATA['visa40estado'] = 0;
 	}
+	if ($DATA['visa40fechainsc'] == '') {
+		$DATA['visa40fechainsc'] = 0;
+	}
+	if ($DATA['visa40numcupo'] == '') {
+		$DATA['visa40numcupo'] = 0;
+	}
+	if ($DATA['visa40idtipologia'] == '') {
+		$DATA['visa40idtipologia'] = 0;
+	}
+	if ($DATA['visa40idsubtipo'] == '') {
+		$DATA['visa40idsubtipo'] = 0;
+	}
+	*/
 	if ($DATA['visa40idperiodo'] == '') {
 		$DATA['visa40idperiodo'] = 0;
 	}
@@ -874,24 +887,9 @@ function f2940_db_GuardarV2b($DATA, $objDB, $bDebug = false, $idTercero = 0, $iC
 	if ($DATA['visa40idcentro'] == '') {
 		$DATA['visa40idcentro'] = 0;
 	}
-	if ($DATA['visa40fechainsc'] == '') {
-		$DATA['visa40fechainsc'] = 0;
-	}
-	*/
 	if ($DATA['visa40fechaadmision'] == '') {
 		$DATA['visa40fechaadmision'] = 0;
 	}
-	/*
-	if ($DATA['visa40numcupo'] == '') {
-		$DATA['visa40numcupo'] = 0;
-	}
-	if ($DATA['visa40idtipologia'] == '') {
-		$DATA['visa40idtipologia'] = 0;
-	}
-	if ($DATA['visa40idsubtipo'] == '') {
-		$DATA['visa40idsubtipo'] = 0;
-	}
-	*/
 	// -- Seccion para validar los posibles causales de error.
 	$sSepara = ', ';
 	if ((int)$DATA['visa40idsubtipo'] == 0) {
@@ -910,23 +908,21 @@ function f2940_db_GuardarV2b($DATA, $objDB, $bDebug = false, $idTercero = 0, $iC
 		//$DATA['visa40fechainsc'] = fecha_DiaMod();
 		$sError = $ERR['visa40fechainsc'] . $sSepara . $sError;
 	}
-	/*
-	if ($DATA['visa40idcentro'] == '') {
+	if ($DATA['visa40idcentro'] == 0) {
 		$sError = $ERR['visa40idcentro'] . $sSepara . $sError;
 	}
-	if ($DATA['visa40idzona'] == '') {
+	if ($DATA['visa40idzona'] == 0) {
 		$sError = $ERR['visa40idzona'] . $sSepara . $sError;
 	}
-	if ($DATA['visa40idprograma'] == '') {
+	if ($DATA['visa40idprograma'] == 0) {
 		$sError = $ERR['visa40idprograma'] . $sSepara . $sError;
 	}
-	if ($DATA['visa40idescuela'] == '') {
+	if ($DATA['visa40idescuela'] == 0) {
 		$sError = $ERR['visa40idescuela'] . $sSepara . $sError;
 	}
-	if ($DATA['visa40idperiodo'] == '') {
+	if ($DATA['visa40idperiodo'] == 0) {
 		$sError = $ERR['visa40idperiodo'] . $sSepara . $sError;
 	}
-	*/
 	if ($DATA['visa40estado'] == '') {
 		$sError = $ERR['visa40estado'] . $sSepara . $sError;
 	}
@@ -953,6 +949,7 @@ function f2940_db_GuardarV2b($DATA, $objDB, $bDebug = false, $idTercero = 0, $iC
 	$bQuitarCodigo = false;
 	$sCampoCodigo = '';
 	$visa35idtipo = 0;
+	$visa35total_inscritos = 0;
 	$bEnFechaLimInsc = true;
 	$bEnFechaRevDocs = true;
 	$bCumpleArchivos = true;
@@ -979,28 +976,37 @@ function f2940_db_GuardarV2b($DATA, $objDB, $bDebug = false, $idTercero = 0, $iC
 			$sSQLadd = '';
 			$fila = $objDB->sf($tabla);
 			$visa35idtipo = $fila['visa35idtipo'];
+			$visa35total_inscritos = $fila['visa35total_inscritos'];
 			if ($DATA['visa40estado'] == 0) { // Borrador
+				if ($iHoy < $fila['visa35fecha_apertura']) {
+					$sFecha = fecha_desdenumero($fila['visa35fecha_apertura']);
+					$sError = $ERR['visa40fecha_apertura'] . $sFecha;
+				}
+				if ($iHoy > $fila['visa35fecha_cierra']) {
+					$sFecha = fecha_desdenumero($fila['visa35fecha_cierra']);
+					$sError = $ERR['visa40fecha_cierra'] . $sFecha;
+				}
 				if ($iHoy > $fila['visa35fecha_liminscrip']) {
 					$bEnFechaLimInsc = false;
-					$sError = $ERR['visa40fecha_liminscrip'];
+					$sError = $ERR['visa40fecha_liminscrip'] . $sSepara . $sError;
 				}
 			}
 			if ($DATA['visa40estado'] == 3) { // Devolución de documentos
 				if ($iHoy > $fila['visa35fecha_limrevdoc']) {
-					$sError = $ERR['visa40fecha_limrevdoc'];
+					$sError = $ERR['visa40fecha_limrevdoc'] . $sSepara . $sError;
 				}
 			}
 			if ($bEnFechaLimInsc) {
 				$iCupos = $fila['visa35numcupos'] - $fila['visa35total_inscritos'];
 				if ($iCupos <= 0) {
-					$sError = $ERR['visa40numcupos'];
+					$sError = $ERR['visa40numcupos'] . $sSepara . $sError;
 				}
 			}
 			if ($sError == '') {
 				$bCumpleRol = false;
 				if ((!$bCumpleRol) && ($fila['visa34rolestudiante'] == 1)) {
 					$sProgramas = '0';
-					$sSQL = 'SELECT core01idtercero, GROUP_CONCAT(core01idprograma) AS programas FROM core01estprograma WHERE core01idestado=0 AND core01idtercero=' . $DATA['visa40idtercero'] . ' GROUP BY core01idtercero';
+					$sSQL = 'SELECT core01idtercero, GROUP_CONCAT(core01idprograma) AS programas FROM core01estprograma WHERE core01idestado IN (0,7) AND core01idtercero=' . $DATA['visa40idtercero'] . ' GROUP BY core01idtercero';
 					$tablaPro = $objDB->ejecutasql($sSQL);
 					if ($filaPro = $objDB->sf($tablaPro)) {
 						$sProgramas = $filaPro['programas'];
@@ -1036,11 +1042,13 @@ function f2940_db_GuardarV2b($DATA, $objDB, $bDebug = false, $idTercero = 0, $iC
 					$tablaRol = $objDB->ejecutasql($sSQL);
 					if ($objDB->nf($tablaRol) > 0) {
 						$filaRol = $objDB->sf($tablaRol);
-						$DATA['visa40idperiodo'] = $filaRol['core16peraca'];
-						$DATA['visa40idescuela'] = $filaRol['core16idescuela'];
-						$DATA['visa40idprograma'] = $filaRol['core16idprograma'];
-						$DATA['visa40idzona'] = $filaRol['core16idzona'];
-						$DATA['visa40idcentro'] = $filaRol['core16idcead'];
+						if ($DATA['visa40estado'] < 5) { // Inscrito
+							$DATA['visa40idperiodo'] = $filaRol['core16peraca'];
+							$DATA['visa40idescuela'] = $filaRol['core16idescuela'];
+							$DATA['visa40idprograma'] = $filaRol['core16idprograma'];
+							$DATA['visa40idzona'] = $filaRol['core16idzona'];
+							$DATA['visa40idcentro'] = $filaRol['core16idcead'];
+						}
 						$bCumpleRol = true;
 					} else {
 						$sError = $ERR['visa34rolactivo'] . $ETI['visa34rolestudiante'] . $sSepara . $sError;
@@ -1081,23 +1089,37 @@ function f2940_db_GuardarV2b($DATA, $objDB, $bDebug = false, $idTercero = 0, $iC
 			$DATA['visa40numcupo'] = 0;
 			$DATA['visa40idminuta'] = 0;
 			$DATA['visa40idresolucion'] = 0;
-		} else {			
+		} else {		
+			$iSiguienteEstado = 5; // Inscrito	
 			$sSQL = 'SELECT T42.visa42titulo, T42.visa42obligatorio, T43.visa43idarchivo, T43.visa43fechaaprob 
 			FROM visa43inscripdocs AS T43, visa42convanexo AS T42 
 			WHERE T43.visa43idinscripcion=' . $DATA['visa40id'] . ' AND T42.visa42idtipo=' . $visa35idtipo . ' AND T43.visa43iddocumento=T42.visa42id';
 			$tabla = $objDB->ejecutasql($sSQL);
 			while ($fila = $objDB->sf($tabla)) {
-				if (($fila['visa43idarchivo'] == 0) && ($fila['visa42obligatorio'] == 1)) {
-					$sError = $ERR['visa40faltaarchivo'] . $fila['visa42titulo'] . $sSepara . $sError;
-					$bCumpleArchivos = false;
+				if ($fila['visa42obligatorio'] == 1) {
+					if ($fila['visa43fechaaprob'] == 0) {
+						$iSiguienteEstado = 1;
+					}
+					if ($fila['visa43idarchivo'] == 0) {
+						$sError = $ERR['visa40faltaarchivo'] . $fila['visa42titulo'] . $sSepara . $sError;
+						$bCumpleArchivos = false;
+					}
 				}
 			}
 			if ($bCumpleArchivos) {
-				list($sErrorC, $sDebugC, $sMensaje) = f2940_CambiaEstado($DATA['visa40id'], $DATA['visa40estado'], 1, '', 0, $objDB, $bDebug);
+				list($sErrorC, $sDebugC, $sMensaje) = f2940_CambiaEstado($DATA['visa40id'], $DATA['visa40estado'], $iSiguienteEstado, '', 0, $objDB, $bDebug);
 				$sDebug = $sDebug . $sDebugC;
 				if ($sErrorC == '') {
-					$DATA['visa40estado'] = 1;
-					$DATA['visa40fechainsc'] = $iHoy;
+					$DATA['visa40estado'] = $iSiguienteEstado;
+					if ($iSiguienteEstado == 5) {
+						if ($DATA['visa40numcupo'] == 0) {
+							$sSQL = 'UPDATE visa35convocatoria SET visa35total_inscritos=visa35total_inscritos+1 WHERE visa35id=' . $DATA['visa40idconvocatoria'];
+							$result = $objDB->ejecutasql($sSQL);
+							$DATA['visa40numcupo'] = $visa35total_inscritos + 1;
+							$sSQL = 'UPDATE visa40inscripcion SET visa40numcupo=' . $DATA['visa40numcupo'] . ' WHERE visa40id=' . $DATA['visa40id'] . ' AND visa40idconvocatoria=' . $DATA['visa40idconvocatoria'] . '';
+							$result = $objDB->ejecutasql($sSQL);
+						}
+					}
 				} else {
 					$sError = $sError . $sErrorC;
 				}
@@ -1245,12 +1267,15 @@ function f2940_db_Eliminar($visa40id, $objDB, $bDebug = false)
 	$iTipoError = 0;
 	$sDebug = '';
 	$visa40id = numeros_validar($visa40id);
+	$visa40estado = 0;
+	$bEliminarAnexos = false;
 	// Traer los datos para hacer las validaciones.
 	if ($sError == '') {
 		$sSQL = 'SELECT * FROM visa40inscripcion WHERE visa40id=' . $visa40id . '';
 		$tabla = $objDB->ejecutasql($sSQL);
 		if ($objDB->nf($tabla) > 0) {
 			$filabase = $objDB->sf($tabla);
+			$visa40estado = $filabase['visa40estado'];
 		} else {
 			$sError = 'No se encuentra el registro solicitado {Ref: ' . $visa40id . '}';
 		}
@@ -1259,7 +1284,11 @@ function f2940_db_Eliminar($visa40id, $objDB, $bDebug = false)
 		$sSQL = 'SELECT 1 FROM visa43inscripdocs WHERE visa43idinscripcion=' . $filabase['visa40id'] . '';
 		$tabla = $objDB->ejecutasql($sSQL);
 		if ($objDB->nf($tabla) > 0) {
-			$sError = 'Existen Anexos creados, no es posible eliminar';
+			if ($visa40estado < 5) { // Inscrito
+				$bEliminarAnexos = true;
+			} else {
+				$sError = 'Existen Anexos creados, no es posible eliminar';
+			}
 		}
 	}
 	if ($sError == '') {
@@ -1303,8 +1332,10 @@ function f2940_db_Eliminar($visa40id, $objDB, $bDebug = false)
 		}
 	}
 	if ($sError == '') {
-		//$sSQL = 'DELETE FROM visa43inscripdocs WHERE visa43idinscripcion=' . $filabase['visa40id'] . '';
-		//$tabla = $objDB->ejecutasql($sSQL);
+		if ($bEliminarAnexos) {
+			$sSQL = 'DELETE FROM visa43inscripdocs WHERE visa43idinscripcion=' . $filabase['visa40id'] . '';
+			$tabla = $objDB->ejecutasql($sSQL);
+		}
 		//$sSQL = 'DELETE FROM visa44anotaciones WHERE visa44idinscripcion=' . $filabase['visa40id'] . '';
 		//$tabla = $objDB->ejecutasql($sSQL);
 		//$sSQL = 'DELETE FROM visa45convpruebares WHERE visa45idinscripcion=' . $filabase['visa40id'] . '';
@@ -1356,6 +1387,9 @@ function f2940_CambiaEstado($visa40id, $iEstadoOrigen, $iEstadoDestino, $sDetall
 		$sSQL = 'UPDATE visa40inscripcion SET visa40estado=' . $iEstadoDestino . '' . $sDatosAdd . ' WHERE visa40id=' . $visa40id . '';
 		$result = $objDB->ejecutasql($sSQL);
 		seg_auditar($iCodModulo, $_SESSION['unad_id_tercero'], 3, $visa40id, $sInfoCambio, $objDB);
+		if ($iEstadoDestino >= 3) { // Devolución Documentos
+			$bNotificar = true;
+		}
 	}
 	if ($bNotificar) {
 		list($sError, $sDebugN, $sMensaje) = f2940_Notificar($visa40id, $objDB, $bDebug);
@@ -1371,32 +1405,76 @@ function f2940_Notificar($visa40id, $objDB, $bDebug = false)
 	$sMensaje = '';
 	$iHoy = fecha_DiaMod();
 	$idInteresado = 0;
-	$sSQL = 'SELECT * 
-	FROM visa40inscripcion AS TB
-	WHERE TB.visa40id=' . $visa40id . '';
+	$sInteresado = '';
+	$sConvocatoria = '';
+	$sEstado = '';
+	$sEnlace = '';
+	$iCodModulo = 2940;
+	$sSQL = 'SELECT TB.visa40estado, TB.visa40idtercero, T35.visa35nombre, T11.unad11razonsocial, T96.unad96nombre,
+	T35.visa35id, T35.visa35fecha_apertura, T35.visa35fecha_cierra
+	FROM visa40inscripcion AS TB, visa35convocatoria AS T35, unad11terceros AS T11, unad96estado AS T96
+	WHERE TB.visa40id>0 AND TB.visa40idconvocatoria=T35.visa35id AND TB.visa40idtercero=T11.unad11id AND TB.visa40estado=T96.unad96id AND TB.visa40id=' . $visa40id . ' AND T96.unad96idmodulo=' . $iCodModulo . '';
 	$tabla = $objDB->ejecutasql($sSQL);
 	if ($objDB->nf($tabla) > 0) {
 		$filabase = $objDB->sf($tabla);
-		$idInteresado = $filabase['id_interesado'];
+		$idInteresado = $filabase['visa40idtercero'];
 		$visa40estado = $filabase['visa40estado'];
+		$sInteresado = $filabase['unad11razonsocial'];
+		$sConvocatoria = $filabase['visa35nombre'];
+		$sEstado = strtoupper($filabase['unad96nombre']);
+		$sDatos = url_encode($filabase['visa35fecha_apertura'] . '|' . $filabase['visa35fecha_cierra'] . '|' . $filabase['visa35id']);
+		$sEnlace = 'https://campus0b.unad.edu.co/campus/visaeinscripcampus.php?u=' . $sDatos;
 	} else {
 		$sError = 'No se ha encontrado el registro solicitado [Ref ' . $visa40id . ']';
 	}
 	if ($sError == '') {
-		$sTituloMensaje = 'Notificación de ... ' . fecha_hoy() . ' ' . html_TablaHoraMin(fecha_hora(), fecha_minuto()) . '';
-		$sCuerpo = 'Estimado usuario:<br><br>';
+		$sTituloMensaje = 'Cambio de Estado Inscripción: ' . $sConvocatoria . '';
+		$sCuerpo = '<br><b>' . $sInteresado . '</b>, cordial saludo:<br><br>';
 		switch ($visa40estado) {
 			case 0:
+			case 1:
+				break;
+			case 3:
+				$sCuerpo = $sCuerpo . 'Su inscripci&oacute;n ha pasado a estado: <b>' . $sEstado . '</b>.<br>';
+				$sCuerpo = $sCuerpo . 'Se solicita amablemente revisar y de ser necesario, volver a cargar los documentos anexos requeridos para completar el proceso de inscripci&oacute;n a la convocatoria, ';
+				$sCuerpo = $sCuerpo . 'ya que se han identificado inconsistencias o informaci&oacute;n faltante.<br>';
+				$sCuerpo = $sCuerpo . 'Agradecemos realizar este ajuste a la mayor brevedad posible.<br><br>';
+				break;
+			case 5:
+			case 7:
+			case 8:
+			case 9:
+			case 11:
+			case 17:
+				$sCuerpo = $sCuerpo . 'Su inscripci&oacute;n ha pasado a estado: <b>' . $sEstado . '</b>.<br><br>';
 				break;
 		}
 	}
 	if ($sError == '') {
-		list($sCorreoUsuario, $sErrorN, $sDebugM) = AUREA_CorreoNotifica($idSolicitante, $objDB, $bDebug);
+		list($sCorreoUsuario, $sErrorN, $sDebugM) = AUREA_CorreoNotifica($idInteresado, $objDB, $bDebug);
 		if ($sCorreoUsuario == '') {
 			$sError = 'El usuario no registra correo de notificaciones.';
 		}
 	}
 	if ($sError == '') {
+		$sCuerpo = $sCuerpo . '<table border="0" cellpadding="10" cellspacing="0" width="50%" style="width: 50%; max-width: 50%; min-width: 50%;">';
+		$sCuerpo = $sCuerpo . '<tbody>';
+		$sCuerpo = $sCuerpo . '<tr>';
+		$sCuerpo = $sCuerpo . '<td align="center" bgcolor="#F0B429" style="font-size:22px;">';
+		$sCuerpo = $sCuerpo . '<font face="Arial, Helvetica, sans-serif" color="#005883">';
+		$sCuerpo = $sCuerpo . '<a style="padding: 10px 20px; color: #005883; font-size: 12px; text-decoration: none; word-wrap: break-word;" target="_blank" href="' . $sEnlace . '">';
+		$sCuerpo = $sCuerpo . '<span style="font-size: 24px;">Enlace de inscripci&oacute;n</span>';
+		$sCuerpo = $sCuerpo . '</a>';
+		$sCuerpo = $sCuerpo . '</font>';
+		$sCuerpo = $sCuerpo . '</td>';
+		$sCuerpo = $sCuerpo . '</tr>';
+		$sCuerpo = $sCuerpo . '<tr>';
+		$sCuerpo = $sCuerpo . '<td height="5">';
+		$sCuerpo = $sCuerpo . '</td>';
+		$sCuerpo = $sCuerpo . '</tr>';
+		$sCuerpo = $sCuerpo . '</tbody>';
+		$sCuerpo = $sCuerpo . '</table>';
+		$sCuerpo = $sCuerpo . 'Cordialmente:<br><br>Vicerrector&iacute;a de Servicios a Aspirantes, Estudiantes y Egresados VISAE<br><br>';
 		$sCuerpo = $sCuerpo . AUREA_HTML_NoResponderSII();
 		$sCorreoCopia = '';
 		$sCuerpo = AUREA_HTML_EncabezadoCorreo($sTituloMensaje) . $sCuerpo . AUREA_HTML_PieCorreo();

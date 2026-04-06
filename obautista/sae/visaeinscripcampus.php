@@ -94,6 +94,7 @@ require $APP->rutacomun . 'libdatos.php';
 require $APP->rutacomun . 'libhtml.php';
 require $APP->rutacomun . 'xajax/xajax_core/xajax.inc.php';
 require $APP->rutacomun . 'unad_xajax.php';
+require $APP->rutacomun . 'libmail.php';
 if (($bPeticionXAJAX) && ($_SESSION['unad_id_tercero'] == 0)) {
 	// viene por xajax.
 	$xajax = new xajax();
@@ -750,9 +751,16 @@ if ($bPuedeGuardar) {
 	list($visa40idsubtipo_nombre, $sErrorDet) = tabla_campoxid('visa37convsubtipo', 'visa37nombre', 'visa37id', $_REQUEST['visa40idsubtipo'], '{' . $ETI['msg_sindato'] . '}', $objDB);
 	$html_visa40idsubtipo = html_oculto('visa40idsubtipo', $_REQUEST['visa40idsubtipo'], $visa40idsubtipo_nombre);
 }
-$visa40idconvocatoria_nombre = '&nbsp;';
+$visa40idconvocatoria_nombre = '{' . $ETI['msg_sindato'] . '}';
+$visa40idconvocatoria_presen = '';
 if ((int)$_REQUEST['visa40idconvocatoria'] != 0) {
-	list($visa40idconvocatoria_nombre, $sErrorDet) = tabla_campoxid('visa35convocatoria', 'visa35nombre', 'visa35id', $_REQUEST['visa40idconvocatoria'], '{' . $ETI['msg_sindato'] . '}', $objDB);
+	$sSQL = 'SELECT visa35nombre, visa35presentacion FROM visa35convocatoria WHERE visa35id=' . $_REQUEST['visa40idconvocatoria'];
+	$tabla = $objDB->ejecutasql($sSQL);
+	if ($objDB->nf($tabla) > 0) {
+		$fila = $objDB->sf($tabla);
+		$visa40idconvocatoria_nombre = cadena_tildes($fila['visa35nombre']);
+		$visa40idconvocatoria_presen = cadena_tildes($fila['visa35presentacion']);
+	}
 }
 $html_visa40idconvocatoria = html_oculto('visa40idconvocatoria', $_REQUEST['visa40idconvocatoria'], $visa40idconvocatoria_nombre);
 $visa40fechainsc_nombre = '{' . $ETI['msg_sindato'] . '}';
@@ -1269,6 +1277,18 @@ echo html_oculto('visa40numcupo', $_REQUEST['visa40numcupo']);
 ?>
 </div>
 </label>
+<?php
+if ($visa40idconvocatoria_presen != '') {
+?>
+<div class="salto1px"></div>
+<div class="GrupoCamposAyuda">
+<?php
+echo $visa40idconvocatoria_presen;
+?>
+</div>
+<?php
+}
+?>
 <div class="salto1px"></div>
 <div class="GrupoCampos450">
 <label class="TituloGrupo">
