@@ -530,14 +530,14 @@ function f3005_db_Guardar($DATA, $objDB, $bDebug = false)
 		}
 	}
 	if ($sError == '') {
-		$sSQL = 'SELECT core01idzona AS idzona, core011idcead AS idcead, core01idescuela AS idescuela, core01idprograma AS idprograma, core01peracainicial as idperiodo 
+		$sSQL = 'SELECT core01idzona AS idzona, core011idcead AS idcead, core01idescuela AS idescuela, core01idprograma AS idprograma, core01peracainicial AS idperiodo, core01contestado AS idcontinuidad
 		FROM core01estprograma
 		WHERE core01idtercero = ' . $DATA['saiu05idsolicitante'] . ' AND core01idestado NOT IN (11, 12) 
 		UNION
-		SELECT unad11idzona AS idzona, unad11idcead AS idcead, unad11idescuela AS idescuela, unad11idprograma AS idprograma, 0 as idperiodo 
+		SELECT unad11idzona AS idzona, unad11idcead AS idcead, unad11idescuela AS idescuela, unad11idprograma AS idprograma, 0 AS idperiodo, 100 AS idcontinuidad 
 		FROM unad11terceros
 		WHERE unad11id = ' . $DATA['saiu05idsolicitante'] . '
-		ORDER BY idperiodo DESC' . '';
+		ORDER BY idcontinuidad, idperiodo DESC' . '';
 		$result = $objDB->ejecutasql($sSQL);
 		if ($objDB->nf($result) > 0) {
 			$fila = $objDB->sf($result);

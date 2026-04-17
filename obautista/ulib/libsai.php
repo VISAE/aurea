@@ -142,7 +142,7 @@ function unad11_Mostrar_v2SAI($aParametros)
 		$sSQL = 'SELECT core01idestado, core01idescuela, core01idprograma, core01idzona, core011idcead 
 		FROM core01estprograma 
 		WHERE core01idtercero=' . $idTercero . ' AND core01idestado NOT IN (11, 12) 
-		ORDER BY core01peracainicial DESC';
+		ORDER BY core01contestado, core01peracainicial DESC';
 		$tabla = $objDB->ejecutasql($sSQL);
 		if ($objDB->nf($tabla) > 0) {
 			$fila = $objDB->sf($tabla);
@@ -151,7 +151,7 @@ function unad11_Mostrar_v2SAI($aParametros)
 			$idZona = $fila['core01idzona'];
 			$idCead = $fila['core011idcead'];
 			$bConAdicionales = true;
-			switch ($fila['core011idcead']) {
+			switch ($fila['core01idestado']) {
 				case -2: // Candidato
 				case -1: // Admitido
 				case 9: // Retirado
