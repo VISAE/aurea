@@ -307,7 +307,12 @@ $mensajes_2943 = $APP->rutacomun . 'lg/lg_2943_' . $sIdioma . '.php';
 if (!file_exists($mensajes_2943)) {
 	$mensajes_2943 = $APP->rutacomun . 'lg/lg_2943_es.php';
 }
+$mensajes_2944 = $APP->rutacomun . 'lg/lg_2944_' . $sIdioma . '.php';
+if (!file_exists($mensajes_2944)) {
+	$mensajes_2944 = $APP->rutacomun . 'lg/lg_2944_es.php';
+}
 require $mensajes_2943;
+require $mensajes_2944;
 // -- Si esta cargando la pagina por primer vez se revisa si requiere auditar y se manda a hacer un limpiar (paso -1)
 if (isset($_REQUEST['paso']) == 0) {
 	$_REQUEST['paso'] = -1;
@@ -319,6 +324,8 @@ if (isset($_REQUEST['paso']) == 0) {
 require $APP->rutacomun . 'lib2940.php';
 // -- 2943 Anexos
 require $APP->rutacomun . 'lib2943.php';
+// -- 2944 Anotaciones
+require $APP->rutacomun . 'lib2944.php';
 $xajax = new xajax();
 $xajax->configure('javascript URI', $APP->rutacomun . 'xajax/');
 $xajax->register(XAJAX_FUNCTION, 'unad11_Mostrar_v2');
@@ -337,6 +344,7 @@ $xajax->register(XAJAX_FUNCTION, 'f2943_Guardar');
 $xajax->register(XAJAX_FUNCTION, 'f2943_Traer');
 $xajax->register(XAJAX_FUNCTION, 'f2943_HtmlTabla');
 $xajax->register(XAJAX_FUNCTION, 'f2943_PintarLlaves');
+$xajax->register(XAJAX_FUNCTION, 'f2944_HtmlTablaCampus');
 $xajax->processRequest();
 if ($bPeticionXAJAX) {
 	die(); // Esto hace que las llamadas por xajax terminen aquí.
@@ -485,6 +493,61 @@ if ((int)$_REQUEST['paso'] > 0) {
 	$_REQUEST['visa43usuarioaprueba'] = numeros_validar($_REQUEST['visa43usuarioaprueba']);
 	$_REQUEST['visa43usuarioaprueba_td'] = cadena_Validar($_REQUEST['visa43usuarioaprueba_td']);
 	$_REQUEST['visa43usuarioaprueba_doc'] = cadena_Validar($_REQUEST['visa43usuarioaprueba_doc']);
+	//Anotaciones
+	if (isset($_REQUEST['paginaf2944']) == 0) {
+		$_REQUEST['paginaf2944'] = 1;
+	}
+	if (isset($_REQUEST['lppf2944']) == 0) {
+		$_REQUEST['lppf2944'] = 20;
+	}
+	if (isset($_REQUEST['boculta2944']) == 0) {
+		$_REQUEST['boculta2944'] = 0;
+	}
+	if (isset($_REQUEST['visa44idinscripcion']) == 0) {
+		$_REQUEST['visa44idinscripcion'] = '';
+	}
+	if (isset($_REQUEST['visa44consec']) == 0) {
+		$_REQUEST['visa44consec'] = '';
+	}
+	if (isset($_REQUEST['visa44id']) == 0) {
+		$_REQUEST['visa44id'] = '';
+	}
+	if (isset($_REQUEST['visa44alcance']) == 0) {
+		$_REQUEST['visa44alcance'] = '';
+	}
+	if (isset($_REQUEST['visa44nota']) == 0) {
+		$_REQUEST['visa44nota'] = '';
+	}
+	if (isset($_REQUEST['visa44usuario']) == 0) {
+		$_REQUEST['visa44usuario'] = 0;
+		//$_REQUEST['visa44usuario'] =  $idTercero;
+	}
+	if (isset($_REQUEST['visa44usuario_td']) == 0) {
+		$_REQUEST['visa44usuario_td'] = $APP->tipo_doc;
+	}
+	if (isset($_REQUEST['visa44usuario_doc']) == 0) {
+		$_REQUEST['visa44usuario_doc'] = '';
+	}
+	if (isset($_REQUEST['visa44fecha']) == 0) {
+		$_REQUEST['visa44fecha'] = $iHoy;
+	}
+	if (isset($_REQUEST['visa44hora']) == 0) {
+		$_REQUEST['visa44hora'] = '';
+	}
+	if (isset($_REQUEST['visa44minuto']) == 0) {
+		$_REQUEST['visa44minuto'] = '';
+	}
+	$_REQUEST['visa44idinscripcion'] = numeros_validar($_REQUEST['visa44idinscripcion']);
+	$_REQUEST['visa44consec'] = numeros_validar($_REQUEST['visa44consec']);
+	$_REQUEST['visa44id'] = numeros_validar($_REQUEST['visa44id']);
+	$_REQUEST['visa44alcance'] = numeros_validar($_REQUEST['visa44alcance']);
+	$_REQUEST['visa44nota'] = cadena_Validar($_REQUEST['visa44nota']);
+	$_REQUEST['visa44usuario'] = numeros_validar($_REQUEST['visa44usuario']);
+	$_REQUEST['visa44usuario_td'] = cadena_Validar($_REQUEST['visa44usuario_td']);
+	$_REQUEST['visa44usuario_doc'] = cadena_Validar($_REQUEST['visa44usuario_doc']);
+	$_REQUEST['visa44fecha'] = numeros_validar($_REQUEST['visa44fecha']);
+	$_REQUEST['visa44hora'] = numeros_validar($_REQUEST['visa44hora']);
+	$_REQUEST['visa44minuto'] = numeros_validar($_REQUEST['visa44minuto']);
 }
 // Espacio para inicializar otras variables
 if (isset($_REQUEST['csv_separa']) == 0) {
@@ -814,6 +877,7 @@ $aParametros[109] = 1;
 list($sTabla2940, $sDebugTabla) = f2940_TablaDetalleV2($aParametros, $objDB, $bDebug);
 $sDebug = $sDebug . $sDebugTabla;
 $sTabla2943 = '';
+$sTabla2944 = '';
 if ($_REQUEST['paso'] != 0) {
 	//Anexos
 	$aParametros2943[0] = $_REQUEST['visa40id'];
@@ -823,6 +887,15 @@ if ($_REQUEST['paso'] != 0) {
 	$aParametros2943[103] = 1;
 	//$aParametros2943[104] = $_REQUEST['blistar2943'];
 	list($sTabla2943, $sDebugTabla) = f2943_TablaDetalleV2($aParametros2943, $objDB, $bDebug);
+	$sDebug = $sDebug . $sDebugTabla;
+	//Anotaciones
+	$aParametros2944[0] = $_REQUEST['visa40id'];
+	$aParametros2944[100] = $idTercero;
+	$aParametros2944[101] = $_REQUEST['paginaf2944'];
+	$aParametros2944[102] = $_REQUEST['lppf2944'];
+	//$aParametros2944[103] = $_REQUEST['bnombre2944'];
+	//$aParametros2944[104] = $_REQUEST['blistar2944'];
+	list($sTabla2944, $sDebugTabla) = f2944_TablaDetalleCampus($aParametros2944, $objDB, $bDebug);
 	$sDebug = $sDebug . $sDebugTabla;
 }
 switch ($iPiel) {
@@ -1119,7 +1192,7 @@ switch ($iPiel) {
 if ($_REQUEST['paso'] != 0) {
 ?>
 <script language="javascript" src="<?php echo $APP->rutacomun; ?>jsi/js2943.js"></script>
-<script language="javascript" src="<?php echo $APP->rutacomun; ?>jsi/js2944.js"></script>
+<script language="javascript" src="<?php echo $APP->rutacomun; ?>jsi/js2944.js?v=2"></script>
 <script language="javascript" src="<?php echo $APP->rutacomun; ?>jsi/js2945.js"></script>
 <?php
 }
@@ -1503,6 +1576,7 @@ echo $objForma->htmlBotonSolo('beliminavisa43idarchivo', 'btMiniEliminar', 'elim
 ?>
 <div class="salto1px"></div>
 </div>
+</div>
 <div class="salto1px"></div>
 <?php
 	} //Termina el segundo bloque  condicional - bloque editar.
@@ -1519,6 +1593,33 @@ echo $sTabla2943;
 </div>
 <?php
 // -- Termina Grupo campos 2943 Anexos
+?>
+<?php
+// -- Inicia Grupo campos 2944 Anotaciones
+?>
+<div class="salto1px"></div>
+<div class="GrupoCampos">
+<label class="TituloGrupo">
+<?php
+echo $ETI['titulo_2944'];
+?>
+</label>
+<?php
+if ($_REQUEST['paso'] == 2) {
+?>
+<div class="salto1px"></div>
+<div id="div_f2944detalle">
+<?php
+echo $sTabla2944;
+?>
+</div>
+<?php
+}
+?>
+<div class="salto1px"></div>
+</div>
+<?php
+// -- Termina Grupo campos 2944 Anotaciones
 ?>
 <div class="salto1px"></div>
 <?php
@@ -1575,7 +1676,6 @@ echo $sTabla2940;
 <?php
 // Termina el div_areatrabajo y DIV_areaform
 ?>
-</div>
 </div>
 </div>
 </div>

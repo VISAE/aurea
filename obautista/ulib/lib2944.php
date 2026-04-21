@@ -347,10 +347,8 @@ function f2944_TablaDetalleV2($aParametros, $objDB, $bDebug = false)
 	*/
 	$sSQLadd = '';
 	$sSQLadd1 = '';
+	$sSQLadd = $sSQLadd . ' AND TB.visa44idinscripcion=' . $visa40id;
 	/*
-	if ((int)$aParametros[103] != -1) {
-		$sSQLadd = $sSQLadd . ' AND TB.campo=' . $aParametros[103];
-	}
 	if ($aParametros[103] != '') {
 		$sSQLadd = $sSQLadd . ' AND TB.campo2 LIKE "%' . $aParametros[103] . '%"';
 	}
@@ -447,7 +445,7 @@ function f2944_TablaDetalleV2($aParametros, $objDB, $bDebug = false)
 		if ($filadet['visa44fecha'] != 0) {
 			$et_visa44fecha = $sPrefijo . fecha_desdenumero($filadet['visa44fecha']) . $sSufijo;
 		}
-		$et_visa44alcance = $sPrefijo . formato_numero($filadet['visa44alcance']) . $sSufijo;
+		$et_visa44alcance = $sPrefijo . $avisa44alcance[$filadet['visa44alcance']] . $sSufijo;
 		if ($bAbierta) {
 			$sLink = '<a href="javascript:cargaridf2944(' . $filadet['visa44id'] . ')" class="lnkresalte">' . $ETI['lnk_cargar'] . '</a>';
 		}
@@ -758,8 +756,9 @@ function f2944_PintarLlaves($aParametros)
 	$html_visa44id = '<input id="visa44id" name="visa44id" type="hidden" value="" />';
 	list($visa44usuario_rs, $visa44usuario, $visa44usuario_td, $visa44usuario_doc) = html_tercero('CC', '', $_SESSION['unad_id_tercero'], 0, $objDB);
 	$html_visa44usuario_llaves = html_DivTerceroV8('visa44usuario', $visa44usuario_td, $visa44usuario_doc, true, $objDB, $objCombos, 0, $ETI['ing_doc']);
-	$et_visa44fecha = '00/00/0000';
-	$html_visa44fecha = html_oculto('visa44fecha', 0, $et_visa44fecha);
+	$iHoy = fecha_DiaMod();
+	$et_visa44fecha = fecha_desdenumero($iHoy);
+	$html_visa44fecha = html_oculto('visa44fecha', $iHoy, $et_visa44fecha);
 	$html_visa44hora = html_HoraMin('visa44hora', fecha_hora(), 'visa44minuto', fecha_minuto(), true);
 	$objResponse = new xajaxResponse();
 	$objResponse->assign('div_visa44consec', 'innerHTML', $html_visa44consec);
@@ -774,4 +773,172 @@ function f2944_PintarLlaves($aParametros)
 // -----------------------------------
 // ---- Funciones personalizadas  ----
 // -----------------------------------
-
+function f2944_TablaDetalleCampus($aParametros, $objDB, $bDebug = false)
+{
+	require './app.php';
+	$mensajes_todas = $APP->rutacomun . 'lg/lg_todas_' . $_SESSION['unad_idioma'] . '.php';
+	if (!file_exists($mensajes_todas)) {
+		$mensajes_todas = $APP->rutacomun . 'lg/lg_todas_es.php';
+	}
+	$mensajes_2944 = 'lg/lg_2944_' . $_SESSION['unad_idioma'] . '.php';
+	if (!file_exists($mensajes_2944)) {
+		$mensajes_2944 = 'lg/lg_2944_es.php';
+	}
+	require $mensajes_todas;
+	require $mensajes_2944;
+	if (!is_array($aParametros)) {
+		$aParametros = json_decode(str_replace('\"', '"', $aParametros), true);
+	}
+	if (isset($aParametros[0]) == 0) {
+		$aParametros[0] = -1;
+	}
+	if (isset($aParametros[100]) == 0) {
+		$aParametros[100] = $_SESSION['unad_id_tercero'];
+	}
+	if (isset($aParametros[101]) == 0) {
+		$aParametros[101] = 1;
+	}
+	if (isset($aParametros[102]) == 0) {
+		$aParametros[102] = 20;
+	}
+	for ($k = 103; $k <= 102; $k++) {
+		if (isset($aParametros[$k]) == 0) {
+			$aParametros[$k] = '';
+		}
+	}
+	$idTercero = numeros_validar($aParametros[100]);
+	$sDebug = '';
+	$aParametros[0] = numeros_validar($aParametros[0]);
+	if ($aParametros[0] == '') {
+		$aParametros[0] = -1;
+	}
+	$visa40id = $aParametros[0];
+	if (true) {
+		//Leemos los parametros de entrada.
+		$pagina = numeros_validar($aParametros[101]);
+		$lineastabla = numeros_validar($aParametros[102]);
+	}
+	$sLeyenda = '';
+	$sBotones = '<input id="paginaf2944" name="paginaf2944" type="hidden" value="' . $pagina . '"/>';
+	$sBotones = $sBotones . '<input id="lppf2944" name="lppf2944" type="hidden" value="' . $lineastabla . '"/>';
+	if ($sLeyenda != '') {
+		$sRes = html_salto() . '<div class="GrupoCamposAyuda">' . $sLeyenda . html_salto() . '</div>';
+		return array($sRes . $sBotones, $sDebug);
+		die();
+	}
+	$iPiel = iDefinirPiel($APP, 2);
+	$sSQLadd = '';
+	$sSQLadd = $sSQLadd . ' AND TB.visa44idinscripcion=' . $visa40id;
+	$sTitulos = 'Consec, Id, Usuario, Fecha, Alcance';
+	$registros = 0;
+	$bGigante = false; //En caso de que la tabla sea muy grande pasarlo a true
+	$sLimite = '';
+	$sCampos = 'SELECT TB.visa44fecha, TB.visa44nota';
+	$sConsulta = 'FROM visa44anotaciones AS TB
+	WHERE TB.visa44alcance=2' . $sSQLadd . '';
+	$sOrden = 'ORDER BY TB.visa44fecha';
+	$sSQL = $sCampos . ' ' . $sConsulta . ' ' . $sOrden;
+	$sSQLlista = str_replace("'", "|", $sSQL);
+	$sSQLlista = str_replace('"', "|", $sSQLlista);
+	$sErrConsulta = '<input id="consulta_2944" name="consulta_2944" type="hidden" value="' . $sSQLlista . '"/>';
+	$sErrConsulta = $sErrConsulta . '<input id="titulos_2944" name="titulos_2944" type="hidden" value="' . $sTitulos . '"/>';
+	if ($bDebug) {
+		$sDebug = $sDebug . log_debug('Consulta 2944: ' . $sSQL . '');
+	}
+	$tabladetalle = $objDB->ejecutasql($sSQL);
+	if ($tabladetalle == false) {
+		$registros = 0;
+		$sErrConsulta = $sErrConsulta . '..<input id="err" name="err" type="hidden" value="' . $sSQL . ' ' . $objDB->serror . '"/>';
+		//$sLeyenda = $sSQL;
+	} else {
+		if (!$bGigante) {
+			$registros = $objDB->nf($tabladetalle);
+			if ($registros == 0) {
+				return array($sErrConsulta . $sBotones, $sDebug);
+			}
+			if ((($registros - 1) / $lineastabla) < ($pagina - 1)) {
+				$pagina = (int)(($registros - 1) / $lineastabla) + 1;
+			}
+			if ($registros > $lineastabla) {
+				$rbase = ($pagina - 1) * $lineastabla;
+				$sSQLLimitado = $objDB->sSQLPaginar($sCampos, $sConsulta, $sOrden, $rbase, $lineastabla);
+				$tabladetalle = $objDB->ejecutasql($sSQLLimitado);
+			}
+		}
+	}
+	$res = $sErrConsulta . $sLeyenda;
+	$sClaseTabla = 'table--secondary';
+	if ($iPiel == 1) {
+		$sClaseTabla = 'tablaapp';
+	}
+	$res = $res . '<div class="table-responsive">';
+	$res = $res . '<table border="0" align="center" cellpadding="0" cellspacing="2" class="' . $sClaseTabla . '">';
+	$res = $res . '<thead class="fondoazul"><tr>';
+	$res = $res . '<th><b>' . $ETI['visa44fecha'] . '</b></th>';
+	$res = $res . '<th><b>' . $ETI['visa44nota'] . '</b></th>';
+	$res = $res . '<th class="flex gap-1 justify-end">';
+	$res = $res . '' . html_paginador('paginaf2944', $registros, $lineastabla, $pagina, 'paginarf2944Campus()') . '';
+	$res = $res . '' . html_lpp('lppf2944', $lineastabla, 'paginarf2944Campus()') . '';
+	$res = $res . '</th>';
+	$res = $res . '</tr></thead><tbody>';
+	$tlinea = 1;
+	while ($filadet = $objDB->sf($tabladetalle)) {
+		$sPrefijo = '';
+		$sSufijo = '';
+		$sClass = ' class="resaltetabla"';
+		$sLink = '';
+		if (false) {
+			$sPrefijo = '<b>';
+			$sSufijo = '</b>';
+		}
+		if (($tlinea % 2) != 0) {
+			$sClass = '';
+		}
+		$tlinea++;
+		$et_visa44fecha = '';
+		if ($filadet['visa44fecha'] != 0) {
+			$et_visa44fecha = $sPrefijo . formato_FechaLargaDesdeNumero($filadet['visa44fecha'], true) . $sSufijo;
+		}
+		$et_visa44nota = $sPrefijo . cadena_tildes($filadet['visa44nota']) . $sSufijo;
+		$res = $res . '<tr' . $sClass . '>';
+		$res = $res . '<td>' . $et_visa44fecha . '</td>';
+		$res = $res . '<td colspan="2">' . $et_visa44nota . '</td>';
+		$res = $res . '</tr>';
+	}
+	$res = $res . '</tbody></table>';
+	$res = $res . '<div class="salto5px"></div>';
+	$res = $res . '</div>';
+	$objDB->liberar($tabladetalle);
+	return array(cadena_codificar($res), $sDebug);
+}
+function f2944_HtmlTablaCampus($aParametros)
+{
+	$_SESSION['u_ultimominuto'] = iminutoavance();
+	$sError = '';
+	$bDebug = false;
+	$sDebug = '';
+	$opts = $aParametros;
+	if (!is_array($opts)) {
+		$opts = json_decode(str_replace('\"', '"', $opts), true);
+	}
+	if (isset($opts[99]) != 0) {
+		if ($opts[99] == 1) {
+			$bDebug = true;
+		}
+	}
+	require './app.php';
+	$objDB = new clsdbadmin($APP->dbhost, $APP->dbuser, $APP->dbpass, $APP->dbname);
+	if ($APP->dbpuerto != '') {
+		$objDB->dbPuerto = $APP->dbpuerto;
+	}
+	$objDB->xajax();
+	list($sDetalle, $sDebugTabla) = f2944_TablaDetalleCampus($aParametros, $objDB, $bDebug);
+	$sDebug = $sDebug . $sDebugTabla;
+	$objDB->CerrarConexion();
+	$objResponse = new xajaxResponse();
+	$objResponse->assign('div_f2944detalle', 'innerHTML', $sDetalle);
+	if ($bDebug) {
+		$objResponse->assign('div_debug', 'innerHTML', $sDebug);
+	}
+	return $objResponse;
+}

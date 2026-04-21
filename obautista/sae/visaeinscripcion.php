@@ -537,8 +537,7 @@ if ((int)$_REQUEST['paso'] > 0) {
 		$_REQUEST['visa44usuario_doc'] = '';
 	}
 	if (isset($_REQUEST['visa44fecha']) == 0) {
-		$_REQUEST['visa44fecha'] = '';
-		//$_REQUEST['visa44fecha'] = $iHoy;
+		$_REQUEST['visa44fecha'] = $iHoy;
 	}
 	if (isset($_REQUEST['visa44hora']) == 0) {
 		$_REQUEST['visa44hora'] = '';
@@ -796,8 +795,7 @@ if ($bLimpiaHijos) {
 	$_REQUEST['visa44usuario'] = $idTercero;
 	$_REQUEST['visa44usuario_td'] = $APP->tipo_doc;
 	$_REQUEST['visa44usuario_doc'] = '';
-	$_REQUEST['visa44fecha'] = '';
-	//$_REQUEST['visa44fecha'] = $iHoy;
+	$_REQUEST['visa44fecha'] = $iHoy;
 	$_REQUEST['visa44hora'] = fecha_hora();
 	$_REQUEST['visa44minuto'] = fecha_minuto();
 	$_REQUEST['visa45idinscripcion'] = '';
@@ -934,6 +932,10 @@ if ($bEdita2944) {
 	list($visa44usuario_rs, $_REQUEST['visa44usuario'], $_REQUEST['visa44usuario_td'], $_REQUEST['visa44usuario_doc']) = html_tercero($_REQUEST['visa44usuario_td'], $_REQUEST['visa44usuario_doc'], $_REQUEST['visa44usuario'], 0, $objDB);
 	$bOculto = true;
 	$html_visa44usuario = html_DivTerceroV8('visa44usuario', $_REQUEST['visa44usuario_td'], $_REQUEST['visa44usuario_doc'], $bOculto, $objDB, $objCombos, 0, $ETI['ing_doc']);
+	$objCombos->nuevo('visa44alcance', $_REQUEST['visa44alcance'], true, '{' . $ETI['msg_seleccione'] . '}');
+	$objCombos->addArreglo($avisa44alcance, $ivisa44alcance);
+	$sSQL = '';
+	$html_visa44alcance = $objCombos->html($sSQL, $objDB);
 }
 if ($bEdita2945) {
 	$html_visa45idprueba = f2945_HTMLComboV2_visa45idprueba($objDB, $objCombos, $_REQUEST['visa45idprueba']);
@@ -1484,7 +1486,7 @@ switch ($iPiel) {
 if ($_REQUEST['paso'] != 0) {
 ?>
 <script language="javascript" src="<?php echo $APP->rutacomun; ?>jsi/js2943.js"></script>
-<script language="javascript" src="<?php echo $APP->rutacomun; ?>jsi/js2944.js"></script>
+<script language="javascript" src="<?php echo $APP->rutacomun; ?>jsi/js2944.js?v=2"></script>
 <script language="javascript" src="<?php echo $APP->rutacomun; ?>jsi/js2945.js"></script>
 <?php
 }
@@ -2082,16 +2084,19 @@ echo $ETI['visa44alcance'];
 ?>
 </label>
 <label class="Label130">
-
-<input id="visa44alcance" name="visa44alcance" type="text" value="<?php echo $_REQUEST['visa44alcance']; ?>" class="diez" maxlength="10" placeholder="<?php echo $ETI['ing_vr']; ?>" />
+<?php
+echo $html_visa44alcance;
+?>
 </label>
+<div class="salto1px"></div>
+<div class="GrupoCampos450">
 <label class="txtAreaS">
 <?php
 echo $ETI['visa44nota'];
 ?>
 <textarea id="visa44nota" name="visa44nota" placeholder="<?php echo $ETI['ing_campo'] . $ETI['visa44nota']; ?>"><?php echo $_REQUEST['visa44nota']; ?></textarea>
 </label>
-<div class="salto1px"></div>
+</div>
 <div class="GrupoCampos450">
 <label class="TituloGrupo">
 <?php
@@ -2108,28 +2113,31 @@ echo $html_visa44usuario;
 <div class="salto1px"></div>
 <div id="div_visa44usuario" class="L"><?php echo $visa44usuario_rs; ?></div>
 <div class="salto1px"></div>
-</div>
-<label class="Label130">
+<label class="Label60">
 <?php
 echo $ETI['visa44fecha'];
 ?>
 </label>
-<label class="Label220">
+<label class="Label90">
 <div id="div_visa44fecha">
 <?php
 echo html_oculto('visa44fecha', $_REQUEST['visa44fecha'], fecha_desdenumero($_REQUEST['visa44fecha'])); //formato_FechaLargaDesdeNumero
 ?>
 </div>
 </label>
-<label class="Label130">
+<label class="Label60">
 <?php
 echo $ETI['visa44hora'];
 ?>
 </label>
+<label class="Label90">
 <div class="campo_HoraMin" id="div_visa44hora">
 <?php
 echo html_HoraMin('visa44hora', $_REQUEST['visa44hora'], 'visa44minuto', $_REQUEST['visa44minuto'], true);
 ?>
+</div>
+</label>
+<div class="salto1px"></div>
 </div>
 <div class="salto1px"></div>
 <label class="Label130">&nbsp;</label>

@@ -94,3 +94,8 @@ function imprime2944() {
 	window.document.frmlista.submit();
 }
 
+function paginarf2944Campus() {
+	params = paramsf2944();
+	document.getElementById('div_f2944detalle').innerHTML = '<div class="GrupoCamposAyuda"><div class="MarquesinaMedia">Procesando datos, por favor espere.</div></div><input id="paginaf2944" name="paginaf2944" type="hidden" value="' + params[101] + '" /><input id="lppf2944" name="lppf2944" type="hidden" value="' + params[102] + '" />';
+	xajax_f2944_HtmlTablaCampus(params);
+}

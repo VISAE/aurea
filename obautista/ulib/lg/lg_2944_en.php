@@ -31,5 +31,6 @@ $ERR['visa44fecha'] = '' . $ETI['visa44fecha'] . ' is incorrect';
 $ERR['visa44hora'] = 'The field ' . $ETI['visa44hora'] . ' is required';
 $ERR['visa44minuto'] = 'The field ' . $ETI['visa44minuto'] . ' is required';
 
-
+$avisa44alcance = array('', 'Interna', 'P&uacute;blica');
+$ivisa44alcance = 3;
 
