@@ -17,10 +17,10 @@ $ETI['msg_visa38consec'] = 'Consecutivo actual';
 $ETI['msg_visa38consec_nuevo'] = 'Nuevo consecutivo';
 $ETI['visa38id'] = 'Ref :';
 $ETI['visa38nombre'] = 'Nombre prueba';
-$ETI['visa38tipoprueba'] = 'Tipoprueba';
-$ETI['visa38puntajemaximo'] = 'Puntaje';
-$ETI['visa38puntajeaproba'] = 'Puntajeaproba';
-$ETI['visa38activo'] = 'Activo';
+$ETI['visa38tipoprueba'] = 'Tipo de prueba';
+$ETI['visa38puntajemaximo'] = 'Puntaje m&aacute;ximo';
+$ETI['visa38puntajeaproba'] = 'Puntaje de aprobaci&oacute;n';
+$ETI['visa38activo'] = 'Activa';
 $ETI['visa38idnav'] = 'Idnav';
 $ETI['visa38idmoodle'] = 'Idmoodle';
 
@@ -38,3 +38,5 @@ $ERR['visa38idmoodle'] = 'Necesita el dato ' . $ETI['visa38idmoodle'];
 $avisa38activo = array('', '');
 $ivisa38activo = 0;
 
+$avisa38tipoprueba = array('', 'Prueba de conocimiento (t&eacute;cnica)', 'Prueba psicot&eacute;cnica', 'Prueba de competencias (conductuales)', 'Entrevista', 'Prueba de personalidad', 'Prueba f&iacute;sica o m&eacute;dica', 'Prueba de idiomas', 'Prueba pr&aacute;ctica o de desempe&ntilde;o');
+$ivisa38tipoprueba = 9;

@@ -14,10 +14,29 @@ $ETI['visa45idinscripcion'] = 'Inscripcion';
 $ETI['visa45idprueba'] = 'Prueba';
 $ETI['visa45id'] = 'Ref :';
 $ETI['visa45puntaje'] = 'Puntaje';
+$ETI['visa45convocatoria'] = 'Convocatoria';
+$ETI['visa45idtercero'] = 'Participante';
+$ETI['visa45fechainsc'] = 'Fecha inscripci&oacute;n';
+$ETI['visa45prueba'] = 'Nombre prueba';
+$ETI['visa45aprueba'] = 'Aprueba';
+$ETI['visa45resultado'] = 'Resultado';
+$ETI['visa45puntajevacio'] = "Sin puntaje";
+$ETI['visa45puntajemaximo'] = 'Puntaje m&aacute;ximo';
+$ETI['visa45puntajeaproba'] = 'Puntaje aprobaci&oacute;n';
+$ETI['visa45idperiodo'] = 'Periodo';
+$ETI['visa45idescuela'] = 'Escuela';
+$ETI['visa45idprograma'] = 'Programa';
+$ETI['visa45idzona'] = 'Zona';
+$ETI['visa45idcentro'] = 'Centro';
 
 $ERR['visa45idinscripcion'] = 'The field ' . $ETI['visa45idinscripcion'] . ' is required';
 $ERR['visa45idprueba'] = 'The field ' . $ETI['visa45idprueba'] . ' is required';
 $ERR['visa45id'] = 'The field ' . $ETI['visa45id'] . ' is required';
 $ERR['visa45puntaje'] = 'The field ' . $ETI['visa45puntaje'] . ' is required';
 
+$ETI['msg_bdocumento'] = 'Documento';
+$ETI['msg_bnombre'] = 'Nombre';
+$ETI['msg_bresultado'] = 'Resultado';
 
+$avisa45resultado = array('', 'Aprueba', 'No Aprueba', 'Sin puntaje');
+$ivisa45resultado = 4;

@@ -339,39 +339,117 @@ if (isset($_REQUEST['visa45id']) == 0) {
 if (isset($_REQUEST['visa45puntaje']) == 0) {
 	$_REQUEST['visa45puntaje'] = '';
 }
+if (isset($_REQUEST['visa45idconvocatoria']) == 0) {
+	$_REQUEST['visa45idconvocatoria'] = '';
+}
+if (isset($_REQUEST['visa45fechainsc']) == 0) {
+	$_REQUEST['visa45fechainsc'] = '';
+}
+if (isset($_REQUEST['visa45puntajemaximo']) == 0) {
+	$_REQUEST['visa45puntajemaximo'] = '';
+}
+if (isset($_REQUEST['visa45puntajeaproba']) == 0) {
+	$_REQUEST['visa45puntajeaproba'] = '';
+}
+if (isset($_REQUEST['visa45idtercero_td']) == 0) {
+	$_REQUEST['visa45idtercero_td'] = '';
+}
+if (isset($_REQUEST['visa45idtercero_doc']) == 0) {
+	$_REQUEST['visa45idtercero_doc'] = '';
+}
+if (isset($_REQUEST['visa45idtercero']) == 0) {
+	$_REQUEST['visa45idtercero'] = '';
+}
+if (isset($_REQUEST['visa45idperiodo']) == 0) {
+	$_REQUEST['visa45idperiodo'] = '';
+}
+if (isset($_REQUEST['visa45idescuela']) == 0) {
+	$_REQUEST['visa45idescuela'] = '';
+}
+if (isset($_REQUEST['visa45idprograma']) == 0) {
+	$_REQUEST['visa45idprograma'] = '';
+}
+if (isset($_REQUEST['visa45idzona']) == 0) {
+	$_REQUEST['visa45idzona'] = '';
+}
+if (isset($_REQUEST['visa45idcentro']) == 0) {
+	$_REQUEST['visa45idcentro'] = '';
+}
 $_REQUEST['visa45idinscripcion'] = numeros_validar($_REQUEST['visa45idinscripcion']);
 $_REQUEST['visa45idprueba'] = numeros_validar($_REQUEST['visa45idprueba']);
 $_REQUEST['visa45id'] = numeros_validar($_REQUEST['visa45id']);
 $_REQUEST['visa45puntaje'] = numeros_validar($_REQUEST['visa45puntaje']);
+$_REQUEST['visa45idconvocatoria'] = numeros_validar($_REQUEST['visa45idconvocatoria']);
+$_REQUEST['visa45fechainsc'] = cadena_Validar($_REQUEST['visa45fechainsc']);
+$_REQUEST['visa45puntajemaximo'] = numeros_validar($_REQUEST['visa45puntajemaximo']);
+$_REQUEST['visa45puntajeaproba'] = numeros_validar($_REQUEST['visa45puntajeaproba']);
+$_REQUEST['visa45idtercero_td'] = cadena_Validar($_REQUEST['visa45idtercero_td']);
+$_REQUEST['visa45idtercero_doc'] = cadena_Validar($_REQUEST['visa45idtercero_doc']);
+$_REQUEST['visa45idtercero'] = numeros_validar($_REQUEST['visa45idtercero']);
+$_REQUEST['visa45idperiodo'] = numeros_validar($_REQUEST['visa45idperiodo']);
+$_REQUEST['visa45idescuela'] = numeros_validar($_REQUEST['visa45idescuela']);
+$_REQUEST['visa45idprograma'] = numeros_validar($_REQUEST['visa45idprograma']);
+$_REQUEST['visa45idzona'] = numeros_validar($_REQUEST['visa45idzona']);
+$_REQUEST['visa45idcentro'] = numeros_validar($_REQUEST['visa45idcentro']);
 // Espacio para inicializar otras variables
 if (isset($_REQUEST['csv_separa']) == 0) {
 	$_REQUEST['csv_separa'] = ';';
 }
+if (isset($_REQUEST['bdocumento']) == 0) {
+	$_REQUEST['bdocumento'] = '';
+}
 if (isset($_REQUEST['bnombre']) == 0) {
 	$_REQUEST['bnombre'] = '';
+}
+if (isset($_REQUEST['bresultado']) == 0) {
+	$_REQUEST['bresultado'] = '';
 }
 /*
 if (isset($_REQUEST['blistar']) == 0) {
 	$_REQUEST['blistar'] = '';
 }
 */
+$_REQUEST['bdocumento'] = cadena_Validar($_REQUEST['bdocumento']);
+$_REQUEST['bnombre'] = cadena_Validar($_REQUEST['bnombre']);
+$_REQUEST['bresultado'] = numeros_validar($_REQUEST['bresultado']);
 //Si Modifica o Elimina Cargar los campos
 if (($_REQUEST['paso'] == 1) || ($_REQUEST['paso'] == 3)) {
 	if ($_REQUEST['paso'] == 1) {
-		$sSQLcondi = 'visa45idinscripcion=' . $_REQUEST['visa45idinscripcion'] . ' AND visa45idprueba=' . $_REQUEST['visa45idprueba'] . '';
+		$sSQLcondi = 'AND TB.visa40id=' . $_REQUEST['visa45idinscripcion'] . ' AND T2.visa38id=' . $_REQUEST['visa45idprueba'] . '';
 	} else {
-		$sSQLcondi = 'visa45id=' . $_REQUEST['visa45id'] . '';
+		$sSQLcondi = 'AND T3.visa45id=' . $_REQUEST['visa45id'] . '';
 	}
-	$sSQL = 'SELECT * FROM visa45convpruebares WHERE ' . $sSQLcondi;
+	$sSQL = 'SELECT TB.visa40id, TB.visa40idconvocatoria, T2.visa38id, TB.visa40fechainsc, T3.visa45puntaje, 
+	T2.visa38puntajemaximo, T2.visa38puntajeaproba, T3.visa45id, TB.visa40idperiodo, TB.visa40idescuela, 
+	TB.visa40idprograma, TB.visa40idzona, TB.visa40idcentro, TB.visa40idtercero 
+	FROM visa40inscripcion AS TB JOIN visa35convocatoria AS T1 ON TB.visa40idconvocatoria=T1.visa35id JOIN visa38convpruebas AS T2 ON T1.visa35idtipo=T2.visa38idtipo 
+	LEFT JOIN visa45convpruebares AS T3 ON T2.visa38id=T3.visa45idprueba AND TB.visa40id=T3.visa45idinscripcion
+	WHERE TB.visa40idconvocatoria=T1.visa35id AND T1.visa35idtipo=T2.visa38idtipo ' . $sSQLcondi . '';
+	if ($bDebug) {
+		$sDebug = $sDebug . log_debug('Consulta SQL: ' . $sSQL . '');
+	}
 	$tabla = $objDB->ejecutasql($sSQL);
 	if ($objDB->nf($tabla) > 0) {
 		$fila = $objDB->sf($tabla);
-		$_REQUEST['visa45idinscripcion'] = $fila['visa45idinscripcion'];
-		$_REQUEST['visa45idprueba'] = $fila['visa45idprueba'];
+		$_REQUEST['visa45idinscripcion'] = $fila['visa40id'];
+		$_REQUEST['visa45idprueba'] = $fila['visa38id'];
 		$_REQUEST['visa45id'] = $fila['visa45id'];
 		$_REQUEST['visa45puntaje'] = $fila['visa45puntaje'];
+		$_REQUEST['visa45idconvocatoria'] = $fila['visa40idconvocatoria'];
+		$_REQUEST['visa45fechainsc'] = $fila['visa40fechainsc'];
+		$_REQUEST['visa45puntajemaximo'] = $fila['visa38puntajemaximo'];
+		$_REQUEST['visa45puntajeaproba'] = $fila['visa38puntajeaproba'];
+		$_REQUEST['visa45idtercero'] = $fila['visa40idtercero'];
+		$_REQUEST['visa45idperiodo'] = $fila['visa40idperiodo'];
+		$_REQUEST['visa45idescuela'] = $fila['visa40idescuela'];
+		$_REQUEST['visa45idprograma'] = $fila['visa40idprograma'];
+		$_REQUEST['visa45idzona'] = $fila['visa40idzona'];
+		$_REQUEST['visa45idcentro'] = $fila['visa40idcentro'];
 		$bcargo = true;
 		$_REQUEST['paso'] = 2;
+		if ($fila['visa45puntaje'] === null) {
+			$_REQUEST['paso'] = 0;
+		}
 		$_REQUEST['boculta2945'] = 0;
 		$bLimpiaHijos = true;
 	} else {
@@ -407,6 +485,18 @@ if ($_REQUEST['paso'] == -1) {
 	$_REQUEST['visa45idprueba'] = '';
 	$_REQUEST['visa45id'] = '';
 	$_REQUEST['visa45puntaje'] = '';
+	$_REQUEST['visa45idconvocatoria'] = '';
+	$_REQUEST['visa45fechainsc'] = '';
+	$_REQUEST['visa45puntajemaximo'] = '';
+	$_REQUEST['visa45puntajeaproba'] = '';
+	$_REQUEST['visa45idtercero_td'] = '';
+	$_REQUEST['visa45idtercero_doc'] = '';
+	$_REQUEST['visa45idtercero'] = '';
+	$_REQUEST['visa45idperiodo'] = '';
+	$_REQUEST['visa45idescuela'] = '';
+	$_REQUEST['visa45idprograma'] = '';
+	$_REQUEST['visa45idzona'] = '';
+	$_REQUEST['visa45idcentro'] = '';
 	$_REQUEST['paso'] = 0;
 }
 if ($bLimpiaHijos) {
@@ -436,6 +526,7 @@ if ((int)$_REQUEST['paso'] != 0) {
 }
 //DATOS PARA COMPLETAR EL FORMULARIO
 $sNombreUsuario = '';
+$sEtiSinDato = '{' . $ETI['msg_sindato'] . '}';
 //Crear los controles que requieran llamado a base de datos
 $objCombos = new clsHtmlCombos();
 $objForma = new clsHtmlForma($iPiel);
@@ -450,25 +541,38 @@ if ($seg_1707 == 1) {
 	$objCombos->iAncho = 60;
 	$html_deb_tipodoc = $objCombos->html('', $objDB, 145);
 }
-if ((int)$_REQUEST['paso'] == 0) {
-	$html_visa45idprueba = f2945_HTMLComboV2_visa45idprueba($objDB, $objCombos, $_REQUEST['visa45idprueba']);
-} else {
-	$visa45idprueba_nombre = '&nbsp;';
-	if ((int)$_REQUEST['visa45idprueba'] != 0) {
-		list($visa45idprueba_nombre, $sErrorDet) = tabla_campoxid('visa38convpruebas', 'visa38nombre', 'visa38id', $_REQUEST['visa45idprueba'], '{' . $ETI['msg_sindato'] . '}', $objDB);
-	}
-	$html_visa45idprueba = html_oculto('visa45idprueba', $_REQUEST['visa45idprueba'], $visa45idprueba_nombre);
+list($visa45idtercero_rs, $_REQUEST['visa45idtercero'], $_REQUEST['visa45idtercero_td'], $_REQUEST['visa45idtercero_doc']) = html_tercero($_REQUEST['visa45idtercero_td'], $_REQUEST['visa45idtercero_doc'], $_REQUEST['visa45idtercero'], 0, $objDB);
+$html_visa45idtercero = $sEtiSinDato;
+if ((int) $_REQUEST['visa45idtercero'] != 0) {
+	$html_visa45idtercero = $_REQUEST['visa45idtercero_td'] . ' ' . $_REQUEST['visa45idtercero_doc'];
 }
+list($visa45idconvocatoria_nombre, $sErrorDet) = tabla_campoxid('visa35convocatoria', 'visa35nombre', 'visa35id', $_REQUEST['visa45idconvocatoria'], $sEtiSinDato, $objDB);
+$html_visa45idconvocatoria = html_oculto('visa45idconvocatoria', $_REQUEST['visa45idconvocatoria'], $visa45idconvocatoria_nombre);
+$visa45fechainsc_nombre = formato_fechalarga(fecha_desdenumero($_REQUEST['visa45fechainsc']), true);
+$html_visa45fechainsc = html_oculto('visa45fechainsc', $_REQUEST['visa45fechainsc'], $visa45fechainsc_nombre);
+list($visa45idperiodo_nombre, $sErrorDet) = tabla_campoxid('exte02per_aca', 'exte02nombre', 'exte02id', $_REQUEST['visa45idperiodo'], $sEtiSinDato, $objDB);
+$html_visa45idperiodo = html_oculto('visa45idperiodo', $_REQUEST['visa45idperiodo'], $visa45idperiodo_nombre);
+list($visa45idescuela_nombre, $sErrorDet) = tabla_campoxid('core12escuela', 'core12nombre', 'core12id', $_REQUEST['visa45idescuela'], $sEtiSinDato, $objDB);
+$html_visa45idescuela = html_oculto('visa45idescuela', $_REQUEST['visa45idescuela'], $visa45idescuela_nombre);
+list($visa45idprograma_nombre, $sErrorDet) = tabla_campoxid('core09programa', 'core09nombre', 'core09id', $_REQUEST['visa45idprograma'], $sEtiSinDato, $objDB);
+$html_visa45idprograma = html_oculto('visa45idprograma', $_REQUEST['visa45idprograma'], $visa45idprograma_nombre);
+list($visa45idzona_nombre, $sErrorDet) = tabla_campoxid('unad23zona', 'unad23nombre', 'unad23id', $_REQUEST['visa45idzona'], $sEtiSinDato, $objDB);
+$html_visa45idzona = html_oculto('visa45idzona', $_REQUEST['visa45idzona'], $visa45idzona_nombre);
+list($visa45idcentro_nombre, $sErrorDet) = tabla_campoxid('unad24sede', 'unad24nombre', 'unad24id', $_REQUEST['visa45idcentro'], $sEtiSinDato, $objDB);
+$html_visa45idcentro = html_oculto('visa45idcentro', $_REQUEST['visa45idcentro'], $visa45idcentro_nombre);
+list($visa45idprueba_nombre, $sErrorDet) = tabla_campoxid('visa38convpruebas', 'visa38nombre', 'visa38id', $_REQUEST['visa45idprueba'], $sEtiSinDato, $objDB);
+$html_visa45idprueba = html_oculto('visa45idprueba', $_REQUEST['visa45idprueba'], $visa45idprueba_nombre);
+$html_visa45puntajemaximo = html_oculto('visa45puntajemaximo', $_REQUEST['visa45puntajemaximo'], $_REQUEST['visa45puntajemaximo']);
+$html_visa45puntajeaproba = html_oculto('visa45puntajeaproba', $_REQUEST['visa45puntajeaproba'], $_REQUEST['visa45puntajeaproba']);
 //Alistar datos adicionales
 $id_rpt = 0;
 //$id_rpt=reportes_id(_Identificador_Tipo_Reporte_, $objDB);
-/*
-$objCombos->nuevo('blistar', $_REQUEST['blistar'], true, '{' . $ETI['msg_todos'] . '}');
+$objCombos->nuevo('bresultado', $_REQUEST['bresultado'], true, '{' . $ETI['msg_todos'] . '}');
+$objCombos->addArreglo($avisa45resultado, $ivisa45resultado);
 $objCombos->sAccion = 'paginarf2945()';
 $sSQL = '';
-$html_blistar = $objCombos->html($sSQL, $objDB);
+$html_bresultado = $objCombos->html($sSQL, $objDB);
 //$html_blistar = $objCombos->comboSistema(2945, 1, $objDB, 'paginarf2945()');
-*/
 if (false) {
 	$objCombos->nuevo('csv_separa', $_REQUEST['csv_separa'], false);
 	$objCombos->addItem(',', $ETI['msg_coma']);
@@ -486,8 +590,9 @@ $aParametros[0] = ''; //$_REQUEST['p1_2945'];
 $aParametros[100] = $idTercero;
 $aParametros[101] = $_REQUEST['paginaf2945'];
 $aParametros[102] = $_REQUEST['lppf2945'];
-//$aParametros[103] = $_REQUEST['bnombre'];
-//$aParametros[104] = $_REQUEST['blistar'];
+$aParametros[103] = $_REQUEST['bdocumento'];
+$aParametros[104] = $_REQUEST['bnombre'];
+$aParametros[105] = $_REQUEST['bresultado'];
 list($sTabla2945, $sDebugTabla) = f2945_TablaDetalleV2($aParametros, $objDB, $bDebug);
 $sDebug = $sDebug . $sDebugTabla;
 switch ($iPiel) {
@@ -603,8 +708,9 @@ switch ($iPiel) {
 	}
 
 	function asignarvariables() {
-		//window.document.frmimpp.v3.value = window.document.frmedita.bnombre.value;
-		//window.document.frmimpp.v4.value = window.document.frmedita.bcodigo.value;
+		window.document.frmimpp.v3.value = window.document.frmedita.bdocumento.value;
+		window.document.frmimpp.v4.value = window.document.frmedita.bnombre.value;
+		window.document.frmimpp.v5.value = window.document.frmedita.bresultado.value;
 		window.document.frmimpp.separa.value = window.document.frmedita.csv_separa.value.trim();
 	}
 
@@ -676,8 +782,9 @@ switch ($iPiel) {
 		params[100] = <?php echo $idTercero; ?>;
 		params[101] = window.document.frmedita.paginaf2945.value;
 		params[102] = window.document.frmedita.lppf2945.value;
-		//params[103] = window.document.frmedita.bnombre.value;
-		//params[104] = window.document.frmedita.blistar.value;
+		params[103] = window.document.frmedita.bdocumento.value;
+		params[104] = window.document.frmedita.bnombre.value;
+		params[105] = window.document.frmedita.bresultado.value;
 		document.getElementById('div_f2945detalle').innerHTML = '<div class="GrupoCamposAyuda"><div class="MarquesinaMedia">Procesando datos, por favor espere.</div></div><input id="paginaf2945" name="paginaf2945" type="hidden" value="' + params[101] + '" /><input id="lppf2945" name="lppf2945" type="hidden" value="' + params[102] + '" />';
 		xajax_f2945_HtmlTabla(params);
 	}
@@ -861,33 +968,105 @@ if ($_REQUEST['boculta2945'] != 0) {
 }
 //Mostrar formulario para editar
 ?>
-<label class="Label130">
+<div class="GrupoCampos450">
+<label class="TituloGrupo">
 <?php
-echo $ETI['visa45idinscripcion'];
+echo $ETI['visa45idtercero'];
 ?>
 </label>
-<label class="Label130">
-
+<div class="salto1px"></div>
+<input id="visa45idtercero" name="visa45idtercero" type="hidden" value="<?php echo $_REQUEST['visa45idtercero']; ?>"/>
+<div id="div_visa45idtercero_llaves">
 <?php
-if ($_REQUEST['paso'] != 2) {
+echo '<b>' . $html_visa45idtercero . '</b>';
 ?>
-<input id="visa45idinscripcion" name="visa45idinscripcion" type="text" value="<?php echo $_REQUEST['visa45idinscripcion']; ?>" onchange="RevisaLlave()" class="diez" maxlength="10" placeholder="<?php echo $ETI['ing_vr']; ?>" />
+</div>
+<div class="salto1px"></div>
+<div id="div_visa45idtercero" class="L"><?php echo $visa45idtercero_rs; ?></div>
+<div class="salto5px"></div>
+<label class="Label130">
 <?php
-} else {
-	echo html_oculto('visa45idinscripcion', $_REQUEST['visa45idinscripcion']);
-}
+echo $ETI['visa45convocatoria'];
 ?>
 </label>
+<label class="Label250">
+<?php
+echo $html_visa45idconvocatoria;
+?>
+</label>
+<div class="salto1px"></div>
 <label class="Label130">
 <?php
-echo $ETI['visa45idprueba'];
+echo $ETI['visa45fechainsc'];
+?>
+</label>
+<label class="Label250">
+<?php
+echo $html_visa45fechainsc;
+?>
+</label>
+<input id="visa45idinscripcion" name="visa45idinscripcion" type="hidden" value="<?php echo $_REQUEST['visa45idinscripcion']; ?>" />
+<div class="salto1px"></div>
+</div>
+<div class="GrupoCampos520">
+<label class="Label130">
+<?php
+echo $ETI['visa45idperiodo'];
 ?>
 </label>
 <label>
 <?php
-echo $html_visa45idprueba;
+echo $html_visa45idperiodo;
 ?>
 </label>
+<div class="salto1px"></div>
+<label class="Label130">
+<?php
+echo $ETI['visa45idzona'];
+?>
+</label>
+<label>
+<?php
+echo $html_visa45idzona;
+?>
+</label>
+<div class="salto1px"></div>
+<label class="Label130">
+<?php
+echo $ETI['visa45idcentro'];
+?>
+</label>
+<label>
+<?php
+echo $html_visa45idcentro;
+?>
+</label>
+<div class="salto1px"></div>
+<label class="Label130">
+<?php
+echo $ETI['visa45idescuela'];
+?>
+</label>
+<label>
+<?php
+echo $html_visa45idescuela;
+?>
+</label>
+<div class="salto1px"></div>
+<label class="Label130">
+<?php
+echo $ETI['visa45idprograma'];
+?>
+</label>
+<label>
+<?php
+echo $html_visa45idprograma;
+?>
+</label>
+<div class="salto1px"></div>
+</div>
+<div class="salto1px"></div>
+<div class="GrupoCampos">
 <label class="Label60"<?php echo $sOcultaId; ?>>
 <?php
 echo $ETI['visa45id'];
@@ -898,15 +1077,48 @@ echo $ETI['visa45id'];
 	echo html_oculto('visa45id', $_REQUEST['visa45id'], formato_numero($_REQUEST['visa45id']));
 ?>
 </label>
-<label class="Label130">
+<label class="Label90">
+<?php
+echo $ETI['visa45idprueba'];
+?>
+</label>
+<label>
+<?php
+echo $html_visa45idprueba;
+?>
+</label>
+<div class="salto1px"></div>
+<label class="Label90">
 <?php
 echo $ETI['visa45puntaje'];
 ?>
 </label>
 <label class="Label130">
-
-<input id="visa45puntaje" name="visa45puntaje" type="text" value="<?php echo $_REQUEST['visa45puntaje']; ?>" class="diez" maxlength="10" placeholder="<?php echo $ETI['ing_vr']; ?>" />
+<input id="visa45puntaje" name="visa45puntaje" type="number" value="<?php echo $_REQUEST['visa45puntaje']; ?>" class="diez" maxlength="10" placeholder="<?php echo $ETI['ing_vr']; ?>" />
 </label>
+<label class="Label130">
+<?php
+echo $ETI['visa45puntajemaximo'];
+?>
+</label>
+<label class="Label90">
+<?php
+echo $html_visa45puntajemaximo;
+?>
+</label>
+<label class="Label160">
+<?php
+echo $ETI['visa45puntajeaproba'];
+?>
+</label>
+<label class="Label90">
+<?php
+echo $html_visa45puntajeaproba;
+?>
+</label>
+<div class="salto1px"></div>
+</div>
+<div class="salto1px"></div>
 <?php
 if (false) {
 	//Ejemplo de boton de ayuda
@@ -932,11 +1144,17 @@ echo '<h3>' . $ETI['bloque1'] . '</h3>';
 ?>
 </div>
 <div class="areatrabajo">
-<?php
-if (false) {
-?>
 <div class="ir_derecha">
-<label class="Label90">
+<label class="Label130">
+<?php
+echo $ETI['msg_bdocumento'];
+?>
+</label>
+<label>
+<input id="bdocumento" name="bdocumento" type="text" value="<?php echo $_REQUEST['bdocumento']; ?>" onchange="paginarf2945()" autocomplete="off" />
+</label>
+<div class="salto1px"></div>
+<label class="Label130">
 <?php
 echo $ETI['msg_bnombre'];
 ?>
@@ -944,21 +1162,19 @@ echo $ETI['msg_bnombre'];
 <label>
 <input id="bnombre" name="bnombre" type="text" value="<?php echo $_REQUEST['bnombre']; ?>" onchange="paginarf2945()" autocomplete="off" />
 </label>
-<label class="Label90">
-<?php
-echo $ETI['msg_blistar'];
-?>
-</label>
+<div class="salto1px"></div>
 <label class="Label130">
 <?php
-echo $html_blistar;
+echo $ETI['msg_bresultado'];
+?>
+</label>
+<label>
+<?php
+echo $html_bresultado;
 ?>
 </label>
 </div>
 <div class="salto1px"></div>
-<?php
-}
-?>
 <?php
 echo ' ' . $csv_separa;
 ?>

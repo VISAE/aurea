@@ -355,10 +355,10 @@ if (isset($_REQUEST['visa38activo']) == 0) {
 	$_REQUEST['visa38activo'] = 0;
 }
 if (isset($_REQUEST['visa38idnav']) == 0) {
-	$_REQUEST['visa38idnav'] = '';
+	$_REQUEST['visa38idnav'] = 0;
 }
 if (isset($_REQUEST['visa38idmoodle']) == 0) {
-	$_REQUEST['visa38idmoodle'] = '';
+	$_REQUEST['visa38idmoodle'] = 0;
 }
 $_REQUEST['visa38idtipo'] = numeros_validar($_REQUEST['visa38idtipo']);
 $_REQUEST['visa38consec'] = numeros_validar($_REQUEST['visa38consec']);
@@ -480,8 +480,8 @@ if ($_REQUEST['paso'] == -1) {
 	$_REQUEST['visa38puntajemaximo'] = '';
 	$_REQUEST['visa38puntajeaproba'] = '';
 	$_REQUEST['visa38activo'] = 1;
-	$_REQUEST['visa38idnav'] = '';
-	$_REQUEST['visa38idmoodle'] = '';
+	$_REQUEST['visa38idnav'] = 0;
+	$_REQUEST['visa38idmoodle'] = 0;
 	$_REQUEST['paso'] = 0;
 }
 if ($bLimpiaHijos) {
@@ -544,6 +544,10 @@ if ((int)$_REQUEST['paso'] == 0) {
 	}
 	$html_visa38idtipo = html_oculto('visa38idtipo', $_REQUEST['visa38idtipo'], $visa38idtipo_nombre);
 }
+$objCombos->nuevo('visa38tipoprueba', $_REQUEST['visa38tipoprueba'], true, '{' . $ETI['msg_seleccione'] . '}');
+$objCombos->addArreglo($avisa38tipoprueba, $ivisa38tipoprueba);
+$sSQL = '';
+$html_visa38tipoprueba = $objCombos->html($sSQL, $objDB);
 //Alistar datos adicionales
 $id_rpt = 0;
 //$id_rpt=reportes_id(_Identificador_Tipo_Reporte_, $objDB);
@@ -960,7 +964,7 @@ if ($_REQUEST['boculta2938'] != 0) {
 }
 //Mostrar formulario para editar
 ?>
-<label class="Label130">
+<label class="Label160">
 <?php
 echo $ETI['visa38idtipo'];
 ?>
@@ -1004,43 +1008,27 @@ echo $ETI['visa38id'];
 	echo html_oculto('visa38id', $_REQUEST['visa38id'], formato_numero($_REQUEST['visa38id']));
 ?>
 </label>
-<label class="Label130">
+<div class="salto1px"></div>
+<label class="Label160">
+<?php
+echo $ETI['visa38tipoprueba'];
+?>
+</label>
+<label>
+<?php  
+echo $html_visa38tipoprueba;
+?>
+</label>
+<div class="salto1px"></div>
+<label class="Label160">
 <?php
 echo $ETI['visa38nombre'];
 ?>
 </label>
 <label>
-
 <input id="visa38nombre" name="visa38nombre" type="text" value="<?php echo $_REQUEST['visa38nombre']; ?>" maxlength="50" placeholder="<?php echo $ETI['ing_campo'] . $ETI['visa38nombre']; ?>" />
 </label>
-<label class="Label130">
-<?php
-echo $ETI['visa38tipoprueba'];
-?>
-</label>
-<label class="Label130">
-
-<input id="visa38tipoprueba" name="visa38tipoprueba" type="text" value="<?php echo $_REQUEST['visa38tipoprueba']; ?>" class="diez" maxlength="10" placeholder="<?php echo $ETI['ing_vr']; ?>" />
-</label>
-<label class="Label130">
-<?php
-echo $ETI['visa38puntajemaximo'];
-?>
-</label>
-<label class="Label130">
-
-<input id="visa38puntajemaximo" name="visa38puntajemaximo" type="text" value="<?php echo $_REQUEST['visa38puntajemaximo']; ?>" class="diez" maxlength="10" placeholder="<?php echo $ETI['ing_vr']; ?>" />
-</label>
-<label class="Label130">
-<?php
-echo $ETI['visa38puntajeaproba'];
-?>
-</label>
-<label class="Label130">
-
-<input id="visa38puntajeaproba" name="visa38puntajeaproba" type="text" value="<?php echo $_REQUEST['visa38puntajeaproba']; ?>" class="diez" maxlength="10" placeholder="<?php echo $ETI['ing_vr']; ?>" />
-</label>
-<label class="Label130">
+<label class="Label90">
 <?php
 echo $ETI['visa38activo'];
 ?>
@@ -1050,6 +1038,26 @@ echo $ETI['visa38activo'];
 echo $html_visa38activo;
 ?>
 </label>
+<div class="salto1px"></div>
+<label class="Label160">
+<?php
+echo $ETI['visa38puntajemaximo'];
+?>
+</label>
+<label class="Label130">
+<input id="visa38puntajemaximo" name="visa38puntajemaximo" type="text" value="<?php echo $_REQUEST['visa38puntajemaximo']; ?>" class="diez" maxlength="10" placeholder="<?php echo $ETI['ing_vr']; ?>" />
+</label>
+<label class="Label200">
+<?php
+echo $ETI['visa38puntajeaproba'];
+?>
+</label>
+<label class="Label130">
+<input id="visa38puntajeaproba" name="visa38puntajeaproba" type="text" value="<?php echo $_REQUEST['visa38puntajeaproba']; ?>" class="diez" maxlength="10" placeholder="<?php echo $ETI['ing_vr']; ?>" />
+</label>
+<?php  
+if (false) {
+?>
 <label class="Label130">
 <?php
 echo $ETI['visa38idnav'];
@@ -1066,9 +1074,16 @@ echo $ETI['visa38idmoodle'];
 ?>
 </label>
 <label class="Label130">
-
 <input id="visa38idmoodle" name="visa38idmoodle" type="text" value="<?php echo $_REQUEST['visa38idmoodle']; ?>" class="diez" maxlength="10" placeholder="<?php echo $ETI['ing_vr']; ?>" />
 </label>
+<?php  
+} else {
+?>
+<input id="visa38idnav" name="visa38idnav" type="hidden" value="<?php echo $_REQUEST['visa38idnav']; ?>" />
+<input id="visa38idmoodle" name="visa38idmoodle" type="hidden" value="<?php echo $_REQUEST['visa38idmoodle']; ?>" />
+<?php  
+}
+?>
 <?php
 if (false) {
 	//Ejemplo de boton de ayuda

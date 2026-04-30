@@ -240,7 +240,7 @@ function f2938_TablaDetalleV2($aParametros, $objDB, $bDebug = false)
 	$sCampos = 'SELECT TB.visa38consec, TB.visa38id, T3.visa34nombre, TB.visa38nombre, TB.visa38puntajemaximo, TB.visa38idtipo';
 	$sConsulta = 'FROM visa38convpruebas AS TB, visa34convtipo AS T3 
 	WHERE ' . $sSQLadd1 . ' TB.visa38id>0 AND TB.visa38idtipo=T3.visa34id ' . $sSQLadd . '';
-	$sOrden = 'ORDER BY TB.visa38consec, TB.visa38idtipo';
+	$sOrden = 'ORDER BY TB.visa38idtipo, TB.visa38consec';
 	$sSQL = $sCampos . ' ' . $sConsulta . ' ' . $sOrden;
 	// ------------------------------------------------
 	// Fin de la consulta
@@ -504,12 +504,14 @@ function f2938_db_GuardarV2b($DATA, $objDB, $bDebug = false, $idTercero = 0, $iC
 	*/
 	// -- Seccion para validar los posibles causales de error.
 	$sSepara = ', ';
+	/*
 	if ($DATA['visa38idmoodle'] == '') {
 		$sError = $ERR['visa38idmoodle'] . $sSepara . $sError;
 	}
 	if ($DATA['visa38idnav'] == '') {
 		$sError = $ERR['visa38idnav'] . $sSepara . $sError;
 	}
+	*/
 	if ($DATA['visa38activo'] == '') {
 		$sError = $ERR['visa38activo'] . $sSepara . $sError;
 	}

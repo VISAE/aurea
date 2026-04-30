@@ -166,7 +166,7 @@ function f2945_TablaDetalleV2($aParametros, $objDB, $bDebug = false)
 	if (isset($aParametros[102]) == 0) {
 		$aParametros[102] = 20;
 	}
-	$iNumVariables = 102;
+	$iNumVariables = 105;
 	for ($k = 103; $k <= $iNumVariables; $k++) {
 		if (isset($aParametros[$k]) == 0) {
 			$aParametros[$k] = '';
@@ -179,8 +179,9 @@ function f2945_TablaDetalleV2($aParametros, $objDB, $bDebug = false)
 	// ------------------------------------------------
 	$pagina = numeros_validar($aParametros[101]);
 	$lineastabla = numeros_validar($aParametros[102]);
-	//$bNombre = trim($aParametros[103]);
-	//$bListar = numeros_validar($aParametros[104]);
+	$bdocumento = cadena_Validar(trim($aParametros[103]));
+	$bNombre = cadena_Validar(trim($aParametros[104]));
+	$bresultado = numeros_validar($aParametros[105]);
 	$bAbierta = true;
 	/*
 	$sSQL = 'SELECT Campo FROM Tabla WHERE Id=' . $sValorId;
@@ -211,12 +212,21 @@ function f2945_TablaDetalleV2($aParametros, $objDB, $bDebug = false)
 	*/
 	$sSQLadd = '';
 	$sSQLadd1 = '';
-	/*
-	if ($aParametros[104] != '') {
-		$sSQLadd = $sSQLadd . ' AND TB.campo2 LIKE "%' . $aParametros[104] . '%"';
+	if ($bdocumento != '') {
+		$sSQLadd = $sSQLadd . ' AND T4.unad11doc LIKE "%' . $bdocumento . '%"';
 	}
-	if ($aParametros[104] != '') {
-		$sSQLadd1 = $sSQLadd1 . 'TB.campo2 LIKE "%' . $aParametros[104] . '%" AND ';
+	if ((int)$bresultado != 0) {
+		switch ($bresultado) {
+			case 1:
+				$sSQLadd1 = $sSQLadd1 . 'T3.visa45puntaje>=T2.visa38puntajeaproba AND ';
+				break;
+			case 2:
+				$sSQLadd1 = $sSQLadd1 . 'T3.visa45puntaje<T2.visa38puntajeaproba AND ';
+				break;
+			default:
+				$sSQLadd1 = $sSQLadd1 . 'T3.visa45puntaje IS NULL AND ';
+				break;
+		}
 	}
 	if ($bNombre != '') {
 		$sBase = mb_strtoupper($bNombre);
@@ -224,12 +234,11 @@ function f2945_TablaDetalleV2($aParametros, $objDB, $bDebug = false)
 		for ($k = 1; $k <= count($aNoms); $k++) {
 			$sCadena = $aNoms[$k - 1];
 			if ($sCadena != '') {
-				$sSQLadd = $sSQLadd . ' AND T6.unad11razonsocial LIKE "%' . $sCadena . '%"';
+				$sSQLadd = $sSQLadd . ' AND T4.unad11razonsocial LIKE "%' . $sCadena . '%"';
 				//$sSQLadd1 = $sSQLadd1 . 'TB.unad11razonsocial LIKE "%' . $sCadena . '%" AND ';
 			}
 		}
 	}
-	*/
 	// ------------------------------------------------
 	// Fin de las condiciones de la consulta
 	// ------------------------------------------------
@@ -237,10 +246,13 @@ function f2945_TablaDetalleV2($aParametros, $objDB, $bDebug = false)
 	$registros = 0;
 	$bGigante = false; //En caso de que la tabla sea muy grande pasarlo a true
 	$sLimite = '';
-	$sCampos = 'SELECT TB.visa45id, T2.visa38nombre, TB.visa45idprueba';
-	$sConsulta = 'FROM visa45convpruebares AS TB, visa38convpruebas AS T2 
-	WHERE ' . $sSQLadd1 . ' TB.visa45id>0 AND TB.visa45idprueba=T2.visa38id ' . $sSQLadd . '';
-	$sOrden = 'ORDER BY TB.visa45idprueba';
+	$sCampos = 'SELECT TB.visa40id AS idinscripcion, TB.visa40idconvocatoria, T2.visa38id AS idprueba, T1.visa35nombre, TB.visa40fechainsc, 
+	T2.visa38nombre, T3.visa45puntaje, T2.visa38puntajemaximo, T2.visa38puntajeaproba, T4.unad11tipodoc, 
+	T4.unad11doc, T4.unad11razonsocial';
+	$sConsulta = 'FROM visa40inscripcion AS TB JOIN visa35convocatoria AS T1 ON TB.visa40idconvocatoria=T1.visa35id JOIN visa38convpruebas AS T2 ON T1.visa35idtipo=T2.visa38idtipo 
+	LEFT JOIN visa45convpruebares AS T3 ON T2.visa38id=T3.visa45idprueba AND TB.visa40id=T3.visa45idinscripcion, unad11terceros AS T4
+	WHERE ' . $sSQLadd1 . ' TB.visa40idtercero=T4.unad11id ' . $sSQLadd . '';
+	$sOrden = 'ORDER BY TB.visa40idconvocatoria, TB.visa40id';
 	$sSQL = $sCampos . ' ' . $sConsulta . ' ' . $sOrden;
 	// ------------------------------------------------
 	// Fin de la consulta
@@ -304,14 +316,30 @@ function f2945_TablaDetalleV2($aParametros, $objDB, $bDebug = false)
 	$res = $res . '<div class="table-responsive">';
 	$res = $res . '<table border="0" align="center" cellpadding="0" cellspacing="2" class="' . $sClaseTabla . '">';
 	$res = $res . '<thead class="fondoazul"><tr>';
-	$res = $res . '<th><b>' . $ETI['visa45idprueba'] . '</b></th>';
+	$res = $res . '<th><b>' . $ETI['visa45prueba'] . '</b></th>';
+	$res = $res . '<th><b>' . $ETI['visa45puntaje'] . '</b></th>';
+	$res = $res . '<th><b>' . $ETI['visa45puntajemaximo'] . '</b></th>';
+	$res = $res . '<th><b>' . $ETI['visa45puntajeaproba'] . '</b></th>';
+	$res = $res . '<th><b>' . $ETI['visa45resultado'] . '</b></th>';
 	$res = $res . '<th class="flex gap-1 justify-end">';
 	$res = $res . html_paginador('paginaf2945', $registros, $lineastabla, $pagina, 'paginarf2945()');
 	$res = $res . html_lpp('lppf2945', $lineastabla, 'paginarf2945()');
 	$res = $res . '</th>';
 	$res = $res . '</tr></thead><tbody>';
 	$tlinea = 1;
+	$visa40idconvocatoria = 0;
+	$idinscripcion = 0;
 	while ($filadet = $objDB->sf($tabladetalle)) {
+		if ($filadet['visa40idconvocatoria'] != $visa40idconvocatoria) {
+			$visa40idconvocatoria = $filadet['visa40idconvocatoria'];			
+			$res = $res . '<tr class="fondoazul" align="center"><td colspan="6">' . $ETI['visa45convocatoria'] . ': <b>' . $filadet['visa35nombre'] . '</b></tr>';
+		}
+		if ($filadet['idinscripcion'] != $idinscripcion) {
+			$idinscripcion = $filadet['idinscripcion'];
+			$sFechaInsc = fecha_desdenumero($filadet['visa40fechainsc']);
+			$res = $res . '<tr class="fondoazul" align="center"><td colspan="6">' . $ETI['visa45idtercero'] . ': <b>' . $filadet['unad11tipodoc'] . $filadet['unad11doc'] . ' ' . $filadet['unad11razonsocial'] . '</b><br>';
+			$res = $res . $ETI['visa45fechainsc'] . ': <b>' . $sFechaInsc . '</b></td></tr>';
+		}
 		$sPrefijo = '';
 		$sSufijo = '';
 		$sClass = ' class="resaltetabla"';
@@ -324,12 +352,29 @@ function f2945_TablaDetalleV2($aParametros, $objDB, $bDebug = false)
 			$sClass = '';
 		}
 		$tlinea++;
-		$et_visa45idprueba = $sPrefijo . cadena_notildes($filadet['visa38nombre']) . $sSufijo;
+		$et_visa45prueba = $sPrefijo . $filadet['visa38nombre'] . $sSufijo;
+		$et_visa45puntaje = $sPrefijo . $filadet['visa45puntaje'] . $sSufijo;
+		$et_visa45puntajemaximo = $sPrefijo . $filadet['visa38puntajemaximo'] . $sSufijo;
+		$et_visa45puntajeaproba = $sPrefijo . $filadet['visa38puntajeaproba'] . $sSufijo;
+		$et_visa45resultado = $ETI['visa45puntajevacio'];
+		if ($filadet['visa45puntaje'] === null) {
+			$et_visa45puntaje = $ETI['visa45puntajevacio'];
+		} else {
+			if ($filadet['visa45puntaje'] >= $filadet['visa38puntajeaproba']) {
+				$et_visa45resultado = $sPrefijo . '<span class="verde">' . $ETI['visa45aprueba'] . '</span>' . $sSufijo;
+			} else {
+				$et_visa45resultado = $sPrefijo . '<span class="rojo">' . $ETI['No'] . ' ' . $ETI['visa45aprueba'] . '</span>' . $sSufijo;
+			}
+		}
 		if ($bAbierta) {
-			$sLink = '<a href="javascript:cargaridf2945(' . $filadet['visa45id'] . ')" class="lnkresalte">' . $ETI['lnk_cargar'] . '</a>';
+			$sLink = '<a href="javascript:cargadato(' . $filadet['idinscripcion'] . ',' . $filadet['idprueba'] . ')" class="lnkresalte">' . $ETI['lnk_cargar'] . '</a>';
 		}
 		$res = $res . '<tr' . $sClass . '>';
-		$res = $res . '<td>' . $et_visa45idprueba . '</td>';
+		$res = $res . '<td>' . $et_visa45prueba . '</td>';
+		$res = $res . '<td>' . $et_visa45puntaje . '</td>';
+		$res = $res . '<td>' . $et_visa45puntajemaximo . '</td>';
+		$res = $res . '<td>' . $et_visa45puntajeaproba . '</td>';
+		$res = $res . '<td>' . $et_visa45resultado . '</td>';
 		$res = $res . '<td align="right">' . $sLink . '</td>';
 		$res = $res . '</tr>';
 	}
