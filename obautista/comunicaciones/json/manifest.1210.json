@@ -1,0 +1,26 @@
+{
+  "code": "1210",
+  "name": "Formatos de correo",
+  "version": "1.0.0",
+  "entry": "masiformatocorreo.php",
+  "library": "lib1210.php",
+  "language": [
+    "lg/lg_1210_es.php",
+    "lg/lg_1210_en.php",
+    "lg/lg_1210_pt.php"
+  ],
+  "db-table": [
+    "masi10formato"
+  ],
+  "dependsOn": [
+    ],
+  "lastUpdate": "2026-3-27",
+  "owner": "UNAD",
+  "version-history": [
+    {
+      "version": "1.0.0",
+      "date": "2026-3-27",
+      "notes": "Primer versión"
+    }
+  ]
+}

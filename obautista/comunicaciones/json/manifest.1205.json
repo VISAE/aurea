@@ -1,0 +1,38 @@
+{
+  "code": "1205",
+  "name": "Mensajes masivos",
+  "version": "1.0.0",
+  "entry": "unadmasivo.php",
+  "library": "lib1205.php",
+  "language": [
+    "lg/lg_1205_es.php",
+    "lg/lg_1205_en.php",
+    "lg/lg_1205_pt.php",
+    "lg/lg_1206_es.php",
+    "lg/lg_1206_en.php",
+    "lg/lg_1206_pt.php",
+    "lg/lg_1207_es.php",
+    "lg/lg_1207_en.php",
+    "lg/lg_1207_pt.php",
+    "lg/lg_1208_es.php",
+    "lg/lg_1208_en.php",
+    "lg/lg_1208_pt.php"
+  ],
+  "db-table": [
+    "masi05mensajes"
+  ],
+  "dependsOn": [
+    "lib1206.php",
+    "lib1207.php",
+    "lib1208.php"
+    ],
+  "lastUpdate": "2026-3-23",
+  "owner": "UNAD",
+  "version-history": [
+    {
+      "version": "1.0.0",
+      "date": "2026-3-23",
+      "notes": "Primer versión"
+    }
+  ]
+}

@@ -1,0 +1,20 @@
+{
+  "componente": {
+    "name": "Comunicaciones",
+    "description": "Sistema de Gestión de Mensajes Masivos",
+    "ruta-componente":"comunicaciones/",
+    "version": "1.0.0",
+    "version-history": [
+      {
+        "version": "1.0.0",
+        "date": "2026-03-23",
+        "notes": "Primer versión del componente Comunicaciones"
+      }
+    ],
+    "modules": [
+      "manifest.1200.json", 
+      "manifest.1205.json", 
+      "manifest.1210.json"
+    ]
+  }
+}

@@ -1,0 +1,26 @@
+{
+  "code": "1200",
+  "name": "Parametros",
+  "version": "1.0.0",
+  "entry": "masiparams.php",
+  "library": "lib1200.php",
+  "language": [
+    "lg/lg_1200_es.php",
+    "lg/lg_1200_en.php",
+    "lg/lg_1200_pt.php"
+  ],
+  "db-table": [
+    "masi00config"
+  ],
+  "dependsOn": [
+    ],
+  "lastUpdate": "2026-3-27",
+  "owner": "UNAD",
+  "version-history": [
+    {
+      "version": "1.0.0",
+      "date": "2026-3-27",
+      "notes": "Primer versión"
+    }
+  ]
+}
