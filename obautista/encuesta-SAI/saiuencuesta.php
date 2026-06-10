@@ -10,6 +10,8 @@
  * @param debug = 1  (Opcional), bandera para indicar si se generan datos de depuración
  * @date miércoles, 14 de mayo de 2025
  */
+/*ini_set('display_errors', 1);
+error_reporting(E_ALL);*/
 if (file_exists('./err_control.php')) {
 	require './err_control.php';
 }
@@ -89,12 +91,13 @@ if (!$bPeticionXAJAX) {
 require $APP->rutacomun . 'unad_todas.php';
 require $APP->rutacomun . 'libs/clsdbadmin.php';
 require $APP->rutacomun . 'unad_librerias.php';
+require $APP->rutacomun . 'libaurea.php';
+require $APP->rutacomun . 'libcomp.php';
 require $APP->rutacomun . 'libdatos.php';
 require $APP->rutacomun . 'libhtml.php';
 require $APP->rutacomun . 'xajax/xajax_core/xajax.inc.php';
 require $APP->rutacomun . 'unad_xajax.php';
-require $APP->rutacomun . 'unad_forma_campus.php';
-require $APP->rutacomun . 'libcomp.php';
+require $APP->rutacomun . 'unad_forma_campus_2024.php';
 if (($bPeticionXAJAX) && ($_SESSION['unad_id_tercero'] == 0)) {
 	// viene por xajax.
 	$xajax = new xajax();
@@ -115,17 +118,18 @@ $iConsecutivoMenu = 1;
 $iMinVerDB = 8560;
 $iCodModulo = 3074;
 $iCodModuloConsulta = $iCodModulo;
+$sIdioma = AUREA_Idioma();
 $audita[1] = false;
 $audita[2] = true;
 $audita[3] = true;
 $audita[4] = true;
 $audita[5] = false;
 // -- Se cargan los archivos de idioma
-$mensajes_todas = $APP->rutacomun . 'lg/lg_todas_' . $_SESSION['unad_idioma'] . '.php';
+$mensajes_todas = $APP->rutacomun . 'lg/lg_todas_' . $sIdioma . '.php';
 if (!file_exists($mensajes_todas)) {
 	$mensajes_todas = $APP->rutacomun . 'lg/lg_todas_es.php';
 }
-$mensajes_3074 = 'lg/lg_3074_' . $_SESSION['unad_idioma'] . '.php';
+$mensajes_3074 = 'lg/lg_3074_' . $sIdioma . '.php';
 if (!file_exists($mensajes_3074)) {
 	$mensajes_3074 = 'lg/lg_3074_es.php';
 }
@@ -424,7 +428,7 @@ if ($_REQUEST['paso'] == 0) {
 			$saiu74codmodulo = $aURL[0];
 			$saiu74idreg = $aURL[1];
 			$saiu74agno = $aURL[2];
-			list($bAbierta, $sErrorC, $sDebugC) = f3074_BuscarEncuesta($saiu74codmodulo, $saiu74idreg, $saiu74agno, $objDB, $bDebug);
+			list($bAbierta, $idTipo, $sErrorC, $sDebugC) = f3074_BuscarEncuesta($saiu74codmodulo, $saiu74idreg, $saiu74agno, $objDB, $bDebug);
 			$sError = $sError . $sErrorC;
 			$sDebug = $sDebug . $sDebugC;
 		}
@@ -447,34 +451,49 @@ if ($_REQUEST['paso'] == 0) {
 			}
 			$html_preguntas = $html_preguntas . '<div class="container-encuesta">';
 			$html_preguntas = $html_preguntas . '<div class="encuesta-form">';
-
+			$sValores = implode('|', $aValores);
+			$sEtiquetas = implode('|', $aEtiquetas);
+			$sEquipo = '';
+			switch ($idTipo) {
+				case 72:
+				case 73:
+					$sEquipo = 'psico';
+					$sEtiquetas = implode('|', $aEtiquetasPsico);
+					break;
+				case 74:
+					$sEquipo = 'terap';
+					$sEtiquetas = implode('|', $aEtiquetasTerap);
+					break;
+			}
 			for ($iPregunta = 1; $iPregunta <= $iPreguntas; $iPregunta++) {
 				$sNombrePreg = 'saiu74preg' . $iPregunta;
 				$sPregunta = '';
-				$sValor = $_REQUEST[$sNombrePreg];
-				$sValores = implode('|', $aValores);
-				$sEtiquetas = implode('|', $aEtiquetas);
-				$sPregunta = $sPregunta . '<div class="group-radio">';
-				$sPregunta = $sPregunta . html_RadioV2($sNombrePreg, $sValor, $sValores, $sEtiquetas, 'marcaropcion(' . $iPregunta . ')');
-				$sPregunta = $sPregunta . '</div>';
-				$sClassRespondida = '';
-				if ($bResaltarPendientes) {
-					if (in_array($iPregunta, $aPendientes)) {
-						$sClassRespondida = ' error';
-					} else {
-						$sClassRespondida = ' fill';
+				if ($ETI[$sNombrePreg . $sEquipo] == '') {
+					$html_preguntas = $html_preguntas . '<input id="' . $sNombrePreg . '" name="' . $sNombrePreg . '" type="hidden" value="0">';
+				} else {
+					$sValor = $_REQUEST[$sNombrePreg];
+					$sPregunta = $sPregunta . '<div class="group-radio">';
+					$sPregunta = $sPregunta . html_RadioV2($sNombrePreg, $sValor, $sValores, $sEtiquetas, 'marcaropcion(' . $iPregunta . ')');
+					$sPregunta = $sPregunta . '</div>';
+					$sClassRespondida = '';
+					if ($bResaltarPendientes) {
+						if (in_array($iPregunta, $aPendientes)) {
+							$sClassRespondida = ' error';
+						} else {
+							$sClassRespondida = ' fill';
+						}
 					}
+					$html_preguntas = $html_preguntas . '<div id="val_' . $iPregunta . '" class="container-pregunta' . $sClassRespondida . '">';
+					$html_preguntas = $html_preguntas . '<div class="pregunta">';
+					$html_preguntas = $html_preguntas . '<p>' . $ETI[$sNombrePreg . $sEquipo] . '</p>';
+					$html_preguntas = $html_preguntas . $sPregunta;
+					$html_preguntas = $html_preguntas . '</div></div>';
 				}
-				$html_preguntas = $html_preguntas . '<div id="val_' . $iPregunta . '" class="container-pregunta' . $sClassRespondida . '">';
-				$html_preguntas = $html_preguntas . '<div class="pregunta">';
-				$html_preguntas = $html_preguntas . '<p>' . $ETI[$sNombrePreg] . '</p>';
-				$html_preguntas = $html_preguntas . $sPregunta;
-				$html_preguntas = $html_preguntas . '</div></div>';
 			}
 			$sPregunta = '<input id="saiu74comentario" name="saiu74comentario" type="text" value="' . $_REQUEST['saiu74comentario'] . '" style="width:98%;" placeholder="' . $ETI['msg_comentario'] . '"/>';
 			$html_preguntas = $html_preguntas . '<div id="val_' . $iComentario . '" class="container-pregunta">';
 			$html_preguntas = $html_preguntas . '<div class="pregunta">';
-			$html_preguntas = $html_preguntas . '<p>' . $ETI['saiu74comentario'] . '</p>';
+			$html_preguntas = $html_preguntas . '<p>' . $ETI['saiu74comentario' . $sEquipo] . '</p>';
 			$html_preguntas = $html_preguntas . $sPregunta;
 			$html_preguntas = $html_preguntas . '</div></div>';
 			$objForma = new clsHtmlForma($iPiel);

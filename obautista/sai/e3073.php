@@ -249,9 +249,18 @@ if ($sError == '') {
 		$sSQLadd1 = $sSQLadd1 . 'TB.saiu73fechafin<=' . $bfecharptafin . ' AND ';
 	}
 	$iCodModulo = 3073;
-	$bEsReservado = false;
-	list($bEsReservado, $sDebugP) = seg_revisa_permisoV3($iCodModulo, 14, $_SESSION['unad_id_tercero'], $objDB);
-	if (!$bEsReservado) {
+	$sEquipo = '';
+	list($bPermiso14, $sDebugP) = seg_revisa_permisoV3($iCodModulo, 14, $_SESSION['unad_id_tercero'], $objDB);
+	$sDebug = $sDebug . $sDebugP;
+	list($bPermiso10, $sDebugP) = seg_revisa_permisoV3($iCodModulo, 10, $_SESSION['unad_id_tercero'], $objDB);
+	$sDebug = $sDebug . $sDebugP;
+	if ($bPermiso10) {
+		$sEquipo = 'terap';
+		$sSQLadd1 = $sSQLadd1 . 'TB.saiu73tiposolicitud NOT IN (72,73) AND ';
+	} else if ($bPermiso14) {
+		$sEquipo = 'psico';
+		$sSQLadd1 = $sSQLadd1 . 'TB.saiu73tiposolicitud NOT IN (74) AND ';
+	} else {
 		$sSQLadd1 = $sSQLadd1 . 'TB.saiu73tiposolicitud NOT IN (' . $idReservado . ') AND ';
 	}
 	// ------------------------------------------------
@@ -264,7 +273,8 @@ if ($sError == '') {
 	TB.saiu73idresponsablecaso, TB.saiu73fechafin, TB.saiu73horafin, TB.saiu73minutofin, TB.saiu73fecharespcaso, 
 	TB.saiu73horarespcaso, TB.saiu73minrespcaso, TB.saiu73evalfecha, TB.saiu73evalacepta, TB.saiu73evalamabilidad, 
 	TB.saiu73evalrapidez, TB.saiu73evalclaridad, TB.saiu73evalresolvio, TB.saiu73evalconocimiento, TB.saiu73evalutilidad, 
-	TB.saiu73evalsugerencias, TB.saiu73idresponsable, TB.saiu73tipointeresado, TB.saiu73consec, TB.saiu73fecharad';
+	TB.saiu73evalsugerencias, TB.saiu73idresponsable, TB.saiu73tipointeresado, TB.saiu73consec, TB.saiu73fecharad, 
+	TB.saiu73idchat, TB.saiu73numsesionchat';
 	$sConsulta = 'FROM saiu73solusuario_' . $iAgno . ' AS TB, unad11terceros AS T11
 	WHERE ' . $sSQLadd1 . ' TB.saiu73idsolicitante=T11.unad11id ' . $sSQLadd . '';
 	$sOrden = 'ORDER BY TB.saiu73estado, TB.saiu73fecharad, TB.saiu73consec';
@@ -295,7 +305,7 @@ if ($sError == '') {
 	$objHoja = $objExcel->getActiveSheet();
 	$objHoja->setTitle(substr($sTituloRpt, 0, 30));
 	$objContenedor = $objHoja;
-	$sColTope = 'AF';
+	$sColTope = 'AH';
 	//Imagen del encabezado
 	$sImagenSuperior = $APP->rutacomun . 'imagenes/rpt_cabeza.jpg';
 	PHPExcel_Justificar_Celda_HorizontalCentro($objContenedor, 'A1');
@@ -330,23 +340,23 @@ if ($sError == '') {
 	$iFilaBase = $iFila;
 	$aTitulos = array(
 		cadena_tildes($ETI['saiu73consec']), cadena_tildes($ETI['saiu73fecharad']), cadena_tildes($ETI['saiu73estado']),cadena_tildes($ETI['saiu73fecharespuesta']), cadena_tildes($ETI['saiu73horarespuesta']), 
-		cadena_tildes($ETI['saiu73solucion']), cadena_tildes($ETI['saiu73tiposolicitud']), cadena_tildes($ETI['saiu73temasolicitud']), cadena_tildes($ETI['saiu73idunidadcaso']), cadena_tildes($ETI['saiu73idequipocaso']), 
-		cadena_tildes($ETI['saiu73idsupervisorcaso']), cadena_tildes($ETI['saiu73idresponsablecaso']), cadena_tildes($ETI['saiu73idsolicitante']), cadena_tildes($ETI['saiu73razonsocial']), cadena_tildes($ETI['saiu73idzona']), 
-		cadena_tildes($ETI['saiu73idcentro']), cadena_tildes($ETI['saiu73idescuela']), cadena_tildes($ETI['saiu73idprograma']), cadena_tildes($ETI['saiu73evalfecha']), cadena_tildes($ETI['saiu73evalacepta']), 
-		cadena_tildes($ETI['saiu73evalamabilidad']), cadena_tildes($ETI['saiu73evalrapidez']), cadena_tildes($ETI['saiu73evalclaridad']), cadena_tildes($ETI['saiu73evalresolvio']), cadena_tildes($ETI['saiu73evalconocimiento']), 
-		cadena_tildes($ETI['saiu73evalutilidad']), cadena_tildes($ETI['saiu73evalsugerencias']), cadena_tildes($ETI['saiu73idresponsable_td']), cadena_tildes($ETI['saiu73idresponsable_doc']), cadena_tildes($ETI['saiu73idresponsable_rs']), 
-		cadena_tildes($ETI['saiu73idresponsable_rol']), cadena_tildes($ETI['saiu73tipointeresado'])
+		cadena_tildes($ETI['saiu73idchat']), cadena_tildes($ETI['saiu73numsesionchat']), cadena_tildes($ETI['saiu73solucion']), cadena_tildes($ETI['saiu73tiposolicitud']), cadena_tildes($ETI['saiu73temasolicitud']), 
+		cadena_tildes($ETI['saiu73idunidadcaso']), cadena_tildes($ETI['saiu73idequipocaso']), cadena_tildes($ETI['saiu73idsupervisorcaso']), cadena_tildes($ETI['saiu73idresponsablecaso']), cadena_tildes($ETI['saiu73idsolicitante']), 
+		cadena_tildes($ETI['saiu73razonsocial']), cadena_tildes($ETI['saiu73idzona']), cadena_tildes($ETI['saiu73idcentro']), cadena_tildes($ETI['saiu73idescuela']), cadena_tildes($ETI['saiu73idprograma']), 
+		cadena_tildes($ETI['saiu73evalfecha']), cadena_tildes($ETI['saiu73evalacepta']), cadena_tildes($ETI['saiu73evalamabilidad' . $sEquipo]), cadena_tildes($ETI['saiu73evalrapidez' . $sEquipo]), cadena_tildes($ETI['saiu73evalclaridad' . $sEquipo]), 
+		cadena_tildes($ETI['saiu73evalresolvio' . $sEquipo]), cadena_tildes($ETI['saiu73evalconocimiento' . $sEquipo]), cadena_tildes($ETI['saiu73evalutilidad' . $sEquipo]), cadena_tildes($ETI['saiu73evalsugerencias']), cadena_tildes($ETI['saiu73idresponsable_td']), 
+		cadena_tildes($ETI['saiu73idresponsable_doc']), cadena_tildes($ETI['saiu73idresponsable_rs']), cadena_tildes($ETI['saiu73idresponsable_rol']), cadena_tildes($ETI['saiu73tipointeresado'])
 	);
 	$aAnchos = array(
 		13, 15, 13, 15, 15, 
-		15, 15, 15, 15, 15, 
-		30, 30, 15, 30, 13, 
-		13, 13, 13, 15, 13, 
-		13, 13, 13, 13, 13, 
-		13, 13, 7, 15,	30, 
-		13, 13
+		20, 20, 15, 30, 30, 
+		30, 30, 30, 30, 15, 
+		30, 13, 13, 13, 13, 
+		15, 13, 13, 13, 13, 
+		13, 13, 13, 30, 7, 
+		15,	30, 13, 13
 	);
-	for ($k = 0; $k <= 31; $k++) {
+	for ($k = 0; $k <= 33; $k++) {
 		PHPEXCEL_Escribir($objHoja, $k, $iFila, $aTitulos[$k]);
 		$sColumna = columna_Letra($k);
 		$objHoja->getColumnDimension($sColumna)->setWidth($aAnchos[$k]);
@@ -589,38 +599,76 @@ if ($sError == '') {
 			}
 		}
 		$saiu73tipointeresado = ($asaiu73tipointeresado[$i_saiu73tipointeresado]);
+		$i_saiu73idchat = $fila['saiu73idchat'];
+		if (isset($asaiu73idchat[$i_saiu73idchat]) == 0) {
+			$sSQL = 'SELECT saiu27nombre FROM saiu27chats WHERE saiu27activo=1 AND saiu27id=' . $i_saiu73idchat . '';
+			$tablae = $objDB->ejecutasql($sSQL);
+			if ($objDB->nf($tablae) > 0) {
+				$filae = $objDB->sf($tablae);
+				$asaiu73idchat[$i_saiu73idchat] = $filae['saiu27nombre'];
+			} else {
+				$asaiu73idchat[$i_saiu73idchat] = '{Ninguno}';
+			}
+		}
+		$saiu73idchat = ($asaiu73idchat[$i_saiu73idchat]);
+		$saiu73evalamabilidad = '';
+		if ($ETI['saiu73evalamabilidad' . $sEquipo] != '') {
+			$saiu73evalamabilidad = $acalificacion[$fila['saiu73evalamabilidad']];
+		}
+		$saiu73evalrapidez = '';
+		if ($ETI['saiu73evalrapidez' . $sEquipo] != '') {
+			$saiu73evalrapidez = $acalificacion[$fila['saiu73evalrapidez']];
+		}
+		$saiu73evalclaridad = '';
+		if ($ETI['saiu73evalclaridad' . $sEquipo] != '') {
+			$saiu73evalclaridad = $acalificacion[$fila['saiu73evalclaridad']];
+		}
+		$saiu73evalresolvio = '';
+		if ($ETI['saiu73evalresolvio' . $sEquipo] != '') {
+			$saiu73evalresolvio = $acalificacion[$fila['saiu73evalresolvio']];
+		}
+		$saiu73evalconocimiento = '';
+		if ($ETI['saiu73evalconocimiento' . $sEquipo] != '') {
+			$saiu73evalconocimiento = $acalificacion[$fila['saiu73evalconocimiento']];
+		}
+		$saiu73evalutilidad = '';
+		if ($ETI['saiu73evalutilidad' . $sEquipo] != '') {
+			$saiu73evalutilidad = $acalificacion[$fila['saiu73evalutilidad']];
+		}
 		PHPEXCEL_Escribir($objHoja, 0, $iFila, $fila['saiu73consec']);
 		PHPEXCEL_Escribir($objHoja, 1, $iFila, $saiu73fecharad);
 		PHPEXCEL_Escribir($objHoja, 2, $iFila, cadena_decodificar($saiu73estado));
 		PHPEXCEL_Escribir($objHoja, 3, $iFila, $saiu73fecharesp);
 		PHPEXCEL_Escribir($objHoja, 4, $iFila, $saiu73horaresp);
-		PHPEXCEL_Escribir($objHoja, 5, $iFila, cadena_decodificar($saiu73solucion));
-		PHPEXCEL_Escribir($objHoja, 6, $iFila, cadena_decodificar($saiu73tiposolicitud));
-		PHPEXCEL_Escribir($objHoja, 7, $iFila, cadena_decodificar($saiu73temasolicitud));
-		PHPEXCEL_Escribir($objHoja, 8, $iFila, cadena_decodificar($saiu73idunidadcaso));
-		PHPEXCEL_Escribir($objHoja, 9, $iFila, cadena_decodificar($saiu73idequipocaso));
-		PHPEXCEL_Escribir($objHoja, 10, $iFila, $saiu73idsupervisorcaso);
-		PHPEXCEL_Escribir($objHoja, 11, $iFila, $saiu73idresponsablecaso);
-		PHPEXCEL_Escribir($objHoja, 12, $iFila, $sDoc);
-		PHPEXCEL_Escribir($objHoja, 13, $iFila, $sRazonSocial);
-		PHPEXCEL_Escribir($objHoja, 14, $iFila, $saiu73idzona);
-		PHPEXCEL_Escribir($objHoja, 15, $iFila, $saiu73idcentro);
-		PHPEXCEL_Escribir($objHoja, 16, $iFila, $saiu73idescuela);
-		PHPEXCEL_Escribir($objHoja, 17, $iFila, $saiu73idprograma);
-		PHPEXCEL_Escribir($objHoja, 18, $iFila, $saiu73evalfecha);
-		PHPEXCEL_Escribir($objHoja, 19, $iFila, $saiu73evalacepta);
-		PHPEXCEL_Escribir($objHoja, 20, $iFila, $acalificacion[$fila['saiu73evalamabilidad']]);
-		PHPEXCEL_Escribir($objHoja, 21, $iFila, $acalificacion[$fila['saiu73evalrapidez']]);
-		PHPEXCEL_Escribir($objHoja, 22, $iFila, $acalificacion[$fila['saiu73evalclaridad']]);
-		PHPEXCEL_Escribir($objHoja, 23, $iFila, $acalificacion[$fila['saiu73evalresolvio']]);
-		PHPEXCEL_Escribir($objHoja, 24, $iFila, $acalificacion[$fila['saiu73evalconocimiento']]);
-		PHPEXCEL_Escribir($objHoja, 25, $iFila, $acalificacion[$fila['saiu73evalutilidad']]);
-		PHPEXCEL_Escribir($objHoja, 26, $iFila, cadena_decodificar($fila['saiu73evalsugerencias']));
-		PHPEXCEL_Escribir($objHoja, 27, $iFila, $saiu73idresponsable_td);
-		PHPEXCEL_Escribir($objHoja, 28, $iFila, $saiu73idresponsable_doc);
-		PHPEXCEL_Escribir($objHoja, 29, $iFila, $saiu73idresponsable_rs);
-		PHPEXCEL_Escribir($objHoja, 30, $iFila, $saiu73idresponsable_rol);
-		PHPEXCEL_Escribir($objHoja, 31, $iFila, $saiu73tipointeresado);
+		PHPEXCEL_Escribir($objHoja, 5, $iFila, $saiu73idchat);
+		PHPEXCEL_Escribir($objHoja, 6, $iFila, $fila['saiu73numsesionchat']);
+		PHPEXCEL_Escribir($objHoja, 7, $iFila, cadena_decodificar($saiu73solucion));
+		PHPEXCEL_Escribir($objHoja, 8, $iFila, cadena_decodificar($saiu73tiposolicitud));
+		PHPEXCEL_Escribir($objHoja, 9, $iFila, cadena_decodificar($saiu73temasolicitud));
+		PHPEXCEL_Escribir($objHoja, 10, $iFila, cadena_decodificar($saiu73idunidadcaso));
+		PHPEXCEL_Escribir($objHoja, 11, $iFila, cadena_decodificar($saiu73idequipocaso));
+		PHPEXCEL_Escribir($objHoja, 12, $iFila, $saiu73idsupervisorcaso);
+		PHPEXCEL_Escribir($objHoja, 13, $iFila, $saiu73idresponsablecaso);
+		PHPEXCEL_Escribir($objHoja, 14, $iFila, $sDoc);
+		PHPEXCEL_Escribir($objHoja, 15, $iFila, $sRazonSocial);
+		PHPEXCEL_Escribir($objHoja, 16, $iFila, $saiu73idzona);
+		PHPEXCEL_Escribir($objHoja, 17, $iFila, $saiu73idcentro);
+		PHPEXCEL_Escribir($objHoja, 18, $iFila, $saiu73idescuela);
+		PHPEXCEL_Escribir($objHoja, 19, $iFila, $saiu73idprograma);
+		PHPEXCEL_Escribir($objHoja, 20, $iFila, $saiu73evalfecha);
+		PHPEXCEL_Escribir($objHoja, 21, $iFila, $saiu73evalacepta);
+		PHPEXCEL_Escribir($objHoja, 22, $iFila, $saiu73evalamabilidad);
+		PHPEXCEL_Escribir($objHoja, 23, $iFila, $saiu73evalrapidez);
+		PHPEXCEL_Escribir($objHoja, 24, $iFila, $saiu73evalclaridad);
+		PHPEXCEL_Escribir($objHoja, 25, $iFila, $saiu73evalresolvio);
+		PHPEXCEL_Escribir($objHoja, 26, $iFila, $saiu73evalconocimiento);
+		PHPEXCEL_Escribir($objHoja, 27, $iFila, $saiu73evalutilidad);
+		PHPEXCEL_Escribir($objHoja, 28, $iFila, cadena_decodificar($fila['saiu73evalsugerencias']));
+		PHPEXCEL_Escribir($objHoja, 29, $iFila, $saiu73idresponsable_td);
+		PHPEXCEL_Escribir($objHoja, 30, $iFila, $saiu73idresponsable_doc);
+		PHPEXCEL_Escribir($objHoja, 31, $iFila, $saiu73idresponsable_rs);
+		PHPEXCEL_Escribir($objHoja, 32, $iFila, $saiu73idresponsable_rol);
+		PHPEXCEL_Escribir($objHoja, 33, $iFila, $saiu73tipointeresado);
 		$iFila++;
 	}
 	$objDB->CerrarConexion();

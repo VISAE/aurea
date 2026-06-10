@@ -13,11 +13,12 @@
 function f3074_GuardarEncuesta($DATA, $objDB, $bDebug = false)
 {
 	require './app.php';
-	$mensajes_todas = $APP->rutacomun . 'lg/lg_todas_' . $_SESSION['unad_idioma'] . '.php';
+	$sIdioma = AUREA_Idioma();
+	$mensajes_todas = $APP->rutacomun . 'lg/lg_todas_' . $sIdioma . '.php';
 	if (!file_exists($mensajes_todas)) {
 		$mensajes_todas = $APP->rutacomun . 'lg/lg_todas_es.php';
 	}
-	$mensajes_3074 = 'lg/lg_3074_' . $_SESSION['unad_idioma'] . '.php';
+	$mensajes_3074 = 'lg/lg_3074_' . $sIdioma . '.php';
 	if (!file_exists($mensajes_3074)) {
 		$mensajes_3074 = 'lg/lg_3074_es.php';
 	}
@@ -215,7 +216,8 @@ function f3074_GuardarEncuesta($DATA, $objDB, $bDebug = false)
 }
 function f3074_BuscarEncuesta($saiu74codmodulo, $saiu74idreg, $saiu74agno, $objDB, $bDebug = false) {
 	require './app.php';
-	$mensajes_3074 = 'lg/lg_3074_' . $_SESSION['unad_idioma'] . '.php';
+	$sIdioma = AUREA_Idioma();
+	$mensajes_3074 = 'lg/lg_3074_' . $sIdioma . '.php';
 	if (!file_exists($mensajes_3074)) {
 		$mensajes_3074 = 'lg/lg_3074_es.php';
 	}
@@ -251,6 +253,7 @@ function f3074_BuscarEncuesta($saiu74codmodulo, $saiu74idreg, $saiu74agno, $objD
 				$sCampoIdReg = 'saiu73id';
 				$sCampoFecha = 'saiu73evalfecha';
 				$sCampoCodModulo = 'saiu73idcanal';
+				$sCampoIdTipo = 'saiu73tiposolicitud';
 				$bEsFAV = true;
 				break;
 			default:
@@ -258,6 +261,7 @@ function f3074_BuscarEncuesta($saiu74codmodulo, $saiu74idreg, $saiu74agno, $objD
 				$sCampoIdReg = 'saiu74idreg';
 				$sCampoFecha = 'saiu74fecharespuesta';
 				$sCampoCodModulo = 'saiu74codmodulo';
+				$sCampoIdTipo = 'saiu74id';
 				break;
 		}
 		$bExiste = $objDB->bexistetabla($sTabla);
@@ -266,7 +270,8 @@ function f3074_BuscarEncuesta($saiu74codmodulo, $saiu74idreg, $saiu74agno, $objD
 		}
 	}
 	if ($sError == '') {
-		$sSQL = 'SELECT ' . $sCampoFecha . ' FROM ' . $sTabla . ' WHERE ' . $sCampoIdReg . '=' . $saiu74idreg . ' AND ' . $sCampoCodModulo . '=' . $saiu74codmodulo . '';
+		$idTipo = 0;
+		$sSQL = 'SELECT ' . $sCampoFecha . ',' . $sCampoIdTipo . ' FROM ' . $sTabla . ' WHERE ' . $sCampoIdReg . '=' . $saiu74idreg . ' AND ' . $sCampoCodModulo . '=' . $saiu74codmodulo . '';
 		$tabla = $objDB->ejecutasql($sSQL);
 		if ($objDB->nf($tabla) > 0) {
 			$fila = $objDB->sf($tabla);
@@ -274,6 +279,7 @@ function f3074_BuscarEncuesta($saiu74codmodulo, $saiu74idreg, $saiu74agno, $objD
 				if ($fila[$sCampoFecha] != 0) {
 					$sError = $ERR['msg_yaregistrada'];
 				} else {
+					$idTipo = $fila[$sCampoIdTipo];
 					$bAbierta = true;
 				}
 			} else {
@@ -287,5 +293,5 @@ function f3074_BuscarEncuesta($saiu74codmodulo, $saiu74idreg, $saiu74agno, $objD
 			}
 		}
 	}
-	return array($bAbierta, $sError, $sDebug);
+	return array($bAbierta, $idTipo, $sError, $sDebug);
 }

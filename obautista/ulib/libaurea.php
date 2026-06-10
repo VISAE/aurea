@@ -194,11 +194,11 @@ function AUREA_Aplicativos($idTercero, $objDB)
 }
 function AUREA_ClavePermitidos()
 {
-	return '*._-¡!+#@()=+';
+	return '*._-¡!+@()=+';
 }
 function AUREA_ClaveLimpiar($sValor, $sPermitidos = '')
 {
-	require './app.php';
+	require __DIR__ . '/app.php';
 	$sIdioma = AUREA_Idioma();
 	$mensajes_1 = $APP->rutacomun . 'lg/lg_1_' . $sIdioma . '.php';
 	if (!file_exists($mensajes_1)) {
@@ -217,7 +217,7 @@ function AUREA_ClaveLimpiar($sValor, $sPermitidos = '')
 }
 function AUREA_ClaveValidaV3($sValor, $idTercero, $objDB, $sPermitidos = '', $bDebug = false)
 {
-	require './app.php';
+	require __DIR__ . '/app.php';
 	$sIdioma = AUREA_Idioma();
 	$mensajes_1011 = $APP->rutacomun . 'lg/lg_1011_' . $sIdioma . '.php';
 	if (!file_exists($mensajes_1011)) {
@@ -622,7 +622,7 @@ function AUREA_CorreoNotificaV2($idTercero, $objDB, $bDebug = false)
 }
 function AUREA_CorreoPrimario($idTercero, $objDB, $bDebug = false)
 {
-	require './app.php';
+	require __DIR__ . '/app.php';
 	$sIdioma = AUREA_Idioma();
 	$mensajes_1 = $APP->rutacomun . 'lg/lg_1_' . $sIdioma . '.php';
 	if (!file_exists($mensajes_1)) {
@@ -715,7 +715,7 @@ function AUREA_CorreoPrimario($idTercero, $objDB, $bDebug = false)
  */
 function AUREA_CorreoRecupera($idTercero, $objDB, $bDebug = false)
 {
-	require './app.php';
+	require __DIR__ . '/app.php';
 	$sIdioma = AUREA_Idioma();
 	$mensajes_1 = $APP->rutacomun . 'lg/lg_1_' . $sIdioma . '.php';
 	if (!file_exists($mensajes_1)) {
@@ -791,7 +791,7 @@ function AUREA_CorreoRecupera($idTercero, $objDB, $bDebug = false)
 }
 function AUREA_CrearTabla_aure01login($sMes, $objDB, $bDebug = false)
 {
-	require './app.php';
+	require __DIR__ . '/app.php';
 	$sIdioma = AUREA_Idioma();
 	$mensajes_1 = $APP->rutacomun . 'lg/lg_1_' . $sIdioma . '.php';
 	if (!file_exists($mensajes_1)) {
@@ -831,7 +831,7 @@ function AUREA_CrearTabla_aure01login($sMes, $objDB, $bDebug = false)
 // LA aure02intentos
 function AUREA_CrearTabla_aure02intentos($sMes, $objDB, $bDebug = false)
 {
-	require './app.php';
+	require __DIR__ . '/app.php';
 	$sIdioma = AUREA_Idioma();
 	$mensajes_1 = $APP->rutacomun . 'lg/lg_1_' . $sIdioma . '.php';
 	if (!file_exists($mensajes_1)) {
@@ -862,7 +862,7 @@ function AUREA_CrearTabla_aure02intentos($sMes, $objDB, $bDebug = false)
 //
 function AUREA_CrearTabla_aure73encuesta($sMes, $objDB, $bDebug = false)
 {
-	require './app.php';
+	require __DIR__ . '/app.php';
 	$sIdioma = AUREA_Idioma();
 	$mensajes_1 = $APP->rutacomun . 'lg/lg_1_' . $sIdioma . '.php';
 	if (!file_exists($mensajes_1)) {
@@ -952,7 +952,7 @@ function AUREA_FirmaLocalV4i()
 function AUREA_Leer_Navegador()
 {
 	$sRes = substr($_SERVER['HTTP_USER_AGENT'], 0, 100);
-	require './app.php';
+	require __DIR__ . '/app.php';
 	require $APP->rutacomun . 'unad_login.lib.nav.php';
 	//require 'https://aurea2.unad.edu.co/ulib/unad_login.lib.nav.dat';
 	$items = count($aDestino);
@@ -1717,7 +1717,7 @@ function AUREA_HTML_FirmaDocumento($sCodigo, $idModulo, $iSubProceso, $idRegistr
 //
 function AUREA_HTML_NoResponder()
 {
-	require './app.php';
+	require __DIR__ . '/app.php';
 	$sIdioma = AUREA_Idioma();
 	$mensajes_1 = $APP->rutacomun . 'lg/lg_1_' . $sIdioma . '.php';
 	if (!file_exists($mensajes_1)) {
@@ -1728,7 +1728,7 @@ function AUREA_HTML_NoResponder()
 }
 function AUREA_HTML_NoResponderSII()
 {
-	require './app.php';
+	require __DIR__ . '/app.php';
 	$sIdioma = AUREA_Idioma();
 	$mensajes_1 = $APP->rutacomun . 'lg/lg_1_' . $sIdioma . '.php';
 	if (!file_exists($mensajes_1)) {
@@ -1778,9 +1778,9 @@ function AUREA_HTML_PieCorreo()
 			break;
 		default:
 			$sDato1 = 'Instituci&oacute;n de Educaci&oacute;n Superior sujeta a inspecci&oacute;n y vigilancia por el Ministerio de Educaci&oacute;n Nacional de Colombia - IES 2102';
-			$sDato2 = 'En Bogot&aacute; D.C. (Colombia) Tel: <a style="color: #005883;" href="tel:+576013443700">(+57)(601)344 3700</a>
+			$sDato2 = 'En Bogot&aacute; D.C. (Colombia) Tel: <a style="color: #005883;" href="tel:+573232641617">(+57)3232641617</a>
 			<br>
-			L&iacute;nea gratuita nacional: <a style="color: #005883;">01 8000 115223</a>';
+			<a style="color: #005883;" href="https://www.unad.edu.co/">https://www.unad.edu.co/</a>';
 			break;
 	}
 	$sRes = '<table border="0" cellpadding="0" cellspacing="0" width="100%" style="width: 100%; max-width: 100%; min-width: 100%;">';
@@ -1870,7 +1870,7 @@ function AUREA_Idioma()
 }
 function AUREA_ExisteCodigo($idTercero, $objDB, $iUso = 1, $sCodigo = '', $bDebug = false)
 {
-	require './app.php';
+	require __DIR__ . '/app.php';
 	$sIdioma = AUREA_Idioma();
 	$mensajes_1 = $APP->rutacomun . 'lg/lg_1_' . $sIdioma . '.php';
 	if (!file_exists($mensajes_1)) {
@@ -2125,7 +2125,7 @@ function AUREA_IniciarLogin($idTercero, $objDB, $sFrase = '', $iUso = 0, $bDebug
 // Marcar codigo 
 function AUREA_MarcarCodigo($idTercero, $iUso, $sCodigo, $objDB, $bDebug = false)
 {
-	require './app.php';
+	require __DIR__ . '/app.php';
 	$sIdioma = AUREA_Idioma();
 	$mensajes_1 = $APP->rutacomun . 'lg/lg_1_' . $sIdioma . '.php';
 	if (!file_exists($mensajes_1)) {
@@ -2201,7 +2201,7 @@ function AUREA_RequiereDobleAutenticacionV2($idTercero, $objDB)
 }
 function AUREA_RequiereDobleAutenticacionV3($idTercero, $objDB)
 {
-	require './app.php';
+	require __DIR__ . '/app.php';
 	$bRes = false;
 	$bAutenticacionActiva = false;
 	$bAutenticaEstudiantes = false;

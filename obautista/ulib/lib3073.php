@@ -65,6 +65,7 @@ function f3073_HTMLComboV2_saiu73tiporadicado($objDB, $objCombos, $valor)
 function f3073_HTMLComboV2_saiu73tiposolicitud($objDB, $objCombos, $valor, $bEsReservado = 0, $idReservado = '')
 {
 	require './app.php';
+	$iCodModulo = 3073;
 	$sIdioma = AUREA_Idioma();
 	$mensajes_todas = $APP->rutacomun . 'lg/lg_todas_' . $sIdioma . '.php';
 	if (!file_exists($mensajes_todas)) {
@@ -74,9 +75,14 @@ function f3073_HTMLComboV2_saiu73tiposolicitud($objDB, $objCombos, $valor, $bEsR
 	$objCombos->nuevo('saiu73tiposolicitud', $valor, true, '{' . $ETI['msg_seleccione'] . '}');
 	$objCombos->sAccion = 'carga_combo_saiu73temasolicitud();';
 	//$objCombos->iAncho=450;
-	$sWhere = '';
-	if ($bEsReservado == 0) {
-		$sWhere = ' AND TB.saiu02id NOT IN (' . $idReservado . ') ';
+	list($bPermiso14, $sDebugP) = seg_revisa_permisoV3($iCodModulo, 14, $_SESSION['unad_id_tercero'], $objDB);
+	list($bPermiso10, $sDebugP) = seg_revisa_permisoV3($iCodModulo, 10, $_SESSION['unad_id_tercero'], $objDB);
+	$sWhere = ' AND TB.saiu02id NOT IN (' . $idReservado . ') ';	
+	if ($bPermiso10) {
+		$sWhere = ' AND TB.saiu02id NOT IN (72,73) ';
+	}
+	if ($bPermiso14) {
+		$sWhere = ' AND TB.saiu02id NOT IN (74) ';
 	}
 	$sSQL = 'SELECT TB.saiu02id AS id, CONCAT(TB.saiu02titulo, " [", T1.saiu01titulo, "]") AS nombre 
 	FROM saiu02tiposol AS TB, saiu01claseser AS T1 
@@ -646,6 +652,9 @@ function f3073_TablaDetalleV2($aParametros, $objDB, $bDebug = false)
 	if ($iAgno == '') {
 		$sLeyenda = $sLeyenda . $ERR['saiu73agno'];
 	}
+	if ($idReservado == '') {
+		$idReservado = '72,73,74';
+	}
 	if ($sLeyenda != '') {
 		$sRes = html_salto() . '<div class="GrupoCamposAyuda">' . $sLeyenda . html_salto() . '</div>';
 		return array($sRes . $sBotones, $sError, $iTipoError, $sDebug);
@@ -786,12 +795,16 @@ function f3073_TablaDetalleV2($aParametros, $objDB, $bDebug = false)
 		$sSQLadd = $sSQLadd . ' AND TB.saiu73idcentro=' . $bcead . '';
 	}
 	$iCodModulo = 3073;
-	$bEsReservado = false;
-	list($bEsReservado, $sDebugP) = seg_revisa_permisoV3($iCodModulo, 14, $_SESSION['unad_id_tercero'], $objDB);
-	if (!$bEsReservado) {
-		if ($idReservado != '') {
-			$sSQLadd = $sSQLadd . ' AND TB.saiu73tiposolicitud NOT IN (' . $idReservado . ')';
-		}
+	list($bPermiso14, $sDebugP) = seg_revisa_permisoV3($iCodModulo, 14, $_SESSION['unad_id_tercero'], $objDB);
+	$sDebug = $sDebug . $sDebugP;
+	list($bPermiso10, $sDebugP) = seg_revisa_permisoV3($iCodModulo, 10, $_SESSION['unad_id_tercero'], $objDB);
+	$sDebug = $sDebug . $sDebugP;
+	if ($bPermiso10) {
+		$sSQLadd = $sSQLadd . ' AND TB.saiu73tiposolicitud NOT IN (72,73) ';
+	} else if ($bPermiso14) {
+		$sSQLadd = $sSQLadd . ' AND TB.saiu73tiposolicitud NOT IN (74) ';
+	} else {
+		$sSQLadd = $sSQLadd . ' AND TB.saiu73tiposolicitud NOT IN (' . $idReservado . ')';
 	}
 	// ------------------------------------------------
 	// Fin de las condiciones de la consulta

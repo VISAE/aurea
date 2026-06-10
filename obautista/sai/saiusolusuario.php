@@ -265,8 +265,13 @@ $seg_1707 = 0;
 $bDevuelve = false;
 list($bDevuelve, $sDebugP, $seg_1707) = seg_revisa_permisoV3($iCodModulo, 1707, $_SESSION['unad_id_tercero'], $objDB, $bDebug);
 $sDebug = $sDebug . $sDebugP;
-list($bEsReservado, $sDebugP) = seg_revisa_permisoV3($iCodModulo, 14, $_SESSION['unad_id_tercero'], $objDB);
+list($bPermiso14, $sDebugP) = seg_revisa_permisoV3($iCodModulo, 14, $_SESSION['unad_id_tercero'], $objDB);
 $sDebug = $sDebug . $sDebugP;
+list($bPermiso10, $sDebugP) = seg_revisa_permisoV3($iCodModulo, 10, $_SESSION['unad_id_tercero'], $objDB);
+$sDebug = $sDebug . $sDebugP;
+if ($bPermiso10 || $bPermiso14) {
+	$bEsReservado = true;
+}
 if (isset($_REQUEST['deb_tipodoc']) == 0) {
 	$_REQUEST['deb_tipodoc'] = $APP->tipo_doc;
 }
@@ -1444,7 +1449,11 @@ if ($bEnTramite) {
 	$sSQL = 'SELECT saiu22id AS id, saiu22nombre AS nombre FROM saiu22telefonos WHERE saiu22id>0 ORDER BY saiu22orden, saiu22nombre';
 	$html_saiu73idtelefono = $objCombos->html($sSQL, $objDB);
 	$objCombos->nuevo('saiu73idchat', $_REQUEST['saiu73idchat'], true, '{' . $ETI['msg_seleccione'] . '}');
-	$sSQL = 'SELECT saiu27id AS id, saiu27nombre AS nombre FROM saiu27chats ORDER BY saiu27nombre';
+	$sWhere = '';
+	if (!$bPermiso14) {
+		$sWhere = $sWhere . 'AND saiu27id!=4';
+	}
+	$sSQL = 'SELECT saiu27id AS id, saiu27nombre AS nombre FROM saiu27chats WHERE saiu27activo=1 ' . $sWhere . ' ORDER BY saiu27nombre';
 	$html_saiu73idchat = $objCombos->html($sSQL, $objDB);
 	$objCombos->nuevo('saiu73idcorreo', $_REQUEST['saiu73idcorreo'], true, '{' . $ETI['msg_seleccione'] . '}');
 	$objCombos->addArreglo($asaiu73idcorreo, $isaiu73idcorreo);
@@ -1562,9 +1571,12 @@ if ($bEsFAV) {
 } else {
 	$objCombos->nuevo('bcategoria', $_REQUEST['bcategoria'], true, '{' . $ETI['msg_todos'] . '}');
 	$objCombos->sAccion = 'carga_combo_btema()';
-	$sWhere = '';
-	if (!$bEsReservado) {
-		$sWhere = 'AND saiu02id NOT IN (' . $idReservado . ')';
+	$sWhere = 'AND saiu02id NOT IN (' . $idReservado . ')';
+	if ($bPermiso10) {
+		$sWhere = 'AND saiu02id NOT IN (72,73)';
+	}
+	if ($bPermiso14) {
+		$sWhere = 'AND saiu02id NOT IN (74)';
 	}
 	$sSQL = 'SELECT saiu02id AS id, saiu02titulo AS nombre FROM saiu02tiposol WHERE saiu02id>0 ' . $sWhere . ' ORDER BY saiu02titulo';
 	$html_bcategoria = $objCombos->html($sSQL, $objDB);
