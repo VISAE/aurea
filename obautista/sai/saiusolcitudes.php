@@ -1411,7 +1411,7 @@ if ($_REQUEST['saiu05estado'] == 7) {
 }
 //DATOS PARA COMPLETAR EL FORMULARIO
 $sNombreUsuario = '';
-if ($seg_1707 == 1) {
+if ($bEsSupervisor) {
 	$sSQL = 'SELECT unad11razonsocial FROM unad11terceros WHERE unad11id=' . $idTercero . '';
 	$tabla = $objDB->ejecutasql($sSQL);
 	if ($objDB->nf($tabla) > 0) {
@@ -1456,13 +1456,7 @@ if ($_REQUEST['paso'] > 0) {
 $objCombos = new clsHtmlCombos();
 $objForma = new clsHtmlForma($iPiel);
 $objTercero = new clsHtmlTercero();
-if ($seg_1707 == 1) {
-	$sSQL = 'SELECT unad11razonsocial FROM unad11terceros WHERE unad11id=' . $idTercero . '';
-	$tabla = $objDB->ejecutasql($sSQL);
-	if ($objDB->nf($tabla) > 0) {
-		$fila = $objDB->sf($tabla);
-		$sNombreUsuario = cadena_notildes($fila['unad11razonsocial']);
-	}
+if ($bEsSupervisor) {
 	$objCombos->nuevo('deb_tipodoc', $_REQUEST['deb_tipodoc'], false);
 	$objCombos->iAncho = 60;
 	$html_deb_tipodoc = $objCombos->html('', $objDB, 145);
@@ -1621,6 +1615,7 @@ if ($seg_12 == 1) {
 $objCombos->nuevo('blistar', $_REQUEST['blistar'], $bTodos, '{' . $ETI['msg_todos'] . '}');
 $objCombos->addItem('1', 'Mis asignaciones');
 $objCombos->addItem('2', 'Asignado a mi equipo');
+$objCombos->addItem('6', 'Sin Asignar');
 $objCombos->sAccion = 'paginarf3005()';
 $html_blistar = $objCombos->html('', $objDB);
 $objCombos->nuevo('btipo', $_REQUEST['btipo'], true, '{' . $ETI['msg_todos'] . '}');
@@ -2537,7 +2532,7 @@ echo '<h2>' . $sTituloModulo . '</h2>';
 <div class="areaform">
 <div class="areatrabajo">
 <?php
-if ($seg_1707 == 1) {
+if ($bEsSupervisor) {
 ?>
 <div class="GrupoCamposAyuda">
 <div class="salto5px"></div>
@@ -3503,7 +3498,7 @@ echo $ETI['saiu05atiende'];
 <div class="ir_derecha">
 <?php
 if ($bPuedeGuardar) {
-	if ($seg_1707 == 1) {
+	if ($bEsSupervisor) {
 		echo $objForma->htmlBotonSolo('bRevAtiende', 'btMiniActualizar', "actualizaratiende();", $ETI['bt_actatiente']);
 	}
 }

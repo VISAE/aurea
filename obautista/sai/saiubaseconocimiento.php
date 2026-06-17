@@ -449,7 +449,7 @@ if ($_REQUEST['paso']==93){
 		$sDetalle='Cambia el consecutivo de '.$_REQUEST['saiu31consec'].' a '.$_REQUEST['saiu31consec_nuevo'].'';
 		$_REQUEST['saiu31consec']=$_REQUEST['saiu31consec_nuevo'];
 		$_REQUEST['saiu31consec_nuevo']='';
-		seg_auditar($iCodModulo, $_SESSION['u_idtercero'], 8, $_REQUEST['saiu31id'], $sDetalle, $objDB);
+		seg_auditar($iCodModulo, $_SESSION['unad_id_tercero'], 8, $_REQUEST['saiu31id'], $sDetalle, $objDB);
 		$sError='<b>Se ha aplicado el cambio de consecutivo.</b>';
 		$iTipoError=1;
 		}else{

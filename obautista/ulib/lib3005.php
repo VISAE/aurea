@@ -545,6 +545,9 @@ function f3005_TablaDetalleV2($aParametros, $objDB, $bDebug = false)
 				$sDebug = $sDebug . fecha_microtiempo() . ' Lider o Colaborador: ' . $sSQL . '<br>';
 			}
 			break;
+		case 6:
+			$sSQLadd = $sSQLadd . ' AND TB.saiu05estado>=0 AND TB.saiu05idresponsable=0';
+			break;
 	}
 	if ($bcentro != '') {
 		$sSQLadd1 = $sSQLadd1 . 'TB.saiu05cead=' . $bcentro . ' AND ';
