@@ -1,0 +1,16 @@
+.campoRequerido{
+	border: 0.4rem solid #c62828;
+	border-radius: 0.1rem;
+	box-sizing: border-box;
+	background-color: #fff3f3;
+	box-shadow: 0 0 0 0.2rem rgba(198, 40, 40, 0.12);
+}
+
+.campoRequeridoLabel::after{
+	content: attr(data-ctlerror-msg);
+	display: block;
+	margin-top: 0.3rem;
+	color: #c62828;
+	font-size: 1.6rem;
+	font-weight: 600;
+}

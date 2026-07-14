@@ -69,6 +69,85 @@ function f105_Aplicaciones($idTercero, $objDB)
 	}
 	return $sLista;
 }
+//Consulta para perfiles reservados
+function f105_ConsultaComboReservado($sWhere = '', $objDB, $bTotal = false, $bDebug = false)
+{
+	$sDebug = '';
+	if ($sWhere != '') {
+		$sWhere = $sWhere . ' AND ';
+	}
+	if (!$bTotal) {
+		//Retiramos perfiles de configuraciones globales
+		$sIds = '-99';
+		$sSQL = 'SELECT saiu00perfillider FROM saiu00config WHERE saiu00id=1';
+		if ($bDebug) {
+			$sDebug = $sDebug . fecha_microtiempo() . ' Configuraci&oacute;n de perfiles de SAI ' . $sSQL . '<br>';
+		}
+		$tabla = $objDB->ejecutasql($sSQL);
+		if ($objDB->nf($tabla) > 0) {
+			$fila = $objDB->sf($tabla);
+			if ($fila['saiu00perfillider'] != 0) {
+				$sIds = $sIds . ',' . $fila['saiu00perfillider'];
+			}
+		}
+		// Tutores y docentes
+		$sSQL = 'SELECT ceca00idperfildirector, ceca00idperfiltutor FROM core00params WHERE core00id=1';
+		if ($bDebug) {
+			$sDebug = $sDebug . fecha_microtiempo() . ' Configuraci&oacute;n de perfiles de CORE ' . $sSQL . '<br>';
+		}
+		$tabla = $objDB->ejecutasql($sSQL);
+		if ($objDB->nf($tabla) > 0) {
+			$fila = $objDB->sf($tabla);
+			if ($fila['ceca00idperfildirector'] != 0) {
+				$sIds = $sIds . ',' . $fila['ceca00idperfildirector'];
+			}
+			if ($fila['ceca00idperfiltutor'] != 0) {
+				$sIds = $sIds . ',' . $fila['ceca00idperfiltutor'];
+			}
+		}
+		// funcionarios
+		$sSQL = 'SELECT gthu00idperfilfunc FROM gthu00config WHERE gthu00id=1';
+		if ($bDebug) {
+			$sDebug = $sDebug . fecha_microtiempo() . ' Configuraci&oacute;n de perfiles de Talento Humano ' . $sSQL . '<br>';
+		}
+		$tabla = $objDB->ejecutasql($sSQL);
+		if ($objDB->nf($tabla) > 0) {
+			$fila = $objDB->sf($tabla);
+			if ($fila['gthu00idperfilfunc'] != 0) {
+				$sIds = $sIds . ',' . $fila['gthu00idperfilfunc'];
+			}
+		}
+		// Perfiles académicos
+		$sSQL = 'SELECT core00idperfildecano, core00idperfiladminescuela, core00idperfilliderprog, core00idperfiltutor, 
+		core00idperfilcursoscomunes, core00idperfildirzona, core00idperfildircentro, core00idperfiladmincomite, 
+		core00idperfil_apoyoprog, core00idperfil_zona_admin 
+		FROM core00params 
+		WHERE core00id=1';
+		if ($bDebug) {
+			$sDebug = $sDebug . fecha_microtiempo() . ' Configuraci&oacute;n de perfiles de CORE ' . $sSQL . '<br>';
+		}
+		$tabla = $objDB->ejecutasql($sSQL);
+		if ($objDB->nf($tabla) > 0) {
+			$fila = $objDB->sf($tabla);
+			if ($fila['core00idperfildecano'] != 0) {
+				$sIds = $sIds . ',' . $fila['core00idperfildecano'];
+			}
+			if ($fila['core00idperfiladminescuela'] != 0) {
+				$sIds = $sIds . ',' . $fila['core00idperfiladminescuela'];
+			}
+			if ($fila['core00idperfilliderprog'] != 0) {
+				$sIds = $sIds . ',' . $fila['core00idperfilliderprog'];
+			}
+		}
+		if ($sIds != '-99') {
+			$sWhere = $sWhere . ' unad05id NOT IN (' . $sIds . ') AND ';
+		}
+	}
+	$sSQL = 'SELECT unad05id AS id, CONCAT(unad05nombre, " [", unad05id, "]") AS nombre FROM unad05perfiles 
+	WHERE ' . $sWhere . ' unad05reservado="S"
+	ORDER BY unad05nombre';
+	return array($sSQL, $sDebug);
+}
 // Devuelve la ubicación del usuario logeado.
 function f107_UbicacionUsuario($objDB, $bDebug = false)
 {
@@ -133,11 +212,24 @@ function f107_VerificarPerfiles($idTercero, $idPeriodo, $objDB, $bDebug = false,
 		FROM bita27equipotrabajo AS TB, bita28eqipoparte AS T2 
 		WHERE TB.bita27idperfil>0 AND TB.bita27id=T2.bita28idequipotrab AND T2.bita28idtercero=' . $idTercero . ' AND T2.bita28activo="S"';
 		if ($bDebug) {
-			$sDebug = $sDebug . fecha_microtiempo() . ' Grupos de trabajo en BITACORA: ' . $sSQL . '<br>';
+			$sDebug = $sDebug . fecha_microtiempo() . ' Grupos de trabajo en SAI (Antes BITACORA): ' . $sSQL . '<br>';
 		}
 		$tabla = $objDB->ejecutasql($sSQL);
 		while ($fila = $objDB->sf($tabla)) {
 			$aPerfil[$fila['bita27idperfil']] = 1;
+		}
+		// Marzo 5 de 2026, se cambia a multiples perfiles.
+		$sSQL = 'SELECT TB.bita70idperfil
+		FROM bita28eqipoparte AS T28, bita70equipoperfil AS TB
+		WHERE T28.bita28idtercero=' . $idTercero . ' AND T28.bita28activo="S" 
+		AND T28.bita28idequipotrab=TB.bita70idequipotrab AND TB.bita70activa>0 
+		GROUP BY TB.bita70idperfil';
+		if ($bDebug) {
+			$sDebug = $sDebug . fecha_microtiempo() . ' Perfiles a grupos de trabajo en SAI: ' . $sSQL . '<br>';
+		}
+		$tabla = $objDB->ejecutasql($sSQL);
+		while ($fila = $objDB->sf($tabla)) {
+			$aPerfil[$fila['bita70idperfil']] = 1;
 		}
 	}
 	// 16 - CCOR 
@@ -248,7 +340,7 @@ function f107_VerificarPerfiles($idTercero, $idPeriodo, $objDB, $bDebug = false,
 	if (true) {
 		$sCondi = array();
 		$sCondi[1] = 'SELECT 1 FROM core12escuela WHERE core12iddecano=' . $idTercero . '';
-		$sCondi[2] = 'SELECT 1 FROM core12escuela WHERE core12idadministrador=' . $idTercero . '';
+		$sCondi[2] = 'SELECT 1 FROM core12escuela WHERE ((core12idadministrador=' . $idTercero . ') OR (core12idadminauxiliar=' . $idTercero . '))';
 		$sCondi[3] = 'SELECT 1 FROM core09programa WHERE core09iddirector=' . $idTercero . '';
 		//$sCondi[4] = 'SELECT 1 FROM core19tutores WHERE core19idtercero=' . $idTercero . ' AND core19activo="S"';
 		$sCondi[4] = 'SELECT 1 FROM core12escuela WHERE core12idrespcursocomun=' . $idTercero . '';
@@ -2843,6 +2935,21 @@ function f1011_BloqueTercero($idTercero, $objDB)
 				$sSQL = $objDB->sSQLCrearIndice($sTabla, 'moni14totalrapest_padre', 'moni14idplan');
 				$bResultado = $objDB->ejecutasql($sSQL);
 			}
+			// 5 de Mayo de 2026 - Se agregan las tablas de cartera.
+			$sTabla = 'cart23conciladet_' . $iRes;
+			$bIniciarContenedor = !$objDB->bexistetabla($sTabla);
+			if ($bIniciarContenedor) {
+				$sSQL="CREATE TABLE " . $sTabla . " (cart23idmodulo int NOT NULL, cart23refproceso varchar(20) NOT NULL, cart23idregistro int NOT NULL, cart23id int NOT NULL DEFAULT 0, cart23idconciliacion int NOT NULL DEFAULT 0, cart23idtercero int NOT NULL DEFAULT 0, cart23fecha int NOT NULL DEFAULT 0, cart23periodo int NOT NULL DEFAULT 0, cart23escuela int NOT NULL DEFAULT 0, cart23programa int NOT NULL DEFAULT 0, cart23curso int NOT NULL DEFAULT 0, cart23zona int NOT NULL DEFAULT 0, cart23centro int NOT NULL DEFAULT 0, cart23idproductoacad int NOT NULL DEFAULT 0, cart23cantcausada int NOT NULL DEFAULT 0, cart23cantcobrada int NOT NULL DEFAULT 0)";
+				$bResultado = $objDB->ejecutasql($sSQL);
+				$sSQL="ALTER TABLE " . $sTabla . " ADD PRIMARY KEY(cart23id)";
+				$bResultado = $objDB->ejecutasql($sSQL);
+				$sSQL=$objDB->sSQLCrearIndice($sTabla, 'cart23conciladet_id', 'cart23idmodulo, cart23refproceso, cart23idregistro', true);
+				$bResultado = $objDB->ejecutasql($sSQL);
+				$sSQL=$objDB->sSQLCrearIndice($sTabla, 'cart23conciladet_padre', 'cart23idconciliacion');
+				$bResultado = $objDB->ejecutasql($sSQL);
+				$sSQL=$objDB->sSQLCrearIndice($sTabla, 'cart23conciladet_tercero', 'cart23idtercero');
+				$bResultado = $objDB->ejecutasql($sSQL);
+			}
 		}
 	} else {
 		$sError = 'No se ha encontrado el tercero Ref ' . $idTercero . '';
@@ -5218,12 +5325,16 @@ function f2212_EscuelaPerteneceV2($idTercero, $idRevisa, $objDB, $bDebug = false
 	return array($idEscuela, $idZona, $sDebug);
 }
 // Lista de zonas
-function f2212_ListaCentros($idTercero, $objDB, $bDebug = false)
+// Mayo 1 de 2026, se agrega el parametro idcentor que nos sirve para verificar si la persona pertenece a la centro
+function f2212_ListaCentros($idTercero, $objDB, $bDebug = false, $bListarZonas = false, $idCentro = 0)
 {
 	$sIds = '-99';
+	$sIdsZonas = '';
 	$sDebug = '';
-	$sCondi26 = '';
-	$sCondi12 = '';
+	$sZona = '';
+	$sCentro = '';
+	$iNumZonas = 0;
+	$iNumCentros = 0;
 	// Primero descartamos que sea un lider nacional.
 	/*
 	$sSQL = 'SELECT 1 
@@ -5240,17 +5351,58 @@ function f2212_ListaCentros($idTercero, $objDB, $bDebug = false)
 	}
 	 */
 	// OR (TB.unad23administrador=' . $idTercero . ')
+	$sCondi24 = '';
+	if ($idCentro != 0) {
+		$sCondi24 = 'TB.unad24id=' . $idCentro . ' AND ';
+	}
 	$sSQL = 'SELECT TB.unad24id 
 	FROM unad24sede AS TB
-	WHERE ' . $sCondi12 . '((TB.unad24director=' . $idTercero . '))';
+	WHERE ' . $sCondi24 . '((TB.unad24director=' . $idTercero . '))';
 	if ($bDebug) {
-		$sDebug = $sDebug . fecha_microtiempo() . ' Consultando Directores de centro: ' . $sSQL . '<br>';
+		$sDebug = $sDebug . log_debug(' Consultando Directores de centro: ' . $sSQL . '');
 	}
 	$tabla = $objDB->ejecutasql($sSQL);
 	while ($fila = $objDB->sf($tabla)) {
 		$sIds = $sIds . ',' . $fila['unad24id'];
 	}
-	return array($sIds, $sDebug);
+	// -- Ver de los grupos de trabajo a que centro esta asociado.
+	$sCondi27 = ' AND T27.bita27cead>0 ';
+	if ($idCentro != 0) {
+		$sCondi27 = ' AND T27.bita27cead=' . $idCentro . ' ';
+	}
+	$sSQL = 'SELECT T27.bita27cead 
+	FROM bita28eqipoparte AS TB, bita27equipotrabajo AS T27
+	WHERE TB.bita28idtercero=' . $idTercero . ' AND TB.bita28activo="S" 
+	AND TB.bita28idequipotrab=T27.bita27id AND T27.bita27nivelrespuesta=3' . $sCondi27 . '
+	GROUP BY T27.bita27cead';
+	if ($bDebug) {
+		$sDebug = $sDebug . log_debug(' Consultando Equipos de trabajo por centro: ' . $sSQL . '');
+	}
+	$tabla = $objDB->ejecutasql($sSQL);
+	$iNumCentros = $objDB->nf($tabla);
+	while ($fila = $objDB->sf($tabla)) {
+		if ($sCentro == '') {
+			$sCentro = $fila['bita27cead'];
+		}
+		$sIds = $sIds . ',' . $fila['bita27cead'];
+	}
+	// -- Se saca el resumen de las zonas.
+	if ($bListarZonas && ($iNumCentros > 0)) {
+		$sIdsZonas = '-99';
+		$sSQL = 'SELECT unad24idzona 
+		FROM unad24sede
+		WHERE unad24id IN (' . $sIds . ')
+		GROUP BY unad24idzona';
+		$tabla = $objDB->ejecutasql($sSQL);
+		$iNumZonas = $objDB->nf($tabla);
+		while ($fila = $objDB->sf($tabla)) {
+			if ($sZona == '') {
+				$sZona = $fila['unad24idzona'];
+			}
+			$sIdsZonas = $sIdsZonas . ',' . $fila['unad24idzona'];
+		}
+	}
+	return array($sIds, $sDebug, $sIdsZonas, $sZona, $sCentro, $iNumZonas, $iNumCentros);
 }
 //Septiembre 2 de 2024 - Necesitamos tener el listado de escuelas a las que alguien pertenece
 function f2212_ListaEscuelas($idTercero, $objDB, $bDebug = false)
@@ -5319,13 +5471,13 @@ function f2212_ListaEscuelasV2($idTercero, $objDB, $bSoloLideres = false, $bDebu
 	return array($sIds, $sDebug);
 }
 // Lista de zonas
-function f2212_ListaZonas($idTercero, $objDB, $bDebug = false)
+function f2212_ListaZonas($idTercero, $objDB, $bDebug = false, $idZona = 0)
 {
 	$sIds = '-99';
 	$sDebug = '';
 	$sCondi26 = '';
-	$sCondi12 = '';
 	$idPrimerZona = -1;
+	$iNumZonas = 0;
 	// Primero descartamos que sea un lider nacional.
 	$sSQL = 'SELECT 1 
 	FROM core26espejos 
@@ -5336,11 +5488,29 @@ function f2212_ListaZonas($idTercero, $objDB, $bDebug = false)
 	$tabla = $objDB->ejecutasql($sSQL);
 	if ($objDB->nf($tabla) > 0) {
 		// En caso de que no se devuelvan ids es porque tiene acceso a todo.
-		$sIds = '';
+		$sCondiZona = ' unad23id>0 AND ';
+		if ($idZona != 0) {
+			$sCondiZona = 'unad23id=' . $idZona . ' AND ';
+		}
+		$sSQL = 'SELECT unad23id 
+		FROM unad23zona 
+		WHERE ' . $sCondiZona . ' unad23conestudiantes="S"';
+		$tabla = $objDB->ejecutasql($sSQL);
+		$iNumZonas - $objDB->nf($tabla);
+		while ($fila = $objDB->sf($tabla)) {
+			$sIds = $sIds . ',' . $fila['unad23id'];
+			if ($idPrimerZona == -1) {
+				$idPrimerZona = $fila['unad23id'];
+			}
+		}
 	} else {
+		$sCondiZona = ' unad23id>0 AND ';
+		if ($idZona != 0) {
+			$sCondiZona = 'unad23id=' . $idZona . ' AND ';
+		}
 		$sSQL = 'SELECT TB.unad23id 
 		FROM unad23zona AS TB
-		WHERE ' . $sCondi12 . '((TB.unad23director=' . $idTercero . ') OR (TB.unad23administrador=' . $idTercero . '))';
+		WHERE ' . $sCondiZona . '((TB.unad23director=' . $idTercero . ') OR (TB.unad23administrador=' . $idTercero . '))';
 		if ($bDebug) {
 			$sDebug = $sDebug . fecha_microtiempo() . ' Consultando Directores zonales y auxiliares: ' . $sSQL . '<br>';
 		}
@@ -5352,9 +5522,13 @@ function f2212_ListaZonas($idTercero, $objDB, $bDebug = false)
 			}
 		}
 		//Puede ser un zonal... entonces tambien pertenece.
+		$sCondi26 = ' core26idzona<>0 AND ';
+		if ($idZona != 0) {
+			$sCondi26 = 'core26idzona=' . $idZona . ' AND ';
+		}
 		$sSQL = 'SELECT core26idescuela, core26idzona 
 		FROM core26espejos 
-		WHERE ' . $sCondi26 . 'core26idtercero=' . $idTercero . ' AND core26vigente="S" AND core26idzona<>0';
+		WHERE ' . $sCondi26 . 'core26idtercero=' . $idTercero . ' AND core26vigente="S"';
 		if ($bDebug) {
 			$sDebug = $sDebug . fecha_microtiempo() . ' Consultando Espejos: ' . $sSQL . '<br>';
 		}
@@ -5365,8 +5539,43 @@ function f2212_ListaZonas($idTercero, $objDB, $bDebug = false)
 				$idPrimerZona = $fila['core26idzona'];
 			}
 		}
+		// la asginacion puede venir por grupo de trabajo
+		$sCondi27 = ' AND T27.bita27idzona>0 ';
+		if ($idZona != 0) {
+			$sCondi27 = ' AND T27.bita27idzona=' . $idZona . '';
+		}
+		$sSQL = 'SELECT T27.bita27idzona 
+		FROM bita28eqipoparte AS TB, bita27equipotrabajo AS T27
+		WHERE TB.bita28idtercero=' . $idTercero . ' AND TB.bita28activo="S" 
+		AND TB.bita28idequipotrab=T27.bita27id AND T27.bita27nivelrespuesta=2 ' . $sCondi27 . ' 
+		GROUP BY T27.bita27idzona';
+		if ($bDebug) {
+			$sDebug = $sDebug . log_debug(' Consultando Equipos de trabajo por zona: ' . $sSQL . '');
+		}
+		$tabla = $objDB->ejecutasql($sSQL);
+		while ($fila = $objDB->sf($tabla)) {
+			$sIds = $sIds . ',' . $fila['bita27idzona'];
+			if ($idPrimerZona == -1) {
+				$idPrimerZona = $fila['bita27idzona'];
+			}
+		}
+		// Ahora depuramos para poder hacer el conteo de zonas.
+		if ($sIds != '-99') {
+			$sSQL = 'SELECT unad23id 
+			FROM unad23zona 
+			WHERE unad23id IN (' . $sIds . ')';
+			if ($bDebug) {
+				$sDebug = $sDebug . log_debug(' Depurando lista de zonas: ' . $sSQL . '');
+			}
+			$tabla = $objDB->ejecutasql($sSQL);
+			$iNumZonas = $objDB->nf($tabla);
+			$sIds = '-99';
+			while ($fila = $objDB->sf($tabla)) {
+				$sIds = $sIds . ',' . $fila['unad23id'];
+			}
+		}
 	}
-	return array($sIds, $sDebug, $idPrimerZona);
+	return array($sIds, $sDebug, $idPrimerZona, $iNumZonas);
 }
 function f2300_EsConsejero($idTercero, $objDB, $bDebug = false)
 {
@@ -6777,6 +6986,16 @@ function TH_EquivalenteTipoDoc($sInfoIngresa)
 	}
 	return $sRes;
 }
+// 23 - feb 2026, se deja de forma generica el inicio de tokens.
+function Token_Iniciar($sSemilla, $iLargo, $bVariable = true) {
+	$sInicio = '';
+	if ($bVariable) {
+		$sInicio = date('i:s:H:D');
+	}
+	$sRes = substr(md5($sInicio . $sSemilla), 0, $iLargo);
+	return $sRes;
+}
+
 function TraerDBCampus($bDebug = false)
 {
 	$objCampus = NULL;
@@ -6866,6 +7085,7 @@ function TraerDBRyCPruebas($bDebug = false)
 	$objRyC = NULL;
 	$sDebug = '';
 	$sRutaIni = 'app.php';
+	$sDirBase = '';
 	if (!file_exists($sRutaIni)) {
 		$sDirBase = __DIR__ . '/';
 		$sRutaIni = $sDirBase . 'app.php';

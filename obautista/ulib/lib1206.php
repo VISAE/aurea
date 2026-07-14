@@ -24,7 +24,7 @@ function f1206_HTMLComboV2_masi06centro($objDB, $objCombos, $valor, $vrmasi06zon
 	}
 	require $mensajes_todas;
 	$objCombos->nuevo('masi06centro', $valor, true, '{' . $ETI['msg_todos'] . '}', 0);
-	//$objCombos->iAncho = 450;
+	$objCombos->iAncho = 450;
 	$sSQL = '';
 	if ((int)$vrmasi06zona != 0) {
 		//$objCombos->addItem('0', '[Sin Dato]');
@@ -53,7 +53,6 @@ function f1206_Combomasi06centro($aParametros)
 	$objDB->CerrarConexion();
 	$objResponse = new xajaxResponse();
 	$objResponse->assign('div_masi06centro', 'innerHTML', $html_masi06centro);
-	//$objResponse->call('$("#masi06centro").chosen()');
 	return $objResponse;
 }
 function f1206_HTMLComboV2_masi06programa($objDB, $objCombos, $valor, $vrmasi06escuela, $vrmasi06nivelforma)
@@ -66,12 +65,14 @@ function f1206_HTMLComboV2_masi06programa($objDB, $objCombos, $valor, $vrmasi06e
 	}
 	require $mensajes_todas;
 	$objCombos->nuevo('masi06programa', $valor, true, '{' . $ETI['msg_todos'] . '}', 0);
+	$objCombos->sAccion = 'carga_combo_masi06curso();';
 	$objCombos->iAncho = 370;
+	$objCombos->bEsCombobox = true;
 	$sSQL = '';
 	if ((int)$vrmasi06escuela != 0) {
 		//$objCombos->addItem('0', '[Sin Dato]');
 		$sCondi = '';
-		if ($vrmasi06nivelforma != '') {
+		if ((int)$vrmasi06nivelforma != 0) {
 			$sCondi = ' AND cara09nivelformacion=' . $vrmasi06nivelforma . '';
 		}
 		$sSQL = 'SELECT TB.core09id AS id, CONCAT(TB.core09nombre, " [", TB.core09codigo, "]") AS nombre 
@@ -99,10 +100,11 @@ function f1206_Combomasi06programa($aParametros)
 	$objDB->CerrarConexion();
 	$objResponse = new xajaxResponse();
 	$objResponse->assign('div_masi06programa', 'innerHTML', $html_masi06programa);
-	$objResponse->call('$("#masi06programa").chosen()');
+	$objResponse->call('createComboboxById("masi06programa")');
+	$objResponse->call('carga_combo_masi06curso()');
 	return $objResponse;
 }
-function f1206_HTMLComboV2_masi06curso($objDB, $objCombos, $valor, $vrmasi06idperiodo)
+function f1206_HTMLComboV2_masi06curso($objDB, $objCombos, $valor, $vrmasi06idperiodo, $vrmasi06programa, $vrmasi06escuela)
 {
 	require './app.php';
 	$sIdioma = AUREA_Idioma();
@@ -112,14 +114,22 @@ function f1206_HTMLComboV2_masi06curso($objDB, $objCombos, $valor, $vrmasi06idpe
 	}
 	require $mensajes_todas;
 	$objCombos->nuevo('masi06curso', $valor, true, '{' . $ETI['msg_ninguno'] . '}', 0);
+	$objCombos->bEsCombobox = true;
 	//$objCombos->iAncho = 450;
 	$sSQL = '';
 	if ((int)$vrmasi06idperiodo != 0) {
 		list($sIds) = f140_CursosPeriodo($vrmasi06idperiodo, $objDB);
 		//$objCombos->addItem('0', '[Sin Dato]');
+		$sCondi = '';
+		if ((int)$vrmasi06escuela != 0) {
+			$sCondi = ' AND unad40idescuela=' . $vrmasi06escuela . '';
+		}
+		if ((int)$vrmasi06programa != 0) {
+			$sCondi = ' AND unad40idprograma=' . $vrmasi06programa . '';
+		}
 		$sSQL = 'SELECT TB.unad40id AS id, CONCAT(TB.unad40titulo, " - ", TB.unad40nombre) AS nombre 
 		FROM unad40curso AS TB
-		WHERE TB.unad40id IN (' . $sIds . ') 
+		WHERE TB.unad40id IN (' . $sIds . ')' . $sCondi . ' 
 		ORDER BY TB.unad40nombre';
 	}
 	$res = $objCombos->html($sSQL, $objDB); //, 0, '', 'et', 1206, $sIdioma
@@ -138,11 +148,11 @@ function f1206_Combomasi06curso($aParametros)
 	}
 	$objDB->xajax();
 	$objCombos = new clsHtmlCombos();
-	$html_masi06curso = f1206_HTMLComboV2_masi06curso($objDB, $objCombos, '', $aParametros[0]);
+	$html_masi06curso = f1206_HTMLComboV2_masi06curso($objDB, $objCombos, '', $aParametros[0], $aParametros[1], $aParametros[2]);
 	$objDB->CerrarConexion();
 	$objResponse = new xajaxResponse();
 	$objResponse->assign('div_masi06curso', 'innerHTML', $html_masi06curso);
-	//$objResponse->call('$("#masi06curso").chosen()');
+	$objResponse->call('createComboboxById("masi06curso")');
 	return $objResponse;
 }
 function f1206_db_Guardar($valores, $objDB, $bDebug = false, $idTercero = 0, $iCodModulo = 1206)
@@ -184,6 +194,15 @@ function f1206_db_Guardar($valores, $objDB, $bDebug = false, $idTercero = 0, $iC
 	$masi06sexo = numeros_validar($valores[10]);
 	$masi06idperiodo = numeros_validar($valores[11]);
 	$masi06curso = numeros_validar($valores[12]);
+	$masi06docente = numeros_validar($valores[13]);
+	$masi06unidadfunc = numeros_validar($valores[14]);
+	$masi06agnogrado = numeros_validar($valores[15]);
+	$bFiltroVacio = true;
+	for ($i=4; $i <=15 ; $i++) { 
+		if ((int) $valores[$i] > 0) {
+			$bFiltroVacio = false;
+		}
+	}
 	/*
 	if ($masi06zona == '') {
 		$masi06zona = 0;
@@ -206,15 +225,24 @@ function f1206_db_Guardar($valores, $objDB, $bDebug = false, $idTercero = 0, $iC
 	if ($masi06sexo == '') {
 		$masi06sexo = 0;
 	}
+	*/
 	if ($masi06idperiodo == '') {
 		$masi06idperiodo = 0;
 	}
 	if ($masi06curso == '') {
 		$masi06curso = 0;
 	}
-	*/
 	// -- Seccion para validar los posibles causales de error.
 	$sSepara = ', ';
+	if ($masi06agnogrado == '') {
+		$sError = $ERR['masi06agnogrado'] . $sSepara . $sError;
+	}
+	if ($masi06unidadfunc == '') {
+		$sError = $ERR['masi06unidadfunc'] . $sSepara . $sError;
+	}
+	if ($masi06docente == '') {
+		$sError = $ERR['masi06docente'] . $sSepara . $sError;
+	}
 	if ($masi06curso == '') {
 		$sError = $ERR['masi06curso'] . $sSepara . $sError;
 	}
@@ -250,12 +278,45 @@ function f1206_db_Guardar($valores, $objDB, $bDebug = false, $idTercero = 0, $iC
 	if ($masi06idmensaje == '') {
 		$sError = $ERR['masi06idmensaje'] . $sSepara . $sError;
 	}
+	if ($bFiltroVacio) {
+		$sError = $ERR['msg_bfiltro'] . $sSepara . $sError;
+	}
 	// -- Se verifican los valores de campos de otras tablas.
 	$bQuitarCodigo = false;
 	$sCampoCodigo = '';
 	if ($sError == '') {
 		$bloque = numeros_validar($valores[97]);
-		list($sTabla1206, $sError) = f1206_NombreTabla($bloque, $objDB);
+		list($sTabla1205, $sError) = f1205_NombreTabla($bloque, $objDB);
+		list($sTabla1206, $sErrorH) = f1206_NombreTabla($bloque, $objDB);
+		$sError = $sError . $sErrorH;
+	}
+	if ($sError == '') {
+		$sSQL = 'SELECT masi05idproceso FROM ' . $sTabla1205 . ' WHERE masi05id=' . $masi06idmensaje . '';
+		$result = $objDB->ejecutasql($sSQL);
+		if ($objDB->nf($result) != 0) {
+			$fila = $objDB->sf($result);
+			switch($fila['masi05idproceso']) {
+				case 0: // - Ninguno
+				case 2: // - Funcionarios
+				case 3: // - Contratistas
+				case 17: // - Egresados
+				case 2741: // - Postulados a grados
+					break;
+				case 11: // - Aspirantes
+				case 12: // - Estudiantes
+				case 13: // - Estudiantes ausentes
+				case 2209: // - Estudiantes del programa
+				case 2306: // - Acompañamiento académico
+				case 2307: // - Seguimiento académico
+				case 12229: // - Convocados
+					if ((int)$masi06idperiodo == 0) {
+						$sError = $ERR['masi06idperiodo'] . $sSepara . $sError;
+					}
+					break;
+			}
+		} else {
+			$sError = $ERR['masi06idmensaje'] . $sSepara . $sError;
+		}
 	}
 	if ($sError == '') {
 		if ((int)$masi06id == 0) {
@@ -308,10 +369,10 @@ function f1206_db_Guardar($valores, $objDB, $bDebug = false, $idTercero = 0, $iC
 		if ($bInserta) {
 			$sCampos1206 = 'masi06idmensaje, masi06consec, masi06id, masi06zona, masi06centro, 
 			masi06escuela, masi06nivelforma, masi06programa, masi06est_condicion, masi06sexo, 
-			masi06idperiodo, masi06curso';
+			masi06idperiodo, masi06curso, masi06docente, masi06unidadfunc, masi06agnogrado';
 			$sValores1206 = '' . $masi06idmensaje . ', ' . $masi06consec . ', ' . $masi06id . ', ' . $masi06zona . ', ' . $masi06centro . ', 
 			' . $masi06escuela . ', ' . $masi06nivelforma . ', ' . $masi06programa . ', ' . $masi06est_condicion . ', ' . $masi06sexo . ', 
-			' . $masi06idperiodo . ', ' . $masi06curso . '';
+			' . $masi06idperiodo . ', ' . $masi06curso . ', ' . $masi06docente . ', ' . $masi06unidadfunc . ', ' . $masi06agnogrado . '';
 			if ($APP->utf8 == 1) {
 				$sSQL = 'INSERT INTO ' . $sTabla1206 . ' (' . $sCampos1206 . ') VALUES (' . cadena_codificar($sValores1206) . ');';
 			} else {
@@ -338,6 +399,9 @@ function f1206_db_Guardar($valores, $objDB, $bDebug = false, $idTercero = 0, $iC
 			$scampo1206[7] = 'masi06sexo';
 			$scampo1206[8] = 'masi06idperiodo';
 			$scampo1206[9] = 'masi06curso';
+			$scampo1206[10] = 'masi06docente';
+			$scampo1206[11] = 'masi06unidadfunc';
+			$scampo1206[12] = 'masi06agnogrado';
 			$svr1206[1] = $masi06zona;
 			$svr1206[2] = $masi06centro;
 			$svr1206[3] = $masi06escuela;
@@ -347,7 +411,10 @@ function f1206_db_Guardar($valores, $objDB, $bDebug = false, $idTercero = 0, $iC
 			$svr1206[7] = $masi06sexo;
 			$svr1206[8] = $masi06idperiodo;
 			$svr1206[9] = $masi06curso;
-			$iNumCampos = 9;
+			$svr1206[10] = $masi06docente;
+			$svr1206[11] = $masi06unidadfunc;
+			$svr1206[12] = $masi06agnogrado;
+			$iNumCampos = 12;
 			$sWhere = 'masi06id=' . $masi06id . '';
 			//$sWhere = 'masi06idmensaje=' . $masi06idmensaje . ' AND masi06consec=' . $masi06consec . '';
 			$sSQL = 'SELECT * FROM ' . $sTabla1206 . ' WHERE ' . $sWhere;
@@ -445,6 +512,7 @@ function f1206_db_Eliminar($aParametros, $objDB, $bDebug = false, $idTercero = 0
 	if ($sError == '') {
 		list($sTabla1206, $sError) = f1206_NombreTabla($bloque, $objDB);
 		list($sTabla1208, $sErrorH) = f1208_NombreTabla($bloque, $objDB);
+		$sError = $sError . $sErrorH;
 	}
 	if ($sError == '') {
 		$sSQL = 'SELECT masi06idmensaje FROM ' . $sTabla1206 . ' WHERE masi06id=' . $masi06id . '';
@@ -519,6 +587,7 @@ function f1206_TablaDetalleV2($aParametros, $objDB, $bDebug = false)
 		$aParametros[0] = -1;
 	}
 	$masi05id = $aParametros[0];
+	$masi05idproceso = 0;
 	if (true) {
 		//Leemos los parametros de entrada.
 		$pagina = numeros_validar($aParametros[101]);
@@ -541,17 +610,58 @@ function f1206_TablaDetalleV2($aParametros, $objDB, $bDebug = false)
 		die();
 	}
 	$bAbierta = false;
-	$sSQL = 'SELECT masi05estado FROM ' . $sTabla1205 . ' WHERE masi05id=' . $masi05id;
+	$bAplicaUnidadFuncional = false;
+	$bAplicaEscuela = false;
+	$bAplicaPrograma = false;
+	$bAplicaPeriodo = false;
+	$bAplicaCurso = false;
+	$bAplicaGrado = false;
+	$sSQL = 'SELECT masi05estado, masi05idproceso FROM ' . $sTabla1205 . ' WHERE masi05id=' . $masi05id;
 	$tabla = $objDB->ejecutasql($sSQL);
 	if ($objDB->nf($tabla) > 0) {
 		$fila = $objDB->sf($tabla);
+		$masi05idproceso = $fila['masi05idproceso'];
 		if ($fila['masi05estado'] == 0) {
 			$bAbierta = true;
 		}
 	}
+	switch ($masi05idproceso) {
+		case 0: // - Ninguno
+			break;
+		case 2: // - Funcionarios
+		case 3: // - Contratistas
+			$bAplicaUnidadFuncional = true;
+			break;
+		case 11: // - Aspirantes
+		case 2306: // - Acompañamiento académico
+		case 2307: // - Seguimiento académico
+		case 12229: // - Convocados
+			$bAplicaEscuela = true;
+			$bAplicaPrograma = true;
+			$bAplicaPeriodo = true;
+			break;
+		case 12: // - Estudiantes
+		case 13: // - Estudiantes ausentes
+		case 2209: // - Estudiantes del programa
+			$bAplicaEscuela = true;
+			$bAplicaPrograma = true;
+			$bAplicaPeriodo = true;
+			$bAplicaCurso = true;
+			break;
+		case 17: // - Egresados
+			$bAplicaEscuela = true;
+			$bAplicaPrograma = true;
+			$bAplicaGrado = true;
+			break;
+		case 2741: // - Postulados a grados
+			$bAplicaEscuela = true;
+			$bAplicaPrograma = true;
+			break;
+	}
 	$iPiel = iDefinirPiel($APP, 2);
 	$aEscuela = array('- -');
 	$aZona = array('- -');
+	$aUnidadFunc = array('- -');
 	$sSQL = 'SELECT core12id, core12sigla, core12nombre FROM core12escuela WHERE core12id>0';
 	$tabla = $objDB->ejecutasql($sSQL);
 	while ($fila = $objDB->sf($tabla)) {
@@ -561,6 +671,11 @@ function f1206_TablaDetalleV2($aParametros, $objDB, $bDebug = false)
 	$tabla = $objDB->ejecutasql($sSQL);
 	while ($fila = $objDB->sf($tabla)) {
 		$aZona[$fila['unad23id']] = cadena_notildes($fila['unad23sigla']);
+	}
+	$sSQL = 'SELECT unae26id, unae26nombre FROM unae26unidadesfun WHERE unae26idzona=0 AND unae26id>0';
+	$tabla = $objDB->ejecutasql($sSQL);
+	while ($fila = $objDB->sf($tabla)) {
+		$aUnidadFunc[$fila['unae26id']] = cadena_notildes($fila['unae26nombre']);
 	}
 	$sSQLadd = '';
 	$sSQLadd1 = '';
@@ -589,12 +704,14 @@ function f1206_TablaDetalleV2($aParametros, $objDB, $bDebug = false)
 	$registros = 0;
 	$bGigante = false; //En caso de que la tabla sea muy grande pasarlo a true
 	$sLimite = '';
-	$sCampos = 'SELECT TB.masi06idmensaje, TB.masi06consec, TB.masi06id, T5.unad24nombre, 
-	T7.core22nombre, T8.core09nombre, TB.masi06est_condicion, TB.masi06sexo, 
-	TB.masi06zona, TB.masi06centro, TB.masi06escuela, TB.masi06nivelforma, TB.masi06programa, TB.masi06idperiodo, TB.masi06curso';
-	$sConsulta = 'FROM ' . $sTabla1206 . ' AS TB, unad24sede AS T5, core22nivelprograma AS T7, core09programa AS T8 
+	$sCampos = 'SELECT TB.masi06idmensaje, TB.masi06consec, TB.masi06id, T5.unad24nombre, T7.core22nombre, 
+	T8.core09nombre, TB.masi06est_condicion, TB.masi06sexo, TB.masi06zona, TB.masi06centro, 
+	TB.masi06escuela, TB.masi06nivelforma, TB.masi06programa, TB.masi06idperiodo, TB.masi06curso, 
+	TB.masi06docente, TB.masi06unidadfunc, TB.masi06agnogrado, T40.unad40nombre, T2.exte02nombre';
+	$sConsulta = 'FROM ' . $sTabla1206 . ' AS TB, unad24sede AS T5, core22nivelprograma AS T7, core09programa AS T8, unad40curso AS T40, exte02per_aca AS T2 
 	WHERE ' . $sSQLadd1 . ' TB.masi06idmensaje=' . $masi05id . ' AND TB.masi06centro=T5.unad24id 
-	AND TB.masi06nivelforma=T7.core22id AND TB.masi06programa=T8.core09id ' . $sSQLadd . '';
+	AND TB.masi06nivelforma=T7.core22id AND TB.masi06programa=T8.core09id AND TB.masi06curso=T40.unad40id 
+	AND TB.masi06idperiodo=T2.exte02id ' . $sSQLadd . '';
 	$sOrden = 'ORDER BY TB.masi06consec';
 	$sSQL = $sCampos . ' ' . $sConsulta . ' ' . $sOrden;
 	$sSQLlista = str_replace("'", "|", $sSQL);
@@ -633,12 +750,27 @@ function f1206_TablaDetalleV2($aParametros, $objDB, $bDebug = false)
 	$res = $res . '<div class="table-responsive">';
 	$res = $res . '<table border="0" align="center" cellpadding="0" cellspacing="2" class="' . $sClaseTabla . '">';
 	$res = $res . '<thead class="fondoazul"><tr>';
-	$res = $res . '<th><b>' . $ETI['masi06consec'] . '</b></th>';
+	if ($bAplicaUnidadFuncional) {
+		$res = $res . '<th><b>' . $ETI['masi06unidadfunc'] . '</b></th>';
+	}
 	$res = $res . '<th><b>' . $ETI['masi06zona'] . '</b></th>';
 	$res = $res . '<th><b>' . $ETI['masi06centro'] . '</b></th>';
-	$res = $res . '<th><b>' . $ETI['masi06escuela'] . '</b></th>';
-	$res = $res . '<th><b>' . $ETI['masi06nivelforma'] . '</b></th>';
-	$res = $res . '<th><b>' . $ETI['masi06programa'] . '</b></th>';
+	if ($bAplicaEscuela) {
+		$res = $res . '<th><b>' . $ETI['masi06escuela'] . '</b></th>';
+	}
+	if ($bAplicaPrograma) {
+		$res = $res . '<th><b>' . $ETI['masi06nivelforma'] . '</b></th>';
+		$res = $res . '<th><b>' . $ETI['masi06programa'] . '</b></th>';
+	}
+	if ($bAplicaPeriodo) {
+		$res = $res . '<th><b>' . $ETI['masi06idperiodo'] . '</b></th>';
+	}
+	if ($bAplicaCurso) {
+		$res = $res . '<th><b>' . $ETI['masi06curso'] . '</b></th>';
+	}
+	if ($bAplicaGrado) {
+		$res = $res . '<th><b>' . $ETI['masi06agnogrado'] . '</b></th>';
+	}
 	$res = $res . '<th><b>' . $ETI['masi06est_condicion'] . '</b></th>';
 	$res = $res . '<th><b>' . $ETI['masi06sexo'] . '</b></th>';
 	$res = $res . '<th colspan="2"><b>' . '</b></th>';
@@ -663,14 +795,50 @@ function f1206_TablaDetalleV2($aParametros, $objDB, $bDebug = false)
 			$sClass = '';
 		}
 		$tlinea++;
-		$et_masi06consec = $sPrefijo . $filadet['masi06consec'] . $sSufijo;
-		$et_masi06zona = $sPrefijo . $aZona[$filadet['masi06zona']] . $sSufijo;
-		$et_masi06centro = $sPrefijo . cadena_notildes($filadet['unad24nombre']) . $sSufijo;
-		$et_masi06escuela = $sPrefijo . $aEscuela[$filadet['masi06escuela']] . $sSufijo;
-		$et_masi06nivelforma = $sPrefijo . cadena_notildes($filadet['core22nombre']) . $sSufijo;
-		$et_masi06programa = $sPrefijo . cadena_notildes($filadet['core09nombre']) . $sSufijo;
-		$et_masi06est_condicion = $sPrefijo . $amasi06est_condicion[$filadet['masi06est_condicion']] . $sSufijo;
-		$et_masi06sexo = $sPrefijo . $amasi06sexo[$filadet['masi06sexo']] . $sSufijo;
+		$et_masi06unidadfunc = $sPrefijo . $ETI['msg_todas'] . $sSufijo;
+		if ($filadet['masi06unidadfunc'] > 0) {
+			$et_masi06unidadfunc = $sPrefijo . $aUnidadFunc[$filadet['masi06unidadfunc']] . $sSufijo;
+		}
+		$et_masi06zona = $sPrefijo . $ETI['msg_todas'] . $sSufijo;
+		if ($filadet['masi06zona'] > 0) {
+			$et_masi06zona = $sPrefijo . $aZona[$filadet['masi06zona']] . $sSufijo;
+		}
+		$et_masi06centro = $sPrefijo . $ETI['msg_todos'] . $sSufijo;
+		if ($filadet['masi06centro'] > 0) {
+			$et_masi06centro = $sPrefijo . cadena_notildes($filadet['unad24nombre']) . $sSufijo;
+		}
+		$et_masi06escuela = $sPrefijo . $ETI['msg_todas'] . $sSufijo;
+		if ($filadet['masi06escuela'] > 0) {
+			$et_masi06escuela = $sPrefijo . $aEscuela[$filadet['masi06escuela']] . $sSufijo;
+		}
+		$et_masi06nivelforma = $sPrefijo . $ETI['msg_todos'] . $sSufijo;
+		if ($filadet['masi06nivelforma'] > 0) {
+			$et_masi06nivelforma = $sPrefijo . cadena_notildes($filadet['core22nombre']) . $sSufijo;
+		}
+		$et_masi06programa = $sPrefijo . $ETI['msg_todos'] . $sSufijo;
+		if ($filadet['masi06programa'] > 0) {
+			$et_masi06programa = $sPrefijo . cadena_notildes($filadet['core09nombre']) . $sSufijo;
+		}
+		$et_masi06idperiodo = $sPrefijo . $ETI['msg_todos'] . $sSufijo;
+		if ($filadet['masi06idperiodo'] > 0) {
+			$et_masi06idperiodo = $sPrefijo . cadena_notildes($filadet['exte02nombre']) . $sSufijo;
+		}
+		$et_masi06curso = $sPrefijo . $ETI['msg_todos'] . $sSufijo;
+		if ($filadet['masi06curso'] > 0) {
+			$et_masi06curso = $sPrefijo . cadena_notildes($filadet['unad40nombre']) . $sSufijo;
+		}
+		$et_masi06est_condicion = $sPrefijo . $ETI['msg_todos'] . $sSufijo;
+		if ($filadet['masi06est_condicion'] > 0) {
+			$et_masi06est_condicion = $sPrefijo . $amasi06est_condicion[$filadet['masi06est_condicion']] . $sSufijo;
+		}
+		$et_masi06sexo = $sPrefijo . $ETI['msg_todos'] . $sSufijo;
+		if ($filadet['masi06sexo'] > 0) {
+			$et_masi06sexo = $sPrefijo . $amasi06sexo[$filadet['masi06sexo']] . $sSufijo;
+		}
+		$et_masi06agnogrado = $sPrefijo . $ETI['msg_todos'] . $sSufijo;
+		if ($filadet['masi06agnogrado'] > 0) {
+			$et_masi06agnogrado = $sPrefijo . $filadet['masi06agnogrado'] . $sSufijo;
+		}
 		$sSQL = 'SELECT 1 FROM ' . $sTabla1208 . ' WHERE masi08idmensaje=' . $masi05id . ' AND masi08idpoblacion=' . $filadet['masi06id'] . '';
 		$tabla08 = $objDB->ejecutasql($sSQL);
 		$iTotal = $objDB->nf($tabla08);
@@ -684,12 +852,27 @@ function f1206_TablaDetalleV2($aParametros, $objDB, $bDebug = false)
 			$sLink3 = $sPrefijo . formato_numero($iTotal) . $sSufijo;
 		}
 		$res = $res . '<tr' . $sClass . '>';
-		$res = $res . '<td>' . $et_masi06consec . '</td>';
+		if ($bAplicaUnidadFuncional) {
+			$res = $res . '<td>' . $et_masi06unidadfunc . '</td>';
+		}
 		$res = $res . '<td>' . $et_masi06zona . '</td>';
 		$res = $res . '<td>' . $et_masi06centro . '</td>';
-		$res = $res . '<td>' . $et_masi06escuela . '</td>';
-		$res = $res . '<td>' . $et_masi06nivelforma . '</td>';
-		$res = $res . '<td>' . $et_masi06programa . '</td>';
+		if ($bAplicaEscuela) {
+			$res = $res . '<td>' . $et_masi06escuela . '</td>';
+		}
+		if ($bAplicaPrograma) {
+			$res = $res . '<td>' . $et_masi06nivelforma . '</td>';
+			$res = $res . '<td>' . $et_masi06programa . '</td>';
+		}
+		if ($bAplicaPeriodo) {
+			$res = $res . '<td>' . $et_masi06idperiodo . '</td>';
+		}
+		if ($bAplicaCurso) {
+			$res = $res . '<td>' . $et_masi06curso . '</td>';
+		}
+		if ($bAplicaGrado) {
+			$res = $res . '<td>' . $et_masi06agnogrado . '</td>';
+		}
 		$res = $res . '<td>' . $et_masi06est_condicion . '</td>';
 		$res = $res . '<td>' . $et_masi06sexo . '</td>';
 		$res = $res . '<td align="right">' . $sLink2 . '</td>';
@@ -861,11 +1044,20 @@ function f1206_Traer($aParametros)
 		$objResponse->assign('masi06nivelforma', 'value', $fila['masi06nivelforma']);
 		$html_masi06programa = f1206_HTMLComboV2_masi06programa($objDB, $objCombos, $fila['masi06programa'], $fila['masi06escuela'], $fila['masi06nivelforma']);
 		$objResponse->assign('div_masi06programa', 'innerHTML', $html_masi06programa);
+		$objResponse->call('createComboboxById("masi06programa")');
 		$objResponse->assign('masi06est_condicion', 'value', $fila['masi06est_condicion']);
 		$objResponse->assign('masi06sexo', 'value', $fila['masi06sexo']);
-		$objResponse->assign('masi06idperiodo', 'value', $fila['masi06idperiodo']);
-		$html_masi06curso = f1206_HTMLComboV2_masi06curso($objDB, $objCombos, $fila['masi06curso'], $fila['masi06idperiodo']);
+		$html_masi06idperiodo = f1206_HTMLComboV2_masi06idperiodo($objDB, $objCombos, $fila['masi06idperiodo']);
+		$objResponse->assign('div_masi06idperiodo', 'innerHTML', $html_masi06idperiodo);
+		$objResponse->call('createComboboxById("masi06idperiodo")');
+		$html_masi06curso = f1206_HTMLComboV2_masi06curso($objDB, $objCombos, $fila['masi06curso'], $fila['masi06idperiodo'], $fila['masi06programa'], $fila['masi06escuela']);
 		$objResponse->assign('div_masi06curso', 'innerHTML', $html_masi06curso);
+		$objResponse->call('createComboboxById("masi06curso")');
+		$objResponse->assign('masi06docente', 'value', $fila['masi06docente']);
+		$html_masi06unidadfunc = f1206_HTMLComboV2_masi06unidadfunc($objDB, $objCombos, $fila['masi06unidadfunc']);
+		$objResponse->assign('div_masi06unidadfunc', 'innerHTML', $html_masi06unidadfunc);
+		$objResponse->call('createComboboxById("masi06unidadfunc")');
+		$objResponse->assign('masi06agnogrado', 'value', $fila['masi06agnogrado']);
 		$objResponse->call("MensajeAlarmaV2('', 0)");
 		$objResponse->call("verboton('belimina1206', 'block')");
 	} else {
@@ -1001,16 +1193,21 @@ function f1206_PintarLlaves($aParametros)
 	$html_masi06id = '<input id="masi06id" name="masi06id" type="hidden" value="" />';
 	$html_masi06centro = f1206_HTMLComboV2_masi06centro($objDB, $objCombos, '', '');
 	$html_masi06programa = f1206_HTMLComboV2_masi06programa($objDB, $objCombos, '', '', '');
-	$html_masi06curso = f1206_HTMLComboV2_masi06curso($objDB, $objCombos, '', '');
+	$html_masi06curso = f1206_HTMLComboV2_masi06curso($objDB, $objCombos, '', '', '', '');
+	$html_masi06idperiodo = f1206_HTMLComboV2_masi06idperiodo($objDB, $objCombos, '');
+	$html_masi06unidadfunc = f1206_HTMLComboV2_masi06unidadfunc($objDB, $objCombos, '');
 	$objResponse = new xajaxResponse();
 	$objResponse->assign('div_masi06consec', 'innerHTML', $html_masi06consec);
 	$objResponse->assign('div_masi06id', 'innerHTML', $html_masi06id);
 	$objResponse->assign('div_masi06centro', 'innerHTML', $html_masi06centro);
-	$objResponse->call('$("#masi06centro").chosen()');
 	$objResponse->assign('div_masi06programa', 'innerHTML', $html_masi06programa);
-	$objResponse->call('$("#masi06programa").chosen()');
+	$objResponse->call('createComboboxById("masi06programa")');
 	$objResponse->assign('div_masi06curso', 'innerHTML', $html_masi06curso);
-	$objResponse->call('$("#masi06curso").chosen()');
+	$objResponse->call('createComboboxById("masi06curso")');
+	$objResponse->assign('div_masi06idperiodo', 'innerHTML', $html_masi06idperiodo);
+	$objResponse->call('createComboboxById("masi06idperiodo")');
+	$objResponse->assign('div_masi06unidadfunc', 'innerHTML', $html_masi06unidadfunc);
+	$objResponse->call('createComboboxById("masi06unidadfunc")');
 	return $objResponse;
 }
 // -----------------------------------
@@ -1041,7 +1238,9 @@ function f1206_Procesar($masi05id, $bloque, $masi06id, $objDB, $bDebug = false)
 	if ($sError == '') {
 		list($sTabla1205, $sError) = f1205_NombreTabla($bloque, $objDB);
 		list($sTabla1206, $sErrorH) = f1206_NombreTabla($bloque, $objDB);
+		$sError = $sError . $sErrorH;
 		list($sTabla1208, $sErrorH) = f1208_NombreTabla($bloque, $objDB);
+		$sError = $sError . $sErrorH;
 	}
 	if ($sError == '') {
 		$sSQL = 'SELECT * FROM ' . $sTabla1206 . ' WHERE masi06id=' . $masi06id . ' AND masi06idmensaje=' . $masi05id . '';
@@ -1082,6 +1281,62 @@ function f1206_Procesar($masi05id, $bloque, $masi06id, $objDB, $bDebug = false)
 			case 11: // - Aspirantes
 				break;
 			case 12: // - Estudiantes
+				$sError = '';
+				$iFecha = $fila05['masi05fecha'];
+				$sCondi = '';
+				$sCondi1 = '';
+				$sTablasAdicionales = '';
+				$bConsultaPrograma = false;
+				$bConsultaTercero = false;
+				$bConsultaCurso = false;
+				if ($filabase['masi06zona'] != 0) {
+					$sCondi = $sCondi . ' AND TB.core01idzona=' . $filabase['masi06zona'] . '';
+				}
+				if ($filabase['masi06centro'] != 0) {
+					$sCondi = $sCondi . ' AND TB.core011idcead=' . $filabase['masi06centro'] . '';
+				}
+				if ($filabase['masi06escuela'] != 0) {
+					$sCondi = $sCondi . ' AND TB.core01idescuela=' . $filabase['masi06escuela'] . '';
+				}
+				if ($filabase['masi06nivelforma'] != 0) {
+					$bConsultaPrograma = true;
+					$sCondi = $sCondi . ' AND T9.cara09nivelformacion=' . $filabase['masi06nivelforma'] . '';
+				}
+				if ($filabase['masi06programa'] != 0) {
+					$bConsultaPrograma = true;
+					$sCondi = $sCondi . ' AND TB.core01idprograma=' . $filabase['masi06programa'] . '';
+				}
+				if ($filabase['masi06idperiodo'] != 0) {
+					$sCondi = $sCondi . ' AND TB.core01peracainicial=' . $filabase['masi06idperiodo'] . '';
+				}
+				if ($filabase['masi06curso'] != 0) {
+					$bConsultaCurso = true;
+					$sCondi = $sCondi . ' AND T40.unad40id=' . $filabase['masi06curso'] . '';
+				}
+				/*
+				if ($filabase['masi06est_condicion'] != 0) {
+					$sCondi = $sCondi . ' AND grad41idescuela=' . $filabase['masi06est_condicion'] . '';
+				}
+				*/
+				if ($filabase['masi06sexo'] != 0) {
+					$bConsultaTercero = true;
+					$masi06sexo = $amasi06sexo[$filabase['masi06sexo']][0];
+					$sCondi = $sCondi . ' AND T11.unad11genero="' . $masi06sexo . '"';
+				}
+				if ($bConsultaPrograma) {
+					$sTablasAdicionales = $sTablasAdicionales . ', core09programa AS T9';
+					$sCondi1 = $sCondi1 . 'TB.core01idprograma=T9.core09id AND ';
+				}
+				if ($bConsultaTercero) {
+					$sTablasAdicionales = $sTablasAdicionales . ', unad11terceros AS T11';
+					$sCondi1 = $sCondi1 . 'TB.core01idtercero=T11.unad11id AND ';
+				}
+				if ($bConsultaCurso) {
+					$sTablasAdicionales = $sTablasAdicionales . ', unad40curso AS T40';
+					$sCondi1 = $sCondi1 . 'TB.core01idprograma=T40.unad40idprograma AND ';
+				}
+				$sSQL = 'SELECT TB.core01idtercero AS idtercero FROM core01estprograma AS TB' . $sTablasAdicionales . ' 
+				WHERE ' . $sCondi1 . ' TB.core01idestado IN (0,7)' . $sCondi . '';
 				break;
 			case 13: // - Estudiantes ausentes
 				break;
@@ -1124,6 +1379,9 @@ function f1206_Procesar($masi05id, $bloque, $masi06id, $objDB, $bDebug = false)
 				break;
 			case 12229: // - Convocados
 				break;
+		}
+		if ($bDebug) {
+			$sDebug = $sDebug . log_debug('Datos base: ' . $sSQL);
 		}
 	}
 	if ($sError == '') {
@@ -1221,4 +1479,37 @@ function f1206_Reversar($aParametros)
 	}
 	$objDB->CerrarConexion();
 	return $objResponse;
+}
+function f1206_HTMLComboV2_masi06idperiodo($objDB, $objCombos, $valor)
+{
+	require './app.php';
+	$sIdioma = AUREA_Idioma();
+	$mensajes_todas = $APP->rutacomun . 'lg/lg_todas_' . $sIdioma . '.php';
+	if (!file_exists($mensajes_todas)) {
+		$mensajes_todas = $APP->rutacomun . 'lg/lg_todas_es.php';
+	}
+	require $mensajes_todas;
+	$objCombos->nuevo('masi06idperiodo', $valor, true, '{' . $ETI['msg_seleccione'] . '}', 0);
+	$objCombos->bEsCombobox = true;
+	$objCombos->sAccion = 'carga_combo_masi06curso();';
+	//$objCombos->iAncho = 450;
+	$sSQL = f146_ConsultaCombo();
+	$res = $objCombos->html($sSQL, $objDB); //, 0, '', 'et', 1206, $sIdioma
+	return $res;
+}
+function f1206_HTMLComboV2_masi06unidadfunc($objDB, $objCombos, $valor)
+{
+	require './app.php';
+	$sIdioma = AUREA_Idioma();
+	$mensajes_todas = $APP->rutacomun . 'lg/lg_todas_' . $sIdioma . '.php';
+	if (!file_exists($mensajes_todas)) {
+		$mensajes_todas = $APP->rutacomun . 'lg/lg_todas_es.php';
+	}
+	require $mensajes_todas;
+	$objCombos->nuevo('masi06unidadfunc', $valor, true, '{' . $ETI['msg_na'] . '}', 0);
+	$objCombos->bEsCombobox = true;
+	//$objCombos->iAncho = 450;
+	$sSQL = f226_ConsultaCombo();
+	$res = $objCombos->html($sSQL, $objDB); //, 0, '', 'et', 1206, $sIdioma
+	return $res;
 }

@@ -22,6 +22,9 @@ $ETI['masi06est_condicion'] = 'Condici&oacute;n';
 $ETI['masi06sexo'] = 'Sexo';
 $ETI['masi06idperiodo'] = 'Periodo';
 $ETI['masi06curso'] = 'Curso';
+$ETI['masi06unidadfunc'] = 'Unidad funcional';
+$ETI['masi06agnogrado'] = 'A&ntilde;o de Graduaci&oacute;n';
+$ETI['masi06docente'] = 'Docente';
 
 $ERR['masi06idmensaje'] = 'Necesita el dato ' . $ETI['masi06idmensaje'];
 $ERR['masi06consec'] = 'Necesita el dato ' . $ETI['masi06consec'];
@@ -35,6 +38,10 @@ $ERR['masi06est_condicion'] = 'Necesita el dato ' . $ETI['masi06est_condicion'];
 $ERR['masi06sexo'] = 'Necesita el dato ' . $ETI['masi06sexo'];
 $ERR['masi06idperiodo'] = 'Necesita el dato ' . $ETI['masi06idperiodo'];
 $ERR['masi06curso'] = 'Necesita el dato ' . $ETI['masi06curso'];
+$ERR['masi06unidadfunc'] = 'Necesita el dato ' . $ETI['masi06unidadfunc'];
+$ERR['masi06agnogrado'] = 'Necesita el dato ' . $ETI['masi06agnogrado'];
+$ERR['masi06docente'] = 'Necesita el dato ' . $ETI['masi06docente'];
+$ERR['msg_bfiltro'] = 'Debe seleccionar un filtro de poblaci&oacute;n';
 
 $amasi06programa = array('', '');
 $imasi06programa = 0;

@@ -12,10 +12,10 @@ const TEMA_CLARO = "light-theme";
 const TEMA_OSCURO = "dark-theme";
 const TEMA_CONTRASTE = "contrast-theme";
 
-function reiniciarTemas(){
-    document.body.classList.remove(TEMA_CLARO);
-    document.body.classList.remove(TEMA_OSCURO);
-    document.body.classList.remove(TEMA_CONTRASTE);
+function reiniciarTemas() {
+	document.body.classList.remove(TEMA_CLARO);
+	document.body.classList.remove(TEMA_OSCURO);
+	document.body.classList.remove(TEMA_CONTRASTE);
 }
 
 const BOTON_ANCLAR_MENU = document.getElementById("anchor-menu");
@@ -29,81 +29,81 @@ var menuGuardado = window.localStorage.getItem("menuGuardado");
 var fuenteGuardada = window.localStorage.getItem("fuenteGuardada");
 
 // *Activar Tema CLARO
-if(BOTON_TEMA_CLARO){
-    BOTON_TEMA_CLARO.addEventListener("click", () => {
-        reiniciarTemas();
-        document.body.classList.add(TEMA_CLARO);
-        window.localStorage.setItem("temaGuardado", TEMA_CLARO);
-    });
+if (BOTON_TEMA_CLARO) {
+	BOTON_TEMA_CLARO.addEventListener("click", () => {
+		reiniciarTemas();
+		document.body.classList.add(TEMA_CLARO);
+		window.localStorage.setItem("temaGuardado", TEMA_CLARO);
+	});
 }
 
 // *Activar Tema OSCURO
-if(BOTON_TEMA_OSCURO){
-    BOTON_TEMA_OSCURO.addEventListener("click", () =>{
-        reiniciarTemas();
-        document.body.classList.add(TEMA_OSCURO);
-        window.localStorage.setItem("temaGuardado", TEMA_OSCURO);
-    });
+if (BOTON_TEMA_OSCURO) {
+	BOTON_TEMA_OSCURO.addEventListener("click", () => {
+		reiniciarTemas();
+		document.body.classList.add(TEMA_OSCURO);
+		window.localStorage.setItem("temaGuardado", TEMA_OSCURO);
+	});
 }
 
 // *Activar Tema CONTRASTE
-if(BOTON_TEMA_CONTRASTE){
-    BOTON_TEMA_CONTRASTE.addEventListener("click", () =>{
-        reiniciarTemas();
-        document.body.classList.add(TEMA_CONTRASTE);
-        window.localStorage.setItem("temaGuardado", TEMA_CONTRASTE);
-    });
+if (BOTON_TEMA_CONTRASTE) {
+	BOTON_TEMA_CONTRASTE.addEventListener("click", () => {
+		reiniciarTemas();
+		document.body.classList.add(TEMA_CONTRASTE);
+		window.localStorage.setItem("temaGuardado", TEMA_CONTRASTE);
+	});
 }
 
 // *Aumentar fuenteGuardada
-if(BOTON_MAS){
-    BOTON_MAS.addEventListener("click", () => {
-        if(fuenteGuardada !=10.5){
-            fuenteGuardada = parseFloat(fuenteGuardada) + 0.5;
-            document.documentElement.style.fontSize = fuenteGuardada + "px";
-            window.localStorage.setItem("fuenteGuardada", fuenteGuardada);    
-        };
-    });
+if (BOTON_MAS) {
+	BOTON_MAS.addEventListener("click", () => {
+		if (fuenteGuardada != 10.5) {
+			fuenteGuardada = parseFloat(fuenteGuardada) + 0.5;
+			document.documentElement.style.fontSize = fuenteGuardada + "px";
+			window.localStorage.setItem("fuenteGuardada", fuenteGuardada);
+		};
+	});
 }
 
 // *Disminuir fuenteGuardada
-if(BOTON_MENOS){
-    BOTON_MENOS.addEventListener("click", () => {
-        if(fuenteGuardada != "5.5"){
-            fuenteGuardada = parseFloat(fuenteGuardada) - 0.5;
-            document.documentElement.style.fontSize = fuenteGuardada + "px";
-            window.localStorage.setItem("fuenteGuardada", fuenteGuardada);
-        };
-    });
+if (BOTON_MENOS) {
+	BOTON_MENOS.addEventListener("click", () => {
+		if (fuenteGuardada != "5.5") {
+			fuenteGuardada = parseFloat(fuenteGuardada) - 0.5;
+			document.documentElement.style.fontSize = fuenteGuardada + "px";
+			window.localStorage.setItem("fuenteGuardada", fuenteGuardada);
+		};
+	});
 }
 
 // *Reiniciar TEMA y FONT SIZE
-if(BOTON_REINICIO){
-    BOTON_REINICIO.addEventListener("click", () => {
-        document.body.className = "light-theme";
-        window.localStorage.setItem("temaGuardado", " ");
-        window.localStorage.setItem("menuGuardado", "");
-        document.documentElement.style.fontSize = "8px";
-        window.localStorage.setItem("fuenteGuardada", "8");
-        fuenteGuardada = 8;
-    });
+if (BOTON_REINICIO) {
+	BOTON_REINICIO.addEventListener("click", () => {
+		document.body.className = "light-theme";
+		window.localStorage.setItem("temaGuardado", " ");
+		window.localStorage.setItem("menuGuardado", "");
+		document.documentElement.style.fontSize = "8px";
+		window.localStorage.setItem("fuenteGuardada", "8");
+		fuenteGuardada = 8;
+	});
 }
 
 // *Activar MENU ANCLADO
-if(BOTON_ANCLAR_MENU){
-    BOTON_ANCLAR_MENU.addEventListener("click", () =>{
-        const MENU_ANCLADO = document.querySelector("nav");
-        MENU_ANCLADO.classList.toggle("anchor");
-        var estadoMenu = MENU_ANCLADO.classList.contains("anchor");
-    
-        if(estadoMenu){
-            menuGuardado = "anchor";
-        }else{
-            menuGuardado = "no-anchor";
-        }
-    
-        window.localStorage.setItem("menuGuardado", menuGuardado);
-    });
+if (BOTON_ANCLAR_MENU) {
+	BOTON_ANCLAR_MENU.addEventListener("click", () => {
+		const MENU_ANCLADO = document.querySelector("nav");
+		MENU_ANCLADO.classList.toggle("anchor");
+		var estadoMenu = MENU_ANCLADO.classList.contains("anchor");
+
+		if (estadoMenu) {
+			menuGuardado = "anchor";
+		} else {
+			menuGuardado = "no-anchor";
+		}
+
+		window.localStorage.setItem("menuGuardado", menuGuardado);
+	});
 }
 ////////////////////////////////////////   BANNER Y NAVBAR   \\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
 ///////////////// Con esto CAMBIO el TAMAÑO del BANNER y del NAVBAR cuando se hace SCROLL \\\\\\\\\\\\\\\\\
@@ -119,135 +119,139 @@ const navbar = document.querySelector('#navbar');
 const banner = document.querySelector(".banner");
 const optionsItems = document.querySelectorAll('.options__item');
 
-if(nav){
-    window.addEventListener("scroll", function () {
+if (nav) {
+	window.addEventListener("scroll", function () {
 
-        setTimeout(() => {
-            if (window.scrollY > 0) {
-                if(window.innerWidth >= 1025){
-                    banner.style.height = "6.5rem";
-                    navbar.style.height = "calc(100vh - (6.5rem + 6rem))";
-                }
-            } else {
-                if(window.innerWidth >= 1025){
-                    banner.style.height = "12.5rem";
-                    navbar.style.height = "calc(100vh - (12.5rem + 6rem))";
-                }
-            }
-        }, 200)
-    });
+		setTimeout(() => {
+			if (window.scrollY > 0) {
+				if (window.innerWidth >= 1025) {
+					banner.style.height = "6.5rem";
+					navbar.style.height = "calc(100vh - (6.5rem + 6rem))";
+				}
+			} else {
+				if (window.innerWidth >= 1025) {
+					banner.style.height = "12.5rem";
+					navbar.style.height = "calc(100vh - (12.5rem + 6rem))";
+				}
+			}
+		}, 200)
+	});
 
-    if (window.innerWidth <= 767){
+	if (window.innerWidth <= 767) {
 
-        // Alternar el breadcrumb mobile
-        routeMobile.addEventListener('click', () => {
-            breadcrumbMobile.style.left = "unset";
-            breadcrumbDesktop.style.left = "unset";
-            nav.style.left = "0";
-        });
-    
-        // Alternar el breadcrumb mobile
-        backRouteMobile.addEventListener('click', () => {
-            breadcrumbMobile.style.left = "-100%";
-            breadcrumbDesktop.style.left = "-100%";
-            nav.style.left = "-23rem";
-        });
-    }
-    
-    // Desplegar menu MOBILE
-    if (window.innerWidth <= 767){
-        optionsItems.forEach(function(item) {
-            const optionLink = item.querySelector('.option');
-    
-            optionLink.addEventListener('click', function(e) {
-                e.preventDefault();
-                item.classList.toggle('open--mobile');
-            });
-        });
-    }
-    
-    function valoresIniciales(){
-    
-        if (window.innerWidth <= 767){
-    
-            if (breadcrumbMobile.style.left == "unset"){
-                nav.style.left = "0";
-            } else{
-                nav.style.left = "-23rem";
-            }
-            
-        } else{
-            breadcrumbMobile.style.left = "-100%";
-            breadcrumbDesktop.style.left = "-100%";
-            nav.style.left = "0";
-        }
-    };
+		// Alternar el breadcrumb mobile
+		routeMobile.addEventListener('click', () => {
+			breadcrumbMobile.style.left = "unset";
+			breadcrumbDesktop.style.left = "unset";
+			nav.style.left = "0";
+		});
+
+		// Alternar el breadcrumb mobile
+		backRouteMobile.addEventListener('click', () => {
+			breadcrumbMobile.style.left = "-100%";
+			breadcrumbDesktop.style.left = "-100%";
+			// nav.style.left = "-23rem";
+			nav.style.left = "-61rem";
+		});
+	}
+
+	// Desplegar menu MOBILE
+	if (window.innerWidth <= 767) {
+		optionsItems.forEach(function (item) {
+			const optionLink = item.querySelector('.option');
+
+			optionLink.addEventListener('click', function (e) {
+				e.preventDefault();
+				item.classList.toggle('open--mobile');
+			});
+		});
+	}
+
+	function valoresIniciales() {
+
+		if (window.innerWidth <= 767) {
+
+			if (breadcrumbMobile.style.left == "unset") {
+				nav.style.left = "0";
+			} else {
+				// nav.style.left = "-23rem";
+				nav.style.left = "-61rem";
+			}
+
+		} else {
+			breadcrumbMobile.style.left = "-100%";
+			breadcrumbDesktop.style.left = "-100%";
+			nav.style.left = "0";
+		}
+	};
 }
 
 // *Establece SI el menu es ANCLADO.
-if(nav){
-    if (menuGuardado){
-        document.querySelector("nav").classList.add(menuGuardado);
-    }else{
-        document.querySelector("nav").classList.add("anchor");
-    }
+if (nav) {
+	if (menuGuardado) {
+		document.querySelector("nav").classList.add(menuGuardado);
+	} else {
+		document.querySelector("nav").classList.add("anchor");
+	}
 }
 // <stages-project>
 // Del componente de etapas; Agrega información del estado del item
 var stagesProject = document.querySelectorAll(".stages-project .stage .item");
 
-if(stagesProject){
-    stagesProject.forEach(element => {
+if (stagesProject) {
+	stagesProject.forEach(element => {
 
-        element.insertAdjacentHTML("afterbegin", "<i></i>")
-        
-        var estadoItem = element.querySelector(".item-title");
-        var iconItem = element.querySelector("i");
-        
-        switch (element.className) {
-            case 'item cola':
-                estadoItem.insertAdjacentHTML("beforeend", '<b class="item-state">Estado: <span>En Cola</span></b>')
-                break;
+		element.insertAdjacentHTML("afterbegin", "<i></i>")
 
-            case 'item borrador':
-                estadoItem.insertAdjacentHTML("beforeend", '<b class="item-state">Estado: <span>Borrador</span></b>')
-                break;
+		var estadoItem = element.querySelector(".item-title");
+		var iconItem = element.querySelector("i");
 
-            case 'item disponible':
-                estadoItem.insertAdjacentHTML("beforeend", '<b class="item-state">Estado: <span>Disponible</span></b>')
-                break;
+		switch (element.className) {
+			case 'item cola':
+				estadoItem.insertAdjacentHTML("beforeend", '<b class="item-state">Estado: <span>En Cola</span></b>')
+				break;
 
-            case 'item proceso':
-                estadoItem.insertAdjacentHTML("beforeend", '<b class="item-state">Estado: <span>En Proceso</span></b>')
-                break;
+			case 'item borrador':
+				estadoItem.insertAdjacentHTML("beforeend", '<b class="item-state">Estado: <span>Borrador</span></b>')
+				break;
 
-            case 'item devuelta':
-                estadoItem.insertAdjacentHTML("beforeend", '<b class="item-state">Estado: <span>Devuelta</span></b>')
-                break;
+			case 'item disponible':
+				estadoItem.insertAdjacentHTML("beforeend", '<b class="item-state">Estado: <span>Disponible</span></b>')
+				break;
 
-            case 'item radicada':
-                estadoItem.insertAdjacentHTML("beforeend", '<b class="item-state">Estado: <span>Radicada</span></b>')
-                break;
+			case 'item proceso':
+				estadoItem.insertAdjacentHTML("beforeend", '<b class="item-state">Estado: <span>En Proceso</span></b>')
+				break;
 
-            case 'item completed':
-                iconItem.classList.add('iCheck');
-                break;
+			case 'item devuelta':
+				iconItem.classList.add('icon-restart');
+				estadoItem.insertAdjacentHTML("beforeend", '<b class="item-state">Estado: <span>Devuelta</span></b>')
+				break;
 
-            case 'item completo':
-                iconItem.classList.add('iCheck');
-                estadoItem.insertAdjacentHTML("beforeend", '<b class="item-state">Estado: <span>Completo</span></b>')
-                
-                break;
+			case 'item radicada':
+				iconItem.classList.add('icon-clock');
+				estadoItem.insertAdjacentHTML("beforeend", '<b class="item-state">Estado: <span>Radicada</span></b>')
+				break;
 
-            case 'item descartada':
-                iconItem.classList.add('iClosed');
-                estadoItem.insertAdjacentHTML("beforeend", '<b class="item-state">Estado: <span>Descartada</span></b>')
-                break;
-            
-            default:
-                break;
-        }
-    });
+			case 'item completed':
+				iconItem.classList.add('icon-check');
+				break;
+
+			case 'item completo':
+				iconItem.classList.add('icon-check');
+				estadoItem.insertAdjacentHTML("beforeend", '<b class="item-state">Estado: <span>Completo</span></b>')
+
+				break;
+
+			case 'item descartada':
+				iconItem.classList.add('icon-closed');
+				estadoItem.insertAdjacentHTML("beforeend", '<b class="item-state">Estado: <span>Descartada</span></b>')
+				break;
+
+			default:
+				break;
+		}
+	});
 }
 // <i>
 // Agrega un SVG con el icono, en base a su clase
@@ -284,7 +288,7 @@ const iHelpFill = '<svg viewBox="0 -960 960 960"><path d="M477.859-218Q503-218 5
 const iHoy = '<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" id="Layer_1" viewBox="0 0 490 490" xml:space="preserve"><g id="SVGRepo_bgCarrier" stroke-width="0"/><g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"/><g id="SVGRepo_iconCarrier"> <g> <g> <g> <g> <path d="M353.4,490H136.6C61.5,490,0,428.5,0,353.4V136.6C0,61.5,61.5,0,136.6,0h216.9C428.5,0,490,61.5,490,136.6v216.9 C490,428.5,428.5,490,353.4,490z M136.6,40.7c-53.2,0-95.9,42.7-95.9,95.9v216.9c0,53.2,42.7,95.9,95.9,95.9h216.9 c53.2,0,95.9-42.7,95.9-95.9V136.6c0-53.2-42.7-95.9-95.9-95.9L136.6,40.7z"/> </g> <g> <g> <path d="M142.8,367V123h41.7v106.3h122V123h41.7v245h-41.7V267.9h-122V368h-41.7V367z"/> </g> </g> </g> </g> </g> </g></svg>';
 const iInfo = '<svg viewBox="0 -960 960 960"><path d="M425-265h110v-255H425v255Zm55-315q25.5 0 42.75-17.25T540-640q0-25.5-17.25-42.75T480-700q-25.5 0-42.75 17.25T420-640q0 25.5 17.25 42.75T480-580Zm0 534q-91 0-169.987-34.084-78.988-34.083-137.417-92.512T80.084-310.013Q46-389 46-480t34.084-169.987q34.083-78.988 92.512-137.417t137.417-92.512Q389-914 480-914t169.987 34.084q78.988 34.083 137.417 92.512t92.512 137.417Q914-571 914-480t-34.084 169.987q-34.083 78.988-92.512 137.417T649.987-80.084Q571-46 480-46Z"/></svg>';
 const iInvertColors = '<svg viewBox="0 -960 960 960"><path d="M480-120q-133 0-226.5-92.5T160-436q0-66 25-122t69-100l226-222 226 222q44 44 69 100t25 122q0 131-93.5 223.5T480-120Zm0-80v-568L310-600q-35 33-52.5 74.5T240-436q0 97 70 166.5T480-200Z"/></svg>';
-const iLightModeFill = '<svg viewBox="0 -960 960 960"><path d="M480-267q-89 0-151-62t-62-151q0-89 62-151t151-62q89 0 151 62t62 151q0 89-62 151t-151 62ZM80-427q-22 0-37.5-15.5T27-480q0-22 15.5-37.5T80-533h80q22 0 37.5 15.5T213-480q0 22-15.5 37.5T160-427H80Zm720 0q-22 0-37.5-15.5T747-480q0-22 15.5-37.5T800-533h80q22 0 37.5 15.5T933-480q0 22-15.5 37.5T880-427h-80ZM480-747q-22 0-37.5-15.5T427-800v-80q0-22 15.5-37.5T480-933q22 0 37.5 15.5T533-880v80q0 22-15.5 37.5T480-747Zm0 720q-22 0-37.5-15.5T427-80v-80q0-22 15.5-37.5T480-213q22 0 37.5 15.5T533-160v80q0 22-15.5 37.5T480-27ZM217-669l-43-42q-16-16-15.5-37.5T174-786q16-16 37.5-16t37.5 16l42 43q15 16 15 37t-15 37q-14 16-36 15.5T217-669Zm494 495-42-43q-15-16-14.5-37t14.5-37q15-16 36.5-15.5T743-291l43 42q16 16 15.5 37.5T786-174q-16 16-37.5 16T711-174Zm-42-495q-16-14-15.5-36t15.5-38l42-43q16-16 37.5-15.5T786-786q16 16 16 37.5T786-711l-43 42q-16 15-37 15t-37-15ZM174-174q-16-16-16-37.5t16-37.5l43-42q16-15 37-14.5t37 14.5q16 15 15.5 36.5T291-217l-42 43q-16 16-37.5 15.5T174-174Z"/></svg>'; 
+const iLightModeFill = '<svg viewBox="0 -960 960 960"><path d="M480-267q-89 0-151-62t-62-151q0-89 62-151t151-62q89 0 151 62t62 151q0 89-62 151t-151 62ZM80-427q-22 0-37.5-15.5T27-480q0-22 15.5-37.5T80-533h80q22 0 37.5 15.5T213-480q0 22-15.5 37.5T160-427H80Zm720 0q-22 0-37.5-15.5T747-480q0-22 15.5-37.5T800-533h80q22 0 37.5 15.5T933-480q0 22-15.5 37.5T880-427h-80ZM480-747q-22 0-37.5-15.5T427-800v-80q0-22 15.5-37.5T480-933q22 0 37.5 15.5T533-880v80q0 22-15.5 37.5T480-747Zm0 720q-22 0-37.5-15.5T427-80v-80q0-22 15.5-37.5T480-213q22 0 37.5 15.5T533-160v80q0 22-15.5 37.5T480-27ZM217-669l-43-42q-16-16-15.5-37.5T174-786q16-16 37.5-16t37.5 16l42 43q15 16 15 37t-15 37q-14 16-36 15.5T217-669Zm494 495-42-43q-15-16-14.5-37t14.5-37q15-16 36.5-15.5T743-291l43 42q16 16 15.5 37.5T786-174q-16 16-37.5 16T711-174Zm-42-495q-16-14-15.5-36t15.5-38l42-43q16-16 37.5-15.5T786-786q16 16 16 37.5T786-711l-43 42q-16 15-37 15t-37-15ZM174-174q-16-16-16-37.5t16-37.5l43-42q16-15 37-14.5t37 14.5q16 15 15.5 36.5T291-217l-42 43q-16 16-37.5 15.5T174-174Z"/></svg>';
 const iLinkOff = '<svg viewBox="0 -960 960 960"><path d="m770-302-60-62q40-11 65-42.5t25-73.5q0-50-35-85t-85-35H520v-80h160q83 0 141.5 58.5T880-480q0 57-29.5 105T770-302ZM634-440l-80-80h86v80h-6ZM792-56 56-792l56-56 736 736-56 56ZM440-280H280q-83 0-141.5-58.5T80-480q0-69 42-123t108-71l74 74h-24q-50 0-85 35t-35 85q0 50 35 85t85 35h160v80ZM320-440v-80h65l79 80H320Z"/></svg>';
 const iLocation = '<svg viewBox="0 -960 960 960"><path d="M480-480q33 0 56.5-23.5T560-560q0-33-23.5-56.5T480-640q-33 0-56.5 23.5T400-560q0 33 23.5 56.5T480-480Zm0 400Q319-217 239.5-334.5T160-552q0-150 96.5-239T480-880q127 0 223.5 89T800-552q0 100-79.5 217.5T480-80Z"/></svg>';
 const iLogout = '<svg viewBox="0 -960 960 960"><path d="M194-88q-43.725 0-74.863-31.137Q88-150.275 88-194v-572q0-43.725 31.137-74.862Q150.275-872 194-872h286v106H194v572h286v106H194Zm438-152-76-78 110-110H354v-106h312L556-644l76-76 240 240-240 240Z"/></svg>';
@@ -325,29 +329,31 @@ const iWindowOff = '<svg viewBox="0 -960 960 960"><path d="M819-28 407-440H160v2
 const iZip = '<svg viewBox="0 0 192 192" xmlns="http://www.w3.org/2000/svg" id="Layer_1"><defs><style>.cls-2,.cls-3{fill:none;stroke-width:8px;stroke:#000000;stroke-linecap:round}.cls-2{stroke-miterlimit:10}.cls-3{stroke-linejoin:round}</style></defs><path d="M0 0h192v192H0z" style="fill:none"/><path d="M21.68 31.74h148.64c.94 5.92 1.64 12.88 1.68 20.68.04 8.29-.69 15.66-1.68 21.86H21.68c-.98-6.2-1.71-13.57-1.68-21.86.03-7.8.74-14.76 1.68-20.68Z" class="cls-3"/><path d="M34.53 41.34v22.35" class="cls-2"/><path d="M71.38 116.78h-49.7c-.98-6.2-1.71-13.57-1.68-21.86.03-7.8.74-14.76 1.68-20.68h148.64c.94 5.92 1.64 12.88 1.68 20.68.04 8.29-.69 15.66-1.68 21.86H119" class="cls-3"/><path d="M34.53 83.85v22.36" class="cls-2"/><path d="M119.01 116.75h51.32c.94 5.92 1.64 12.88 1.68 20.68.04 8.29-.69 15.66-1.68 21.86H21.68c-.98-6.2-1.71-13.57-1.68-21.86.03-7.8.74-14.76 1.68-20.68h49.71" class="cls-3"/><path d="M34.53 127.37v22.35" class="cls-2"/><path d="M74.74 28.18h42.51v135.63H74.74z" style="stroke-width:12px;stroke-linejoin:round;stroke:#000000;stroke-linecap:round;fill:none"/><path d="M74.74 89h-5.06l-2.02 42.43h56.68L122.32 89h-5.06" class="cls-3"/><path d="m92.96 129-2.02-16.2c.51-2.39 2.65-4.1 5.06-4.05 2.34.05 4.36 1.73 4.85 4.05-.61 5.4-1.21 10.8-1.82 16.2h-6.07Z" style="stroke-width:6px;stroke-linejoin:round;stroke:#000000;stroke-linecap:round;fill:none"/></svg>';
 const iZoomIn = '<svg viewBox="0 -960 960 960"><path d="M784-120 532-372q-30 24-69 38t-83 14q-109 0-184.5-75.5T120-580q0-109 75.5-184.5T380-840q109 0 184.5 75.5T640-580q0 44-14 83t-38 69l252 252-56 56ZM380-400q75 0 127.5-52.5T560-580q0-75-52.5-127.5T380-760q-75 0-127.5 52.5T200-580q0 75 52.5 127.5T380-400Zm-40-60v-80h-80v-80h80v-80h80v80h80v80h-80v80h-80Z"/></svg>';
 const iZoomOut = '<svg viewBox="0 -960 960 960"><path d="M784-120 532-372q-30 24-69 38t-83 14q-109 0-184.5-75.5T120-580q0-109 75.5-184.5T380-840q109 0 184.5 75.5T640-580q0 44-14 83t-38 69l252 252-56 56ZM380-400q75 0 127.5-52.5T560-580q0-75-52.5-127.5T380-760q-75 0-127.5 52.5T200-580q0 75 52.5 127.5T380-400ZM280-540v-80h200v80H280Z"/></svg>';
+const iXML = '<svg id="uuid-b67dc105-370e-4d56-84d8-efabb21994e4" data-name="Icons" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 453.44 512"><path d="M424.74,183.14h-12.29v-59.32c0-.37-.06-.74-.1-1.12-.02-2.35-.78-4.67-2.39-6.5L311.24,3.43s-.06-.04-.08-.07c-.59-.65-1.27-1.2-2-1.67-.21-.15-.43-.27-.66-.4-.62-.34-1.29-.62-1.98-.83-.18-.05-.35-.12-.54-.17-.74-.18-1.52-.29-2.3-.29H61.07c-11.08,0-20.08,9.01-20.08,20.08v163.06h-12.29c-15.85,0-28.7,12.84-28.7,28.69v149.24c0,15.84,12.85,28.69,28.7,28.69h12.29v102.16c0,11.07,9,20.08,20.08,20.08h331.3c11.06,0,20.08-9.01,20.08-20.08v-102.16h12.29c15.84,0,28.7-12.85,28.7-28.69v-149.23c0-15.86-12.85-28.7-28.7-28.7ZM61.07,20.08h232.57v102.72c0,5.55,4.5,10.04,10.04,10.04h88.69v50.3H61.07V20.08ZM308.24,346.83h-28.74l-1.94-49.76c-.57-15.62-1.13-34.54-1.13-53.42h-.58c-4.05,16.57-9.45,35.09-14.47,50.34l-15.82,50.72h-22.93l-13.9-50.34c-4.23-15.25-8.67-33.74-11.76-50.72h-.38c-.77,17.55-1.35,37.6-2.31,53.81l-2.31,49.37h-27.2l8.29-130h39.16l12.72,43.39c4.07,15.05,8.09,31.26,11,46.49h.58c3.66-15.06,8.09-32.22,12.33-46.67l13.89-43.21h38.38l7.12,130ZM41.48,346.83l37.59-65.78-36.25-64.21h33.75l11.37,23.73c3.85,7.91,6.75,14.27,9.83,21.59h.39c3.07-8.28,5.59-14.08,8.86-21.59l10.99-23.73h33.56l-36.64,63.43,38.56,66.56h-33.93l-11.77-23.54c-4.82-9.06-7.92-15.82-11.57-23.35h-.39c-2.69,7.53-5.98,14.29-10.02,23.35l-10.79,23.54h-33.54ZM392.37,486.49H61.07v-96.73h331.3v96.73ZM411.96,346.83h-81.18v-130h29.51v105.31h51.67v24.69Z"/></svg>'
+
 
 function addSvgContentToElements(elements, svgContent) {
-    elements.forEach(element => {
-        element.innerHTML += svgContent;
-    });
+	elements.forEach(element => {
+		element.innerHTML += svgContent;
+	});
 }
 
 const iconMappings = {
 	'iAccessibility': iAccessibility,
-    'iAdd': iAdd,
+	'iAdd': iAdd,
 	'iArrowBack': iArrowBack,
 	'iArrowRight': iArrowRight,
 	'iAttach': iAttach,
 	'iCalendar': iCalendar,
 	'iCancel': iCancel,
-    'iChatError': iChatError,
-    'iCheck': iCheck,
+	'iChatError': iChatError,
+	'iCheck': iCheck,
 	'iClosed': iClosed,
 	'iCoin': iCoin,
-    'iContrastMode': iContrastMode,
-    'iContentCopy': iContentCopy,
-    'iCursor': iCursor,
-    'iCopy': iCopy,
+	'iContrastMode': iContrastMode,
+	'iContentCopy': iContentCopy,
+	'iCursor': iCursor,
+	'iCopy': iCopy,
 	'iDarkModeFill': iDarkModeFill,
 	'iDelete': iDelete,
 	'iDocument': iDocument,
@@ -355,26 +361,26 @@ const iconMappings = {
 	'iEdit': iEdit,
 	'iEmail': iEmail,
 	'iEmpty': iEmpty,
-    'iError': iError,
-    'iExcel': iExcel,
+	'iError': iError,
+	'iExcel': iExcel,
 	'iExpand': iExpand,
 	'iExpandLess': iExpandLess,
 	'iHelp': iHelp,
 	'iHelpFill': iHelpFill,
 	'iHoy': iHoy,
-    'iInfo': iInfo,
-    'iInvertColors': iInvertColors,
-    'iLightModeFill': iLightModeFill,
-    'iLinkOff': iLinkOff,
+	'iInfo': iInfo,
+	'iInvertColors': iInvertColors,
+	'iLightModeFill': iLightModeFill,
+	'iLinkOff': iLinkOff,
 	'iLocation': iLocation,
-    'iLogout': iLogout,
-    'iMatchWord': iMatchWord,
+	'iLogout': iLogout,
+	'iMatchWord': iMatchWord,
 	'iMenu': iMenu,
 	'iNavigateBefore': iNavigateBefore,
 	'iNavigateNext': iNavigateNext,
-    'iNewReleases': iNewReleases,
-    'iNull': iNull,
-    'iOpen': iOpen,
+	'iNewReleases': iNewReleases,
+	'iNull': iNull,
+	'iOpen': iOpen,
 	'iPdf': iPdf,
 	'iPerson': iPerson,
 	'iPersonAdd': iPersonAdd,
@@ -383,38 +389,39 @@ const iconMappings = {
 	'iPersonList': iPersonList,
 	'iPin': iPin,
 	'iPrint': iPrint,
-    'iProblem': iProblem,
-    'iRemove': iRemove,
+	'iProblem': iProblem,
+	'iRemove': iRemove,
 	'iRestart': iRestart,
 	'iSaveFill': iSaveFill,
 	'iSearch': iSearch,
 	'iSend': iSend,
 	'iSettings': iSettings,
 	'iSettingsAccessibility': iSettingsAccessibility,
-    'iSupport': iSupport,
+	'iSupport': iSupport,
 	'iSync': iSync,
-    'iTag': iTag,
+	'iTag': iTag,
 	'iTask': iTask,
 	'iText': iText,
-    'iTrendingFlat': iTrendingFlat,
-    'iTrendingUp': iTrendingUp,
+	'iTrendingFlat': iTrendingFlat,
+	'iTrendingUp': iTrendingUp,
 	'iUpload': iUpload,
-    'iUsaFlag': iUsaFlag,
+	'iUsaFlag': iUsaFlag,
 	'iWarning': iWarning,
-    'iWindowOff': iWindowOff,
-    'iZip': iZip,
+	'iWindowOff': iWindowOff,
+	'iZip': iZip,
 	'iZoomIn': iZoomIn,
-	'iZoomOut': iZoomOut
+	'iZoomOut': iZoomOut,
+	'iXML': iXML
 };
 
-if(icons){
-    icons.forEach(icon => {
-        const iconName = icon.className;
+if (icons) {
+	icons.forEach(icon => {
+		const iconName = icon.className;
 		const iconFunction = iconMappings[iconName];
-        if (iconFunction) {
+		if (iconFunction) {
 			addSvgContentToElements([icon], iconFunction);
 		}
-    });
+	});
 }
 // ¡ESTO DEPENDE DE _icons.js!
 
@@ -423,24 +430,24 @@ if(icons){
 
 const details = document.querySelectorAll('details');
 
-if(details){
+if (details) {
 
-    details.forEach(element => {
+	details.forEach(element => {
 
-        if(!element.hasAttribute("closed")){
-            element.open = "true"
-        }
-    });
+		if (!element.hasAttribute("closed")) {
+			element.open = "true"
+		}
+	});
 
-    const summary = document.querySelectorAll('summary');
+	const summary = document.querySelectorAll('summary');
 
-    // summary.forEach(element => {
-    //     addSvgContentToElements([element], iExpand);
-    // });
+	// summary.forEach(element => {
+	//     addSvgContentToElements([element], iExpand);
+	// });
 
-    summary.forEach(element => {
-        element.insertAdjacentHTML("beforeend", "<i class='icon-expand'></i>")
-    });
+	summary.forEach(element => {
+		element.insertAdjacentHTML("beforeend", "<i class='icon-expand'></i>")
+	});
 }
 // MODALES
 const modal = document.getElementById('div_modal');
@@ -468,88 +475,540 @@ function abrirModal() {
 
 var tooltip = document.querySelectorAll("[tooltip]");
 
-if(tooltip.length > 0){
-    tooltip.forEach(eTooltip => {
-        var tooltipText = eTooltip.getAttribute("tooltip");
-        
-        eTooltip.insertAdjacentHTML(
-            "beforeend",
-            `<span class="tooltip-text">${tooltipText}</span>`
-        );
+if (tooltip.length > 0) {
+	tooltip.forEach(eTooltip => {
+		var tooltipText = eTooltip.getAttribute("tooltip");
 
-        var toolTipText = eTooltip.querySelector(".tooltip-text");
-        var position = toolTipText.getBoundingClientRect();
+		eTooltip.insertAdjacentHTML(
+			"beforeend",
+			`<span class="tooltip-text">${tooltipText}</span>`
+		);
 
-        eTooltip.addEventListener("mouseenter", function() {
+		var toolTipText = eTooltip.querySelector(".tooltip-text");
+		var position = toolTipText.getBoundingClientRect();
 
-            if(position.left < 0){
-                toolTipText.classList.add("right");
-            } else{
-                toolTipText.classList.remove("right");
-            }
-        });
+		eTooltip.addEventListener("mouseenter", function () {
 
-        eTooltip.addEventListener("mouseleave", function() {
-            toolTipText.classList.remove("right");
-        });
-    });
+			if (position.left < 0) {
+				toolTipText.classList.add("right");
+			} else {
+				toolTipText.classList.remove("right");
+			}
+		});
+
+		eTooltip.addEventListener("mouseleave", function () {
+			toolTipText.classList.remove("right");
+		});
+	});
 }
 ///////////////////////////////////////   VALORES INICIALES  \\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
 ////////////////////////// Establece el estado inicial de algunos elementos \\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
 
 // *Establece el tema (CLARO, OSCURO o CONTRASTE).
-if (temaGuardado){
-    document.body.className = temaGuardado; 
-}else{
-    document.body.className = TEMA_CLARO;
+if (temaGuardado) {
+	document.body.className = temaGuardado;
+} else {
+	document.body.className = TEMA_CLARO;
 }
 
 // *Establece SI el menu es ANCLADO.
-if(nav){
-    if (menuGuardado){
-        document.querySelector("nav").classList.add(menuGuardado);
-    }else{
-        document.querySelector("nav").classList.add("anchor");
-    }
+if (nav) {
+	if (menuGuardado) {
+		document.querySelector("nav").classList.add(menuGuardado);
+	} else {
+		document.querySelector("nav").classList.add("anchor");
+	}
 }
 
 
 // *Establece el valor de FONT SIZE para su uso en AUMENTAR o DISMINUIR fuenteGuardada
-if(fuenteGuardada){
-    document.documentElement.style.fontSize = fuenteGuardada + "px";
-} else{
-    document.documentElement.style.fontSize = "8px";
-    fuenteGuardada = 8;
+if (fuenteGuardada) {
+	document.documentElement.style.fontSize = fuenteGuardada + "px";
+} else {
+	document.documentElement.style.fontSize = "8px";
+	fuenteGuardada = 8;
 }
 ///////////////////////////////////////   EVENTO RESIZE  \\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
 
 addEventListener("resize", (event) => {
-    if(nav){
-        valoresIniciales();
+	if (nav) {
+		valoresIniciales();
 
-        if (window.innerWidth <= 767){
-    
-            // Alternar el breadcrumb mobile
-            routeMobile.addEventListener('click', () => {    
-                breadcrumbMobile.style.left = "unset";
-                breadcrumbDesktop.style.left = "unset";
-                nav.style.left = "0";
-            });
-        
-            // Alternar el breadcrumb mobile
-            backRouteMobile.addEventListener('click', () => {
-                breadcrumbMobile.style.left = "-100%";
-                breadcrumbDesktop.style.left = "-100%";
-                nav.style.left = "-23rem";
-            });
-    
-            optionsItems.forEach(function(item) {
-                const optionLink = item.querySelector('.option');
-                optionLink.addEventListener('click', function(e) {
-                    e.preventDefault();
-                    item.classList.toggle('open--mobile');
-                });
-            });
-        }
-    }
+		if (window.innerWidth <= 767) {
+
+			// Alternar el breadcrumb mobile
+			routeMobile.addEventListener('click', () => {
+				breadcrumbMobile.style.left = "unset";
+				breadcrumbDesktop.style.left = "unset";
+				nav.style.left = "0";
+			});
+
+			// Alternar el breadcrumb mobile
+			backRouteMobile.addEventListener('click', () => {
+				breadcrumbMobile.style.left = "-100%";
+				breadcrumbDesktop.style.left = "-100%";
+				nav.style.left = "-23rem";
+			});
+
+			optionsItems.forEach(function (item) {
+				const optionLink = item.querySelector('.option');
+				optionLink.addEventListener('click', function (e) {
+					e.preventDefault();
+					item.classList.toggle('open--mobile');
+				});
+			});
+		}
+	}
 });
+
+// Funcion que convierte un select en un combobox personalizado
+function FromSelectToCombobox(select) {
+	// Ocultar select origin
+	select.hidden = true;
+
+	// Obterner clase del select para aplicarla al combobox
+	const classList = select.classList;
+	// Obtener textos personalizados desde data-attributes o usar valores por defecto
+	const {
+		text = 'Select an option',
+		ariaLabel = '',
+		ariaLabelOpen = 'Search box and list',
+		ariaLabelInput = 'Search options',
+		placeholder = 'Search…',
+		emptyText = 'No results found'
+	} = select.dataset;
+
+	// Crear estructura combobox
+	const combobox = document.createElement('div');
+	combobox.className = classList.value;
+	combobox.dataset.combobox = '';
+	combobox.dataset.emptyText = emptyText;
+	combobox.setAttribute('role', 'combobox');
+	combobox.setAttribute('aria-label', ariaLabel);
+	combobox.setAttribute('aria-haspopup', 'listbox');
+	combobox.setAttribute('aria-expanded', 'false');
+	combobox._select = select;
+
+	combobox.innerHTML = `
+        <button class="combobox__trigger" type="button">
+        <span class="combobox__text">${text}</span>
+        <i class="icon-expand" aria-hidden="true"></i>
+        </button>
+
+        <div class="combobox__panel hidden" role="group" aria-label="${ariaLabelOpen}">
+        <input
+            class="combobox__input"
+            type="text"
+            role="searchbox"
+            aria-label="${ariaLabelInput}"
+            placeholder="${placeholder}" />
+        <i class="icon-search combobox__icon" aria-hidden="true"></i>
+        <div class="combobox__list"></div>
+        </div>
+    `;
+
+	// Rellenar opciones
+	buildOptions(select, combobox);
+
+	// Insertar comobox después del select
+	select.after(combobox);
+}
+
+// Funcion quue decide qué tipo de opciones construir (agrupadas o no)
+function buildOptions(select, combobox) {
+	const listContainer = combobox.querySelector('.combobox__list');
+	const hasGroups = select.querySelector('optgroup');
+
+	if (hasGroups) {
+		listContainer.appendChild(buildGroupedOptions(select));
+	} else {
+		listContainer.appendChild(buildFlatOptions(select));
+	}
+}
+
+// Funcion que construye opciones sin agrupar
+function buildFlatOptions(select) {
+	const list = document.createElement('ul');
+	list.className = 'combobox__list-options';
+	list.setAttribute('role', 'listbox');
+
+	[...select.options].forEach(option => {
+		const li = document.createElement('li');
+		li.className = 'combobox__option';
+		li.setAttribute('role', 'option');
+		li.textContent = option.textContent;
+		li.setAttribute('value', option.value);
+		// li.dataset.value = option.value;
+		li.dataset.index = option.index;
+
+		list.appendChild(li);
+	});
+
+	return list;
+}
+
+// Funcion que construye opciones agrupadas
+function buildGroupedOptions(select) {
+	const groups = document.createElement('ul');
+	groups.className = 'combobox__list-groups';
+	groups.setAttribute('role', 'listbox');
+
+	[...select.children].forEach(child => {
+		if (child.tagName === 'OPTGROUP') {
+			groups.appendChild(createGroup(child));
+		}
+
+		if (child.tagName === 'OPTION') {
+			// opción suelta fuera de grupo
+			const tempGroup = document.createElement('li');
+			tempGroup.className = 'combobox__group';
+			tempGroup.setAttribute('role', 'group');
+
+			const list = document.createElement('ul');
+			list.className = 'combobox__list-options';
+			list.setAttribute('role', 'listbox');
+
+			list.appendChild(createOption(child));
+			tempGroup.appendChild(list);
+			groups.appendChild(tempGroup);
+		}
+	});
+
+	return groups;
+}
+
+// Funcion que crea un grupo de opciones reutilizable
+function createGroup(optgroup) {
+	const group = document.createElement('li');
+	group.className = 'combobox__group';
+	group.setAttribute('role', 'group');
+	group.setAttribute('aria-label', optgroup.label);
+
+	const label = document.createElement('label');
+	label.className = 'combobox__group-label';
+	label.textContent = optgroup.label;
+
+	const list = document.createElement('ul');
+	list.className = 'combobox__list-options';
+	list.setAttribute('role', 'listbox');
+
+	[...optgroup.children].forEach(option => {
+		if (option.tagName === 'OPTION') {
+			list.appendChild(createOption(option));
+		}
+	});
+
+	group.append(label, list);
+	return group;
+}
+
+// Funcion que crea una opción individual reutilizable
+function createOption(option) {
+	const li = document.createElement('li');
+	li.className = 'combobox__option';
+	li.setAttribute('role', 'option');
+	li.textContent = option.textContent;
+	li.setAttribute('value', option.value);
+	// li.dataset.value = option.value;
+	li.dataset.index = option.index;
+
+	return li;
+}
+
+// Inicialización para creación de combobox desde selects con clase .combobox
+document.querySelectorAll('select.combobox').forEach(FromSelectToCombobox);
+
+// Hacer que el combobox funcione
+
+function createComboboxById(id) {
+  const select = document.getElementById(id);
+  if (!select) return;
+  FromSelectToCombobox(select);
+  new ComboBox(select.nextElementSibling);
+}
+
+function setSelectValue(id, value) {
+  const select = document.getElementById(id);
+  if (!select) {
+  	return;
+  }
+  select.value = value;
+  select.dispatchEvent(new Event('change', { bubbles: true }));
+}
+
+class ComboBox {
+	constructor(root) {
+		this.root = root;
+		this.button = root.querySelector('.combobox__trigger');
+		this.buttonText = root.querySelector('.combobox__text');
+		this.panel = root.querySelector('.combobox__panel');
+		this.input = root.querySelector('input');
+		this.list = root.querySelector('[role=listbox]');
+		this.groups = [...this.list.querySelectorAll('[role=group]')];
+		this.options = [...this.list.querySelectorAll('[role=option]')];
+
+		// Guardar texto original de cada opción para búsquedas
+		this.options.forEach(option => {
+			option.dataset.label = option.textContent;
+		});
+
+		// Texto de NO HAY RESULTADOS
+		this.emptyText = root.dataset.emptyText || 'No results found';
+
+		// Índice de la opción, ninguna al inicio
+		this.activeIndex = -1;
+		this.selectedIndex = -1;
+
+		// Tomar selected del select original y sincronizar con combobox
+		this.selectEl = root._select;
+		this.selectedIndex = this.selectEl.selectedIndex;
+
+		if (this.selectedIndex >= 0) {
+			const option = this.options[this.selectedIndex];
+			option.setAttribute('aria-selected', 'true');
+			this.buttonText.textContent = option.textContent;
+		}
+
+		// Escuchar cambios en el select original
+		this.selectEl.addEventListener('change', () => {
+			const index = this.selectEl.selectedIndex;
+			if (index < 0) return;
+
+			this.options.forEach(opt =>
+				opt.removeAttribute('aria-selected')
+			);
+
+			const option = this.options[index];
+			option.setAttribute('aria-selected', 'true');
+			this.buttonText.textContent = option.textContent;
+			this.selectedIndex = index;
+		});
+
+		// Conecta todos los listeners de eventos
+		this.bindEvents();
+	}
+
+	// Subrayar coincidencias de busqueda en el texto
+	highlight(text, query) {
+		if (!query) return text;
+		const normalizedQuery = this.normalize(query);
+
+		let result = '';
+		let queryIndex = 0;
+
+		for (let i = 0; i < text.length; i++) {
+			const originalChar = text[i];
+			const normalizedChar = this.normalize(originalChar);
+
+			if (
+				queryIndex < normalizedQuery.length &&
+				normalizedChar === normalizedQuery[queryIndex]
+			) {
+				result += `<mark>${originalChar}</mark>`;
+				queryIndex++;
+			} else {
+				result += originalChar;
+			}
+		}
+		return result;
+	}
+
+	// Normaliza texto quitando tildes y pasando a minúsculas, para busquedas
+	normalize(text) {
+		return text
+			.normalize('NFD')
+			.replace(/[\u0300-\u036f]/g, '')
+			.toLowerCase();
+	}
+
+	// Evidencia si el combobox está abierto
+	isOpen() {
+		return this.root.getAttribute('aria-expanded') === 'true';
+	}
+
+	// Abrir / cerrar panel
+	open() {
+		this.panel.classList.remove('hidden');
+		this.root.setAttribute('aria-expanded', 'true');
+		if (this.selectedIndex >= 0) {
+			const selected = this.options[this.selectedIndex];
+			selected.scrollIntoView({ block: 'nearest' });
+		}
+		this.input.focus();
+	}
+	close() {
+		this.panel.classList.add('hidden');
+		this.root.setAttribute('aria-expanded', 'false');
+		this.input.value = '';
+		this.filter('');
+		this.clearActive();
+	}
+
+	// Mostrar / ocultar mensaje de NO HAY RESULTADOS
+	showEmpty() {
+		if (!this.list.querySelector('.empty')) {
+			const li = document.createElement('li');
+			li.className = 'empty';
+			li.textContent = this.emptyText;
+			this.list.appendChild(li);
+		}
+	}
+	removeEmpty() {
+		const empty = this.list.querySelector('.empty');
+		if (empty) empty.remove();
+	}
+
+	// Limpia la opción activa y reestablece el índice
+	clearActive() {
+		this.options.forEach((opt, i) => {
+			if (i !== this.selectedIndex) {
+				opt.removeAttribute('aria-selected');
+			}
+		});
+		this.activeIndex = -1;
+	}
+
+	// Agrega o remueve clase hidden segun filtro 
+	filter(value) {
+		const query = this.normalize(value);
+		let totalVisibleOptions = 0;
+
+		// Eliminar mensaje de NO HAY RESULTADOS
+		this.removeEmpty();
+
+		// Filtrar opciones
+		this.options.forEach(option => {
+			const label = option.dataset.label;
+			const match = this.normalize(label).includes(query);
+			option.classList.toggle('hidden', !match);
+
+			if (match) {
+				totalVisibleOptions++;
+				// Subrayar coincidencias
+				option.innerHTML = query ? this.highlight(label, query) : label;
+			} else {
+				// Restaurar texto original
+				option.textContent = label;
+			}
+		});
+
+		// Muestra / oculta grupos
+		this.groups.forEach(group => {
+			const groupOptions = [...group.querySelectorAll('[role=option]')];
+			const hasVisible = groupOptions.some(
+				opt => !opt.classList.contains('hidden')
+			);
+
+			group.classList.toggle('hidden', !hasVisible);
+		});
+
+		if (totalVisibleOptions === 0) {
+			this.showEmpty();
+		}
+
+		this.clearActive();
+	}
+
+	// Obtiene solo las opciones visibles, no ocultas por filtro
+	getVisibleOptions() {
+		return this.options.filter(
+			option =>
+				!option.classList.contains('hidden') &&
+				!option.closest('[role=group]')?.classList.contains('hidden')
+		);
+	}
+
+	// Establece la opción activa por índice dentro de las opciones visibles [Necesito entenderlo mejor]
+	setActive(index) {
+		const visible = this.getVisibleOptions();
+		if (!visible.length) return;
+
+		this.clearActive();
+
+		const option = visible[index];
+		if (!option) return;
+
+		option.setAttribute('aria-selected', 'true');
+		option.scrollIntoView({ block: 'nearest' });
+		this.activeIndex = index;
+	}
+
+	// Muestra la opción seleccionada en el botón y cierra el panel
+	select(option) {
+		// Limpiar selección anterior
+		this.options.forEach(opt =>
+			opt.removeAttribute('aria-selected')
+		);
+
+		// Guardar selección
+		this.selectedIndex = this.options.indexOf(option);
+		option.setAttribute('aria-selected', 'true');
+
+		// Actualizar botón
+		this.buttonText.textContent = option.textContent;
+
+		// Si cambia combobox, cambie el select original
+		this.selectEl.selectedIndex = this.selectedIndex;
+		this.selectEl.dispatchEvent(new Event('change', { bubbles: true }));
+
+		this.close();
+		this.button.focus();
+	}
+
+
+	// Listeners de eventos 
+	bindEvents() {
+		// Toggle botón
+		this.button.addEventListener('click', () => {
+			this.isOpen() ? this.close() : this.open();
+		});
+
+		// Busqueda por input
+		this.input.addEventListener('input', e => {
+			this.filter(e.target.value);
+		});
+
+		// Navegación por teclado
+		this.input.addEventListener('keydown', e => {
+			const visible = this.getVisibleOptions();
+			if (!visible.length) return;
+
+			if (e.key === 'ArrowDown') {
+				e.preventDefault();
+				this.setActive((this.activeIndex + 1) % visible.length);
+			}
+
+			if (e.key === 'ArrowUp') {
+				e.preventDefault();
+				this.setActive(
+					(this.activeIndex - 1 + visible.length) % visible.length
+				);
+			}
+
+			if (e.key === 'Enter' && this.activeIndex >= 0) {
+				e.preventDefault();
+				this.select(visible[this.activeIndex]);
+			}
+
+			if (e.key === 'Escape') {
+				this.close();
+				this.button.focus();
+			}
+		});
+
+		// Selección de opción
+		this.options.forEach(option => {
+			option.addEventListener('click', () => this.select(option));
+		});
+
+		// Cerrar al hacer click fuera
+		document.addEventListener('click', e => {
+			if (!this.root.contains(e.target)) {
+				this.close();
+			}
+		});
+	}
+}
+
+// Inicialización par funcionamiento de comboboxes
+document.querySelectorAll('[data-combobox]').forEach(el => new ComboBox(el));

@@ -338,7 +338,8 @@ function f1208_TablaDetalleV2($aParametros, $objDB, $bDebug = false)
 	list($sTabla1208, $sLeyenda) = f1208_NombreTabla($bloque, $objDB);
 	if ($sLeyenda == '') {
 		list($sTabla1205, $sLeyenda) = f1205_NombreTabla($bloque, $objDB);
-		list($sTabla1206, $sLeyenda) = f1206_NombreTabla($bloque, $objDB);
+		list($sTabla1206, $sLeyendaH) = f1206_NombreTabla($bloque, $objDB);
+		$sLeyenda = $sLeyenda . $sLeyendaH;
 	}
 	$sBotones = '<input id="paginaf1208" name="paginaf1208" type="hidden" value="' . $pagina . '"/>';
 	$sBotones = $sBotones . '<input id="lppf1208" name="lppf1208" type="hidden" value="' . $lineastabla . '"/>';

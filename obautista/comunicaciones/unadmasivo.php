@@ -320,6 +320,7 @@ $xajax->register(XAJAX_FUNCTION, 'unad11_Mostrar_v2');
 $xajax->register(XAJAX_FUNCTION, 'unad11_TraerXid');
 $xajax->register(XAJAX_FUNCTION, 'f1205_Combomasi05centro');
 $xajax->register(XAJAX_FUNCTION, 'f1205_Combomasi05programa');
+$xajax->register(XAJAX_FUNCTION, 'f1205_Combomasi05curso');
 $xajax->register(XAJAX_FUNCTION, 'f1205_Combobcentro');
 $xajax->register(XAJAX_FUNCTION, 'f1205_Combobprograma');
 $xajax->register(XAJAX_FUNCTION, 'sesion_abandona_V2');
@@ -489,7 +490,7 @@ $_REQUEST['masi05consec'] = numeros_validar($_REQUEST['masi05consec']);
 $_REQUEST['masi05id'] = numeros_validar($_REQUEST['masi05id']);
 $_REQUEST['masi05estado'] = numeros_validar($_REQUEST['masi05estado']);
 $_REQUEST['masi05asunto'] = cadena_Validar($_REQUEST['masi05asunto']);
-$_REQUEST['masi05cuerpo'] = cadena_Validar($_REQUEST['masi05cuerpo']);
+$_REQUEST['masi05cuerpo'] = cadena_Validar($_REQUEST['masi05cuerpo'],true);
 $_REQUEST['masi05admiterpta'] = numeros_validar($_REQUEST['masi05admiterpta']);
 $_REQUEST['masi05correorpta'] = cadena_Validar($_REQUEST['masi05correorpta']);
 $_REQUEST['masi05firma'] = numeros_validar($_REQUEST['masi05firma']);
@@ -561,6 +562,15 @@ if ((int)$_REQUEST['paso'] > 0) {
 	if (isset($_REQUEST['masi06curso']) == 0) {
 		$_REQUEST['masi06curso'] = '';
 	}
+	if (isset($_REQUEST['masi06docente']) == 0) {
+		$_REQUEST['masi06docente'] = 0;
+	}
+	if (isset($_REQUEST['masi06unidadfunc']) == 0) {
+		$_REQUEST['masi06unidadfunc'] = 0;
+	}
+	if (isset($_REQUEST['masi06agnogrado']) == 0) {
+		$_REQUEST['masi06agnogrado'] = 0;
+	}
 	$_REQUEST['masi06idmensaje'] = numeros_validar($_REQUEST['masi06idmensaje']);
 	$_REQUEST['masi06consec'] = numeros_validar($_REQUEST['masi06consec']);
 	$_REQUEST['masi06id'] = numeros_validar($_REQUEST['masi06id']);
@@ -573,6 +583,9 @@ if ((int)$_REQUEST['paso'] > 0) {
 	$_REQUEST['masi06sexo'] = numeros_validar($_REQUEST['masi06sexo']);
 	$_REQUEST['masi06idperiodo'] = numeros_validar($_REQUEST['masi06idperiodo']);
 	$_REQUEST['masi06curso'] = numeros_validar($_REQUEST['masi06curso']);
+	$_REQUEST['masi06docente'] = numeros_validar($_REQUEST['masi06docente']);
+	$_REQUEST['masi06unidadfunc'] = numeros_validar($_REQUEST['masi06unidadfunc']);
+	$_REQUEST['masi06agnogrado'] = numeros_validar($_REQUEST['masi06agnogrado']);
 	//Anexo
 	if (isset($_REQUEST['paginaf1207']) == 0) {
 		$_REQUEST['paginaf1207'] = 1;
@@ -736,47 +749,52 @@ if (($_REQUEST['paso'] == 1) || ($_REQUEST['paso'] == 3)) {
 		$sSQLcondi = 'masi05id=' . $_REQUEST['masi05id'] . '';
 	}
 	list($sTabla1205, $sErrorT) = f1205_NombreTabla($_REQUEST['bmes'], $objDB);
-	$sSQL = 'SELECT * FROM ' . $sTabla1205 . ' WHERE ' . $sSQLcondi;
-	$tabla = $objDB->ejecutasql($sSQL);
-	if ($objDB->nf($tabla) > 0) {
-		$fila = $objDB->sf($tabla);
-		$_REQUEST['masi05idproceso'] = $fila['masi05idproceso'];
-		$_REQUEST['masi05consec'] = $fila['masi05consec'];
-		$_REQUEST['masi05id'] = $fila['masi05id'];
-		$_REQUEST['masi05estado'] = $fila['masi05estado'];
-		$_REQUEST['masi05asunto'] = $fila['masi05asunto'];
-		$_REQUEST['masi05cuerpo'] = $fila['masi05cuerpo'];
-		$_REQUEST['masi05admiterpta'] = $fila['masi05admiterpta'];
-		$_REQUEST['masi05correorpta'] = $fila['masi05correorpta'];
-		$_REQUEST['masi05firma'] = $fila['masi05firma'];
-		$_REQUEST['masi05idusuario'] = $fila['masi05idusuario'];
-		$_REQUEST['masi05fecha'] = $fila['masi05fecha'];
-		$_REQUEST['masi05hora'] = $fila['masi05hora'];
-		$_REQUEST['masi05min'] = $fila['masi05min'];
-		$_REQUEST['masi05unidadfunc'] = $fila['masi05unidadfunc'];
-		$_REQUEST['masi05zona'] = $fila['masi05zona'];
-		$_REQUEST['masi05centro'] = $fila['masi05centro'];
-		$_REQUEST['masi05escuela'] = $fila['masi05escuela'];
-		$_REQUEST['masi05programa'] = $fila['masi05programa'];
-		$_REQUEST['masi05idperiodo'] = $fila['masi05idperiodo'];
-		$_REQUEST['masi05curso'] = $fila['masi05curso'];
-		$_REQUEST['masi05docente'] = $fila['masi05docente'];
-		$_REQUEST['masi05total_usuarios'] = $fila['masi05total_usuarios'];
-		$_REQUEST['masi05total_envios'] = $fila['masi05total_envios'];
-		$_REQUEST['masi05tiponotifica'] = $fila['masi05tiponotifica'];
-		$_REQUEST['masi05periodicidad'] = $fila['masi05periodicidad'];
-		$_REQUEST['masi05idrelacion'] = $fila['masi05idrelacion'];
-		$_REQUEST['masi05idrelacion2'] = $fila['masi05idrelacion2'];
-		$_REQUEST['masi05idrelacion3'] = $fila['masi05idrelacion3'];
-		$bcargo = true;
-		$_REQUEST['paso'] = 2;
-		$_REQUEST['boculta1205'] = 0;
-		$bLimpiaHijos = true;
-		if ($idProceso != 0) {
-			if ($idProceso != $fila['masi05idproceso']) {
-				$sError = 'No es posible consultar este registro en esta visual.';
-				$_REQUEST['paso'] = -1;
+	$sError = $sError . $sErrorT;
+	if ($sError == '') {
+		$sSQL = 'SELECT * FROM ' . $sTabla1205 . ' WHERE ' . $sSQLcondi;
+		$tabla = $objDB->ejecutasql($sSQL);
+		if ($objDB->nf($tabla) > 0) {
+			$fila = $objDB->sf($tabla);
+			$_REQUEST['masi05idproceso'] = $fila['masi05idproceso'];
+			$_REQUEST['masi05consec'] = $fila['masi05consec'];
+			$_REQUEST['masi05id'] = $fila['masi05id'];
+			$_REQUEST['masi05estado'] = $fila['masi05estado'];
+			$_REQUEST['masi05asunto'] = $fila['masi05asunto'];
+			$_REQUEST['masi05cuerpo'] = $fila['masi05cuerpo'];
+			$_REQUEST['masi05admiterpta'] = $fila['masi05admiterpta'];
+			$_REQUEST['masi05correorpta'] = $fila['masi05correorpta'];
+			$_REQUEST['masi05firma'] = $fila['masi05firma'];
+			$_REQUEST['masi05idusuario'] = $fila['masi05idusuario'];
+			$_REQUEST['masi05fecha'] = $fila['masi05fecha'];
+			$_REQUEST['masi05hora'] = $fila['masi05hora'];
+			$_REQUEST['masi05min'] = $fila['masi05min'];
+			$_REQUEST['masi05unidadfunc'] = $fila['masi05unidadfunc'];
+			$_REQUEST['masi05zona'] = $fila['masi05zona'];
+			$_REQUEST['masi05centro'] = $fila['masi05centro'];
+			$_REQUEST['masi05escuela'] = $fila['masi05escuela'];
+			$_REQUEST['masi05programa'] = $fila['masi05programa'];
+			$_REQUEST['masi05idperiodo'] = $fila['masi05idperiodo'];
+			$_REQUEST['masi05curso'] = $fila['masi05curso'];
+			$_REQUEST['masi05docente'] = $fila['masi05docente'];
+			$_REQUEST['masi05total_usuarios'] = $fila['masi05total_usuarios'];
+			$_REQUEST['masi05total_envios'] = $fila['masi05total_envios'];
+			$_REQUEST['masi05tiponotifica'] = $fila['masi05tiponotifica'];
+			$_REQUEST['masi05periodicidad'] = $fila['masi05periodicidad'];
+			$_REQUEST['masi05idrelacion'] = $fila['masi05idrelacion'];
+			$_REQUEST['masi05idrelacion2'] = $fila['masi05idrelacion2'];
+			$_REQUEST['masi05idrelacion3'] = $fila['masi05idrelacion3'];
+			$bcargo = true;
+			$_REQUEST['paso'] = 2;
+			$_REQUEST['boculta1205'] = 0;
+			$bLimpiaHijos = true;
+			if ($idProceso != 0) {
+				if ($idProceso != $fila['masi05idproceso']) {
+					$sError = 'No es posible consultar este registro en esta visual.';
+					$_REQUEST['paso'] = -1;
+				}
 			}
+		} else {
+			$_REQUEST['paso'] = 0;
 		}
 	} else {
 		$_REQUEST['paso'] = 0;
@@ -858,9 +876,11 @@ if ($_REQUEST['paso'] == 93) {
 			$sError = $ERR['8'] . ' [Mod ' . $iCodModulo . ']';
 		}
 	}
+	list($sTabla1205, $sErrorT) = f1205_NombreTabla($_REQUEST['bmes'], $objDB);
+	$sError = $sError . $sErrorT;
 	if ($sError == '') {
 		//Ver que el consecutivo no exista.
-		$sSQL = 'SELECT masi05id FROM masi05mensajes WHERE masi05consec=' . $_REQUEST['masi05consec_nuevo'] . ' AND masi05idproceso=' . $_REQUEST['masi05idproceso'] . '';
+		$sSQL = 'SELECT masi05id FROM ' . $sTabla1205 . ' WHERE masi05consec=' . $_REQUEST['masi05consec_nuevo'] . ' AND masi05idproceso=' . $_REQUEST['masi05idproceso'] . '';
 		$tabla = $objDB->ejecutasql($sSQL);
 		if ($objDB->nf($tabla) > 0) {
 			$sError = 'El consecutivo ' . $_REQUEST['masi05consec_nuevo'] . ' ya existe';
@@ -868,7 +888,7 @@ if ($_REQUEST['paso'] == 93) {
 	}
 	if ($sError == '') {
 		//Aplicar el cambio.
-		$sSQL = 'UPDATE masi05mensajes SET masi05consec=' . $_REQUEST['masi05consec_nuevo'] . ' WHERE masi05id=' . $_REQUEST['masi05id'] . '';
+		$sSQL = 'UPDATE ' . $sTabla1205 . ' SET masi05consec=' . $_REQUEST['masi05consec_nuevo'] . ' WHERE masi05id=' . $_REQUEST['masi05id'] . '';
 		$tabla = $objDB->ejecutasql($sSQL);
 		$sDetalle = 'Cambia el consecutivo de ' . $_REQUEST['masi05consec'] . ' a ' . $_REQUEST['masi05consec_nuevo'] . '';
 		$_REQUEST['masi05consec'] = $_REQUEST['masi05consec_nuevo'];
@@ -948,6 +968,7 @@ if ($_REQUEST['paso'] == -1) {
 	$_REQUEST['masi05idrelacion'] = 0;
 	$_REQUEST['masi05idrelacion2'] = 0;
 	$_REQUEST['masi05idrelacion3'] = 0;
+	$_REQUEST['bmes'] = date("Ym");
 	$_REQUEST['paso'] = 0;
 	switch ($_REQUEST['masi05idproceso']) {
 		case 2741: // Postulados a grados
@@ -959,15 +980,18 @@ if ($bLimpiaHijos) {
 	$_REQUEST['masi06idmensaje'] = '';
 	$_REQUEST['masi06consec'] = '';
 	$_REQUEST['masi06id'] = '';
-	$_REQUEST['masi06zona'] = '';
-	$_REQUEST['masi06centro'] = '';
-	$_REQUEST['masi06escuela'] = '';
-	$_REQUEST['masi06nivelforma'] = '';
+	$_REQUEST['masi06zona'] = 0;
+	$_REQUEST['masi06centro'] = 0;
+	$_REQUEST['masi06escuela'] = 0;
+	$_REQUEST['masi06nivelforma'] = 0;
 	$_REQUEST['masi06programa'] = 0;
 	$_REQUEST['masi06est_condicion'] = 0;
 	$_REQUEST['masi06sexo'] = 0;
-	$_REQUEST['masi06idperiodo'] = '';
-	$_REQUEST['masi06curso'] = '';
+	$_REQUEST['masi06idperiodo'] = 0;
+	$_REQUEST['masi06curso'] = 0;
+	$_REQUEST['masi06docente'] = 0;
+	$_REQUEST['masi06unidadfunc'] = 0;
+	$_REQUEST['masi06agnogrado'] = 0;
 	$_REQUEST['masi07idmensaje'] = '';
 	$_REQUEST['masi07consec'] = '';
 	$_REQUEST['masi07id'] = '';
@@ -1009,6 +1033,7 @@ $bAplicaEscuela = false;
 $bAplicaPrograma = false;
 $bAplicaPeriodo = false;
 $bAplicaCurso = false;
+$bAplicaGrado = false;
 $bBloqueado = false;
 $bGestionaPoblacion = false;
 $bPermiteRepetir = false;
@@ -1019,28 +1044,35 @@ switch ($_REQUEST['masi05idproceso']) {
 	case 0: // - Ninguno
 		break;
 	case 2: // - Funcionarios
-		break;
 	case 3: // - Contratistas
+		$bAplicaUnidadFuncional = true;
 		break;
 	case 11: // - Aspirantes
+	case 2306: // - Acompañamiento académico
+	case 2307: // - Seguimiento académico
+	case 12229: // - Convocados
+		$bAplicaEscuela = true;
+		$bAplicaPrograma = true;
+		$bAplicaPeriodo = true;
 		break;
 	case 12: // - Estudiantes
-		break;
 	case 13: // - Estudiantes ausentes
+	case 2209: // - Estudiantes del programa
+		$bAplicaEscuela = true;
+		$bAplicaPrograma = true;
+		$bAplicaPeriodo = true;
+		$bAplicaCurso = true;
 		break;
 	case 17: // - Egresados
-		break;
-	case 2209: // - Estudiantes del programa
-		break;
-	case 2306: // - Acompañamiento académico
-		break;
-	case 2307: // - Seguimiento académico
+		$bAplicaEscuela = true;
+		$bAplicaPrograma = true;
+		$bAplicaGrado = true;
 		break;
 	case 2741: // - Postulados a grados
+		$bAplicaEscuela = true;
+		$bAplicaPrograma = true;
 		$bRelacion1 = true;
 		$bRelacion2 = true;
-		break;
-	case 12229: // - Convocados
 		break;
 }
 //Permisos adicionales
@@ -1065,10 +1097,13 @@ if ((int)$_REQUEST['paso'] != 0) {
 			$bEdita1207 = true;
 			$bEdita1208 = true;
 			list($sNomTabla1208, $sErrorH) = f1208_NombreTabla($_REQUEST['bloque'], $objDB);
-			$sSQL = 'SELECT 1 FROM ' . $sNomTabla1208 . ' WHERE masi08idmensaje=' . $_REQUEST['masi05id'] . ' LIMIT 0, 1';
-			$tabla08 = $objDB->ejecutasql($sSQL);
-			if ($objDB->nf($tabla08) == 0) {
-				$bBloqueado = false;
+			$sError = $sError . $sErrorH;
+			if ($sError == '') {
+				$sSQL = 'SELECT 1 FROM ' . $sNomTabla1208 . ' WHERE masi08idmensaje=' . $_REQUEST['masi05id'] . ' LIMIT 0, 1';
+				$tabla08 = $objDB->ejecutasql($sSQL);
+				if ($objDB->nf($tabla08) == 0) {
+					$bBloqueado = false;
+				}
 			}
 			break;
 		case 3: // Completo
@@ -1085,7 +1120,7 @@ if ((int)$_REQUEST['paso'] != 0) {
 if ($_REQUEST['bloque'] != $_REQUEST['bmes']) {
 	$_REQUEST['bloque'] = $_REQUEST['bmes'];
 	if ($_REQUEST['bloque'] != '') {
-		list($sErrorM, $sDebugA) = f1200_ArmarEstructura($_REQUEST['bmes'], $objDB, $bDebug);
+		list($sErrorM, $sDebugA) = f1200_ArmarEstructuraMasivos($_REQUEST['bmes'], $objDB, $bDebug);
 		$sDebug = $sDebug . $sDebugA;
 		if ($bDebug && ($sErrorM != '')) {
 			$sDebug = $sDebug . log_debug('Error desde la estructura: <span class="rojo">' . $sErrorM . '</span>');
@@ -1093,7 +1128,7 @@ if ($_REQUEST['bloque'] != $_REQUEST['bmes']) {
 	}
 }
 // lOS AÑOS LOS TOMAMOS DE LA TABLA QUE TIENE LAP PARTICION.
-$iAgno = substr($_REQUEST['bmes'], 0, 4);
+$iAgno = (int) substr($_REQUEST['bmes'], 0, 4);
 $iAgnoIni = $iAgno;
 $iAgnoFin = $iAgno + 1;
 $sNombreUsuario = '';
@@ -1112,6 +1147,14 @@ if ($seg_1707 == 1) {
 	$objCombos->iAncho = 60;
 	$html_deb_tipodoc = $objCombos->html('', $objDB, 145);
 }
+$masi05idproceso_nombre = '{' . $ETI['msg_ninguno'] . '}';
+$sSQL = 'SELECT masi72nombre FROM masi72proceso WHERE masi72id=' . $_REQUEST['masi05idproceso'];
+$tabla = $objDB->ejecutasql($sSQL);
+if ($objDB->nf($tabla) > 0) {
+	$fila = $objDB->sf($tabla);
+	$masi05idproceso_nombre = cadena_notildes($fila['masi72nombre']);
+}
+$html_masi05idproceso = html_oculto('masi05idproceso', $_REQUEST['masi05idproceso'], $masi05idproceso_nombre);
 $masi05estado_nombre = '{' . $_REQUEST['masi05estado'] . '}';
 $sSQL = 'SELECT unad96nombre, unad96etiqueta FROM unad96estado WHERE unad96idmodulo=1205 AND unad96id=' . $_REQUEST['masi05estado'];
 $tabla = $objDB->ejecutasql($sSQL);
@@ -1134,52 +1177,6 @@ $html_masi05firma = $objCombos->html($sSQL, $objDB);
 list($masi05idusuario_rs, $_REQUEST['masi05idusuario'], $_REQUEST['masi05idusuario_td'], $_REQUEST['masi05idusuario_doc']) = html_tercero($_REQUEST['masi05idusuario_td'], $_REQUEST['masi05idusuario_doc'], $_REQUEST['masi05idusuario'], 0, $objDB);
 $bOculto = true;
 $html_masi05idusuario = html_DivTerceroV8('masi05idusuario', $_REQUEST['masi05idusuario_td'], $_REQUEST['masi05idusuario_doc'], $bOculto, $objDB, $objCombos, 0, $ETI['ing_doc']);
-if ($bAplicaUnidadFuncional) {
-	$objCombos->nuevo('masi05unidadfunc', $_REQUEST['masi05unidadfunc'], true, '{' . $ETI['msg_na'] . '}', 0);
-	$objCombos->iAncho = 600;
-	$sSQL = f226_ConsultaCombo();
-	$html_masi05unidadfunc = $objCombos->html($sSQL, $objDB);
-}
-$objCombos->nuevo('masi05zona', $_REQUEST['masi05zona'], true, '{' . $ETI['msg_todas'] . '}', 0);
-$objCombos->sAccion = 'carga_combo_masi05centro();';
-$sSQL = 'SELECT unad23id AS id, unad23nombre AS nombre FROM unad23zona WHERE unad23id>0 ORDER BY unad23conestudiantes DESC, unad23nombre';
-$html_masi05zona = $objCombos->html($sSQL, $objDB);
-$html_masi05centro = f1205_HTMLComboV2_masi05centro($objDB, $objCombos, $_REQUEST['masi05centro'], $_REQUEST['masi05zona']);
-if ($bAplicaEscuela) {
-	$objCombos->nuevo('masi05escuela', $_REQUEST['masi05escuela'], true, '{' . $ETI['msg_todas'] . '}', 0);
-	$objCombos->sAccion = 'carga_combo_masi05programa();';
-	$sSQL = 'SELECT core12id AS id, core12nombre AS nombre FROM core12escuela WHERE core12id>0 AND core12tieneestudiantes="S" ORDER BY core12nombre';
-	$html_masi05escuela = $objCombos->html($sSQL, $objDB);
-}
-if ($bAplicaPrograma) {
-	$html_masi05programa = f1205_HTMLComboV2_masi05programa($objDB, $objCombos, $_REQUEST['masi05programa'], $_REQUEST['masi05escuela']);
-}
-if ($bAplicaPeriodo) {
-	$masi05idperiodo_nombre = $_REQUEST['masi05idperiodo'];
-	//$masi05idperiodo_nombre = $amasi05idperiodo[$_REQUEST['masi05idperiodo']];
-	//$masi05idperiodo_nombre = '&nbsp;';
-	//if ((int)$_REQUEST['masi05idperiodo'] != 0) {
-		//list($masi05idperiodo_nombre, $sErrorDet) = tabla_campoxid('', '', '', $_REQUEST['masi05idperiodo'], '{' . $ETI['msg_sindato'] . '}', $objDB);
-	//}
-	$html_masi05idperiodo = html_oculto('masi05idperiodo', $_REQUEST['masi05idperiodo'], $masi05idperiodo_nombre);
-}
-if ($bAplicaCurso) {
-	$masi05curso_nombre = $_REQUEST['masi05curso'];
-	//$masi05curso_nombre = $amasi05curso[$_REQUEST['masi05curso']];
-	//$masi05curso_nombre = '&nbsp;';
-	//if ((int)$_REQUEST['masi05curso'] != 0) {
-		//list($masi05curso_nombre, $sErrorDet) = tabla_campoxid('', '', '', $_REQUEST['masi05curso'], '{' . $ETI['msg_sindato'] . '}', $objDB);
-	//}
-	$html_masi05curso = html_oculto('masi05curso', $_REQUEST['masi05curso'], $masi05curso_nombre);
-	$masi05docente_nombre = $_REQUEST['masi05docente'];
-	//$masi05docente_nombre = $amasi05docente[$_REQUEST['masi05docente']];
-	//$masi05docente_nombre = '&nbsp;';
-	//if ((int)$_REQUEST['masi05docente'] != 0) {
-		//list($masi05docente_nombre, $sErrorDet) = tabla_campoxid('', '', '', $_REQUEST['masi05docente'], '{' . $ETI['msg_sindato'] . '}', $objDB);
-	//}
-	$html_masi05docente = html_oculto('masi05docente', $_REQUEST['masi05docente'], $masi05docente_nombre);
-}
-
 list($masi05tiponotifica_nombre, $sErrorDet) = tabla_campoxid('masi73tiponoti', 'masi73nombre', 'masi73id', $_REQUEST['masi05tiponotifica'], '{' . $ETI['msg_sindato'] . '}', $objDB);
 $html_masi05tiponotifica = html_oculto('masi05tiponotifica', $_REQUEST['masi05tiponotifica'], $masi05tiponotifica_nombre);
 if ($bPermiteRepetir) {
@@ -1226,25 +1223,53 @@ if ((int)$_REQUEST['paso'] == 0) {
 } else {
 }
 if ($bEdita1206) {
+	if ($bAplicaUnidadFuncional) {
+		$html_masi06unidadfunc = f1206_HTMLComboV2_masi06unidadfunc($objDB, $objCombos, $_REQUEST['masi06unidadfunc']);
+	}
 	$objCombos->nuevo('masi06zona', $_REQUEST['masi06zona'], true, '{' . $ETI['msg_todas'] . '}', 0);
 	$objCombos->sAccion = 'carga_combo_masi06centro();';
 	$sSQL = 'SELECT unad23id AS id, unad23nombre AS nombre FROM unad23zona WHERE unad23id>0 ORDER BY unad23conestudiantes DESC, unad23nombre';
 	$html_masi06zona = $objCombos->html($sSQL, $objDB);
 	$html_masi06centro = f1206_HTMLComboV2_masi06centro($objDB, $objCombos, $_REQUEST['masi06centro'], $_REQUEST['masi06zona']);
-	$objCombos->nuevo('masi06escuela', $_REQUEST['masi06escuela'], true, '{' . $ETI['msg_todas'] . '}', 0);
-	$objCombos->sAccion = 'carga_combo_masi06programa();';
-	$objCombos->iAncho = 370;
-	$sSQL = 'SELECT core12id AS id, core12nombre AS nombre FROM core12escuela WHERE core12id>0 AND core12tieneestudiantes="S" ORDER BY core12nombre';
-	$html_masi06escuela = $objCombos->html($sSQL, $objDB);
-	$objCombos->nuevo('masi06nivelforma', $_REQUEST['masi06nivelforma'], true, '{' . $ETI['msg_todos'] . '}', 0);
-	$objCombos->sAccion = 'carga_combo_masi06programa();';
-	$sSQL = 'SELECT core22id AS id, core22nombre AS nombre FROM core22nivelprograma WHERE core22id>0 ORDER BY core22orden, core22nombre';
-	$html_masi06nivelforma = $objCombos->html($sSQL, $objDB);
-	$html_masi06programa = f1206_HTMLComboV2_masi06programa($objDB, $objCombos, $_REQUEST['masi06programa'], $_REQUEST['masi06escuela'], $_REQUEST['masi06nivelforma']);
+	if ($bAplicaEscuela) {
+		$objCombos->nuevo('masi06escuela', $_REQUEST['masi06escuela'], true, '{' . $ETI['msg_todas'] . '}', 0);
+		$objCombos->sAccion = 'carga_combo_masi06programa();';
+		$sSQL = 'SELECT core12id AS id, core12nombre AS nombre FROM core12escuela WHERE core12id>0 AND core12tieneestudiantes="S" ORDER BY core12nombre';
+		$html_masi06escuela = $objCombos->html($sSQL, $objDB);
+	}
+	if ($bAplicaPrograma) {
+		$objCombos->nuevo('masi06nivelforma', $_REQUEST['masi06nivelforma'], true, '{' . $ETI['msg_todos'] . '}', 0);
+		$objCombos->sAccion = 'carga_combo_masi06programa();';
+		$sSQL = 'SELECT core22id AS id, core22nombre AS nombre FROM core22nivelprograma WHERE core22id>0 ORDER BY core22orden, core22nombre';
+		$html_masi06nivelforma = $objCombos->html($sSQL, $objDB);
+		$html_masi06programa = f1206_HTMLComboV2_masi06programa($objDB, $objCombos, $_REQUEST['masi06programa'], $_REQUEST['masi06escuela'], $_REQUEST['masi06nivelforma']);
+	}
 	$objCombos->nuevo('masi06est_condicion', $_REQUEST['masi06est_condicion'], true, $amasi06est_condicion[0], 0);
 	switch($idProceso) {
-		case 0: //
+		case 0: // - Ninguno
 			//$objCombos->addArreglo($amasi06est_condicion, $imasi06est_condicion);
+			break;
+		case 2: // - Funcionarios
+			break;
+		case 3: // - Contratistas
+			break;
+		case 11: // - Aspirantes
+			break;
+		case 12: // - Estudiantes
+			break;
+		case 13: // - Estudiantes ausentes
+			break;
+		case 17: // - Egresados
+			break;
+		case 2209: // - Estudiantes del programa
+			break;
+		case 2306: // - Acompañamiento académico
+			break;
+		case 2307: // - Seguimiento académico
+			break;
+		case 2741: // - Postulados a grados
+			break;
+		case 12229: // - Convocados
 			break;
 	}
 	$sSQL = '';
@@ -1253,15 +1278,22 @@ if ($bEdita1206) {
 	$objCombos->addArreglo($amasi06sexo, $imasi06sexo);
 	$sSQL = '';
 	$html_masi06sexo = $objCombos->html($sSQL, $objDB);
-	$objCombos->nuevo('masi06idperiodo', $_REQUEST['masi06idperiodo'], true, '{' . $ETI['msg_todos'] . '}', 0);
-	$objCombos->sAccion = 'carga_combo_masi06curso();';
 	if ($bAplicaPeriodo) {
-		$sSQL = f146_ConsultaCombo();
-	} else {
-		$sSQL = '';
+		$html_masi06idperiodo = f1206_HTMLComboV2_masi06idperiodo($objDB, $objCombos, $_REQUEST['masi06idperiodo']);
 	}
-	$html_masi06idperiodo = $objCombos->html($sSQL, $objDB);
-	$html_masi06curso = f1206_HTMLComboV2_masi06curso($objDB, $objCombos, $_REQUEST['masi06curso'], $_REQUEST['masi06idperiodo']);
+	if ($bAplicaCurso) {
+		$html_masi06curso = f1206_HTMLComboV2_masi06curso($objDB, $objCombos, $_REQUEST['masi06curso'], $_REQUEST['masi06idperiodo'], $_REQUEST['masi06programa'], $_REQUEST['masi06escuela']);
+		$masi06docente_nombre = $_REQUEST['masi06docente'];
+		$html_masi06docente = html_oculto('masi06docente', $_REQUEST['masi06docente'], $masi06docente_nombre);
+	}
+	if ($bAplicaGrado) {
+		$iAgnoIniGrado = 1989;
+		$iAgnoFinGrado = fecha_agno();
+		$objCombos->nuevo('masi06agnogrado', $_REQUEST['masi06agnogrado'], true, '{' . $ETI['msg_todos'] . '}', 0);
+		$objCombos->numeros($iAgnoIniGrado, $iAgnoFinGrado, 1);
+		$sSQL = '';
+		$html_masi06agnogrado = $objCombos->html($sSQL, $objDB);
+	}
 }
 if ($bEdita1207) {
 }
@@ -1272,9 +1304,14 @@ if ($bEdita1208 && $bGestionaPoblacion) {
 		$bOculto = false;
 	}
 	$html_masi08idtercero = html_DivTerceroV8('masi08idtercero', $_REQUEST['masi08idtercero_td'], $_REQUEST['masi08idtercero_doc'], $bOculto, $objDB, $objCombos, 1, $ETI['ing_doc']);
-	$objCombos->nuevo('masi08idpoblacion', $_REQUEST['masi08idpoblacion'], true, '{' . $ETI['msg_ninguno'] . '}', 0);
-	$sSQL = 'SELECT masi06id AS id, masi06consec AS nombre FROM ' . $sTabla1206 . ' WHERE masi06idmensaje=' . $_REQUEST['masi05id'] .  ' ORDER BY masi06consec DESC';
-	$html_masi08idpoblacion = $objCombos->html($sSQL, $objDB);
+	list($sTabla1206, $sErrorH) = f1206_NombreTabla($_REQUEST['bloque'], $objDB);
+	$sError = $sError . $sErrorH;
+	$html_masi08idpoblacion = '';
+	if ($sError == '') {
+		$objCombos->nuevo('masi08idpoblacion', $_REQUEST['masi08idpoblacion'], true, '{' . $ETI['msg_ninguno'] . '}', 0);
+		$sSQL = 'SELECT masi06id AS id, masi06consec AS nombre FROM ' . $sTabla1206 . ' WHERE masi06idmensaje=' . $_REQUEST['masi05id'] .  ' ORDER BY masi06consec DESC';
+		$html_masi08idpoblacion = $objCombos->html($sSQL, $objDB);
+	}
 	if (false) {
 		$objCombos->nuevo('masi08idsmtp', $_REQUEST['masi08idsmtp'], true, '{' . $ETI['msg_ninguno'] . '}', 0);
 		$sSQL = 'SELECT unad69id AS id, unad69titulo AS nombre FROM unad69smtp ORDER BY unad69titulo';
@@ -1302,8 +1339,9 @@ while ($fbase = $objDB->sf($tbase)) {
 $sSQL = '';
 $html_bmes = $objCombos->html($sSQL, $objDB);
 $objCombos->nuevo('bunidadfunc', $_REQUEST['bunidadfunc'], true, '{' . $ETI['msg_todos'] . '}');
+$objCombos->bEsCombobox = true;
 $objCombos->sAccion = 'paginarf1205()';
-$objCombos->iAncho = 600;
+$objCombos->iAncho = 400;
 $sSQL = f226_ConsultaCombo();
 $html_bunidadfunc = $objCombos->html($sSQL, $objDB);
 $objCombos->nuevo('bzona', $_REQUEST['bzona'], true, '{' . $ETI['msg_todos'] . '}');
@@ -1321,9 +1359,9 @@ if ($bAplicaPrograma) {
 	$html_bprograma = f1205_HTMLComboV2_bprograma($objDB, $objCombos, $_REQUEST['bprograma'], $_REQUEST['bescuela']);
 }
 if ($idProceso == 0) {
-	$objCombos->nuevo('bproceso', $_REQUEST['bproceso'], true, '{' . $ETI['msg_todos'] . '}');
+	$objCombos->nuevo('bproceso', $_REQUEST['bproceso'], false);
 	$objCombos->sAccion = 'limpiapagina()';
-	$sSQL = 'SELECT masi72id AS id, masi72nombre AS nombre FROM masi72proceso ORDER BY masi72nombre';
+	$sSQL = 'SELECT masi72id AS id, masi72nombre AS nombre FROM masi72proceso ORDER BY masi72id';
 	$html_bproceso = $objCombos->html($sSQL, $objDB);
 }
 if ((int)$_REQUEST['paso'] > 0) {
@@ -1659,6 +1697,13 @@ switch ($iPiel) {
 		xajax_f1205_Combomasi05programa(params);
 	}
 
+	function carga_combo_masi05curso() {
+		let params = new Array();
+		params[0] = window.document.frmedita.masi05programa.value;
+		document.getElementById('div_masi05curso').innerHTML = '<b>Procesando datos, por favor espere...</b><input id="masi05curso" name="masi05curso" type="hidden" value="" />';
+		xajax_f1205_Combomasi05curso(params);
+	}
+
 	function carga_combo_bcentro() {
 		let params = new Array();
 		params[0] = window.document.frmedita.bzona.value;
@@ -1825,7 +1870,7 @@ if ($bPuedeAbrir) {
 <?php
 if ($_REQUEST['paso'] != 0) {
 ?>
-<script language="javascript" src="<?php echo $APP->rutacomun; ?>jsi/js1206.js?v=4"></script>
+<script language="javascript" src="<?php echo $APP->rutacomun; ?>jsi/js1206.js?v=4a"></script>
 <script language="javascript" src="<?php echo $APP->rutacomun; ?>jsi/js1207.js?v=1"></script>
 <script language="javascript" src="<?php echo $APP->rutacomun; ?>jsi/js1208.js?v=2b"></script>
 <?php
@@ -1990,7 +2035,6 @@ if ($_REQUEST['boculta1205'] != 0) {
 }
 //Mostrar formulario para editar
 ?>
-<input id="masi05idproceso" name="masi05idproceso" type="hidden" value="<?php echo $_REQUEST['masi05idproceso']; ?>" />
 <label class="Label130"<?php echo $sOcultaConsec; ?>>
 <?php
 echo $ETI['masi05consec'];
@@ -2027,6 +2071,16 @@ echo $ETI['masi05id'];
 </label>
 <label class="Label90">
 <?php
+echo $ETI['masi05idproceso'];
+?>
+</label>
+<label class="Label220">
+<?php
+echo $html_masi05idproceso;
+?>
+</label>
+<label class="Label90">
+<?php
 echo $ETI['masi05estado'];
 ?>
 </label>
@@ -2042,7 +2096,7 @@ echo $ETI['masi05asunto'];
 
 <input id="masi05asunto" name="masi05asunto" type="text" value="<?php echo $_REQUEST['masi05asunto']; ?>" maxlength="250" class="L" placeholder="<?php echo $ETI['ing_campo'] . $ETI['masi05asunto']; ?>" />
 </label>
-<label class="txtAreaL">
+<label class="txtAreaEXTRA">
 <?php
 echo $ETI['masi05cuerpo'];
 ?>
@@ -2114,12 +2168,12 @@ echo $html_masi05idrelacion3;
 echo $ETI['masi05fecha'];
 ?>
 </label>
-<div class="Campo220">
+<div class="Campo250">
 <?php
 if ($bBloqueado) {
 	echo html_oculto('masi05fecha', $_REQUEST['masi05fecha'], fecha_desdenumero($_REQUEST['masi05fecha']));
 } else {
-	echo html_FechaEnNumero('masi05fecha', $_REQUEST['masi05fecha'], false, '', $iAgno, $iAgno + 1);
+	echo html_FechaEnNumero('masi05fecha', $_REQUEST['masi05fecha'], false, '', $iAgnoIni, $iAgnoFin);
 }
 ?>
 </div>
@@ -2128,7 +2182,7 @@ if (false) {
 	echo $objForma->htmlBotonSolo('bmasi05fecha_hoy', 'btMiniHoy', "fecha_AsignarNum('masi05fecha', " . $iHoy . ")", $ETI['bt_hoy']);
 }
 ?>
-<label class="Label130">
+<label class="Label90">
 <?php
 echo $ETI['masi05hora'];
 ?>
@@ -2220,173 +2274,15 @@ echo $html_masi05idusuario;
 <div id="div_masi05idusuario" class="L"><?php echo $masi05idusuario_rs; ?></div>
 <div class="salto1px"></div>
 </div>
-
-<div class="GrupoCampos520">
-<?php
-if ($bAplicaUnidadFuncional) {
-?>
-<label class="Label130">
-<?php
-echo $ETI['masi05unidadfunc'];
-?>
-</label>
-<label>
-<?php
-echo $html_masi05unidadfunc;
-?>
-</label>
-<div class="salto1px"></div>
-<?php
-} else {
-?>
 <input id="masi05unidadfunc" name="masi05unidadfunc" type="hidden" value="<?php echo $_REQUEST['masi05unidadfunc']; ?>" />
-<?php
-}
-?>
-<label class="Label130">
-<?php
-echo $ETI['masi05zona'];
-?>
-</label>
-<label>
-<?php
-echo $html_masi05zona;
-?>
-</label>
-<div class="salto1px"></div>
-<label class="Label130">
-<?php
-echo $ETI['masi05centro'];
-?>
-</label>
-<label>
-<div id="div_masi05centro">
-<?php
-echo $html_masi05centro;
-?>
-</div>
-</label>
-<div class="salto1px"></div>
-</div>
-<?php
-if ($bAplicaEscuela) {
-?>
-<div class="GrupoCampos450">
-<label class="Label130">
-<?php
-echo $ETI['masi05escuela'];
-?>
-</label>
-<label>
-<?php
-echo $html_masi05escuela;
-?>
-</label>
-<?php
-} else {
-?>
+<input id="masi05zona" name="masi05zona" type="hidden" value="<?php echo $_REQUEST['masi05zona']; ?>" />
+<input id="masi05centro" name="masi05centro" type="hidden" value="<?php echo $_REQUEST['masi05centro']; ?>" />
 <input id="masi05escuela" name="masi05escuela" type="hidden" value="<?php echo $_REQUEST['masi05escuela']; ?>" />
-<?php
-}
-?>
-<?php
-if ($bAplicaPrograma) {
-	echo html_salto();
-?>
-<label class="Label130">
-<?php
-echo $ETI['masi05programa'];
-?>
-</label>
-<label>
-<div id="div_masi05programa">
-<?php
-echo $html_masi05programa;
-?>
-</div>
-</label>
-<?php
-} else {
-?>
 <input id="masi05programa" name="masi05programa" type="hidden" value="<?php echo $_REQUEST['masi05programa']; ?>" />
-<?php
-}
-?>
-<?php
-if ($bAplicaEscuela) {
-	echo html_salto();
-?>
-</div>
-<?php
-}
-?>
-<?php
-if ($bAplicaPeriodo) {
-?>
-<div class="GrupoCampos450">
-<label class="Label130">
-<?php
-echo $ETI['masi05idperiodo'];
-?>
-</label>
-<label>
-<div id="div_masi05idperiodo">
-<?php
-echo $html_masi05idperiodo;
-?>
-</div>
-</label>
-<?php
-} else {
-?>
 <input id="masi05idperiodo" name="masi05idperiodo" type="hidden" value="<?php echo $_REQUEST['masi05idperiodo']; ?>" />
-<?php
-}
-if ($bAplicaCurso) {
-	echo html_salto();
-?>
-<label class="Label130">
-<?php
-echo $ETI['masi05curso'];
-?>
-</label>
-<label>
-<div id="div_masi05curso">
-<?php
-echo $html_masi05curso;
-?>
-</div>
-</label>
-<div class="salto1px"></div>
-<label class="Label130">
-<?php
-echo $ETI['masi05docente'];
-?>
-</label>
-<label>
-<div id="div_masi05docente">
-<?php
-echo $html_masi05docente;
-?>
-</div>
-</label>
-<?php
-} else {
-?>
 <input id="masi05curso" name="masi05curso" type="hidden" value="<?php echo $_REQUEST['masi05curso']; ?>" />
 <input id="masi05docente" name="masi05docente" type="hidden" value="<?php echo $_REQUEST['masi05docente']; ?>" />
-<?php
-}
-?>
-<?php
-if ($bAplicaPeriodo) {
-	echo html_salto();
-?>
-</div>
-<?php
-}
-echo html_salto();
-?>
+<div class="salto1px"></div>
 <div class="GrupoCampos">
 <label class="Label130">
 <?php
@@ -2479,8 +2375,29 @@ echo $ETI['masi06id'];
 </label>
 
 <div class="salto1px"></div>
-<div class="GrupoCampos450">
-<label class="Label90">
+<div class="GrupoCampos520">
+<?php
+if ($bAplicaUnidadFuncional) {
+?>
+<label class="Label160">
+<?php
+echo $ETI['masi06unidadfunc'];
+?>
+</label>
+<div id="div_masi06unidadfunc" class="field">
+<?php
+echo $html_masi06unidadfunc;
+?>
+</div>
+<?php
+echo html_salto();
+} else {
+?>
+<input id="masi06unidadfunc" name="masi06unidadfunc" type="hidden" value="<?php echo $_REQUEST['masi06unidadfunc']; ?>" />
+<?php
+}
+?>
+<label class="Label160">
 <?php
 echo $ETI['masi06zona'];
 ?>
@@ -2491,53 +2408,15 @@ echo $html_masi06zona;
 ?>
 </label>
 <div class="salto1px"></div>
-<label class="Label90">
+<label class="Label160">
 <?php
 echo $ETI['masi06centro'];
 ?>
 </label>
 <label>
-<div id="div_masi06centro">
+<div id="div_masi06centro" class="field">
 <?php
 echo $html_masi06centro;
-?>
-</div>
-</label>
-<div class="salto1px"></div>
-</div>
-
-<div class="GrupoCampos520">
-<label class="Label90">
-<?php
-echo $ETI['masi06escuela'];
-?>
-</label>
-<label>
-<?php
-echo $html_masi06escuela;
-?>
-</label>
-<div class="salto1px"></div>
-<label class="Label220">
-<?php
-echo $ETI['masi06nivelforma'];
-?>
-</label>
-<label class="Label220">
-<?php
-echo $html_masi06nivelforma;
-?>
-</label>
-<div class="salto1px"></div>
-<label class="Label90">
-<?php
-echo $ETI['masi06programa'];
-?>
-</label>
-<label>
-<div id="div_masi06programa">
-<?php
-echo $html_masi06programa;
 ?>
 </div>
 </label>
@@ -2570,44 +2449,165 @@ echo $html_masi06sexo;
 </div>
 
 <?php
-$sMuestraPeriodo = ' style="display:none;"';
-$sMuestraCurso = ' style="display:none;"';
-if ($bAplicaPeriodo) {
-	$sMuestraPeriodo = '';
+if ($bAplicaEscuela) {
+?>
+<div class="GrupoCampos520">
+<label class="Label160">
+<?php
+echo $ETI['masi06escuela'];
+?>
+</label>
+<label>
+<?php
+echo $html_masi06escuela;
+?>
+</label>
+<?php
 } else {
-	if ($bAplicaCurso) {
-		$sMuestraCurso = '';
-	}
+?>
+<input id="masi06escuela" name="masi06escuela" type="hidden" value="<?php echo $_REQUEST['masi06escuela']; ?>" />
+<?php
+}
+if ($bAplicaPrograma) {
+?>
+<label class="Label160">
+<?php
+echo $ETI['masi06nivelforma'];
+?>
+</label>
+<label>
+<?php
+echo $html_masi06nivelforma;
+?>
+</label>
+<div class="salto1px"></div>
+<label class="Label160">
+<?php
+echo $ETI['masi06programa'];
+?>
+</label>
+<label>
+<div id="div_masi06programa" class="field">
+<?php
+echo $html_masi06programa;
+?>
+</div>
+</label>
+<?php
+} else {
+?>
+<input id="masi06nivelforma" name="masi06nivelforma" type="hidden" value="<?php echo $_REQUEST['masi06nivelforma']; ?>" />
+<input id="masi06programa" name="masi06programa" type="hidden" value="<?php echo $_REQUEST['masi06programa']; ?>" />
+<?php
 }
 ?>
-<div class="GrupoCampos520"<?php echo $sMuestraPeriodo; ?>>
+<?php
+if ($bAplicaEscuela) {
+	echo html_salto();
+?>
+</div>
+<?php
+}
+?>
+
+<?php
+if ($bAplicaPeriodo) {
+?>
+<div class="GrupoCampos450">
 <label class="Label90">
 <?php
 echo $ETI['masi06idperiodo'];
 ?>
 </label>
 <label>
+<div id="div_masi06idperiodo" class="field">
 <?php
 echo $html_masi06idperiodo;
 ?>
+</div>
 </label>
-<div class="salto1px"></div>
-<label class="Label90"<?php echo $sMuestraCurso; ?>>
+<?php
+} else {
+?>
+<input id="masi06idperiodo" name="masi06idperiodo" type="hidden" value="<?php echo $_REQUEST['masi06idperiodo']; ?>" />
+<?php
+}
+if ($bAplicaCurso) {
+?>
+<label class="Label90">
 <?php
 echo $ETI['masi06curso'];
 ?>
 </label>
-<label<?php echo $sMuestraCurso; ?>>
-<div id="div_masi06curso">
+<label>
+<div id="div_masi06curso" class="field">
 <?php
 echo $html_masi06curso;
+echo html_salto();
 ?>
 </div>
 </label>
 <div class="salto1px"></div>
+<label class="Label90">
+<?php
+echo $ETI['masi06docente'];
+?>
+</label>
+<label>
+<div id="div_masi06docente">
+<?php
+echo $html_masi06docente;
+?>
 </div>
+</label>
+<?php
+} else {
+?>
+<input id="masi06curso" name="masi06curso" type="hidden" value="<?php echo $_REQUEST['masi06curso']; ?>" />
+<input id="masi06docente" name="masi06docente" type="hidden" value="<?php echo $_REQUEST['masi06docente']; ?>" />
+<?php
+}
+?>
+<?php
+if ($bAplicaPeriodo) {
+	echo html_salto();
+?>
+</div>
+<?php
+}
+?>
 
-<div class="salto1px"></div>
+<?php
+if ($bAplicaGrado) {
+?>
+<div class="GrupoCampos450">
+<label class="Label160">
+<?php
+echo $ETI['masi06agnogrado'];
+?>
+</label>
+<label class="Label90">
+<?php
+echo $html_masi06agnogrado;
+?>
+</label>
+<?php
+} else {
+?>
+<input id="masi06agnogrado" name="masi06agnogrado" type="hidden" value="<?php echo $_REQUEST['masi06agnogrado']; ?>" />
+<?php
+}
+?>
+<?php
+if ($bAplicaGrado) {
+	echo html_salto();
+?>
+</div>
+<?php
+}
+?>
+
+<div class="salto5px"></div>
 <label class="Label130">&nbsp;</label>
 <?php
 $sEstiloElimina = 'display:none;';
@@ -3086,7 +3086,7 @@ echo $ETI['msg_bfechainicia'];
 </label>
 <label class="Label250">
 <?php
-echo html_FechaEnNumero('bfechainicia', $_REQUEST['bfechainicia'], true, 'paginarf1205()');
+echo html_FechaEnNumero('bfechainicia', $_REQUEST['bfechainicia'], true, 'paginarf1205()', $iAgnoIni);
 ?>
 </label>
 <label class="Label130">
@@ -3096,7 +3096,7 @@ echo $ETI['msg_bfechafinal'];
 </label>
 <label class="Label250">
 <?php
-echo html_FechaEnNumero('bfechafinal', $_REQUEST['bfechafinal'], true, 'paginarf1205()');
+echo html_FechaEnNumero('bfechafinal', $_REQUEST['bfechafinal'], true, 'paginarf1205()', $iAgnoIni);
 ?>
 </label>
 <div class="salto1px"></div>
@@ -3105,12 +3105,12 @@ echo html_FechaEnNumero('bfechafinal', $_REQUEST['bfechafinal'], true, 'paginarf
 echo $ETI['msg_bunidadfunc'];
 ?>
 </label>
-<label>
+<div class="field">
 <?php
 echo $html_bunidadfunc;
+echo html_salto();
 ?>
-</label>
-<div class="salto1px"></div>
+</div>
 <label class="Label160">
 <?php
 echo $ETI['msg_bzona'];
@@ -3163,7 +3163,7 @@ echo $ETI['msg_bprograma'];
 ?>
 </label>
 <label>
-<div id="div_bprograma">
+<div id="div_bprograma" class="field">
 <?php
 echo $html_bprograma;
 ?>
@@ -3432,33 +3432,30 @@ if ($bMueveScroll) {
 <script language="javascript" src="<?php echo $APP->rutacomun; ?>js/jquery.autocomplete.js"></script>
 <script language="javascript" src="<?php echo $APP->rutacomun; ?>js/chosen.jquery.js"></script>
 <link rel="stylesheet" href="<?php echo $APP->rutacomun; ?>js/chosen.css" type="text/css" />
+<script language="javascript" src="<?php echo $APP->rutacomun; ?>jodit/jodit.js"></script>
+<link rel="stylesheet" href="<?php echo $APP->rutacomun; ?>jodit/jodit.css" type="text/css" />
 <?php
-if (false) {
+//if (false) {
 //}
 //if ($_REQUEST['paso'] == 0) {
 ?>
 <script language="javascript">
 	$().ready(function() {
-		$("#masi05idproceso").chosen({width:"100%"});
+		// $("#masi05idproceso").chosen({width:"100%"});
 		$("#masi05firma").chosen({width:"100%"});
-		$("#masi05unidadfunc").chosen({width:"100%"});
-		$("#masi05zona").chosen({width:"100%"});
-		$("#masi05centro").chosen({width:"100%"});
-		$("#masi05escuela").chosen({width:"100%"});
-		$("#masi05programa").chosen({width:"100%"});
-		$("#masi05tiponotifica").chosen({width:"100%"});
-		$("#bunidadfunc").chosen({width:"100%"});
-		$("#bzona").chosen({width:"100%"});
-		$("#bcentro").chosen({width:"100%"});
-		$("#bescuela").chosen({width:"100%"});
-		$("#bprograma").chosen({width:"100%"});
+		// $("#masi05tiponotifica").chosen({width:"100%"});
+	});
+	let editor = new Jodit('#masi05cuerpo',{
+		height: 400,
+		language: 'es',
+		removeButtons: ['file', 'video', 'print', 'about']
 	});
 </script>
 <?php
-}
+//}
 ?>
 <script language="javascript" src="ac_1205.js"></script>
 <script language="javascript" src="<?php echo $APP->rutacomun; ?>unad_todas2024v2.js"></script>
 <?php
 forma_piedepagina();
-
+// !TODO: Terminar de actualizar combos chosen, ajustar funciones en librería para envío de mensajes y función o librería que debe ejecutar el CRON

@@ -8,8 +8,11 @@
 function forma_InicioV4($XAJAX = NULL, $sNomModulo = '', $bIncluyePWA = false, $idSistema = 0)
 {
 	require './app.php';
-	$iPiel = iDefinirPiel($APP, 2);
-	$sRes = '<!DOCTYPE html><html><head>';
+	if (!function_exists('AUREA_Idioma()')) {
+		require_once $APP->rutacomun . 'libaurea.php';
+	}
+	$sIdioma = AUREA_Idioma();
+	$sRes = '<!DOCTYPE html><html lang="' . $sIdioma . '"><head>';
 	if ($XAJAX != NULL) {
 		echo $sRes;
 		$sRes = '';
@@ -27,7 +30,8 @@ function forma_InicioV4($XAJAX = NULL, $sNomModulo = '', $bIncluyePWA = false, $
 	$sRes = $sRes . '<title>' . $sNomModulo . 'Universidad Nacional Abierta y a Distancia - UNAD</title>';
 	$sRes = $sRes . '<meta charset="UTF-8">';
 	$sRes = $sRes . '<meta name="viewport" content="width=device-width, initial-scale=1.0">';
-	$sRes = $sRes . '<link href="' . $APP->rutacomun . 'css/favicon.ico" rel="shortcut icon" type="image/vnd.microsoft.icon" />';
+	$sRes = $sRes . '<link rel="icon" type="image/png" sizes="16x16" href="' . $APP->rutacomun . '/img/favicon-16x16.png">';
+	$sRes = $sRes . '<link rel="icon" type="image/png" sizes="32x32" href="' . $APP->rutacomun . '/img/favicon-32x32.png">';
 	$sRes = $sRes . '<link rel="stylesheet" href="' . $APP->rutacomun . 'css/formav2.css?v=2" type="text/css" />';
 	if ($bIncluyePWA) {
 		$sRes = $sRes . '<meta name="MobileOptimized" content="width">';
@@ -47,6 +51,10 @@ function forma_InicioV4($XAJAX = NULL, $sNomModulo = '', $bIncluyePWA = false, $
 		$sRes = $sRes . '<script language="javascript" src="' . $APP->rutacomun . 'js/bootstrap.min.js"></script>';
 		$sRes = $sRes . '<link rel="stylesheet" href="' . $APP->rutacomun . 'js/bootstrap.min.css" type="text/css" />';
 	}
+
+	$sRes = $sRes . '<script language="javascript" src="' . $APP->rutacomun . 'js/ctlerror.js"></script>';
+	$sRes = $sRes . '<link rel="stylesheet" href="' . $APP->rutacomun . 'css/ctlerror.css" type="text/css" />';
+
 	$sRes = $sRes . '<link rel="stylesheet" href="' . $APP->rutacomun . 'css/criticalPath.css" type="text/css" />';
 	$sRes = $sRes . '<link rel="stylesheet" href="' . $APP->rutacomun . 'css/principal.css" type="text/css" />';
 	$sRes = $sRes . '<link rel="stylesheet" href="' . $APP->rutacomun . 'unad_estilos2018.css" type="text/css" />';
@@ -113,14 +121,14 @@ function forma_cabeceraV4b($aRutas = array(), $aBotones = array(), $bConMenu = t
 	}
 	$aSistema = array('', '', '', '', '', 'PRESUPUESTO', '', 'FACTURACION', 'TESORERIA', 'CARTERA', 
 	'', '', '', '', '', '', 'CONSECUTIVOS', '', '', '', 
-	'', '', '', '', '', '', '', 'GRADOS', '', '', 
+	'', '', '', '', '', '', 'GD', 'GRADOS', 'ANALITICA', 'VISAE', 
 	'SAI', '', '', '', '', '', '', 'SIGTools', '', '', 
 	'', '', '', '', '', '', 'GAF', '', '', '', 
 	'MUMO17', '', '', '', '', '', '', '', '', '', 
 	'', '', '', '', '', '', '', '', '', '');
 	$aLogo = array('', '', '', '', '', 'presupuesto', '', 'facturacion', 'tesoreria', 'cartera', 
 	'', '', '', '', '', '', 'consecutivos', '', '', '', 
-	'', '', '', '', '', '', '', 'grados', '', '', 
+	'', '', '', '', '', '', 'gd', 'grados', 'analitica', 'sae', 
 	'sai', '', '', '', '', '', '', 'sig', '', '', 
 	'', '', '', '', '', '', 'aurea', '', '', '', 
 	'aurea', '', '', '', '', '', '', '', '', '', 
@@ -143,9 +151,6 @@ function forma_cabeceraV4b($aRutas = array(), $aBotones = array(), $bConMenu = t
 			break;
 		case 24: //C2
 			$sLogoSistema = '<img src="' . $APP->rutacomun . 'img/2023/c2.svg" alt=""><p>C2</p>';
-			break;
-		case 28: //ANALITICA
-			$sLogoSistema = '<img src="' . $APP->rutacomun . 'img/2023/analitica.svg" alt=""><p>ANALITICA</p>';
 			break;
 		case 36: //SIGMA
 			$sLogoSistema = '<img src="' . $APP->rutacomun . 'img/2023/sigma.svg" alt=""><p>SIGMA</p>';
@@ -316,13 +321,13 @@ function forma_cabeceraV4b($aRutas = array(), $aBotones = array(), $bConMenu = t
 		$sRes = $sRes . 'Cerrar';
 		$sRes = $sRes . '<i class="icon-closed"></i>';
 		$sRes = $sRes . '</button>';
-		$sRes = $sRes . '<i class="icon-warning"></i>';
+		$sRes = $sRes . '<i id="modal__title_icon" class="icon-warning"></i>';
 		$sRes = $sRes . '<p id="modal__title">Advertencia</p>';
 		$sRes = $sRes . '</div>';
 		$sRes = $sRes . '</div>';
 		$sRes = $sRes . '<div id="modal__body" class="modal__body">';
 		$sRes = $sRes . '</div>';
-		$sRes = $sRes . '<div class="modal__footer">';
+		$sRes = $sRes . '<div id="modal__footer" class="modal__footer">';
 		$sRes = $sRes . '<button id="boton__aceptar" class="btn-tertiary modal-close" type="button">';
 		$sRes = $sRes . '<i class="icon-check"></i>';
 		$sRes = $sRes . '<p id="boton__aceptar__title">Aceptar</p>';
@@ -352,7 +357,16 @@ function forma_cabeceraV4b($aRutas = array(), $aBotones = array(), $bConMenu = t
 function forma_mitad($idTercero = 0)
 {
 	require './app.php';
-	$iPiel = iDefinirPiel($APP, 2);
+	if (!function_exists('AUREA_Idioma()')) {
+		require_once $APP->rutacomun . 'libaurea.php';
+	}
+	$sIdioma = AUREA_Idioma();
+	$mensajes_todas = $APP->rutacomun . 'lg/lg_todas_' . $sIdioma . '.php';
+	if (!file_exists($mensajes_todas)) {
+		$mensajes_todas = $APP->rutacomun . 'lg/lg_todas_es.php';
+	}
+	require $mensajes_todas;
+
 	$sRes = '';
 	$sRes = $sRes . '</ul>';
 	$sRes = $sRes . '</section>';
@@ -361,44 +375,44 @@ function forma_mitad($idTercero = 0)
 	$sRes = $sRes . '<li class="options__item">';
 	$sRes = $sRes . '<a class="option">';
 	$sRes = $sRes . '<i class="iLightModeFill"></i>';
-	$sRes = $sRes . '<p>Accesibilidad</p>';
+	$sRes = $sRes . '<p>' . $ETI['menu_accesibilidad'] . '</p>';
 	$sRes = $sRes . '<i class="iNavigateNext"></i></a>';
 	$sRes = $sRes . '<div class="option-drop accesibilidad">';
 	$sRes = $sRes . '<ul>';
 	$sRes = $sRes . '<li>';
 	$sRes = $sRes . '<a id="boton-reinicio">';
 	$sRes = $sRes . '<i class="iRestart"></i>';
-	$sRes = $sRes . 'Reiniciar';
+	$sRes = $sRes . $ETI['menu_reiniciar'];
 	$sRes = $sRes . '</a>';
 	$sRes = $sRes . '</li>';
 	$sRes = $sRes . '<li>';
 	$sRes = $sRes . '<a id="boton-menos">';
 	$sRes = $sRes . '<i class="iZoomOut"></i>';
-	$sRes = $sRes . 'Reducir';
+	$sRes = $sRes . $ETI['menu_reducir'];
 	$sRes = $sRes . '</a>';
 	$sRes = $sRes . '</li>';
 	$sRes = $sRes . '<li>';
 	$sRes = $sRes . '<a id="boton-mas">';
 	$sRes = $sRes . '<i class="iZoomIn"></i>';
-	$sRes = $sRes . 'Aumentar';
+	$sRes = $sRes . $ETI['menu_aumentar'];
 	$sRes = $sRes . '</a>';
 	$sRes = $sRes . '</li>';
 	$sRes = $sRes . '<li>';
 	$sRes = $sRes . '<a id="boton-contraste">';
 	$sRes = $sRes . '<i class="iContrastMode"></i>';
-	$sRes = $sRes . 'Contrast';
+	$sRes = $sRes . $ETI['menu_contraste'];
 	$sRes = $sRes . '</a>';
 	$sRes = $sRes . '</li>';
 	$sRes = $sRes . '<li>';
 	$sRes = $sRes . '<a id="boton-oscuro">';
 	$sRes = $sRes . '<i class="iDarkModeFill"></i>';
-	$sRes = $sRes . 'Oscuro';
+	$sRes = $sRes . $ETI['menu_oscuro'];
 	$sRes = $sRes . '</a>';
 	$sRes = $sRes . '</li>';
 	$sRes = $sRes . '<li>';
 	$sRes = $sRes . '<a id="boton-claro">';
 	$sRes = $sRes . '<i class="iLightModeFill"></i>';
-	$sRes = $sRes . 'Claro';
+	$sRes = $sRes . $ETI['menu_claro'];
 	$sRes = $sRes . '</a>';
 	$sRes = $sRes . '</li>';
 	$sRes = $sRes . '</ul>';
@@ -407,13 +421,13 @@ function forma_mitad($idTercero = 0)
 	$sRes = $sRes . '<li class="options__item">';
 	$sRes = $sRes . '<a class="option">';
 	$sRes = $sRes . '<i class="iHelpFill"></i>';
-	$sRes = $sRes . '<p>Ayuda</p>';
+	$sRes = $sRes . '<p>' . $ETI['msg_ayuda'] . '</p>';
 	$sRes = $sRes . '<i class="iNavigateNext"></i>';
 	$sRes = $sRes . '</a>';
 	$sRes = $sRes . '<div class="option-drop ayuda">';
 	$sRes = $sRes . '<ul>';
-	$sRes = $sRes . '<li><a href="./unadayudas.php">Manuales</a></li>';
-	$sRes = $sRes . '<li><a href="./acercade.php">Acerca de...</a></li>';
+	$sRes = $sRes . '<li><a href="./unadayudas.php">' . $ETI['menu_manuales'] . '</a></li>';
+	$sRes = $sRes . '<li><a href="./acercade.php">' . $ETI['menu_acerdade'] . '</a></li>';
 	$sRes = $sRes . '</ul>';
 	$sRes = $sRes . '</div>';
 	$sRes = $sRes . '</li>';
@@ -421,7 +435,7 @@ function forma_mitad($idTercero = 0)
 		$sRes = $sRes . '<li class="options__item">';
 		$sRes = $sRes . '<a class="option" href="./salir.php">';
 		$sRes = $sRes . '<i class="iLogout"></i>';
-		$sRes = $sRes . '<p>Salir</p>';
+		$sRes = $sRes . '<p>' . $ETI['menu_salir'] . '</p>';
 		$sRes = $sRes . '</a>';
 		$sRes = $sRes . '</li>';
 	}
@@ -430,6 +444,7 @@ function forma_mitad($idTercero = 0)
 	$sRes = $sRes . '</div>';
 	$sRes = $sRes . '</nav>';
 	$sRes = $sRes . '<main>';
+	$sRes = $sRes . '<section id="lang-config" class="hidden" aria-hidden="true" data-lang="' . $sIdioma . '" style="display: none"></section>';
 	//
 	echo $sRes;
 }
@@ -465,11 +480,11 @@ function forma_piedepagina($bConTiempo = true, $sAdd = '')
 			$sRes = $sRes . 'Sede nacional Jos&eacute; Celestino Mutis: <a href="https://goo.gl/maps/9vSBgNcPa6SKYo7HA" target="_blank">Calle 14 sur No. 14 - 23</a>';
 			$sRes = $sRes . '</p>';
 			$sRes = $sRes . '<p>';
-			$sRes = $sRes . 'PBX: <a href="tel:+576013443700">(+57 601) 344 3700</a> Bogotá D.C., Colombia';
+			$sRes = $sRes . 'PBX: <a href="tel:+573232641617">(+57) 323 264 16 17</a> Bogot&aacute; D.C., Colombia';
 			$sRes = $sRes . '</p>';
-			$sRes = $sRes . '<p>';
-			$sRes = $sRes . 'Línea nacional gratuita desde Colombia: <a href="tel:018000115223">01 8000 115 223</a>';
-			$sRes = $sRes . '</p>';
+			//$sRes = $sRes . '<p>';
+			//$sRes = $sRes . 'Línea nacional gratuita desde Colombia: <a href="tel:018000115223">01 8000 115 223</a>';
+			//$sRes = $sRes . '</p>';
 			$sRes = $sRes . '<p>';
 			$sRes = $sRes . 'Atenci&oacute;n al usuario: <a href="mailto:atencionalusuario@unad.edu.co">atencionalusuario@unad.edu.co</a>';
 			$sRes = $sRes . '</p>';
@@ -480,7 +495,6 @@ function forma_piedepagina($bConTiempo = true, $sAdd = '')
 	}
 	$sRes = $sRes . '</div>';
 	$sRes = $sRes . '</footer>';
-	$sRes = $sRes . '<link href="https://fonts.googleapis.com/css?family=Open+Sans" rel="stylesheet">';
 	$sRes = $sRes . '<script type="text/javascript">';
 	// Script del Modal Confirm
 	$sRes = $sRes . 'var ModalDialogConfirm = function(callback){';
@@ -496,6 +510,7 @@ function forma_piedepagina($bConTiempo = true, $sAdd = '')
 	$sRes = $sRes . '};';
 	$sRes = $sRes . '</script>';
 	$sRes = $sRes . '<script src="' . $APP->rutacomun . 'js/aurea2024.js"></script>';
+	$sRes = $sRes . '<script src="' . $APP->rutacomun . 'js/modal.js"></script>';
 	$sRes = $sRes . '<script type="text/javascript">';
 	$sRes = $sRes . 'if (window.history.replaceState) {';
 	$sRes = $sRes . 'window.history.replaceState(null, null, window.location.href);';
@@ -507,4 +522,3 @@ function forma_piedepagina($bConTiempo = true, $sAdd = '')
 	// Fin
 	echo $sRes;
 }
-

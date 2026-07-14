@@ -867,7 +867,7 @@ function cadena_ResuelveParaHTML($sBase)
 }
 function cadena_Validar($semilla, $bTolerante = false)
 {
-	$sSignos = '.,;()!¡$=+-_$?¿|°*[]{}~"@:%€' . "'";
+	$sSignos = '.,;()!¡$=+-_$?¿|°*[]{}~"@:%€&' . "'";
 	$permitidos = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890ñáéíóúüÑÁÉÍÓÚÜ ' . $sSignos . "\r\n";
 	if ($bTolerante) {
 		$permitidos = $permitidos . '-<>/';

@@ -9,7 +9,7 @@ $err_level = error_reporting(E_ALL);
 error_reporting($err_level);
 ini_set("display_errors", 1);
 //ini_set("error_log", "/var/www/aurea_www/campus/panel/log.htm"); // unad florida
-ini_set("error_log", "/var/www/panel/log.htm"); // campus colombia
+ini_set("error_log", "/var/www/panel/log.php"); // campus colombia
 set_time_limit(0);
 
 require './app.php';
@@ -24,7 +24,7 @@ if ($APP->dbpuerto!=''){$objDB->dbPuerto=$APP->dbpuerto;}
 if (isset($APP->dbmodelo) == 0){
 	$APP->dbmodelo = 'M';
 }
-$versionejecutable = 9468;
+$versionejecutable = 9934;
 $procesos=0;
 $suspende=0;
 $error=0;
@@ -59,6 +59,7 @@ echo "Version Actual de la base de datos ".$dbversion.'<br>';
 echo '<ul style="margin-top: 10px;">';
 if (true){
 	$u01="INSERT INTO unad01sistema (unad01id, unad01nombre, unad01descripcion, unad01publico, unad01instalado, unad01mayor, unad01menor, unad01correccion) VALUES ";
+	$u01b="INSERT INTO unad01sistema (unad01id, unad01nombre, unad01descripcion, unad01publico, unad01instalado, unad01mayor, unad01menor, unad01correccion, unad01ruta, unad01orden) VALUES ";
 	$u03="INSERT INTO unad03permisos (unad03id, unad03nombre) VALUES ";
 	$u04="INSERT INTO unad04modulopermisos (unad04idmodulo, unad04idpermiso, unad04vigente) VALUES ";
 	$u05="INSERT INTO unad05perfiles (unad05id, unad05nombre) VALUES ";
@@ -621,19 +622,604 @@ if (($dbversion>9400)&&($dbversion<9501)){
 	if ($dbversion==9466){$sSQL=$objDB->sSQLCrearIndice('visa37convsubtipo', 'visa37convsubtipo_id', 'visa37idtipologia, visa37consec', true);}
 	if ($dbversion==9467){$sSQL=$objDB->sSQLCrearIndice('visa37convsubtipo', 'visa37convsubtipo_padre', 'visa37idtipologia');}
 
+	if ($dbversion==9468){$sSQL="CREATE TABLE repo22permsem (repo22idcicloacad int NOT NULL, repo22idescuela int NOT NULL, repo22idsnies int NOT NULL, repo22idprograma int NOT NULL, repo22idzona int NOT NULL, repo22idcentro int NOT NULL, repo22cicloorigen int NOT NULL, repo22matricula int NOT NULL DEFAULT 0, repo22cambioprog int NOT NULL DEFAULT 0, repo22egresando int NOT NULL DEFAULT 0, repo22graduado int NOT NULL DEFAULT 0, repo22permanece int NOT NULL DEFAULT 0, repo22ausente int NOT NULL DEFAULT 0, repo22retirado int NOT NULL DEFAULT 0)";}
+	if ($dbversion==9469){$sSQL="ALTER TABLE repo22permsem ADD PRIMARY KEY(repo22idcicloacad, repo22idescuela, repo22idsnies, repo22idprograma, repo22idzona, repo22idcentro, repo22cicloorigen)";}
+	//3 - mar - 2026
+	if ($dbversion==9470){$sSQL="agregamodulo|3721|37|Histórico de variables|1|2|3|4|5|6|8";}
+	if ($dbversion==9471){$sSQL=$u09."(3721, 1, 'Histórico de variables', 'sigthistoricovar.php', 3701, 3721, 'S', '', '')";}
+
+	if ($dbversion==9472){$sSQL="CREATE TABLE cart15recaudomasivo (cart15consec int NOT NULL, cart15id int NOT NULL DEFAULT 0, cart15vigencia int NOT NULL DEFAULT 0, cart15idtiporecaudo int NOT NULL DEFAULT 0, cart15fecha int NOT NULL DEFAULT 0, cart15cerrado int NOT NULL DEFAULT 0, cart15idzona int NOT NULL DEFAULT 0, cart15idsede int NOT NULL DEFAULT 0, cart15concepto Text NULL, cart15idcuenta int NOT NULL DEFAULT 0, cart15idformarec int NOT NULL DEFAULT 0, cart15idrecini int NOT NULL DEFAULT 0, cart15idrecfin int NOT NULL DEFAULT 0, cart15idusuario int NOT NULL DEFAULT 0)";}
+	if ($dbversion==9473){$sSQL="ALTER TABLE cart15recaudomasivo ADD PRIMARY KEY(cart15id)";}
+	if ($dbversion==9474){$sSQL=$objDB->sSQLCrearIndice('cart15recaudomasivo', 'cart15recaudomasivo_id', 'cart15consec', true);}
+	if ($dbversion==9475){$sSQL="agregamodulo|915|9|Recaudos masivos|1|2|3|4|5|6|8";}
+	if ($dbversion==9476){$sSQL=$u09."(915, 1, 'Recaudos masivos', 'cartrecmasivo.php', 702, 915, 'S', '', '')";}
+	if ($dbversion==9477){$sSQL="CREATE TABLE cart16recaudoitems (cart16idrecmasivo int NOT NULL, cart16consec int NOT NULL, cart16id int NOT NULL DEFAULT 0, cart16idtercero int NOT NULL DEFAULT 0, cart16vrrecaudo Decimal(15,2) NULL DEFAULT 0, cart16detalle Text NULL, cart16idrecaudo int NOT NULL DEFAULT 0, cart16consecrec int NOT NULL DEFAULT 0, cart16iditem int NOT NULL DEFAULT 0, cart16aplicado int NOT NULL DEFAULT 0, cart16idrecaplica int NOT NULL DEFAULT 0, cart16idformapago int NOT NULL DEFAULT 0)";}
+	if ($dbversion==9478){$sSQL="ALTER TABLE cart16recaudoitems ADD PRIMARY KEY(cart16id)";}
+	if ($dbversion==9479){$sSQL=$objDB->sSQLCrearIndice('cart16recaudoitems', 'cart16recaudoitems_id', 'cart16idrecmasivo, cart16consec', true);}
+	if ($dbversion==9480){$sSQL=$objDB->sSQLCrearIndice('cart16recaudoitems', 'cart16recaudoitems_padre', 'cart16idrecmasivo');}
+	if ($dbversion==9481){$sSQL="agregamodulo|916|9|Recaudo - items|1|2|3|4|5|6|8";}
+	//4 - mar - 2026
+	// 9482 - 9485 - Queda libre 
+	if ($dbversion==9486){$sSQL="agregamodulo|1570|30|Equipos de trabajo - Perfiles|1|2|3|4|5|6";}
+
+	if ($dbversion==9487){$sSQL="CREATE TABLE even67eventocategorias (even67idevento int NOT NULL, even67idcategoria int NOT NULL, even67id int NOT NULL DEFAULT 0, even67registromax int NOT NULL DEFAULT 0, even67gestionagrupo int NOT NULL DEFAULT 0)";}
+	if ($dbversion==9488){$sSQL="ALTER TABLE even67eventocategorias ADD PRIMARY KEY(even67id)";}
+	if ($dbversion==9489){$sSQL=$objDB->sSQLCrearIndice('even67eventocategorias', 'even67eventocategorias_id', 'even67idevento, even67idcategoria', true);}
+	if ($dbversion==9490){$sSQL=$objDB->sSQLCrearIndice('even67eventocategorias', 'even67eventocategorias_padre', 'even67idevento');}
+	if ($dbversion==9491){$sSQL="agregamodulo|1967|19|Categorias|1|2|3|4|5|6|8";}
+	if ($dbversion==9492){$sSQL="CREATE TABLE even66eventogrupos (even66idevento int NOT NULL, even66idcategoria int NOT NULL, even66idgrupo int NOT NULL, even66idsubgrupo int NOT NULL, even66id int NOT NULL DEFAULT 0, even66gestionatamano int NOT NULL DEFAULT 0, even66cantmin int NOT NULL DEFAULT 0, even66cantmax int NOT NULL DEFAULT 0)";}
+	if ($dbversion==9493){$sSQL="ALTER TABLE even66eventogrupos ADD PRIMARY KEY(even66id)";}
+	if ($dbversion==9494){$sSQL=$objDB->sSQLCrearIndice('even66eventogrupos', 'even66eventogrupos_id', 'even66idevento, even66idcategoria, even66idgrupo, even66idsubgrupo', true);}
+	if ($dbversion==9495){$sSQL=$objDB->sSQLCrearIndice('even66eventogrupos', 'even66eventogrupos_padre', 'even66idevento');}
+	if ($dbversion==9496){$sSQL="agregamodulo|1966|19|Grupos|1|2|3|4|5|6|8";}
+	if ($dbversion==9497){$sSQL="CREATE TABLE even63grupoeventos (even63consec int NOT NULL, even63id int NOT NULL DEFAULT 0, even63idcategoria int NOT NULL DEFAULT 0, even63nombre varchar(100) NULL, even63activo int NOT NULL DEFAULT 0, even63orden int NOT NULL DEFAULT 0)";}
+	if ($dbversion==9498){$sSQL="ALTER TABLE even63grupoeventos ADD PRIMARY KEY(even63id)";}
+	if ($dbversion==9499){$sSQL=$objDB->sSQLCrearIndice('even63grupoeventos', 'even63grupoeventos_id', 'even63consec', true);}
+	if ($dbversion==9500){$sSQL="agregamodulo|1963|19|Grupos para eventos|1|2|3|4|5|6|8";}
 }
 if (($dbversion>9500)&&($dbversion<9601)){
-}
+	if ($dbversion==9501){$sSQL=$u09."(1963, 1, 'Grupos para eventos', 'evengrupos.php', 0, 1963, 'S', '', '')";}
+	if ($dbversion==9502){$sSQL="CREATE TABLE even64subgrupos (even64idgrupo int NOT NULL, even64consec int NOT NULL, even64id int NOT NULL DEFAULT 0, even64nombre varchar(100) NULL, even64activo int NOT NULL DEFAULT 0)";}
+	if ($dbversion==9503){$sSQL="ALTER TABLE even64subgrupos ADD PRIMARY KEY(even64id)";}
+	if ($dbversion==9504){$sSQL=$objDB->sSQLCrearIndice('even64subgrupos', 'even64subgrupos_id', 'even64idgrupo, even64consec', true);}
+	if ($dbversion==9505){$sSQL=$objDB->sSQLCrearIndice('even64subgrupos', 'even64subgrupos_padre', 'even64idgrupo');}
+	if ($dbversion==9506){$sSQL="agregamodulo|1964|19|Subgrupos|1|2|3|4|5|6|8";}
+	if ($dbversion==9507){$sSQL="CREATE TABLE even65categoriagrupo (even65consec int NOT NULL, even65id int NOT NULL DEFAULT 0, even65nombre varchar(100) NULL, even65activo int NOT NULL DEFAULT 0, even65porequipo int NOT NULL DEFAULT 0)";}
+	if ($dbversion==9508){$sSQL="ALTER TABLE even65categoriagrupo ADD PRIMARY KEY(even65id)";}
+	if ($dbversion==9509){$sSQL=$objDB->sSQLCrearIndice('even65categoriagrupo', 'even65categoriagrupo_id', 'even65consec', true);}
+	if ($dbversion==9510){$sSQL="agregamodulo|1965|19|Categorias para grupos|1|2|3|4|5|6|8";}
+	if ($dbversion==9511){$sSQL=$u09."(1965, 1, 'Categorias para grupos', 'evencatgrupos.php', 0, 1965, 'S', '', '')";}
+	if ($dbversion==9512) {$sSQL="UPDATE unad02modulos SET unad02nombre='Confirmación de recaudos - [3047]', unad02idsistema=9 WHERE unad02id=890";}
+
+	if ($dbversion==9513){$sSQL="DROP TABLE bita30equipoperfil";}
+	if ($dbversion==9514){$sSQL="CREATE TABLE bita70equipoperfil (bita70idequipotrab int NOT NULL, bita70idperfil int NOT NULL, bita70id int NOT NULL DEFAULT 0, bita70activa int NOT NULL DEFAULT 0)";}
+	if ($dbversion==9515){$sSQL="ALTER TABLE bita70equipoperfil ADD PRIMARY KEY(bita70id)";}
+	if ($dbversion==9516){$sSQL=$objDB->sSQLCrearIndice('bita70equipoperfil', 'bita70equipoperfil_id', 'bita70idequipotrab, bita70idperfil', true);}
+	if ($dbversion==9517){$sSQL=$objDB->sSQLCrearIndice('bita70equipoperfil', 'bita70equipoperfil_padre', 'bita70idequipotrab');}
+	// 6 - mar - 2026 
+	if ($dbversion==9518){$sSQL=$objDB->sSQLCrearIndice('core16actamatricula', 'core16actamatricula_procesado', 'core16procesado');}
+	if ($dbversion==9519){$sSQL=$objDB->sSQLCrearIndice('core16actamatricula', 'core16actamatricula_errmat', 'core16errormatricula');}
+	if ($dbversion==9520){$sSQL=$objDB->sSQLCrearIndice('core16actamatricula', 'core16actamatricula_periodo', 'core16peraca');}
+	if ($dbversion==9521){$sSQL=$objDB->sSQLCrearIndice('core16actamatricula', 'core16actamatricula_cron', 'core16procesado, core16errormatricula, core16tipomatricula');}
+	if ($dbversion==9522){$sSQL=$objDB->sSQLCrearIndice('ofer08oferta', 'ofer08oferta_director', 'ofer08idacomanamento');}
+
+	if ($dbversion==9523){$sSQL="CREATE TABLE gcmo24rangovariables (gcmo24consec int NOT NULL, gcmo24id int NOT NULL DEFAULT 0, gcmo24nombre varchar(100) NULL, gcmo24activo int NOT NULL DEFAULT 0, gcmo24orden int NOT NULL DEFAULT 0)";}
+	if ($dbversion==9524){$sSQL="ALTER TABLE gcmo24rangovariables ADD PRIMARY KEY(gcmo24id)";}
+	if ($dbversion==9525){$sSQL=$objDB->sSQLCrearIndice('gcmo24rangovariables', 'gcmo24rangovariables_id', 'gcmo24consec', true);}
+	if ($dbversion==9526){$sSQL="agregamodulo|3724|37|Rangos para variables|1|2|3|4|5|6|8";}
+	if ($dbversion==9527){$sSQL=$u09."(3724, 1, 'Rangos para variables', 'gcmorangovariables.php', 2, 3724, 'S', '', '')";}
+	if ($dbversion==9528){$sSQL="CREATE TABLE gcmo25rangovaritems (gcmo25idrango int NOT NULL, gcmo25consec int NOT NULL, gcmo25id int NOT NULL DEFAULT 0, gcmo25nombre varchar(100) NULL, gcmo25activo int NOT NULL DEFAULT 0, gcmo25orden int NOT NULL DEFAULT 0)";}
+	if ($dbversion==9529){$sSQL="ALTER TABLE gcmo25rangovaritems ADD PRIMARY KEY(gcmo25id)";}
+	if ($dbversion==9530){$sSQL=$objDB->sSQLCrearIndice('gcmo25rangovaritems', 'gcmo25rangovaritems_id', 'gcmo25idrango, gcmo25consec', true);}
+	if ($dbversion==9531){$sSQL=$objDB->sSQLCrearIndice('gcmo25rangovaritems', 'gcmo25rangovaritems_padre', 'gcmo25idrango');}
+	if ($dbversion==9532){$sSQL="agregamodulo|3725|37|Rango para variables-items|1|2|3|4|5|6|8";}
+	if ($dbversion==9533){$sSQL="CREATE TABLE gcmo26rangoetario (gcmo26consec int NOT NULL, gcmo26id int NOT NULL DEFAULT 0, gcmo26nombre varchar(100) NULL, gcmo26activo int NOT NULL DEFAULT 0, gcmo26orden int NOT NULL DEFAULT 0)";}
+	if ($dbversion==9534){$sSQL="ALTER TABLE gcmo26rangoetario ADD PRIMARY KEY(gcmo26id)";}
+	if ($dbversion==9535){$sSQL=$objDB->sSQLCrearIndice('gcmo26rangoetario', 'gcmo26rangoetario_id', 'gcmo26consec', true);}
+	if ($dbversion==9536){$sSQL="agregamodulo|3726|37|Rangos etarios|1|2|3|4|5|6|8";}
+	if ($dbversion==9537){$sSQL=$u09."(3726, 1, 'Rangos etarios', 'gcmorangoetario.php', 2, 3726, 'S', '', '')";}
+	if ($dbversion==9538){$sSQL="CREATE TABLE gcmo27rangoetarioitems (gcmo27idrango int NOT NULL, gcmo27consec int NOT NULL, gcmo27id int NOT NULL DEFAULT 0, gcmo27nombre varchar(100) NULL, gcmo27activo int NOT NULL DEFAULT 0, gcmo27orden int NOT NULL DEFAULT 0, gcmo27edadminima int NOT NULL DEFAULT 0, gcmo27edadmaxima int NOT NULL DEFAULT 0)";}
+	if ($dbversion==9539){$sSQL="ALTER TABLE gcmo27rangoetarioitems ADD PRIMARY KEY(gcmo27id)";}
+	if ($dbversion==9540){$sSQL=$objDB->sSQLCrearIndice('gcmo27rangoetarioitems', 'gcmo27rangoetarioitems_id', 'gcmo27idrango, gcmo27consec', true);}
+	if ($dbversion==9541){$sSQL=$objDB->sSQLCrearIndice('gcmo27rangoetarioitems', 'gcmo27rangoetarioitems_padre', 'gcmo27idrango');}
+	if ($dbversion==9542){$sSQL="agregamodulo|3727|37|Rangos etarios - items|1|2|3|4|5|6|8";}
+
+	if ($dbversion==9543){$sSQL="ALTER TABLE olab77consolidadocp DROP PRIMARY KEY";}
+	if ($dbversion==9544){$sSQL="ALTER TABLE olab77consolidadocp ADD PRIMARY KEY(olab77id)";}
+	if ($dbversion==9545){$sSQL=$objDB->sSQLCrearIndice('olab77consolidadocp', 'olab77consolidadocp_id', 'olab77idmatricula', true);}
+	// 9 - mar - 2026
+	if ($dbversion==9546){$sSQL="add_campos|grad25tipoanexoproyecto|grad25idprograma int NOT NULL DEFAULT 0";}	
+	// 12 -mar - 2026
+	if ($dbversion==9547){$sSQL="add_campos|cttc37minutas|cttc37idbanco int NOT NULL DEFAULT 0|cttc37idcuentabanco int NOT NULL DEFAULT 0";}
+	if ($dbversion==9548){$sSQL="add_campos|teso34planpagodet|teso34porcamoritzar Decimal(15,2) NULL DEFAULT 0|teso34valoramortizar Decimal(15,2) NULL DEFAULT 0|teso34idbanco int NOT NULL DEFAULT 0|teso34idcuentabanco int NOT NULL DEFAULT 0|teso34numpago int NOT NULL DEFAULT 0|teso34agno int NOT NULL DEFAULT 0|teso34mes int NOT NULL DEFAULT 0";}
+	if ($dbversion==9549){$sSQL=$objDB->sSQLCrearIndice('teso34planpagodet', 'teso34planpagodet_agno', 'teso34agno');}
+	if ($dbversion==9550){$sSQL=$objDB->sSQLCrearIndice('teso34planpagodet', 'teso34planpagodet_mes', 'teso34mes');}
+	
+	if ($dbversion==9551){$sSQL="CREATE TABLE even61equipos (even61idevento int NOT NULL, even61consec int NOT NULL, even61id int NOT NULL DEFAULT 0, even61idlider int NOT NULL DEFAULT 0, even61nombre varchar(100) NULL, even61idcategoria int NOT NULL DEFAULT 0, even61idgrupo int NOT NULL DEFAULT 0, even61idsubgrupo int NOT NULL DEFAULT 0, even61estado int NOT NULL DEFAULT 0, even61numinvitados int NOT NULL DEFAULT 0, even61numparticipantes int NOT NULL DEFAULT 0, even61fechaconforma int NOT NULL DEFAULT 0, even61fecharatifica int NOT NULL DEFAULT 0)";}
+	if ($dbversion==9552){$sSQL="ALTER TABLE even61equipos ADD PRIMARY KEY(even61id)";}
+	if ($dbversion==9553){$sSQL=$objDB->sSQLCrearIndice('even61equipos', 'even61equipos_id', 'even61idevento, even61consec', true);}
+	if ($dbversion==9554){$sSQL="agregamodulo|1961|19|Equipos|1|2|3|4|5|6|8";}
+	if ($dbversion==9555){$sSQL="CREATE TABLE even62miembroequipo (even62idequipo int NOT NULL, even62idtercero int NOT NULL, even62id int NOT NULL DEFAULT 0, even62idevento int NOT NULL DEFAULT 0, even62fechainvita int NOT NULL DEFAULT 0, even62fechaacepta int NOT NULL DEFAULT 0)";}
+	if ($dbversion==9556){$sSQL="ALTER TABLE even62miembroequipo ADD PRIMARY KEY(even62idequipo, even62idtercero)";}
+	if ($dbversion==9557){$sSQL=$objDB->sSQLCrearIndice('even62miembroequipo', 'even62miembroequipo_padre', 'even62idequipo');}
+	if ($dbversion==9558){$sSQL="agregamodulo|1962|19|Miembros|1|2|3|4|5|6";}
+	// 13 de mar - 2026
+	if ($dbversion==9559){$sSQL="add_campos|inve01bodega|inve01zona int NOT NULL DEFAULT 0|inve01centro int NOT NULL DEFAULT 0";}
+	if ($dbversion==9560){$sSQL="add_campos|inve13almacenistas|inve13fechafinal int NOT NULL DEFAULT 0| inve13activo int NOT NULL DEFAULT 1|inve13ifechaini int NOT NULL DEFAULT 0";}
+	if ($dbversion==9561){$sSQL="add_campos|nico02centrocosto|nico02orden int NOT NULL DEFAULT 0|nico02unidadfunc int NOT NULL DEFAULT 0|nico02escuela int NOT NULL DEFAULT 0|nico02programa int NOT NULL DEFAULT 0|nico02zona int NOT NULL DEFAULT 0|nico02centro int NOT NULL DEFAULT 0";}
+	if ($dbversion==9562){$sSQL=$u96."(2935,0,'Borrador',100),(2935,1,'Abierta',101),
+	(2935,5,'Verificación de Requisitos',105),(2935,11,'Legalización',111),
+	(2935,15,'Pruebas de Ingreso',115),(2935,21,'Selección de Aspirantes',121),
+	(2935,25,'Admisión',125),(2935,31,'Cerrada',131),
+	(2940,0,'Borrador',100),(2940,1,'Preinscripción',101),
+	(2940,3,'Devolución de documentos',103),(2940,5,'Inscrito',105),
+	(2940,7,'Admitido',107),(2940,8,'Lista de espera',108),
+	(2940,9,'No admitido',109),(2940,11,'Desistido',111),
+	(2940,17,'Cupo confirmado',117)";}
+	//16 de mar - 2026
+	if ($dbversion==9563){$sSQL="CREATE TABLE corg37pruebarango (corg37idprueba int NOT NULL, corg37consec int NOT NULL, corg37id int NOT NULL DEFAULT 0, corg37base int NOT NULL DEFAULT 0, corg37tope int NOT NULL DEFAULT 0, corg37nivel int NOT NULL DEFAULT 0)";}
+	if ($dbversion==9564){$sSQL="ALTER TABLE corg37pruebarango ADD PRIMARY KEY(corg37id)";}
+	if ($dbversion==9565){$sSQL=$objDB->sSQLCrearIndice('corg37pruebarango', 'corg37pruebarango_id', 'corg37idprueba, corg37consec', true);}
+	if ($dbversion==9566){$sSQL=$objDB->sSQLCrearIndice('corg37pruebarango', 'corg37pruebarango_padre', 'corg37idprueba');}
+	if ($dbversion==9567){$sSQL="agregamodulo|4737|22|Prueba idioma - rango|1|2|3|4|5|6|8";}
+	if ($dbversion==9568){$sSQL="add_campos|corg35certidioma|corg35fecharadicado int NOT NULL DEFAULT 0";}
+	//	$u96="INSERT INTO unad96estado (unad96idmodulo, unad96id, unad96nombre, unad96etiqueta) VALUES ";
+	if ($dbversion==9569){$sSQL="UPDATE unad96estado SET unad96nombre='En proceso de pago' WHERE unad96idmodulo=4735 AND unad96id=5";}
+	if ($dbversion==9570){$sSQL="ALTER TABLE visa37convsubtipo CHANGE visa37nombre visa37nombre VARCHAR(100)";}
+	//17 de mar - 2026
+	if ($dbversion==9571){$sSQL="add_campos|even61equipos|even61idorigen int NOT NULL DEFAULT 0|even61idbanner int NOT NULL DEFAULT 0|even62emp_1 varchar(100) NULL|even61emp_2 varchar(250) NULL|even61emp_3 int NOT NULL DEFAULT 0|even61emp_4 int NOT NULL DEFAULT 0|even61emp_5 int NOT NULL DEFAULT 0|even61emp_6 varchar(200) NULL";}
+	if ($dbversion==9572){$sSQL="add_campos|even62miembroequipo|even62idorigen int NOT NULL DEFAULT 0|even62idcertmedico int NOT NULL DEFAULT 0|even62preg_1 int NOT NULL DEFAULT 0|even62preg_2 int NOT NULL DEFAULT 0|even62preg_3 varchar(200) NULL";}
+
+	if ($dbversion==9573){$sSQL="add_campos|comp01solicitud|comp01fecharadicado int NOT NULL DEFAULT 0";}
+	if ($dbversion==9574){$sSQL="UPDATE comp01solicitud SET comp01fecharadicado=comp01fecha WHERE comp01estado IN (7, 11)";}
+	//18 - mar - 2026
+	if ($dbversion==9575){$sSQL=$u04."(4735, 17, 'S'), (4735, 1707, 'S')";}
+	if ($dbversion==9576){$sSQL=$u09."(1961, 1, 'Equipos', 'evenequipos.php', 1901, 1961, 'S', '', '')";}
+	//19 - mar - 2026
+	if ($dbversion==9577){$sSQL="add_campos|corg35certidioma|corg35idproducto int NOT NULL DEFAULT 0|corg35vigfactura int NOT NULL DEFAULT 0|corg35idfactura int NOT NULL DEFAULT 0|corg35vrpagado int NOT NULL DEFAULT 0";}
+	if ($dbversion==9578){$sSQL="add_campos|core01estprograma|core01bloqueado int NOT NULL DEFAULT 0";}
+	if ($dbversion==9579){$sSQL="DROP TABLE masi73estadomensaje";}
+	if ($dbversion==9580){$sSQL=$u96."(1205, 0, 'Borrador', 100), (1205, 3, 'Completo', 103), (1205, 7, 'Enviado', 107)";}
+	if ($dbversion==9581){$sSQL="CREATE TABLE masi73tiponoti (masi73id int NOT NULL, masi73nombre varchar(100) NULL, masi73etiqueta int NOT NULL DEFAULT 0)";}
+	if ($dbversion==9582){$sSQL="ALTER TABLE masi73tiponoti ADD PRIMARY KEY(masi73id)";}
+	if ($dbversion==9583){$sSQL="INSERT INTO masi73tiponoti (masi73id, masi73nombre, masi73etiqueta) VALUES (0, 'Específico', 0), (11, 'General', 11), (21, 'Recurrente', 21)";}
+
+	if ($dbversion==9584){$sSQL="agregamodulo|1205|12|Mensajes masivos|1|2|3|4|5|6|12|17";}
+	if ($dbversion==9585){$sSQL=$u09."(1205, 1, 'Mensajes masivos', 'unadmasivo.php', 1201, 1205, 'S', '', '')";}
+	if ($dbversion==9586){$sSQL="agregamodulo|1206|12|Mensajes masivos - Poblacion|1|2|3|4|5|6";}
+	if ($dbversion==9587){$sSQL="agregamodulo|1207|12|Mensajes masivos - Anexo|1|2|3|4|5|6";}
+	if ($dbversion==9588){$sSQL="agregamodulo|1208|12|Mensajes masivos - Destinatario|1|2|3|4|5|6";}
+	//20 - mar - 2025
+	if ($dbversion==9589){$sSQL="UPDATE unad09modulomenu SET unad09pagina='unadmasfirmas.php' WHERE unad09idmodulo=1209 AND unad09consec=1";}
+	if ($dbversion==9590){$sSQL="agregamodulo|1968|19|Equipos por evento|1|2|3|4|5|6";}
+	if ($dbversion==9591){$sSQL=$u09."(1968, 1, 'Equipos por evento', 'evenrptequipos.php', 11, 1968, 'S', '', '')";}
+	//21 -mar - 2025
+	if ($dbversion==9592){$sSQL="add_campos|cart01productos|cart01clase int NOT NULL DEFAULT 0";}
+	if ($dbversion==9593){$sSQL="CREATE TABLE cart71tipoproductoacad (cart71id int NOT NULL, cart71nombre varchar(100) NULL, cart71etiqueta int NOT NULL DEFAULT 0)";}
+	if ($dbversion==9594){$sSQL="ALTER TABLE cart71tipoproductoacad ADD PRIMARY KEY(cart71id)";}
+	if ($dbversion==9595){$sSQL="INSERT INTO cart71tipoproductoacad (cart71id, cart71nombre, cart71etiqueta) VALUES (0, '{Ninguno}', 100), (1, 'Creditos', 101), (2, 'Situaciones académicas - Homologaciones', 102), (3, 'Habilitaciones y Supletorios', 103), (5, 'Matricula por ciclo', 105), (6, 'Cursos MOOC', 106), (11, 'Admisiones', 111), (21, 'Eventos', 121), (31, 'Idiomas', 131), (41, 'Certificaciones', 141), (71, 'Grados', 171)";}
+	if ($dbversion==9595){$sSQL="UPDATE cart01productos SET cart01clase=1 WHERE cart01cursos=1";}
+	//26 - mar - 2026
+	if ($dbversion==9596){$sSQL="ALTER TABLE even62miembroequipo MODIFY even62preg_3 int NOT NULL DEFAULT 0";}
+	if ($dbversion==9597){$sSQL="add_campos|even62miembroequipo|even62preg_4 int NOT NULL DEFAULT 0|even62preg_5 int NOT NULL DEFAULT 0";}
+	if ($dbversion==9598){$sSQL="add_campos|even61equipos|even61idorigen int NOT NULL DEFAULT 0|even61idbanner int NOT NULL DEFAULT 0|even61idorigenarc1 int NOT NULL DEFAULT 0|even61idarchivo1 int NOT NULL DEFAULT 0|even61idorigenarc2 int NOT NULL DEFAULT 0|even61idarchivo2 int NOT NULL DEFAULT 0";}
+
+	if ($dbversion==9599){$sSQL="agregamodulo|2763|27|Reporte de postulados|1|5|6";}
+	if ($dbversion==9600){$sSQL=$u09."(2763, 1, 'Postulados', 'gradrptpostulados.php', 11, 2763, 'S', '', '')";}
+	}
 if (($dbversion>9600)&&($dbversion<9701)){
-}
+	if ($dbversion==9601){$sSQL=$objDB->sSQLCrearIndice('olab20notificahorario', 'olab20notificahorario_cupo', 'olab20idcupo');}
+
+	// 27 de marzo de 2026
+	if ($dbversion==9602){$sSQL="CREATE TABLE masi00config (masi00id int NOT NULL, masi00idformato int NOT NULL DEFAULT 0, masi00formaenvios int NOT NULL DEFAULT 0)";}
+	if ($dbversion==9603){$sSQL="ALTER TABLE masi00config ADD PRIMARY KEY(masi00id)";}
+	if ($dbversion==9604){$sSQL="agregamodulo|1200|12|Parametros|1|3";}
+	if ($dbversion==9605){$sSQL=$u09."(1200, 1, 'Parametros', 'masiparams.php', 2, 1200, 'S', '', '')";}
+	if ($dbversion==9606){$sSQL="CREATE TABLE masi10formato (masi10consec int NOT NULL, masi10id int NOT NULL DEFAULT 0, masi1oactivo int NOT NULL DEFAULT 0, masi10titulo varchar(100) NULL, masi10encabezado Text NULL, masi10divcuerpo Text NULL, masi10divcodigocorreo Text NULL, masi10divcodigoconfirma Text NULL, masi10divcodigorecupera Text NULL, masi10divfirma Text NULL, masi10piedepagina Text NULL)";}
+	if ($dbversion==9607){$sSQL="ALTER TABLE masi10formato ADD PRIMARY KEY(masi10id)";}
+	if ($dbversion==9608){$sSQL=$objDB->sSQLCrearIndice('masi10formato', 'masi10formato_id', 'masi10consec', true);}
+	if ($dbversion==9609){$sSQL="agregamodulo|1210|12|Formatos de correo|1|2|3|4|5|6";}
+	if ($dbversion==9610){$sSQL=$u09."(1210, 1, 'Formatos de correo', 'masiformatocorreo.php', 2, 1210, 'S', '', '')";}
+	if ($dbversion==9611){$sSQL="INSERT INTO masi00config (masi00id, masi00idformato, masi00formaenvios) VALUES (1, 0, 0)";}
+	
+	//28 mar de 2026
+	if ($dbversion==9612){$sSQL="CREATE TABLE grad38xml (grad38idcohorte int NOT NULL, grad38consec int NOT NULL, grad38id int NOT NULL DEFAULT 0, grad38contador int NOT NULL DEFAULT 0, grad38graduandos int NOT NULL DEFAULT 0, grad38anulado int NOT NULL DEFAULT 0)";}
+	if ($dbversion==9613){$sSQL="ALTER TABLE grad38xml ADD PRIMARY KEY(grad38id)";}
+	if ($dbversion==9614){$sSQL=$objDB->sSQLCrearIndice('grad38xml', 'grad38xml_id', 'grad38idcohorte, grad38consec', true);}
+	if ($dbversion==9615){$sSQL=$objDB->sSQLCrearIndice('grad38xml', 'grad38xml_padre', 'grad38idcohorte');}
+	if ($dbversion==9616){$sSQL="agregamodulo|2738|27|Postulados - Envios xml|1|2|3|4|5|6";}
+	if ($dbversion==9617){$sSQL="add_campos|grad41postulaciones|grad41idxml int NOT NULL DEFAULT 0|grad41val_aprob int NOT NULL DEFAULT 0|grad41val_est Text NULL|grad41val_lider Text NULL|grad41val_grad Text NULL";}
+	//29 de marzo de 2026
+	if ($dbversion==9618){$sSQL="add_campos|grad38xml|grad38errores int NOT NULL DEFAULT 0";}
+	//30  de marzo de 2026
+	if ($dbversion==9619){$sSQL=$u04."(2236, 12, 'S')";}
+	//31 de marzo de 2026
+	if ($dbversion==9620){$sSQL=$u04."(2740, 12, 'S')";}
+	if ($dbversion==9621){$sSQL="add_campos|core38opciongrado|core38numeroopcion int NOT NULL DEFAULT 0|core38idescuela int NOT NULL DEFAULT 0";}
+	if ($dbversion==9622){$sSQL="UPDATE core38opciongrado SET core38numeroopcion=core38id, core38idescuela=0";}
+	if ($dbversion==9623){$sSQL=$objDB->sSQLCrearIndice('core38opciongrado', 'core38opciongrado_id', 'core38numeroopcion, core38idescuela', true);}
+	if ($dbversion==9624){$sSQL="agregamodulo|2705|27|Opciones de grado|1|2|3|4|5|6";}
+	if ($dbversion==9625){$sSQL=$u09."(2705, 1, 'Opciones de grado', 'gradopcion.php', 2, 2705, 'S', '', '')";}
+	if ($dbversion==9626){$sSQL="add_campos|grad40trabajogradoalterno|grad40idescuela int NOT NULL DEFAULT 0|grad40idprograma int NOT NULL DEFAULT 0|grad40idzona int NOT NULL DEFAULT 0|grad40idcentro int NOT NULL DEFAULT 0|grad40origen int NOT NULL DEFAULT 0|grad40enlacesoporte varchar(250) NULL";}
+	if ($dbversion==9627){$sSQL="ALTER TABLE grad40trabajogradoalterno DROP INDEX grad40trabajogradoalterno_id";}
+	if ($dbversion==9628){$sSQL=$objDB->sSQLCrearIndice('grad40trabajogradoalterno', 'grad40trabajogradoalterno_id', 'grad40idpei', true);}
+	if ($dbversion==9629){$sSQL="add_campos|core38opciongrado|core38historicos int NOT NULL DEFAULT 0|core38titulocomplementario int NOT NULL DEFAULT 0";}
+	// 1 de Abril de 2026
+	if ($dbversion==9630){$sSQL="CREATE TABLE core49gruponivelforma (core49id int NOT NULL, core49nombre varchar(50) NULL, core49etiqueta int NOT NULL DEFAULT 0)";}
+	if ($dbversion==9631){$sSQL="ALTER TABLE core49gruponivelforma ADD PRIMARY KEY(core49id)";}
+	if ($dbversion==9632){$sSQL="INSERT INTO core49gruponivelforma (core49id, core49nombre, core49etiqueta) VALUES (0, '{Ninguno}', 100), (1, 'Básica', 101), (2, 'Continuada', 102), (3, 'Profesional', 103), (4, 'PostGrado', 104)";}
+	if ($dbversion==9633){$sSQL="add_campos|core38opciongrado|core38cred_tipocurso int NOT NULL DEFAULT 0|core38cred_cantidad int NOT NULL DEFAULT 0|core38proy_titulo int NOT NULL DEFAULT 1";}
+	//Tenemos que actualizar la core38opciongrado para que no de problema
+	if ($dbversion==9634){$sSQL="UPDATE core38opciongrado SET core38cred_tipocurso=9, core38cred_cantidad=10 WHERE core38id=5";}
+	if ($dbversion==9635){$sSQL="UPDATE core38opciongrado SET core38cred_tipocurso=10, core38cred_cantidad=10 WHERE core38id=4";}
+	if ($dbversion==9636){$sSQL="UPDATE core38opciongrado SET core38cred_tipocurso=11, core38cred_cantidad=3 WHERE core38id=15";}
+	if ($dbversion==9637){$sSQL="UPDATE core38opciongrado SET core38cred_tipocurso=12, core38cred_cantidad=6 WHERE core38id=16";}
+	if ($dbversion==9638){$sSQL="UPDATE core38opciongrado SET core38cred_tipocurso=13, core38cred_cantidad=8 WHERE core38id=9";}
+	if ($dbversion==9639){$sSQL="add_campos|core13tiporegistroprog|core13opciongradoclase int NOT NULL DEFAULT 0";}
+	if ($dbversion==9640){$sSQL="UPDATE core13tiporegistroprog SET core13opciongradoclase=1 WHERE core13id IN (10,11)";}
+	if ($dbversion==9641){$sSQL="UPDATE core13tiporegistroprog SET core13opciongradoclase=2 WHERE core13id IN (9,12,13)";}
+	if ($dbversion==9642){$sSQL=$u04."(2740, 14, 'S')";} //Acceder a datos reservados en grados.
+	if ($dbversion==9643){$sSQL="ALTER TABLE grad40trabajogradoalterno CHANGE grad40titulo grad40titulo VARCHAR(500)";}
+	// 4 de Abril de 2026
+	if ($dbversion==9644){$sSQL="add_campos|grad01cohortes|grad01idlibrodiploma int NOT NULL DEFAULT 0|grad01idlibroactas int NOT NULL DEFAULT 0";}
+	if ($dbversion==9645){$sSQL="add_campos|grad45estadosolgrad|grad45etiqueta int NOT NULL DEFAULT 0";}
+	if ($dbversion==9646){$sSQL="UPDATE grad45estadosolgrad SET grad45etiqueta=(grad45id+100)";}
+	if ($dbversion==9647){$sSQL="INSERT INTO grad45estadosolgrad (grad45id, grad45nombre, grad45etiqueta) VALUES (36, 'Terminada', 136)";}
+
+	if ($dbversion==9648){$sSQL="CREATE TABLE grad56cohorteresol (grad56idcohorte int NOT NULL, grad56idcentro int NOT NULL, grad56idescuela int NOT NULL, grad56id int NOT NULL DEFAULT 0, grad56idacta int NOT NULL DEFAULT 0, grad56numacta int NOT NULL DEFAULT 0, grad56fechaacta int NOT NULL DEFAULT 0, grad56cantidad int NOT NULL DEFAULT 0)";}
+	if ($dbversion==9649){$sSQL="ALTER TABLE grad56cohorteresol ADD PRIMARY KEY(grad56id)";}
+	if ($dbversion==9650){$sSQL=$objDB->sSQLCrearIndice('grad56cohorteresol', 'grad56cohorteresol_id', 'grad56idcohorte, grad56idcentro, grad56idescuela', true);}
+	if ($dbversion==9651){$sSQL=$objDB->sSQLCrearIndice('grad56cohorteresol', 'grad56cohorteresol_padre', 'grad56idcohorte');}
+	if ($dbversion==9652){$sSQL="agregamodulo|2756|27|Cohortes - Resoluciones|1|2|3|4|5|6";}
+
+	// 6 de Abril de 2026
+	if ($dbversion==9653){$sSQL="add_campos|cart16recaudoitems|cart16idrecexistente int NOT NULL DEFAULT 0";}
+	// 7 de abril de 2026
+	if ($dbversion==9654){$sSQL="agregamodulo|921|9|Ingresos diarios|1|2|3|4|5|6";}
+	if ($dbversion==9655){$sSQL=$u09."(921, 1, 'Ingresos diarios', 'cartrptingdiario.php', 11, 921, 'S', '', '')";}
+	if ($dbversion==9656){$sSQL="INSERT INTO gedo50resoluciones (gedo50vigencia, gedo50numsol, gedo50id, gedo50origen_proceso, gedo50origen_comp, gedo50origen_id, gedo50estado, gedo50unidad, gedo50escuela, gedo50zona, gedo50centro, gedo50asunto, gedo50fechasolicitada, gedo50salida_id, gedo50salida_fecha, gedo50salida_numero, gedo50beneficiario_id, gedo50beneficiario_vr, gedo50beneficiario_4x1000) VALUES (0, 0, 0, 0, '', 0, 0, 0, 0, 0, 0, '', 0, 0, 0, 0, 0, 0, 0)";}
+	//9 de Abril de 2026
+	if ($dbversion==9657){$sSQL="UPDATE comp73estadoestudmer SET comp73nombre='Seleccionada' WHERE comp73id=7";}
+	if ($dbversion==9658){$sSQL="add_campos|cttc07proceso|cttc07e1_justificacion Text NULL|cttc07e1_idinvitacion int NOT NULL DEFAULT 0|cttc07e2_contrato_minuta int NOT NULL DEFAULT 0|cttc07e2_fechaactainicio int NOT NULL DEFAULT 0|cttc07e2_fechainicio int NOT NULL DEFAULT 0|cttc07e2_fechafinal int NOT NULL DEFAULT 0|cttc07e2_fechaterminacion int NOT NULL DEFAULT 0|cttc07e2_diasduracion_ini int NOT NULL DEFAULT 0|cttc07e2_diasduracion_total int NOT NULL DEFAULT 0|cttc07e2_vranticipo Decimal(15,2) NULL DEFAULT 0|cttc07e2_vranticipopagado Decimal(15,2) NULL DEFAULT 0|cttc07e2_vranticipolegalizado Decimal(15,2) NULL DEFAULT 0|cttc07e2_porcejecutado Decimal(15,2) NULL DEFAULT 0|cttc07e2_valorejecutado Decimal(15,2) NULL DEFAULT 0|cttc07e2_valornoejecutado Decimal(15,2) NULL DEFAULT 0|cttc07e2_porcpagado Decimal(15,2) NULL DEFAULT 0|cttc07e2_valorpagado Decimal(15,2) NULL DEFAULT 0|cttc07e2_valorreintegrado Decimal(15,2) NULL DEFAULT 0|cttc07e3termina_estado int NOT NULL DEFAULT 0|cttc07e3termina_abogado int NOT NULL DEFAULT 0|cttc07e3termina_fecha int NOT NULL DEFAULT 0|cttc07e3secop_codigo varchar(250) NULL|cttc07e3secop_link Text NULL|cttc07func_jur_fecha int NOT NULL DEFAULT 0|cttc07func_jur_hora int NOT NULL DEFAULT 0|cttc07func_jur_minuto int NOT NULL DEFAULT 0";}
+	
+	//10 de Abril de 2026
+	if ($dbversion==9659){$sSQL="agregamodulo|2771|27|Paises|1|3|5|6";}
+	if ($dbversion==9660){$sSQL=$u09."(2771, 1, 'Paises', 'gradpais.php', 2, 2771, 'S', '', '')";}
+	if ($dbversion==9661){$sSQL="agregamodulo|2772|27|Departamentos|1|3|5|6";}
+	if ($dbversion==9662){$sSQL=$u09."(2772, 1, 'Departamentos', 'graddepto.php', 2, 2772, 'S', '', '')";}
+	if ($dbversion==9663){$sSQL="agregamodulo|2773|27|Ciudades|1|3|5|6";}
+	if ($dbversion==9664){$sSQL=$u09."(2773, 1, 'Ciudades', 'gradciudad.php', 2, 2773, 'S', '', '')";}
+
+	if ($dbversion==9665){$sSQL="add_campos|unad18pais|unad18codgrados varchar(3) NULL";}
+	if ($dbversion==9666){$sSQL="add_campos|unad19depto|unad19codgrados varchar(5) NULL";}
+	if ($dbversion==9667){$sSQL="add_campos|unad20ciudad|unad20codgrados varchar(8) NULL";}
+
+	if ($dbversion==9668){$sSQL="agregamodulo|2757|27|Otras postulaciones|1|2|3|4|5|6";}
+	if ($dbversion==9669){$sSQL=$u09."(2757, 1, 'Otras postulaciones', 'gradpostuladootros.php', 2701, 2757, 'S', '', '')";}
+	// 17 de Abril de 2026
+	if ($dbversion==9670){$sSQL="add_campos|grad03tipodocgrad|grad03aplicaotraspost int NOT NULL DEFAULT 1";}
+	// 20 de Abril de 2026 
+	if ($dbversion==9671){$sSQL="add_campos|cttc76aportantes|cttc76actorautorizado int NOT NULL DEFAULT 0|cttc76mensajebloqueo Text NULL";}
+	if ($dbversion==9672){$sSQL="add_campos|core01estprograma|core01grado_tipo int NOT NULL DEFAULT 1";}
+	// 21 de Abril de 2026
+	if ($dbversion==9673){$sSQL="CREATE TABLE visa11aspirante (visa11consec int NOT NULL, visa11id int NOT NULL DEFAULT 0, visa11idtercero int NOT NULL DEFAULT 0, visa11fechainicioreg int NOT NULL DEFAULT 0, visa11estado int NOT NULL DEFAULT 0, visa11idcanalreg int NOT NULL DEFAULT 0, visa11idzona int NOT NULL DEFAULT 0, visa11idcentro int NOT NULL DEFAULT 0, visa11titulobachiller int NOT NULL DEFAULT 0, visa11titulouniversitario int NOT NULL DEFAULT 0, visa11egresado_unad int NOT NULL DEFAULT 0, visa11egresado_programa int NOT NULL DEFAULT 0, visa11egresado_fecha int NOT NULL DEFAULT 0, visa11estudiante int NOT NULL DEFAULT 0, visa11reingreso int NOT NULL DEFAULT 0, visa11reingreso_programa int NOT NULL DEFAULT 0, visa11cursovocacional int NOT NULL DEFAULT 0, visa11curso_fechaing int NOT NULL DEFAULT 0, visa11curso_fechafin int NOT NULL DEFAULT 0, visa11idconsejero int NOT NULL DEFAULT 0, visa11idasesor int NOT NULL DEFAULT 0, visa11interesprevio int NOT NULL DEFAULT 0, visa11int_idunidad int NOT NULL DEFAULT 0, visa11int_idescuela int NOT NULL DEFAULT 0, visa11int_idprograma int NOT NULL DEFAULT 0, visa11idunidad int NOT NULL DEFAULT 0, visa11idescuela int NOT NULL DEFAULT 0, visa11idprograma int NOT NULL DEFAULT 0, visa11idcursomooc int NOT NULL DEFAULT 0, visa11interesadohomol int NOT NULL DEFAULT 0, visa11homol_idconvenio int NOT NULL DEFAULT 0, visa11volvercontactar int NOT NULL DEFAULT 0, visa11fechaproxcontacto int NOT NULL DEFAULT 0, visa11indicacionescont Text NULL, visa11generarecibo int NOT NULL DEFAULT 0, visa11fechalimiterecibo int NOT NULL DEFAULT 0, visa11idperiodorecibo int NOT NULL DEFAULT 0, visa11fechacierre int NOT NULL DEFAULT 0, visa11idresultado int NOT NULL DEFAULT 0, visa11idcausadesiste int NOT NULL DEFAULT 0, visa11idplanestudio int NOT NULL DEFAULT 0, visa11prog_admision int NOT NULL DEFAULT 0)";}
+	if ($dbversion==9674){$sSQL="ALTER TABLE visa11aspirante ADD PRIMARY KEY(visa11id)";}
+	if ($dbversion==9675){$sSQL=$objDB->sSQLCrearIndice('visa11aspirante', 'visa11aspirante_id', 'visa11consec', true);}
+	if ($dbversion==9676){$sSQL="agregamodulo|5011|29|Aspirantes|1|2|3|4|5|6|8";}
+	if ($dbversion==9677){$sSQL=$u09."(5011, 1, 'Aspirantes', 'visaeaspirante.php', 2906, 5011, 'S', '', '')";}
+	if ($dbversion==9678){$sSQL="CREATE TABLE visa12anotacion (visa12idatencion int NOT NULL, visa12consec int NOT NULL, visa12id int NOT NULL DEFAULT 0, visa12formacontacto int NOT NULL DEFAULT 0, visa12anotacion Text NULL, visa12fecha int NOT NULL DEFAULT 0, visa12hora int NOT NULL DEFAULT 0, visa12minuto int NOT NULL DEFAULT 0, visa12idusuario int NOT NULL DEFAULT 0)";}
+	if ($dbversion==9679){$sSQL="ALTER TABLE visa12anotacion ADD PRIMARY KEY(visa12id)";}
+	if ($dbversion==9680){$sSQL=$objDB->sSQLCrearIndice('visa12anotacion', 'visa12anotacion_id', 'visa12idatencion, visa12consec', true);}
+	if ($dbversion==9681){$sSQL=$objDB->sSQLCrearIndice('visa12anotacion', 'visa12anotacion_padre', 'visa12idatencion');}
+	if ($dbversion==9682){$sSQL="agregamodulo|5012|29|Aspirantes - Anotacion|1|2|3|4|5|6|8";}
+	if ($dbversion==9683){$sSQL="CREATE TABLE visa13otrosprogramas (visa13idatencion int NOT NULL, visa13idprograma int NOT NULL, visa13id int NOT NULL DEFAULT 0, visa13detalle Text NULL, visa13mantieneinteres int NOT NULL DEFAULT 0)";}
+	if ($dbversion==9684){$sSQL="ALTER TABLE visa13otrosprogramas ADD PRIMARY KEY(visa13id)";}
+	if ($dbversion==9685){$sSQL=$objDB->sSQLCrearIndice('visa13otrosprogramas', 'visa13otrosprogramas_id', 'visa13idatencion, visa13idprograma', true);}
+	if ($dbversion==9686){$sSQL=$objDB->sSQLCrearIndice('visa13otrosprogramas', 'visa13otrosprogramas_padre', 'visa13idatencion');}
+	if ($dbversion==9687){$sSQL="agregamodulo|5013|29|Aspirantes - Otros programas|1|2|3|4|5|6|8";}
+	if ($dbversion==9688){$sSQL="CREATE TABLE visa14cambioestado (visa14idatencion int NOT NULL, visa14consec int NOT NULL, visa14id int NOT NULL DEFAULT 0, visa14idestadoorigen int NOT NULL DEFAULT 0, visa14idestadofin int NOT NULL DEFAULT 0, visa14detalle varchar(250) NULL, visa14fecha int NOT NULL DEFAULT 0, visa14hora int NOT NULL DEFAULT 0, visa14minuto int NOT NULL DEFAULT 0, visa14idtercero int NOT NULL DEFAULT 0)";}
+	if ($dbversion==9689){$sSQL="ALTER TABLE visa14cambioestado ADD PRIMARY KEY(visa14id)";}
+	if ($dbversion==9690){$sSQL=$objDB->sSQLCrearIndice('visa14cambioestado', 'visa14cambioestado_id', 'visa14idatencion, visa14consec', true);}
+	if ($dbversion==9691){$sSQL=$objDB->sSQLCrearIndice('visa14cambioestado', 'visa14cambioestado_padre', 'visa14idatencion');}
+
+	if ($dbversion==9692){$sSQL="add_campos|cart15recaudomasivo|cart15totalrec Decimal(15,2) NULL DEFAULT 0|cart15totalgen Decimal(15,2) NULL DEFAULT 0|cart1recaudostotal int NOT NULL DEFAULT 0|cart15generadostotal int NOT NULL DEFAULT 0";}
+	if ($dbversion==9693){$sSQL="agregamodulo|2758|27|Descarga de Resoluciones|1|5|1708|1710";}
+	if ($dbversion==9694){$sSQL=$u09."(2758, 1, 'Descarga de Resoluciones', 'gradrptresol.php', 11, 2758, 'S', '', '')";}
+
+	// 23 de Abril de 2026
+	if ($dbversion==9695){$sSQL=$u08."(4103, 'Invitaciones', 'gm.php?id=4103', 'Invitaciones', 'Invitations', 'Convites'), (4104, 'Ejecución', 'gm.php?id=4104', 'Ejecución', 'Execution', 'Execução')";}
+	if ($dbversion==9696){$sSQL="CREATE TABLE fact40rptfact (fact40vigencia int NOT NULL DEFAULT 0, fact40fechaini int NOT NULL DEFAULT 0, fact40fechafin int NOT NULL DEFAULT 0)";}
+	if ($dbversion==9697){$sSQL="agregamodulo|740|7|Reporte de facturación|1|5|6";}
+	if ($dbversion==9698){$sSQL=$u09."(740, 1, 'Reporte de facturación', 'factrptfact.php', 11, 740, 'S', '', '')";}
+
+	// 24 de Abril de 2026
+	//9699 - 9700 quedan libres
+	}
 if (($dbversion>9700)&&($dbversion<9801)){
-}
+	if ($dbversion==9701){$sSQL="agregamodulo|4138|41|Invitaciones|1|2|3|4|5|6";}
+	if ($dbversion==9702){$sSQL=$u09."(4138, 1, 'Invitaciones', 'cttcinvitaciones.php', 4103, 4138, 'S', '', '')";}
+	//9703 A 9707 quedan libres
+	if ($dbversion==9708){$sSQL="CREATE TABLE cttc42invitaciondoc (cttc42idinvitacion int NOT NULL, cttc42idoferente int NOT NULL, cttc42idrequisito int NOT NULL, cttc42consec int NOT NULL, cttc42id int NOT NULL DEFAULT 0, cttc42tituloanexo varchar(250) NULL, cttc42origenanexo int NOT NULL DEFAULT 0, cttc42archivo int NOT NULL DEFAULT 0, cttc42fechadoc int NOT NULL DEFAULT 0, cttc42fechavence int NOT NULL DEFAULT 0, cttc42publico int NOT NULL DEFAULT 0)";}
+	if ($dbversion==9709){$sSQL="ALTER TABLE cttc42invitaciondoc ADD PRIMARY KEY(cttc42id)";}
+	if ($dbversion==9710){$sSQL=$objDB->sSQLCrearIndice('cttc42invitaciondoc', 'cttc42invitaciondoc_id', 'cttc42idinvitacion, cttc42idoferente, cttc42idrequisito, cttc42consec', true);}
+	if ($dbversion==9711){$sSQL=$objDB->sSQLCrearIndice('cttc42invitaciondoc', 'cttc42invitaciondoc_padre', 'cttc42idinvitacion');}
+	if ($dbversion==9712){$sSQL="agregamodulo|4142|41|Invitaciones - Documentos|1|2|3|4|5|6|8";}
+	if ($dbversion==9713){$sSQL="CREATE TABLE cttc43invitacionobserva (cttc43idinvitacion int NOT NULL, cttc43idoferente int NOT NULL, cttc43consec int NOT NULL, cttc43id int NOT NULL DEFAULT 0, cttc43tipo int NOT NULL DEFAULT 0, cttc43estado int NOT NULL DEFAULT 0, cttc43observacion Text NULL, cttc43fecha int NOT NULL DEFAULT 0, cttc43hora int NOT NULL DEFAULT 0, cttc43minuto int NOT NULL DEFAULT 0, cttc43origenanexo int NOT NULL DEFAULT 0, cttc43archivoanexo int NOT NULL DEFAULT 0, cttc43idusuario int NOT NULL DEFAULT 0)";}
+	if ($dbversion==9714){$sSQL="ALTER TABLE cttc43invitacionobserva ADD PRIMARY KEY(cttc43id)";}
+	if ($dbversion==9715){$sSQL=$objDB->sSQLCrearIndice('cttc43invitacionobserva', 'cttc43invitacionobserva_id', 'cttc43idinvitacion, cttc43idoferente, cttc43consec', true);}
+	if ($dbversion==9716){$sSQL=$objDB->sSQLCrearIndice('cttc43invitacionobserva', 'cttc43invitacionobserva_padre', 'cttc43idinvitacion');}
+	if ($dbversion==9717){$sSQL="agregamodulo|4143|41|Invitaciones - Observaciones|1|2|3|4|5|6|8";}
+	// 9718 QUEDA LIBRE
+	if ($dbversion==9719){$sSQL="CREATE TABLE cttc44invitacionrpta (cttc44idinvitacion int NOT NULL, cttc44idobservacion int NOT NULL, cttc44numrpta int NOT NULL, cttc44id int NOT NULL DEFAULT 0, cttc44respuesta Text NULL, cttc44fecha int NOT NULL DEFAULT 0, cttc44hora int NOT NULL DEFAULT 0, cttc44min int NOT NULL DEFAULT 0, cttc44idusuario int NOT NULL DEFAULT 0)";}
+	if ($dbversion==9720){$sSQL="ALTER TABLE cttc44invitacionrpta ADD PRIMARY KEY(cttc44id)";}
+	if ($dbversion==9721){$sSQL=$objDB->sSQLCrearIndice('cttc44invitacionrpta', 'cttc44invitacionrpta_id', 'cttc44idinvitacion, cttc44idobservacion, cttc44numrpta', true);}
+	if ($dbversion==9722){$sSQL=$objDB->sSQLCrearIndice('cttc44invitacionrpta', 'cttc44invitacionrpta_padre', 'cttc44idinvitacion');}
+	if ($dbversion==9723){$sSQL="agregamodulo|4144|41|Invitacion - Observacion - Respuesta|1|2|3|4|5|6|8";}
+	if ($dbversion==9724){$sSQL="agregamodulo|4139|41|Invitaciones - Oferentes|1|2|3|4|5|6|8";}
+	// 25 de Abril de 2026
+	if ($dbversion==9725){$sSQL="CREATE TABLE grad59proyajustes (grad59idproyecto int NOT NULL, grad59tipoajuste int NOT NULL, grad59consec int NOT NULL DEFAULT 0, grad59id int NOT NULL DEFAULT 0, grad59titulo varchar(200) NULL, grad59linkrepo varchar(250) NULL, grad59fecha int NOT NULL DEFAULT 0, grad59usuario int NOT NULL DEFAULT 0)";}
+	if ($dbversion==9726){$sSQL="ALTER TABLE grad59proyajustes ADD PRIMARY KEY(grad59id)";}
+	if ($dbversion==9727){$sSQL=$objDB->sSQLCrearIndice('grad59proyajustes', 'grad59proyajustes_id', 'grad59idproyecto, grad59tipoajuste', true);}
+	if ($dbversion==9728){$sSQL=$objDB->sSQLCrearIndice('grad59proyajustes', 'grad59proyajustes_padre', 'grad59idproyecto');}
+	if ($dbversion==9729){$sSQL="agregamodulo|2759|27|Proyectos de grado - ajustes|1|2|3|4|5|6";}
+	// 27 de Abril de 2026
+	if ($dbversion==9730){$sSQL=$objDB->sSQLCrearIndice('core47admitidos', 'core47admitidos_tercero', 'core47idtercero');}
+	if ($dbversion==9731){$sSQL=$objDB->sSQLCrearIndice('core47admitidos', 'core47admitidos_zona', 'core47idzona');}
+	if ($dbversion==9732){$sSQL=$objDB->sSQLCrearIndice('core47admitidos', 'core47admitidos_centro', 'core47idcentro');}
+	if ($dbversion==9733){$sSQL=$objDB->sSQLCrearIndice('core47admitidos', 'core47admitidos_escuela', 'core47idescuela');}
+	if ($dbversion==9734){$sSQL=$objDB->sSQLCrearIndice('core47admitidos', 'core47admitidos_programa', 'core47idprograma');}
+	if ($dbversion==9735){$sSQL=$objDB->sSQLCrearIndice('unad11terceros ', 'unad11terceros_autocom', 'unad11tipodoc, unad11doc, unad11razonsocial');}
+
+	if ($dbversion==9736){$sSQL="agregamodulo|917|9|Recaudo - Beneficiarios|1|2|3|4|5|6";}
+	//9737 - 9742 quedan libres
+	// 28 de Abril de 2026
+	if ($dbversion==9744){$sSQL=$u04."(2741, 21, 'S')";}
+	// 9745 y 9746 quedan libres
+	if ($dbversion==9747){$sSQL="add_campos|cttc02tipoproceso|cttc02tipoinvita int NOT NULL DEFAULT 0";}
+
+	if ($dbversion==9748){$sSQL="DROP TABLE cttc45tipoinvitacion";}
+	if ($dbversion==9749){$sSQL="mod_quitar|4145";}
+
+	if ($dbversion==9750){$sSQL="CREATE TABLE grad64otrasent (grad64consec int NOT NULL, grad64id int NOT NULL DEFAULT 0, grad64activo int NOT NULL DEFAULT 0, grad64orden int NOT NULL DEFAULT 0, grad64nombre varchar(200) NULL, grad64formato int NOT NULL DEFAULT 0)";}
+	if ($dbversion==9751){$sSQL="ALTER TABLE grad64otrasent ADD PRIMARY KEY(grad64id)";}
+	if ($dbversion==9752){$sSQL=$objDB->sSQLCrearIndice('grad64otrasent', 'grad64otrasent_id', 'grad64consec', true);}
+	if ($dbversion==9753){$sSQL="agregamodulo|2764|27|Otras entidades|1|2|3|4|5|6";}
+	if ($dbversion==9754){$sSQL=$u09."(2764, 1, 'Otras entidades', 'gradotraent.php', 2, 2764, 'S', '', '')";}
+	if ($dbversion==9755){$sSQL="CREATE TABLE grad65otrasentprog (grad65idotraent int NOT NULL, grad65idescuela int NOT NULL, grad65idprograma int NOT NULL, grad65id int NOT NULL DEFAULT 0, grad65activo int NOT NULL DEFAULT 0)";}
+	if ($dbversion==9756){$sSQL="ALTER TABLE grad65otrasentprog ADD PRIMARY KEY(grad65id)";}
+	if ($dbversion==9757){$sSQL=$objDB->sSQLCrearIndice('grad65otrasentprog', 'grad65otrasentprog_id', 'grad65idotraent, grad65idescuela, grad65idprograma', true);}
+	if ($dbversion==9758){$sSQL=$objDB->sSQLCrearIndice('grad65otrasentprog', 'grad65otrasentprog_padre', 'grad65idotraent');}
+	if ($dbversion==9759){$sSQL="agregamodulo|2765|27|Otras entidades - programa|1|2|3|4|5|6";}
+	if ($dbversion==9760){$sSQL="agregamodulo|2766|27|Informe a otras entidades|1|5|6";}
+	if ($dbversion==9761){$sSQL=$u09."(2766, 1, 'Informe a otras entidades', 'gradrptotras.php', 11, 2766, 'S', '', '')";}
+	if ($dbversion==9762){$sSQL=$u04."(2701, 21, 'S')";}
+	//29 de Abril de 2026
+	if ($dbversion==9763){$sSQL="agregamodulo|2331|23|Identificar dato anonimizado|1|";}
+	if ($dbversion==9764){$sSQL=$u09."(2331, 1, 'Identificar dato anonimizado', 'caraidentificar.php', 7, 2331, 'S', '', '')";}
+	//30 de Abril de 2026
+	if ($dbversion==9765){$sSQL="agregamodulo|2178|21|Acceso a Richmond|1|1707";}
+	if ($dbversion==9766){$sSQL=$u09."(2178, 1, 'Acceso a Richmond', 'richmond.php', 2106, 2178, 'S', '', '')";}
+
+	// 04 de Mayo de 2026
+	//9767 queda libre
+	//if ($dbversion==9767){$sSQL=$u08."(901, 'Cartera', 'gm.php?id=901', 'Cartera', 'Debt', 'Cobrança')";}
+	if ($dbversion==9768){$sSQL="CREATE TABLE cart22conciliacion (cart22consec int NOT NULL, cart22id int NOT NULL DEFAULT 0, cart22idtercero int NOT NULL DEFAULT 0, cart22fechabase int NOT NULL DEFAULT 0, cart22fechafin int NOT NULL DEFAULT 0, cart22estado int NOT NULL DEFAULT 0, cart22detalle Text NULL, cart22idusuario int NOT NULL DEFAULT 0, cart22fecha int NOT NULL DEFAULT 0, cart22hora int NOT NULL DEFAULT 0, cart22minuto int NOT NULL DEFAULT 0)";}
+	if ($dbversion==9769){$sSQL="ALTER TABLE cart22conciliacion ADD PRIMARY KEY(cart22id)";}
+	if ($dbversion==9770){$sSQL=$objDB->sSQLCrearIndice('cart22conciliacion', 'cart22conciliacion_id', 'cart22consec', true);}
+	if ($dbversion==9771){$sSQL="agregamodulo|922|9|Conciliación académica|1|2|3|4|5|6|8";}
+	if ($dbversion==9772){$sSQL=$u09."(922, 1, 'Conciliación académica', 'cartconciliaacad.php', 702, 922, 'S', '', '')";}
+	if ($dbversion==9773){$sSQL="agregamodulo|923|9|Conciliacion acad - Items|1|2|3|4|5|6|8";}
+	if ($dbversion==9774){$sSQL="CREATE TABLE cart24conciliaresumen (cart24idconciliacion int NOT NULL, cart24idproductoacad int NOT NULL, cart24id int NOT NULL DEFAULT 0, cart24cantcausada int NOT NULL DEFAULT 0, cart24cantcobrada int NOT NULL DEFAULT 0)";}
+	if ($dbversion==9775){$sSQL="ALTER TABLE cart24conciliaresumen ADD PRIMARY KEY(cart24id)";}
+	if ($dbversion==9776){$sSQL=$objDB->sSQLCrearIndice('cart24conciliaresumen', 'cart24conciliaresumen_id', 'cart24idconciliacion, cart24idproductoacad', true);}
+	if ($dbversion==9777){$sSQL=$objDB->sSQLCrearIndice('cart24conciliaresumen', 'cart24conciliaresumen_padre', 'cart24idconciliacion');}
+	if ($dbversion==9778){$sSQL="agregamodulo|924|9|Conciliacion acad - Resumen|1|5|6";}
+	if ($dbversion==9779){$sSQL="CREATE TABLE cart25concilianota (cart25idconciliacion int NOT NULL, cart25consec int NOT NULL, cart25id int NOT NULL DEFAULT 0, cart25nota Text NULL, cart25origenanexo int NOT NULL DEFAULT 0, cart25idanexo int NOT NULL DEFAULT 0, cart25idusuario int NOT NULL DEFAULT 0, cart25fecha int NOT NULL DEFAULT 0, cart25hora int NOT NULL DEFAULT 0, cart25minuto int NOT NULL DEFAULT 0)";}
+	if ($dbversion==9780){$sSQL="ALTER TABLE cart25concilianota ADD PRIMARY KEY(cart25id)";}
+	if ($dbversion==9781){$sSQL=$objDB->sSQLCrearIndice('cart25concilianota', 'cart25concilianota_id', 'cart25idconciliacion, cart25consec', true);}
+	if ($dbversion==9782){$sSQL=$objDB->sSQLCrearIndice('cart25concilianota', 'cart25concilianota_padre', 'cart25idconciliacion');}
+	if ($dbversion==9783){$sSQL="agregamodulo|925|9|Conciliacion acad - anotaciones|1|2|3|4|5|6|8";}
+	if ($dbversion==9784){$sSQL=$unad70."(901,140,'unad40curso','unad40id','unad40idproductoacad','El producto esta relacionado a un curso', '')";}
+	if ($dbversion==9785){$sSQL=$unad70."(901,923,'unad40curso','unad40id','unad40idprod_habilita','El producto esta relacionado a un curso', '')";}
+	if ($dbversion==9786){$sSQL=$unad70."(901,924,'unad40curso','unad40id','unad40idprod_supletorio','El producto esta relacionado a un curso', '')";}
+	if ($dbversion==9787){$sSQL=$unad70."(901,925,'unad40curso','unad40id','unad40idprod_homologa','El producto esta relacionado a un curso', '')";}
+	if ($dbversion==9788){$sSQL=$unad70."(901,926,'unad40curso','unad40id','unad40idprod_suficiencia','El producto esta relacionado a un curso', '')";}
+	if ($dbversion==9789){$sSQL="add_campos|unad40curso|unad40idprod_habilita int NOT NULL DEFAULT 0|unad40idprod_supletorio int NOT NULL DEFAULT 0|unad40idprod_homologa int NOT NULL DEFAULT 0|unad40idprod_suficiencia int NOT NULL DEFAULT 0";}
+	if ($dbversion==9790){$sSQL="agregamodulo|926|9|Cursos (Cartera)|1|3|5|6";}
+	if ($dbversion==9791){$sSQL=$u09."(926, 1, 'Cursos', 'cartcurso.php', 1, 926, 'S', '', '')";}
+	if ($dbversion==9792){$sSQL=$u96."(1, 0, 'Borrador', 100), (1, 7, 'Cerrado', 107), (1, 9, 'Anulado', 109), 
+		(2, 0, 'Borrador', 100), (2, 7, 'Cerrada', 107), (2, 9, 'Anulada', 109)";}
+	if ($dbversion==9793){$sSQL="add_campos|cttc68modalidad|cttc68tipoinvitacion int NOT NULL DEFAULT 0";}
+
+
+	if ($dbversion==9794){$sSQL="DROP TABLE cttc38invitaciones";}
+	if ($dbversion==9795){$sSQL="CREATE TABLE cttc38invitaciones (cttc38vigencia int NOT NULL, cttc38idtipo int NOT NULL, cttc38consec int NOT NULL, cttc38id int NOT NULL DEFAULT 0, cttc38idproceso int NOT NULL DEFAULT 0, cttc38estado int NOT NULL DEFAULT 0, cttc38instrucciones Text NULL, cttc38apertura_fecha int NOT NULL DEFAULT 0, cttc38pubpliegos_fecha int NOT NULL DEFAULT 0, cttc38visitatecnica int NOT NULL DEFAULT 0, cttc38visitatecnica_fecha int NOT NULL DEFAULT 0, cttc38observatr_cant int NOT NULL DEFAULT 0, cttc38observatr_fecha int NOT NULL DEFAULT 0, cttc38observatr_hora int NOT NULL DEFAULT 0, cttc38observatr_min int NOT NULL DEFAULT 0, cttc38observatr_rta_fecha int NOT NULL DEFAULT 0, cttc38cierre_fecha int NOT NULL DEFAULT 0, cttc38cierre_hora int NOT NULL DEFAULT 0, cttc38cierre_min int NOT NULL DEFAULT 0, cttc38evaluacion_fecha int NOT NULL DEFAULT 0, cttc38aclaraciones_cant int NOT NULL DEFAULT 0, cttc38aclaraciones_fecha int NOT NULL DEFAULT 0, cttc38aclaraciones_hora int NOT NULL DEFAULT 0, cttc38aclaraciones_min int NOT NULL DEFAULT 0, cttc38aclaraciones_rta_fecha int NOT NULL DEFAULT 0, cttc38aclaraciones_rta_hora int NOT NULL DEFAULT 0, cttc38aclaraciones_rta_min int NOT NULL DEFAULT 0, cttc38infprel_fecha int NOT NULL DEFAULT 0, cttc38infprel_hora int NOT NULL DEFAULT 0, cttc38infprel_min int NOT NULL DEFAULT 0, cttc38infprel_obs_cant int NOT NULL DEFAULT 0, cttc38infprel_obs_fecha int NOT NULL DEFAULT 0, cttc38infprel_obs_hora int NOT NULL DEFAULT 0, cttc38infprel_obs_min int NOT NULL DEFAULT 0, cttc38infprel_obs_rpta_fecha int NOT NULL DEFAULT 0, cttc38informedef_fecha int NOT NULL DEFAULT 0, cttc38adjudicacion_fecha int NOT NULL DEFAULT 0, cttc38idajudicado int NOT NULL DEFAULT 0)";}
+	if ($dbversion==9796){$sSQL="ALTER TABLE cttc38invitaciones ADD PRIMARY KEY(cttc38id)";}
+	if ($dbversion==9797){$sSQL=$objDB->sSQLCrearIndice('cttc38invitaciones', 'cttc38invitaciones_id', 'cttc38vigencia, cttc38idtipo, cttc38consec', true);}
+	if ($dbversion==9798){$sSQL="INSERT INTO cttc38invitaciones (cttc38vigencia, cttc38idtipo, cttc38consec, cttc38id, cttc38idproceso, cttc38estado, cttc38instrucciones) VALUES (0, 0, 0, 0, 0, 0, '')";}
+	if ($dbversion==9799){$sSQL="add_campos|exte02per_aca|exte02idperiodoadmision int NOT NULL DEFAULT 0";}
+	if ($dbversion==9800){$sSQL="add_campos|core12escuela|core12idadminauxiliar int NOT NULL DEFAULT 0";}
+	}
 if (($dbversion>9800)&&($dbversion<9901)){
+	// 11 de mayo de 2026
+	if ($dbversion==9801){$sSQL=$u01b."(55, 'INVIL', 'Sistema de Gestion de Idiomas', 'S', 'S', 1, 0, 0, '../invil/', 10)";}
+	if ($dbversion==9802){$sSQL="UPDATE unad02modulos SET unad02idsistema=55 WHERE unad02id IN (4733, 4734, 4737, 4738, 4735, 4736, 4738)";}
+	if ($dbversion==9803){$sSQL="add_campos|corg34pruebaidioma|corg34idsoporte int NOT NULL DEFAULT 0|corg34nivelacceso int NOT NULL DEFAULT 0|corg34presentacion Text NULL";}
+	if ($dbversion==9804){$sSQL="CREATE TABLE corg38pruebapoblacion (corg38idprueba int NOT NULL, corg38idgrupo int NOT NULL, corg38id int NOT NULL DEFAULT 0, corg38vigente int NOT NULL DEFAULT 0)";}
+	if ($dbversion==9805){$sSQL="ALTER TABLE corg38pruebapoblacion ADD PRIMARY KEY(corg38id)";}
+	if ($dbversion==9806){$sSQL=$objDB->sSQLCrearIndice('corg38pruebapoblacion', 'corg38pruebapoblacion_id', 'corg38idprueba, corg38idgrupo', true);}
+	if ($dbversion==9807){$sSQL=$objDB->sSQLCrearIndice('corg38pruebapoblacion', 'corg38pruebapoblacion_padre', 'corg38idprueba');}
+	if ($dbversion==9808){$sSQL="agregamodulo|4738|55|Prueba idioma - poblacion|1|2|3|4|5|6";}
+
+	if ($dbversion==9809){$sSQL="CREATE TABLE idio01certificadoresidioma (idio01consec int NOT NULL, idio01id int NOT NULL DEFAULT 0, idio01activa int NOT NULL DEFAULT 0, idio01nombre varchar(250) NULL)";}
+	if ($dbversion==9810){$sSQL="ALTER TABLE idio01certificadoresidioma ADD PRIMARY KEY(idio01id)";}
+	if ($dbversion==9811){$sSQL=$objDB->sSQLCrearIndice('idio01certificadoresidioma', 'idio01certificadoresidioma_id', 'idio01consec', true);}
+	if ($dbversion==9812){$sSQL="agregamodulo|5501|55|Instituciones certificadores|1|2|3|4|5|6|8";}
+	if ($dbversion==9813){$sSQL=$u09."(5501, 1, 'Instituciones certificadores', 'idioinstcertifica.php', 1, 5501, 'S', '', '')";}
+
+	if ($dbversion==9814){$sSQL="add_campos|corg35certidioma|corg35vigpedido int NOT NULL DEFAULT 0|corg35idpedido int NOT NULL DEFAULT 0|corg35idcertificador int NOT NULL DEFAULT 0|corg35hab_num int NOT NULL DEFAULT 0|corg35hab_lectura int NOT NULL DEFAULT 0|corg35hab_escucha int NOT NULL DEFAULT 0|corg35hab_escritura int NOT NULL DEFAULT 0|corg35hab_habla int NOT NULL DEFAULT 0";}
+	// 13 de Mayo de 2026
+	if ($dbversion==9815){$sSQL="CREATE TABLE idio00params (idio00id int NOT NULL, idio00idescuela int NOT NULL DEFAULT 0, idio00idprograma int NOT NULL DEFAULT 0, idio00idioma int NOT NULL DEFAULT 0, idio00nivelfuncionario int NOT NULL DEFAULT 0, idio00niveldocente int NOT NULL DEFAULT 0)";}
+	if ($dbversion==9816){$sSQL="ALTER TABLE idio00params ADD PRIMARY KEY(idio00id)";}
+	if ($dbversion==9817){$sSQL="INSERT INTO idio00params (idio00id, idio00idescuela, idio00idprograma, idio00idioma, idio00nivelfuncionario, idio00niveldocente) VALUES (1, 0, 0, 0, 0, 0)";}
+	if ($dbversion==9818){$sSQL="agregamodulo|5500|55|Parametros|1|3|1707";}
+	if ($dbversion==9819){$sSQL=$u09."(5500, 1, 'Parametros', 'idioparams.php', 2, 5500, 'S', '', '')";}
+	if ($dbversion==9820){$sSQL=$unad70."(4733,5502,'idio02historialidioma','','idio02idioma','Ya existe Historial de usuarios del idioma', '')";}
+	// 9821 - 9823 quedan libres
+	if ($dbversion==9824){$sSQL="agregamodulo|5502|55|Historial de idioma|1|5|6";}
+	if ($dbversion==9825){$sSQL=$u09."(5502, 1, 'Historial de idioma', 'rpthistorialidioma.php', 11, 5502, 'S', '', '')";}
+	if ($dbversion==9826){$sSQL="DROP TABLE cttc85estadoinvita";}
+
+	if ($dbversion==9827){$sSQL="CREATE TABLE cttc85estadoinvita (cttc85id int NOT NULL, cttc85nombre varchar(100) NULL, cttc85publica int NOT NULL DEFAULT 0, cttc85directa int NOT NULL DEFAULT 0, cttc85etiqueta int NOT NULL DEFAULT 0)";}
+	if ($dbversion==9828){$sSQL="ALTER TABLE cttc85estadoinvita ADD PRIMARY KEY(cttc85id)";}
+	if ($dbversion==9829){$sSQL="INSERT INTO cttc85estadoinvita (cttc85id, cttc85nombre, cttc85publica, cttc85directa, cttc85etiqueta) VALUES 
+	(0, 'En elaboración', 1, 1, 100), 
+	(1, 'Apertura de la invitación', 1, 0, 101), 
+	(2, 'Invitación a presentar propuestas', 0, 1, 102), 
+	(5, 'Publicación de términos de referencia', 1, 0, 105), 
+	(7, 'Visita técnica', 1, 0, 107), 
+	(9, 'Observaciones a los términos de referencia', 1, 0, 109), 
+	(10, 'Recepción de solicitudes de aclaraciones', 0, 1, 110), 
+	(11, 'Respuesta a observaciones y publicación de adendas', 1, 0, 111), 
+	(12, 'Respuesta y aclaraciones a los términos de referencia y adendas', 0, 1, 112), 
+	(21, 'Recepción de ofertas y cierre de la invitación', 1, 1, 121), 
+	(23, 'Proceso de evaluación de las ofertas', 1, 0, 123), 
+	(25, 'Solicitud de aclaraciones a las ofertas', 1, 1, 125), 
+	(27, 'Respuesta a las aclaraciones de las ofertas', 1, 1, 127), 
+	(31, 'Publicación del informe de evaluación preliminar', 1, 0, 131), 
+	(33, 'Observaciones al informe de evaluación preliminar y consulta de ofertas', 1, 1, 133), 
+	(35, 'Respuesta a observaciones del informe de evaluación', 1, 0, 135), 
+	(36, 'Respuesta a observaciones', 0, 1, 136), 
+	(37, 'Publicación del informe de evaluación definitivo', 1, 1, 137), 
+	(41, 'Adjudicada', 1, 1, 141), 
+	(51, 'Desierta', 1, 1, 151), 
+	(91, 'Terminación anticipada', 1, 1, 191)";}
+	
+	//14 de Mayo de 2026
+	if ($dbversion==9830){$sSQL="DROP TABLE cttc39Invitacionofer";}
+	if ($dbversion==9831){$sSQL="CREATE TABLE cttc39Invitacionofer (cttc39idinvitacion int NOT NULL, cttc39idinvitado int NOT NULL, cttc39id int NOT NULL DEFAULT 0, cttc39estado int NOT NULL DEFAULT 0, cttc39fecharadica int NOT NULL DEFAULT 0, cttc39horaradica int NOT NULL DEFAULT 0, cttc39minradica int NOT NULL DEFAULT 0, cttc39vrtotalpropuesta Decimal(15,2) NULL DEFAULT 0, cttc39usuariorado int NOT NULL DEFAULT 0)";}
+	if ($dbversion==9832){$sSQL="ALTER TABLE cttc39Invitacionofer ADD PRIMARY KEY(cttc39id)";}
+	if ($dbversion==9833){$sSQL=$objDB->sSQLCrearIndice('cttc39Invitacionofer', 'cttc39Invitacionofer_id', 'cttc39idinvitacion, cttc39idinvitado', true);}
+	if ($dbversion==9834){$sSQL=$objDB->sSQLCrearIndice('cttc39Invitacionofer', 'cttc39Invitacionofer_padre', 'cttc39idinvitacion');}
+
+	if ($dbversion==9835){$sSQL=$u96."(4139, 0, 'Invitado', 100), 
+	(4139, 1, 'Postulándose', 101), 
+	(4139, 7, 'Radicado oferta', 107), 
+	(4139, 9, 'Desiste', 109), 
+	(4139, 10, 'No habilitado', 110), 
+	(4139, 15, 'Habilitado', 115), 
+	(4139, 17, 'Adjudicado', 117), 
+	(4139, 19, 'No adjudicado', 119)";}
+	if ($dbversion==9836){$sSQL="add_campos|olab65simulexp|olab65identificador2 varchar(20) NULL";}
+	if ($dbversion==9837){$sSQL="add_campos|core38opciongrado|core38cred_cursounico int NOT NULL DEFAULT 0";}
+
+	//15 de mayo de 2026
+	if ($dbversion==9838){$sSQL="CREATE TABLE grad06graduado (grad06idgraduado int NOT NULL, grad06id int NOT NULL DEFAULT 0, grad06fechaprimergrado int NOT NULL DEFAULT 0, grad06agnoprimergrado int NOT NULL DEFAULT 0, grad06grados_bach int NOT NULL DEFAULT 0, grad06grados_tecno int NOT NULL DEFAULT 0, grad06grados_prof int NOT NULL DEFAULT 0, grad06grados_esp int NOT NULL DEFAULT 0, grad06grados_maestria int NOT NULL DEFAULT 0, grad06grados_doctorado int NOT NULL DEFAULT 0, grad06fechaactualizadatos int NOT NULL DEFAULT 0, grad06idescuela int NOT NULL DEFAULT 0, grad06idsnies int NOT NULL DEFAULT 0, grad06zona int NOT NULL DEFAULT 0, grad06centro int NOT NULL DEFAULT 0)";}
+	if ($dbversion==9839){$sSQL="ALTER TABLE grad06graduado ADD PRIMARY KEY(grad06id)";}
+	if ($dbversion==9840){$sSQL=$objDB->sSQLCrearIndice('grad06graduado', 'grad06graduado_id', 'grad06idgraduado', true);}
+	//21  de mayo de 2026
+	if ($dbversion==9841){$sSQL="CREATE TABLE corg39indicesrpgbase (corg39idcohorte int NOT NULL DEFAULT 0, corg39idcohortefin int NOT NULL DEFAULT 0, corg39idcentro int NOT NULL DEFAULT 0, corg39idsnies int NOT NULL DEFAULT 0, corg39id int NOT NULL DEFAULT 0, corg39distancia int NOT NULL DEFAULT 0, corg39indicador int NOT NULL DEFAULT 0, corg39nivelforma int NOT NULL DEFAULT 0, corg39idzona int NOT NULL DEFAULT 0, corg39idescuela int NOT NULL DEFAULT 0, corg39numadmitidos int NOT NULL DEFAULT 0, corg39numpermanecen int NOT NULL DEFAULT 0, corg39numgraduados int NOT NULL DEFAULT 0, corg39fechadato int NOT NULL DEFAULT 0)";}
+	if ($dbversion==9842){$sSQL="ALTER TABLE corg39indicesrpgbase ADD PRIMARY KEY(corg39id)";}
+	if ($dbversion==9843){$sSQL="agregamodulo|4739|22|Indices RPG|1|5|6|1701|1707|1710";}
+	if ($dbversion==9844){$sSQL=$u09."(4739, 1, 'Indices RPG', 'coreindicesrpg.php', 11, 4739, 'S', '', '')";}
+	// 22 de mayo de 2026
+	if ($dbversion==9845){$sSQL=$u08."(2208, 'Admisiones', 'gm.php?id=2208', 'Admisiones', 'Admissions', 'Editais')";}
+	if ($dbversion==9846){$sSQL="agregamodulo|2834|28|Avance de admitidos por cohorte|1|5|6|1701|1710";}
+	if ($dbversion==9847){$sSQL=$u09."(2834, 1, 'Avance de admitidos por cohorte', 'rptavanceadmxcohorte.php', 2208, 2834, 'S', '', '')";}
+	if ($dbversion==9848){$sSQL="add_campos|core22nivelprograma|core22rpg int NOT NULL DEFAULT 0";}
+	if ($dbversion==9849){$sSQL="UPDATE core22nivelprograma SET core22rpg=1 WHERE core22id IN (2,3,4,5,6)";}
+	if ($dbversion==9850){$sSQL="add_campos|core36estadocont|core36gruporpg int NOT NULL DEFAULT 0";}
+	if ($dbversion==9851){$sSQL="UPDATE core36estadocont SET core36gruporpg=1 WHERE core36id IN (10,41,42,43,44,45,51,52,53,54,55,80)";}
+	if ($dbversion==9852){$sSQL="UPDATE core36estadocont SET core36gruporpg=7 WHERE core36id IN (90)";}
+	if ($dbversion==9853){$sSQL="INSERT INTO unae16cronaccion(unae16id, unae16accion) VALUES (2408, 'Estadistica de cursos')";}
+	// 25 de mayo de 2026 
+	// -- Se agrega el permiso de administrar terceros para poder actualizar datos de razon social de proveedores.
+	if ($dbversion==9854){$sSQL=$u04."(111, 10, 'S')";}
+	// 26 de Mayo de 2026
+	if ($dbversion==9855){$sSQL="INSERT INTO cttc76aportantes(cttc76consec, cttc76id, cttc76nombre, cttc76forma, cttc76idtercero, cttc76idunidad, cttc76idequipotrab, cttc76actorautorizado, cttc76mensajebloqueo) VALUES 
+	(11, 11, 'Oferente - Representante legal', 9, 0, 0, 0, 0, ''), 
+	(12, 12, 'Oferente - Revisor fiscal', 9, 0, 0, 0, 0, '')";}
+	//27 de mayo de 2026 
+	if ($dbversion==9856){$sSQL=$u96."(4143, 0, 'En elaboración', 100), 
+	(4143, 3, 'Radicada', 103), 
+	(4143, 7, 'Respondida', 107)";}
+	if ($dbversion==9857){$sSQL="add_campos|grad11proyecto|grad11categoria int NOT NULL DEFAULT 0";}
+	//28 de mayo de 2025
+	if ($dbversion==9858){$sSQL="agregamodulo|743|7|Recibos|1|2|3|4|5|6|8";}
+	if ($dbversion==9859){$sSQL=$u09."(743, 1, 'Recibos', 'factrecibos.php', 701, 743, 'S', '', '')";}
+	if ($dbversion==9860){$sSQL="agregamodulo|744|7|Recibo detalle|1|2|3|4|5|6|8";}
+	if ($dbversion==9861){$sSQL="agregamodulo|745|7|Convenios - Contratos|1|2|3|4|5|6|8";}
+	// 29 de mayo de 2026
+	if ($dbversion==9862){$sSQL=$u04."(3073, 10, 'S')";}
+	if ($dbversion==9863){$sSQL="CREATE TABLE unad11busca (unad11tipodoc varchar(2) NOT NULL, unad11doc varchar(20) NOT NULL, unad11id int NOT NULL DEFAULT 0, unad11busqueda varchar(200) NULL)";}
+	if ($dbversion==9864){$sSQL="ALTER TABLE unad11busca ADD PRIMARY KEY(unad11id)";}
+	if ($dbversion==9865){$sSQL=$objDB->sSQLCrearIndice('unad11busca', 'unad11_id', 'unad11tipodoc, unad11doc', true);}
+	if ($dbversion==9866){$sSQL="ALTER TABLE unad11busca ADD FULLTEXT INDEX unad11_busca(unad11busqueda)";}
+	// 4 de Junio de 2026
+	if ($dbversion==9867){$sSQL="CREATE TABLE core87reqgradoadicionales (core87idprograma int NOT NULL, core87consec int NOT NULL, core87id int NOT NULL DEFAULT 0, core87vigente int NOT NULL DEFAULT 0, core87nombre varchar(100) NULL, core87formacomprueba int NOT NULL DEFAULT 0, core87momentorecordar int NOT NULL DEFAULT 0, core87anexo int NOT NULL DEFAULT 0, core87productocobrar int NOT NULL DEFAULT 0, core87aplicanav int NOT NULL DEFAULT 0, core87nav_id int NOT NULL DEFAULT 0, core87nav_idava int NOT NULL DEFAULT 0, core87nav_codigoava varchar(20) NULL, core87idioma_id int NOT NULL DEFAULT 0, core87idioma_nivel int NOT NULL DEFAULT 0, core87curso_id int NOT NULL DEFAULT 0, core87curso_notaminima Decimal(15,2) NULL DEFAULT 0)";}
+	if ($dbversion==9868){$sSQL="ALTER TABLE core87reqgradoadicionales ADD PRIMARY KEY(core87id)";}
+	if ($dbversion==9869){$sSQL=$objDB->sSQLCrearIndice('core87reqgradoadicionales', 'core87reqgradoadicionales_id', 'core87idprograma, core87consec', true);}
+	if ($dbversion==9870){$sSQL=$objDB->sSQLCrearIndice('core87reqgradoadicionales', 'core87reqgradoadicionales_padre', 'core87idprograma');}
+	if ($dbversion==9871){$sSQL="agregamodulo|2287|22|Programas-Req grado adicional|1|2|3|4|5|6|8";}
+	if ($dbversion==9872){$sSQL=$objDB->sSQLCrearIndice('core47admitidos', 'core47admitidos_snies', 'core47idsnies');}
+
+	if ($dbversion==9873){$sSQL="DROP TABLE idio02historialidioma";}
+	if ($dbversion==9874){$sSQL="CREATE TABLE idio02historialidioma (idio02idtercero int NOT NULL, idio02idioma int NOT NULL, idio02rutaqualifica int NOT NULL, idio02id int NOT NULL DEFAULT 0, idio02fechacert int NOT NULL DEFAULT 0, idio02nivel int NOT NULL DEFAULT 0, idio02grupo int NOT NULL DEFAULT 0)";}
+	if ($dbversion==9875){$sSQL="ALTER TABLE idio02historialidioma ADD PRIMARY KEY(idio02id)";}
+	if ($dbversion==9876){$sSQL=$objDB->sSQLCrearIndice('idio02historialidioma', 'idio02historialidioma_id', 'idio02idtercero, idio02idioma, idio02rutaqualifica', true);}
+	if ($dbversion==9877){$sSQL="CREATE TABLE idio03grupointeres (idio03consec int NOT NULL, idio03id int NOT NULL DEFAULT 0, idio03activo int NOT NULL DEFAULT 0, idio03orden int NOT NULL DEFAULT 0, idio03nombre varchar(250) NULL, idio03exigible int NOT NULL DEFAULT 0, idio03grupopob int NOT NULL DEFAULT 0, idio03nivelobjetivo int NOT NULL DEFAULT 0)";}
+	if ($dbversion==9878){$sSQL="ALTER TABLE idio03grupointeres ADD PRIMARY KEY(idio03id)";}
+	if ($dbversion==9879){$sSQL=$objDB->sSQLCrearIndice('idio03grupointeres', 'idio03grupointeres_id', 'idio03consec', true);}
+	if ($dbversion==9880){$sSQL="agregamodulo|5503|55|Grupos de interes|1|2|3|4|5|6|8";}
+	if ($dbversion==9881){$sSQL=$u09."(5503, 1, 'Grupos de interes', 'idiogrupointeres.php', 2, 5503, 'S', '', '')";}
+	if ($dbversion==9882){$sSQL="CREATE TABLE idio04grupointerescargo (idio04idgrupo int NOT NULL, idio04idcargo int NOT NULL, idio04id int NOT NULL DEFAULT 0, idio04activo int NOT NULL DEFAULT 0)";}
+	if ($dbversion==9883){$sSQL="ALTER TABLE idio04grupointerescargo ADD PRIMARY KEY(idio04id)";}
+	if ($dbversion==9884){$sSQL=$objDB->sSQLCrearIndice('idio04grupointerescargo', 'idio04grupointerescargo_id', 'idio04idgrupo, idio04idcargo', true);}
+	if ($dbversion==9885){$sSQL=$objDB->sSQLCrearIndice('idio04grupointerescargo', 'idio04grupointerescargo_padre', 'idio04idgrupo');}
+	if ($dbversion==9886){$sSQL="agregamodulo|5504|55|Grupos de interes - cargos|1|2|3|4|5|6|8";}
+	if ($dbversion==9887){$sSQL="CREATE TABLE idio05grupointconfig (idio05idgrupo int NOT NULL, idio05idnivel int NOT NULL, idio05id int NOT NULL DEFAULT 0, idio05avance int NOT NULL DEFAULT 0)";}
+	if ($dbversion==9888){$sSQL="ALTER TABLE idio05grupointconfig ADD PRIMARY KEY(idio05id)";}
+	if ($dbversion==9889){$sSQL=$objDB->sSQLCrearIndice('idio05grupointconfig', 'idio05grupointconfig_id', 'idio05idgrupo, idio05idnivel', true);}
+	if ($dbversion==9890){$sSQL=$objDB->sSQLCrearIndice('idio05grupointconfig', 'idio05grupointconfig_padre', 'idio05idgrupo');}
+	if ($dbversion==9891){$sSQL="agregamodulo|5505|55|Grupos de interes - configuracion|1|2|3|4|5|6|8";}
+	// 5 de junio de 2026
+	if ($dbversion==9892){$sSQL=$objDB->sSQLEliminarIndice('unae25dblog', 'unae25dblog_id');}
+	if ($dbversion==9893){$sSQL=$objDB->sSQLCrearIndice('unae25dblog', 'unae25dblog_id', 'unae25fechaini, unae25tipouso', true);}
+	if ($dbversion==9894){$sSQL="ALTER TABLE unae25dblog CHANGE unae25fechafin unae25fechafin int NOT NULL DEFAULT 0";}
+	// 8 de junio de 2026
+	if ($dbversion==9895){$sSQL="CREATE TABLE unaf27equivalentes (unaf27idtercero int NOT NULL, unaf27idseccional int NOT NULL, unaf27id int NOT NULL DEFAULT 0, unaf27secc_id int NOT NULL DEFAULT 0, unaf27secc_tipodoc varchar(2) NULL, unaf27secc_doc varchar(20) NULL, unaf27secc_correo varchar(100) NULL, unaf27forma int NOT NULL DEFAULT 0, unaf27fechacrea int NOT NULL DEFAULT 0, bdoc varchar(50) NULL, bnombre varchar(50) NULL, bseccional int NOT NULL DEFAULT 0)";}
+	if ($dbversion==9896){$sSQL="ALTER TABLE unaf27equivalentes ADD PRIMARY KEY(unaf27id)";}
+	if ($dbversion==9897){$sSQL=$objDB->sSQLCrearIndice('unaf27equivalentes', 'unaf27equivalentes_id', 'unaf27idtercero, unaf27idseccional', true);}
+	if ($dbversion==9898){$sSQL="agregamodulo|4327|1|Usuarios equivalentes|1|2|3|4|5|6|1707";}
+	if ($dbversion==9899){$sSQL=$u09."(4327, 1, 'Usuarios equivalentes', 'unadseccequivale.php', 1, 4327, 'S', '', '')";}
+	// 11 de junio de 2026
+	if ($dbversion==9900){$sSQL="CREATE TABLE teso20cuentanits (teso20idcuentabanco int NOT NULL, teso20consec int NOT NULL, teso20id int NOT NULL DEFAULT 0, teso20activo int NOT NULL DEFAULT 0, teso20nit varchar(20) NULL, teso20fechaini int NOT NULL DEFAULT 0, teso20fechafin int NOT NULL DEFAULT 0)";}
 }
 if (($dbversion>9900)&&($dbversion<10001)){
-	if ($dbversion==99999){$sSQL="";}
-}
+	if ($dbversion==9901){$sSQL="ALTER TABLE teso20cuentanits ADD PRIMARY KEY(teso20id)";}
+	if ($dbversion==9902){$sSQL=$objDB->sSQLCrearIndice('teso20cuentanits', 'teso20cuentanits_id', 'teso20idcuentabanco, teso20consec', true);}
+	if ($dbversion==9903){$sSQL=$objDB->sSQLCrearIndice('teso20cuentanits', 'teso20cuentanits_padre', 'teso20idcuentabanco');}
+	if ($dbversion==9904){$sSQL="agregamodulo|820|8|Nits autorizados|1|2|3|4|5|6|8";}
+	if ($dbversion==9905){$sSQL="add_campos|fact08cuenta|fact08idcategoria int NOT NULL DEFAULT 0";}
+	//12 de junio de 2026
+	if ($dbversion==9906){$sSQL=$unad70."(146,4740,'corg40articulacion','corg40id','corg40idperiodo','El dato esta incluido en Articulacion', '')";}
+	if ($dbversion==9907){$sSQL="CREATE TABLE corg40articulacion (corg40idperiodo int NOT NULL, corg40id int NOT NULL DEFAULT 0, corg40idequivalente int NOT NULL DEFAULT 0, corg40numest int NOT NULL DEFAULT 0)";}
+	if ($dbversion==9908){$sSQL="ALTER TABLE corg40articulacion ADD PRIMARY KEY(corg40id)";}
+	if ($dbversion==9909){$sSQL=$objDB->sSQLCrearIndice('corg40articulacion', 'corg40articulacion_id', 'corg40idperiodo', true);}
+	if ($dbversion==9910){$sSQL="agregamodulo|4740|22|Articulación|1|2|3|4|5|6";}
+	if ($dbversion==9911){$sSQL=$u09."(4740, 1, 'Articulación', 'corearticulacion.php', 2200, 4740, 'S', '', '')";}
+	//16 de junio de 2026
+	if ($dbversion==9912){$sSQL="CREATE TABLE unaf28seccionaltipodoc (unaf28idseccional int NOT NULL, unaf28tipodoc varchar(2) NOT NULL, unaf28id int NOT NULL DEFAULT 0, unaf28tipoequivale varchar(2) NULL, unaf28forma int NOT NULL DEFAULT 0)";}
+	if ($dbversion==9913){$sSQL="ALTER TABLE unaf28seccionaltipodoc ADD PRIMARY KEY(unaf28idseccional, unaf28tipodoc)";}
+	if ($dbversion==9914){$sSQL=$objDB->sSQLCrearIndice('unaf28seccionaltipodoc', 'unaf28seccionaltipodoc_padre', 'unaf28idseccional');}
+	if ($dbversion==9915){$sSQL="agregamodulo|4328|1|Seccionales - tipo documento|1|2|3|4|5|6";}
+	if ($dbversion==9916){$sSQL="add_campos|unad40curso|unad40idseccional int NOT NULL DEFAULT 0";}
+
+	if ($dbversion==9917){$sSQL="drop_campo|fact08cuenta|fact08idcategoria";}
+	if ($dbversion==9918){$sSQL="add_campos|fact08cuenta|fact08pagos int NOT NULL DEFAULT 0|fact08recaudo int NOT NULL DEFAULT 0|fact08cajamenor int NOT NULL DEFAULT 0|fact08convenio int NOT NULL DEFAULT 0";}
+	//17 de junio de 2026
+	if ($dbversion==9919){$sSQL="CREATE TABLE cart22recaudolote (cart22idrecmasivo int NOT NULL, cart22consec int NOT NULL, cart22id int NOT NULL DEFAULT 0, cart22item Text NULL, cart22procesado int NOT NULL DEFAULT 0, cart22fechaprocesado int NOT NULL DEFAULT 0)";}
+	if ($dbversion==9920){$sSQL="ALTER TABLE cart22recaudolote ADD PRIMARY KEY(cart22id)";}
+	if ($dbversion==9921){$sSQL=$objDB->sSQLCrearIndice('cart22recaudolote', 'cart22recaudolote_id', 'cart22idrecmasivo, cart22consec', true);}
+	if ($dbversion==9922){$sSQL=$objDB->sSQLCrearIndice('cart22recaudolote', 'cart22recaudolote_padre', 'cart22idrecmasivo');}
+	if ($dbversion==9923){$sSQL="agregamodulo|922|9|Lote|1|2|3|4|5|6|8";}
+	if ($dbversion==9924){$sSQL="add_campos|cart15recaudomasivo|cart15numlineas int NOT NULL DEFAULT 0|cart15numlineasprocesa int NOT NULL DEFAULT 0";}
+	//19 de junio de 2026
+	if ($dbversion==9925){$sSQL=$objDB->sSQLCrearIndice('corf60inscripcion', 'corf60inscripcion_tercero', 'corf60idtercero');}
+	if ($dbversion==9926){$sSQL="add_campos|cart22recaudolote|cart22hora int NOT NULL DEFAULT 0|cart22min int NOT NULL DEFAULT 0";}
+	if ($dbversion==9927){$sSQL="add_campos|cart16recaudoitems|cart16numref varchar(50) NULL";}
+	// 20 de junio de 2026
+	if ($dbversion==9928){$sSQL="add_campos|unae43tokenws|unad43uso varchar(100) NULL";}
+	// 22 de junio de 2026
+	if ($dbversion==9929){$sSQL="add_campos|gcmo20variable|gcmo20dig_rangoet int NOT NULL DEFAULT 0|gcmo20dig_variable int NOT NULL DEFAULT 0|gcmo20fuente_modulo int NOT NULL DEFAULT 0";}
+	if ($dbversion==9930){$sSQL="add_campos|unad02modulos|unad02bancovariables int NOT NULL DEFAULT 0";}
+	if ($dbversion==9931){$sSQL="add_campos|core09programa|core01procesaadmisiones int NOT NULL DEFAULT 0";}
+	if ($dbversion==9932){$sSQL="INSERT INTO unae16cronaccion(unae16id, unae16accion) VALUES (111, 'Terceros'), (2247, 'Procesar admisiones')";}
+	// 23 de Junio de 2026
+	if ($dbversion==9933){$sSQL="ALTER TABLE grad11proyecto CHANGE grad11titulo grad11titulo VARCHAR(300)";}
+	}
 if (false) {
+	if ($dbversion==99999){$sSQL="";}
 	if ($dbversion==9999){$sSQL=$u04."(3646, 10, 'S')";}
 	//if ($dbversion==6781){$sSQL=$u09."(12280, 1, 'Cupos preoferta', 'corepreofcupos.php', 2206, 12280, 'S', '', '')";}
 	//(3220, 'Conceptos para nómina', ''), (3221, 'Provisiones de nómina', '')

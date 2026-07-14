@@ -23,6 +23,13 @@ class clsHtmlCombos
 	var $sVrVacio = '';
 	var $sValorCombo = '';
 	var $sEstilos = '';
+	var $bEsCombobox = false;
+	var $sAriaLabel = '';
+	var $sAriaLabelOpen = '';
+	var $sAriaLabelInput = '';
+	var $sPlaceholder = '';
+	var $sEmptyText = '';
+
 	function addArreglo($aDatos, $iCantidad, $sEstilo = '')
 	{
 		for ($k = 1; $k <= $iCantidad; $k++) {
@@ -104,6 +111,15 @@ class clsHtmlCombos
 		$sAccion = '';
 		$sEstilos = '';
 		$sClaseC = '';
+		$sDatosChosen = '';
+		if ($this->bEsCombobox) {
+			if ($this->sClaseCombo != '') {
+				$this->sClaseCombo = $this->sClaseCombo . ' combobox';
+			} else {
+				$this->sClaseCombo = 'combobox';
+			}
+			$sDatosChosen = ' data-aria-label="' . $this->sAriaLabel . '" data-aria-label-open="' . $this->sAriaLabelOpen . '" data-aria-label-input="' . $this->sAriaLabelInput . '" data-placeholder="' . $this->sPlaceholder . '" data-empty-text="' . $this->sEmptyText . '">';
+		}
 		if ($this->sAccion != '') {
 			$sAccion = ' onChange="' . $this->sAccion . '"';
 		}
@@ -124,7 +140,7 @@ class clsHtmlCombos
 		if ($this->sEstilos != '') {
 			$sEstilos = ' style="' . $sAncho . $this->sEstilos . '"';
 		}
-		$sRes = '<select id="' . $this->sNombre . '" name="' . $this->sNombre . '"' . $sAccion . $sClaseC . $sEstilos . $sAria . '>';
+		$sRes = '<select id="' . $this->sNombre . '" name="' . $this->sNombre . '"' . $sAccion . $sClaseC . $sEstilos . $sAria . $sDatosChosen . '>';
 		if ($this->bConVacio) {
 			$sEstilo = '';
 			if ($this->sVrVacio === '') {
@@ -189,7 +205,7 @@ class clsHtmlCombos
 			$this->addItem($k, $sMeses[$k], $sEstilo);
 		}
 	}
-	function nuevo($sNombre, $sValorCombo = '', $bConVacio = true, $sEtiVacio = '{Seleccione Uno}', $sVrVacio = '')
+	function nuevo($sNombre, $sValorCombo = '', $bConVacio = true, $sEtiVacio = '{Seleccione Uno}', $sVrVacio = '', $sEtiLabel = '')
 	{
 		$this->bConVacio = $bConVacio;
 		$this->aItem = array();
@@ -201,6 +217,12 @@ class clsHtmlCombos
 		$this->sNombre = $sNombre;
 		$this->sVrVacio = $sVrVacio;
 		$this->sValorCombo = $sValorCombo;
+		$this->bEsCombobox = false;
+		$this->sAriaLabel = $sEtiLabel;
+		$this->sAriaLabelOpen = 'B&uacute;squeda y lista de ' . $this->sAriaLabel;
+		$this->sAriaLabelInput = 'Buscar en ' . $this->sAriaLabel;
+		$this->sPlaceholder = 'Ingrese una b&uacute;squeda';
+		$this->sEmptyText = 'No se encontraron resultados';
 	}
 	function numeros($iNumIni, $iNumFin, $iOrden = 0, $sEstilo = '')
 	{
@@ -645,6 +667,10 @@ class clsHtmlForma
 						$bBotonMini = true;
 						$sImg = '<i id="i_expande' . $sNombre . '"  class="icon-expand-less"></i>';
 						$sNombre = 'btexpande' . $sNombre;
+						break;
+					case 'btMiniGrado':
+						$bBotonMini = true;
+						$sImg = '<i class="icon-school"></i>';
 						break;
 					case 'btMiniLimpiar':
 						$bBotonMini = true;
@@ -1515,6 +1541,9 @@ function html_DivAlarmaV2($sError, $iTipoError, $bDebug = false)
 {
 	$sClase = '';
 	$iMomento = 0;
+	if (is_array($sError)) {
+		$sError = json_encode($sError);
+	}
 	if ($bDebug) {
 		$sError = $sError . ' -- ' . $iTipoError . '';
 	}
@@ -1557,6 +1586,45 @@ function html_DivAlarmaV2($sError, $iTipoError, $bDebug = false)
 		$sError = $sError . ' -- ' . $iMomento . '';
 	}
 	$sRes = '<div id="div_alarma"' . $sClase . '>' . $sError . '</div>';
+	return $sRes;
+}
+function html_DivAlarmaV3($sError, $iTipoError = 0)
+{
+	$sRes = '';
+	$sClase = '';
+	$sIcono = '';
+	$sTitulo = '';
+	switch ($iTipoError) {
+		case 1: // Azul
+			$sClase = 'alert--info';
+			$sIcono = 'icon-info';
+			$sTitulo = 'Informaci&oacute;n';
+			break;
+		case 2: // Verde
+			$sClase = 'alert--success';
+			$sIcono = 'icon-check';
+			$sTitulo = '&Eacute;xito';
+			break;
+		default: // Rojo
+			$sClase = 'alert--danger';
+			$sIcono = 'icon-warning';
+			$sTitulo = 'Advertencia';
+			break;
+	}
+	$sRes = $sRes . '<section id="div_alarma" class="toasts">';
+	if ($sError != '') {
+		$sRes = $sRes . '<div class="alert ' . $sClase . ' alert--toast" role="alert" aria-live="polite">';
+		$sRes = $sRes . '<button class="alert__close btn" aria-label="Cerrar alerta" type="button" onclick="closeAlert(this)">';
+		$sRes = $sRes . '<i class="icon-closed" aria-hidden="true"></i>';
+		$sRes = $sRes . '</button>';
+		$sRes = $sRes . '<i class="' . $sIcono . ' alert__icon" aria-hidden="true"></i>';
+		$sRes = $sRes . '<b class="alert__title">' . $sTitulo . '</b>';
+		$sRes = $sRes . '<div class="alert__content">';
+		$sRes = $sRes . '<p>' . $sError . '</p>';
+		$sRes = $sRes . '</div>';
+		$sRes = $sRes . '</div>';
+	}
+	$sRes = $sRes . '</section>';
 	return $sRes;
 }
 function html_DivAyudaLocal($sNombreCampo)
@@ -1651,6 +1719,9 @@ function html_Combo145($sNombreCampo, $sTipoDoc, $objDB, $objCombos, $idAccion =
 		case 243:
 			$sCondi = 'unad45id>=0';
 			break;
+		case 10: // Unadito
+			$sCondi = '(unad45id>=0 AND unad45activo=1) OR unad45id=0';
+			break;	
 		case 16: // Proveedores
 			$sCondi = 'unad45aplicaproveed>0';
 			break;
@@ -2201,7 +2272,7 @@ function html_menuCampusV2($objDB, $iPiel = 2, $bDebug = false, $idTercero = 0, 
 	if ($idTercero == 0) {
 		$idTercero = $_SESSION['unad_id_tercero'];
 	}
-	$sDebug = sesion_actualizar_v2($objDB, $bDebug);
+	$sDebugS = sesion_actualizar_v2($objDB, $bDebug);
 	$sHTML = '';
 	$sClaseLinkBase = '';
 	$sClaseLinkItem = '';
@@ -2691,10 +2762,36 @@ function html_menuCampusV3($objDB, $bDebug = false, $idTercero = 0)
 	$sHTML = $sHTML . $sFinBloque . '</li>';
 	return array($sHTML, $sDebug);
 }
+
 function html_menuCampus2025($objDB, $bDebug = false, $idTercero = 0)
 {
+	if ($idTercero == 0) {
+		$idTercero = $_SESSION['unad_id_tercero'];
+	}
+	list($sHTML, $sDebug) = html_Menu2026($objDB, $idTercero, 2, $bDebug);
+	return array($sHTML, $sDebug);
+}
+function html_Menu2026($objDB, $idTercero, $iUso = 1, $bDebug = false)
+{
 	$sDebug = '';
+	/* 
+	Usos : 0 - Ninguno (como si no hubiera usuario.)
+	1 - Aurea2
+	2 - Campus
+	3 - Proveedores
+	7 - Aurea  - Portal de servicios.
+	*/
 	require './app.php';
+	$mensajes_17 = $APP->rutacomun . 'lg/lg_17_' . $_SESSION['unad_idioma'] . '.php';
+	if (!file_exists($mensajes_17)) {
+		$mensajes_17 = $APP->rutacomun . 'lg/lg_17_es.php';
+	}
+	require $mensajes_17;
+	$mensajes_17 = $APP->rutacomun . 'lg/lg_17_' . $_SESSION['unad_idioma'] . '.php';
+	if (!file_exists($mensajes_17)) {
+		$mensajes_17 = $APP->rutacomun . 'lg/lg_17_es.php';
+	}
+	require $mensajes_17;
 	$idEntidad = Traer_Entidad();
 	$bUnadFlorida = false;
 	switch ($idEntidad) {
@@ -2703,9 +2800,6 @@ function html_menuCampus2025($objDB, $bDebug = false, $idTercero = 0)
 			break;
 	}
 	$_SESSION['u_ultimominuto'] = iminutoavance();
-	if ($idTercero == 0) {
-		$idTercero = $_SESSION['unad_id_tercero'];
-	}
 	$sDebug = sesion_actualizar_v2($objDB, $bDebug);
 	$sHTML = '';
 	$et_inicio = 'Inicio';
@@ -2722,6 +2816,8 @@ function html_menuCampus2025($objDB, $bDebug = false, $idTercero = 0)
 	$et_oferabierta = 'Cursos Abiertos';
 	$et_emprendimiento = 'Emprendimiento';
 	$et_proveedores = 'Proveedores';
+	$et_seccionales = 'Seccionales';
+	$et_matriz = 'UNAD - Colombia';
 	$et_modulos = 'Acad&eacute;mico';
 	$et_erp = 'SIGAF';
 	$et_gestion = 'Gesti&oacute;n';
@@ -2781,12 +2877,23 @@ function html_menuCampus2025($objDB, $bDebug = false, $idTercero = 0)
 			$et_salir = 'Sair';
 			break;
 	}
+	$sUrlInicio = './';
+	$bInternos = false;
+	switch ($iUso) {
+		case 1: // aurea2
+			$bInternos = true;
+			$sUrlInicio = './panel.php';
+			break;
+		case 2: // Campus
+			$bInternos = true;
+			$sUrlInicio = './accesit.php';
+			break;
+	}
 	$sHTML = $sHTML . '<section class="menu-toggle">';
 	$sHTML = $sHTML . '<button class="btn btn--tertiary" aria-label="Abrir menú principal">';
 	$sHTML = $sHTML . '<i class="icon-menu" aria-hidden="true"></i>';
 	$sHTML = $sHTML . '</button>';
 	$sHTML = $sHTML . '</section>';
-
 	$sHTML = $sHTML . '<div class="nav__content">';
 	$sHTML = $sHTML . '<section class="nav__main" role="navigation" aria-label="' . $label_menu . '">';
 	$sHTML = $sHTML . '<div class="nav__content">';
@@ -2794,220 +2901,234 @@ function html_menuCampus2025($objDB, $bDebug = false, $idTercero = 0)
 	$sHTML = $sHTML . '<span class="menu__title">' . $et_menu . '</span>';
 	$sHTML = $sHTML . '<ul class="menu__content">';
 	$sHTML = $sHTML . '<li class="menu-item">';
-	$sHTML = $sHTML . '<a href="./accesit.php" class="item"><i class="icon-home" aria-hidden="true"></i>' . $et_inicio . '</a>';
+	$sHTML = $sHTML . '<a href="' . $sUrlInicio . '" class="item"><i class="icon-home" aria-hidden="true"></i>' . $et_inicio . '</a>';
 	$sHTML = $sHTML . '</li>';
 	$bEspeciales = false;
 	$bRevisaEspeciales = false;
 	$bConSoporte = false;
 	// $idTercero = 0;
-	if ((int)$idTercero > 0) {
-		switch ($idEntidad) {
-			case 0: // Colombia
-				$bRevisaEspeciales = true;
-				break;
-		}
-		if ($bRevisaEspeciales) {
-			if (function_exists('f107_PerfilPertenece')) {
-				if (f107_PerfilPertenece($idTercero, 1, $objDB)) {
-					$bEspeciales = true;
-				} else {
+	switch ($iUso) {
+		case 1: // aurea2 segun el componente
+			break;
+		case 2: // Campus
+			switch ($idEntidad) {
+				case 0: // Colombia
+					$bRevisaEspeciales = true;
+					break;
+			}
+			if ($bRevisaEspeciales) {
+				if (function_exists('f107_PerfilPertenece')) {
+					if (f107_PerfilPertenece($idTercero, 1, $objDB)) {
+						$bEspeciales = true;
+					} else {
+					}
 				}
 			}
-		}
-		// Vida academica
-		$sHTML = $sHTML . '<li class="menu-item">';
-		$sHTML = $sHTML . '<button class="item" aria-expanded="false" aria-controls="submenu-2" aria-haspopup="menu">';
-		$sHTML = $sHTML . '<i class="icon-school" aria-hidden="true"></i>' . $et_vida;
-		$sHTML = $sHTML . '<i class="icon-navigate-next" aria-hidden="true"></i>';
-		$sHTML = $sHTML . '</button>';
-		$sHTML = $sHTML . '<div class="submenu">';
-		$sHTML = $sHTML . '<ul id="submenu-2" class="submenu__content" aria-hidden="true">';
-		$sHTML = $sHTML . '<li><a href="./miscursos.php" >' . $et_miscursos . '</a></li>';
-		$sHTML = $sHTML . '<li><a href="./misinscripciones.php" >' . $et_misinscripciones . '</a></li>';
-		if ($idEntidad == 0) {
-			$sHTML = $sHTML . '<li><a href="./cipas.php" >' . $et_cipas . '</a></li>';
-			$sHTML = $sHTML . '<li><a href="./sai.php" >' . $et_sai . '</a></li>';
-			if ($bEspeciales) {
-				$sHTML = $sHTML . '<li><a href="./misprogramas.php" >' . $et_misprogramas . '</a></li>';
+			// Vida academica
+			$sHTML = $sHTML . '<li class="menu-item">';
+			$sHTML = $sHTML . '<button class="item" aria-expanded="false" aria-controls="submenu-2" aria-haspopup="menu">';
+			$sHTML = $sHTML . '<i class="icon-school" aria-hidden="true"></i>' . $et_vida;
+			$sHTML = $sHTML . '<i class="icon-navigate-next" aria-hidden="true"></i>';
+			$sHTML = $sHTML . '</button>';
+			$sHTML = $sHTML . '<div class="submenu">';
+			$sHTML = $sHTML . '<ul id="submenu-2" class="submenu__content" aria-hidden="true">';
+			$sHTML = $sHTML . '<li><a href="./miscursos.php" >' . $et_miscursos . '</a></li>';
+			$sHTML = $sHTML . '<li><a href="./misinscripciones.php" >' . $et_misinscripciones . '</a></li>';
+			if ($idEntidad == 0) {
+				$sHTML = $sHTML . '<li><a href="./cipas.php" >' . $et_cipas . '</a></li>';
+				$sHTML = $sHTML . '<li><a href="./sai.php" >' . $et_sai . '</a></li>';
+				if ($bEspeciales) {
+					$sHTML = $sHTML . '<li><a href="./misprogramas.php" >' . $et_misprogramas . '</a></li>';
+				}
 			}
-		}
-		$sHTML = $sHTML . '<li><a href="./eventos.php" >' . $et_eventos . '</a></li>';
-		$sHTML = $sHTML . '</ul>';
-		$sHTML = $sHTML . '</div>';
-		$sHTML = $sHTML . '</li>';
-		// Servicios
-		$sHTML = $sHTML . '<li class="menu-item">';
-		$sHTML = $sHTML . '<button class="item" aria-expanded="false" aria-controls="submenu-2" aria-haspopup="menu">';
-		$sHTML = $sHTML . '<i class="icon-settings" aria-hidden="true"></i>' . $et_servicios;
-		$sHTML = $sHTML . '<i class="icon-navigate-next" aria-hidden="true"></i>';
-		$sHTML = $sHTML . '</button>';
-		$sHTML = $sHTML . '<div class="submenu">';
-		$sHTML = $sHTML . '<ul id="submenu-2" class="submenu__content" aria-hidden="true">';
-		$sHTML = $sHTML . '<li><a href="./servicios.php" >' . $et_serviciosacad . '</a></li>';
-		$sHTML = $sHTML . '<li><a href="./admisiones.php" >' . $et_admisiones . '</a></li>';
-		$sHTML = $sHTML . '<li><a href="./mooc.php" >' . $et_mooc . '</a></li>';
-		if ($idEntidad == 0) {
-			$sHTML = $sHTML . '<li><a href="./ofertaabierta.php" >' . $et_oferabierta . '</a></li>';
-			$sHTML = $sHTML . '<li><a href="./emprendedor.php" >' . $et_emprendimiento . '</a></li>';
-			if ($bEspeciales) {
-				$sHTML = $sHTML . '<li><a href="https://erp.unad.edu.co/proveedor/" >' . $et_proveedores . '</a></li>';
+			$sHTML = $sHTML . '<li><a href="./eventos.php" >' . $et_eventos . '</a></li>';
+			$sHTML = $sHTML . '</ul>';
+			$sHTML = $sHTML . '</div>';
+			$sHTML = $sHTML . '</li>';
+			// Servicios
+			$sHTML = $sHTML . '<li class="menu-item">';
+			$sHTML = $sHTML . '<button class="item" aria-expanded="false" aria-controls="submenu-2" aria-haspopup="menu">';
+			$sHTML = $sHTML . '<i class="icon-settings" aria-hidden="true"></i>' . $et_servicios;
+			$sHTML = $sHTML . '<i class="icon-navigate-next" aria-hidden="true"></i>';
+			$sHTML = $sHTML . '</button>';
+			$sHTML = $sHTML . '<div class="submenu">';
+			$sHTML = $sHTML . '<ul id="submenu-2" class="submenu__content" aria-hidden="true">';
+			$sHTML = $sHTML . '<li><a href="./servicios.php" >' . $et_serviciosacad . '</a></li>';
+			$sHTML = $sHTML . '<li><a href="./admisiones.php" >' . $et_admisiones . '</a></li>';
+			$sHTML = $sHTML . '<li><a href="./mooc.php" >' . $et_mooc . '</a></li>';
+			if ($idEntidad == 0) {
+				$sHTML = $sHTML . '<li><a href="./ofertaabierta.php" >' . $et_oferabierta . '</a></li>';
+				$sHTML = $sHTML . '<li><a href="./emprendedor.php" >' . $et_emprendimiento . '</a></li>';
 			}
-		}
-		$sHTML = $sHTML . '</ul>';
-		$sHTML = $sHTML . '</div>';
-		$sHTML = $sHTML . '</li>';
+			if ($idEntidad == 0) {
+				$sHTML = $sHTML . '<li><a href="./seccionales.php" >' . $et_seccionales . '</a></li>';
+				if ($bEspeciales) {
+					$sHTML = $sHTML . '<li><a href="https://erp.unad.edu.co/proveedor/" >' . $et_proveedores . '</a></li>';
+				}
+			} else {
+				$sHTML = $sHTML . '<li><a href="./unadcolombia.php" >' . $et_matriz . '</a></li>';
+			}
+			$sHTML = $sHTML . '</ul>';
+			$sHTML = $sHTML . '</div>';
+			$sHTML = $sHTML . '</li>';
+			// Termian el menu campus
+			break;
+	}
+	if ($bInternos) {
 		//Ver si tiene funciones administrativas.
-		$bInternos = true;
 		if (!is_object($objDB)) {
 			$bInternos = false;
 		}
-		if ($bInternos) {
-			// Ver si hay soporte
+	}
+	if ($bInternos) {
+		if ($iUso == 2) {
+			// Ver si hay soporte para que administre el banner de campus.
 			list($bConSoporte, $sDebugP) = seg_revisa_permisoV3(202, 1, $idTercero, $objDB);
-			//
-			$sSQL = 'SELECT unad88appsestado FROM unad88opciones WHERE unad88id=1';
-			$tabla = $objDB->ejecutasql($sSQL);
-			if ($objDB->nf($tabla) > 0) {
-				$fila = $objDB->sf($tabla);
-				if ($fila['unad88appsestado'] == 9) {
-					$bInternos = false;
-				}
-			} else {
+		}
+		$sSQL = 'SELECT unad88appsestado FROM unad88opciones WHERE unad88id=1';
+		$tabla = $objDB->ejecutasql($sSQL);
+		if ($objDB->nf($tabla) > 0) {
+			$fila = $objDB->sf($tabla);
+			if ($fila['unad88appsestado'] == 9) {
 				$bInternos = false;
 			}
+		} else {
+			$bInternos = false;
 		}
-		if ($bInternos) {
-			//Acceso a los modulos en los que tiene permiso.
-			$bConModulos = false;
-			$bConERP = false;
-			$bConGestion = false;
-			$sPerfiles = '-99';
-			$sSQL = 'SELECT unad07idperfil FROM unad07usuarios WHERE unad07idtercero=' . $idTercero . ' AND unad07vigente="S"';
+	}
+	if ($bInternos) {
+		//Acceso a los modulos en los que tiene permiso.
+		$bConModulos = false;
+		$bConERP = false;
+		$bConGestion = false;
+		$sPerfiles = '-99';
+		$sSQL = 'SELECT unad07idperfil FROM unad07usuarios WHERE unad07idtercero=' . $idTercero . ' AND unad07vigente="S"';
+		$tabla = $objDB->ejecutasql($sSQL);
+		while ($fila = $objDB->sf($tabla)) {
+			$sPerfiles = $sPerfiles . ',' . $fila['unad07idperfil'];
+		}
+		$sSistema = '-99';
+		//, unad01orden
+		if ($sPerfiles != '-99') {
+			$sSQL = 'SELECT T1.unad02idsistema, TS.unad01orden 
+		FROM unad06perfilmodpermiso AS TB, unad02modulos AS T1, unad01sistema AS TS 
+		WHERE TB.unad06idperfil IN (' . $sPerfiles . ') AND TB.unad06idpermiso=1 AND TB.unad06vigente="S" 
+		AND TB.unad06idmodulo=T1.unad02id AND T1.unad02idsistema NOT IN (99)
+		AND T1.unad02idsistema=TS.unad01id 
+		GROUP BY T1.unad02idsistema, TS.unad01orden';
 			$tabla = $objDB->ejecutasql($sSQL);
 			while ($fila = $objDB->sf($tabla)) {
-				$sPerfiles = $sPerfiles . ',' . $fila['unad07idperfil'];
-			}
-			$sSistema = '-99';
-			//, unad01orden
-			if ($sPerfiles != '-99') {
-				$sSQL = 'SELECT T1.unad02idsistema, TS.unad01orden 
-			FROM unad06perfilmodpermiso AS TB, unad02modulos AS T1, unad01sistema AS TS 
-			WHERE TB.unad06idperfil IN (' . $sPerfiles . ') AND TB.unad06idpermiso=1 AND TB.unad06vigente="S" 
-			AND TB.unad06idmodulo=T1.unad02id AND T1.unad02idsistema NOT IN (99)
-			AND T1.unad02idsistema=TS.unad01id 
-			GROUP BY T1.unad02idsistema, TS.unad01orden';
-				$tabla = $objDB->ejecutasql($sSQL);
-				while ($fila = $objDB->sf($tabla)) {
-					if ($fila['unad01orden'] < 70) {
-						$bConModulos = true;
+				if ($fila['unad01orden'] < 70) {
+					$bConModulos = true;
+				} else {
+					if ($fila['unad01orden'] < 100) {
+						$bConERP = true;
 					} else {
-						if ($fila['unad01orden'] < 100) {
-							$bConERP = true;
-						} else {
-							$bConGestion = true;
-						}
+						$bConGestion = true;
 					}
-					$sSistema = $sSistema . ',' . $fila['unad02idsistema'];
 				}
+				$sSistema = $sSistema . ',' . $fila['unad02idsistema'];
 			}
-			$sRutaBase = 'https://aurea2.unad.edu.co/';
-			switch ($idEntidad) {
-				case 0: // Colombia
-					break;
-				default:
-					$sRutaBase = './';
-					break;
-			}
-			if ($bConModulos) {
-				//Vemos los temas asociados a modulos academicos y eventos.
-				$sSQL = 'SELECT unad01nombre, unad01descripcion, unad01ruta 
-				FROM unad01sistema 
-				WHERE unad01id IN (' . $sSistema . ') AND unad01publico="S" AND unad01instalado="S" AND unad01orden<70 
-				ORDER BY unad01orden, unad01nombre';
-				$tabla = $objDB->ejecutasql($sSQL);
-				if ($objDB->nf($tabla) > 0) {
-					$sHTML = $sHTML . '<li class="menu-item">';
-					$sHTML = $sHTML . '<button class="item" aria-expanded="false" aria-controls="submenu-2" aria-haspopup="menu">';
-					$sHTML = $sHTML . '<i class="icon-library-book" aria-hidden="true"></i>' . $et_modulos;
-					$sHTML = $sHTML . '<i class="icon-navigate-next" aria-hidden="true"></i>';
-					$sHTML = $sHTML . '</button>';
-					$sHTML = $sHTML . '<div class="submenu">';
-					$sHTML = $sHTML . '<ul id="submenu-2" class="submenu__content" aria-hidden="true">';
-					while ($fila = $objDB->sf($tabla)) {
-						$sRutaDef = $sRutaBase . cadena_Reemplazar($fila['unad01ruta'], '../', '');
-						$sHTML = $sHTML . '<li><a href="' . $sRutaDef . '" title="' . cadena_notildes($fila['unad01descripcion']) . '" target="_blank">' . strtoupper($fila['unad01nombre']) . '</a></li>';
-					}
-					$sHTML = $sHTML . '</ul>';
-					$sHTML = $sHTML . '</div>';
-					$sHTML = $sHTML . '</li>';
+		}
+		$sRutaBase = 'https://aurea2.unad.edu.co/';
+		switch ($idEntidad) {
+			case 0: // Colombia
+				break;
+			default:
+				$sRutaBase = './';
+				break;
+		}
+		if ($bConModulos) {
+			//Vemos los temas asociados a modulos academicos y eventos.
+			$sSQL = 'SELECT unad01nombre, unad01descripcion, unad01ruta 
+			FROM unad01sistema 
+			WHERE unad01id IN (' . $sSistema . ') AND unad01publico="S" AND unad01instalado="S" AND unad01orden<70 
+			ORDER BY unad01orden, unad01nombre';
+			$tabla = $objDB->ejecutasql($sSQL);
+			if ($objDB->nf($tabla) > 0) {
+				$sHTML = $sHTML . '<li class="menu-item">';
+				$sHTML = $sHTML . '<button class="item" aria-expanded="false" aria-controls="submenu-2" aria-haspopup="menu">';
+				$sHTML = $sHTML . '<i class="icon-library-book" aria-hidden="true"></i>' . $et_modulos;
+				$sHTML = $sHTML . '<i class="icon-navigate-next" aria-hidden="true"></i>';
+				$sHTML = $sHTML . '</button>';
+				$sHTML = $sHTML . '<div class="submenu">';
+				$sHTML = $sHTML . '<ul id="submenu-2" class="submenu__content" aria-hidden="true">';
+				while ($fila = $objDB->sf($tabla)) {
+					$sRutaDef = $sRutaBase . cadena_Reemplazar($fila['unad01ruta'], '../', '');
+					$sHTML = $sHTML . '<li><a href="' . $sRutaDef . '" title="' . cadena_notildes($fila['unad01descripcion']) . '" target="_blank">' . strtoupper($fila['unad01nombre']) . '</a></li>';
 				}
+				$sHTML = $sHTML . '</ul>';
+				$sHTML = $sHTML . '</div>';
+				$sHTML = $sHTML . '</li>';
 			}
-			if ($bConERP) {
-				//ERP
-				$sSQL = 'SELECT unad01nombre, unad01descripcion, unad01ruta 
-				FROM unad01sistema 
-				WHERE unad01id IN (' . $sSistema . ') AND unad01publico="S" AND unad01instalado="S" AND unad01orden>69 AND unad01orden<100  
-				ORDER BY unad01orden, unad01nombre';
-				$tabla = $objDB->ejecutasql($sSQL);
-				if ($objDB->nf($tabla) > 0) {
-					$sHTML = $sHTML . '<li class="menu-item">';
-					$sHTML = $sHTML . '<button class="item" aria-expanded="false" aria-controls="submenu-2" aria-haspopup="menu">';
-					$sHTML = $sHTML . '<i class="icon-library-book" aria-hidden="true"></i>' . $et_erp;
-					$sHTML = $sHTML . '<i class="icon-navigate-next" aria-hidden="true"></i>';
-					$sHTML = $sHTML . '</button>';
-					$sHTML = $sHTML . '<div class="submenu">';
-					$sHTML = $sHTML . '<ul id="submenu-2" class="submenu__content" aria-hidden="true">';
-					while ($fila = $objDB->sf($tabla)) {
-						$sRutaDef = $sRutaBase . cadena_Reemplazar($fila['unad01ruta'], '../', '');
-						$sHTML = $sHTML . '<li><a href="' . $sRutaDef . '" title="' . cadena_notildes($fila['unad01descripcion']) . '" target="_blank">' . strtoupper($fila['unad01nombre']) . '</a></li>';
-					}
-					$sHTML = $sHTML . '</ul>';
-					$sHTML = $sHTML . '</div>';
-					$sHTML = $sHTML . '</li>';
+		}
+		if ($bConERP) {
+			//ERP
+			$sSQL = 'SELECT unad01nombre, unad01descripcion, unad01ruta 
+			FROM unad01sistema 
+			WHERE unad01id IN (' . $sSistema . ') AND unad01publico="S" AND unad01instalado="S" AND unad01orden>69 AND unad01orden<100  
+			ORDER BY unad01orden, unad01nombre';
+			$tabla = $objDB->ejecutasql($sSQL);
+			if ($objDB->nf($tabla) > 0) {
+				$sHTML = $sHTML . '<li class="menu-item">';
+				$sHTML = $sHTML . '<button class="item" aria-expanded="false" aria-controls="submenu-2" aria-haspopup="menu">';
+				$sHTML = $sHTML . '<i class="icon-library-book" aria-hidden="true"></i>' . $et_erp;
+				$sHTML = $sHTML . '<i class="icon-navigate-next" aria-hidden="true"></i>';
+				$sHTML = $sHTML . '</button>';
+				$sHTML = $sHTML . '<div class="submenu">';
+				$sHTML = $sHTML . '<ul id="submenu-2" class="submenu__content" aria-hidden="true">';
+				while ($fila = $objDB->sf($tabla)) {
+					$sRutaDef = $sRutaBase . cadena_Reemplazar($fila['unad01ruta'], '../', '');
+					$sHTML = $sHTML . '<li><a href="' . $sRutaDef . '" title="' . cadena_notildes($fila['unad01descripcion']) . '" target="_blank">' . strtoupper($fila['unad01nombre']) . '</a></li>';
 				}
+				$sHTML = $sHTML . '</ul>';
+				$sHTML = $sHTML . '</div>';
+				$sHTML = $sHTML . '</li>';
 			}
-			if ($bConGestion) {
-				//Modulos de gestion.
-				$sSQL = 'SELECT unad01nombre, unad01descripcion, unad01ruta 
-				FROM unad01sistema 
-				WHERE unad01id IN (' . $sSistema . ') AND unad01publico="S" AND unad01instalado="S" AND unad01orden>99  
-				ORDER BY unad01orden, unad01nombre';
-				$tabla = $objDB->ejecutasql($sSQL);
-				if ($objDB->nf($tabla) > 0) {
-					$sHTML = $sHTML . '<li class="menu-item">';
-					$sHTML = $sHTML . '<button class="item" aria-expanded="false" aria-controls="submenu-2" aria-haspopup="menu">';
-					$sHTML = $sHTML . '<i class="icon-library-book" aria-hidden="true"></i>' . $et_gestion;
-					$sHTML = $sHTML . '<i class="icon-navigate-next" aria-hidden="true"></i>';
-					$sHTML = $sHTML . '</button>';
-					$sHTML = $sHTML . '<div class="submenu">';
-					$sHTML = $sHTML . '<ul id="submenu-2" class="submenu__content" aria-hidden="true">';
-					while ($fila = $objDB->sf($tabla)) {
-						$sRutaDef = $sRutaBase . cadena_Reemplazar($fila['unad01ruta'], '../', '');
-						$sHTML = $sHTML . '<li><a href="' . $sRutaDef . '" title="' . cadena_notildes($fila['unad01descripcion']) . '" target="_blank">' . strtoupper($fila['unad01nombre']) . '</a></li>';
-					}
-					$sHTML = $sHTML . '</ul>';
-					$sHTML = $sHTML . '</div>';
-					$sHTML = $sHTML . '</li>';
+		}
+		if ($bConGestion) {
+			//Modulos de gestion.
+			$sSQL = 'SELECT unad01nombre, unad01descripcion, unad01ruta 
+			FROM unad01sistema 
+			WHERE unad01id IN (' . $sSistema . ') AND unad01publico="S" AND unad01instalado="S" AND unad01orden>99  
+			ORDER BY unad01orden, unad01nombre';
+			$tabla = $objDB->ejecutasql($sSQL);
+			if ($objDB->nf($tabla) > 0) {
+				$sHTML = $sHTML . '<li class="menu-item">';
+				$sHTML = $sHTML . '<button class="item" aria-expanded="false" aria-controls="submenu-2" aria-haspopup="menu">';
+				$sHTML = $sHTML . '<i class="icon-library-book" aria-hidden="true"></i>' . $et_gestion;
+				$sHTML = $sHTML . '<i class="icon-navigate-next" aria-hidden="true"></i>';
+				$sHTML = $sHTML . '</button>';
+				$sHTML = $sHTML . '<div class="submenu">';
+				$sHTML = $sHTML . '<ul id="submenu-2" class="submenu__content" aria-hidden="true">';
+				while ($fila = $objDB->sf($tabla)) {
+					$sRutaDef = $sRutaBase . cadena_Reemplazar($fila['unad01ruta'], '../', '');
+					$sHTML = $sHTML . '<li><a href="' . $sRutaDef . '" title="' . cadena_notildes($fila['unad01descripcion']) . '" target="_blank">' . strtoupper($fila['unad01nombre']) . '</a></li>';
 				}
+				$sHTML = $sHTML . '</ul>';
+				$sHTML = $sHTML . '</div>';
+				$sHTML = $sHTML . '</li>';
 			}
 		}
 	}
-	// Opcion ayuda
-	$sHTML = $sHTML . '<li class="menu-item">';
-	$sHTML = $sHTML . '<button class="item" aria-expanded="false" aria-controls="submenu-2" aria-haspopup="menu">';
-	$sHTML = $sHTML . '<i class="icon-help-fill" aria-hidden="true"></i>' . $et_ayuda;
-	$sHTML = $sHTML . '<i class="icon-navigate-next" aria-hidden="true"></i>';
-	$sHTML = $sHTML . '</button>';
-	$sHTML = $sHTML . '<div class="submenu">';
-	$sHTML = $sHTML . '<ul id="submenu-2" class="submenu__content" aria-hidden="true">';
-	if ($bConSoporte) {
-		$sHTML = $sHTML . '<li><a href="./adminbanner.php" >' . $et_banner . '</a></li>';
+	if ($iUso != 0) {
+		// Opcion ayuda
+		$sHTML = $sHTML . '<li class="menu-item">';
+		$sHTML = $sHTML . '<button class="item" aria-expanded="false" aria-controls="submenu-2" aria-haspopup="menu">';
+		$sHTML = $sHTML . '<i class="icon-help-fill" aria-hidden="true"></i>' . $et_ayuda;
+		$sHTML = $sHTML . '<i class="icon-navigate-next" aria-hidden="true"></i>';
+		$sHTML = $sHTML . '</button>';
+		$sHTML = $sHTML . '<div class="submenu">';
+		$sHTML = $sHTML . '<ul id="submenu-2" class="submenu__content" aria-hidden="true">';
+		if ($bConSoporte) {
+			$sHTML = $sHTML . '<li><a href="./adminbanner.php" >' . $et_banner . '</a></li>';
+		}
+		$sHTML = $sHTML . '<li><a href="./unadayudas.php">' . $et_manuales . '</a></li>';
+		$sHTML = $sHTML . '<li><a href="./acercade.php">' . $et_acerca . '</a></li>';
+		$sHTML = $sHTML . '</ul>';
+		$sHTML = $sHTML . '</div>';
+		$sHTML = $sHTML . '</li>';
 	}
-	$sHTML = $sHTML . '<li><a href="./unadayudas.php">' . $et_manuales . '</a></li>';
-	$sHTML = $sHTML . '<li><a href="./acercade.php">' . $et_acerca . '</a></li>';
-	$sHTML = $sHTML . '</ul>';
-	$sHTML = $sHTML . '</div>';
-	$sHTML = $sHTML . '</li>';
 	$sHTML = $sHTML . '</ul>';
 	$sHTML = $sHTML . '</div>';
 	$sHTML = $sHTML . '</section>';
@@ -3016,56 +3137,67 @@ function html_menuCampus2025($objDB, $bDebug = false, $idTercero = 0)
 	// Nav user
 	$sHTML = $sHTML . '<section class="nav__user">';
 	if ((int)$idTercero > 0) {
-		$sIniciales = '';
-		$sSQL = 'SELECT unad11nombre1, unad11apellido1, unad11razonsocial
-			FROM unad11terceros 
-			WHERE unad11id=' . $idTercero . '';
+		$iAvatar = 0;
+		$sNombre = '';
+		$sSQL = 'SELECT TB.unad11razonsocial, T1.unad11idavatar
+		FROM unad11terceros AS TB, unad11terceros_md AS T1
+		WHERE TB.unad11id=' . $idTercero . ' AND TB.unad11id=T1.unad11id';
 		$tabla = $objDB->ejecutasql($sSQL);
+		if ($objDB->nf($tabla) == 0) {
+			$sSQL = 'SELECT TB.unad11razonsocial, 0 AS unad11idavatar
+			FROM unad11terceros AS TB
+			WHERE TB.unad11id=' . $idTercero . '';
+			$tabla = $objDB->ejecutasql($sSQL);
+		}
 		if ($objDB->nf($tabla) > 0) {
 			$fila = $objDB->sf($tabla);
 			$sNombre = cadena_notildes(trim($fila['unad11razonsocial']));
-			$sIni1 = '';
-			if ($fila['unad11nombre1'] != '') {
-				$sIni1 = $fila['unad11nombre1'][0];
-			}
-			$sIni2 = '';
-			if ($fila['unad11apellido1'] != '') {
-				$sIni2 = $fila['unad11apellido1'][0];
-			}
-			$sIniciales = mb_strtoupper($sIni1 . $sIni2);
+			$iAvatar = $fila['unad11idavatar'];
 		}
-		$sHTML = $sHTML . '<button class="nav__user__button nav__user__button--session" onclick="toggleNavUser()" aria-haspopup="menu" aria-expanded="false" aria-controls="nav__user__dropdown" aria-label="' . $label_idioma . '">';
+		//
+		$sComplemento = '';
+		$sAccionesBoton = ' onclick="toggleNavUser()" aria-haspopup="menu" aria-expanded="false" aria-controls="nav__user__dropdown"';
+		if ($iUso == 0) {
+			$sComplemento = ' role="text" style="pointer-events:none"';
+			$sAccionesBoton = '';
+		}
+		// aria-label="' . $label_idioma . '"
+		$sHTML = $sHTML . '<button class="nav__user__button nav__user__button--session"' . $sAccionesBoton . $sComplemento . '>';
 		$sHTML = $sHTML . '<div class="nav__user__name">';
 		$sHTML = $sHTML . '<span>' . $sNombre . '</span>';
 		$sHTML = $sHTML . '</div>';
 		$sHTML = $sHTML . '<div class="nav__user__avatar">';
-		$sHTML = $sHTML . '<!-- <img class="nav__user__img" src="./img/user.jpg" alt="Foto de perfil"> -->';
-		$sHTML = $sHTML . '<span class="nav__user_">' . $sIniciales . '</span>';
+		//$sHTML = $sHTML . '<!-- <img class="nav__user__img" src="./img/user.jpg" alt="Foto de perfil"> -->';
+		$sHTML = $sHTML . '<span class="nav__user_"><i class="icon-' . $aAvatares[$iAvatar] . '"></i></span>';
 		$sHTML = $sHTML . '</div>';
-		$sHTML = $sHTML . '<i class="icon-expand" aria-hidden="true"></i>';
+		if ($iUso != 0) {
+			$sHTML = $sHTML . '<i class="icon-expand" aria-hidden="true"></i>';
+		}
 		$sHTML = $sHTML . '</button>';
-		$sHTML = $sHTML . '<div role="menu" aria-label="' . $label_opcion_usuario . '" class="nav__user__dropdown nav__user__dropdown--hidden">';
-		$sHTML = $sHTML . '<ul class="nav__user__listmenu">';
-		$sHTML = $sHTML . '<li class="nav__user__item" role="menuitem">';
-		$sHTML = $sHTML . '<a class="nav__user__anchor" href="./miperfil.php">';
-		$sHTML = $sHTML . '<i class="icon-person" aria-hidden="true"></i>';
-		$sHTML = $sHTML . $et_miperfil;
-		$sHTML = $sHTML . '</a>';
-		$sHTML = $sHTML . '</li>';
-		$sHTML = $sHTML . '<li class="nav__user__item" role="menuitem">';
-		$sHTML = $sHTML . '<a class="nav__user__anchor" href="./contrasegna.php">';
-		$sHTML = $sHTML . '<i class="icon-lock" aria-hidden="true"></i>';
-		$sHTML = $sHTML . $et_contrasegna;
-		$sHTML = $sHTML . '</a>';
-		$sHTML = $sHTML . '</li>';
-		$sHTML = $sHTML . '<li class="nav__user__item" role="menuitem">';
-		$sHTML = $sHTML . '<a class="nav__user__anchor" href="./contacto.php">';
-		$sHTML = $sHTML . '<i class="icon-person-list" aria-hidden="true"></i>';
-		$sHTML = $sHTML . $et_contacto;
-		$sHTML = $sHTML . '</a>';
-		$sHTML = $sHTML . '</li>';
-		$sHTML = $sHTML . '</ul>';
-		$sHTML = $sHTML . '</div>';
+		if ($iUso != 0) {
+			$sHTML = $sHTML . '<div role="menu" aria-label="' . $label_opcion_usuario . '" class="nav__user__dropdown nav__user__dropdown--hidden">';
+			$sHTML = $sHTML . '<ul class="nav__user__listmenu">';
+			$sHTML = $sHTML . '<li class="nav__user__item" role="menuitem">';
+			$sHTML = $sHTML . '<a class="nav__user__anchor" href="./perfilusuario.php">';
+			$sHTML = $sHTML . '<i class="icon-person" aria-hidden="true"></i>';
+			$sHTML = $sHTML . $et_miperfil;
+			$sHTML = $sHTML . '</a>';
+			$sHTML = $sHTML . '</li>';
+			$sHTML = $sHTML . '<li class="nav__user__item" role="menuitem">';
+			$sHTML = $sHTML . '<a class="nav__user__anchor" href="./contrasegna.php">';
+			$sHTML = $sHTML . '<i class="icon-lock" aria-hidden="true"></i>';
+			$sHTML = $sHTML . $et_contrasegna;
+			$sHTML = $sHTML . '</a>';
+			$sHTML = $sHTML . '</li>';
+			$sHTML = $sHTML . '<li class="nav__user__item" role="menuitem">';
+			$sHTML = $sHTML . '<a class="nav__user__anchor" href="./contacto.php">';
+			$sHTML = $sHTML . '<i class="icon-person-list" aria-hidden="true"></i>';
+			$sHTML = $sHTML . $et_contacto;
+			$sHTML = $sHTML . '</a>';
+			$sHTML = $sHTML . '</li>';
+			$sHTML = $sHTML . '</ul>';
+			$sHTML = $sHTML . '</div>';
+		}
 		$sHTML = $sHTML . '<a href="./salir.php" class="nav__user__button nav__user__button--logout" aria-label="Inicar Sesión en Campus Virtual">';
 		$sHTML = $sHTML . '<i class="icon-logout" aria-hidden="true"></i>';
 		$sHTML = $sHTML . $et_salir;
@@ -3236,9 +3368,19 @@ function html_notaV3($nota, $bocultacero = true, $iVrAprueba = 3, $iVrMaximo = 5
 	}
 	return $res;
 }
-function html_salto()
+function html_salto($iTipo = 1)
 {
-	return '<div class="salto1px"></div>';
+	$sRes = '<div class="salto1rem"></div>';
+	switch($iTipo) {
+		case 0:
+			$sRes = '<div class="salto1px"></div>';
+		case 2:
+			$sRes = '<div class="salto2rem"></div>';
+		case 50:
+			$sRes = '<div class="salto0.5rem"></div>';
+			break;
+	}
+	return $sRes;
 }
 // Menus..
 function html_MenuGrupo2023($grupo, $idsistema, $iPiel, $objDB, $completo = true, $bDebug = false, $idTercero = 0)

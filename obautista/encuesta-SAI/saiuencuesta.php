@@ -10,8 +10,6 @@
  * @param debug = 1  (Opcional), bandera para indicar si se generan datos de depuración
  * @date miércoles, 14 de mayo de 2025
  */
-/*ini_set('display_errors', 1);
-error_reporting(E_ALL);*/
 if (file_exists('./err_control.php')) {
 	require './err_control.php';
 }
@@ -92,7 +90,7 @@ require $APP->rutacomun . 'unad_todas.php';
 require $APP->rutacomun . 'libs/clsdbadmin.php';
 require $APP->rutacomun . 'unad_librerias.php';
 require $APP->rutacomun . 'libaurea.php';
-require $APP->rutacomun . 'libcomp.php';
+require $APP->rutacomun . 'libcomp_v2.php';
 require $APP->rutacomun . 'libdatos.php';
 require $APP->rutacomun . 'libhtml.php';
 require $APP->rutacomun . 'xajax/xajax_core/xajax.inc.php';

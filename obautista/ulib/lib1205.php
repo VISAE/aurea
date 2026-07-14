@@ -71,13 +71,36 @@ function f1205_HTMLComboV2_masi05programa($objDB, $objCombos, $valor, $vrmasi05e
 	require $mensajes_todas;
 	$objCombos->nuevo('masi05programa', $valor, true, '{' . $ETI['msg_todos'] . '}', 0);
 	//$objCombos->iAncho = 450;
+	$objCombos->sAccion = 'carga_combo_masi05curso();';
 	$sSQL = '';
 	if ((int)$vrmasi05escuela != 0) {
 		//$objCombos->addItem('0', '[Sin Dato]');
-		$sSQL = 'SELECT TB.core09id AS id, CONCAT(TB.core09nombre, " [" & TB.core09codigo & "]") AS nombre 
+		$sSQL = 'SELECT TB.core09id AS id, CONCAT(TB.core09nombre, " [", TB.core09codigo, "]") AS nombre 
 		FROM core09programa AS TB
 		WHERE TB.core09idescuela=' . $vrmasi05escuela . ' 
 		ORDER BY TB.core09nombre';
+	}
+	$res = $objCombos->html($sSQL, $objDB); //, 0, '', 'et', 1205, $sIdioma
+	return $res;
+}
+function f1205_HTMLComboV2_masi05curso($objDB, $objCombos, $valor, $vrmasi05programa)
+{
+	require './app.php';
+	$sIdioma = AUREA_Idioma();
+	$mensajes_todas = $APP->rutacomun . 'lg/lg_todas_' . $sIdioma . '.php';
+	if (!file_exists($mensajes_todas)) {
+		$mensajes_todas = $APP->rutacomun . 'lg/lg_todas_es.php';
+	}
+	require $mensajes_todas;
+	$objCombos->nuevo('masi05curso', $valor, true, '{' . $ETI['msg_todos'] . '}', 0);
+	//$objCombos->iAncho = 450;
+	$sSQL = '';
+	if ((int)$vrmasi05programa != 0) {
+		//$objCombos->addItem('0', '[Sin Dato]');
+		$sSQL = 'SELECT TB.unad40id AS id, TB.unad40nombre AS nombre 
+		FROM unad40curso AS TB
+		WHERE TB.unad40idprograma=' . $vrmasi05programa . ' 
+		ORDER BY TB.unad40nombre';
 	}
 	$res = $objCombos->html($sSQL, $objDB); //, 0, '', 'et', 1205, $sIdioma
 	return $res;
@@ -99,7 +122,7 @@ function f1205_Combomasi05centro($aParametros)
 	$objDB->CerrarConexion();
 	$objResponse = new xajaxResponse();
 	$objResponse->assign('div_masi05centro', 'innerHTML', $html_masi05centro);
-	//$objResponse->call('$("#masi05centro").chosen()');
+	//$objResponse->call('$("#masi05centro").chosen({width:"100%"})');
 	return $objResponse;
 }
 function f1205_Combomasi05programa($aParametros)
@@ -119,7 +142,28 @@ function f1205_Combomasi05programa($aParametros)
 	$objDB->CerrarConexion();
 	$objResponse = new xajaxResponse();
 	$objResponse->assign('div_masi05programa', 'innerHTML', $html_masi05programa);
-	$objResponse->call('$("#masi05programa").chosen()');
+	$objResponse->call('$("#masi05programa").chosen({width:"100%"})');
+	$objResponse->call('carga_combo_masi05curso()');
+	return $objResponse;
+}
+function f1205_Combomasi05curso($aParametros)
+{
+	$_SESSION['u_ultimominuto'] = iminutoavance();
+	if (!is_array($aParametros)) {
+		$aParametros = json_decode(str_replace('\"', '"', $aParametros), true);
+	}
+	require './app.php';
+	$objDB = new clsdbadmin($APP->dbhost, $APP->dbuser, $APP->dbpass, $APP->dbname);
+	if ($APP->dbpuerto != '') {
+		$objDB->dbPuerto = $APP->dbpuerto;
+	}
+	$objDB->xajax();
+	$objCombos = new clsHtmlCombos();
+	$html_masi05curso = f1205_HTMLComboV2_masi05curso($objDB, $objCombos, '', $aParametros[0]);
+	$objDB->CerrarConexion();
+	$objResponse = new xajaxResponse();
+	$objResponse->assign('div_masi05curso', 'innerHTML', $html_masi05curso);
+	$objResponse->call('$("#masi05curso").chosen({width:"100%"})');
 	return $objResponse;
 }
 function f1205_HTMLComboV2_bcentro($objDB, $objCombos, $valor, $vrbzona)
@@ -162,7 +206,7 @@ function f1205_Combobcentro($aParametros)
 	$objDB->CerrarConexion();
 	$objResponse = new xajaxResponse();
 	$objResponse->assign('div_bcentro', 'innerHTML', $html_bcentro);
-	//$objResponse->call('$("#bcentro").chosen()');
+	//$objResponse->call('$("#bcentro").chosen({width:"100%"})');
 	$objResponse->call('paginarf1205()');
 	return $objResponse;
 }
@@ -178,6 +222,7 @@ function f1205_HTMLComboV2_bprograma($objDB, $objCombos, $valor, $vrbescuela)
 	$objCombos->nuevo('bprograma', $valor, true, '{' . $ETI['msg_todos'] . '}');
 	//$objCombos->iAncho = 450;
 	$objCombos->sAccion = 'paginarf1205()';
+	$objCombos->bEsCombobox = true;
 	$sSQL = '';
 	if ((int)$vrbescuela != 0) {
 		//$objCombos->addItem('0', '[Sin Dato]');
@@ -206,7 +251,7 @@ function f1205_Combobprograma($aParametros)
 	$objDB->CerrarConexion();
 	$objResponse = new xajaxResponse();
 	$objResponse->assign('div_bprograma', 'innerHTML', $html_bprograma);
-	//$objResponse->call('$("#bprograma").chosen()');
+	$objResponse->call('createComboboxById("bprograma")');
 	$objResponse->call('paginarf1205()');
 	return $objResponse;
 }
@@ -233,7 +278,7 @@ function f1205_ExisteDato($datos)
 		}
 		$objDB->xajax();
 		list($sTabla1205, $sErrorT) = f1205_NombreTabla($datos[97], $objDB);
-		if (!$objDB->bexistetabla($sTabla)) {
+		if (!$objDB->bexistetabla($sTabla1205)) {
 			$bHayLlave = false;
 			$sLeyenda = 'No ha sido posible determinar el origen de los datos.';
 		}
@@ -409,25 +454,34 @@ function f1205_TablaDetalleV2($aParametros, $objDB, $bDebug = false)
 	$bprograma = numeros_validar($aParametros[111]);
 	$bcurso = cadena_Validar(trim($aParametros[112]));
 	$bproceso = numeros_validar($aParametros[113]);
-	/* 
-0 - Ninguno
-2 - Funcionarios
-3 - Contratistas
-11 - Aspirantes
-12 - Estudiantes
-13 - Estudiantes ausentes
-17 - Egresados
-2209 - Estudiantes del programa
-2306 - Acompañamiento académico
-2307 - Seguimiento académico
-2741 - Postulados a grados
-12229 - Convocados
-	*/
+	switch ($bproceso) {
+		case 0: // - Ninguno
+			break;
+		case 2: // - Funcionarios
+		case 3: // - Contratistas
+			$bescuela = '';
+			$bprograma = '';
+			$bcurso = '';
+			break;
+		case 11: // - Aspirantes
+		case 12: // - Estudiantes
+		case 13: // - Estudiantes ausentes
+		case 17: // - Egresados
+		case 2209: // - Estudiantes del programa
+		case 2306: // - Acompañamiento académico
+		case 2307: // - Seguimiento académico
+		case 2741: // - Postulados a grados
+		case 12229: // - Convocados
+			$bunidadfunc = '';
+			break;
+	}
 	$bMultiProceso = false;
 	list($sTabla1205, $sLeyenda) = f1205_NombreTabla($aParametros[97], $objDB);
+	list($sTabla1206, $sLeyendaT) = f1206_NombreTabla($aParametros[97], $objDB);
+	$sLeyenda = $sLeyenda . $sLeyendaT;
 	if ($sLeyenda == '') {
 		if ((int)$bproceso == 0) {
-			$sLeyenda = 'No se ha definido el proceso a gestionar.';
+			$sLeyenda = $ERR['msg_bproceso'];
 		}
 	}
 	$sBotones = '<input id="paginaf1205" name="paginaf1205" type="hidden" value="' . $pagina . '"/>';
@@ -465,31 +519,31 @@ function f1205_TablaDetalleV2($aParametros, $objDB, $bDebug = false)
 	$sSQLadd1 = '';
 	$sTablaAdd = '';
 	if (fecha_NumValido($bfechainicia)) {
-		$sSQLadd1 = $sSQLadd1 . 'masi05fecha>=' . $bfechainicia . ' AND ';
+		$sSQLadd1 = $sSQLadd1 . 'TB.masi05fecha>=' . $bfechainicia . ' AND ';
 	}
 	if (fecha_NumValido($bfechafinal)) {
-		$sSQLadd1 = $sSQLadd1 . 'masi05fecha<=' . $bfechafinal . ' AND ';
+		$sSQLadd1 = $sSQLadd1 . 'TB.masi05fecha<=' . $bfechafinal . ' AND ';
 	}
 	if ($bunidadfunc != '') {
-		$sSQLadd1 = $sSQLadd1 . 'masi05unidadfunc=' . $bunidadfunc . ' AND ';
+		$sSQLadd1 = $sSQLadd1 . 'T6.masi06unidadfunc=' . $bunidadfunc . ' AND ';
 	}
 	if ($bcentro != '') {
-		$sSQLadd1 = $sSQLadd1 . 'masi05centro=' . $bcentro . ' AND ';
+		$sSQLadd1 = $sSQLadd1 . 'T6.masi06centro=' . $bcentro . ' AND ';
 	} else {
 		if ($bzona != '') {
-			$sSQLadd1 = $sSQLadd1 . 'masi05zona=' . $bzona . ' AND ';
+			$sSQLadd1 = $sSQLadd1 . 'T6.masi06zona=' . $bzona . ' AND ';
 		}
 	}
 	if ($bprograma != '') {
-		$sSQLadd1 = $sSQLadd1 . 'masi05programa=' . $bprograma . ' AND ';
+		$sSQLadd1 = $sSQLadd1 . 'T6.masi06programa=' . $bprograma . ' AND ';
 	} else {
 		if ($bescuela != '') {
-			$sSQLadd1 = $sSQLadd1 . 'masi05escuela=' . $bescuela . ' AND ';
+			$sSQLadd1 = $sSQLadd1 . 'T6.masi06escuela=' . $bescuela . ' AND ';
 		}
 	}
 	if ($bcurso != '') {
 		$sTablaAdd = ', unad40curso AS T40';
-		$sSQLadd = $sSQLadd . ' AND TB.masi05curso=T40.unad40id AND T40.unad40titulo LIKE "%' . $bcurso . '%"';
+		$sSQLadd = $sSQLadd . ' AND T6.masi06curso=T40.unad40id AND T40.unad40titulo LIKE "%' . $bcurso . '%"';
 	}
 	if ($bproceso != '') {
 		$sSQLadd1 = $sSQLadd1 . 'TB.masi05idproceso=' . $bproceso . ' AND ';
@@ -521,8 +575,8 @@ function f1205_TablaDetalleV2($aParametros, $objDB, $bDebug = false)
 	$registros = 0;
 	$bGigante = false; //En caso de que la tabla sea muy grande pasarlo a true
 	$sLimite = '';
-	$sCampos = 'SELECT TB.masi05consec, TB.masi05id, TB.masi05asunto, TB.masi05estado, TB.masi05fecha, T14.masi72nombre, TB.masi05idproceso';
-	$sConsulta = 'FROM ' . $sTabla1205 . ' AS TB, masi72proceso AS T14' . $sTablaAdd . ' 
+	$sCampos = 'SELECT DISTINCT TB.masi05consec, TB.masi05id, TB.masi05asunto, TB.masi05estado, TB.masi05fecha, T14.masi72nombre, TB.masi05idproceso';
+	$sConsulta = 'FROM ' . $sTabla1205 . ' AS TB LEFT JOIN ' . $sTabla1206 . ' AS T6 ON (TB.masi05id=T6.masi06idmensaje), masi72proceso AS T14' . $sTablaAdd . ' 
 	WHERE ' . $sSQLadd1 . ' TB.masi05id>0 AND TB.masi05idproceso=T14.masi72id ' . $sSQLadd . '';
 	$sOrden = 'ORDER BY TB.masi05idproceso, TB.masi05consec DESC';
 	$sSQL = $sCampos . ' ' . $sConsulta . ' ' . $sOrden;
@@ -802,7 +856,7 @@ function f1205_db_GuardarV2b($DATA, $objDB, $bDebug = false, $idTercero = 0, $iC
 	// -- Se inicia validando todas las posibles entradas de usuario.
 	$DATA['masi05consec'] = numeros_validar($DATA['masi05consec']);
 	$DATA['masi05asunto'] = cadena_Validar(trim($DATA['masi05asunto']));
-	$DATA['masi05cuerpo'] = cadena_Validar(trim($DATA['masi05cuerpo']));
+	$DATA['masi05cuerpo'] = cadena_Validar(trim($DATA['masi05cuerpo']), true);
 	$DATA['masi05admiterpta'] = numeros_validar($DATA['masi05admiterpta']);
 	$DATA['masi05correorpta'] = cadena_Validar(trim($DATA['masi05correorpta']));
 	$DATA['masi05firma'] = numeros_validar($DATA['masi05firma']);
@@ -818,11 +872,15 @@ function f1205_db_GuardarV2b($DATA, $objDB, $bDebug = false, $idTercero = 0, $iC
 	$DATA['masi05idrelacion'] = numeros_validar($DATA['masi05idrelacion']);
 	$DATA['masi05idrelacion2'] = numeros_validar($DATA['masi05idrelacion2']);
 	$DATA['masi05idrelacion3'] = numeros_validar($DATA['masi05idrelacion3']);
+	$DATA['masi05idproceso'] = numeros_validar($DATA['masi05idproceso']);
 	// -- Se inicializan las variables que puedan pasar vacias {Especialmente números}.
 	/*
 	*/
 	if ($DATA['masi05estado'] == '') {
 		$DATA['masi05estado'] = 0;
+	}
+	if ($DATA['masi05idproceso'] == '') {
+		$DATA['masi05idproceso'] = 0;
 	}
 		/*
 	if ($DATA['masi05admiterpta'] == '') {
@@ -930,14 +988,15 @@ function f1205_db_GuardarV2b($DATA, $objDB, $bDebug = false, $idTercero = 0, $iC
 	if ($DATA['masi05admiterpta'] == '') {
 		$sError = $ERR['masi05admiterpta'] . $sSepara . $sError;
 	}
-	/*
-	if ($DATA['masi05cuerpo'] == '') {
-		$sError = $ERR['masi05cuerpo'] . $sSepara . $sError;
-	}
+	if ($DATA['masi05idproceso'] == 0) {
+		$sError = $ERR['msg_bproceso'] . $sSepara . $sError;
+	}	
 	if ($DATA['masi05asunto'] == '') {
 		$sError = $ERR['masi05asunto'] . $sSepara . $sError;
 	}
-	*/
+	if ($DATA['masi05cuerpo'] == '') {
+		$sError = $ERR['masi05cuerpo'] . $sSepara . $sError;
+	}
 	//Fin de las valiaciones NO LLAVE.
 	//Valiaciones de campos obligatorios en todo guardar.
 	if ($sError == '') {
@@ -955,6 +1014,8 @@ function f1205_db_GuardarV2b($DATA, $objDB, $bDebug = false, $idTercero = 0, $iC
 	$sCampoCodigo = '';
 	if ($sError == '') {
 		list($sTabla1205, $sError) = f1205_NombreTabla($DATA['bmes'], $objDB);
+		list($sTabla1206, $sErrorH) = f1206_NombreTabla($DATA['bmes'], $objDB);
+		$sError = $sError . $sErrorH;
 	}
 	if ($sError == '') {
 		if ($DATA['paso'] == 10) {
@@ -1012,11 +1073,20 @@ function f1205_db_GuardarV2b($DATA, $objDB, $bDebug = false, $idTercero = 0, $iC
 			$DATA['masi05idrelacion'] = 0;
 			$DATA['masi05idrelacion2'] = 0;
 			$DATA['masi05idrelacion3'] = 0;
+		} else {			
+			$sSQL = 'SELECT * FROM ' . $sTabla1206 . ' WHERE masi06idmensaje=' . $DATA['masi05id'] . '';
+			$result = $objDB->ejecutasql($sSQL);
+			if ($objDB->nf($result) == 0) {
+				$sError = $ERR['msg_bpoblacion'] . $sSepara . $sError;
+			}
 		}
 	}
 	if ($sError == '') {
 		//$masi05cuerpo = addslashes($DATA['masi05cuerpo']);
-		$masi05cuerpo = str_replace('"', '\"', $DATA['masi05cuerpo']);
+		list($masi05cuerpo, $sError, $sDebug) = f1205_GestionaImagenes($DATA['masi05cuerpo'], $objDB, $bDebug);
+		$DATA['masi05cuerpo'] = $masi05cuerpo;
+		$masi05cuerpo = str_replace('"', '\"', $masi05cuerpo);
+		// $masi05cuerpo = str_replace('"', '\"', $DATA['masi05cuerpo']);
 		$bPasa = false;
 		if ($DATA['paso'] == 10) {
 			$sCampos1205 = 'masi05idproceso, masi05consec, masi05id, masi05estado, masi05asunto, 
@@ -1178,8 +1248,11 @@ function f1205_db_Eliminar($masi05id, $bloque, $objDB, $bDebug = false)
 	if ($sError == '') {
 		list($sTabla1205, $sError) = f1205_NombreTabla($bloque, $objDB);
 		list($sTabla1206, $sErrorH) = f1206_NombreTabla($bloque, $objDB);
+		$sError = $sError . $sErrorH;
 		list($sTabla1207, $sErrorH) = f1207_NombreTabla($bloque, $objDB);
+		$sError = $sError . $sErrorH;
 		list($sTabla1208, $sErrorH) = f1208_NombreTabla($bloque, $objDB);
+		$sError = $sError . $sErrorH;
 	}
 	if ($sError == '') {
 		$sSQL = 'SELECT * FROM ' . $sTabla1205 . ' WHERE masi05id=' . $masi05id . '';
@@ -1279,15 +1352,17 @@ function f1205_CambiaEstado($masi05id, $bloque, $iEstadoOrigen, $iEstadoDestino,
 	$sMensaje = '';
 	$bNotificar = false;
 	list($sTabla1205, $sError) = f1205_NombreTabla($bloque, $objDB);
-	$sSQL = 'SELECT masi05estado FROM ' . $sTabla1205 . ' WHERE masi05id=' . $masi05id . '';
-	$tabla = $objDB->ejecutasql($sSQL);
-	if ($objDB->nf($tabla) > 0) {
-		$filabase = $objDB->sf($tabla);
-		if ($filabase['masi05estado'] != $iEstadoOrigen) {
-			$sError = 'El estado de origen no coincide [' . $filabase['masi05estado'] . '].';
+	if ($sError == '') {
+		$sSQL = 'SELECT masi05estado FROM ' . $sTabla1205 . ' WHERE masi05id=' . $masi05id . '';
+		$tabla = $objDB->ejecutasql($sSQL);
+		if ($objDB->nf($tabla) > 0) {
+			$filabase = $objDB->sf($tabla);
+			if ($filabase['masi05estado'] != $iEstadoOrigen) {
+				$sError = 'El estado de origen no coincide [' . $filabase['masi05estado'] . '].';
+			}
+		} else {
+			$sError = $ETI['msg_no_encontrado'] . ' [Ref ' . $masi05id . ']';
 		}
-	} else {
-		$sError = $ETI['msg_no_encontrado'] . ' [Ref ' . $masi05id . ']';
 	}
 	if ($sError == '') {
 		$sInfoCambio = 'Cambia el estado a ' . $iEstadoDestino;
@@ -1320,16 +1395,18 @@ function f1205_Notificar($masi05id, $bloque, $objDB, $bDebug = false)
 	$iHoy = fecha_DiaMod();
 	$idInteresado = 0;
 	list($sTabla1205, $sError) = f1205_NombreTabla($bloque, $objDB);
-	$sSQL = 'SELECT * 
-	FROM ' . $sTabla1205 . ' AS TB
-	WHERE TB.masi05id=' . $masi05id . '';
-	$tabla = $objDB->ejecutasql($sSQL);
-	if ($objDB->nf($tabla) > 0) {
-		$filabase = $objDB->sf($tabla);
-		$idInteresado = $filabase['id_interesado'];
-		$masi05estado = $filabase['masi05estado'];
-	} else {
-		$sError = 'No se ha encontrado el registro solicitado [Ref ' . $masi05id . ']';
+	if ($sError == '') {
+		$sSQL = 'SELECT * 
+		FROM ' . $sTabla1205 . ' AS TB
+		WHERE TB.masi05id=' . $masi05id . '';
+		$tabla = $objDB->ejecutasql($sSQL);
+		if ($objDB->nf($tabla) > 0) {
+			$filabase = $objDB->sf($tabla);
+			$idInteresado = $filabase['id_interesado'];
+			$masi05estado = $filabase['masi05estado'];
+		} else {
+			$sError = 'No se ha encontrado el registro solicitado [Ref ' . $masi05id . ']';
+		}
 	}
 	if ($sError == '') {
 		$sTituloMensaje = 'Notificación de ... ' . fecha_hoy() . ' ' . html_TablaHoraMin(fecha_hora(), fecha_minuto()) . '';
@@ -1408,4 +1485,35 @@ function f1205_GestionaPoblacion($masi05idproceso, $masi05estado)
 		}
 	}
 	return $res;
+}
+
+function f1205_GestionaImagenes($masi05cuerpo, $objDB, $bDebug = false) 
+{
+	$sError = '';
+	$sDebug = '';
+	$dom = new DOMDocument('1.0', 'UTF-8');
+	libxml_use_internal_errors(true);
+	$dom->loadHTML('<?xml encoding="UTF-8">' . $masi05cuerpo, LIBXML_HTML_NOIMPLIED | LIBXML_HTML_NODEFDTD);
+	libxml_clear_errors();
+	$imagenes = $dom->getElementsByTagName('img');		
+	foreach ($imagenes as $img) {
+		$bExiste = true;
+   		$src = $img->getAttribute('src');
+		if (strpos($src, 'data:image/') === 0) {
+			$bExiste = false;
+		} else {
+			$bExiste = getimagesize($src);			
+		}
+		if (!$bExiste) {
+			$img->setAttribute('src', '#');
+			$img->setAttribute('alt', 'Enlace de imagen no permitido');
+		}
+	}
+	if ($sError == '') {
+		$masi05cuerpo = $dom->saveHTML();
+		if ($bDebug) {
+			$sDebug = $sDebug . log_debug(' Cuerpo del mensaje: ' . $masi05cuerpo . '');
+		}
+	}
+	return array($masi05cuerpo, $sError, $sDebug);
 }
