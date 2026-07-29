@@ -458,7 +458,7 @@ function f2320_TablaDetalleV2($aParametros, $objDB, $bDebug = false)
 		}
 	*/
 	$sTitulos = 'Tercero';
-	$sSQL = 'SELECT T1.exte02nombre, TB.cara01completa, TB.cara01fechaencuesta, TB.cara01id, TB.cara01idperaca, TB.cara01idconsejero, TB.cara01tipocaracterizacion, TB.cara01fichafam, TB.cara01fichadigital, TB.cara01fichalectura, TB.cara01ficharazona, TB.cara01fichaingles, TB.cara01fichabiolog, TB.cara01fichafisica, TB.cara01fichaquimica, TB.cara01fichaciudad 
+	$sSQL = 'SELECT T1.exte02nombre, TB.cara01completa, TB.cara01fechaencuesta, TB.cara01id, TB.cara01idperaca, TB.cara01idconsejero, TB.cara01tipocaracterizacion, TB.cara01fichafam, TB.cara01fichadigital, TB.cara01fichalectura, TB.cara01ficharazona, TB.cara01fichaingles, TB.cara01fichabiolog, TB.cara01fichafisica, TB.cara01fichaquimica, TB.cara01fichaciudad, TB.cara01fichadiscrimina 
 FROM cara01encuesta AS TB, exte02per_aca AS T1 
 WHERE ' . $sSQLadd1 . ' TB.cara01idtercero=' . $idTercero . ' AND TB.cara01idperaca=T1.exte02id ' . $sSQLadd . '
 ORDER BY TB.cara01idperaca DESC';
@@ -521,7 +521,7 @@ ORDER BY TB.cara01idperaca DESC';
 		$sLink = '';
 		//Saber el numero de preguntas que se le hacer por cada ficha...
 		$aBloque = array();
-		for ($k = 1; $k <= 8; $k++) {
+		for ($k = 1; $k <= 9; $k++) {
 			$aBloque[$k] = 0;
 		}
 		$sSQL = 'SELECT cara10idbloque, COUNT(cara10id) AS Total FROM cara10pregprueba WHERE cara10idcara=' . $filadet['cara01id'] . ' GROUP BY cara10idbloque';
@@ -563,6 +563,10 @@ ORDER BY TB.cara01idperaca DESC';
 		}
 		if ($filadet['cara01fichaciudad'] != -1) {
 			$et_fichas = $et_fichas . ' - ' . $ETI['cara11ficha8'] . ' <b>' . $aBloque[8] . '</b>';
+			$bConPreg = true;
+		}
+		if ($filadet['cara01fichadiscrimina'] != -1) {
+			$et_fichas = $et_fichas . ' - ' . $ETI['cara11ficha9'] . ' <b>' . $aBloque[9] . '</b>';
 			$bConPreg = true;
 		}
 		if ($filadet['cara01completa'] == 'S') {

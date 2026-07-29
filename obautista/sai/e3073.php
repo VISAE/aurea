@@ -121,6 +121,7 @@ if ($sError == '') {
 	$bfecharptaini = numeros_validar($_REQUEST['v18']);
 	$bfecharptafin = numeros_validar($_REQUEST['v19']);
 	$idReservado = cadena_Validar($_REQUEST['v20']);
+	$bchat = numeros_validar($_REQUEST['v21']);
 	$sCanal = '';
 	$sCanalCorto = '';
 	$sSubtitulo = '';
@@ -235,6 +236,9 @@ if ($sError == '') {
 	}
 	if ($iTema != '') {
 		$sSQLadd = $sSQLadd . ' AND TB.saiu73temasolicitud=' . $iTema . '';
+	}
+	if ($bchat != '') {
+		$sSQLadd = $sSQLadd . ' AND TB.saiu73idchat=' . $bchat . '';
 	}
 	if (fecha_NumValido($bfecharadini)) {
 		$sSQLadd1 = $sSQLadd1 . 'TB.saiu73fecharad>=' . $bfecharadini . ' AND ';

@@ -205,7 +205,12 @@ function f2311_TablaDetalleV2($aParametros, $objDB, $bDebug = false)
 	$registros = 0;
 	$bGigante = false; //En caso de que la tabla sea muy grande pasarlo a true
 	$sLimite = '';
-	$sCampos = 'SELECT TB.cara11consec, TB.cara11id, TB.cara11nombre, TB.cara11ficha1, TB.cara11ficha1pregbas, TB.cara11ficha1pregprof, TB.cara11ficha2, TB.cara11ficha2pregbas, TB.cara11ficha2pregprof, TB.cara11ficha3, TB.cara11ficha3pregbas, TB.cara11ficha3pregprof, TB.cara11ficha4, TB.cara11ficha4pregbas, TB.cara11ficha4pregprof, TB.cara11ficha5, TB.cara11ficha5pregbas, TB.cara11ficha5pregprof, TB.cara11ficha6, TB.cara11ficha6pregbas, TB.cara11ficha6pregprof, TB.cara11ficha7, TB.cara11ficha7pregbas, TB.cara11ficha7pregprof, TB.cara11fichafamilia, TB.cara11resultadovisible, TB.cara11fichasinep, TB.cara11ficha8, TB.cara11ficha8pregbas, TB.cara11ficha8pregprof, TB.cara11nivelforma';
+	$sCampos = 'SELECT TB.cara11consec, TB.cara11id, TB.cara11nombre, TB.cara11ficha1, TB.cara11ficha1pregbas, TB.cara11ficha1pregprof, 
+	TB.cara11ficha2, TB.cara11ficha2pregbas, TB.cara11ficha2pregprof, TB.cara11ficha3, TB.cara11ficha3pregbas, TB.cara11ficha3pregprof, 
+	TB.cara11ficha4, TB.cara11ficha4pregbas, TB.cara11ficha4pregprof, TB.cara11ficha5, TB.cara11ficha5pregbas, TB.cara11ficha5pregprof, 
+	TB.cara11ficha6, TB.cara11ficha6pregbas, TB.cara11ficha6pregprof, TB.cara11ficha7, TB.cara11ficha7pregbas, TB.cara11ficha7pregprof, 
+	TB.cara11fichafamilia, TB.cara11resultadovisible, TB.cara11fichasinep, TB.cara11ficha8, TB.cara11ficha8pregbas, TB.cara11ficha8pregprof, 
+	TB.cara11nivelforma, TB.cara11ficha9, TB.cara11ficha9pregbas, TB.cara11ficha9pregprof';
 	$sConsulta = 'FROM cara11tipocaract AS TB
 	WHERE ' . $sSQLadd1 . ' TB.cara11id>0 ' . $sSQLadd . '';
 	$sOrden = 'ORDER BY TB.cara11nombre';
@@ -327,6 +332,9 @@ function f2311_TablaDetalleV2($aParametros, $objDB, $bDebug = false)
 		if ($filadet['cara11ficha8'] == 'S') {
 			$et_cara11fichafamilia = $et_cara11fichafamilia . ' - ' . $ETI['cara11ficha8'];
 		}
+		if ($filadet['cara11ficha9'] == 'S') {
+			$et_cara11fichafamilia = $et_cara11fichafamilia . ' - ' . $ETI['cara11ficha9'];
+		}
 		if ($bAbierta) {
 			$sLink = '<a href="javascript:cargaridf2311(' . $filadet['cara11id'] . ')" class="lnkresalte">' . $ETI['lnk_cargar'] . '</a>';
 		}
@@ -420,6 +428,9 @@ function f2311_db_CargarPadre($DATA, $objDB, $bDebug = false)
 		$DATA['cara11ficha8'] = $fila['cara11ficha8'];
 		$DATA['cara11ficha8pregbas'] = $fila['cara11ficha8pregbas'];
 		$DATA['cara11ficha8pregprof'] = $fila['cara11ficha8pregprof'];
+		$DATA['cara11ficha9'] = $fila['cara11ficha9'];
+		$DATA['cara11ficha9pregbas'] = $fila['cara11ficha9pregbas'];
+		$DATA['cara11ficha9pregprof'] = $fila['cara11ficha9pregprof'];
 		$bcargo = true;
 		$DATA['paso'] = 2;
 		$DATA['boculta2311'] = 0;
@@ -545,6 +556,15 @@ function f2311_db_GuardarV2($DATA, $objDB, $bDebug = false, $idTercero = 0, $iCo
 	if (isset($DATA['cara11ficha8pregprof']) == 0) {
 		$DATA['cara11ficha8pregprof'] = 0;
 	}
+	if (isset($DATA['cara11ficha9']) == 0) {
+		$DATA['cara11ficha9'] = '';
+	}
+	if (isset($DATA['cara11ficha9pregbas']) == 0) {
+		$DATA['cara11ficha9pregbas'] = 0;
+	}
+	if (isset($DATA['cara11ficha9pregprof']) == 0) {
+		$DATA['cara11ficha9pregprof'] = 0;
+	}
 	*/
 	// -- Se inicia validando todas las posibles entradas de usuario.
 	$DATA['cara11consec'] = numeros_validar($DATA['cara11consec']);
@@ -577,6 +597,9 @@ function f2311_db_GuardarV2($DATA, $objDB, $bDebug = false, $idTercero = 0, $iCo
 	$DATA['cara11ficha8'] = cadena_Validar(trim($DATA['cara11ficha8']));
 	$DATA['cara11ficha8pregbas'] = numeros_validar($DATA['cara11ficha8pregbas']);
 	$DATA['cara11ficha8pregprof'] = numeros_validar($DATA['cara11ficha8pregprof']);
+	$DATA['cara11ficha9'] = cadena_Validar(trim($DATA['cara11ficha9']));
+	$DATA['cara11ficha9pregbas'] = numeros_validar($DATA['cara11ficha9pregbas']);
+	$DATA['cara11ficha9pregprof'] = numeros_validar($DATA['cara11ficha9pregprof']);
 	// -- Se inicializan las variables que puedan pasar vacias {Especialmente números}.
 	if ($DATA['cara11ficha1pregbas'] == '') {
 		$DATA['cara11ficha1pregbas'] = 0;
@@ -635,9 +658,24 @@ function f2311_db_GuardarV2($DATA, $objDB, $bDebug = false, $idTercero = 0, $iCo
 	if ($DATA['cara11ficha8pregprof'] == '') {
 		$DATA['cara11ficha8pregprof'] = 0;
 	}
+	if ($DATA['cara11ficha9pregbas'] == '') {
+		$DATA['cara11ficha9pregbas'] = 0;
+	}
+	if ($DATA['cara11ficha9pregprof'] == '') {
+		$DATA['cara11ficha9pregprof'] = 0;
+	}
 	// -- Seccion para validar los posibles causales de error.
 	$sSepara = ', ';
 	if (true) {
+		if ($DATA['cara11ficha9pregprof'] == '') {
+			$sError = $ERR['cara11ficha9pregprof'] . $sSepara . $sError;
+		}
+		if ($DATA['cara11ficha9pregbas'] == '') {
+			$sError = $ERR['cara11ficha9pregbas'] . $sSepara . $sError;
+		}
+		if ($DATA['cara11ficha9'] == '') {
+			$sError = $ERR['cara11ficha9'] . $sSepara . $sError;
+		}
 		if ($DATA['cara11ficha8pregprof'] == '') {
 			$sError = $ERR['cara11ficha8pregprof'] . $sSepara . $sError;
 		}
@@ -795,14 +833,14 @@ function f2311_db_GuardarV2($DATA, $objDB, $bDebug = false, $idTercero = 0, $iCo
 			cara11ficha5, cara11ficha5pregbas, cara11ficha5pregprof, cara11ficha6, cara11ficha6pregbas, 
 			cara11ficha6pregprof, cara11ficha7, cara11ficha7pregbas, cara11ficha7pregprof, cara11fichafamilia, 
 			cara11resultadovisible, cara11nivelforma, cara11fichasinep, cara11ficha8, cara11ficha8pregbas, 
-			cara11ficha8pregprof';
+			cara11ficha8pregprof, cara11ficha9, cara11ficha9pregbas, cara11ficha9pregprof';
 			$sValores2311 = '' . $DATA['cara11consec'] . ', ' . $DATA['cara11id'] . ', "' . $DATA['cara11nombre'] . '", "' . $DATA['cara11ficha1'] . '", ' . $DATA['cara11ficha1pregbas'] . ', 
 			' . $DATA['cara11ficha1pregprof'] . ', "' . $DATA['cara11ficha2'] . '", ' . $DATA['cara11ficha2pregbas'] . ', ' . $DATA['cara11ficha2pregprof'] . ', "' . $DATA['cara11ficha3'] . '", 
 			' . $DATA['cara11ficha3pregbas'] . ', ' . $DATA['cara11ficha3pregprof'] . ', "' . $DATA['cara11ficha4'] . '", ' . $DATA['cara11ficha4pregbas'] . ', ' . $DATA['cara11ficha4pregprof'] . ', 
 			"' . $DATA['cara11ficha5'] . '", ' . $DATA['cara11ficha5pregbas'] . ', ' . $DATA['cara11ficha5pregprof'] . ', "' . $DATA['cara11ficha6'] . '", ' . $DATA['cara11ficha6pregbas'] . ', 
 			' . $DATA['cara11ficha6pregprof'] . ', "' . $DATA['cara11ficha7'] . '", ' . $DATA['cara11ficha7pregbas'] . ', ' . $DATA['cara11ficha7pregprof'] . ', "' . $DATA['cara11fichafamilia'] . '", 
 			' . $DATA['cara11resultadovisible'] . ', ' . $DATA['cara11nivelforma'] . ', ' . $DATA['cara11fichasinep'] . ', "' . $DATA['cara11ficha8'] . '", ' . $DATA['cara11ficha8pregbas'] . ', 
-			' . $DATA['cara11ficha8pregprof'] . '';
+			' . $DATA['cara11ficha8pregprof'] . ', "' . $DATA['cara11ficha9'] . '", ' . $DATA['cara11ficha9pregbas'] . ', ' . $DATA['cara11ficha9pregprof'] . '';
 			if ($APP->utf8 == 1) {
 				$sSQL = 'INSERT INTO cara11tipocaract (' . $sCampos2311 . ') VALUES (' . cadena_codificar($sValores2311) . ');';
 				$sdetalle = $sCampos2311 . '[' . cadena_codificar($sValores2311) . ']';
@@ -842,6 +880,9 @@ function f2311_db_GuardarV2($DATA, $objDB, $bDebug = false, $idTercero = 0, $iCo
 			$scampo[27] = 'cara11ficha8';
 			$scampo[28] = 'cara11ficha8pregbas';
 			$scampo[29] = 'cara11ficha8pregprof';
+			$scampo[30] = 'cara11ficha9';
+			$scampo[31] = 'cara11ficha9pregbas';
+			$scampo[32] = 'cara11ficha9pregprof';
 			$sdato[1] = $DATA['cara11nombre'];
 			$sdato[2] = $DATA['cara11ficha1'];
 			$sdato[3] = $DATA['cara11ficha1pregbas'];
@@ -871,7 +912,10 @@ function f2311_db_GuardarV2($DATA, $objDB, $bDebug = false, $idTercero = 0, $iCo
 			$sdato[27] = $DATA['cara11ficha8'];
 			$sdato[28] = $DATA['cara11ficha8pregbas'];
 			$sdato[29] = $DATA['cara11ficha8pregprof'];
-			$iNumCamposMod = 29;
+			$sdato[30] = $DATA['cara11ficha9'];
+			$sdato[31] = $DATA['cara11ficha9pregbas'];
+			$sdato[32] = $DATA['cara11ficha9pregprof'];
+			$iNumCamposMod = 32;
 			$sWhere = 'cara11id=' . $DATA['cara11id'] . '';
 			$sSQL = 'SELECT * FROM cara11tipocaract WHERE ' . $sWhere;
 			$sdatos = '';

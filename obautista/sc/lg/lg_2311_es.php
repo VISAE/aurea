@@ -47,6 +47,9 @@ $ETI['cara11fichasinep'] = 'Ficha SINEP';
 $ETI['cara11ficha8'] = 'Competencias Ciudadanas';
 $ETI['cara11ficha8pregbas'] = 'Ficha8pregbas';
 $ETI['cara11ficha8pregprof'] = 'Ficha8pregprof';
+$ETI['cara11ficha9'] = 'Discriminaci&oacute;n y VBG';
+$ETI['cara11ficha9pregbas'] = 'Ficha8pregbas';
+$ETI['cara11ficha9pregprof'] = 'Ficha8pregprof';
 
 $ERR['cara11consec']='Necesita el dato '.$ETI['cara11consec'];
 $ERR['cara11id']='Necesita el dato '.$ETI['cara11id'];
@@ -79,6 +82,9 @@ $ERR['cara11fichasinep'] = 'Necesita el dato ' . $ETI['cara11fichasinep'];
 $ERR['cara11ficha8'] = 'Necesita el dato ' . $ETI['cara11ficha8'];
 $ERR['cara11ficha8pregbas'] = 'Necesita el dato ' . $ETI['cara11ficha8pregbas'];
 $ERR['cara11ficha8pregprof'] = 'Necesita el dato ' . $ETI['cara11ficha8pregprof'];
+$ERR['cara11ficha9'] = 'Necesita el dato ' . $ETI['cara11ficha9'];
+$ERR['cara11ficha9pregbas'] = 'Necesita el dato ' . $ETI['cara11ficha9pregbas'];
+$ERR['cara11ficha9pregprof'] = 'Necesita el dato ' . $ETI['cara11ficha9pregprof'];
 
 $ETI['msg_incluir']='Incluir';
 $ETI['msg_preguntas']='N&deg; de preguntas';

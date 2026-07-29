@@ -580,7 +580,7 @@ function f3073_TablaDetalleV2($aParametros, $objDB, $bDebug = false)
 	if (isset($aParametros[102]) == 0) {
 		$aParametros[102] = 20;
 	}
-	$iNumVariables = 120;
+	$iNumVariables = 121;
 	for ($k = 103; $k <= $iNumVariables; $k++) {
 		if (isset($aParametros[$k]) == 0) {
 			$aParametros[$k] = '';
@@ -613,6 +613,7 @@ function f3073_TablaDetalleV2($aParametros, $objDB, $bDebug = false)
 	$bfecharptaini = numeros_validar($aParametros[118]);
 	$bfecharptafin = numeros_validar($aParametros[119]);
 	$idReservado = cadena_Validar($aParametros[120]);
+	$bchat = numeros_validar($aParametros[121]);
 	$bAbierta = true;
 	/*
 	$sSQL = 'SELECT Campo FROM Tabla WHERE Id=' . $sValorId;
@@ -793,6 +794,9 @@ function f3073_TablaDetalleV2($aParametros, $objDB, $bDebug = false)
 	}
 	if ($bcead !== '') {
 		$sSQLadd = $sSQLadd . ' AND TB.saiu73idcentro=' . $bcead . '';
+	}
+	if ($bchat !== '') {
+		$sSQLadd = $sSQLadd . ' AND TB.saiu73idchat=' . $bchat . '';
 	}
 	$iCodModulo = 3073;
 	list($bPermiso14, $sDebugP) = seg_revisa_permisoV3($iCodModulo, 14, $_SESSION['unad_id_tercero'], $objDB);
@@ -1332,6 +1336,7 @@ function f3073_db_GuardarV2($DATA, $objDB, $bDebug = false, $idTercero = 0, $iCo
 	$bConCierre = false;
 	$bEnviaEncuesta = false;
 	$bEnviaCaso = false;
+	$bRadicaBorrador = false;
 	$sTabla73 = 'saiu73solusuario_' . $DATA['saiu73agno'];
 	if ($DATA['saiu73temasolicitud'] == '') {
 		$sError = $ERR['saiu73temasolicitud'] . $sSepara . $sError;
@@ -1409,27 +1414,9 @@ function f3073_db_GuardarV2($DATA, $objDB, $bDebug = false, $idTercero = 0, $iCo
 			break;
 	}
 	if ($sError == '') {
-		$bRadicaBorrador = false;
 		if ($DATA['saiu73estadoorigen'] == -1) {
 			if ($DATA['saiu73estado'] != $DATA['saiu73estadoorigen']) {
 				$bRadicaBorrador = true;
-			}
-		}
-		if ($bRadicaBorrador) {
-			$sSQL = '';
-			$iFechaHoy = fecha_DiaMod();
-			$DATA['saiu73fecharad'] = $iFechaHoy;
-			$iNumDia = fecha_NumDiaSemana($iFechaHoy);
-			if ($iNumDia == 0) {
-				$DATA['saiu73fecharad'] = fecha_NumSumarDias($iFechaHoy, 1);
-			}
-			if ($iNumDia == 6) {
-				$DATA['saiu73fecharad'] = fecha_NumSumarDias($iFechaHoy, 2);
-			}
-			$sSQL = $sSQL . 'UPDATE ' . $sTabla73 . ' SET saiu73fecharad = ' . $DATA['saiu73fecharad'] . ' WHERE saiu73id = ' . $DATA['saiu73id'] . '';
-			$result = $objDB->ejecutasql($sSQL);
-			if ($result == false){
-				$sError = $sError . $ERR['msg_radicacion'] . '<br>';
 			}
 		}
 	}
@@ -1617,12 +1604,19 @@ function f3073_db_GuardarV2($DATA, $objDB, $bDebug = false, $idTercero = 0, $iCo
 			case 7: //Logra cerrar			
 				switch ($DATA['saiu73solucion']) {
 					case 1: // Resuelto en la atención
+						$DATA['saiu73fecharespcaso'] = fecha_DiaMod();
+						$DATA['saiu73horarespcaso'] = fecha_hora();
+						$DATA['saiu73minrespcaso'] = fecha_minuto();
+						$DATA['saiu73fechafin'] = fecha_DiaMod();
+						$DATA['saiu73horafin'] = fecha_hora();
+						$DATA['saiu73minutofin'] = fecha_minuto();
+						$bEnviaEncuesta = true;
+						break;
 					case 5: // Se inicia PQRS
 						$DATA['saiu73fecharespcaso'] = 0;
 						$DATA['saiu73fechafin'] = fecha_DiaMod();
 						$DATA['saiu73horafin'] = fecha_hora();
 						$DATA['saiu73minutofin'] = fecha_minuto();
-						$bEnviaEncuesta = true;
 						break;
 					case 3: // Se inicia caso
 						if ($DATA['saiu73estadoorigen'] == 1) {
@@ -1649,9 +1643,21 @@ function f3073_db_GuardarV2($DATA, $objDB, $bDebug = false, $idTercero = 0, $iCo
 						break;
 					case 8: //Cancelada por el usuario
 						$DATA['saiu73respuesta'] = $ETI['termina_usuario'];
+						$DATA['saiu73fecharespcaso'] = fecha_DiaMod();
+						$DATA['saiu73horarespcaso'] = fecha_hora();
+						$DATA['saiu73minrespcaso'] = fecha_minuto();
+						$DATA['saiu73estado'] = -2;
+						$bRadicaBorrador = false;
 						break;
 					case 9: //Terminada por el asesor
 						$DATA['saiu73respuesta'] = $ETI['termina_asesor'];
+						if ($DATA['saiu73fechafin'] == 0) {
+							$DATA['saiu73fechafin'] = fecha_DiaMod();
+							$DATA['saiu73horafin'] = fecha_hora();
+							$DATA['saiu73minutofin'] = fecha_minuto();
+						}
+						$DATA['saiu73estado'] = -2;
+						$bRadicaBorrador = false;
 						break;
 					default:
 						$sError = $ERR['saiu73solucion'] . $sSepara . $sError;
@@ -1774,6 +1780,25 @@ function f3073_db_GuardarV2($DATA, $objDB, $bDebug = false, $idTercero = 0, $iCo
 	if ($sError == '') {
 		list($sErrorR, $sDebugR) = f3073_RevTabla_saiu73solusuario($DATA['saiu73agno'], $objDB);
 		$sError = $sError . $sErrorR;
+	}
+	if ($sError == '') {
+		if ($bRadicaBorrador) {
+			$sSQL = '';
+			$iFechaHoy = fecha_DiaMod();
+			$DATA['saiu73fecharad'] = $iFechaHoy;
+			$iNumDia = fecha_NumDiaSemana($iFechaHoy);
+			if ($iNumDia == 0) {
+				$DATA['saiu73fecharad'] = fecha_NumSumarDias($iFechaHoy, 1);
+			}
+			if ($iNumDia == 6) {
+				$DATA['saiu73fecharad'] = fecha_NumSumarDias($iFechaHoy, 2);
+			}
+			$sSQL = $sSQL . 'UPDATE ' . $sTabla73 . ' SET saiu73fecharad = ' . $DATA['saiu73fecharad'] . ' WHERE saiu73id = ' . $DATA['saiu73id'] . '';
+			$result = $objDB->ejecutasql($sSQL);
+			if ($result == false){
+				$sError = $sError . $ERR['msg_radicacion'] . '<br>';
+			}
+		}
 	}
 	$bQuitarCodigo = false;
 	$sCampoCodigo = '';

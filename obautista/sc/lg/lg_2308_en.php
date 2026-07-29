@@ -17,6 +17,7 @@ $ETI['titulo_2354'] = 'Preguntas Biolog&iacute;a';
 $ETI['titulo_2355'] = 'Preguntas F&iacute;sica';
 $ETI['titulo_2356'] = 'Preguntas Qu&iacute;mica';
 $ETI['titulo_2359'] = 'Preguntas Competencias Ciudadanas';
+$ETI['titulo_2362'] = 'Discriminaci&oacute;n y VBG';
 $ETI['sigla_2308'] = 'Preguntas Ingl&eacute;s';
 $ETI['lnk_cargar'] = 'Editar';
 $ETI['cara08idbloque'] = 'Bloque';

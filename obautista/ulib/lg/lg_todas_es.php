@@ -62,7 +62,9 @@ $ETI['lnk_ayudas'] = 'haga clic en este enlace';
 $ETI['lnk_cargar'] = 'Editar';
 $ETI['lnk_consultar'] = 'Consultar';
 $ETI['lnk_quitar'] = 'Quitar';
+$ETI['lnk_procesar'] = 'Procesar';
 $ETI['lnk_rem'] = 'Retirar';
+$ETI['lnk_reversa'] = 'Reversar';
 
 $ETI['msg_a'] = 'A';
 $ETI['msg_abierta'] = 'Abierta';
@@ -72,6 +74,7 @@ $ETI['msg_ayudas'] = 'Para consultar elementos de ayuda';
 $ETI['msg_bdoc'] = 'Documento';
 $ETI['msg_bnombre'] = 'Nombre';
 $ETI['msg_blistar'] = 'Listar';
+$ETI['msg_bvigencia'] = 'Vigencia';
 $ETI['msg_cerrada'] = 'Cerrada';
 $ETI['msg_cerrado'] = 'Cerrado';
 $ETI['msg_codigo'] = 'C&oacute;digo';
@@ -125,6 +128,7 @@ $ETI['msg_periodo'] = 'Periodo';
 $ETI['msg_procesoterminado'] = 'Proceso completado con &eacute;xito.';
 $ETI['msg_programa'] = 'Programa';
 $ETI['msg_puntoycoma'] = 'Punto y coma';
+$ETI['msg_requerido'] = 'Campo requerido';
 $ETI['msg_salir'] = 'Salir';
 $ETI['msg_seleccione'] = 'Seleccione Uno';
 $ETI['msg_separador'] = 'Separador';
@@ -163,6 +167,7 @@ $ERR['err_leydeolvido'] = 'Se aplica DERECHO AL OLVIDO para el documento ';
 $ERR['falla_guardar'] = 'Se ha producido un error al intentar grabar los datos, <br>por favor comuniquese con el administrador del sistema';
 $ERR['falla_eliminar'] = 'Se ha producido un error al intentar eliminar, <br>por favor comuniquese con el administrador del sistema';
 $ERR['no_tercero'] = 'No se encuentra el tercero ';
+$ERR['requeridos'] = 'Por favor diligencie los campos requeridos';
 $ERR['tercero_bloqueado1'] = 'El tercero ';
 $ERR['tercero_bloqueado2'] = ' se encuentra bloqueado';
 
@@ -191,6 +196,7 @@ $ETI['msg_rechazar'] = 'Rechazar';
 
 $ETI['msg_ayuda'] = 'Ayuda';
 $ETI['menu_accesibilidad'] = 'Accesibilidad';
+$ETI['menu_inicio'] = 'Inicio';
 $ETI['menu_reiniciar'] = 'Reiniciar';
 $ETI['menu_reducir'] = 'Reducir Zoom';
 $ETI['menu_aumentar'] = 'Aumentar Zoom';
@@ -216,7 +222,11 @@ $ETI['label_activar_modos_contraste'] = 'Activar modos de contraste';
 $ETI['msg_contraste'] = 'Contraste';
 $ETI['label_activar_modos_saturacion'] = 'Activar modos de saturación';
 $ETI['msg_saturacion'] = 'Saturación';
+$ETI['msg_cursor'] = 'Cursor';
+$ETI['msg_gran_cursor'] = 'Gran Cursor';
 $ETI['label_activar_modo_gran_cursor'] = 'Activar modo gran cursor';
+$ETI['msg_lectura'] = 'Lectura';
+$ETI['msg_guia_lectura'] = 'Gu&iacute;a Lectura';
 $ETI['label_activar_modo_guia_lectura'] = 'Activar modo guía lectura';
 $ETI['label_restablecer_ajustes_accesibilidad'] = 'Restablecer ajustes de accesibilidad';
 $ETI['msg_restablecer_configuraciones'] = 'Restablecer Configuraciones';
@@ -255,12 +265,62 @@ $ETI['msg_correo_invalido_usuario'] = 'No se ha establecido un correo electr&oac
 
 $ETI['msg_lista_caracteres'] = 'Asterisco, punto, guion bajo, guion, signo de exclamaci&oacute;n inicial, signo de exclamaci&oacute;n, m&aacute;s, numeral, arroba, par&eacute;ntesis, igual.';
 
-$ETI['msg_caracteres_permitidos'] = '* . _ - ¡ ! + # @ ( ) =';
+$ETI['msg_caracteres_permitidos'] = '* . _ - ¡ ! + @ ( ) =';
 
 // Errores
 
 $ERR['correo_invalido'] = 'No existe una direcci&oacute;n de correo electr&oacute;nico v&aacute;lida.';
 
-// Accesit
+// Framearchivo
 
-$ETI['msg_accesit'] = 'ACCESIT';
+$ETI['msg_upload'] = 'Subir archivo';
+
+// Modal
+
+$ETI['label_cerrar_mensaje'] = 'Cerrar este mensaje';
+$ETI['msg_advertencia'] = 'Advertencia';
+$ETI['label_confirmar'] = 'Confirmar';
+$ETI['label_cancelar'] = 'Cancelar';
+
+// Seg 1707
+
+$ETI['msg_doc_no_encontrado'] = 'No se ha encontrado el documento';
+
+//
+
+$ETI['msg_procesando_datos'] = 'Procesando datos, por favor espere...';
+
+$ETI['msg_documento'] = 'Documento';
+$ETI['msg_no_encontrado'] = 'No se ha encontrado el registro';
+
+// Productos
+
+$ETI['msg_prod_noaplica_a'] = 'El producto ';
+$ETI['msg_prod_noaplica_b'] = ' no aplica para facturar.';
+
+$ETI['msg_prod_noenc'] = 'No se encuentra el Producto';
+$ETI['msg_desc_max'] = 'El descuento m&aacute;ximo permitido es de ';
+$ETI['msg_valor_prod_nolista'] = 'No se ha encontrado el valor del producto en las listas de precios.';
+$ETI['msg_prod_sinlista'] = 'El producto no est&aacute; en una lista de precios para el d&iacute;a ';
+
+// Conciliacion facturas
+
+$ETI['msg_ya_conciliado'] = 'Ya se ha ejecutado la conciliaci&oacute;n';
+$ETI['msg_doc_no_factura'] = 'El documento no es una factura.';
+$ETI['msg_estado_no_cierre'] = 'El estado del documento no permite hacer cierre general.';
+$ETI['msg_fact_no_encontrada'] = 'No se ha encontrado la factura solicitada';
+
+// Msgs de error
+
+$ETI['msg_requerido'] = 'Campo requerido';
+
+$ETI['bt_atras'] = 'Atr&aacute;s';
+
+$ETI['msg_ver_mas'] = 'Ver m&aacute;s...';
+$ETI['msg_ver_menos'] = 'Ver menos...';
+
+$ETI['msg_campo_oblig'] = 'Campo obligatorio';
+
+$ETI['titulo_tyc'] = 'Terminos y condiciones';
+
+$ETI['bt_confirmar'] = 'Confirmar';

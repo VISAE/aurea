@@ -852,8 +852,8 @@ if ($bEntra) {
 			$lin_cara01discv2condicionmedica = $cSepara;
 			$lin_cara01discv2condmeddet = $cSepara;
 			$lin_cara01discv2pruebacoeficiente = $cSepara;
-			$lin_cara44sexov1identidadgen = $cSepara;
-			$lin_cara44sexov1orientasexo = $cSepara;
+			$lin_identidadgen = $cSepara;
+			$lin_orientasexo = $cSepara;
 			$lin_cara44campesinado = $cSepara;
 			$lin_cara44fam_madrecabeza = $cSepara;
 			$lin_cara44acadhatenidorecesos = $cSepara;
@@ -1068,11 +1068,23 @@ if ($bEntra) {
 		$tabla1 = $objDB->ejecutasql($sSQL);
 		$cara44numfilas = $objDB->nf($tabla1);
 		if ($fila1 = $objDB->sf($tabla1)) {
-			if (isset($acara44sexov1identidadgen[$fila1['cara44sexov1identidadgen']]) != 0) {
-				$lin_cara44sexov1identidadgen = $cSepara . cadena_codificar(html_entity_decode($acara44sexov1identidadgen[$fila1['cara44sexov1identidadgen']]));
+			$aidentidadgen = array();
+			$aorientasexo = array();
+			switch ($fila1['cara44sexoversion']) {
+				case 1:
+					$aidentidadgen = $acara44sexov1identidadgen;
+					$aorientasexo = $acara44sexov1orientasexo;
+					break;
+				case 2:
+					$aidentidadgen = $acara44sexov2identidadgen;
+					$aorientasexo = $acara44sexov2orientasexo;
+					break;
 			}
-			if (isset($acara44sexov1orientasexo[$fila1['cara44sexov1orientasexo']]) != 0) {
-				$lin_cara44sexov1orientasexo = $cSepara . cadena_codificar(html_entity_decode($acara44sexov1orientasexo[$fila1['cara44sexov1orientasexo']]));
+			if (isset($aidentidadgen[$fila1['cara44sexov1identidadgen']]) != 0) {
+				$lin_identidadgen = $cSepara . cadena_codificar(html_entity_decode($aidentidadgen[$fila1['cara44sexov1identidadgen']]));
+			}
+			if (isset($aorientasexo[$fila1['cara44sexov1orientasexo']]) != 0) {
+				$lin_orientasexo = $cSepara . cadena_codificar(html_entity_decode($aorientasexo[$fila1['cara44sexov1orientasexo']]));
 			}
 			$lin_cara44campesinado = $cSepara . $fila1['cara44campesinado'];
 			$lin_cara44frontera = $cSepara . 'Si';
@@ -1490,7 +1502,10 @@ if ($bEntra) {
 			$lin_unad11fechaultingreso = $cSepara . $aSys11[$iTer]['ult_ing'];
 			$lin_cara01fechaencuesta = $cSepara . $fila['cara01fechaencuesta'];
 			$lin_cara01agnos = $cSepara . $fila['cara01agnos'];
-			$lin_cara01sexo = $cSepara . $fila['cara01sexo'];
+			$lin_cara01sexo = $cSepara . $ETI['msg_noresponde'];
+			if ($fila['cara01sexo'] != '') {
+				$lin_cara01sexo = $cSepara . $fila['cara01sexo'];
+			}
 			$i_cara01pais = $fila['cara01pais'];
 			if (isset($acara01pais['"' . $i_cara01pais . '"']) == 0) {
 				$sSQL = 'SELECT unad18nombre FROM unad18pais WHERE unad18codigo="' . $i_cara01pais . '"';
@@ -2170,7 +2185,7 @@ if ($bEntra) {
 		//'Tipo Caracterizacion'.$cSepara.'TD'.$cSepara.'Doc'.$cSepara.'Estudiante'.$cSepara.'Fecha encuesta'.$cSepara.'Edad'.$cSepara.'Sexo'.$cSepara.'Pais'.$cSepara.'Departamento'
 		//.$cSepara.'Direccion'.$cSepara.'Estrato'.$cSepara.'Zona'.$cSepara.'Estado civil'.$cSepara.'Nombre del contacto'.$cSepara.'Parentezco del contacto'.$cSepara.'Celular del contacto'.$cSepara.'Correo del contacto'.$cSepara.'Zona'.$cSepara.'CEAD'.$cSepara.'Matricula en convenio'.$cSepara.'Raizal'.$cSepara.'Palenquero'.$cSepara.'Afrocolombiano'.$cSepara.'Otra comunidad negra'.$cSepara.'ROM'.$cSepara.'Indigena'.$cSepara.'Victima desplazado'
 		$sBloque1 = '' . $lin_cara01tipocaracterizacion . $lin_cara01idtercero . $lin_unad11fechaultingreso . $lin_cara01fechaencuesta . $lin_cara01agnos
-			. $lin_cara01sexo . $lin_cara44sexov1identidadgen . $lin_cara44sexov1orientasexo . $lin_cara01pais . $lin_cara01depto . $lin_cara01ciudad . $lin_cara01direccion . $lin_cara01estrato . $lin_cara01zonares . $lin_cara01estcivil . $lin_cara01nomcontacto . $lin_cara01parentezcocontacto
+			. $lin_cara01sexo . $lin_identidadgen . $lin_orientasexo . $lin_cara01pais . $lin_cara01depto . $lin_cara01ciudad . $lin_cara01direccion . $lin_cara01estrato . $lin_cara01zonares . $lin_cara01estcivil . $lin_cara01nomcontacto . $lin_cara01parentezcocontacto
 			. $lin_cara01idzona . $lin_cara01idcead . $lin_cara01idescuela . $lin_cara01idprograma . $lin_cara01matconvenio . $lin_cara01raizal . $lin_cara01palenquero
 			. $lin_cara01afrocolombiano . $lin_cara01otracomunnegras . $lin_cara01rom . $lin_cara01indigenas . $lin_cara44campesinado . $lin_cara44frontera . $lin_cara01victimadesplazado . $lin_cara01victimaacr . $lin_cara01inpecfuncionario . $lin_cara01inpecrecluso . $lin_cara01inpectiempocondena . $lin_cara01centroreclusion . $lin_cara01discsensorial
 			. $lin_cara01discfisica . $lin_cara01disccognitiva . $lin_cara01perayuda . $lin_cara01perotraayuda . $lin_cara01discv2sensorial . $lin_cara02discv2intelectura . $lin_cara02discv2fisica . $lin_cara02discv2psico . $lin_cara02discv2sistemica . $lin_cara02discv2sistemicaotro . $lin_cara02discv2multiple . $lin_cara02discv2multipleotro . $lin_cara01discv2archivoorigen . $lin_cara01discv2trastornos . $lin_cara01discv2trastaprende . $lin_cara01discv2contalento . $lin_cara01discv2pruebacoeficiente . $lin_cara01discv2condicionmedica . $lin_cara01discv2condmeddet . $lin_cara44med_tratamiento . $lin_cara44med_trat_cual;

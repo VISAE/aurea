@@ -147,6 +147,7 @@ $ETI['saiu73evalclaridadpsico'] = '¿Las estrategias, orientaciones o herramient
 $ETI['saiu73evalresolviopsico'] = 'Despu&eacute;s de recibir el acompa&ntilde;amiento, ¿cuento con mayores recursos para reconocer mis emociones, tomar decisiones o activar redes de apoyo cuando lo requiera&quest;';
 $ETI['saiu73evalconocimientopsico'] = '';
 $ETI['saiu73evalutilidadpsico'] = '';
+$ETI['titulo_historial'] = 'Historial de atenciones y PQRS';
 
 $ERR['saiu73agno'] = 'Necesita el dato ' . $ETI['saiu73agno'];
 $ERR['saiu73mes'] = 'Necesita el dato ' . $ETI['saiu73mes'];
