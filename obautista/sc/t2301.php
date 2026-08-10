@@ -600,7 +600,7 @@ if ($bEntra) {
 	$sTituloConsejero = '';
 	$sBloqueConsejero = '';
 	if ($bConConsejero) {
-		$sTituloConsejero = 'Consejero';
+		$sTituloConsejero = 'Docente de Inclusión';
 		$sBloqueConsejero = '';
 	}
 	if ($bPorTipo) {

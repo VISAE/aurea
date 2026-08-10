@@ -87,6 +87,8 @@ if (!$bPeticionXAJAX) {
 require $APP->rutacomun . 'unad_todas.php';
 require $APP->rutacomun . 'libs/clsdbadmin.php';
 require $APP->rutacomun . 'unad_librerias.php';
+require $APP->rutacomun . 'libaurea.php';
+require $APP->rutacomun . 'libcomp.php';
 require $APP->rutacomun . 'libdatos.php';
 require $APP->rutacomun . 'libhtml.php';
 require $APP->rutacomun . 'xajax/xajax_core/xajax.inc.php';
@@ -94,7 +96,6 @@ require $APP->rutacomun . 'unad_xajax.php';
 require $APP->rutacomun . 'libsai.php';
 require $APP->rutacomun . 'libtiempo.php';
 require $APP->rutacomun . 'libmail.php';
-require $APP->rutacomun . 'libaurea.php';
 if (($bPeticionXAJAX) && ($_SESSION['unad_id_tercero'] == 0)) {
 	// viene por xajax.
 	$xajax = new xajax();
@@ -120,13 +121,14 @@ $iConsecutivoMenu = 2;
 $iMinVerDB = 7774;
 $iCodModulo = 3073;
 $iCodModuloConsulta = $iCodModulo;
+$sIdioma = AUREA_Idioma();
 $audita[1] = false;
 $audita[2] = true;
 $audita[3] = true;
 $audita[4] = true;
 $audita[5] = false;
 // -- Se cargan los archivos de idioma
-$mensajes_todas = $APP->rutacomun . 'lg/lg_todas_' . $_SESSION['unad_idioma'] . '.php';
+$mensajes_todas = $APP->rutacomun . 'lg/lg_todas_' . $sIdioma . '.php';
 if (!file_exists($mensajes_todas)) {
 	$mensajes_todas = $APP->rutacomun . 'lg/lg_todas_es.php';
 }
@@ -141,7 +143,7 @@ $mensajes_3000 = $APP->rutacomun . 'lg/lg_3000_' . $_SESSION['unad_idioma'] . '.
 if (!file_exists($mensajes_3000)) {
 	$mensajes_3000 = $APP->rutacomun . 'lg/lg_3000_es.php';
 }
-$mensajes_3073 = $APP->rutacomun . 'lg/lg_3073_' . $_SESSION['unad_idioma'] . '.php';
+$mensajes_3073 = $APP->rutacomun . 'lg/lg_3073_' . $sIdioma . '.php';
 if (!file_exists($mensajes_3073)) {
 	$mensajes_3073 = $APP->rutacomun . 'lg/lg_3073_es.php';
 }
@@ -271,6 +273,8 @@ list($bDevuelve, $sDebugP, $seg_1707) = seg_revisa_permisoV3($iCodModulo, 1707, 
 if (isset($_REQUEST['deb_tipodoc']) == 0) {
 	$_REQUEST['deb_tipodoc'] = $APP->tipo_doc;
 }
+$_REQUEST['deb_tipodoc'] = cadena_Validar($_REQUEST['deb_tipodoc']);
+$_REQUEST['deb_doc'] = cadena_Validar($_REQUEST['deb_doc']);
 if ($_REQUEST['deb_doc'] != '') {
 	if ($seg_1707 == 1) {
 		$sSQL = 'SELECT unad11id, unad11razonsocial FROM unad11terceros WHERE unad11doc="' . $_REQUEST['deb_doc'] . '" AND unad11tipodoc="' . $_REQUEST['deb_tipodoc'] . '"';
@@ -1659,9 +1663,9 @@ echo $html_deb_tipodoc;
 </label>
 <label class="Label30">
 </label>
-<label class="Label30">
-<input id="btRevisaDoc" name="btRevisaDoc" type="button" value="Actualizar" class="btMiniActualizar" onclick="limpiapagina()" title="Consultar documento" />
-</label>
+<?php
+echo $objForma->htmlBotonSolo('btRevisaDoc', 'btMiniActualizar', 'limpiapagina()', 'Consultar documento', 30);
+?>
 <label class="Label30">&nbsp;</label>
 <b>
 <?php
@@ -1873,7 +1877,7 @@ echo $html_saiu73codciudad;
 echo $ETI['saiu73tiposolicitud'];
 ?>
 </label>
-<label>
+<label class="Label600">
 <div id="div_saiu73tiposolicitud">
 <?php
 echo $html_saiu73tiposolicitud;
@@ -1886,7 +1890,7 @@ echo $html_saiu73tiposolicitud;
 echo $ETI['saiu73temasolicitud'];
 ?>
 </label>
-<label>
+<label class="Label600">
 <div id="div_saiu73temasolicitud">
 <?php
 echo $html_saiu73temasolicitud;
@@ -1900,7 +1904,7 @@ echo $html_saiu73temasolicitud;
 echo $ETI['saiu73idescuela'];
 ?>
 </label>
-<label>
+<label class="Label600">
 <?php
 echo $html_saiu73idescuela;
 ?>
@@ -1911,7 +1915,7 @@ echo $html_saiu73idescuela;
 echo $ETI['saiu73idprograma'];
 ?>
 </label>
-<label>
+<label class="Label600">
 <div id="div_saiu73idprograma">
 <?php
 echo $html_saiu73idprograma;
@@ -1924,14 +1928,14 @@ echo $html_saiu73idprograma;
 echo $ETI['saiu73idperiodo'];
 ?>
 </label>
-<label>
+<label class="Label600">
 <?php
 echo $html_saiu73idperiodo;
 ?>
 </label>
 <div class="salto1px"></div>
-<div class="GrupoCampos520">
-<label class="txtAreaS">
+<div class="GrupoCampos">
+<label class="txtAreaM">
 <?php
 echo $ETI['saiu73detalle'];
 ?>
@@ -1973,9 +1977,9 @@ if ($bPuedeCerrar) {
 <?php
 if ($bResuelto) {
 ?>
-<div id="div_saiu73respuesta" style="display:block;">
-<div class="GrupoCampos520">
-<label class="txtAreaS">
+<div id="div_saiu73respuesta">
+<div class="GrupoCampos">
+<label class="txtAreaL">
 <?php
 echo $ETI['saiu73respuesta'];
 ?>
@@ -2304,8 +2308,6 @@ $("#saiu73idprograma").chosen({width:"100%"});
 $("#saiu73idperiodo").chosen({width:"100%"});
 <?php
 }
-?>
-<?php
 if ($_REQUEST['saiu73id'] == '') {
 ?>
 ter_muestra('saiu73idsolicitante',0);
