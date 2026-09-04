@@ -486,6 +486,7 @@ function f1206_db_Eliminar($aParametros, $objDB, $bDebug = false, $idTercero = 0
 	$masi06idmensaje = numeros_validar($aParametros[1]);
 	$masi06consec = numeros_validar($aParametros[2]);
 	$masi06id = numeros_validar($aParametros[3]);
+	$iCantidad = 0;
 	if ($sError == '') {
 		list($bDevuelve, $sDebugP) = seg_revisa_permisoV3($iCodModulo, 4, $idTercero, $objDB);
 		if (!$bDevuelve) {
@@ -510,7 +511,9 @@ function f1206_db_Eliminar($aParametros, $objDB, $bDebug = false, $idTercero = 0
 		}
 	}
 	if ($sError == '') {
-		list($sTabla1206, $sError) = f1206_NombreTabla($bloque, $objDB);
+		list($sTabla1205, $sError) = f1205_NombreTabla($bloque, $objDB);
+		list($sTabla1206, $sErrorH) = f1206_NombreTabla($bloque, $objDB);
+		$sError = $sError . $sErrorH;
 		list($sTabla1208, $sErrorH) = f1208_NombreTabla($bloque, $objDB);
 		$sError = $sError . $sErrorH;
 	}
@@ -528,7 +531,11 @@ function f1206_db_Eliminar($aParametros, $objDB, $bDebug = false, $idTercero = 0
 		//acciones previas
 		$sSQL = 'DELETE FROM ' . $sTabla1208 . ' WHERE masi08idmensaje=' . $masi05id . ' AND masi08idpoblacion=' . $masi06id . '';
 		$result = $objDB->ejecutasql($sSQL);
-
+		$sSQL = 'SELECT * FROM ' . $sTabla1208 . ' WHERE masi08idmensaje=' . $masi05id . '';
+		$tabla08 = $objDB->ejecutasql($sSQL);
+		$iCantidad = $objDB->nf($tabla08);
+		$sSQL = 'UPDATE ' . $sTabla1205 . ' SET masi05total_usuarios=' . $iCantidad . '';
+		$result = $objDB->ejecutasql($sSQL);
 		$sWhere = 'masi06id=' . $masi06id . '';
 		//$sWhere = 'masi06idmensaje=' . $masi06idmensaje . ' AND masi06consec=' . $masi06consec . '';
 		$sSQL = 'DELETE FROM ' . $sTabla1206 . ' WHERE ' . $sWhere . ';';
@@ -541,7 +548,7 @@ function f1206_db_Eliminar($aParametros, $objDB, $bDebug = false, $idTercero = 0
 			}
 		}
 	}
-	return array($sError, $sDebug);
+	return array($iCantidad, $sError, $sDebug);
 }
 function f1206_TablaDetalleV2($aParametros, $objDB, $bDebug = false)
 {
@@ -1109,14 +1116,18 @@ function f1206_Eliminar($aParametros)
 		$objDB->dbPuerto = $APP->dbpuerto;
 	}
 	$objDB->xajax();
-	list($sError, $sDebugElimina) = f1206_db_Eliminar($aParametros, $objDB, $bDebug, $idTercero);
+	list($iCantidad, $sError, $sDebugElimina) = f1206_db_Eliminar($aParametros, $objDB, $bDebug, $idTercero);
 	$sDebug = $sDebug . $sDebugElimina;
 	$objResponse = new xajaxResponse();
 	if ($sError == '') {
 		list($sDetalle, $sDebugTabla) = f1206_TablaDetalleV2($aParametros, $objDB, $bDebug);
 		$sDebug = $sDebug . $sDebugTabla;
 		$objResponse->assign('div_f1206detalle', 'innerHTML', $sDetalle);
+		$html_masi05total_usuarios = html_oculto('masi05total_usuarios', $iCantidad);
+		$objResponse->assign('div_masi05total_usuarios', 'innerHTML', $html_masi05total_usuarios);
 		$objResponse->call('limpiaf1206');
+		$objResponse->call('limpiaf1208');
+		$objResponse->call('paginarf1208');
 		$sError = $ETI['msg_itemeliminado'];
 		$iTipoError = 1;
 	}
@@ -1232,6 +1243,7 @@ function f1206_Procesar($masi05id, $bloque, $masi06id, $objDB, $bDebug = false)
 	$sError = '';
 	$iTipoError = 0;
 	$sDebug = '';
+	$iCantidad = 0;
 	$masi05id = numeros_validar($masi05id);
 	$masi06id = numeros_validar($masi06id);
 	// Traer los datos para hacer las validaciones.
@@ -1411,10 +1423,13 @@ function f1206_Procesar($masi05id, $bloque, $masi06id, $objDB, $bDebug = false)
 				}
 				$result = $objDB->ejecutasql($sSQL);
 				$masi08id++;
+				$iCantidad++;
 			}
 		}
+		$sSQL = 'UPDATE ' . $sTabla1205 . ' SET masi05total_usuarios=' . $iCantidad . '';
+		$result = $objDB->ejecutasql($sSQL);
 	}
-	return array($sError, $iTipoError, $sDebug);
+	return array($iCantidad, $sError, $iTipoError, $sDebug);
 }
 // Remover
 function f1206_Reversar($aParametros)
@@ -1458,8 +1473,17 @@ function f1206_Reversar($aParametros)
 	$objDB->xajax();
 	// -- 
 	if ($sError == '') {
+		list($sTabla1205, $sError) = f1205_NombreTabla($bloque, $objDB);
 		list($sTabla1208, $sErrorH) = f1208_NombreTabla($bloque, $objDB);
+		$sError = $sError . $sErrorH;
+	}
+	if ($sError == '') {
 		$sSQL = 'DELETE FROM ' . $sTabla1208 . ' WHERE masi08idmensaje=' . $masi05id . ' AND masi08idpoblacion=' . $masi06id . '';
+		$result = $objDB->ejecutasql($sSQL);
+		$sSQL = 'SELECT * FROM ' . $sTabla1208 . ' WHERE masi08idmensaje=' . $masi05id . '';
+		$tabla08 = $objDB->ejecutasql($sSQL);
+		$iCantidad = $objDB->nf($tabla08);
+		$sSQL = 'UPDATE ' . $sTabla1205 . ' SET masi05total_usuarios=' . $iCantidad . '';
 		$result = $objDB->ejecutasql($sSQL);
 	}
 	// --
@@ -1468,6 +1492,8 @@ function f1206_Reversar($aParametros)
 		list($sDetalle, $sDebugTabla) = f1206_TablaDetalleV2($aParametros, $objDB, $bDebug);
 		$sDebug = $sDebug . $sDebugTabla;
 		$objResponse->assign('div_f1206detalle', 'innerHTML', $sDetalle);
+		$html_masi05total_usuarios = html_oculto('masi05total_usuarios', $iCantidad);
+		$objResponse->assign('div_masi05total_usuarios', 'innerHTML', $html_masi05total_usuarios);
 		$objResponse->call('limpiaf1208');
 		$objResponse->call('paginarf1208');
 		$sError = $ETI['msg_procesoterminado'];

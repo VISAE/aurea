@@ -466,11 +466,16 @@ function elimina_archivo_masi07idarchivo($idPadre, $bloque, $bDebug = false)
 	if ($bPuedeEliminar) {
 		list($sTabla1207, $sError) = f1207_NombreTabla($bloque, $objDB);
 		archivo_eliminar($sTabla1207, 'masi07id', 'masi07idorigen', 'masi07idarchivo', $idPadre, $objDB);
+		$aParametros[0] = $idPadre;
+		$aParametros[97] = $bloque;
+		list($sDetalle, $sDebugTabla) = f1207_TablaDetalleV2($aParametros, $objDB, $bDebug);
+		$sDebug = $sDebug . $sDebugTabla;
 	}
 	$objDB->CerrarConexion();
 	$objResponse = new xajaxResponse();
 	if ($bPuedeEliminar) {
 		$objResponse->call("limpia_masi07idarchivo");
+		$objResponse->assign('div_f1207detalle', 'innerHTML', $sDetalle);
 	} else {
 		$objResponse->call("MensajeAlarmaV2('" . $sError . "', 0);");
 	}

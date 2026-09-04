@@ -10,6 +10,92 @@
  * @author Angel Mauro Avellaneda Barreto - angel.avellaneda@unad.edu.co
  * @date viernes, 11 de julio de 2025
  */
+function f1209_HTMLComboV2_masi09idcentro($objDB, $objCombos, $valor, $vrmasi09idzona)
+{
+	require './app.php';
+	$sIdioma = AUREA_Idioma();
+	$mensajes_todas = $APP->rutacomun . 'lg/lg_todas_' . $sIdioma . '.php';
+	if (!file_exists($mensajes_todas)) {
+		$mensajes_todas = $APP->rutacomun . 'lg/lg_todas_es.php';
+	}
+	require $mensajes_todas;
+	$objCombos->nuevo('masi09idcentro', $valor, true, '{' . $ETI['msg_todos'] . '}', 0);
+	//$objCombos->iAncho = 450;
+	$objCombos->bEsCombobox = true;
+	$sSQL = '';
+	if ((int)$vrmasi09idzona != 0) {
+		//$objCombos->addItem('0', '[Sin Dato]');
+		$sSQL = 'SELECT TB.unad24id AS id, TB.unad24nombre AS nombre 
+		FROM unad24sede AS TB
+		WHERE TB.unad24idzona=' . $vrmasi09idzona . ' 
+		ORDER BY TB.unad24nombre';
+	}
+	$res = $objCombos->html($sSQL, $objDB); //, 0, '', 'et', 1209, $sIdioma
+	return $res;
+}
+function f1209_HTMLComboV2_masi09idprograma($objDB, $objCombos, $valor, $vrmasi09idescuela)
+{
+	require './app.php';
+	$sIdioma = AUREA_Idioma();
+	$mensajes_todas = $APP->rutacomun . 'lg/lg_todas_' . $sIdioma . '.php';
+	if (!file_exists($mensajes_todas)) {
+		$mensajes_todas = $APP->rutacomun . 'lg/lg_todas_es.php';
+	}
+	require $mensajes_todas;
+	$objCombos->nuevo('masi09idprograma', $valor, true, '{' . $ETI['msg_todos'] . '}', 0);
+	//$objCombos->iAncho = 450;
+	$objCombos->bEsCombobox = true;
+	$sSQL = '';
+	if ((int)$vrmasi09idescuela != 0) {
+		//$objCombos->addItem('0', '[Sin Dato]');
+		$sSQL = 'SELECT TB.core09id AS id, TB.core09nombre AS nombre 
+		FROM core09programa AS TB
+		WHERE TB.core09idescuela=' . $vrmasi09idescuela . ' 
+		ORDER BY TB.core09nombre';
+	}
+	$res = $objCombos->html($sSQL, $objDB); //, 0, '', 'et', 1209, $sIdioma
+	return $res;
+}
+function f1209_Combomasi09idcentro($aParametros)
+{
+	$_SESSION['u_ultimominuto'] = iminutoavance();
+	if (!is_array($aParametros)) {
+		$aParametros = json_decode(str_replace('\"', '"', $aParametros), true);
+	}
+	require './app.php';
+	$objDB = new clsdbadmin($APP->dbhost, $APP->dbuser, $APP->dbpass, $APP->dbname);
+	if ($APP->dbpuerto != '') {
+		$objDB->dbPuerto = $APP->dbpuerto;
+	}
+	$objDB->xajax();
+	$objCombos = new clsHtmlCombos();
+	$html_masi09idcentro = f1209_HTMLComboV2_masi09idcentro($objDB, $objCombos, '', $aParametros[0]);
+	$objDB->CerrarConexion();
+	$objResponse = new xajaxResponse();
+	$objResponse->assign('div_masi09idcentro', 'innerHTML', $html_masi09idcentro);
+	$objResponse->call('createComboboxById("masi09idcentro")');
+	return $objResponse;
+}
+function f1209_Combomasi09idprograma($aParametros)
+{
+	$_SESSION['u_ultimominuto'] = iminutoavance();
+	if (!is_array($aParametros)) {
+		$aParametros = json_decode(str_replace('\"', '"', $aParametros), true);
+	}
+	require './app.php';
+	$objDB = new clsdbadmin($APP->dbhost, $APP->dbuser, $APP->dbpass, $APP->dbname);
+	if ($APP->dbpuerto != '') {
+		$objDB->dbPuerto = $APP->dbpuerto;
+	}
+	$objDB->xajax();
+	$objCombos = new clsHtmlCombos();
+	$html_masi09idprograma = f1209_HTMLComboV2_masi09idprograma($objDB, $objCombos, '', $aParametros[0]);
+	$objDB->CerrarConexion();
+	$objResponse = new xajaxResponse();
+	$objResponse->assign('div_masi09idprograma', 'innerHTML', $html_masi09idprograma);
+	$objResponse->call('createComboboxById("masi09idprograma")');
+	return $objResponse;
+}
 function f1209_ExisteDato($datos)
 {
 	if (!is_array($datos)) {
@@ -214,9 +300,12 @@ function f1209_TablaDetalleV2($aParametros, $objDB, $bDebug = false)
 	$registros = 0;
 	$bGigante = false; //En caso de que la tabla sea muy grande pasarlo a true
 	$sLimite = '';
-	$sCampos = 'SELECT TB.masi09consec, TB.masi09id, TB.masi09activa, TB.masi09nombre, TB.masi09cuerpo, TB.masi09unidadfuncional, TB.masi09idescuela, TB.masi09idprograma';
-	$sConsulta = 'FROM masi09firma AS TB 
-	WHERE ' . $sSQLadd1 . ' TB.masi09id>0 ' . $sSQLadd . '';
+	$sCampos = 'SELECT TB.masi09consec, TB.masi09id, TB.masi09activa, TB.masi09nombre, TB.masi09unidadfuncional, 
+	CONCAT(T26.unae26prefijo, T26.unae26nombre) AS unidad, TB.masi09idescuela, T12.core12sigla, TB.masi09idprograma, T9.core09nombre, 
+	TB.masi09idzona, T23.unad23sigla, TB.masi09idcentro, T24.unad24nombre';
+	$sConsulta = 'FROM masi09firma AS TB, unae26unidadesfun AS T26, core12escuela AS T12, core09programa AS T9, unad23zona AS T23, unad24sede AS T24 
+	WHERE ' . $sSQLadd1 . ' TB.masi09id>0 AND TB.masi09unidadfuncional=T26.unae26id AND TB.masi09idescuela=T12.core12id AND TB.masi09idprograma=T9.core09id 
+	AND TB.masi09idzona=T23.unad23id AND TB.masi09idcentro=T24.unad24id ' . $sSQLadd . '';
 	$sOrden = 'ORDER BY TB.masi09consec';
 	$sSQL = $sCampos . ' ' . $sConsulta . ' ' . $sOrden;
 	// ------------------------------------------------
@@ -284,10 +373,11 @@ function f1209_TablaDetalleV2($aParametros, $objDB, $bDebug = false)
 	$res = $res . '<th><b>' . $ETI['masi09consec'] . '</b></th>';
 	$res = $res . '<th><b>' . $ETI['masi09activa'] . '</b></th>';
 	$res = $res . '<th><b>' . $ETI['masi09nombre'] . '</b></th>';
-	$res = $res . '<th><b>' . $ETI['masi09cuerpo'] . '</b></th>';
 	$res = $res . '<th><b>' . $ETI['masi09unidadfuncional'] . '</b></th>';
 	$res = $res . '<th><b>' . $ETI['masi09idescuela'] . '</b></th>';
 	$res = $res . '<th><b>' . $ETI['masi09idprograma'] . '</b></th>';
+	$res = $res . '<th><b>' . $ETI['masi09idzona'] . '</b></th>';
+	$res = $res . '<th><b>' . $ETI['masi09idcentro'] . '</b></th>';
 	$res = $res . '<th class="flex gap-1 justify-end">';
 	$res = $res . html_paginador('paginaf1209', $registros, $lineastabla, $pagina, 'paginarf1209()');
 	$res = $res . html_lpp('lppf1209', $lineastabla, 'paginarf1209()');
@@ -324,18 +414,25 @@ function f1209_TablaDetalleV2($aParametros, $objDB, $bDebug = false)
 			$et_masi09activa = $sPrefijo . $ETI['no'] . $sSufijo;
 		}
 		$et_masi09nombre = $sPrefijo . cadena_notildes($filadet['masi09nombre']) . $sSufijo;
-		$et_masi09cuerpo = $sPrefijo . cadena_notildes($filadet['masi09cuerpo']) . $sSufijo;
-		$et_masi09unidadfuncional = $sPrefijo . $ETI['si'] . $sSufijo;
+		$et_masi09unidadfuncional = $sPrefijo . $filadet['unidad'] . $sSufijo;
 		if ($filadet['masi09unidadfuncional'] == 0) {
-			$et_masi09unidadfuncional = $sPrefijo . $ETI['no'] . $sSufijo;
+			$et_masi09unidadfuncional = $sPrefijo . $ETI['msg_todas'] . $sSufijo;
 		}
-		$et_masi09idescuela = $sPrefijo . $ETI['si'] . $sSufijo;
+		$et_masi09idescuela = $sPrefijo . $filadet['core12sigla'] . $sSufijo;
 		if ($filadet['masi09idescuela'] == 0) {
-			$et_masi09idescuela = $sPrefijo . $ETI['no'] . $sSufijo;
+			$et_masi09idescuela = $sPrefijo . $ETI['msg_todas'] . $sSufijo;
 		}
-		$et_masi09idprograma = $sPrefijo . $ETI['si'] . $sSufijo;
+		$et_masi09idprograma = $sPrefijo . $filadet['core09nombre'] . $sSufijo;
 		if ($filadet['masi09idprograma'] == 0) {
-			$et_masi09idprograma = $sPrefijo . $ETI['no'] . $sSufijo;
+			$et_masi09idprograma = $sPrefijo . $ETI['msg_todos'] . $sSufijo;
+		}
+		$et_masi09idzona = $sPrefijo . $filadet['unad23sigla'] . $sSufijo;
+		if ($filadet['masi09idzona'] == 0) {
+			$et_masi09idzona = $sPrefijo . $ETI['msg_todas'] . $sSufijo;
+		}
+		$et_masi09idcentro = $sPrefijo . $filadet['unad24nombre'] . $sSufijo;
+		if ($filadet['masi09idcentro'] == 0) {
+			$et_masi09idcentro = $sPrefijo . $ETI['msg_todas'] . $sSufijo;
 		}
 		if ($bAbierta) {
 			$sLink = '<a href="javascript:cargaridf1209(' . $filadet['masi09id'] . ')" class="lnkresalte">' . $ETI['lnk_cargar'] . '</a>';
@@ -344,10 +441,11 @@ function f1209_TablaDetalleV2($aParametros, $objDB, $bDebug = false)
 		$res = $res . '<td>' . $et_masi09consec . '</td>';
 		$res = $res . '<td>' . $et_masi09activa . '</td>';
 		$res = $res . '<td>' . $et_masi09nombre . '</td>';
-		$res = $res . '<td>' . $et_masi09cuerpo . '</td>';
 		$res = $res . '<td>' . $et_masi09unidadfuncional . '</td>';
 		$res = $res . '<td>' . $et_masi09idescuela . '</td>';
 		$res = $res . '<td>' . $et_masi09idprograma . '</td>';
+		$res = $res . '<td>' . $et_masi09idzona . '</td>';
+		$res = $res . '<td>' . $et_masi09idcentro . '</td>';
 		$res = $res . '<td align="right">' . $sLink . '</td>';
 		$res = $res . '</tr>';
 	}
@@ -472,10 +570,12 @@ function f1209_db_GuardarV2($DATA, $objDB, $bDebug = false, $idTercero = 0, $iCo
 	$DATA['masi09consec'] = numeros_validar($DATA['masi09consec']);
 	$DATA['masi09activa'] = numeros_validar($DATA['masi09activa']);
 	$DATA['masi09nombre'] = cadena_Validar(trim($DATA['masi09nombre']));
-	$DATA['masi09cuerpo'] = cadena_Validar(trim($DATA['masi09cuerpo']));
+	$DATA['masi09cuerpo'] = cadena_Validar(trim($DATA['masi09cuerpo']), true);
 	$DATA['masi09unidadfuncional'] = numeros_validar($DATA['masi09unidadfuncional']);
 	$DATA['masi09idescuela'] = numeros_validar($DATA['masi09idescuela']);
 	$DATA['masi09idprograma'] = numeros_validar($DATA['masi09idprograma']);
+	$DATA['masi09idzona'] = numeros_validar($DATA['masi09idzona']);
+	$DATA['masi09idcentro'] = numeros_validar($DATA['masi09idcentro']);
 	// -- Se inicializan las variables que puedan pasar vacias {Especialmente números}.
 	/*
 	if ($DATA['masi09activa'] == '') {
@@ -494,6 +594,12 @@ function f1209_db_GuardarV2($DATA, $objDB, $bDebug = false, $idTercero = 0, $iCo
 	// -- Seccion para validar los posibles causales de error.
 	$sSepara = ', ';
 	if (true) {
+		if ($DATA['masi09idcentro'] == '') {
+			$sError = $ERR['masi09idcentro'] . $sSepara . $sError;
+		}
+		if ($DATA['masi09idzona'] == '') {
+			$sError = $ERR['masi09idzona'] . $sSepara . $sError;
+		}
 		if ($DATA['masi09idprograma'] == '') {
 			$sError = $ERR['masi09idprograma'] . $sSepara . $sError;
 		}
@@ -503,11 +609,9 @@ function f1209_db_GuardarV2($DATA, $objDB, $bDebug = false, $idTercero = 0, $iCo
 		if ($DATA['masi09unidadfuncional'] == '') {
 			$sError = $ERR['masi09unidadfuncional'] . $sSepara . $sError;
 		}
-		/*
 		if ($DATA['masi09cuerpo'] == '') {
 			$sError = $ERR['masi09cuerpo'] . $sSepara . $sError;
 		}
-		*/
 		if ($DATA['masi09nombre'] == '') {
 			$sError = $ERR['masi09nombre'] . $sSepara . $sError;
 		}
@@ -581,9 +685,9 @@ function f1209_db_GuardarV2($DATA, $objDB, $bDebug = false, $idTercero = 0, $iCo
 		$bPasa = false;
 		if ($DATA['paso'] == 10) {
 			$sCampos1209 = 'masi09consec, masi09id, masi09activa, masi09nombre, masi09cuerpo, 
-			masi09unidadfuncional, masi09idescuela, masi09idprograma';
+			masi09unidadfuncional, masi09idescuela, masi09idprograma, masi09idzona, masi09idcentro';
 			$sValores1209 = '' . $DATA['masi09consec'] . ', ' . $DATA['masi09id'] . ', ' . $DATA['masi09activa'] . ', "' . $DATA['masi09nombre'] . '", "' . $masi09cuerpo . '", 
-			' . $DATA['masi09unidadfuncional'] . ', ' . $DATA['masi09idescuela'] . ', ' . $DATA['masi09idprograma'] . '';
+			' . $DATA['masi09unidadfuncional'] . ', ' . $DATA['masi09idescuela'] . ', ' . $DATA['masi09idprograma'] . ', ' . $DATA['masi09idzona'] . ', ' . $DATA['masi09idcentro'] . '';
 			if ($APP->utf8 == 1) {
 				$sSQL = 'INSERT INTO masi09firma (' . $sCampos1209 . ') VALUES (' . cadena_codificar($sValores1209) . ');';
 				$sdetalle = $sCampos1209 . '[' . cadena_codificar($sValores1209) . ']';
@@ -600,13 +704,17 @@ function f1209_db_GuardarV2($DATA, $objDB, $bDebug = false, $idTercero = 0, $iCo
 			$scampo[4] = 'masi09unidadfuncional';
 			$scampo[5] = 'masi09idescuela';
 			$scampo[6] = 'masi09idprograma';
+			$scampo[7] = 'masi09idzona';
+			$scampo[8] = 'masi09idcentro';
 			$sdato[1] = $DATA['masi09activa'];
 			$sdato[2] = $DATA['masi09nombre'];
 			$sdato[3] = $masi09cuerpo;
 			$sdato[4] = $DATA['masi09unidadfuncional'];
 			$sdato[5] = $DATA['masi09idescuela'];
 			$sdato[6] = $DATA['masi09idprograma'];
-			$iNumCamposMod = 6;
+			$sdato[7] = $DATA['masi09idzona'];
+			$sdato[8] = $DATA['masi09idcentro'];
+			$iNumCamposMod = 8;
 			$sWhere = 'masi09id=' . $DATA['masi09id'] . '';
 			$sSQL = 'SELECT * FROM masi09firma WHERE ' . $sWhere;
 			$sdatos = '';

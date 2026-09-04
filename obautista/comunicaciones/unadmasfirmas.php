@@ -91,6 +91,7 @@ require $APP->rutacomun . 'libaurea.php';
 require $APP->rutacomun . 'libcomp.php';
 require $APP->rutacomun . 'libdatos.php';
 require $APP->rutacomun . 'libhtml.php';
+require $APP->rutacomun . 'libcombos.php';
 require $APP->rutacomun . 'xajax/xajax_core/xajax.inc.php';
 require $APP->rutacomun . 'unad_xajax.php';
 if (($bPeticionXAJAX) && ($_SESSION['unad_id_tercero'] == 0)) {
@@ -301,6 +302,8 @@ $xajax->register(XAJAX_FUNCTION, 'sesion_abandona_V2');
 $xajax->register(XAJAX_FUNCTION, 'sesion_mantenerV4');
 $xajax->register(XAJAX_FUNCTION, 'f1209_HtmlTabla');
 $xajax->register(XAJAX_FUNCTION, 'f1209_ExisteDato');
+$xajax->register(XAJAX_FUNCTION, 'f1209_Combomasi09idprograma');
+$xajax->register(XAJAX_FUNCTION, 'f1209_Combomasi09idcentro');
 $xajax->processRequest();
 if ($bPeticionXAJAX) {
 	die(); // Esto hace que las llamadas por xajax terminen aquí.
@@ -354,14 +357,22 @@ if (isset($_REQUEST['masi09idescuela']) == 0) {
 if (isset($_REQUEST['masi09idprograma']) == 0) {
 	$_REQUEST['masi09idprograma'] = 0;
 }
+if (isset($_REQUEST['masi09idzona']) == 0) {
+	$_REQUEST['masi09idzona'] = 0;
+}
+if (isset($_REQUEST['masi09idcentro']) == 0) {
+	$_REQUEST['masi09idcentro'] = 0;
+}
 $_REQUEST['masi09consec'] = numeros_validar($_REQUEST['masi09consec']);
 $_REQUEST['masi09id'] = numeros_validar($_REQUEST['masi09id']);
 $_REQUEST['masi09activa'] = numeros_validar($_REQUEST['masi09activa']);
 $_REQUEST['masi09nombre'] = cadena_Validar($_REQUEST['masi09nombre']);
-$_REQUEST['masi09cuerpo'] = cadena_Validar($_REQUEST['masi09cuerpo']);
+$_REQUEST['masi09cuerpo'] = cadena_Validar($_REQUEST['masi09cuerpo'], true);
 $_REQUEST['masi09unidadfuncional'] = numeros_validar($_REQUEST['masi09unidadfuncional']);
 $_REQUEST['masi09idescuela'] = numeros_validar($_REQUEST['masi09idescuela']);
 $_REQUEST['masi09idprograma'] = numeros_validar($_REQUEST['masi09idprograma']);
+$_REQUEST['masi09idzona'] = numeros_validar($_REQUEST['masi09idzona']);
+$_REQUEST['masi09idcentro'] = numeros_validar($_REQUEST['masi09idcentro']);
 // Espacio para inicializar otras variables
 if (isset($_REQUEST['csv_separa']) == 0) {
 	$_REQUEST['csv_separa'] = ';';
@@ -393,6 +404,8 @@ if (($_REQUEST['paso'] == 1) || ($_REQUEST['paso'] == 3)) {
 		$_REQUEST['masi09unidadfuncional'] = $fila['masi09unidadfuncional'];
 		$_REQUEST['masi09idescuela'] = $fila['masi09idescuela'];
 		$_REQUEST['masi09idprograma'] = $fila['masi09idprograma'];
+		$_REQUEST['masi09idzona'] = $fila['masi09idzona'];
+		$_REQUEST['masi09idcentro'] = $fila['masi09idcentro'];
 		$bcargo = true;
 		$_REQUEST['paso'] = 2;
 		$_REQUEST['boculta1209'] = 0;
@@ -467,9 +480,11 @@ if ($_REQUEST['paso'] == -1) {
 	$_REQUEST['masi09activa'] = 1;
 	$_REQUEST['masi09nombre'] = '';
 	$_REQUEST['masi09cuerpo'] = '';
-	$_REQUEST['masi09unidadfuncional'] = 1;
-	$_REQUEST['masi09idescuela'] = 1;
-	$_REQUEST['masi09idprograma'] = 1;
+	$_REQUEST['masi09unidadfuncional'] = 0;
+	$_REQUEST['masi09idescuela'] = 0;
+	$_REQUEST['masi09idprograma'] = 0;
+	$_REQUEST['masi09idzona'] = 0;
+	$_REQUEST['masi09idcentro'] = 0;
 	$_REQUEST['paso'] = 0;
 }
 if ($bLimpiaHijos) {
@@ -520,21 +535,23 @@ $objCombos->addItem(1, $ETI['si']);
 //$objCombos->addArreglo($amasi09activa, $imasi09activa);
 $sSQL = '';
 $html_masi09activa = $objCombos->html($sSQL, $objDB);
-$objCombos->nuevo('masi09unidadfuncional', $_REQUEST['masi09unidadfuncional'], true, $ETI['no'], 0);
-$objCombos->addItem(1, $ETI['si']);
-//$objCombos->addArreglo($amasi09unidadfuncional, $imasi09unidadfuncional);
-$sSQL = '';
+$objCombos->nuevo('masi09unidadfuncional', $_REQUEST['masi09unidadfuncional'], true, '{' . $ETI['msg_todas'] . '}', 0);
+$objCombos->iAncho = 600;
+$objCombos->bEsCombobox = true;
+$sSQL = f226_ConsultaCombo();
 $html_masi09unidadfuncional = $objCombos->html($sSQL, $objDB);
-$objCombos->nuevo('masi09idescuela', $_REQUEST['masi09idescuela'], true, $ETI['no'], 0);
-$objCombos->addItem(1, $ETI['si']);
-//$objCombos->addArreglo($amasi09idescuela, $imasi09idescuela);
-$sSQL = '';
+$objCombos->nuevo('masi09idescuela', $_REQUEST['masi09idescuela'], true, '{' . $ETI['msg_todas'] . '}', 0);
+$objCombos->bEsCombobox = true;
+$objCombos->sAccion = 'carga_combo_masi09idprograma();';
+$sSQL = f2212_ConsultaComboEscuela();
 $html_masi09idescuela = $objCombos->html($sSQL, $objDB);
-$objCombos->nuevo('masi09idprograma', $_REQUEST['masi09idprograma'], true, $ETI['no'], 0);
-$objCombos->addItem(1, $ETI['si']);
-//$objCombos->addArreglo($amasi09idprograma, $imasi09idprograma);
-$sSQL = '';
-$html_masi09idprograma = $objCombos->html($sSQL, $objDB);
+$html_masi09idprograma = f1209_HTMLComboV2_masi09idprograma($objDB, $objCombos, $_REQUEST['masi09idprograma'], $_REQUEST['masi09idescuela']);
+$objCombos->nuevo('masi09idzona', $_REQUEST['masi09idzona'], true, '{' . $ETI['msg_todas'] . '}', 0);
+$objCombos->bEsCombobox = true;
+$objCombos->sAccion = 'carga_combo_masi09idcentro();';
+$sSQL = 'SELECT unad23id AS id, unad23nombre AS nombre FROM unad23zona WHERE unad23conestudiantes="S" ORDER BY unad23nombre';
+$html_masi09idzona = $objCombos->html($sSQL, $objDB);
+$html_masi09idcentro = f1209_HTMLComboV2_masi09idcentro($objDB, $objCombos, $_REQUEST['masi09idcentro'], $_REQUEST['masi09idzona']);
 if ((int)$_REQUEST['paso'] == 0) {
 } else {
 }
@@ -808,6 +825,20 @@ switch ($iPiel) {
 		window.document.frmedita.paso.value = 93;
 		window.document.frmedita.submit();
 	}
+
+	function carga_combo_masi09idcentro() {
+		let params = new Array();
+		params[0] = window.document.frmedita.masi09idzona.value;
+		document.getElementById('div_masi09idcentro').innerHTML = '<b>Procesando datos, por favor espere...</b><input id="masi09idcentro" name="masi09idcentro" type="hidden" value="" />';
+		xajax_f1209_Combomasi09idcentro(params);
+	}
+
+	function carga_combo_masi09idprograma() {
+		let params = new Array();
+		params[0] = window.document.frmedita.masi09idescuela.value;
+		document.getElementById('div_masi09idprograma').innerHTML = '<b>Procesando datos, por favor espere...</b><input id="masi09idprograma" name="masi09idprograma" type="hidden" value="" />';
+		xajax_f1209_Combomasi09idprograma(params);
+	}
 </script>
 <?php
 if ($_REQUEST['paso'] != 0) {
@@ -1015,19 +1046,26 @@ echo $ETI['masi09unidadfuncional'];
 ?>
 </label>
 <label>
+<div class="field">
 <?php
 echo $html_masi09unidadfuncional;
 ?>
+</div>
 </label>
+<div class="salto1px"></div>
 <label class="Label130">
 <?php
 echo $ETI['masi09idescuela'];
 ?>
 </label>
 <label>
+<div id="div_masi09idescuela" class="field">
 <?php
 echo $html_masi09idescuela;
 ?>
+</div>
+</label>
+<label class="Label30">
 </label>
 <label class="Label130">
 <?php
@@ -1035,9 +1073,38 @@ echo $ETI['masi09idprograma'];
 ?>
 </label>
 <label>
+<div id="div_masi09idprograma" class="field">
 <?php
 echo $html_masi09idprograma;
 ?>
+</div>
+</label>
+<div class="salto1px"></div>
+<label class="Label130">
+<?php
+echo $ETI['masi09idzona'];
+?>
+</label>
+<label>
+<div id="div_masi09idzona" class="field">
+<?php
+echo $html_masi09idzona;
+?>
+</div>
+</label>
+<label class="Label30">
+</label>
+<label class="Label130">
+<?php
+echo $ETI['masi09idcentro'];
+?>
+</label>
+<label>
+<div id="div_masi09idcentro" class="field">
+<?php
+echo $html_masi09idcentro;
+?>
+</div>
 </label>
 <?php
 if (false) {

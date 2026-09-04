@@ -927,8 +927,9 @@ if ($_REQUEST['paso'] == 21) {
 		}
 	}
 	if ($sError == '') {
-		list($sError, $iTipoError, $sDebugP) = f1206_Procesar($_REQUEST['masi05id'], $_REQUEST['bloque'], $_REQUEST['idprocesa'], $objDB, $bDebug);
+		list($iCantidad, $sError, $iTipoError, $sDebugP) = f1206_Procesar($_REQUEST['masi05id'], $_REQUEST['bloque'], $_REQUEST['idprocesa'], $objDB, $bDebug);
 		$sDebug = $sDebug . $sDebugP;
+		$_REQUEST['masi05total_usuarios'] = $_REQUEST['masi05total_usuarios'] + $iCantidad;
 	}
 	if ($sError == '') {
 		$sError = $ETI['msg_procesoterminado'];
@@ -1097,20 +1098,20 @@ if ((int)$_REQUEST['paso'] != 0) {
 			$bEdita1207 = true;
 			$bEdita1208 = true;
 			list($sNomTabla1208, $sErrorH) = f1208_NombreTabla($_REQUEST['bloque'], $objDB);
-			$sError = $sError . $sErrorH;
-			if ($sError == '') {
+			if ($sErrorH == '') {
 				$sSQL = 'SELECT 1 FROM ' . $sNomTabla1208 . ' WHERE masi08idmensaje=' . $_REQUEST['masi05id'] . ' LIMIT 0, 1';
 				$tabla08 = $objDB->ejecutasql($sSQL);
 				if ($objDB->nf($tabla08) == 0) {
 					$bBloqueado = false;
 				}
 			}
+			$sError = $sError . $sErrorH;
 			break;
 		case 3: // Completo
 			list($bPuedeAbrir, $sDebugP) = seg_revisa_permisoV3($iCodModulo, 17, $idTercero, $objDB);
 			break;
+		case 5: // En proceso
 		case 7: // Enviado
-			list($bPuedeAbrir, $sDebugP) = seg_revisa_permisoV3($iCodModulo, 17, $idTercero, $objDB);
 			break;
 		case 9: // Descartado
 			break;
@@ -1120,11 +1121,14 @@ if ((int)$_REQUEST['paso'] != 0) {
 if ($_REQUEST['bloque'] != $_REQUEST['bmes']) {
 	$_REQUEST['bloque'] = $_REQUEST['bmes'];
 	if ($_REQUEST['bloque'] != '') {
-		list($sErrorM, $sDebugA) = f1200_ArmarEstructuraMasivos($_REQUEST['bmes'], $objDB, $bDebug);
+		list($sErrorM, $sDebugA) = f1200_ArmarEstructura($_REQUEST['bmes'], $objDB, $bDebug);
 		$sDebug = $sDebug . $sDebugA;
 		if ($bDebug && ($sErrorM != '')) {
 			$sDebug = $sDebug . log_debug('Error desde la estructura: <span class="rojo">' . $sErrorM . '</span>');
 		}
+		list($sErrorM, $sDebugA) = f1200_RevisarTablaPoblacion($_REQUEST['bmes'], $objDB, $bDebug);
+		$sError = $sError . $sErrorM;
+		$sDebug = $sDebug . $sDebugA;
 	}
 }
 // lOS AÑOS LOS TOMAMOS DE LA TABLA QUE TIENE LAP PARTICION.
@@ -1147,14 +1151,22 @@ if ($seg_1707 == 1) {
 	$objCombos->iAncho = 60;
 	$html_deb_tipodoc = $objCombos->html('', $objDB, 145);
 }
-$masi05idproceso_nombre = '{' . $ETI['msg_ninguno'] . '}';
-$sSQL = 'SELECT masi72nombre FROM masi72proceso WHERE masi72id=' . $_REQUEST['masi05idproceso'];
-$tabla = $objDB->ejecutasql($sSQL);
-if ($objDB->nf($tabla) > 0) {
-	$fila = $objDB->sf($tabla);
-	$masi05idproceso_nombre = cadena_notildes($fila['masi72nombre']);
+if ($_REQUEST['masi05id'] == '') {
+	$objCombos->nuevo('masi05idproceso', $_REQUEST['masi05idproceso'], false);
+	$objCombos->sAccion = 'cargaproceso()';
+	$sSQL = 'SELECT masi72id AS id, masi72nombre AS nombre FROM masi72proceso ORDER BY masi72id';
+	$sHTML = $objCombos->html($sSQL, $objDB);
+} else {
+	$masi05idproceso_nombre = '{' . $ETI['msg_ninguno'] . '}';
+	$sSQL = 'SELECT masi72nombre FROM masi72proceso WHERE masi72id=' . $_REQUEST['masi05idproceso'];
+	$tabla = $objDB->ejecutasql($sSQL);
+	if ($objDB->nf($tabla) > 0) {
+		$fila = $objDB->sf($tabla);
+		$masi05idproceso_nombre = cadena_notildes($fila['masi72nombre']);
+	}
+	$sHTML = html_oculto('masi05idproceso', $_REQUEST['masi05idproceso'], $masi05idproceso_nombre);
 }
-$html_masi05idproceso = html_oculto('masi05idproceso', $_REQUEST['masi05idproceso'], $masi05idproceso_nombre);
+$html_masi05idproceso = $sHTML;
 $masi05estado_nombre = '{' . $_REQUEST['masi05estado'] . '}';
 $sSQL = 'SELECT unad96nombre, unad96etiqueta FROM unad96estado WHERE unad96idmodulo=1205 AND unad96id=' . $_REQUEST['masi05estado'];
 $tabla = $objDB->ejecutasql($sSQL);
@@ -1167,11 +1179,13 @@ if ($objDB->nf($tabla) > 0) {
 }
 $html_masi05estado = html_oculto('masi05estado', $_REQUEST['masi05estado'], $masi05estado_nombre);
 $objCombos->nuevo('masi05admiterpta', $_REQUEST['masi05admiterpta'], true, $ETI['no'], 0);
+$objCombos->sAccion = 'admiterpta()';
 $objCombos->addItem(1, $ETI['si']);
 //$objCombos->addArreglo($amasi05admiterpta, $imasi05admiterpta);
 $sSQL = '';
 $html_masi05admiterpta = $objCombos->html($sSQL, $objDB);
 $objCombos->nuevo('masi05firma', $_REQUEST['masi05firma'], true, '{' . $ETI['msg_ninguna'] . '}', 0);
+$objCombos->bEsCombobox = true;
 $sSQL = 'SELECT masi09id AS id, masi09nombre AS nombre FROM masi09firma ORDER BY masi09nombre';
 $html_masi05firma = $objCombos->html($sSQL, $objDB);
 list($masi05idusuario_rs, $_REQUEST['masi05idusuario'], $_REQUEST['masi05idusuario_td'], $_REQUEST['masi05idusuario_doc']) = html_tercero($_REQUEST['masi05idusuario_td'], $_REQUEST['masi05idusuario_doc'], $_REQUEST['masi05idusuario'], 0, $objDB);
@@ -1859,6 +1873,7 @@ if ($bPuedeAbrir) {
 		window.document.frmedita.paso.value = 93;
 		window.document.frmedita.submit();
 	}
+	
 	function procesarf1206(id) {
 		MensajeAlarmaV2('<?php echo $ETI['msg_ejecutando']; ?>', 2);
 		expandesector(98);
@@ -1866,12 +1881,26 @@ if ($bPuedeAbrir) {
 		window.document.frmedita.paso.value = 21;
 		window.document.frmedita.submit();
 	}
+
+	function cargaproceso() {
+		window.document.frmedita.bproceso.value = window.document.frmedita.masi05idproceso.value;
+		limpiapagina();
+	}
+
+	function admiterpta() {
+		let sMuestra = 'none';
+		let iValor = window.document.frmedita.masi05admiterpta.value;
+		if (iValor == 1) {
+			sMuestra = 'block';
+		}
+		document.getElementById('div_masi05correorpta').style.display = sMuestra;
+	}
 </script>
 <?php
 if ($_REQUEST['paso'] != 0) {
 ?>
 <script language="javascript" src="<?php echo $APP->rutacomun; ?>jsi/js1206.js?v=4a"></script>
-<script language="javascript" src="<?php echo $APP->rutacomun; ?>jsi/js1207.js?v=1"></script>
+<script language="javascript" src="<?php echo $APP->rutacomun; ?>jsi/js1207.js?v=2"></script>
 <script language="javascript" src="<?php echo $APP->rutacomun; ?>jsi/js1208.js?v=2b"></script>
 <?php
 }
@@ -2074,7 +2103,7 @@ echo $ETI['masi05id'];
 echo $ETI['masi05idproceso'];
 ?>
 </label>
-<label class="Label220">
+<label class="Label250">
 <?php
 echo $html_masi05idproceso;
 ?>
@@ -2204,15 +2233,21 @@ echo $ETI['masi05admiterpta'];
 echo $html_masi05admiterpta;
 ?>
 </label>
+<?php
+$sEstiloDiv = '';
+if ($_REQUEST['masi05admiterpta'] == 0) {
+	$sEstiloDiv = ' style="display:none;"';
+}
+?>
+<div id="div_masi05correorpta"<?php echo $sEstiloDiv; ?>>
 <label class="L">
 <?php
 echo $ETI['masi05correorpta'];
 ?>
-
 <input id="masi05correorpta" name="masi05correorpta" type="text" value="<?php echo $_REQUEST['masi05correorpta']; ?>" maxlength="200" class="L" placeholder="<?php echo $ETI['ing_campo'] . $ETI['masi05correorpta']; ?>" />
 </label>
-
-
+</div>
+<div class="salto1px"></div>
 <label class="Label130">
 <?php
 echo $ETI['masi05tiponotifica'];
@@ -2252,9 +2287,11 @@ echo $ETI['masi05firma'];
 ?>
 </label>
 <label>
+<div class="field">
 <?php
 echo $html_masi05firma;
 ?>
+</div>
 </label>
 <div class="salto1px"></div>
 <div class="GrupoCampos450">
@@ -2755,7 +2792,7 @@ if ((int)$_REQUEST['masi07id'] == 0) {
 if ((int)$_REQUEST['masi07idarchivo'] != 0) {
 	$sEstiloElimina = '';
 }
-echo $objForma->htmlBotonSolo('banexamasi07idarchivo', 'btMiniAnexar', 'carga_masi07idarchivo(window.document.frmedita.masi07idarchivo_up.value)', $ETI['bt_mini_cargararchivo'], 30, $sEstiloAnexa);
+echo $objForma->htmlBotonSolo('banexamasi07idarchivo', 'btMiniAnexar', 'carga_masi07idarchivo()', $ETI['bt_mini_cargararchivo'], 30, $sEstiloAnexa);
 echo $objForma->htmlBotonSolo('beliminamasi07idarchivo', 'btMiniEliminar', 'eliminamasi07idarchivo()', $ETI['bt_mini_eliminararchivo'], 30, $sEstiloElimina);
 ?>
 <div class="salto1px"></div>
@@ -3430,8 +3467,6 @@ if ($bMueveScroll) {
 </script>
 <link rel="stylesheet" href="<?php echo $APP->rutacomun; ?>js/jquery.autocomplete.css" type="text/css" />
 <script language="javascript" src="<?php echo $APP->rutacomun; ?>js/jquery.autocomplete.js"></script>
-<script language="javascript" src="<?php echo $APP->rutacomun; ?>js/chosen.jquery.js"></script>
-<link rel="stylesheet" href="<?php echo $APP->rutacomun; ?>js/chosen.css" type="text/css" />
 <script language="javascript" src="<?php echo $APP->rutacomun; ?>jodit/jodit.js"></script>
 <link rel="stylesheet" href="<?php echo $APP->rutacomun; ?>jodit/jodit.css" type="text/css" />
 <?php
@@ -3440,11 +3475,6 @@ if ($bMueveScroll) {
 //if ($_REQUEST['paso'] == 0) {
 ?>
 <script language="javascript">
-	$().ready(function() {
-		// $("#masi05idproceso").chosen({width:"100%"});
-		$("#masi05firma").chosen({width:"100%"});
-		// $("#masi05tiponotifica").chosen({width:"100%"});
-	});
 	let editor = new Jodit('#masi05cuerpo',{
 		height: 400,
 		language: 'es',

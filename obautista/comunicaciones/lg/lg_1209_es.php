@@ -20,9 +20,11 @@ $ETI['masi09id'] = 'Ref :';
 $ETI['masi09activa'] = 'Activa';
 $ETI['masi09nombre'] = 'Nombre';
 $ETI['masi09cuerpo'] = 'Cuerpo';
-$ETI['masi09unidadfuncional'] = 'Unidadfuncional';
+$ETI['masi09unidadfuncional'] = 'Unidad funcional';
 $ETI['masi09idescuela'] = 'Escuela';
 $ETI['masi09idprograma'] = 'Programa';
+$ETI['masi09idzona'] = 'Zona';
+$ETI['masi09idcentro'] = 'Centro';
 
 $ERR['masi09consec'] = 'Necesita el dato ' . $ETI['masi09consec'];
 $ERR['masi09id'] = 'Necesita el dato ' . $ETI['masi09id'];
@@ -32,6 +34,8 @@ $ERR['masi09cuerpo'] = 'Necesita el dato ' . $ETI['masi09cuerpo'];
 $ERR['masi09unidadfuncional'] = 'Necesita el dato ' . $ETI['masi09unidadfuncional'];
 $ERR['masi09idescuela'] = 'Necesita el dato ' . $ETI['masi09idescuela'];
 $ERR['masi09idprograma'] = 'Necesita el dato ' . $ETI['masi09idprograma'];
+$ERR['masi09idzona'] = 'Necesita el dato ' . $ETI['masi09idzona'];
+$ERR['masi09idcentro'] = 'Necesita el dato ' . $ETI['masi09idcentro'];
 
 $amasi09activa = array('', '');
 $imasi09activa = 0;

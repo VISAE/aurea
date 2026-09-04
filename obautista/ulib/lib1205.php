@@ -1062,8 +1062,6 @@ function f1205_db_GuardarV2b($DATA, $objDB, $bDebug = false, $idTercero = 0, $iC
 			//Datos adicionales al iniciar un registro.
 			$DATA['masi05estado'] = 0;
 			//$DATA['masi05idusuario'] = 0; //$_SESSION['unad_id_tercero'];
-			$DATA['masi05hora'] = 0;
-			$DATA['masi05min'] = 0;
 			$DATA['masi05idperiodo'] = 0;
 			$DATA['masi05curso'] = 0;
 			$DATA['masi05docente'] = 0;
@@ -1084,9 +1082,10 @@ function f1205_db_GuardarV2b($DATA, $objDB, $bDebug = false, $idTercero = 0, $iC
 	if ($sError == '') {
 		//$masi05cuerpo = addslashes($DATA['masi05cuerpo']);
 		list($masi05cuerpo, $sError, $sDebug) = f1205_GestionaImagenes($DATA['masi05cuerpo'], $objDB, $bDebug);
+		$iMaxLong = 16300; // tipo Text
+		$masi05cuerpo = mb_substr($masi05cuerpo, 0, $iMaxLong);
 		$DATA['masi05cuerpo'] = $masi05cuerpo;
 		$masi05cuerpo = str_replace('"', '\"', $masi05cuerpo);
-		// $masi05cuerpo = str_replace('"', '\"', $DATA['masi05cuerpo']);
 		$bPasa = false;
 		if ($DATA['paso'] == 10) {
 			$sCampos1205 = 'masi05idproceso, masi05consec, masi05id, masi05estado, masi05asunto, 
@@ -1351,38 +1350,43 @@ function f1205_CambiaEstado($masi05id, $bloque, $iEstadoOrigen, $iEstadoDestino,
 	$sDebug = '';
 	$sMensaje = '';
 	$bNotificar = false;
+	$masi05fecha = 0;
+	$masi05hora = 0;
+	$masi05min = 0;
 	list($sTabla1205, $sError) = f1205_NombreTabla($bloque, $objDB);
 	if ($sError == '') {
-		$sSQL = 'SELECT masi05estado FROM ' . $sTabla1205 . ' WHERE masi05id=' . $masi05id . '';
+		$sSQL = 'SELECT masi05estado, masi05fecha, masi05hora, masi05min FROM ' . $sTabla1205 . ' WHERE masi05id=' . $masi05id . '';
 		$tabla = $objDB->ejecutasql($sSQL);
 		if ($objDB->nf($tabla) > 0) {
 			$filabase = $objDB->sf($tabla);
 			if ($filabase['masi05estado'] != $iEstadoOrigen) {
 				$sError = 'El estado de origen no coincide [' . $filabase['masi05estado'] . '].';
+			} else {
+				$iHoy = fecha_DiaMod();
+				$iHora = fecha_hora();
+				$iMin = fecha_minuto();
+				$masi05fecha = $filabase['masi05fecha'];
+				$masi05hora = $filabase['masi05hora'];
+				$masi05min = $filabase['masi05min'];
+				$iTiempoMinutos = fecha_tiempoenminutos($iHoy, $iHora, $iMin, $masi05fecha, $masi05hora, $masi05min);
+				if ($iTiempoMinutos < 30) {
+					$sError = 'La fecha y hora para env&iacute;o no es v&aacute;lida, el tiempo programado no es suficiente';
+				}
 			}
 		} else {
 			$sError = $ETI['msg_no_encontrado'] . ' [Ref ' . $masi05id . ']';
 		}
 	}
 	if ($sError == '') {
-		$sInfoCambio = 'Cambia el estado a ' . $iEstadoDestino;
+		$sInfoCambio = 'Tabla: ' . $sTabla1205 . ', Registro: ' . $masi05id . ', Cambia el estado a ' . $iEstadoDestino;
 		$sDatosAdd = '';
-		switch ($iEstadoDestino) {
-			case 0:
-				break;
-		}
-	}
-	if ($sError == '') {
-		//Guardar el historial del cambio...
-	}
-	if ($sError == '') {
 		$sSQL = 'UPDATE ' . $sTabla1205 . ' SET masi05estado=' . $iEstadoDestino . '' . $sDatosAdd . ' WHERE masi05id=' . $masi05id . '';
 		$result = $objDB->ejecutasql($sSQL);
-		seg_auditar($iCodModulo, $_SESSION['unad_id_tercero'], 3, $_REQUEST['masi05id'], $sInfoCambio, $objDB);
+		seg_auditar($iCodModulo, $idUsuario, 3, $masi05id, $sInfoCambio, $objDB);
 	}
 	if ($bNotificar) {
-		list($sError, $sDebugN, $sMensaje) = f1205_Notificar($masi05id, $bloque, $objDB, $bDebug);
-		$sDebug = $sDebug . $sDebugN;
+		// list($sError, $sDebugN, $sMensaje) = f1205_Notificar($masi05id, $bloque, $objDB, $bDebug);
+		// $sDebug = $sDebug . $sDebugN;
 	}
 	return array($sError, $sDebug, $sMensaje);
 }
@@ -1395,15 +1399,21 @@ function f1205_Notificar($masi05id, $bloque, $objDB, $bDebug = false)
 	$iHoy = fecha_DiaMod();
 	$idInteresado = 0;
 	list($sTabla1205, $sError) = f1205_NombreTabla($bloque, $objDB);
+	list($sTabla1207, $sErrorH) = f1207_NombreTabla($bloque, $objDB);
+	$sError = $sError . $sErrorH;
+	list($sTabla1208, $sErrorH) = f1208_NombreTabla($bloque, $objDB);
+	$sError = $sError . $sErrorH;
 	if ($sError == '') {
-		$sSQL = 'SELECT * 
+		$sSQL = 'SELECT TB.masi05estado, TB.masi05asunto, TB.masi05cuerpo, TB.masi05firma
 		FROM ' . $sTabla1205 . ' AS TB
 		WHERE TB.masi05id=' . $masi05id . '';
 		$tabla = $objDB->ejecutasql($sSQL);
 		if ($objDB->nf($tabla) > 0) {
 			$filabase = $objDB->sf($tabla);
-			$idInteresado = $filabase['id_interesado'];
 			$masi05estado = $filabase['masi05estado'];
+			$masi05asunto = $filabase['masi05asunto'];
+			$masi05cuerpo = $filabase['masi05cuerpo'];
+			$masi05firma = $filabase['masi05firma'];
 		} else {
 			$sError = 'No se ha encontrado el registro solicitado [Ref ' . $masi05id . ']';
 		}
@@ -1499,14 +1509,16 @@ function f1205_GestionaImagenes($masi05cuerpo, $objDB, $bDebug = false)
 	foreach ($imagenes as $img) {
 		$bExiste = true;
    		$src = $img->getAttribute('src');
-		if (strpos($src, 'data:image/') === 0) {
-			$bExiste = false;
-		} else {
-			$bExiste = getimagesize($src);			
-		}
-		if (!$bExiste) {
-			$img->setAttribute('src', '#');
-			$img->setAttribute('alt', 'Enlace de imagen no permitido');
+		if ($src != '') {
+			if (strpos($src, 'data:image/') === 0) {
+				$bExiste = false;
+			} else {
+				$bExiste = getimagesize($src);			
+			}
+			if (!$bExiste) {
+				$img->setAttribute('src', '#');
+				$img->setAttribute('alt', 'Enlace de imagen no permitido');
+			}
 		}
 	}
 	if ($sError == '') {

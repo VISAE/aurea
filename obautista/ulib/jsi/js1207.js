@@ -13,22 +13,24 @@
 		//paginarf1207();
 	}
 
-	function carga_masi07idarchivo(u) {
+	function carga_masi07idarchivo() {
 		window.document.frmedita.iscroll.value = window.scrollY;
 		window.document.frmedita.div96v1.value = '';
 		window.document.frmedita.div96v2.value = '';
 		window.document.frmedita.div96v3.value = '';
+		let did = window.document.frmedita.masi07id.value;
+		let dbloque = window.document.frmedita.bloque.value;
 		document.getElementById('div_96titulo').innerHTML = '<h2>' + window.document.frmedita.titulo_1205.value + ' - Cargar archivo</h2>';
-		document.getElementById('div_96cuerpo').innerHTML = '<iframe id="iframe96" src="upload.php?u=' + u +'" height="400px" width="100%" frameborder="0"></iframe>';
+		document.getElementById('div_96cuerpo').innerHTML = '<iframe id="iframe96" src="framearchivodis.php?ref=1207&id=' + did + '&tabla=_' + dbloque + '&tipo=0" height="400px" width="100%" frameborder="0"></iframe>';
 		expandesector(96);
 		window.scrollTo(0, 150);
 	}
 
 	function eliminamasi07idarchivo() {
-		let did = window.document.frmedita.masi07id;
-		let dbloque = window.document.frmedita.bloque;
+		let did = window.document.frmedita.masi07id.value;
+		let dbloque = window.document.frmedita.bloque.value;
 		ModalConfirmV2('&iquest;Esta seguro de eliminar el archivo?', () => {
-			xajax_elimina_archivo_masi07idarchivo(did.value, dbloque.value);
+			xajax_elimina_archivo_masi07idarchivo(did, dbloque);
 			//paginarf1207();
 		});
 	}

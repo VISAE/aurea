@@ -648,7 +648,7 @@ function f107_VerificarPerfiles($idTercero, $idPeriodo, $objDB, $bDebug = false,
 	if (true) {
 		$sCondi = array();
 		// unae26idresponsable (se asigna por permiso de la GAF)
-		$sCondi[1] = 'SELECT 1 FROM cttc05oficina WHERE cttc05idcoordinador=' . $idTercero . ' AND cttc05activa>0';
+		$sCondi[1] = 'SELECT 1 FROM cttc05oficina WHERE (cttc05idcoordinador=' . $idTercero . ' OR cttc05idjefe=' . $idTercero . ') AND cttc05activa>0';
 		//Solo despues de la tarea 106 es que queda en firme como supervisor.
 		$sCondi[2] = 'SELECT 1 FROM cttc07proceso WHERE cttc07e2_idsupervisor=' . $idTercero . ' AND cttc07idtarea>106';
 		$sCondi[3] = 'SELECT 1 FROM cttc07proceso WHERE cttc07interventor=' . $idTercero . '';
@@ -739,6 +739,9 @@ function f107_VerificarPerfiles($idTercero, $idPeriodo, $objDB, $bDebug = false,
 			$iTotalPerfiles = 0;
 		}
 		for ($j = 1; $j <= $iTotalPerfiles; $j++) {
+			if ($bDebug) {
+				$sDebug = $sDebug . fecha_microtiempo() . ' Condicion de funcionario ' . $sCondi[$j] . '<br>';
+			}
 			$tabla = $objDB->ejecutasql($sCondi[$j]);
 			if ($objDB->nf($tabla) > 0) {
 				$id05 = $aCFG[$j];
@@ -1449,7 +1452,7 @@ function f111_AsignarIdMoodle($idTercero, $objDB, $bDebug = false)
 	return array($idResultado, $sDebug);
 }
 // Septiembre 29 de 2025 - Se inicia el uso de series debido a que se publican los ids en varios escenarios.
-function f111_IdSerie($numSerie, $id11, $objDB, $bDebug = false) 
+function f111_IdSerie($numSerie, $id11, $objDB, $bDebug = false)
 {
 	$iRes = 0;
 	$sError = '';
@@ -1473,7 +1476,7 @@ function f111_IdSerie($numSerie, $id11, $objDB, $bDebug = false)
 		$fila17 = $objDB->sf($tabla17);
 		$iRes = $fila17['maximo'];
 		$iRes++;
-		$sSQL = 'UPDATE unaf17series SET unaf17p' . $numSerie . '=' . $iRes .' WHERE unaf17id=' . $id11 . '';
+		$sSQL = 'UPDATE unaf17series SET unaf17p' . $numSerie . '=' . $iRes . ' WHERE unaf17id=' . $id11 . '';
 		$tabla17 = $objDB->ejecutasql($sSQL);
 	}
 	return array($iRes, $sError, $sDebug);
@@ -1561,6 +1564,14 @@ function f111_PuedeActualizarDatos($unad11id, $objDB, $bDebug = false)
 	$sError = '';
 	$sDebug = '';
 	$bPuedeEditar = true;
+	// Mayo 25 de 2026 --- Los que tengan el permiso de administrar terceros los dejamos pasar.
+	list($bPuedeAdministrar, $sDebugP) = seg_revisa_permisoV3(111, 10, $_SESSION['unad_id_tercero'], $objDB);
+	if ($bPuedeAdministrar) {
+		if ($bDebug) {
+			$sDebug = $sDebug . log_debug('<b>Revisando bloqueos de terceros</b>: Tiene permisos de admistrar {Permiso 10 en el modulo 111}');
+		}
+		return array($bPuedeEditar, $sError, $sDebug);
+	}
 	// Noviembre 6 de 2025 - Se define que contabilidad puede bloquear a un tercero.
 	$sSQL = 'SELECT unad11contab_idaprueba FROM unad11terceros WHERE unad11id=' . $unad11id . '';
 	if ($bDebug) {
@@ -1569,7 +1580,7 @@ function f111_PuedeActualizarDatos($unad11id, $objDB, $bDebug = false)
 	$tabla = $objDB->ejecutasql($sSQL);
 	if ($objDB->nf($tabla) > 0) {
 		$fila = $objDB->sf($tabla);
-		switch($fila['unad11contab_idaprueba']) {
+		switch ($fila['unad11contab_idaprueba']) {
 			case 0:
 				break;
 			case -1:
@@ -1596,6 +1607,179 @@ function f111_PuedeActualizarDatos($unad11id, $objDB, $bDebug = false)
 		}
 	}
 	return array($bPuedeEditar, $sError, $sDebug);
+}
+// 2026-05-29 Sincronizar la tabla de busquedas
+function f111_SincronizarBusqueda($objDB, $bDebug = false, $bAplicarOrden = false)
+{
+	/* 12 Segundos en una tabla con un millon de registros - contra 7 segundos de una busqueda simple con actualizacon.
+	UPDATE unad11busca B
+INNER JOIN unad11terceros T ON B.unad11id = T.unad11id
+SET 
+    B.unad11tipodoc = T.unad11tipodoc,
+    B.unad11doc = T.unad11doc,
+    B.unad11busqueda = CONCAT(T.unad11tipodoc, ' ', T.unad11doc, ' ', T.unad11razonsocial)
+WHERE T.unad11id > 0
+AND (
+    B.unad11tipodoc <> T.unad11tipodoc
+    OR B.unad11doc <> T.unad11doc
+    OR B.unad11busqueda <> CONCAT(T.unad11tipodoc, ' ', T.unad11doc, ' ', T.unad11razonsocial)
+);
+	*/
+	$sError = '';
+	$sDebug = '';
+	/*
+	$sSQL = 'SELECT TB.unad11id, TB.unad11tipodoc, TB.unad11doc, TB.unad11razonsocial
+	FROM unad11terceros AS TB, unad11busca AS T2
+	WHERE TB.unad11id>0 AND TB.unad11id=T2.unad11id 
+	AND CONCAT(TB.unad11tipodoc, " ", TB.unad11doc, " ", TB.unad11razonsocial)<>T2.unad11busqueda';
+	if ($bDebug) {
+		$sDebug = $sDebug . log_debug(' <b>Sincronizar unad11</b> Diferencias en la tabla de busqueda: ' . $sSQL . '');
+	}
+	$tabla = $objDB->ejecutasql($sSQL);
+	while ($fila = $objDB->sf($tabla)) {
+		$sNueva = $fila['unad11tipodoc'] . ' ' . $fila['unad11doc'] . ' ' . $fila['unad11razonsocial'];
+		$sSQL = 'UPDATE unad11busca SET unad11tipodoc="' . $fila['unad11tipodoc'] . '", 
+		unad11doc="' . $fila['unad11doc'] . '", unad11busqueda="' . $sNueva . '" 
+		WHERE unad11id=' . $fila['unad11id'] . '';
+		$result = $objDB->ejecutasql($sSQL);
+	}
+	*/
+	// 2 de Julio de 2026 -- Cambiamos la estrategia de actualizacion..
+	// Los que han cambiado de documento los quitamos para que luego se agregen y evitar que haya choques.
+	$sIds = '-99';
+	$sSQL = 'SELECT TB.unad11id
+	FROM unad11terceros AS TB, unad11busca AS T2
+	WHERE TB.unad11id>0 AND TB.unad11id=T2.unad11id 
+	AND CONCAT(TB.unad11tipodoc, " ", TB.unad11doc, " ", TB.unad11razonsocial)<>T2.unad11busqueda';
+	if ($bDebug) {
+		$sDebug = $sDebug . log_debug(' <b>Sincronizar unad11</b> Diferencias en la tabla de busqueda: ' . $sSQL . '');
+	}
+	$tabla = $objDB->ejecutasql($sSQL);
+	while ($fila = $objDB->sf($tabla)) {
+		$sIds = $sIds . ',' . $fila['unad11id'];
+	}
+	if ($sIds != '-99') {
+		$sSQL = 'DELETE FROM unad11busca WHERE unad11id IN (' . $sIds . ')';
+		if ($bDebug) {
+			$sDebug = $sDebug . log_debug(' <b>Sincronizar unad11</b> Retirando cambios: ' . $sSQL . '');
+		}
+		$result = $objDB->ejecutasql($sSQL);
+		$sSQL = 'DELETE FROM unad11espejo WHERE unad11id IN (' . $sIds . ')';
+		/*
+		if ($bDebug) {
+			$sDebug = $sDebug . log_debug(' <b>Sincronizar unad11</b> Retirando cambios: ' . $sSQL . '');
+		}
+		*/
+		$result = $objDB->ejecutasql($sSQL);
+	}
+	// Ahora insertarmos los faltantes
+	$sSQL = 'INSERT IGNORE INTO unad11busca (unad11tipodoc, unad11doc, unad11id, unad11busqueda)
+	SELECT unad11tipodoc, unad11doc, unad11id, CONCAT(unad11tipodoc, " ", unad11doc, " ", unad11razonsocial)
+	FROM unad11terceros
+	WHERE unad11id>0';
+	if ($bDebug) {
+		$sDebug = $sDebug . log_debug(' <b>Sincronizar unad11</b> Insertando faltantes de busqueda: ' . $sSQL . '');
+	}
+	$result = $objDB->ejecutasql($sSQL);
+
+	// Ahora repetimos la operacion con la unad11espejo
+	/*
+	$sSQL = 'SELECT TB.unad11id, TB.unad11tipodoc, TB.unad11doc, TB.unad11razonsocial
+	FROM unad11terceros AS TB, unad11espejo AS T2
+	WHERE TB.unad11id>0 AND TB.unad11id=T2.unad11id 
+	AND (TB.unad11tipodoc<>T2.unad11tipodoc OR TB.unad11doc=T2.unad11doc OR TB.unad11razonsocial=T2.unad11razonsocial)';
+	if ($bDebug) {
+		$sDebug = $sDebug . log_debug(' <b>Sincronizar unad11</b> Diferencias con la tabla espejo: ' . $sSQL . '');
+	}
+	$tabla = $objDB->ejecutasql($sSQL);
+	while ($fila = $objDB->sf($tabla)) {
+		$sNueva = $fila['unad11tipodoc'] . ' ' . $fila['unad11doc'] . ' ' . $fila['unad11razonsocial'];
+		$sSQL = 'UPDATE unad11espejo SET unad11tipodoc="' . $fila['unad11tipodoc'] . '", 
+		unad11doc="' . $fila['unad11doc'] . '", unad11busqueda="' . $sNueva . '" 
+		WHERE unad11id=' . $fila['unad11id'] . '';
+		$result = $objDB->ejecutasql($sSQL);
+	}
+	*/
+	$sSQL = 'INSERT IGNORE INTO unad11espejo (unad11tipodoc, unad11doc, unad11id, unad11razonsocial)
+	SELECT unad11tipodoc, unad11doc, unad11id, unad11razonsocial
+	FROM unad11terceros';
+	if ($bDebug) {
+		$sDebug = $sDebug . log_debug(' <b>Sincronizar unad11</b> Insertando faltantes del espejo: ' . $sSQL . '');
+	}
+	$result = $objDB->ejecutasql($sSQL);
+	/*
+	$iOrden = 1;
+	$sSQL = 'SELECT unad11id, unad11orden
+	FROM unad11espejo 
+	ORDER BY unad11razonsocial, unad11tipodoc, unad11doc';
+	if ($bDebug) {
+		$sDebug = $sDebug . log_debug(' <b>Sincronizar unad11</b> Alistando ordenamiento de la tabla espejo: ' . $sSQL . '');
+	}
+	$tabla = $objDB->ejecutasql($sSQL);
+	while ($fila = $objDB->sf($tabla)) {
+		if ($fila['unad11orden'] != $iOrden) {
+			$sSQL = 'UPDATE unad11espejo SET unad11orden=' . $iOrden . ' WHERE unad11id=' . $fila['unad11id'] . '';
+			$result = $objDB->ejecutasql($sSQL);
+		}
+		$iOrden++;
+	}
+	*/
+	if ($bAplicarOrden) {
+		//TEMPORARY 
+		$sTablaTemporal = 'tmp_unad11orden';
+		if ($objDB->bexistetabla($sTablaTemporal)) {
+			// ups no se borro antes..
+			$sSQL = 'DROP TABLE ' . $sTablaTemporal . '';
+			$result = $objDB->ejecutasql($sSQL);
+		}
+		$sSQL = 'CREATE TABLE ' . $sTablaTemporal . ' (
+		unad11orden INT UNSIGNED NOT NULL AUTO_INCREMENT,
+		unad11id INT NOT NULL,
+		PRIMARY KEY (unad11orden),
+		UNIQUE KEY idx_unad11id (unad11id)) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci';
+		if ($bDebug) {
+			$sDebug = $sDebug . log_debug(' <b>Sincronizar unad11</b> Creando tabla temporal: ' . $sSQL . '');
+		}
+		$result = $objDB->ejecutasql($sSQL);
+		// Esta inserción puede demorar mas de 30 segundos...
+		$sSQL = 'INSERT INTO ' . $sTablaTemporal . ' (unad11id)
+		SELECT unad11id
+		FROM unad11terceros
+		WHERE unad11id>0 AND TRIM(unad11razonsocial)<>""
+		ORDER BY TRIM(unad11razonsocial), unad11doc, unad11tipodoc';
+		if ($bDebug) {
+			$sDebug = $sDebug . log_debug(' <b>Sincronizar unad11</b> Agregando ordenamientos: ' . $sSQL . '');
+		}
+		$result = $objDB->ejecutasql($sSQL);
+		/*
+		$sSQL = 'UPDATE unad11espejo B
+		INNER JOIN ' . $sTablaTemporal . ' X ON X.unad11id = B.unad11id
+		SET B.unad11orden = X.unad11orden';
+		*/
+		$sSQL = 'UPDATE unad11busca B, ' . $sTablaTemporal . ' X
+		SET B.unad11orden = X.unad11orden
+		WHERE X.unad11id = B.unad11id AND B.unad11orden<>X.unad11orden';
+		if ($bDebug) {
+			$sDebug = $sDebug . log_debug(' <b>Sincronizar unad11</b> Actualizando ordenes en la busqueda: ' . $sSQL . '');
+		}
+		$result = $objDB->ejecutasql($sSQL);
+		$sSQL = 'UPDATE unad11espejo B, ' . $sTablaTemporal . ' X
+		SET B.unad11orden = X.unad11orden
+		WHERE X.unad11id = B.unad11id AND B.unad11orden<>X.unad11orden';
+		if ($bDebug) {
+			$sDebug = $sDebug . log_debug(' <b>Sincronizar unad11</b> Actualizando ordenes en el espejo: ' . $sSQL . '');
+		}
+		$result = $objDB->ejecutasql($sSQL);
+		$sSQL = 'DROP TABLE ' . $sTablaTemporal . '';
+		if ($bDebug) {
+			$sDebug = $sDebug . log_debug(' <b>Sincronizar unad11</b> Quitando tabla temporal: ' . $sSQL . '');
+		}
+		$result = $objDB->ejecutasql($sSQL);
+	}
+	if ($bDebug) {
+		$sDebug = $sDebug . log_debug(' <b>Sincronizar unad11</b> Fin del proceso');
+	}
+	return array($sError, $sDebug);
 }
 // 2024-07-11 Verificar si existen varios usuarios
 function f111_VerificarUnicoUsuario($unad11usuario, $objDB, $bDebug = false)
@@ -2045,6 +2229,21 @@ function f146_ConsultaCombo($sWhere = '', $objDB = NULL, $idTercero = 0, $idProg
 		case 2100:
 			//Solo los peracas donde se oferten laboratorios.
 			$sWhere = 'ext02ofertalaboratorios="S"';
+			break;
+		case 17: // donde el tercero este matriculado
+			//core16tercero=' . $vrsaiu41idestudiante . ' AND core16peraca>765
+			$sIds = '-99';
+			if ((int)$idTercero != 0) {
+				$sSQL = 'SELECT core16peraca 
+				FROM core16actamatricula 
+				WHERE core16tercero=' . $idTercero . ' 
+				GROUP BY core16peraca';
+				$tabla = $objDB->ejecutasql($sSQL);
+				while ($fila = $objDB->sf($tabla)) {
+					$sIds = $sIds . ',' . $fila['core16peraca'];
+				}
+			}
+			$sWhere = 'exte02id IN (' . $sIds . ')';
 			break;
 		case 2216:
 			//Solo los peracas donde haya matricula
@@ -2716,7 +2915,7 @@ function f1011_BloqueTercero($idTercero, $objDB)
 				core03idlineaprof int NULL DEFAULT 0, core03premfecha int NULL DEFAULT 0, core03idhomolcurso int NULL DEFAULT 0,
 				core03notahabilita Decimal(15,2) NULL DEFAULT 0, core03fechanotahabilita int NULL DEFAULT 0, 
 				core03excepcion int NULL DEFAULT 0, core03idlineaelectiva int NULL DEFAULT 0, core03rcp_orden int NULL DEFAULT 0, 
-				core03acumula int NULL DEFAULT 0, core03sissu_orden int NULL DEFAULT 0)";
+				core03acumula int NULL DEFAULT 0, core03sissu_orden int NULL DEFAULT 0) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci";
 				$bResultado = $objDB->ejecutasql($sSQL);
 				if ($bResultado == false) {
 					$sError = 'No ha sido posible iniciar la creaci&oacute;n del contenedor ' . $iRes . ', Por favor informe al administrador del sistema';
@@ -2798,7 +2997,7 @@ function f1011_BloqueTercero($idTercero, $objDB)
 				core04estact_puntaje5 int NULL DEFAULT 0, core04estact_puntaje6 int NULL DEFAULT 0, core04estact_puntaje7 int NULL DEFAULT 0, 
 				core04estact_puntaje8 int NULL DEFAULT 0, core04estact_puntaje9 int NULL DEFAULT 0, core04estact_puntaje10 int NULL DEFAULT 0, 
 				core04res75 Decimal(2,1) NULL DEFAULT 0, core04res25 Decimal(2,1) NULL DEFAULT 0, core04resdef Decimal(2,1) NULL DEFAULT 0, 
-				core04idcupoblear int NULL DEFAULT 0, core04res75campus Decimal(2,1) NULL DEFAULT 0, core04idgrupoinicial int NULL DEFAULT 0)";
+				core04idcupoblear int NULL DEFAULT 0, core04res75campus Decimal(2,1) NULL DEFAULT 0, core04idgrupoinicial int NULL DEFAULT 0) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci";
 				$bResultado = $objDB->ejecutasql($sSQL);
 				$sSQL = "ALTER TABLE " . $sTabla . " ADD PRIMARY KEY(core04id)";
 				$bResultado = $objDB->ejecutasql($sSQL);
@@ -2827,7 +3026,7 @@ function f1011_BloqueTercero($idTercero, $objDB)
 				core05tipoactividad int NULL DEFAULT 0, core05puntaje75 int NULL DEFAULT 0, core05puntaje25 int NULL DEFAULT 0, 
 				core05nota Decimal(15,2) NULL DEFAULT 0, core05fechanota int NULL DEFAULT 0, core05acumula75 int NULL DEFAULT 0, 
 				core05acumula25 int NULL DEFAULT 0, core05estado int NULL DEFAULT 0, core05retroalimentacion Text NULL, 
-				core05rezagado int NULL DEFAULT 0, core05calificado int NULL DEFAULT 0, core05idcupolab int NULL DEFAULT 0)";
+				core05rezagado int NULL DEFAULT 0, core05calificado int NULL DEFAULT 0, core05idcupolab int NULL DEFAULT 0) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci";
 				$bResultado = $objDB->ejecutasql($sSQL);
 				$sSQL = "ALTER TABLE " . $sTabla . " ADD PRIMARY KEY(core05id)";
 				$bResultado = $objDB->ejecutasql($sSQL);
@@ -2852,7 +3051,7 @@ function f1011_BloqueTercero($idTercero, $objDB)
 			$sTabla = 'corg18lineaelec_' . $iRes;
 			$bIniciarContenedor = !$objDB->bexistetabla($sTabla);
 			if ($bIniciarContenedor) {
-				$sSQL = "CREATE TABLE " . $sTabla . " (corg18idestprograma int NOT NULL, corg18idlineaelec int NOT NULL, corg18id int NOT NULL DEFAULT 0, corg18idtercero int NOT NULL DEFAULT 0, corg18idprograma int NOT NULL DEFAULT 0, corg18itipocurso int NOT NULL DEFAULT 0, corg18creditos int NOT NULL DEFAULT 0, corg18aprobados int NOT NULL DEFAULT 0)";
+				$sSQL = "CREATE TABLE " . $sTabla . " (corg18idestprograma int NOT NULL, corg18idlineaelec int NOT NULL, corg18id int NOT NULL DEFAULT 0, corg18idtercero int NOT NULL DEFAULT 0, corg18idprograma int NOT NULL DEFAULT 0, corg18itipocurso int NOT NULL DEFAULT 0, corg18creditos int NOT NULL DEFAULT 0, corg18aprobados int NOT NULL DEFAULT 0) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci";
 				$bResultado = $objDB->ejecutasql($sSQL);
 				$sSQL = "ALTER TABLE " . $sTabla . " ADD PRIMARY KEY(corg18id)";
 				$bResultado = $objDB->ejecutasql($sSQL);
@@ -2867,7 +3066,7 @@ function f1011_BloqueTercero($idTercero, $objDB)
 			$sTabla = 'saiu40baseconotifica_' . $iRes;
 			$bIniciarContenedor = !$objDB->bexistetabla($sTabla);
 			if ($bIniciarContenedor) {
-				$sSQL = "CREATE TABLE " . $sTabla . " (saiu40idbasecon int NOT NULL, saiu40idtercero int NOT NULL, saiu40consec int NOT NULL, saiu40id int NULL DEFAULT 0, saiu40fecha int NULL DEFAULT 0, saiu40hora int NULL DEFAULT 0, saiu40min int NULL DEFAULT 0, saiu40vianotifica int NULL DEFAULT 0)";
+				$sSQL = "CREATE TABLE " . $sTabla . " (saiu40idbasecon int NOT NULL, saiu40idtercero int NOT NULL, saiu40consec int NOT NULL, saiu40id int NULL DEFAULT 0, saiu40fecha int NULL DEFAULT 0, saiu40hora int NULL DEFAULT 0, saiu40min int NULL DEFAULT 0, saiu40vianotifica int NULL DEFAULT 0) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci";
 				$bResultado = $objDB->ejecutasql($sSQL);
 				$sSQL = "ALTER TABLE " . $sTabla . " ADD PRIMARY KEY(saiu40id)";
 				$bResultado = $objDB->ejecutasql($sSQL);
@@ -2889,7 +3088,7 @@ function f1011_BloqueTercero($idTercero, $objDB)
 				saiu41factorprincipaldesc int NULL DEFAULT 0, saiu41motivocontacto int NULL DEFAULT 0, saiu41acciones int NULL DEFAULT 0, 
 				saiu41resultados int NULL DEFAULT 0, saiu41idestprog int NULL DEFAULT 0, saiu41idescuela int NULL DEFAULT 0, 
 				saiu41idprograma int NULL DEFAULT 0, saiu41idzona int NULL DEFAULT 0, saiu41idcentro int NULL DEFAULT 0, 
-				saiu41tipointeresado int NULL DEFAULT 1, saiu41subtipocontacto int NULL DEFAULT 0)";
+				saiu41tipointeresado int NULL DEFAULT 1, saiu41subtipocontacto int NULL DEFAULT 0) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci";
 				$bResultado = $objDB->ejecutasql($sSQL);
 				$sSQL = "ALTER TABLE " . $sTabla . " ADD PRIMARY KEY(saiu41id)";
 				$bResultado = $objDB->ejecutasql($sSQL);
@@ -2914,7 +3113,7 @@ function f1011_BloqueTercero($idTercero, $objDB)
 			$sTabla = 'moni13rapcursoest_' . $iRes;
 			$bIniciarContenedor = !$objDB->bexistetabla($sTabla);
 			if ($bIniciarContenedor) {
-				$sSQL = "CREATE TABLE " . $sTabla . " (moni13idplan int NOT NULL, moni13idrap int NOT NULL, moni13idestudiante int NOT NULL, moni13idcurso int NOT NULL, moni13idperiodo int NOT NULL, moni13idact int NOT NULL, moni13id int NOT NULL DEFAULT 0, moni13puntajemax Decimal(15,2) NULL DEFAULT 0, moni13puntajeobtenido Decimal(15,2) NULL DEFAULT 0)";
+				$sSQL = "CREATE TABLE " . $sTabla . " (moni13idplan int NOT NULL, moni13idrap int NOT NULL, moni13idestudiante int NOT NULL, moni13idcurso int NOT NULL, moni13idperiodo int NOT NULL, moni13idact int NOT NULL, moni13id int NOT NULL DEFAULT 0, moni13puntajemax Decimal(15,2) NULL DEFAULT 0, moni13puntajeobtenido Decimal(15,2) NULL DEFAULT 0) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci";
 				$bResultado = $objDB->ejecutasql($sSQL);
 				$sSQL = "ALTER TABLE " . $sTabla . " ADD PRIMARY KEY(moni13id)";
 				$bResultado = $objDB->ejecutasql($sSQL);
@@ -2926,7 +3125,7 @@ function f1011_BloqueTercero($idTercero, $objDB)
 			$sTabla = 'moni14totalrapest_' . $iRes;
 			$bIniciarContenedor = !$objDB->bexistetabla($sTabla);
 			if ($bIniciarContenedor) {
-				$sSQL = "CREATE TABLE " . $sTabla . " (moni14idplan int NOT NULL, moni14idrap int NOT NULL, moni14idestudiante int NOT NULL, moni14idcurso int NOT NULL, moni14idperiodo int NOT NULL, moni14id int NOT NULL DEFAULT 0, moni14puntajemax Decimal(15,2) NULL DEFAULT 0, moni14puntajecalificado Decimal(15,2) NULL DEFAULT 0, moni14puntajeobtenido Decimal(15,2) NULL DEFAULT 0, moni14rappeso Decimal(15,2) NULL DEFAULT 0, moni14rappesoobtenido Decimal(15,2) NULL DEFAULT 0)";
+				$sSQL = "CREATE TABLE " . $sTabla . " (moni14idplan int NOT NULL, moni14idrap int NOT NULL, moni14idestudiante int NOT NULL, moni14idcurso int NOT NULL, moni14idperiodo int NOT NULL, moni14id int NOT NULL DEFAULT 0, moni14puntajemax Decimal(15,2) NULL DEFAULT 0, moni14puntajecalificado Decimal(15,2) NULL DEFAULT 0, moni14puntajeobtenido Decimal(15,2) NULL DEFAULT 0, moni14rappeso Decimal(15,2) NULL DEFAULT 0, moni14rappesoobtenido Decimal(15,2) NULL DEFAULT 0) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci";
 				$bResultado = $objDB->ejecutasql($sSQL);
 				$sSQL = "ALTER TABLE " . $sTabla . " ADD PRIMARY KEY(moni14id)";
 				$bResultado = $objDB->ejecutasql($sSQL);
@@ -2939,15 +3138,15 @@ function f1011_BloqueTercero($idTercero, $objDB)
 			$sTabla = 'cart23conciladet_' . $iRes;
 			$bIniciarContenedor = !$objDB->bexistetabla($sTabla);
 			if ($bIniciarContenedor) {
-				$sSQL="CREATE TABLE " . $sTabla . " (cart23idmodulo int NOT NULL, cart23refproceso varchar(20) NOT NULL, cart23idregistro int NOT NULL, cart23id int NOT NULL DEFAULT 0, cart23idconciliacion int NOT NULL DEFAULT 0, cart23idtercero int NOT NULL DEFAULT 0, cart23fecha int NOT NULL DEFAULT 0, cart23periodo int NOT NULL DEFAULT 0, cart23escuela int NOT NULL DEFAULT 0, cart23programa int NOT NULL DEFAULT 0, cart23curso int NOT NULL DEFAULT 0, cart23zona int NOT NULL DEFAULT 0, cart23centro int NOT NULL DEFAULT 0, cart23idproductoacad int NOT NULL DEFAULT 0, cart23cantcausada int NOT NULL DEFAULT 0, cart23cantcobrada int NOT NULL DEFAULT 0)";
+				$sSQL = "CREATE TABLE " . $sTabla . " (cart23idmodulo int NOT NULL, cart23refproceso varchar(20) NOT NULL, cart23idregistro int NOT NULL, cart23id int NOT NULL DEFAULT 0, cart23idconciliacion int NOT NULL DEFAULT 0, cart23idtercero int NOT NULL DEFAULT 0, cart23fecha int NOT NULL DEFAULT 0, cart23periodo int NOT NULL DEFAULT 0, cart23escuela int NOT NULL DEFAULT 0, cart23programa int NOT NULL DEFAULT 0, cart23curso int NOT NULL DEFAULT 0, cart23zona int NOT NULL DEFAULT 0, cart23centro int NOT NULL DEFAULT 0, cart23idproductoacad int NOT NULL DEFAULT 0, cart23cantcausada int NOT NULL DEFAULT 0, cart23cantcobrada int NOT NULL DEFAULT 0) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci";
 				$bResultado = $objDB->ejecutasql($sSQL);
-				$sSQL="ALTER TABLE " . $sTabla . " ADD PRIMARY KEY(cart23id)";
+				$sSQL = "ALTER TABLE " . $sTabla . " ADD PRIMARY KEY(cart23id)";
 				$bResultado = $objDB->ejecutasql($sSQL);
-				$sSQL=$objDB->sSQLCrearIndice($sTabla, 'cart23conciladet_id', 'cart23idmodulo, cart23refproceso, cart23idregistro', true);
+				$sSQL = $objDB->sSQLCrearIndice($sTabla, 'cart23conciladet_id', 'cart23idmodulo, cart23refproceso, cart23idregistro', true);
 				$bResultado = $objDB->ejecutasql($sSQL);
-				$sSQL=$objDB->sSQLCrearIndice($sTabla, 'cart23conciladet_padre', 'cart23idconciliacion');
+				$sSQL = $objDB->sSQLCrearIndice($sTabla, 'cart23conciladet_padre', 'cart23idconciliacion');
 				$bResultado = $objDB->ejecutasql($sSQL);
-				$sSQL=$objDB->sSQLCrearIndice($sTabla, 'cart23conciladet_tercero', 'cart23idtercero');
+				$sSQL = $objDB->sSQLCrearIndice($sTabla, 'cart23conciladet_tercero', 'cart23idtercero');
 				$bResultado = $objDB->ejecutasql($sSQL);
 			}
 		}
@@ -4176,7 +4375,7 @@ function f2205_ArreglarFechaAgendaCursoEstudiante($idPeriodo, $idCurso, $objDB, 
 	}
 	// Las agendas ya existen por lo que hay que traer la información de los estudiantes
 	$iHoy = fecha_DiaMod();
-	$sSQL='SHOW TABLES LIKE "core04%"';
+	$sSQL = 'SHOW TABLES LIKE "core04%"';
 	if ($bDebug) {
 		$sDebug = $sDebug . fecha_microtiempo() . ' Total Periodo: Lista de contenedores: ' . $sSQL . '<br>';
 	}
@@ -4838,6 +5037,26 @@ function f2209_ProgramasLider($idTercero, $objDB, $bDebug = false)
 		$sProgramas = $sProgramas . ',' . $fila['core09id'];
 	}
 	return array($sProgramas, $sDebug);
+}
+function f2209_SniesLider($idTercero, $objDB, $bDebug = false)
+{
+	$sSnies = '';
+	$sDebug = '';
+	$sSQL = 'SELECT TB.core09idsnies 
+	FROM core09programa AS TB
+	WHERE TB.core09iddirector=' . $idTercero . ' AND TB.core09idsnies>0
+	GROUP BY TB.core09idsnies';
+	if ($bDebug) {
+		$sDebug = $sDebug . fecha_microtiempo() . ' Consultando Lideres de programa X codigo SNIES: ' . $sSQL . '<br>';
+	}
+	$tabla = $objDB->ejecutasql($sSQL);
+	if ($objDB->nf($tabla) > 0) {
+		$sSnies = '-99';
+	}
+	while ($fila = $objDB->sf($tabla)) {
+		$sSnies = $sSnies . ',' . $fila['core09id'];
+	}
+	return array($sSnies, $sDebug);
 }
 function f2209_TituloPrograma($id09, $objDB)
 {
@@ -5666,7 +5885,7 @@ function f2402_CargarActividades($idTercero, $idPeriodo, $idCurso, $objDB, $bFor
 			ceca02mincierra int NULL DEFAULT 0, ceca02fechaimporta int NULL DEFAULT 0, ceca02estado0 int NULL DEFAULT 0, 
 			ceca02estado1 int NULL DEFAULT 0, ceca02estado3 int NULL DEFAULT 0, ceca02estado5 int NULL DEFAULT 0, 
 			ceca02estado7 int NULL DEFAULT 0, ceca02puntajeacum int NULL DEFAULT 0, ceca02numaprobados int NULL DEFAULT 0, 
-			ceca02promedio Decimal(15,2) NULL DEFAULT 0, ceca02porcaproba Decimal(15,2) NULL DEFAULT 0)';
+			ceca02promedio Decimal(15,2) NULL DEFAULT 0, ceca02porcaproba Decimal(15,2) NULL DEFAULT 0) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci';
 			$tabla = $objDB->ejecutasql($sSQL);
 			$sSQL = 'ALTER TABLE ' . $sNomTabla . ' ADD PRIMARY KEY(ceca02id)';
 			$tabla = $objDB->ejecutasql($sSQL);
@@ -6088,7 +6307,7 @@ function f3000_TablasInventario($idContenedor, $objDB, $bDebug = false)
 	$sTabla = 'saiu23inventario_' . $idContenedor . '';
 	$bIniciarContenedor = !$objDB->bexistetabla($sTabla);
 	if ($bIniciarContenedor) {
-		$sSQL = "CREATE TABLE " . $sTabla . " (saiu23idtercero int NOT NULL, saiu23modulo int NOT NULL, saiu23tabla int NOT NULL, saiu23idtabla int NOT NULL, saiu23fecha int NULL DEFAULT 0, saiu23idtipo int NULL DEFAULT 0, saiu23idtema int NULL DEFAULT 0, saiu23estado int NULL DEFAULT 0)";
+		$sSQL = "CREATE TABLE " . $sTabla . " (saiu23idtercero int NOT NULL, saiu23modulo int NOT NULL, saiu23tabla int NOT NULL, saiu23idtabla int NOT NULL, saiu23fecha int NULL DEFAULT 0, saiu23idtipo int NULL DEFAULT 0, saiu23idtema int NULL DEFAULT 0, saiu23estado int NULL DEFAULT 0) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci";
 		$bResultado = $objDB->ejecutasql($sSQL);
 		if ($bResultado == false) {
 			$sError = 'No ha sido posible iniciar la creaci&oacute;n del contenedor de invetario Ref: ' . $idContenedor . ', Por favor informe al administrador del sistema';
@@ -6412,7 +6631,7 @@ function f3000_TablasMes($iAgno, $iMes, $objDB, $bDebug = false)
 		saiu05evalresolvio int NULL DEFAULT 0, saiu05evalsugerencias Text NULL, saiu05evalconocimiento int NULL DEFAULT 0, 
 		saiu05evalconocmotivo Text NULL, saiu05evalutilidad int NULL DEFAULT 0, saiu05evalutilmotivo Text NULL, saiu05idcategoria int NULL DEFAULT 0, 
 		saiu05raddia int NULL DEFAULT 0, saiu05radhora int NULL DEFAULT 0, saiu05radmin int NULL DEFAULT 0, 
-		saiu05raddespcalend int NULL DEFAULT 0, saiu05raddesphab int NULL DEFAULT 0)";
+			saiu05raddespcalend int NULL DEFAULT 0, saiu05raddesphab int NULL DEFAULT 0) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci";
 		$bResultado = $objDB->ejecutasql($sSQL);
 		if ($bResultado == false) {
 			$sError = 'No ha sido posible iniciar la creaci&oacute;n de lso contenedores para ' . $iAgno . $iMes . ', Por favor informe al administrador del sistema';
@@ -6444,7 +6663,7 @@ function f3000_TablasMes($iAgno, $iMes, $objDB, $bDebug = false)
 			$bResultado = $objDB->ejecutasql($sSQL);
 
 			$sTabla = 'saiu06solanotacion_' . $iAgno . $iMes;
-			$sSQL = "CREATE TABLE " . $sTabla . " (saiu06idsolicitud int NOT NULL, saiu06consec int NOT NULL, saiu06id int NULL DEFAULT 0, saiu06anotacion Text NULL, saiu06visible varchar(1) NULL, saiu06descartada varchar(1) NULL, saiu06idorigen int NULL DEFAULT 0, saiu06idarchivo int NULL DEFAULT 0, saiu06idusuario int NULL DEFAULT 0, saiu06fecha int NULL DEFAULT 0, saiu06hora int NULL DEFAULT 0, saiu06minuto int NULL DEFAULT 0)";
+			$sSQL = "CREATE TABLE " . $sTabla . " (saiu06idsolicitud int NOT NULL, saiu06consec int NOT NULL, saiu06id int NULL DEFAULT 0, saiu06anotacion Text NULL, saiu06visible varchar(1) NULL, saiu06descartada varchar(1) NULL, saiu06idorigen int NULL DEFAULT 0, saiu06idarchivo int NULL DEFAULT 0, saiu06idusuario int NULL DEFAULT 0, saiu06fecha int NULL DEFAULT 0, saiu06hora int NULL DEFAULT 0, saiu06minuto int NULL DEFAULT 0) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci";
 			$bResultado = $objDB->ejecutasql($sSQL);
 			$sSQL = "ALTER TABLE " . $sTabla . " ADD PRIMARY KEY(saiu06id)";
 			$bResultado = $objDB->ejecutasql($sSQL);
@@ -6453,7 +6672,7 @@ function f3000_TablasMes($iAgno, $iMes, $objDB, $bDebug = false)
 			$sSQL = "ALTER TABLE " . $sTabla . " ADD INDEX saiu06solanotacion_padre(saiu06idsolicitud)";
 			$bResultado = $objDB->ejecutasql($sSQL);
 			$sTabla = 'saiu07anexos_' . $iAgno . $iMes;
-			$sSQL = "CREATE TABLE " . $sTabla . " (saiu07idsolicitud int NOT NULL, saiu07consec int NOT NULL, saiu07id int NULL DEFAULT 0, saiu07idtipoanexo int NULL DEFAULT 0, saiu07detalle varchar(100) NULL, saiu07idorigen int NULL DEFAULT 0, saiu07idarchivo int NULL DEFAULT 0, saiu07idusuario int NULL DEFAULT 0, saiu07fecha int NULL DEFAULT 0, saiu07hora int NULL DEFAULT 0, saiu07minuto int NULL DEFAULT 0, saiu07estado int NULL DEFAULT 0, saiu07idvalidad int NULL DEFAULT 0, saiu07fechavalida int NULL DEFAULT 0, saiu07horavalida int NULL DEFAULT 0, saiu07minvalida int NULL DEFAULT 0)";
+			$sSQL = "CREATE TABLE " . $sTabla . " (saiu07idsolicitud int NOT NULL, saiu07consec int NOT NULL, saiu07id int NULL DEFAULT 0, saiu07idtipoanexo int NULL DEFAULT 0, saiu07detalle varchar(100) NULL, saiu07idorigen int NULL DEFAULT 0, saiu07idarchivo int NULL DEFAULT 0, saiu07idusuario int NULL DEFAULT 0, saiu07fecha int NULL DEFAULT 0, saiu07hora int NULL DEFAULT 0, saiu07minuto int NULL DEFAULT 0, saiu07estado int NULL DEFAULT 0, saiu07idvalidad int NULL DEFAULT 0, saiu07fechavalida int NULL DEFAULT 0, saiu07horavalida int NULL DEFAULT 0, saiu07minvalida int NULL DEFAULT 0) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci";
 			$bResultado = $objDB->ejecutasql($sSQL);
 			$sSQL = "ALTER TABLE " . $sTabla . " ADD PRIMARY KEY(saiu07id)";
 			$bResultado = $objDB->ejecutasql($sSQL);
@@ -6462,7 +6681,7 @@ function f3000_TablasMes($iAgno, $iMes, $objDB, $bDebug = false)
 			$sSQL = "ALTER TABLE " . $sTabla . " ADD INDEX saiu07anexos_padre(saiu07idsolicitud)";
 			$bResultado = $objDB->ejecutasql($sSQL);
 			$sTabla = 'saiu08solinteresados_' . $iAgno . $iMes;
-			$sSQL = "CREATE TABLE " . $sTabla . " (saiu08idsolicitud int NOT NULL, saiu08idinteresado int NOT NULL, saiu08id int NULL DEFAULT 0, saiu08detalle varchar(250) NULL)";
+			$sSQL = "CREATE TABLE " . $sTabla . " (saiu08idsolicitud int NOT NULL, saiu08idinteresado int NOT NULL, saiu08id int NULL DEFAULT 0, saiu08detalle varchar(250) NULL) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci";
 			$bResultado = $objDB->ejecutasql($sSQL);
 			$sSQL = "ALTER TABLE " . $sTabla . " ADD PRIMARY KEY(saiu08id)";
 			$bResultado = $objDB->ejecutasql($sSQL);
@@ -6471,7 +6690,7 @@ function f3000_TablasMes($iAgno, $iMes, $objDB, $bDebug = false)
 			$sSQL = "ALTER TABLE " . $sTabla . " ADD INDEX saiu08solinteresados_padre(saiu08idsolicitud)";
 			$bResultado = $objDB->ejecutasql($sSQL);
 			$sTabla = 'saiu09cambioestado_' . $iAgno . $iMes;
-			$sSQL = "CREATE TABLE " . $sTabla . " (saiu09idsolicitud int NOT NULL, saiu09consec int NOT NULL, saiu09id int NULL DEFAULT 0, saiu09idestadoorigen int NULL DEFAULT 0, saiu09idestadofin int NULL DEFAULT 0, saiu09idusuario int NULL DEFAULT 0, saiu09fecha int NULL DEFAULT 0, saiu09hora int NULL DEFAULT 0, saiu09minuto int NULL DEFAULT 0)";
+			$sSQL = "CREATE TABLE " . $sTabla . " (saiu09idsolicitud int NOT NULL, saiu09consec int NOT NULL, saiu09id int NULL DEFAULT 0, saiu09idestadoorigen int NULL DEFAULT 0, saiu09idestadofin int NULL DEFAULT 0, saiu09idusuario int NULL DEFAULT 0, saiu09fecha int NULL DEFAULT 0, saiu09hora int NULL DEFAULT 0, saiu09minuto int NULL DEFAULT 0) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci";
 			$bResultado = $objDB->ejecutasql($sSQL);
 			$sSQL = "ALTER TABLE " . $sTabla . " ADD PRIMARY KEY(saiu09id)";
 			$bResultado = $objDB->ejecutasql($sSQL);
@@ -6480,7 +6699,7 @@ function f3000_TablasMes($iAgno, $iMes, $objDB, $bDebug = false)
 			$sSQL = "ALTER TABLE " . $sTabla . " ADD INDEX saiu09cambioestado_padre(saiu09idsolicitud)";
 			$bResultado = $objDB->ejecutasql($sSQL);
 			$sTabla = 'saiu10cambioresponsable_' . $iAgno . $iMes;
-			$sSQL = "CREATE TABLE " . $sTabla . " (saiu10idsolicitud int NOT NULL, saiu10consec int NOT NULL, saiu10id int NULL DEFAULT 0, saiu10idresporigen int NULL DEFAULT 0, saiu10idrespfin int NULL DEFAULT 0, saiu10idusuario int NULL DEFAULT 0, saiu10fecha int NULL DEFAULT 0, saiu10hora int NULL DEFAULT 0, saiu10minuto int NULL DEFAULT 0)";
+			$sSQL = "CREATE TABLE " . $sTabla . " (saiu10idsolicitud int NOT NULL, saiu10consec int NOT NULL, saiu10id int NULL DEFAULT 0, saiu10idresporigen int NULL DEFAULT 0, saiu10idrespfin int NULL DEFAULT 0, saiu10idusuario int NULL DEFAULT 0, saiu10fecha int NULL DEFAULT 0, saiu10hora int NULL DEFAULT 0, saiu10minuto int NULL DEFAULT 0) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci";
 			$bResultado = $objDB->ejecutasql($sSQL);
 			$sSQL = "ALTER TABLE " . $sTabla . " ADD PRIMARY KEY(saiu10id)";
 			$bResultado = $objDB->ejecutasql($sSQL);
@@ -6505,7 +6724,7 @@ function f3000_TablasMes($iAgno, $iMes, $objDB, $bDebug = false)
 			saiu18idpqrs int NULL DEFAULT 0, saiu18detalle Text NULL, saiu18horafin int NULL DEFAULT 0, 
 			saiu18minutofin int NULL DEFAULT 0, saiu18paramercadeo int NULL DEFAULT 0, saiu18idresponsable int NULL DEFAULT 0, 
 			saiu18tiemprespdias int NULL DEFAULT 0, saiu18tiempresphoras int NULL DEFAULT 0, saiu18tiemprespminutos int NULL DEFAULT 0, 
-			saiu18solucion int NULL DEFAULT 0, saiu18idcaso int NULL DEFAULT 0, saiu18respuesta Text NULL)";
+			saiu18solucion int NULL DEFAULT 0, saiu18idcaso int NULL DEFAULT 0, saiu18respuesta Text NULL) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci";
 			$bResultado = $objDB->ejecutasql($sSQL);
 			if ($bResultado == false) {
 				$sError = 'No ha sido posible iniciar la creaci&oacute;n de los contenedores para ' . $sTabla . ', Por favor informe al administrador del sistema';
@@ -6540,7 +6759,7 @@ function f3000_TablasMes($iAgno, $iMes, $objDB, $bDebug = false)
 			saiu19numorigen varchar(20) NULL, saiu19idpqrs int NULL DEFAULT 0, saiu19detalle Text NULL, saiu19horafin int NULL DEFAULT 0, 
 			saiu19minutofin int NULL DEFAULT 0, saiu19paramercadeo int NULL DEFAULT 0, saiu19idresponsable int NULL DEFAULT 0, 
 			saiu19tiemprespdias int NULL DEFAULT 0, saiu19tiempresphoras int NULL DEFAULT 0, saiu19tiemprespminutos int NULL DEFAULT 0, 
-			saiu19solucion int NULL DEFAULT 0, saiu19idcaso int NULL DEFAULT 0, saiu19numsesionchat varchar(20) NULL)";
+			saiu19solucion int NULL DEFAULT 0, saiu19idcaso int NULL DEFAULT 0, saiu19numsesionchat varchar(20) NULL) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci";
 			$bResultado = $objDB->ejecutasql($sSQL);
 			if ($bResultado == false) {
 				$sError = 'No ha sido posible iniciar la creaci&oacute;n de los contenedores para ' . $sTabla . ', Por favor informe al administrador del sistema';
@@ -6572,7 +6791,7 @@ function f3000_TablasMes($iAgno, $iMes, $objDB, $bDebug = false)
 			saiu20codpais varchar(3) NULL, saiu20coddepto varchar(5) NULL, saiu20codciudad varchar(8) NULL, saiu20idescuela int NULL DEFAULT 0, saiu20idprograma int NULL DEFAULT 0, 
 			saiu20idperiodo int NULL DEFAULT 0, saiu20numorigen varchar(20) NULL, saiu20idpqrs int NULL DEFAULT 0, saiu20detalle Text NULL, saiu20horafin int NULL DEFAULT 0, saiu20minutofin int NULL DEFAULT 0, 
 			saiu20paramercadeo int NULL DEFAULT 0, saiu20idresponsable int NULL DEFAULT 0, saiu20tiemprespdias int NULL DEFAULT 0, saiu20tiempresphoras int NULL DEFAULT 0, saiu20tiemprespminutos int NULL DEFAULT 0, 
-			saiu20solucion int NULL DEFAULT 0, saiu20idcaso int NULL DEFAULT 0, saiu20respuesta Text NULL, saiu20correoorigen varchar(50) NULL)";
+			saiu20solucion int NULL DEFAULT 0, saiu20idcaso int NULL DEFAULT 0, saiu20respuesta Text NULL, saiu20correoorigen varchar(50) NULL) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci";
 			$bResultado = $objDB->ejecutasql($sSQL);
 			if ($bResultado == false) {
 				$sError = 'No ha sido posible iniciar la creaci&oacute;n de los contenedores para ' . $sTabla . ', Por favor informe al administrador del sistema';
@@ -6603,7 +6822,7 @@ function f3000_TablasMes($iAgno, $iMes, $objDB, $bDebug = false)
 			saiu21temasolicitud int NULL DEFAULT 0, saiu21idzona int NULL DEFAULT 0, saiu21idcentro int NULL DEFAULT 0, saiu21codpais varchar(3) NULL, saiu21coddepto varchar(5) NULL, saiu21codciudad varchar(8) NULL, 
 			saiu21idescuela int NULL DEFAULT 0, saiu21idprograma int NULL DEFAULT 0, saiu21idperiodo int NULL DEFAULT 0, saiu21idpqrs int NULL DEFAULT 0, saiu21detalle Text NULL, saiu21horafin int NULL DEFAULT 0, 
 			saiu21minutofin int NULL DEFAULT 0, saiu21paramercadeo int NULL DEFAULT 0, saiu21idresponsable int NULL DEFAULT 0, saiu21tiemprespdias int NULL DEFAULT 0, saiu21tiempresphoras int NULL DEFAULT 0, 
-			saiu21tiemprespminutos int NULL DEFAULT 0, saiu21solucion int NULL DEFAULT 0, saiu21idcaso int NULL DEFAULT 0, saiu21respuesta Text NULL)";
+			saiu21tiemprespminutos int NULL DEFAULT 0, saiu21solucion int NULL DEFAULT 0, saiu21idcaso int NULL DEFAULT 0, saiu21respuesta Text NULL) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci";
 			$bResultado = $objDB->ejecutasql($sSQL);
 			if ($bResultado == false) {
 				$sError = 'No ha sido posible iniciar la creaci&oacute;n de los contenedores para ' . $sTabla . ', Por favor informe al administrador del sistema';
@@ -6637,7 +6856,7 @@ function f3000_TablasMes($iAgno, $iMes, $objDB, $bDebug = false)
 			saiu73tiemprespminutos int NULL DEFAULT 0, saiu73solucion int NULL DEFAULT 0, saiu73idcaso int NULL DEFAULT 0, saiu73respuesta Text NULL, saiu73fecharespcaso INT NULL DEFAULT 0, 
 			saiu73horarespcaso INT NULL DEFAULT 0, saiu73minrespcaso INT NULL DEFAULT 0, saiu73idunidadcaso INT NULL DEFAULT 0, saiu73idequipocaso INT NULL DEFAULT 0, saiu73idsupervisorcaso INT NULL DEFAULT 0, 
 			saiu73idresponsablecaso INT NULL DEFAULT 0, saiu73numref VARCHAR(37) NULL, saiu73idorigen INT NULL DEFAULT 0, saiu73idarchivo INT NULL DEFAULT 0, saiu73idorigenrta INT NULL DEFAULT 0, 
-			saiu73idarchivorta INT NULL DEFAULT 0, saiu73fechafin INT NULL DEFAULT 0)";
+			saiu73idarchivorta INT NULL DEFAULT 0, saiu73fechafin INT NULL DEFAULT 0) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci";
 			$bResultado = $objDB->ejecutasql($sSQL);
 			if ($bResultado == false) {
 				$sError = 'No ha sido posible iniciar la creaci&oacute;n de los contenedores para ' . $sTabla . ', Por favor informe al administrador del sistema';
@@ -6682,7 +6901,7 @@ function f3000_TablasMes($iAgno, $iMes, $objDB, $bDebug = false)
 			saiu28tiemprespdias3 int NULL DEFAULT 0, saiu28tiempresphoras3 int NULL DEFAULT 0, saiu28centrotarea3 int NULL DEFAULT 0, 
 			saiu28tiempousado3 int NULL DEFAULT 0, saiu28tiempocalusado3 int NULL DEFAULT 0, saiu28idsupervisor int NULL DEFAULT 0, 
 			saiu28moduloasociado int NULL DEFAULT 0, saiu28etapaactual int NULL DEFAULT 0, saiu28fechalimite int NULL DEFAULT 0, 
-			saiu28horalimite int NULL DEFAULT 0, saiu28minlimite int NULL DEFAULT 0)";
+			saiu28horalimite int NULL DEFAULT 0, saiu28minlimite int NULL DEFAULT 0) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci";
 			$bResultado = $objDB->ejecutasql($sSQL);
 			$sSQL = "ALTER TABLE " . $sTabla . " ADD PRIMARY KEY(saiu28id)";
 			$bResultado = $objDB->ejecutasql($sSQL);
@@ -6706,7 +6925,7 @@ function f3000_TablasMes($iAgno, $iMes, $objDB, $bDebug = false)
 		$sTabla = 'saiu29anexos_' . $iAgno;
 		$bIniciarContenedor = !$objDB->bexistetabla($sTabla);
 		if ($bIniciarContenedor) {
-			$sSQL = "CREATE TABLE " . $sTabla . " (saiu29idsolicitud int NOT NULL, saiu29idanexo int NOT NULL, saiu29consec int NOT NULL, saiu29id int NULL DEFAULT 0, saiu29idorigen int NULL DEFAULT 0, saiu29idarchivo int NULL DEFAULT 0, saiu29detalle Text NULL)";
+			$sSQL = "CREATE TABLE " . $sTabla . " (saiu29idsolicitud int NOT NULL, saiu29idanexo int NOT NULL, saiu29consec int NOT NULL, saiu29id int NULL DEFAULT 0, saiu29idorigen int NULL DEFAULT 0, saiu29idarchivo int NULL DEFAULT 0, saiu29detalle Text NULL) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci";
 			$bResultado = $objDB->ejecutasql($sSQL);
 			$sSQL = "ALTER TABLE " . $sTabla . " ADD PRIMARY KEY(saiu29id)";
 			$bResultado = $objDB->ejecutasql($sSQL);
@@ -6715,7 +6934,7 @@ function f3000_TablasMes($iAgno, $iMes, $objDB, $bDebug = false)
 			$sSQL = "ALTER TABLE " . $sTabla . " ADD INDEX saiu29anexos_padre(saiu29idsolicitud)";
 			$bResultado = $objDB->ejecutasql($sSQL);
 			$sTabla = 'saiu30anotaciones_' . $iAgno;
-			$sSQL = "CREATE TABLE " . $sTabla . " (saiu30idsolicitud int NOT NULL, saiu30consec int NOT NULL, saiu30id int NULL DEFAULT 0, saiu30visiblealinteresado int NULL DEFAULT 0, saiu30anotacion Text NULL, saiu30idusuario int NULL DEFAULT 0, saiu30fecha int NULL DEFAULT 0, saiu30hora int NULL DEFAULT 0, saiu30minuto int NULL DEFAULT 0)";
+			$sSQL = "CREATE TABLE " . $sTabla . " (saiu30idsolicitud int NOT NULL, saiu30consec int NOT NULL, saiu30id int NULL DEFAULT 0, saiu30visiblealinteresado int NULL DEFAULT 0, saiu30anotacion Text NULL, saiu30idusuario int NULL DEFAULT 0, saiu30fecha int NULL DEFAULT 0, saiu30hora int NULL DEFAULT 0, saiu30minuto int NULL DEFAULT 0) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci";
 			$bResultado = $objDB->ejecutasql($sSQL);
 			$sSQL = "ALTER TABLE " . $sTabla . " ADD PRIMARY KEY(saiu30id)";
 			$bResultado = $objDB->ejecutasql($sSQL);
@@ -6724,7 +6943,7 @@ function f3000_TablasMes($iAgno, $iMes, $objDB, $bDebug = false)
 			$sSQL = "ALTER TABLE " . $sTabla . " ADD INDEX saiu30anotaciones_padre(saiu30idsolicitud)";
 			$bResultado = $objDB->ejecutasql($sSQL);
 			$sTabla = 'saiu39cambioestmesa_' . $iAgno;
-			$sSQL = "CREATE TABLE " . $sTabla . " (saiu39idsolicitud int NOT NULL, saiu39consec int NOT NULL, saiu39id int NULL DEFAULT 0, saiu39idetapa int NULL DEFAULT 0, saiu39idresponsable int NULL DEFAULT 0, saiu39idestadorigen int NULL DEFAULT 0, saiu39idestadofin int NULL DEFAULT 0, saiu39detalle Text NULL, saiu39usuario int NULL DEFAULT 0, saiu39fecha int NULL DEFAULT 0, saiu39hora int NULL DEFAULT 0, saiu39minuto int NULL DEFAULT 0, saiu39correterminos int NULL DEFAULT 0, saiu39tiempousado int NULL DEFAULT 0, saiu39tiempocalusado int NULL DEFAULT 0)";
+			$sSQL = "CREATE TABLE " . $sTabla . " (saiu39idsolicitud int NOT NULL, saiu39consec int NOT NULL, saiu39id int NULL DEFAULT 0, saiu39idetapa int NULL DEFAULT 0, saiu39idresponsable int NULL DEFAULT 0, saiu39idestadorigen int NULL DEFAULT 0, saiu39idestadofin int NULL DEFAULT 0, saiu39detalle Text NULL, saiu39usuario int NULL DEFAULT 0, saiu39fecha int NULL DEFAULT 0, saiu39hora int NULL DEFAULT 0, saiu39minuto int NULL DEFAULT 0, saiu39correterminos int NULL DEFAULT 0, saiu39tiempousado int NULL DEFAULT 0, saiu39tiempocalusado int NULL DEFAULT 0) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci";
 			$bResultado = $objDB->ejecutasql($sSQL);
 			$sSQL = "ALTER TABLE " . $sTabla . " ADD PRIMARY KEY(saiu39id)";
 			$bResultado = $objDB->ejecutasql($sSQL);
@@ -6750,7 +6969,7 @@ function f3000_TablasMes($iAgno, $iMes, $objDB, $bDebug = false)
 			saiu47horaaprueba int NULL DEFAULT 0, saiu47minutoaprueba int NULL DEFAULT 0, saiu47detalle Text NULL, 
 			saiu47idunidad int NULL DEFAULT 0, saiu47idgrupotrabajo int NULL DEFAULT 0, saiu47idresponsable int NULL DEFAULT 0, 
 			saiu47t707fecha int NULL DEFAULT 0, saiu47t707formarecaudo int NULL DEFAULT 0, saiu47t707identidadconv int NULL DEFAULT 0, 
-			saiu47t707idbanco int NULL DEFAULT 0, saiu47t707idcuenta int NULL DEFAULT 0)";
+			saiu47t707idbanco int NULL DEFAULT 0, saiu47t707idcuenta int NULL DEFAULT 0) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci";
 			if ($bDebug) {
 				$sDebug = $sDebug . fecha_microtiempo() . ' <b>TABLA</b> ' . $sTabla . ': ' . $sSQL . '<br>';
 			}
@@ -6816,7 +7035,7 @@ function f3000_TablasMes($iAgno, $iMes, $objDB, $bDebug = false)
 		$sTabla = 'saiu59tramiteanexo_' . $iAgno;
 		$bIniciarContenedor = !$objDB->bexistetabla($sTabla);
 		if ($bIniciarContenedor) {
-			$sSQL = "CREATE TABLE " . $sTabla . " (saiu59idtramite int NOT NULL, saiu59consec int NOT NULL, saiu59id int NULL DEFAULT 0, saiu59idtipodoc int NULL DEFAULT 0, saiu59opcional int NULL DEFAULT 0, saiu59idestado int NULL DEFAULT 0, saiu59idorigen int NULL DEFAULT 0, saiu59idarchivo int NULL DEFAULT 0, saiu59idusuario int NULL DEFAULT 0, saiu59fecha int NULL DEFAULT 0, saiu59idrevisa int NULL DEFAULT 0, saiu59fecharevisa int NULL DEFAULT 0)";
+			$sSQL = "CREATE TABLE " . $sTabla . " (saiu59idtramite int NOT NULL, saiu59consec int NOT NULL, saiu59id int NULL DEFAULT 0, saiu59idtipodoc int NULL DEFAULT 0, saiu59opcional int NULL DEFAULT 0, saiu59idestado int NULL DEFAULT 0, saiu59idorigen int NULL DEFAULT 0, saiu59idarchivo int NULL DEFAULT 0, saiu59idusuario int NULL DEFAULT 0, saiu59fecha int NULL DEFAULT 0, saiu59idrevisa int NULL DEFAULT 0, saiu59fecharevisa int NULL DEFAULT 0) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci";
 			$bResultado = $objDB->ejecutasql($sSQL);
 			$sSQL = "ALTER TABLE " . $sTabla . " ADD PRIMARY KEY(saiu59id)";
 			$bResultado = $objDB->ejecutasql($sSQL);
@@ -6830,7 +7049,7 @@ function f3000_TablasMes($iAgno, $iMes, $objDB, $bDebug = false)
 		$sTabla = 'saiu48anotaciones_' . $iAgno;
 		$bIniciarContenedor = !$objDB->bexistetabla($sTabla);
 		if ($bIniciarContenedor) {
-			$sSQL = "CREATE TABLE " . $sTabla . " (saiu48idtramite int NOT NULL, saiu48consec int NOT NULL, saiu48id int NULL DEFAULT 0, saiu48visiblealinteresado int NULL DEFAULT 0, saiu48anotacion Text NULL, saiu48idusuario int NULL DEFAULT 0, saiu48fecha int NULL DEFAULT 0, saiu48hora int NULL DEFAULT 0, saiu48minuto int NULL DEFAULT 0)";
+			$sSQL = "CREATE TABLE " . $sTabla . " (saiu48idtramite int NOT NULL, saiu48consec int NOT NULL, saiu48id int NULL DEFAULT 0, saiu48visiblealinteresado int NULL DEFAULT 0, saiu48anotacion Text NULL, saiu48idusuario int NULL DEFAULT 0, saiu48fecha int NULL DEFAULT 0, saiu48hora int NULL DEFAULT 0, saiu48minuto int NULL DEFAULT 0) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci";
 			$bResultado = $objDB->ejecutasql($sSQL);
 			$sSQL = "ALTER TABLE " . $sTabla . " ADD PRIMARY KEY(saiu48id)";
 			$bResultado = $objDB->ejecutasql($sSQL);
@@ -6844,7 +7063,7 @@ function f3000_TablasMes($iAgno, $iMes, $objDB, $bDebug = false)
 		$sTabla = 'saiu49cambioesttra_' . $iAgno;
 		$bIniciarContenedor = !$objDB->bexistetabla($sTabla);
 		if ($bIniciarContenedor) {
-			$sSQL = "CREATE TABLE " . $sTabla . " (saiu49idtramite int NOT NULL, saiu49consec int NOT NULL, saiu49id int NULL DEFAULT 0, saiu49idresponsable int NULL DEFAULT 0, saiu49idestadorigen int NULL DEFAULT 0, saiu49idestadofin int NULL DEFAULT 0, saiu49detalle Text NULL, saiu49usuario int NULL DEFAULT 0, saiu49fecha int NULL DEFAULT 0, saiu49hora int NULL DEFAULT 0, saiu49minuto int NULL DEFAULT 0, saiu49correterminos int NULL DEFAULT 0, saiu49tiempousado int NULL DEFAULT 0, saiu49tiempocalusado int NULL DEFAULT 0)";
+			$sSQL = "CREATE TABLE " . $sTabla . " (saiu49idtramite int NOT NULL, saiu49consec int NOT NULL, saiu49id int NULL DEFAULT 0, saiu49idresponsable int NULL DEFAULT 0, saiu49idestadorigen int NULL DEFAULT 0, saiu49idestadofin int NULL DEFAULT 0, saiu49detalle Text NULL, saiu49usuario int NULL DEFAULT 0, saiu49fecha int NULL DEFAULT 0, saiu49hora int NULL DEFAULT 0, saiu49minuto int NULL DEFAULT 0, saiu49correterminos int NULL DEFAULT 0, saiu49tiempousado int NULL DEFAULT 0, saiu49tiempocalusado int NULL DEFAULT 0) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci";
 			$bResultado = $objDB->ejecutasql($sSQL);
 			$sSQL = "ALTER TABLE " . $sTabla . " ADD PRIMARY KEY(saiu49id)";
 			$bResultado = $objDB->ejecutasql($sSQL);
@@ -6872,7 +7091,7 @@ function f3000_TablasMes($iAgno, $iMes, $objDB, $bDebug = false)
 		$sTabla = 'saiu76anotaciones_' . $iAgno;
 		$bIniciarContenedor = !$objDB->bexistetabla($sTabla);
 		if ($bIniciarContenedor) {
-			$sSQL = "CREATE TABLE " . $sTabla . " (saiu76idsolicitud int NOT NULL, saiu76consec int NOT NULL, saiu76id int NULL DEFAULT 0, saiu76visible int NULL DEFAULT 0, saiu76anotacion Text NULL, saiu76idorigen int NULL DEFAULT 0, saiu76idarchivo int NULL DEFAULT 0, saiu76idusuario int NULL DEFAULT 0, saiu76fecha int NULL DEFAULT 0, saiu76hora int NULL DEFAULT 0, saiu76minuto int NULL DEFAULT 0)";
+			$sSQL = "CREATE TABLE " . $sTabla . " (saiu76idsolicitud int NOT NULL, saiu76consec int NOT NULL, saiu76id int NULL DEFAULT 0, saiu76visible int NULL DEFAULT 0, saiu76anotacion Text NULL, saiu76idorigen int NULL DEFAULT 0, saiu76idarchivo int NULL DEFAULT 0, saiu76idusuario int NULL DEFAULT 0, saiu76fecha int NULL DEFAULT 0, saiu76hora int NULL DEFAULT 0, saiu76minuto int NULL DEFAULT 0) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci";
 			$bResultado = $objDB->ejecutasql($sSQL);
 			$sSQL = "ALTER TABLE " . $sTabla . " ADD PRIMARY KEY(saiu76id)";
 			$bResultado = $objDB->ejecutasql($sSQL);
@@ -6987,7 +7206,8 @@ function TH_EquivalenteTipoDoc($sInfoIngresa)
 	return $sRes;
 }
 // 23 - feb 2026, se deja de forma generica el inicio de tokens.
-function Token_Iniciar($sSemilla, $iLargo, $bVariable = true) {
+function Token_Iniciar($sSemilla, $iLargo, $bVariable = true)
+{
 	$sInicio = '';
 	if ($bVariable) {
 		$sInicio = date('i:s:H:D');
@@ -7189,6 +7409,44 @@ function TraerDBFL($bDebug = false)
 	}
 	return array($objFL, $sDebug);
 }
+// la db temporal 
+function TraerDBTemporal($objDB, $iFecha = 0, $bDebug = false)
+{
+	$objDBTmp = NULL;
+	$sError = '';
+	$sDebug = '';
+	if ($iFecha == 0) {
+		$iFecha = fecha_DiaMod();
+	}
+	$sSQL = 'SELECT unae25modelo, unae25server, unae25puerto, unae25db, unae25usuario, unae25pwd
+	FROM unae25dblog
+	WHERE unae25tipouso=2 AND ((unae25fechaini=0) OR (unae25fechaini<=' . $iFecha . ')) 
+	AND ((unae25fechafin=0) OR (unae25fechafin>=' . $iFecha . '))
+	ORDER BY unae25fechaini DESC';
+	$tabla = $objDB->ejecutasql($sSQL);
+	if ($objDB->nf($tabla) > 0) {
+		$fila = $objDB->sf($tabla);
+		switch ($fila['unae25modelo']) {
+			case 'M': // MySQL
+				$objDBTmp = new clsdbadmin($fila['unae25server'], $fila['unae25usuario'], $fila['unae25pwd'], $fila['unae25db']);
+				if ($fila['unae25puerto'] != '') {
+					$objDBTmp->dbPuerto = $fila['unae25puerto'];
+				}
+				if (!$objDBTmp->Conectar()) {
+					$sError = ' Error al intentar conectar con la base de datos <b>' . $objDBTmp->serror . '</b>';
+				}
+				if ($bDebug) {
+				}
+				break;
+			default: // ups que esto...
+				$sError = 'Modelo de base de datos no implementado.';
+				break;
+		}
+	} else {
+		$sError = ' No se ha encontrado una configuraci&oacute;n de base de datos temporales.';
+	}
+	return array($objDBTmp, $sError, $sDebug);
+}
 function Traer_Entidad()
 {
 	$sDirBase = __DIR__ . '/';
@@ -7207,8 +7465,30 @@ function Traer_Entidad()
 	return $idEntidad;
 }
 
+function Traer_RutaBase($idEntidad)
+{
+	$sRutaBase = 'https://campus0a.unad.edu.co/campus/';
+	switch ($idEntidad) {
+		case 1:
+			$sRutaBase = 'https://unad.us/campus/';
+			break;
+		case 2:
+			$sRutaBase = 'https://campus.unad-ue.es/';
+			break;
+	}
+	return $sRutaBase;
+}
+
 // ----------------- Funciones de ajuste
 function f1024_Opcion($iVr, $sParametro, $objDB)
 {
 	return $iVr;
+}
+
+function Traer_UrlPago($idRecibo, $iVigencia)
+{
+	$idEntidad = Traer_Entidad();
+	$sRuta = Traer_RutaBase($idEntidad);
+	$sRuta = $sRuta . 'checkout.php?q=' . url_encode($idRecibo . '|' . $iVigencia);
+	return $sRuta;
 }
