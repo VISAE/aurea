@@ -100,6 +100,7 @@ $ETI['msg_bescuela'] = 'Escuela';
 $ETI['msg_bprograma'] = 'Programa';
 $ETI['msg_bcurso'] = 'Curso';
 $ETI['msg_bproceso'] = 'Proceso';
+$ETI['msg_blistar'] = 'Listar';
 
 $ERR['msg_bproceso'] = 'No se ha definido el proceso a gestionar.';
 $ERR['msg_bpoblacion'] = 'No se ha definido la poblaci&oacute;n';

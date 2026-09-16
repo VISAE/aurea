@@ -5,22 +5,29 @@
 --- Modelo Version 1.2.8 lunes, 06 de octubre de 2014
 --- Modelo Version 2.24.1 jueves, 30 de enero de 2020
 --- Modelo Version 2.28.2 martes, 23 de agosto de 2022
+--- Modelo Versión 2.29.3 viernes, 17 de marzo de 2023
 */
 $ETI['app_nombre']='Tablero';
 $ETI['grupo_nombre']='Panel';
 $ETI['titulo']='Panel';
+$ETI['titulo_contacto']='Datos de contacto';
 $ETI['titulo_sector2']='Perfil de usuario';
 $ETI['titulo_sector2a']='Notificaciones por correo electr&oacute;nico';
 $ETI['titulo_sector3']='Inscripci&oacute;n de laboratorios';
 $ETI['titulo_sector4']='Registrar CEAD';
 $ETI['titulo_sector5']='Confirmar Inscripci&oacute;n (Documento de aceptaci&oacute;n/ Declaraci&oacute;n del estudiante)';
 $ETI['titulo_sector6']='Datos para configurar Moodle Mobile';
+$ETI['titulo_sector7']='Pago de cursos MOOC';
 $ETI['titulo_17']='Panel';
 $ETI['titulo_17perfil']='Perfil de usuario';
 $ETI['titulo_17tutor']='Acompa&ntilde;amiento tutorial';
+$ETI['titulo_17expdoc'] = 'Expediente Documental';
 $ETI['titulo_1900']='Acerca de la Geolocalizaci&oacute;n';
 $ETI['titulo_12229']='Postulaciones a pruebas de estado';
 $ETI['titulo_correo']='Correo institucional';
+$ETI['msg_cambioclave'] = 'Cambio de contrase&ntilde;a';
+$ETI['txt_codigo'] = 'C&oacute;digo =';
+$ETI['txtcodigo'] = 'C&oacute;digo de confirmaci&oacute;n';
 $ETI['sigla_17']='Panel';
 $ETI['lnk_cargar']='Editar';
 
@@ -35,12 +42,19 @@ $ETI['unad11correonotifica']='Correo notificaciones';
 $ETI['unad11correoinstitucional']='Su correo institucional es: ';
 $ETI['unad01autoriza_tel'] = 'Autorizo a ser contactado <b>a mi n&uacute;mero de tel&eacute;fono</b> por parte de los tutores, directores de cursos, y personal de apoyo en mi proceso de formaci&oacute;n acad&eacute;mica.';
 $ETI['unad01autoriza_bol'] = 'Autorizo que sean enviados boletines informativos a mi correo de notificaciones.';
-$ETI['unad01oir_ruv'] = 'Deseo oir Radio UNAD Virtual desde el inicio de Campus Virtual';
+$ETI['unad01oir_ruv'] = 'Oir Radio UNAD Virtual desde el inicio de Campus Virtual';
 $ETI['lnk_ir']='Acceder';
 
 $ETI['msg_autorizaciones'] = 'AUTORIZACI&Oacute;N PARA EL TRATAMIENTO DE DATOS PERSONALES';
 $ETI['msg_autoriza_det'] = '';
-$ETI['msg_cipas']='CIPAS - ';
+
+$ETI['msg_cipas']='Circulos de Interacci&oacute;n y Participaci&oacute;n Acad&eacute;mica y Social - CIPAS';
+$ETI['msg_cipas_asistente'] = 'Asistente';
+$ETI['msg_cipas_concluido'] = 'El encuentro ha concluido';
+$ETI['msg_cipas_inscrito'] = 'Confirmado';
+$ETI['msg_cipas_noasistente'] = 'No asiste';
+$ETI['msg_cipas_preinscrito'] = 'Convocado';
+
 $ETI['msg_continuar']='Continuar';
 $ETI['msg_contrasegna']='Contrase&ntilde;a';
 $ETI['msg_contrasegna_caduca']='Su contrase&ntilde;a de acceso ha caducado, por favor modif&iacute;quela en el siguiente <a href="contrasegna.php">link</a>';
@@ -49,9 +63,14 @@ $ETI['msg_codigonocorresponde']='El c&oacute;digo de confirmaci&oacute;n no corr
 $ETI['msg_codigonoencontrado']='No se encuentra un c&oacute;digo de verficaci&oacute;n vigente, es posible que necesite generar un c&oacute;digo nuevo.';
 $ETI['msg_codigonoingresado']='No ha ingresado un c&oacute;digo de verificaci&oacute;n';
 $ETI['msg_curso']='Curso';
+$ETI['msg_cursoabierto']='Cursos de Oferta Abierta';
 $ETI['msg_heleido']='He leido la informaci&oacute;n que se me esta ofreciendo';
+$ETI['msg_historial']='Historial Acad&eacute;mico';
+$ETI['msg_historial'] = 'Historial de calificaciones';
+$ETI['msg_acudientes'] = 'Mis acudientes';
 $ETI['msg_infoestado1']='Debe cargar los documentos solicitados y solicitar revisi&oacute;n.';
 $ETI['msg_miperfil']='Mi Perfil';
+$ETI['msg_mooc']='Massive Open Online Course - MOOC';
 $ETI['msg_moodlemobile']='<b>Para estudiantes:</b> Moodle Mobile es la herramienta de acceso a dispositivos mobiles de moodle, para descargarla vaya al <a href="https://play.google.com/store/apps/details?id=com.moodle.classic" target="_blank">sitio de descarga de Moodle Mobile</a><br>Moodle Desktop es la herramienta de acceso desde computadores personales, para descargarla vaya al <a href="https://datateca.unad.edu.co/contenidos/publicaciones/Comunicaciones_VIMEP/2018/moodledesktop-windows-v341.zip" target="_blank">sitio oficial de Moodle Desktop</a><br><b>Tenga en cuenta que:</b><br>- la clave para dispositivos m&oacute;viles es diferente de la clave para ingresar al campus.<br>- Para consultar la clave a emplear con este servicio y el enlace a emplear seg&uacute;n los cursos en que usted esta matriculado <a href="javascript:moodlemobile()">haga clic aqu&iacute;</a>';
 $ETI['msg_nocompartimos']='Esta informaci&oacute;n no estar&aacute; disponible para otros usuarios';
 $ETI['msg_nonotifica']='Usted ha decidido no recibir notificaciones en su correo personal, en caso de ser necesario se le enviar&aacute;n notificaciones al correo institucional: ';
@@ -65,6 +84,7 @@ $ETI['msg_proximas']='Proximas Actividades';
 $ETI['msg_pruebaest_apto']='Se encuentran disponible la convocatoria a prueba de estado';
 $ETI['msg_pruebaest_lnkpostular']='Haga clic aqu&iacute; para postularse';
 $ETI['msg_pruebaest_postulado']='Se encuentra postulado/a para presentar la prueba de estado';
+$ETI['msg_pruebaest_inscrito']='Se encuentra inscrito/a para presentar la prueba de estado';
 $ETI['msg_pruebaest_presentado']='Ya existe registro de presentaci&oacute;n de la prueba de estado';
 $ETI['msg_sinotifica']='Se enviar&aacute;n notificaciones al correo ';
 $ETI['msg_tituloayuda']='UNAgenDa';
@@ -96,6 +116,17 @@ $ETI['msg_califica']='En su opini&oacute;n este cambio es';
 $ETI['msg_nocursos']='No se han encontrado cursos en los cuales se encuentre matriculado, es posible que se deba a que a&uacute;n el per&iacute;odo acad&eacute;mico a&uacute;n no inicia sus actividades acad&eacute;micas (por favor revise las fechas planteadas para el inicio del per&iacute;odo acad&eacute;mico en el cual se matricul&oacute;). Si considera que esto es un error lo invitamos a seguir los siguientes pasos:<div class="salto1px"></div><div class="MarquesinaMedia">1 - <a href="javascript:updtablero()">Haga clic aqu&iacute;</a> para actualizar su informaci&oacute;n</div><div class="salto1px"></div>2 - En caso de que el problema persista por favor informelo a <a href="mailto:soporte.campus@unad.edu.co">soporte.campus@unad.edu.co</a> ';
 $ETI['msg_nocursos_1']='No se han encontrado cursos en los cuales se encuentre matriculado, si considera que esto es un error lo invitamos a seguir los siguientes pasos:<div class="salto1px"></div><div class="MarquesinaMedia">1 - <a href="javascript:updtablero()">Haga clic aqu&iacute;</a> para actualizar su informaci&oacute;n</div><div class="salto1px"></div>2 - En caso de que el problema persista por favor informelo a <a href="mailto:soporte.campus@unad.edu.co">soporte.campus@unad.edu.co</a> ';
 
+$ETI['bt_enviarmodal'] = 'Enviar Reporte de Inconveniente';
+$ETI['msg_descripcionmodal'] = 'Descripci&oacute;n';
+$ETI['msg_guardadomodal'] = 'Tus datos han sido guardados exitosamente.';
+
+$ETI['msg_reportemodal'] = 'Espacio para reportar <b>inconvenientes</b> en el curso, por favor seleccione el <b>inconveniente</b> que est&aacute; presentando y expliquelo.';
+$ETI['msg_reportemodal'] = 'Seleccione el tipo de inconveniente que está presentando y descr&iacute;balo en el espacio correspondiente. Nota. Los temas relacionados con CALIFICACIONES y ACTIVIDADES del curso, comuníquese con su docente';
+
+$ETI['msg_tipoincmodal'] = 'Tipo de inconveniente';
+$ETI['msg_titulomodal'] = 'Reportar Inconveniente T&eacute;cnico';
+$ETI['msg_titulomodal'] = 'Soporte T&eacute;cnico';
+
 $ERR['unad11correonotifica']='La direcci&oacute;n de correo que esta ingresando no es v&aacute;lida, por favor corrijala.';
 
 $ETI['matr01zonaasiste']='ZONA';
@@ -106,10 +137,12 @@ $ETI['msg_19parazona']='Para la zona:';
 $ETI['msg_19correo']='Correo electr&oacute;nico';
 $ETI['msg_19nocupos']='<b>En este momento se registra oferta de laboratorios para este curso en su zona</b>.<br>Si no puede terminar el proceso de inscripci&oacute;n de sus pr&aacute;cticas, por favor comun&iacute;quese con el L&iacute;der Zonal de Laboratorios, con el fin de brindarle orientaci&oacute;n y apoyo.';
 $ETI['msg_19nocupossalida']='<b>En este momento se registra oferta de salidas de campo para este curso en su zona</b>.<br>Si no puede terminar el proceso de inscripci&oacute;n de sus actividades, por favor comun&iacute;quese con el L&iacute;der Zonal, con el fin de brindarle orientaci&oacute;n y apoyo.';
-$ETI['msg_19nocuposblearning']='<b>En este momento no se registra oferta de B-Learning para este curso en su zona</b>.<br>
+$ETI['msg_19nocuposblearning']='<b>En este momento no se registra oferta de CIPAS PM/CC para este curso en su zona</b>.<br>
 Si no puede terminar el proceso de inscripci&oacute;n de sus actividades, por favor comun&iacute;quese con el L&iacute;der Zonal VIACI, con el fin de brindarle orientaci&oacute;n y apoyo.';
 $ETI['msg_acceder']='Acceder al espacio';
 $ETI['msg_ayudacodigo']='Una vez ingresado el c&oacute;digo de verificaci&oacute;n no podr&aacute; modificar su correo de notificaciones.';
+$ETI['msg_ayudacodigo']='Para confirmar su correo de notificaciones por favor ingrese el c&oacute;digo que le ha sido enviado.';
+$ETI['msg_botonsoporte'] = 'Soporte t&eacute;cnico';
 $ETI['msg_clavecaduca']='Su contrase&ntilde;a de acceso ha caducado, por favor modif&iacute;quela en el siguiente <a href="contrasegna.php">link</a>.';
 $ETI['msg_codigo']='Ingrese el c&oacute;digo';
 $ETI['msg_documento']='Documento';
@@ -138,7 +171,7 @@ $ETI['msg_oiliniciasalida']='La agenda de salidas de campo estar&aacute; disponi
 $ETI['msg_oiliniciablear']='La agenda de encuentros BLearning estar&aacute; disponible a partir del ';
 $ETI['msg_oilnoinicialab']='<b>Estamos trabajando en la agenda de laboratorios para el curso, pronto estar&aacute; disponible.</b>';
 $ETI['msg_oilnoiniciasalida']='<b>Estamos trabajando en la agenda de salidas de campo para el curso, pronto estar&aacute; disponible.</b>';
-$ETI['msg_oilnoiniciablear']='<b>Estamos trabajando en la agenda de encuentors BLearning para el curso, pronto estar&aacute; disponible.</b>';
+$ETI['msg_oilnoiniciablear']='<b>Estamos trabajando en la agenda de encuentros BLearning para el curso, pronto estar&aacute; disponible.</b>';
 $ETI['msg_periodo']='Periodo';
 $ETI['msg_periodoinicia']='Las actividades acad&eacute;micas tienes inicio el d&iacute;a';
 $ETI['msg_salir']='Salir';
@@ -150,7 +183,10 @@ $ETI['bt_mostrar']='Mostrar';
 $ETI['bt_ocultar']='Ocultar';
 
 $ETI['mail_enc_titulo']='Encuesta de calidad del servicio';
-$ETI['mail_enc_titulo_2']='No haz vuelto a estudiar';
+$ETI['mail_enc_titulo_2']='No has vuelto a estudiar en el programa';
+$ETI['mail_enc_titulo_2']='Estudiante de';
+$ETI['mail_enc_titulo_2b']='de la';
+$ETI['mail_enc_titulo_2b']=' - Estado Ausente';
 $ETI['mail_enc_parte1']='Apreciado Usuario, agradecemos su opini&oacute;n respecto a la atenci&oacute;n recibida el d&iacute;a';
 $ETI['mail_enc_parte2']=' y nos gustar&iacute;a su opini&oacute;n respecto a la calidad de nuestro servicio';
 
@@ -182,6 +218,194 @@ $ETI['msg_movilbloqueado2']=' conexiones sospechosas.</span>';
 $ERR['unad01autoriza'] = 'Por favor complete la autorizaci&oacute;n para el tratamiento de datos personales';
 $ERR['msg_novalido']='Los datos ingresados no son v&aacute;lidos';
 
+$ETI['msg_modclave'] = 'Cambiar contrase&ntilde;a';
+$ETI['msg_modcorreo'] = 'Actualizar correo de notificaciones';
+$ETI['msg_moddatos'] = 'Modificiar datos personales';
+$ETI['msg_procesos']='Procesos';
+
+$ETI['msg_fichaegresado'] = 'Para diligenciar la ficha del egresado';
+$ETI['msg_gestiongrado'] = 'Para realizar la gesti&oacute;n de su grado';
+$ETI['msg_ingrese'] = 'Ingrese aqu&iacute;';
+
 $AYU['msg_pruebaestado']='<b>Importante</b>: Recuerde que postularse es el primer paso para presentar la prueba de estado que es un requisito para grado.<br>
 La informaci&oacute;n diligenciada en este formulario es la que ser&aacute; enviada al ICFES para su registro, por favor asegurese de que sea correcta.';
-?>
+
+$ETI['msg_mooc_sincursos'] = 'No se han encontrado cursos asociados';
+$ETI['msg_entorno_admin'] = 'Entorno Administrativo';
+$ETI['msg_entorno_otros'] = 'Otras aplicaciones';
+$ETI['msg_entorno_media'] = 'Medios y otros';
+$ETI['msg_entorno_servicios'] = 'Servicios';
+
+$ETI['msg_biblioteca'] = 'Biblioteca';
+$ETI['msg_biblioteca_descrip'] = 'Acceso a la e-Biblioteca de la UNAD';
+$ETI['msg_ruv'] = 'Radio UNAD Virtual';
+$ETI['msg_ruv_descrip'] = 'La emisora de Radio de la Universidad.';
+$ETI['msg_tuv'] = 'TV UNAD Virtual';
+$ETI['msg_tuv_descrip'] = 'Canal Virtual de la UNAD.';
+$ETI['msg_mobile'] = 'Moodle Mobile';
+$ETI['msg_mobile_descrip'] = 'Versi&oacute;n para dispositívos m&oacute;viles de Moodle.';
+$ETI['msg_manual'] = 'Manual Moodle';
+$ETI['msg_manual_descrip'] = 'Descripci&oacute;n del manual de Moodle';
+$ETI['msg_office'] = 'Office 365';
+$ETI['msg_office_descrip'] = 'Software de trabajo de Microsoft';
+$ETI['msg_servicios'] = 'Servicios acad&eacute;micos';
+$ETI['msg_servicios_descrip'] = 'Inscripci&oacute;n a cursos MOOC';
+$ETI['msg_ficha'] = 'Ficha Seguimiento Egresados';
+$ETI['msg_ficha_descrip'] = 'Estudiantes próximos a graduarse';
+$ETI['msg_caracterizacion'] = 'Caracterizaci&oacute;n de estudiantes';
+$ETI['msg_caracterizacion_descrip'] = 'Caracterizaci&oacute;n de estudiantes';
+$ETI['msg_homologaciones'] = 'Sistema de Homologaciones';
+$ETI['msg_homologaciones_descrip'] = 'Sistema de Homologaciones';
+
+// Etiquetas para el tablero. libagenda2024
+$ETI['msg_aula_enajuste'] = 'Estamos en proceso de ajuste del Aula Virtual';
+$ETI['msg_aula_nodisponible'] = 'El Aula no se encuentra disponible en campus a&uacute;n';
+$ETI['msg_aula_tardia'] = 'Estamos terminando de ajustar el Aula Virtual, ofrecemos disculpas por las demoras.';
+$ETI['msg_curso_aplazado'] = 'APLAZADO';
+$ETI['msg_curso_cancelado'] = 'CANCELADO';
+$ETI['msg_curso_clasifica'] = 'Clasificaci&oacute;n';
+$ETI['msg_curso_clic'] = 'Haga clic aqu&iacute; para acceder al campus del curso';
+$ETI['msg_curso_consupletorio'] = 'El curso permite evaluaci&oacute;n supletoria';
+$ETI['msg_curso_externo'] = 'Curso externo';
+$ETI['msg_curso_habilitable'] = 'El curso permite habilitaci&oacute;n';
+$ETI['msg_curso_retirado'] = 'RETIRADO';
+$ETI['msg_curso_seccional'] = 'Curso UNAD Florida';
+$ETI['msg_curso_teorico'] = 'Curso Te&oacute;rico';
+$ETI['msg_curso_metodologico'] = 'Curso Metodol&oacute;gico';
+$ETI['msg_curso_practica'] = 'Curso Pr&aacute;ctico';
+$ETI['msg_curso_requisito'] = 'Requisito de grado';
+$ETI['msg_grupo_enproceso'] = 'La asignaci&oacute;n de grupo en Aula est&aacute; en proceso';
+$ETI['msg_nav_noconfig'] = 'El Aula no se encuentra disponible en campus a&uacute;n';
+$ETI['msg_periodo_noabierto'] = 'El periodo a&uacute;n no ha sido abierto';
+$ETI['msg_perido_noinicia'] = 'Ambiente virtual no disponible';
+
+// Contacto
+
+$ETI['msg_datos_per'] = 'Datos personales';
+$ETI['msg_correo'] = 'Correo';
+$ETI['bt_actualiza_datos'] = 'Actualizar datos';
+$ETI['msg_sinconfirmar'] = '[Sin confirmar]';
+$ERR['correo_duplicado'] = 'La direcci&oacute;n de correo que intenta ingresar pertenece a otro usuario.';
+$ERR['uso_invalido'] = 'Se ha detectado un uso errado de la plataforma, se ha informado al administrador.';
+$ERR['correo_notifica_a'] = 'La direcci&oacute;n de correo de notificaciones no es v&aacute;lida [';
+$ERR['correo_notifica_b'] = ']';
+$ERR['valida_datos'] = 'No fue posible continuar debido a un error de validaci&oacute;n de datos, se ha informado al administrador del sistema.';
+$ETI['msg_confcorreo_a'] = '<p>Se ha enviado un c&oacute;digo de confirmaci&oacute;n a su correo de notificaciones <b>';
+$ETI['msg_confcorreo_b'] = '</b>.</p>';
+$ETI['msg_confirma'] = 'Confirmaci&oacute;n';
+$ETI['bt_verifica'] = 'Verificar';
+$ETI['msg_verifica_codigo'] = 'Para ingresar el c&oacute;digo de verificaci&oacute;n que le fue enviado a su correo haga clic en el siguiente bot&oacute;n';
+$ETI['bt_verifica_codigo'] = 'Verificar c&oacute;digo';
+
+// Correo confirmacion
+
+$ETI['msg_correo_codigo'] = 'Su c&oacute;digo de confirmaci&oacute;n es:';
+$ETI['msg_correo_vigencia'] = 'Este c&oacute;digo estar&aacute; vigente durante todo el d&iacute;a.';
+$ETI['msg_correo_despedida'] = '<b>Comedidamente:</b><br>Equipo de Soporte T&eacute;cnico.';
+
+$aAvatares = array(
+	'aurea',
+	'user-unadito',
+	'user-unadito-ecbti',
+	'user-unadito-ecsah',
+	'user-unadito-ecacen',
+	'user-unadito-ecisa',
+	'user-ecapma',
+	'user-unadito-ecedu',
+	'user-unadito-ecjp',
+	'user-ruven',
+	'user-nerdo',
+	'user-campoelias',
+	'user-dog',
+	'user-cat',
+	'user-horse',
+	'user-unadito-2',
+	'user-unadita',
+	'user-unadita-2',
+	'user-campoeliana'
+);
+
+$aFondos = array(
+	'white-custom',
+	'lgbt',
+	'black-custom',
+	'red-custom-light',
+	'red-custom',
+	'orange-custom-light',
+	'orange-custom',
+	'yellow-custom-light',
+	'yellow-custom',
+	'green-custom-light',
+	'green-custom',
+	'blue-custom-light',
+	'blue-custom',
+	'purple-custom-light',
+	'purple-custom'
+);
+
+// Menu Aurea
+
+$ETI['msg_inicio'] = 'Inicio';
+$ETI['msg_entorno'] = 'Entorno de trabajo';
+$ETI['msg_campus'] = 'Campus virtual';
+$ETI['msg_inisesion'] = 'Iniciar sesion';
+$ETI['msg_erp'] = 'SIGAF';
+$ETI['msg_gestion'] = 'Gesti&oacute;n';
+$ETI['msg_perfil'] = 'Mi perfil';
+$ETI['msg_modulos'] = 'Ac&aacute;demico';
+$ETI['msg_salir'] = 'Salir';
+
+$ETI['msg_17_oferta_cancelada'] = 'A oferta do curso foi cancelada';
+$ETI['msg_17_curso_no_ofertado'] = 'O curso n&atilde;o est&aacute; sendo ofertado';
+$ETI['msg_17_id_curso'] = 'idCurso';
+$ETI['msg_17_periodo_oferta'] = 'Per&iacute;odo da oferta';
+$ETI['msg_17_ambiente_no_configurado'] = 'O ambiente virtual n&atilde;o foi configurado para a sala';
+$ETI['msg_17_contenedor_periodo_no_encontrado'] = 'N&atilde;o foi poss&iacute;vel encontrar o cont&ecirc;iner do per&iacute;odo';
+$ETI['msg_17_nodos_no_encontrados'] = 'N&atilde;o foram encontrados N&oacute;s para realizar a matr&iacute;cula';
+$ETI['msg_17_nodo_no_disponible'] = 'Lamentamos, neste momento o N&oacute;';
+$ETI['msg_17_nodo_no_disponible_fin'] = 'n&atilde;o est&aacute; dispon&iacute;vel [NAV inativo].';
+$ETI['msg_17_error_webservice_inicio'] = 'Erro ao iniciar o WebService:';
+$ETI['msg_17_credenciales_no_generadas'] = 'N&atilde;o foi poss&iacute;vel gerar as credenciais de matr&iacute;cula para';
+$ETI['msg_17_respuesta_inesperada'] = 'Resposta inesperada do servidor.<br>Resposta';
+$ETI['msg_17_error_webservice_matricula'] = 'Erro ao usar o WebService para';
+$ETI['msg_17_falla_matricula_comunicacion'] = 'Falha de comunica&ccedil;&atilde;o, tente novamente mais tarde.';
+
+$ETI['label_logo_campus_unad'] = 'Logo del Campus de la Universidad Nacional Abierta y a Distancia';
+$ETI['label_menu_vertical'] = 'Men&uacute; vertical';
+$ETI['label_toggle_menu'] = 'Ocultar o expandir men&uacute; vertical';
+$ETI['label_anclar_menu'] = 'Anclar men&uacute;';
+$ETI['msg_menu'] = 'Men&uacute;';
+$ETI['label_menu_principal'] = 'Men&uacute; principal';
+$ETI['label_panel_accesibilidad'] = 'Panel de Accesibilidad';
+$ETI['msg_accesibilidad'] = 'Accesibilidad';
+$ETI['label_seleccion_idioma'] = 'Seleccionar idioma';
+$ETI['msg_sesion_iniciada'] = 'Sesi&oacute;n iniciada';
+$ETI['label_menu_idioma'] = 'Men&uacute; de selecci&oacute;n de idioma';
+$ETI['label_iniciar_aurea'] = 'Iniciar sesi&oacute;n en AUREA';
+
+$ETI['msg_vida_acad'] = 'Vida acad&ecirc;mica';
+$ETI['msg_mis_cursos'] = 'Meus cursos';
+$ETI['msg_cipas_menu'] = 'CIPAS';
+$ETI['msg_sai'] = 'Sistema de Atendimento Integral';
+$ETI['msg_mis_programas'] = 'Meus programas';
+$ETI['msg_eventos'] = 'Eventos';
+$ETI['msg_menu_servicios'] = 'Servi&ccedil;os';
+$ETI['msg_admisiones'] = 'Admiss&otilde;es';
+$ETI['msg_cursos_mooc'] = 'Cursos MOOC';
+$ETI['msg_cursos_abiertos'] = 'Cursos Abertos';
+$ETI['msg_emprendimiento'] = 'Empreendedorismo';
+$ETI['msg_proveedores'] = 'Fornecedores';
+$ETI['msg_seccionales'] = 'Seccionais';
+$ETI['msg_unad_colombia'] = 'UNAD - Col&ocirc;mbia';
+$ETI['msg_ayuda'] = 'Ajuda';
+$ETI['msg_banner'] = 'Banner';
+$ETI['msg_manuales'] = 'Manuais';
+$ETI['msg_acerca'] = 'Sobre...';
+$ETI['msg_mis_inscripciones'] = 'Minhas inscri&ccedil;&otilde;es';
+$ETI['msg_menu_sistema'] = 'Menu do Sistema';
+$ETI['label_menu_usuario'] = 'Menu do usu&aacute;rio';
+$ETI['label_abrir_menu'] = 'Abrir menu principal';
+$ETI['label_salir_campus'] = 'Sair do Campus Virtual';
+
+$ETI['msg_proveedor'] = 'Fornecedor';
+$ETI['msg_reg_proveedor'] = 'Cadastro de fornecedor';

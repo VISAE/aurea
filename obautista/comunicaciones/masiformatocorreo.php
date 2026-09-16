@@ -91,8 +91,10 @@ require $APP->rutacomun . 'libaurea.php';
 require $APP->rutacomun . 'libcomp.php';
 require $APP->rutacomun . 'libdatos.php';
 require $APP->rutacomun . 'libhtml.php';
+require $APP->rutacomun . 'libcombos.php';
 require $APP->rutacomun . 'xajax/xajax_core/xajax.inc.php';
 require $APP->rutacomun . 'unad_xajax.php';
+require $APP->rutacomun . 'libmail.php';
 if (($bPeticionXAJAX) && ($_SESSION['unad_id_tercero'] == 0)) {
 	// viene por xajax.
 	$xajax = new xajax();
@@ -467,6 +469,23 @@ if ($_REQUEST['paso'] == 13) {
 		$iTipoError = 1;
 	}
 }
+// Proceso de pagina - ejemplo
+$sMensaje = '';
+if ($_REQUEST['paso'] == 21) {
+	$_REQUEST['paso'] = 2;
+	if ($sError == '') {
+		// acciones a ejecutar
+		list($sError, $sDebugN, $sMensaje) = f1210_TestNotifica($_REQUEST['masi10id'], $objDB, $bDebug);
+		$sDebug = $sDebug . $sDebugN;
+	}
+	if ($sError == '') {
+		$sError = $ETI['msg_procesoterminado'];
+		if ($sMensaje != '') {
+			$sError = $sError . '<br>' . $sMensaje;
+		}
+		$iTipoError = 1;
+	}
+}
 //limpiar la pantalla
 if ($_REQUEST['paso'] == -1) {
 	$_REQUEST['masi10consec'] = '';
@@ -802,6 +821,12 @@ if ($_REQUEST['paso'] != 0) {
 		window.document.frmimpp.v3.value = window.document.frmedita.masi10id.value;
 		window.document.frmimpp.submit();
 	}
+	function testenviar() {
+		MensajeAlarmaV2('<?php echo $ETI['msg_ejecutando']; ?>', 2);
+		expandesector(98);
+		window.document.frmedita.paso.value = 21;
+		window.document.frmedita.submit();
+	}
 <?php
 }
 ?>
@@ -996,6 +1021,8 @@ echo $html_masi1oactivo;
 <?php
 if ($_REQUEST['paso'] != 0) {
 	echo $objForma->htmlBotonSolo('btPrevisual', 'btMiniMail', 'previsual()', 'Previsualizar', 30);
+	echo html_contenedor('', 30);
+	echo $objForma->htmlBotonSolo('btEnviar', 'btMiniNotificar', 'testenviar()', 'Enviar mensaje de prueba', 30);
 }
 ?>
 <label class="L">
@@ -1074,6 +1101,16 @@ echo $ETI['masi10divfirma'];
 ?>
 <textarea id="masi10divfirma" name="masi10divfirma" placeholder="<?php echo $ETI['ing_campo'] . $ETI['masi10divfirma']; ?>"><?php echo $_REQUEST['masi10divfirma']; ?></textarea>
 </label>
+<div class="salto1px"></div>
+<div class="GrupoCamposAyuda">
+<?php
+echo $ETI['msg_variables_disponibles'] . ':<br>';
+echo '|@CUERPO@| = ' . $ETI['msg_variable_cuerpo_firma'] . '<br>';
+echo '|@TITULO@| = ' . $ETI['msg_variable_titulo_correo'];
+?>
+<div class="salto1px"></div>
+</div>
+<div class="salto1px"></div>
 <label class="txtAreaL">
 <?php
 echo $ETI['masi10piedepagina'];

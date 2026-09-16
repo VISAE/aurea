@@ -244,8 +244,8 @@ if (!$bPeticionXAJAX) {
 }
 $seg_1707 = 0;
 $bDevuelve = false;
-//list($bDevuelve, $sDebugP, $seg_1707) = seg_revisa_permisoV3($iCodModulo, 1707, $_SESSION['unad_id_tercero'], $objDB, $bDebug);
-//$sDebug = $sDebug . $sDebugP;
+list($bDevuelve, $sDebugP, $seg_1707) = seg_revisa_permisoV3($iCodModulo, 1707, $_SESSION['unad_id_tercero'], $objDB, $bDebug);
+$sDebug = $sDebug . $sDebugP;
 if (isset($_REQUEST['deb_tipodoc']) == 0) {
 	$_REQUEST['deb_tipodoc'] = $APP->tipo_doc;
 }
@@ -721,6 +721,9 @@ if (isset($_REQUEST['bcurso']) == 0) {
 if (isset($_REQUEST['bproceso']) == 0) {
 	$_REQUEST['bproceso'] = $idProceso;
 }
+if (isset($_REQUEST['blistar']) == 0) {
+	$_REQUEST['blistar'] = 1;
+}
 	//Poblacion
 	//Anexo
 	//Destinatario
@@ -736,6 +739,7 @@ $_REQUEST['bescuela'] = numeros_validar($_REQUEST['bescuela']);
 $_REQUEST['bprograma'] = numeros_validar($_REQUEST['bprograma']);
 $_REQUEST['bcurso'] = cadena_Validar($_REQUEST['bcurso']);
 $_REQUEST['bproceso'] = numeros_validar($_REQUEST['bproceso']);
+$_REQUEST['blistar'] = numeros_validar($_REQUEST['blistar']);
 	//Poblacion
 	//Anexo
 	//Destinatario
@@ -1038,6 +1042,7 @@ $bAplicaGrado = false;
 $bBloqueado = false;
 $bGestionaPoblacion = false;
 $bPermiteRepetir = false;
+$bVerTodos = false;
 $bRelacion1 = false;
 $bRelacion2 = false;
 $bRelacion3 = false;
@@ -1080,9 +1085,11 @@ switch ($_REQUEST['masi05idproceso']) {
 $seg_5 = 0;
 $seg_6 = 0;
 $seg_8 = 0;
+$seg_12 = 0;
 /*
 list($bHayImprimir, $sDebugP, $seg_6) = seg_revisa_permisoV3($iCodModulo, 6, $idTercero, $objDB);
 */
+list($bVerTodos, $sDebugP, $seg_12) = seg_revisa_permisoV3($iCodModulo, 12, $idTercero, $objDB);
 if ((int)$_REQUEST['paso'] != 0) {
 	//list($bHayImprimir2, $sDebugP, $seg_5) = seg_revisa_permisoV3($iCodModulo, 5, $idTercero, $objDB);
 	$bPuedeGuardar = false;
@@ -1378,6 +1385,12 @@ if ($idProceso == 0) {
 	$sSQL = 'SELECT masi72id AS id, masi72nombre AS nombre FROM masi72proceso ORDER BY masi72id';
 	$html_bproceso = $objCombos->html($sSQL, $objDB);
 }
+if ($bVerTodos) {
+	$objCombos->nuevo('blistar', $_REQUEST['blistar'], true, '{' . $ETI['msg_todos'] . '}');
+	$objCombos->sAccion = 'paginarf1205()';
+	$objCombos->addItem('1', 'Mis registros');
+	$html_blistar = $objCombos->html('', $objDB);
+}
 if ((int)$_REQUEST['paso'] > 0) {
 }
 if (false) {
@@ -1409,6 +1422,7 @@ $aParametros[110] = $_REQUEST['bescuela'];
 $aParametros[111] = $_REQUEST['bprograma'];
 $aParametros[112] = $_REQUEST['bcurso'];
 $aParametros[113] = $_REQUEST['bproceso'];
+$aParametros[114] = $_REQUEST['blistar'];
 list($sTabla1205, $sDebugTabla) = f1205_TablaDetalleV2($aParametros, $objDB, $bDebug);
 $sDebug = $sDebug . $sDebugTabla;
 $sTabla1206 = '';
@@ -1631,6 +1645,7 @@ switch ($iPiel) {
 		window.document.frmimpp.v11.value = window.document.frmedita.bprograma.value;
 		window.document.frmimpp.v12.value = window.document.frmedita.bcurso.value;
 		window.document.frmimpp.v13.value = window.document.frmedita.bproceso.value;
+		window.document.frmimpp.v14.value = window.document.frmedita.blistar.value;
 		window.document.frmimpp.v97.value = window.document.frmedita.bmes.value;
 	}
 
@@ -1750,6 +1765,7 @@ switch ($iPiel) {
 		params[111] = window.document.frmedita.bprograma.value;
 		params[112] = window.document.frmedita.bcurso.value;
 		params[113] = window.document.frmedita.bproceso.value;
+		params[114] = window.document.frmedita.blistar.value;
 		document.getElementById('div_f1205detalle').innerHTML = '<div class="GrupoCamposAyuda"><div class="MarquesinaMedia">Procesando datos, por favor espere.</div></div><input id="paginaf1205" name="paginaf1205" type="hidden" value="' + params[101] + '" /><input id="lppf1205" name="lppf1205" type="hidden" value="' + params[102] + '" />';
 		xajax_f1205_HtmlTabla(params);
 	}
@@ -3098,6 +3114,26 @@ echo $ETI['msg_bmes'];
 echo $html_bmes;
 ?>
 </label>
+<?php
+if ($bVerTodos) {
+?>
+<label class="Label160">
+<?php
+echo $ETI['msg_blistar'];
+?>
+</label>
+<label>
+<?php
+echo $html_blistar;
+?>
+</label>
+<?php
+} else {
+?>
+<input id="blistar" name="blistar" type="hidden" value="<?php echo $_REQUEST['blistar']; ?>" />
+<?php
+}
+?>
 <div class="salto1px"></div>
 <label class="Label160">
 <?php

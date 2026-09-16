@@ -740,3 +740,78 @@ function f1210_db_Eliminar($masi10id, $objDB, $bDebug = false)
 // ---- Funciones personalizadas  ----
 // -----------------------------------
 
+function f1210_TestNotifica($masi10id, $objDB, $bDebug = false)
+{
+	$sDebug = '';
+	$sError = '';
+	$sMensaje = '';
+	$sSQL = 'SELECT ceca07idestudiante, ceca07idcurso, ceca07idactividad, ceca07idavala, ceca07idperaca, ceca07notafinal 
+	FROM ceca07solicitudrecal
+	WHERE ceca07id=' . $ceca07id;
+	if ($bDebug) {
+		$sDebug = $sDebug . fecha_microtiempo() . ' Consultando recalificacion : ' . $sSQL . '';
+	}
+	$tabla = $objDB->ejecutasql($sSQL);
+	if ($objDB->nf($tabla) > 0) {
+		$fila = $objDB->sf($tabla);
+		$idEstudiante = $fila['ceca07idestudiante'];
+		$ceca07idcurso = $fila['ceca07idcurso'];
+		$ceca07idactividad = $fila['ceca07idactividad'];
+		$ceca07idavala = $fila['ceca07idavala'];
+		$ceca07idperaca = $fila['ceca07idperaca'];
+		$ceca07notafinal = $fila['ceca07notafinal'];
+		$sNombrePeriodo = '{' . $ceca07idperaca . '}';
+		list($sNombrePeriodo, $sErrorDet) = tabla_campoxid('exte02per_aca', 'exte02nombre', 'exte02id', $ceca07idperaca, '{' . $ceca07idperaca . '}', $objDB);
+		$sNombreCurso = '{' . $ceca07idcurso . '}';
+		list($sNombreCurso, $sErrorDet) = tabla_campoxid('unad40curso', 'CONCAT(unad40titulo, " - ", unad40nombre)', 'unad40id', $ceca07idcurso, '{' . $ceca07idcurso . '}', $objDB);
+		$sNombreActividad = '{' . $ceca07idactividad . '}';
+		list($sNombreActividad, $sErrorDet) = tabla_campoxid('ofer04cursoactividad', 'ofer04nombre', 'ofer04id', $ceca07idactividad, '{' . $ceca07idactividad . '}', $objDB);
+		$sTituloMensaje = 'Notificación de recalificación ' . fecha_hoy() . ' ' . html_TablaHoraMin(fecha_hora(), fecha_minuto()) . '';
+		$sCuerpo = 'Apreciado estudiante<br><br>
+		Le informamos que se ha aplicado una recalificaci&oacute;n en la actividad <b>' . $sNombreActividad . '</b><br> 
+		del curso <b>' . $sNombreCurso . '</b> <br>
+		del periodo <b>' . $sNombrePeriodo . '</b><br><br>';
+	} else {
+		$sError = 'No se ha encontrado la recalificaci&oacute; solicitada.';
+	}
+	if ($sError == '') {
+		list($sCorreoMensajes, $sErrorN, $sDebugM) = AUREA_CorreoNotifica($idEstudiante, $objDB, $bDebug);
+		if ($sCorreoMensajes == '') {
+			$sError = 'El estudiante no registra correo de notificaciones.';
+		}
+	}
+	if ($sError == '') {
+		$sCorreoEscuela = '';
+		list($sCorreoEscuela, $sErrorN, $sDebugM) = AUREA_CorreoNotifica($ceca07idavala, $objDB, $bDebug);
+		$sCuerpo = AUREA_HTML_EncabezadoCorreo($sTituloMensaje) . $sCuerpo . AUREA_HTML_NoResponder() . AUREA_NotificaPieDePagina() . AUREA_HTML_PieCorreo();
+		$sCorreoCopia = '';
+		$sMes = date('Ym');
+		$sTabla = 'aure01login' . $sMes;
+		list($idSMTP, $sDebugS) = AUREA_SmtpMejor($sTabla, $objDB, $bDebug);
+		$objMail = new clsMail_Unad($objDB);
+		$objMail->TraerSMTP($idSMTP);
+		$objMail->sAsunto = cadena_codificar($sTituloMensaje);
+		$sMensaje = 'Se notifica al correo ' . $sCorreoMensajes;
+		//$sCorreoMensajes = 'angel.avellaneda@unad.edu.co';
+		$objMail->addCorreo($sCorreoMensajes, $sCorreoMensajes);
+		if ($sCorreoCopia != '') {
+			$objMail->addCorreo($sCorreoCopia, $sCorreoCopia, 'O');
+			$sMensaje = $sMensaje . ' con copia a ' . $sCorreoCopia;
+		}
+		if ($sCorreoEscuela != '') {
+			$objMail->addCorreo($sCorreoEscuela, $sCorreoEscuela, 'O');
+			$sMensaje = $sMensaje . ' con copia a ' . $sCorreoEscuela;
+		}
+		if ($sError == '') {
+			$objMail->sCuerpo = $sCuerpo;
+			if ($bDebug) {
+				$sDebug = $sDebug . fecha_microtiempo() . ' Enviando notificaci&oacute;n a : ' . $sCorreoMensajes . '';
+			}
+			$sError = $objMail->Enviar($bDebug);
+			if ($sError != '') {
+				$sMensaje = '';
+			}
+		}
+	}
+	return array($sError, $sDebug, $sMensaje);
+}

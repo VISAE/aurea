@@ -789,7 +789,7 @@ if (isset($_REQUEST['vdidcorreo']) == 0) {
 	}
 	$_REQUEST['vdidcorreo'] = $sVr;
 }
-if (isset($_REQUEST['u']) != 0) {
+if (isset($_REQUEST['u']) && $_REQUEST['u'] != '') {
 	$sArgs = url_decode_simple($_REQUEST['u']);
 	$aArgs = explode('|', $sArgs);
 	if (count($aArgs) == 2) {
@@ -797,15 +797,23 @@ if (isset($_REQUEST['u']) != 0) {
 		$_REQUEST['saiu73id'] = numeros_validar($aArgs[1]);
 		?>
 		<form name="frmedita" method="post" action="saiusolusuario.php" style="display: none;">
-			<input id="saiu73agno" name="saiu73agno" type="hidden" value="<?php echo numeros_validar($aArgs[0]); ?>">
-			<input id="saiu73id" name="saiu73id" type="hidden" value="<?php echo numeros_validar($aArgs[1]); ?>">
+			<input id="saiu73agno" name="saiu73agno" type="hidden" value="<?php echo $_REQUEST['saiu73agno']; ?>">
+			<input id="saiu73id" name="saiu73id" type="hidden" value="<?php echo $_REQUEST['saiu73id']; ?>">
 			<input id="paso" name="paso" type="hidden" value="3">
 		</form>
 		<script language="javascript">
-		function recargar(){
-			frmedita.submit();
+			function limpiarURL() {
+				if (window.history.replaceState) {
+					const cleanURL = window.location.origin + window.location.pathname;
+					window.history.replaceState(null, null, cleanURL);
+				}
 			}
-		setInterval ("recargar();", 1000); 
+
+			function recargar() {
+				limpiarURL();
+				window.document.frmedita.submit();
+			}
+			setTimeout("recargar();", 1000);
 		</script>
 		<?php
 		die();
@@ -1413,6 +1421,10 @@ switch ($_REQUEST['saiu73idcanal']) {
 		$asaiu73solucion = $aSolucion3019;
 		$isaiu73solucion = $iSolucion3019;
 		$bVerFiltroChat = true;
+		if ($bPermiso10 || $bPermiso14) {
+			$asaiu73solucion = $aSolucion3019Psi;
+			$isaiu73solucion = $iSolucion3019Psi;
+		}
 		break;
 	case 3020:
 		$asaiu73solucion = $aSolucion3020;

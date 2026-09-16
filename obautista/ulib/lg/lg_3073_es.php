@@ -214,14 +214,16 @@ $ERR['mail_valido']='No se ha definido un correo electr&oacute;nico v&aacute;lid
 $asaiu73paramercadeo = array('', '');
 $isaiu73paramercadeo = 0;
 
-$asaiu73solucion = array('En proceso', 'Resuelto en la atenci&oacute;n', '', 'Se inicia caso', '', 'Se inicia PQRS');
+$asaiu73solucion = array('En proceso', 'Resuelto en la atenci&oacute;n', '', '', '', 'Se inicia PQRS');
 $isaiu73solucion = 6;
-$aSolucion3018 = array('En proceso', 'Resuelto en la llamada', '', 'Se inicia caso', '', 'Se inicia PQRS', '', '', 'Llamada abandonada por usuario', 'Llamada terminada por asesor');
+$aSolucion3018 = array('En proceso', 'Resuelto en la llamada', '', '', '', 'Se inicia PQRS', '', '', 'Llamada abandonada por usuario', 'Llamada terminada por asesor');
 $iSolucion3018 = 9;
-$aSolucion3019 = array('En proceso', 'Resuelto en la conversaci&oacute;n', '', 'Se inicia caso', '', 'Se inicia PQRS', '', '', 'Sesi&oacute;n abandonada por usuario', 'Sesi&oacute;n terminada por asesor');
+$aSolucion3019 = array('En proceso', 'Resuelto en la conversaci&oacute;n', '', '', '', 'Se inicia PQRS', '', '', 'Sesi&oacute;n abandonada por usuario', 'Sesi&oacute;n terminada por asesor');
 $iSolucion3019 = 9;
-$aSolucion3020 = array('En proceso', 'Resuelto en correo de respuesta', '', 'Se inicia caso', '', 'Se inicia PQRS');
+$aSolucion3020 = array('En proceso', 'Resuelto en correo de respuesta', '', '', '', 'Se inicia PQRS');
 $iSolucion3020 = 6;
+$aSolucion3019Psi = array('En proceso', 'Resuelto en la conversaci&oacute;n', '', 'Se inicia caso', '', 'Se inicia PQRS', '', '', 'Sesi&oacute;n abandonada por usuario', 'Sesi&oacute;n terminada por asesor');
+$iSolucion3019Psi = 9;
 
 $asaiu73idcorreo = array('', 'Soporte Campus', 'Atenci&oacute;n a usuarios', 'Otro');
 $isaiu73idcorreo = 4;

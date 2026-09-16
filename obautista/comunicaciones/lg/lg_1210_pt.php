@@ -24,6 +24,9 @@ $ETI['masi10divcodigoconfirma'] = 'Divcodigoconfirma';
 $ETI['masi10divcodigorecupera'] = 'Divcodigorecupera';
 $ETI['masi10divfirma'] = 'Divfirma';
 $ETI['masi10piedepagina'] = 'Piedepagina';
+$ETI['msg_variables_disponibles'] = 'Vari&aacute;veis dispon&iacute;veis';
+$ETI['msg_variable_cuerpo_firma'] = 'Conte&uacute;do compacto da mensagem de assinatura';
+$ETI['msg_variable_titulo_correo'] = 'T&iacute;tulo do e-mail';
 
 $ERR['masi10consec'] = '&Eacute; necess&aacute;rio o dado ' . $ETI['masi10consec'];
 $ERR['masi10id'] = '&Eacute; necess&aacute;rio o dado ' . $ETI['masi10id'];

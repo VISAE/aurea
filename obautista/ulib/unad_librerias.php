@@ -167,14 +167,11 @@ function cadena_AleatoriaV2($largo, $incluirMinusculas = true, $caracteresAdicio
 	if ($largo <= 0) {
 		return "";
 	}
-
 	// Construcción del conjunto de caracteres posibles
 	$minusculas = "abcdefghijklmnopqrstuvwxyz";
 	$mayusculas = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
 	$numeros = "0123456789";
-
 	$conjuntoCaracteres = "";
-
 	if ($incluirMinusculas) {
 		$conjuntoCaracteres .= $minusculas;
 	}
@@ -185,17 +182,14 @@ function cadena_AleatoriaV2($largo, $incluirMinusculas = true, $caracteresAdicio
 		$conjuntoCaracteres .= $numeros;
 	}
 	$conjuntoCaracteres .= $caracteresAdicionales;
-
 	if (empty($conjuntoCaracteres)) {
 		return "";
 	}
-
 	// Generador aleatorio
 	$cadena = "";
 	for ($i = 0; $i < $largo; $i++) {
 		$cadena .= $conjuntoCaracteres[random_int(0, strlen($conjuntoCaracteres) - 1)];
 	}
-
 	return $cadena;
 }
 // Abril 27 de 2023 - Se ajusta el modelo de codificacion para PHP 8
@@ -239,7 +233,7 @@ function cadena_esutf8($string)
 {
 	$sBase = substr($string, 0, 250);
 	return preg_match('%^(?:
-          [\x09\x0A\x0D\x20-\x7E]
+        [\x09\x0A\x0D\x20-\x7E]
         | [\xC2-\xDF][\x80-\xBF]
         |  \xE0[\xA0-\xBF][\x80-\xBF]
         | [\xE1-\xEC\xEE\xEF][\x80-\xBF]{2}
@@ -508,6 +502,24 @@ function cadena_LimpiarXAJAX($semilla, $adicionales = '', $sComodin = '?')
 	}
 	return $cf;
 }
+// 29 de mayo de 2026 - Se agrega para evitar que en funciones xajax se devuelvan valores no validos para utf-8
+function cadena_NormalizarUTF8($sCadena)
+{
+	$sCadena = (string)$sCadena;
+	$sCadena = str_replace("\xEF\xBB\xBF", '', $sCadena);
+	if (!mb_check_encoding($sCadena, 'UTF-8')) {
+		$enc = mb_detect_encoding($sCadena, ['UTF-8', 'Windows-1252', 'ISO-8859-1'], true);
+		if ($enc === false) {
+			$enc = 'Windows-1252';
+		}
+		$sCadena = mb_convert_encoding($sCadena, 'UTF-8', $enc);
+	}
+	$sCadena = cadena_LimpiarWord($sCadena);
+	$sCadena = iconv('UTF-8', 'UTF-8//IGNORE', $sCadena);
+	// Quita caracteres no válidos para XML 1.0.
+	$sCadena = preg_replace('/[^\x{9}\x{A}\x{D}\x{20}-\x{D7FF}\x{E000}-\x{FFFD}]/u', '', $sCadena);
+	return $sCadena;
+}
 //
 function cadena_notildes($origen, $butf8 = false)
 {
@@ -711,6 +723,13 @@ function cadena_tildes($origen, $butf8 = false)
 	}
 	return $nuevo;
 }
+// Marzo 12 de 2026 - Se reemplazan los saltos de linea y los tabuladores por un espacio en blanco y se quitan los espacios repetidos
+function cadena_NoSaltos($origen)
+{
+	$destino = str_replace(array("\r\n", "\r", "\n", "\t"), ' ', $origen);
+	$destino = preg_replace('/[ ]{2,}/', ' ', $destino);
+	return $destino;
+}
 function cadena_NoTildesJS($origen, $butf8 = false)
 {
 	$nuevo = $origen;
@@ -868,9 +887,9 @@ function cadena_ResuelveParaHTML($sBase)
 function cadena_Validar($semilla, $bTolerante = false)
 {
 	$sSignos = '.,;()!¡$=+-_$?¿|°*[]{}~"@:%€&' . "'";
-	$permitidos = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890ñáéíóúüÑÁÉÍÓÚÜ ' . $sSignos . "\r\n";
+	$permitidos = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890ñáéíóúüÑÁÉÍÓÚÜãÂ ' . $sSignos . "\r\n";
 	if ($bTolerante) {
-		$permitidos = $permitidos . '-<>/';
+		$permitidos = $permitidos . '-<>/#';
 	}
 	$cf = '';
 	$semilla = cadena_LimpiarWord($semilla);
@@ -977,7 +996,6 @@ function dato_spredet($numtabla, $objDB, $sconsulta = '')
 	}
 	return $res;
 }
-
 function DBalterna_Traer($idAlterna, $objDB)
 {
 	$objalterna = NULL;
@@ -1279,8 +1297,8 @@ function fecha_dia_nombre($iDiaSem, $sIdioma = 'es')
 			case 'en':
 				$sDias = array('Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday');
 				break;
-			case 'es':
-				$sDias = array('Domingo', 'Lunes', 'Martes', 'Miercoles', 'Jueves', 'Viernes', 'Sabado');
+			default:
+				$sDias = array('Domingo', 'Lunes', 'Martes', 'Mi&eacute;rcoles', 'Jueves', 'Viernes', 'S&aacute;bado');
 				break;
 		}
 		$res = $sDias[$iData];
@@ -1361,25 +1379,43 @@ function fecha_EnNumero($sFecha)
 	}
 	return $iRes;
 }
-function fecha_EdadNombreTipo($iCantidad, $iTipo)
+function fecha_EdadNombreTipo($iCantidad, $iTipo, $sIdioma = 'es')
 {
 	$sRes = '&nbsp;';
+	switch ($sIdioma) {
+		case 'en':
+			$sAgnos = 'Years';
+			$sAgno = 'Year';
+			$sMeses = 'Months';
+			$sMes = 'Month';
+			$sDias = 'Days';
+			$sDia = 'Day';
+			break;
+		default:
+			$sAgnos = 'A&ntilde;os';
+			$sAgno = 'A&ntilde;o';
+			$sMeses = 'Meses';
+			$sMes = 'Mes';
+			$sDias = 'D&iacute;as';
+			$sDia = 'D&iacute;a';
+			break;
+	}
 	if ($iCantidad > 0) {
-		$sRes = 'A&ntilde;os';
+		$sRes = $sAgnos;
 		if ($iCantidad == 1) {
-			$sRes = 'A&ntilde;o';
+			$sRes = $sAgno;
 		}
 		switch ($iTipo) {
 			case 2:
-				$sRes = 'Meses';
+				$sRes = $sMeses;
 				if ($iCantidad == 1) {
-					$sRes = 'Mes';
+					$sRes = $sMes;
 				}
 				break;
 			case 3:
-				$sRes = 'D&iacute;as';
+				$sRes = $sDias;
 				if ($iCantidad == 1) {
-					$sRes = 'D&iacute;a';
+					$sRes = $sDia;
 				}
 				break;
 		}
@@ -1490,9 +1526,19 @@ function fecha_entreHoras($iHora, $iMin, $iHoraIni, $iMinIni, $iHoraFin, $iMinFi
 function fecha_Validar($sFecha, $sFormato = 'dd/mm/YYYY')
 {
 	/* -------- Nota Curiosa --------
-Esta es la primera funcion modificada por solicitud de las personas que aprendieron a usar la plataforma AUREA, 
-estos fueron Saul Alexander Hernandez Albarración y Omar Augusto Bautista Mora el 31 de Octubre de 2019.
-*/
+	Esta es la primera funcion modificada por solicitud de las personas que aprendieron a usar la plataforma AUREA, 
+	estos fueron Saul Alexander Hernandez Albarración y Omar Augusto Bautista Mora el 31 de Octubre de 2019.
+	*/
+	require './app.php';
+	if (!function_exists('AUREA_Idioma')) {
+		require $APP->rutacomun . 'libaurea.php';
+	}
+	$sIdioma = AUREA_Idioma();
+	$mensajes_todas = $APP->rutacomun . 'lg/lg_todas_' . $sIdioma . '.php';
+	if (!file_exists($mensajes_todas)) {
+		$mensajes_todas = $APP->rutacomun . 'lg/lg_todas_es.php';
+	}
+	require $mensajes_todas;
 	$sError = '';
 	$iDia = 0;
 	$iMes = 0;
@@ -1518,18 +1564,18 @@ estos fueron Saul Alexander Hernandez Albarración y Omar Augusto Bautista Mora 
 			$iPosD = 2;
 			break;
 		default:
-			$sError = 'No se reconoce el formato de fecha solicitado.';
+			$sError = $ETI['msg_formato_fecha_no_reconocido'];
 			break;
 	}
 	if ($sError == '') {
 		if (strlen($sFecha) != $iTamano) {
-			$sError = 'La fecha no tiene el tamaño esperado.';
+			$sError = $ETI['msg_fecha_tamano_incorrecto'];
 		}
 	}
 	if ($sError == '') {
 		$aFecha = explode($sSeparador, $sFecha);
 		if (count($aFecha) != 3) {
-			$sError = 'La fecha no usa el separador ' . $sSeparador;
+			$sError = $ETI['msg_fecha_separador'] . $sSeparador;
 		}
 	}
 	if ($sError == '') {
@@ -1537,7 +1583,7 @@ estos fueron Saul Alexander Hernandez Albarración y Omar Augusto Bautista Mora 
 		$iMes = $aFecha[$iPosM];
 		$iAgno = $aFecha[$iPosA];
 		if (!checkdate($iMes, $iDia, $iAgno)) {
-			$sError = 'Fecha incorrecta';
+			$sError = $ETI['msg_fecha_incorrecta'];
 		}
 	}
 	return array($sError, $iDia, $iMes, $iAgno);
@@ -1693,8 +1739,26 @@ function fecha_SegundoMod()
 	return (date('H') * 60 * 60) + (date('i') * 60) + date('s');
 }
 // Devuelve la cantidad de tiempo que son una cantidad x de segundos
-function fecha_TiempoDesdeSegundos($iSegundos)
+function fecha_TiempoDesdeSegundos($iSegundos, $sIdioma = 'es')
 {
+	switch ($sIdioma) {
+		case 'en':
+			$sHora = 'Hour';
+			$sHoras = 'Hours';
+			$sMin = 'Minute';
+			$sMins = 'Minutes';
+			$sSegundo = 'Second';
+			$sSegundos = 'Seconds';
+			break;
+		default:
+			$sHora = 'Hora';
+			$sHoras = 'Horas';
+			$sMin = 'Minuto';
+			$sMins = 'Minutos';
+			$sSegundo = 'Segundo';
+			$sSegundos = 'Segundos';
+			break;
+	}
 	$sRes = '';
 	if (is_numeric($iSegundos)) {
 		$sHoras = '';
@@ -1706,9 +1770,9 @@ function fecha_TiempoDesdeSegundos($iSegundos)
 			$iReduce = $iHoras * $iHoraEnSegundos;
 			$iSegundos = $iSegundos - $iReduce;
 			if ($iHoras == 1) {
-				$sHoras = '1 Hora';
+				$sHoras = '1 ' . $sHora;
 			} else {
-				$sHoras = formato_numero($iHoras) . ' Horas';
+				$sHoras = formato_numero($iHoras) . ' ' . $sHoras;
 			}
 		}
 		if ($iSegundos > 59) {
@@ -1716,16 +1780,16 @@ function fecha_TiempoDesdeSegundos($iSegundos)
 			$iReduce = $iMinutos * 60;
 			$iSegundos = $iSegundos - $iReduce;
 			if ($iMinutos == 1) {
-				$sMinutos = ' 1 Minuto';
+				$sMinutos = ' 1 ' . $sMin;
 			} else {
-				$sMinutos = ' ' . formato_numero($iMinutos) . ' Minutos';
+				$sMinutos = ' ' . formato_numero($iMinutos) . ' ' . $sMins;
 			}
 		}
 		if ($iSegundos > 0) {
 			if ($iSegundos == 1) {
-				$sSeg = ' 1 Segundo';
+				$sSeg = ' 1 ' . $sSegundo;
 			} else {
-				$sSeg = ' ' . formato_numero($iSegundos) . ' Segundos';
+				$sSeg = ' ' . formato_numero($iSegundos) . ' ' . $sSegundos;
 			}
 		}
 		$sRes = $sHoras . $sMinutos . $sSeg;
@@ -1737,6 +1801,12 @@ function fecha_numdiasentrefechas($sfechaini, $sfechafin)
 {
 	$fecha = explode("/", $sfechaini);
 	$fecha2 = explode("/", $sfechafin);
+	if (count($fecha) != 3) {
+		return 0;
+	}
+	if (count($fecha2) != 3) {
+		return 0;
+	}
 	$nueva = (mktime(0, 0, 0, $fecha2[1], $fecha2[0], $fecha2[2]) / 86400) - (mktime(0, 0, 0, $fecha[1], $fecha[0], $fecha[2]) / 86400);
 	return floor($nueva + (1 / 2));
 }
@@ -1840,7 +1910,17 @@ function formato_anchofijo($scadena, $ilargo, $sprevio = ' ', $bizquierda = true
 }
 function formato_CorreoParcialOculto($sCorreo)
 {
-	$sRes = 'Direcci&oacute;n de correo incorrecta.';
+	require './app.php';
+	if (!function_exists('AUREA_Idioma')) {
+		require $APP->rutacomun . 'libaurea.php';
+	}
+	$sIdioma = AUREA_Idioma();
+	$mensajes_todas = $APP->rutacomun . 'lg/lg_todas_' . $sIdioma . '.php';
+	if (!file_exists($mensajes_todas)) {
+		$mensajes_todas = $APP->rutacomun . 'lg/lg_todas_es.php';
+	}
+	require $mensajes_todas;
+	$sRes = $ETI['msg_correo_incorrecto'];
 	if (correo_VerificarDireccion($sCorreo)) {
 		list($sUsuario, $sDominio) = explode('@', $sCorreo, 2);
 		$iLargo = strlen($sUsuario);
@@ -1852,7 +1932,17 @@ function formato_CorreoParcialOculto($sCorreo)
 }
 function formato_CorreoOculto($sCorreo)
 {
-	$sRes = 'Direcci&oacute;n de correo incorrecta.';
+	require './app.php';
+	if (!function_exists('AUREA_Idioma')) {
+		require $APP->rutacomun . 'libaurea.php';
+	}
+	$sIdioma = AUREA_Idioma();
+	$mensajes_todas = $APP->rutacomun . 'lg/lg_todas_' . $sIdioma . '.php';
+	if (!file_exists($mensajes_todas)) {
+		$mensajes_todas = $APP->rutacomun . 'lg/lg_todas_es.php';
+	}
+	require $mensajes_todas;
+	$sRes = $ETI['msg_correo_incorrecto'];
 	if (correo_VerificarDireccion($sCorreo)) {
 		list($ssup, $smedio, $sinf) = cadena_partir($sCorreo, '@', '.');
 		$iLargo = strlen($ssup);
@@ -1963,6 +2053,53 @@ function formato_FechaLargaDesdeNumero($iFecha, $bConDia = false)
 	}
 	return $res;
 }
+function formato_FechaLegal($iFecha, $bHtml = true)
+{
+	$sDirBase = './';
+	$sRutaApp = $sDirBase . 'app.php';
+	if (!file_exists($sRutaApp)) {
+		$sDirBase = __DIR__ . '/';
+		$sRutaApp = $sDirBase . 'app.php';
+	}
+	require $sRutaApp;
+	if (!function_exists('AUREA_Idioma')) {
+		require $APP->rutacomun . 'libaurea.php';
+	}
+	if (!function_exists('Traer_Entidad')) {
+		require $APP->rutacomun . 'libdatos.php';
+	}
+	$sIdioma = AUREA_Idioma();
+	$mensajes_todas = $APP->rutacomun . 'lg/lg_todas_' . $sIdioma . '.php';
+	if (!file_exists($mensajes_todas)) {
+		$mensajes_todas = $APP->rutacomun . 'lg/lg_todas_es.php';
+	}
+	require $mensajes_todas;
+	$res = $ETI['msg_fecha_incorrecta'] . ' {' . $iFecha . '}';
+	$bPasa = true;
+	if ($iFecha == 0) {
+		$res = $ETI['msg_sin_fecha'];
+		$bPasa = false;
+	}
+	if ($iFecha < 10000) {
+		$bPasa = false;
+	}
+	if ($iFecha > 99999999) {
+		$bPasa = false;
+	}
+	if ($bPasa) {
+		list($iDia, $iMes, $iAgno) = fecha_DividirNumero($iFecha);
+		if (checkdate($iMes, $iDia, $iAgno)) {
+			if ($bHtml) {
+				$res = $ETI['msg_dias_mes'] . $iDia . $ETI['msg_dias_mes_html'];
+			} else {
+				$res = $ETI['msg_dias_mes'] . $iDia . $ETI['msg_dias_mes_b'];
+			}
+			$res = $res . strtolower(fecha_mes_nombre($iMes, $sIdioma));
+			$res = $res . ' ' . $ETI['msg_de'] . ' ' . $iAgno;
+		}
+	}
+	return $res;
+}
 function formato_hora($ivalor)
 {
 	$sfinal = (int)$ivalor;
@@ -1987,7 +2124,6 @@ function formato_moneda($dValor, $iDecimales = 2, $sPref = '$ ')
 	if ($dValor2 == '') {
 		$dValor2 = 0;
 	}
-	//$sfinal="$ ".number_format($ivalor2,$idecimales,",","."); // Posicion anterior
 	$sFinal = $sPref . number_format($dValor2, $iDecimales, '.', ',');
 	return $sFinal;
 }
@@ -2122,8 +2258,7 @@ function html_combo($nombre, $cod_, $nom_, $tab_, $cond_, $ord_, $valor_, $objDB
 	$sClaseI = '';
 	//if ($valor_==''){$sClaseI=' style="color:#FF0000"';}
 	//if ($html_accion==''){$html_accion=' onChange="combo_tono(this);"';}
-	$res = '<select id="' . $nombre . '" name="' . $nombre . '"' . $html_accion . $sClaseI . '>
-';
+	$res = '<select id="' . $nombre . '" name="' . $nombre . '"' . $html_accion . $sClaseI . '>';
 	if ($bvacio) {
 		$aEtiquetas = explode('|', $etvacio);
 		$aValores = explode('|', $vrvacio);
@@ -2142,8 +2277,7 @@ function html_combo($nombre, $cod_, $nom_, $tab_, $cond_, $ord_, $valor_, $objDB
 			if ($sVal == '') {
 				$sClaseI = ' style="color:#FF0000"';
 			}
-			$res = $res . '<option value="' . $sVal . '"' . $ssel . $sClaseI . '>' . $sEtiq . '</option>
-';
+			$res = $res . '<option value="' . $sVal . '"' . $ssel . $sClaseI . '>' . $sEtiq . '</option>';
 		}
 	}
 	if ($result != false) {
@@ -2172,9 +2306,7 @@ function html_combo($nombre, $cod_, $nom_, $tab_, $cond_, $ord_, $valor_, $objDB
 		if ($bConDebug) {
 			$res = $sSQL . '<br>' . $res;
 		} else {
-			$res = $res . '..<!-- 
-' . $sSQL . '
- -->';
+			$res = $res . '..<!-- ' . $sSQL . ' -->';
 		}
 	} else {
 		if ($bConDebug) {
@@ -2203,12 +2335,11 @@ function html_comboaceptada($nombre, $valor, $accion = '', $etaceptada = 'Acepta
 		default:
 			$sselp = ' Selected';
 	}
-	$res = '<select id="' . $nombre . '" name="' . $nombre . '"' . $stemp . '>
-<option value="-1"' . $sselp . '>' . $etpendiente . '</option>
-<option value="1"' . $ssels . '>' . $etaceptada . '</option>
-<option value="0"' . $sseln . '>' . $etno . '</option>
-</select>
-';
+	$res = '<select id="' . $nombre . '" name="' . $nombre . '"' . $stemp . '>';
+	$res = $res . '<option value="-1"' . $sselp . '>' . $etpendiente . '</option>';
+	$res = $res . '<option value="1"' . $ssels . '>' . $etaceptada . '</option>';
+	$res = $res . '<option value="0"' . $sseln . '>' . $etno . '</option>';
+	$res = $res . '</select>';
 	return $res;
 }
 function html_combobma($nombre, $valor, $accion = '', $etb = 'Bajo', $etm = 'Medio', $eta = 'Alto', $etpendiente = '')
@@ -2234,13 +2365,12 @@ function html_combobma($nombre, $valor, $accion = '', $etb = 'Bajo', $etm = 'Med
 		default:
 			$sselp = ' Selected';
 	}
-	$res = '<select id="' . $nombre . '" name="' . $nombre . '"' . $stemp . '>
-<option value="-1"' . $sselp . '>' . $etpendiente . '</option>
-<option value="0"' . $sselb . '>' . $etb . '</option>
-<option value="1"' . $sselm . '>' . $etm . '</option>
-<option value="2"' . $ssela . '>' . $eta . '</option>
-</select>
-';
+	$res = '<select id="' . $nombre . '" name="' . $nombre . '"' . $stemp . '>';
+	$res = $res . '<option value="-1"' . $sselp . '>' . $etpendiente . '</option>';
+	$res = $res . '<option value="0"' . $sselb . '>' . $etb . '</option>';
+	$res = $res . '<option value="1"' . $sselm . '>' . $etm . '</option>';
+	$res = $res . '<option value="2"' . $ssela . '>' . $eta . '</option>';
+	$res = $res . '</select>';
 	return $res;
 }
 //manda un arreglo y lo convierte en combo.
@@ -2275,7 +2405,7 @@ function html_ComboDia($nombre, $valor, $con_nulo = false, $accion = '')
 	if ($accion != '') {
 		$sAccion = ' onchange="' . $accion . '"';
 	}
-	$res = '<select id="' . $nombre . '" name="' . $nombre . '" class="cbo_dia"' . $sAccion . '>';
+	$res = '<select id="' . $nombre . '" name="' . $nombre . '" class="cbo_dia field-date__day"' . $sAccion . '>';
 	if ($con_nulo) {
 		$res = $res . '<option value="00"></option>';
 	}
@@ -2295,26 +2425,16 @@ function html_ComboDia($nombre, $valor, $con_nulo = false, $accion = '')
 }
 function html_ComboMes($nombre, $valor, $con_nulo = false, $accion = '')
 {
-	$sIdioma = 'es';
-	if (isset($_SESSION['unad_idioma']) == 0) {
-		$_SESSION['unad_idioma'] = 'es';
+	require './app.php';
+	if (!function_exists('AUREA_Idioma')) {
+		require $APP->rutacomun . 'libaurea.php';
 	}
-	switch ($_SESSION['unad_idioma']) {
-		case 'en':
-		case 'es':
-		case 'pt':
-			$sIdioma = $_SESSION['unad_idioma'];
-			break;
-		default:
-			$_SESSION['unad_idioma'] = 'es';
-			break;
-	}
-	//$smeses = array('', 'Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre');
+	$sIdioma = AUREA_Idioma();
 	$sAccion = '';
 	if ($accion != '') {
 		$sAccion = ' onchange="' . $accion . '"';
 	}
-	$res = '<select id="' . $nombre . '" name="' . $nombre . '" class="cbo_mes"' . $sAccion . '>';
+	$res = '<select id="' . $nombre . '" name="' . $nombre . '" class="cbo_mes field-date__month"' . $sAccion . '>';
 	if ($con_nulo) {
 		$res = $res . '<option value="00"></option>';
 	}
@@ -2411,7 +2531,7 @@ function html_fecha($nomcampo, $valor = '', $bvacio = false, $accion = '', $iagn
 		$bconagno = false;
 	}
 	if ($bconagno) {
-		$res = $res . '<select id="' . $nomcampo . '_agno" name="' . $nomcampo . '_agno" class="cbo_agno"' . $sClass . ' onchange="fecha_ajusta(' . "'" . $nomcampo . "','" . $accion . "'" . ')">';
+		$res = $res . '<select id="' . $nomcampo . '_agno" name="' . $nomcampo . '_agno" class="cbo_agno field-date__year"' . $sClass . ' onchange="fecha_ajusta(' . "'" . $nomcampo . "','" . $accion . "'" . ')">';
 		if ($bvacio) {
 			$res = $res . '<option value="0000"></option>';
 		}
@@ -2429,10 +2549,11 @@ function html_fecha($nomcampo, $valor = '', $bvacio = false, $accion = '', $iagn
 	if (trim($valor) == '') {
 		$valor = '00/00/0000';
 	}
-	$res = $res . '<input id="' . $nomcampo . '" name="' . $nomcampo . '" type="hidden" value="' . $valor . '"/>
-	<input id="' . $nomcampo . '_prev" name="' . $nomcampo . '_prev" type="hidden" value="' . $valor . '"/>';
+	$res = $res . '<input id="' . $nomcampo . '" name="' . $nomcampo . '" type="hidden" value="' . $valor . '"/>';
+	$res = $res . '<input id="' . $nomcampo . '_prev" name="' . $nomcampo . '_prev" type="hidden" value="' . $valor . '"/>';
 	return $res;
 }
+
 function html_HoraMin($sNomCampoHora, $iHora, $sNomCampoMin, $iMin, $bOculto = false, $iFormato = 1)
 {
 	$sVN = (int)$iHora;
@@ -2441,8 +2562,8 @@ function html_HoraMin($sNomCampoHora, $iHora, $sNomCampoMin, $iMin, $bOculto = f
 	$res = '';
 	$sAdd = '';
 	if ($bOculto) {
-		$res = '<input id="' . $sNomCampoHora . '" name="' . $sNomCampoHora . '" type="hidden" value="' . $iHora . '"/>
-<input id="' . $sNomCampoMin . '" name="' . $sNomCampoMin . '" type="hidden" value="' . $iMin . '"/>';
+		$res = '<input id="' . $sNomCampoHora . '" name="' . $sNomCampoHora . '" type="hidden" value="' . $iHora . '"/>';
+		$res = $res . '<input id="' . $sNomCampoMin . '" name="' . $sNomCampoMin . '" type="hidden" value="' . $iMin . '"/>';
 		if (((int)$iHora + (int)$iMin) == 0) {
 			$iFormato = 0;
 		}
@@ -2479,11 +2600,11 @@ function html_HoraMin($sNomCampoHora, $iHora, $sNomCampoMin, $iMin, $bOculto = f
 			if (((int)$iHora + (int)$iMin) == 0) {
 				$sVN = '';
 			}
-			$sAdd = '<label class="Label30"><select id="' . $sNomCampoHora . '_Ciclo" name="' . $sNomCampoHora . '_Ciclo" onchange="javascript:hora_ajusta(\'' . $sNomCampoHora . '\');">
-<option value="A"' . $sSelA . '>AM</option>
-<option value="P"' . $sSelP . '>PM</option>
-</select></label>
-<input id="' . $sNomCampoHora . '" name="' . $sNomCampoHora . '" type="hidden" value="' . $iHora . '"/>';
+			$sAdd = '<label class="Label30"><select id="' . $sNomCampoHora . '_Ciclo" name="' . $sNomCampoHora . '_Ciclo" onchange="javascript:hora_ajusta(\'' . $sNomCampoHora . '\');">';
+			$sAdd = $sAdd . '<option value="A"' . $sSelA . '>AM</option>';
+			$sAdd = $sAdd . '<option value="P"' . $sSelP . '>PM</option>';
+			$sAdd = $sAdd . '</select></label>';
+			$sAdd = $sAdd . '<input id="' . $sNomCampoHora . '" name="' . $sNomCampoHora . '" type="hidden" value="' . $iHora . '"/>';
 			$res = '<label class="Label30"><input id="' . $sNomCampoHora . '_Num" name="' . $sNomCampoHora . '_Num" type="text" value="' . $sVN . '" class="dos" maxlength="2" placeholder="00" onchange="javascript:hora_ajusta(\'' . $sNomCampoHora . '\');"/></label>';
 		} else {
 			//Hora militar
@@ -2568,9 +2689,9 @@ function html_HoraMinSeg($sNomCampoHora, $iHora, $sNomCampoMin, $iMin, $sNomCamp
 	$res = '';
 	$sAdd = '';
 	if ($bOculto) {
-		$res = '<input id="' . $sNomCampoHora . '" name="' . $sNomCampoHora . '" type="hidden" value="' . $iHora . '"/>
-<input id="' . $sNomCampoMin . '" name="' . $sNomCampoMin . '" type="hidden" value="' . $iMin . '"/>
-<input id="' . $sNomCampoSeg . '" name="' . $sNomCampoSeg . '" type="hidden" value="' . $iSeg . '"/>';
+		$res = '<input id="' . $sNomCampoHora . '" name="' . $sNomCampoHora . '" type="hidden" value="' . $iHora . '"/>';
+		$res = $res . '<input id="' . $sNomCampoMin . '" name="' . $sNomCampoMin . '" type="hidden" value="' . $iMin . '"/>';
+		$res = $res . '<input id="' . $sNomCampoSeg . '" name="' . $sNomCampoSeg . '" type="hidden" value="' . $iSeg . '"/>';
 		if (($iHora + $iMin + $iSeg) == 0) {
 			$iFormato = 0;
 		}
@@ -2603,11 +2724,11 @@ function html_HoraMinSeg($sNomCampoHora, $iHora, $sNomCampoMin, $iMin, $sNomCamp
 			if (($iHora + $iMin) == 0) {
 				$sVN = '';
 			}
-			$sAdd = '<label class="Label30"><select id="' . $sNomCampoHora . '_Ciclo" name="' . $sNomCampoHora . '_Ciclo" onchange="javascript:hora_ajusta(\'' . $sNomCampoHora . '\');">
-<option value="A"' . $sSelA . '>AM</option>
-<option value="P"' . $sSelP . '>PM</option>
-</select></label>
-<input id="' . $sNomCampoHora . '" name="' . $sNomCampoHora . '" type="hidden" value="' . $iHora . '"/>';
+			$sAdd = '<label class="Label30"><select id="' . $sNomCampoHora . '_Ciclo" name="' . $sNomCampoHora . '_Ciclo" onchange="javascript:hora_ajusta(\'' . $sNomCampoHora . '\');">';
+			$sAdd = $sAdd . '<option value="A"' . $sSelA . '>AM</option>';
+			$sAdd = $sAdd . '<option value="P"' . $sSelP . '>PM</option>';
+			$sAdd = $sAdd . '</select></label>';
+			$sAdd = $sAdd . '<input id="' . $sNomCampoHora . '" name="' . $sNomCampoHora . '" type="hidden" value="' . $iHora . '"/>';
 			$res = '<label class="Label30"><input id="' . $sNomCampoHora . '_Num" name="' . $sNomCampoHora . '_Num" type="text" value="' . $sVN . '" class="dos" maxlength="2" placeholder="00" onchange="javascript:hora_ajusta(\'' . $sNomCampoHora . '\');"/></label>';
 		} else {
 			//Hora militar
@@ -2619,8 +2740,8 @@ function html_HoraMinSeg($sNomCampoHora, $iHora, $sNomCampoMin, $iMin, $sNomCamp
 			$sValorMin = '';
 			$sValorSeg = '';
 		}
-		$res = $res . '<label style="width:7px;"><b>:</b></label><label style="width:35px;"><input id="' . $sNomCampoMin . '" name="' . $sNomCampoMin . '" type="text" value="' . $sValorMin . '" class="dos" maxlength="2" placeholder="00"/></label>
-<label style="width:7px;"><b>:</b></label><label style="width:35px;"><input id="' . $sNomCampoSeg . '" name="' . $sNomCampoSeg . '" type="text" value="' . $sValorSeg . '" class="dos" maxlength="2" placeholder="00"/></label>' . $sAdd;
+		$res = $res . '<label style="width:7px;"><b>:</b></label><label style="width:35px;"><input id="' . $sNomCampoMin . '" name="' . $sNomCampoMin . '" type="text" value="' . $sValorMin . '" class="dos" maxlength="2" placeholder="00"/></label>';
+		$res = $res . '<label style="width:7px;"><b>:</b></label><label style="width:35px;"><input id="' . $sNomCampoSeg . '" name="' . $sNomCampoSeg . '" type="text" value="' . $sValorSeg . '" class="dos" maxlength="2" placeholder="00"/></label>' . $sAdd;
 	}
 	return $res;
 }
@@ -2642,21 +2763,31 @@ function html_idioma($nombre, $valor, $accion = '', $bvacio = false, $etvacio = 
 	if ($accion != '') {
 		$stemp = ' onChange="' . $accion . '"';
 	}
-	$res = '<select id="' . $nombre . '" name="' . $nombre . '"' . $stemp . '>
-';
+	$res = '<select id="' . $nombre . '" name="' . $nombre . '"' . $stemp . '>';
 	if ($bvacio) {
-		$res = $res . '<option value="' . $vrvacio . '">' . $etvacio . '</option>
-';
+		$res = $res . '<option value="' . $vrvacio . '">' . $etvacio . '</option>';
 	}
-	$res = $res . '<option value="es"' . $sES . '>Espa&ntilde;ol</option>
-<option value="en"' . $sEN . '>English</option>
-<option value="pt"' . $sPT . '>Portugu&ecirc;s</option>
-</select>
-';
+	$res = $res . '<option value="es"' . $sES . '>Espa&ntilde;ol</option>';
+	$res = $res . '<option value="en"' . $sEN . '>English</option>';
+	$res = $res . '<option value="pt"' . $sPT . '>Portugu&ecirc;s</option>';
+	$res = $res . '</select>';
 	return $res;
 }
-function html_lnkarchivo($origen, $id, $titulo = 'Descargar', $sClase = 'lnkresalte', $sIcono = '')
+function html_lnkarchivo($origen, $id, $titulo = '', $sClase = 'lnkresalte', $sIcono = '')
 {
+	require './app.php';
+	if (!function_exists('AUREA_Idioma')) {
+		require $APP->rutacomun . 'libaurea.php';
+	}
+	$sIdioma = AUREA_Idioma();
+	$mensajes_todas = $APP->rutacomun . 'lg/lg_todas_' . $sIdioma . '.php';
+	if (!file_exists($mensajes_todas)) {
+		$mensajes_todas = $APP->rutacomun . 'lg/lg_todas_es.php';
+	}
+	require $mensajes_todas;
+	if ($titulo == '') {
+		$titulo = $ETI['msg_descargar'];
+	}
 	$res = '&nbsp;';
 	if ($id != 0) {
 		if ($sIcono != '') {
@@ -2666,15 +2797,17 @@ function html_lnkarchivo($origen, $id, $titulo = 'Descargar', $sClase = 'lnkresa
 	}
 	return $res;
 }
-function html_lnkupload($origen, $id)
+function html_lnkupload($origen, $id, $bloque = '')
 {
-	return url_encode($origen . '|' . $id);
+	$sComp = '';
+	if ($bloque != '') {
+		$sComp = '|' . $bloque;
+	}
+	return url_encode($origen . '|' . $id . $sComp);
 }
 // -- Combos ...
 function html_lpp($nombre, $iactual, $saccion, $iTope = 50)
 {
-	require './app.php';
-	$iPiel = iDefinirPiel($APP, 2);
 	$res = '<select class="w-max" name="' . $nombre . '" id="' . $nombre . '" onChange="' . $saccion . '">';
 	$iPaso = 4;
 	switch ($iTope) {
@@ -2870,74 +3003,42 @@ function html_menu($idsistema, $objDB, $iPiel = 1)
 }
 function html_menuV2($idsistema, $objDB, $iPiel = 1, $bDebug = false, $idTercero = 0)
 {
-	//if (isset($_SESSION['ent_chat'])==0){$_SESSION['ent_chat']='N';}
 	require './app.php';
+	if (!function_exists('AUREA_Idioma')) {
+		require $APP->rutacomun . 'libaurea.php';
+	}
+	if (!function_exists('Traer_Entidad')) {
+		require $APP->rutacomun . 'libdatos.php';
+	}
+	$sIdioma = AUREA_Idioma();
+	$mensajes_todas = $APP->rutacomun . 'lg/lg_todas_' . $sIdioma . '.php';
+	if (!file_exists($mensajes_todas)) {
+		$mensajes_todas = $APP->rutacomun . 'lg/lg_todas_es.php';
+	}
+	$mensajes_17 = $APP->rutacomun . 'lg/lg_17_' . $sIdioma . '.php';
+	if (!file_exists($mensajes_17)) {
+		$mensajes_17 = $APP->rutacomun . 'lg/lg_17_es.php';
+	}
+	require $mensajes_todas;
+	require $mensajes_17;
 	$bPasa = true;
 	$sDebug = '';
-	$idEntidad = 0;
-	if (isset($APP->entidad) != 0) {
-		if ($APP->entidad == 1) {
-			$idEntidad = 1;
-		}
-	}
+	$idEntidad = Traer_Entidad();
 	$_SESSION['u_ultimominuto'] = iminutoavance();
 	if ($idTercero == 0) {
 		$idTercero = $_SESSION['unad_id_tercero'];
 	}
 	$sDebug = sesion_actualizar_v2($objDB, $bDebug);
-	$et_ini = 'Inicio';
-	$et_entorno = 'Entorno de trabajo';
-	$et_panel = 'Panel';
-	$et_chat = 'Chat';
-	$et_dp = 'Datos Personales';
-	$et_pwd = 'Contrase&ntilde;a';
-	$et_inisesion = 'Iniciar Sesi&oacute;n';
-	$et_ayuda = 'Ayuda';
-	$et_acerca = 'Acerca de...';
-	$et_erp = 'SIGAF';
-	$et_gestion = 'Gesti&oacute;n';
-	$et_manuales = 'Manuales';
-	$et_miperfil = 'Mi perfil';
-	// (M&oacute;dulos)
-	$et_modulos = 'Acad&eacute;mico';
-	$et_salir = 'Salir';
-	switch ($_SESSION['unad_idioma']) {
-		case 'en':
-			$et_ini = 'Home';
-			$et_panel = 'Panel';
-			$et_dp = 'Personal Information';
-			$et_pwd = 'Password';
-			$et_inisesion = 'Login';
-			$et_ayuda = 'Help';
-			$et_acerca = 'About...';
-			$et_miperfil = 'My profile';
-			$et_salir = 'Exit';
-			break;
-		case 'pt':
-			$et_ini = 'Home';
-			$et_panel = 'Painel';
-			$et_chat = 'Bate Papo';
-			$et_dp = 'Dados Pessoais';
-			$et_pwd = 'Sehna';
-			$et_inisesion = 'Login';
-			$et_ayuda = 'Ajuda';
-			$et_acerca = 'Sobre...';
-			$et_miperfil = 'Meu perfil';
-			$et_salir = 'Sair';
-			break;
-	}
 	$sHTML = '';
 	$sClaseLinkBase = '';
 	$sClaseLinkItem = '';
 	$sClaseLiBase = '';
-	$sClaseLiItem = '';
 	$sInicioBloque = '';
 	$sFinBloque = '';
 	$sInicioItem = '';
 	$sFinItem = '';
 	if ($iPiel == 0) {
-		$sHTML = '
-		<div class="menuapp">
+		$sHTML = '<div class="menuapp">
 		<ul id="navmenu-h">';
 		$sClaseLinkBase = ' class="ppal"';
 		$sInicioBloque = '<ul><li class="ini"></li>';
@@ -2960,14 +3061,14 @@ function html_menuV2($idsistema, $objDB, $iPiel = 1, $bDebug = false, $idTercero
 		$sInicioBloque = '<div class="dropdown-menu">';
 		$sFinBloque = '</div>';
 	}
-	$sHTML = $sHTML . '<li' . $sClaseLiBase . '><a href="index.php"' . $sClaseLinkBase . '><span>' . $et_ini . '</span></a>';
+	$sHTML = $sHTML . '<li' . $sClaseLiBase . '><a href="index.php"' . $sClaseLinkBase . '><span>' . $ETI['msg_inicio'] . '</span></a>';
 	if (($idTercero != 0)) {
 		if ($_SESSION['cfg_movil'] == 1) {
 			$bPasa = false;
 		}
 		if ($bPasa) {
 			$sHTML = $sHTML . $sInicioBloque;
-			$sHTML = $sHTML . $sInicioItem . '<a href="index.php"' . $sClaseLinkItem . '><span>' . $et_ini . '</span></a>' . $sFinItem;
+			$sHTML = $sHTML . $sInicioItem . '<a href="index.php"' . $sClaseLinkItem . '><span>' . $ETI['msg_inicio'] . '</span></a>' . $sFinItem;
 			$bEntraGrupoCero = false;
 			if ($idsistema > 0) {
 				if ($idsistema != 51) {
@@ -2979,12 +3080,11 @@ function html_menuV2($idsistema, $objDB, $iPiel = 1, $bDebug = false, $idTercero
 				$sDebug = $sDebug . $sDebugG;
 				$sHTML = $sHTML . $sgrupo;
 			}
-			$sHTML = $sHTML . $sInicioItem . '<a href="miperfil.php"' . $sClaseLinkItem . '><span>' . $et_miperfil . '</span></a>' . $sFinItem;
-			$sHTML = $sHTML . $sInicioItem . '<a href="unadentorno.php"' . $sClaseLinkItem . '><span>' . $et_entorno . '</span></a>' . $sFinItem;
+			$sHTML = $sHTML . $sInicioItem . '<a href="miperfil.php"' . $sClaseLinkItem . '><span>' . $ETI['msg_perfil'] . '</span></a>' . $sFinItem;
+			$sHTML = $sHTML . $sInicioItem . '<a href="unadentorno.php"' . $sClaseLinkItem . '><span>' . $ETI['msg_entorno'] . '</span></a>' . $sFinItem;
 			if ($bPielTipoUno) {
-				$sHTML = $sHTML . $sInicioItem . '<a href="salir.php"' . $sClaseLinkItem . '><span>' . $et_salir . '</span></a>' . $sFinItem;
+				$sHTML = $sHTML . $sInicioItem . '<a href="salir.php"' . $sClaseLinkItem . '><span>' . $ETI['msg_salir'] . '</span></a>' . $sFinItem;
 			}
-			//if ($_SESSION['ent_chat']=='S')
 			$sHTML = $sHTML . $sFinBloque;
 		}
 		$sHTML = $sHTML . '</li>';
@@ -3044,7 +3144,7 @@ function html_menuV2($idsistema, $objDB, $iPiel = 1, $bDebug = false, $idTercero
 		if ($idEntidad == 1) {
 			$sRutaLogin = 'http://aurea.unad.us/campus/';
 		}
-		$sHTML = $sHTML . $sInicioBloque . $sInicioItem . '<a href="' . $sRutaLogin . '"' . $sClaseLinkItem . '><span>' . $et_inisesion . '</span></a>' . $sFinItem . $sFinBloque;
+		$sHTML = $sHTML . $sInicioBloque . $sInicioItem . '<a href="' . $sRutaLogin . '"' . $sClaseLinkItem . '><span>' . $ETI['msg_inisesion'] . '</span></a>' . $sFinItem . $sFinBloque;
 	}
 	//Acceso a los modulos en los que tiene permiso.
 	$bConModulos = false;
@@ -3057,7 +3157,6 @@ function html_menuV2($idsistema, $objDB, $iPiel = 1, $bDebug = false, $idTercero
 		$sPerfiles = $sPerfiles . ',' . $fila['unad07idperfil'];
 	}
 	$sSistema = '-99';
-	//, unad01orden
 	$sSQL = 'SELECT T1.unad02idsistema, TS.unad01orden 
 	FROM unad06perfilmodpermiso AS TB, unad02modulos AS T1, unad01sistema AS TS 
 	WHERE TB.unad06idperfil IN (' . $sPerfiles . ') AND TB.unad06idpermiso=1 AND TB.unad06vigente="S" AND TB.unad06idmodulo=T1.unad02id AND T1.unad02idsistema NOT IN (99, ' . $idsistema . ')
@@ -3084,7 +3183,7 @@ function html_menuV2($idsistema, $objDB, $iPiel = 1, $bDebug = false, $idTercero
 		ORDER BY unad01orden, unad01nombre';
 		$tabla = $objDB->ejecutasql($sSQL);
 		if ($objDB->nf($tabla) > 0) {
-			$sHTML = $sHTML . '<li' . $sClaseLiBase . '><a href="#"' . $sClaseLinkBase . '><span>' . $et_modulos . '</span></a>' . $sInicioBloque;
+			$sHTML = $sHTML . '<li' . $sClaseLiBase . '><a href="#"' . $sClaseLinkBase . '><span>' . $ETI['msg_modulos'] . '</span></a>' . $sInicioBloque;
 		}
 		while ($fila = $objDB->sf($tabla)) {
 			$sHTML = $sHTML . $sInicioItem . '<a href="' . $fila['unad01ruta'] . '"' . $sClaseLinkItem . ' title="' . cadena_notildes($fila['unad01descripcion']) . '" target="_blank"><span>' . strtoupper($fila['unad01nombre']) . '</span></a>' . $sFinItem;
@@ -3100,7 +3199,7 @@ function html_menuV2($idsistema, $objDB, $iPiel = 1, $bDebug = false, $idTercero
 		$tabla = $objDB->ejecutasql($sSQL);
 		if ($objDB->nf($tabla) > 0) {
 			$bConERP = true;
-			$sHTML = $sHTML . '<li' . $sClaseLiBase . '><a href="#"' . $sClaseLinkBase . '><span>' . $et_erp . '</span></a>' . $sInicioBloque;
+			$sHTML = $sHTML . '<li' . $sClaseLiBase . '><a href="#"' . $sClaseLinkBase . '><span>' . $ETI['msg_erp'] . '</span></a>' . $sInicioBloque;
 		}
 		while ($fila = $objDB->sf($tabla)) {
 			$sHTML = $sHTML . $sInicioItem . '<a href="' . $fila['unad01ruta'] . '"' . $sClaseLinkItem . ' title="' . cadena_notildes($fila['unad01descripcion']) . '" target="_blank"><span>' . strtoupper($fila['unad01nombre']) . '</span></a>' . $sFinItem;
@@ -3116,7 +3215,7 @@ function html_menuV2($idsistema, $objDB, $iPiel = 1, $bDebug = false, $idTercero
 		$tabla = $objDB->ejecutasql($sSQL);
 		if ($objDB->nf($tabla) > 0) {
 			$bConGestion = true;
-			$sHTML = $sHTML . '<li' . $sClaseLiBase . '><a href="#"' . $sClaseLinkBase . '><span>' . $et_gestion . '</span></a>' . $sInicioBloque;
+			$sHTML = $sHTML . '<li' . $sClaseLiBase . '><a href="#"' . $sClaseLinkBase . '><span>' . $ETI['msg_gestion'] . '</span></a>' . $sInicioBloque;
 		}
 		while ($fila = $objDB->sf($tabla)) {
 			$sHTML = $sHTML . $sInicioItem . '<a href="' . $fila['unad01ruta'] . '"' . $sClaseLinkItem . ' title="' . cadena_notildes($fila['unad01descripcion']) . '" target="_blank"><span>' . strtoupper($fila['unad01nombre']) . '</span></a>' . $sFinItem;
@@ -3124,9 +3223,9 @@ function html_menuV2($idsistema, $objDB, $iPiel = 1, $bDebug = false, $idTercero
 		$sHTML = $sHTML . $sFinBloque . '</li>';
 	}
 	//Termina de revisar el acceso.
-	$sHTML = $sHTML . '<li' . $sClaseLiBase . '><a href="#"' . $sClaseLinkBase . '><span>' . $et_ayuda . '</span></a>' . $sInicioBloque;
-	$sHTML = $sHTML . $sInicioItem . '<a href="unadayudas.php"' . $sClaseLinkItem . '><span>' . $et_manuales . '</span></a>' . $sFinItem;
-	$sHTML = $sHTML . $sInicioItem . '<a href="acercade.php"' . $sClaseLinkItem . '><span>' . $et_acerca . '</span></a>' . $sFinItem;
+	$sHTML = $sHTML . '<li' . $sClaseLiBase . '><a href="#"' . $sClaseLinkBase . '><span>' . $ETI['msg_ayuda'] . '</span></a>' . $sInicioBloque;
+	$sHTML = $sHTML . $sInicioItem . '<a href="unadayudas.php"' . $sClaseLinkItem . '><span>' . $ETI['msg_manuales'] . '</span></a>' . $sFinItem;
+	$sHTML = $sHTML . $sInicioItem . '<a href="acercade.php"' . $sClaseLinkItem . '><span>' . $ETI['msg_acerca'] . '</span></a>' . $sFinItem;
 	$sHTML = $sHTML . $sFinBloque . '</li>';
 	if ($iPiel == 0) {
 		$sHTML = $sHTML . '</ul>
@@ -3155,15 +3254,13 @@ function html_paginadorV1($nombre, $iregistros, $filasxpag, $ipagactual, $saccio
 		if ($fin_ > $iregistros) {
 			$fin_ = $iregistros;
 		}
-		$res = '<select name="' . $nombre . '" id="' . $nombre . '" onChange="' . $saccion . '">
-';
+		$res = '<select name="' . $nombre . '" id="' . $nombre . '" onChange="' . $saccion . '">';
 		while ($pendientes > 0) {
 			$sSel = '';
 			if ($ipagactual == $fila_) {
 				$sSel = ' selected';
 			}
-			$res = $res . '<option value="' . $fila_ . '"' . $sSel . '>' . $ini_ . ' - ' . $fin_ . '</option>
-';
+			$res = $res . '<option value="' . $fila_ . '"' . $sSel . '>' . $ini_ . ' - ' . $fin_ . '</option>';
 			$pendientes = $pendientes - $filasxpag;
 			$fila_++;
 			$ini_ = $fin_ + 1;
@@ -3172,27 +3269,22 @@ function html_paginadorV1($nombre, $iregistros, $filasxpag, $ipagactual, $saccio
 				$fin_ = $iregistros;
 			}
 		}
-		$res = $res . '</select>
-';
+		$res = $res . '</select>';
 	} else {
 		if ($iregistros == 0) {
 			$ini_ = 0;
 		}
-		$res = '<input name="' . $nombre . '" type="hidden" id="' . $nombre . '" value="1"/>{<b>' . $ini_ . ' - ' . $iregistros . '</b>}
-';
+		$res = '<input name="' . $nombre . '" type="hidden" id="' . $nombre . '" value="1"/>{<b>' . $ini_ . ' - ' . $iregistros . '</b>}';
 	}
 	return $res;
 }
 function html_paginador($nombre, $iregistros, $filasxpag, $ipagactual, $saccion)
 {
 	require './app.php';
-	$iPiel = iDefinirPiel($APP, 2);
-	$pendientes = $iregistros;
 	$filasxpag = numeros_validar($filasxpag);
 	if ($filasxpag == '') {
 		$filasxpag = 20;
 	}
-	$fila_ = 1;
 	$ini_ = 1;
 	if ($iregistros > $filasxpag) {
 		//Calcular cuantos son en total.
@@ -3200,9 +3292,7 @@ function html_paginador($nombre, $iregistros, $filasxpag, $ipagactual, $saccion)
 		if (($iTotalFilas * $filasxpag) < $iregistros) {
 			$iTotalFilas++;
 		}
-		//$fin_=$filasxpag;
-		//if ($fin_>$iregistros){$fin_=$iregistros;}
-		$res = '<select id="' . $nombre . '" name="' . $nombre . '" onChange="' . $saccion . '">';
+		$res = '<select class="w-max" id="' . $nombre . '" name="' . $nombre . '" onChange="' . $saccion . '">';
 		if ($iTotalFilas < 22) {
 			for ($t = 1; $t <= $iTotalFilas; $t++) {
 				$sSel = '';
@@ -3259,6 +3349,16 @@ function html_paginador($nombre, $iregistros, $filasxpag, $ipagactual, $saccion)
 }
 function html_pregunta($sNombre, $sValor, $sAccion, $iTipo, $bOculto = false, $iValorTope = 10)
 {
+	require './app.php';
+	if (!function_exists('AUREA_Idioma')) {
+		require $APP->rutacomun . 'libaurea.php';
+	}
+	$sIdioma = AUREA_Idioma();
+	$mensajes_todas = $APP->rutacomun . 'lg/lg_todas_' . $sIdioma . '.php';
+	if (!file_exists($mensajes_todas)) {
+		$mensajes_todas = $APP->rutacomun . 'lg/lg_todas_es.php';
+	}
+	require $mensajes_todas;
 	$res = '';
 	if ($bOculto) {
 		$sEti = $sValor;
@@ -3266,13 +3366,13 @@ function html_pregunta($sNombre, $sValor, $sAccion, $iTipo, $bOculto = false, $i
 			case 1:
 				switch ($sValor) {
 					case 0:
-						$sEti = 'No';
+						$sEti = $ETI['No'];
 						break;
 					case 1:
-						$sEti = 'Si';
+						$sEti = $ETI['Si'];
 						break;
 					default:
-						$sEti = '{Pendiente}';
+						$sEti = '{' . $ETI['msg_pendiente'] . '}';
 						break;
 				}
 				$res = html_oculto($sNombre, $sValor, $sEti);
@@ -3280,25 +3380,25 @@ function html_pregunta($sNombre, $sValor, $sAccion, $iTipo, $bOculto = false, $i
 			case 2:
 				switch ($sValor) {
 					case 0:
-						$sEti = 'Bajo';
+						$sEti = $ETI['msg_bajo'];
 						break;
 					case 1:
-						$sEti = 'Medio';
+						$sEti = $ETI['msg_medio'];
 						break;
 					case 2:
-						$sEti = 'Alto';
+						$sEti = $ETI['msg_alto'];
 						break;
 					default:
-						$sEti = '{Pendiente}';
+						$sEti = '{' . $ETI['msg_pendiente'] . '}';
 						break;
 				}
 				$res = html_oculto($sNombre, $sValor, $sEti);
 				break;
 			case 3:
 				if ($sValor == -1) {
-					$sEti = '{Pendiente}';
+					$sEti = '{' . $ETI['msg_pendiente'] . '}';
 				} else {
-					$sEti = (int)$sValor . ' (Max ' . $iValorTope . ')';
+					$sEti = (int)$sValor . ' (' . $ETI['msg_max'] . ' ' . $iValorTope . ')';
 				}
 				$res = html_oculto($sNombre, $sValor, $sEti);
 				break;
@@ -3306,7 +3406,7 @@ function html_pregunta($sNombre, $sValor, $sAccion, $iTipo, $bOculto = false, $i
 	} else {
 		switch ($iTipo) {
 			case 1:
-				$res = html_sino($sNombre, $sValor, true, '', '-1', $sAccion, 'Si', 'No', '1', '0');
+				$res = html_sino($sNombre, $sValor, true, '', '-1', $sAccion, $ETI['Si'], $ETI['No'], '1', '0');
 				break;
 			case 2:
 				$res = html_combobma($sNombre, $sValor, $sAccion);
@@ -3401,16 +3501,13 @@ function html_sino($nombre, $valor, $bvacio = false, $etvacio = '', $vrvacio = '
 	if ($valor == $vrno) {
 		$sseln = ' Selected';
 	}
-	$res = '<select name="' . $nombre . '" id="' . $nombre . '"' . $stemp . '>
-';
+	$res = '<select name="' . $nombre . '" id="' . $nombre . '"' . $stemp . '>';
 	if ($bvacio) {
-		$res = $res . '<option value="' . $vrvacio . '">' . $etvacio . '</option>
-';
+		$res = $res . '<option value="' . $vrvacio . '">' . $etvacio . '</option>';
 	}
-	$res = $res . '<option value="' . $vrsi . '" ' . $ssels . '>' . $etsi . '</option>
-<option value="' . $vrno . '" ' . $sseln . '>' . $etno . '</option>
-</select>
-';
+	$res = $res . '<option value="' . $vrsi . '" ' . $ssels . '>' . $etsi . '</option>';
+	$res = $res . '<option value="' . $vrno . '" ' . $sseln . '>' . $etno . '</option>';
+	$res = $res . '</select>';
 	return $res;
 }
 function html_TablaFecha($sFecha, $iFormato = 0)
@@ -3443,7 +3540,6 @@ function html_TablaHoraMin($iHora, $iMin, $iFormato = 1)
 	} else {
 		$sVN = (int)$iHora;
 		$sVC = 'AM';
-		$sAdd = '';
 		if ($iFormato == 1) {
 			if ($iHora > 11) {
 				$sVN = $iHora - 12;
@@ -3485,7 +3581,6 @@ function html_TablaHoraMinSeg($iHora, $iMin, $iSeg, $iFormato = 1)
 	} else {
 		$sVN = (int)$iHora;
 		$sVC = 'AM';
-		$sAdd = '';
 		if ($iFormato == 1) {
 			if ($iHora > 11) {
 				$sVN = $iHora - 12;
@@ -3506,7 +3601,6 @@ function html_TablaTiempo($iHora, $iMin, $iSeg, $iMilecimas = 2)
 	$res = '';
 	if ($iHora + $iMin + $iSeg == 0) {
 	} else {
-		$sAdd = '';
 		$sSeg = formato_numero($iSeg, $iMilecimas);
 		if ($iSeg < 10) {
 			$sSeg = '0' . $sSeg;
@@ -3634,21 +3728,11 @@ function html_tipodocV2($nombre, $valor, $accion = '', $con_nulo = false, $bConE
 	if ($accion != '') {
 		$saccion = ' onChange="' . $accion . '"';
 	}
-	$ssel = '';
 	$res = '<label class="Label60">';
 	$res = $res . '<select name="' . $nombre . '" id="' . $nombre . '"' . $saccion . '>';
 	if ($con_nulo) {
 		$res = $res . html_combo_opcion('', $valor, '');
 	}
-	//unad45tipodoc
-	//switch ($_SESSION['u_pais']){
-	//	case 1: //USA
-	//	$res=$res.html_combo_opcion('LC',$valor,'LC');
-	//	break;
-	//	case 54: //ARGENTINA
-	//$res=$res.html_combo_opcion('DN',$valor,'DNI');
-	//	break;
-	//	case 57: //COLOMBIA
 	$res = $res . html_combo_opcion('CC', $valor, 'CC');
 	$res = $res . html_combo_opcion('CE', $valor, 'CE');
 	$res = $res . html_combo_opcion('TI', $valor, 'TI');
@@ -3656,15 +3740,6 @@ function html_tipodocV2($nombre, $valor, $accion = '', $con_nulo = false, $bConE
 	$res = $res . html_combo_opcion('RC', $valor, 'RC');
 	$res = $res . html_combo_opcion('PA', $valor, 'PA');
 	$res = $res . html_combo_opcion('NI', $valor, 'NIT');
-	//	break;
-	//	case 58: //VENEZUELA
-	//$res=$res.html_combo_opcion('CI',$valor,'CI');
-	//	break;
-	//	case 502: //GUATEMALA
-	//$res=$res.html_combo_opcion('DPI',$valor,'DPI');
-	//	break;
-	//	}
-	//$res=$res.html_combo_opcion('MO',$valor,'MOO');
 	$res = $res . html_combo_opcion('SS', $valor, 'SS');
 	$res = $res . html_combo_opcion('__', $valor, '__');
 	if ($bConEspeciales) {
@@ -3679,7 +3754,6 @@ function html_tipodocV3($nombre, $valor, $accion = '', $con_nulo = false, $bConE
 	if ($accion != '') {
 		$saccion = ' onChange="' . $accion . '"';
 	}
-	$ssel = '';
 	$res = '<select class="w-10" name="' . $nombre . '" id="' . $nombre . '"' . $saccion . '>';
 	if ($con_nulo) {
 		$res = $res . html_combo_opcion('', $valor, '');
@@ -3890,6 +3964,7 @@ function login_IniciarSesionV2($idUsuario, $objDB, $bDebug = false)
 }
 function login_revisa_grupos_v2($idtercero, $objDB) {}
 function login_validar_v3($std, $sid, $spw, $idsistema, $objDB) {}
+// Función depreciada
 function login_valida_usuario_v3($susuario, $spw, $idsistema, $objDB)
 {
 	$res = '';
@@ -4032,7 +4107,7 @@ function Perfiles_OIL($idTercero, $objDB, $bDebug = false)
 	$sDebug = '';
 	return $sDebug;
 }
-// -- Funciones para le manejo generico de registros.
+// -- Funciones para el manejo generico de registros.
 function registro_duplicar($stabla, $scamposclave, $scampoid, $svrid, $svrclave, $objDB)
 {
 	$nclaves = explode("|", $scamposclave);
@@ -4088,7 +4163,6 @@ function registro_duplicar($stabla, $scamposclave, $scampoid, $svrid, $svrclave,
 	}
 	return array($nuevoid, $sError);
 }
-
 function resolvercolor($entrada)
 {
 	$res[0] = 0;
@@ -4156,7 +4230,6 @@ function resolverhexa($semilla)
 	}
 	return $res;
 }
-
 //FUNCIONES RELATIVAS A SEGURIDAD 
 function seg_auditar($idmodulo, $idtercero, $idAccion, $idregistro, $sdetalle, $objDB, $bDebug = false)
 {
@@ -4179,7 +4252,7 @@ function seg_auditar($idmodulo, $idtercero, $idAccion, $idregistro, $sdetalle, $
 		if (!$bexiste) {
 			//crear la tabla
 			//OJO PROBLEMA... EL USUARIO NO TIENE PERMISOS....
-			$sSQL = "CREATE TABLE " . $stabla . " (unad52id int AUTO_INCREMENT PRIMARY KEY, unad52idistema int NULL, unad52codmodulo int NULL, unad52idtercero int NULL, unad52fecha varchar(10) NULL, unad52hora int NULL, unad52minuto int NULL, unad52segundo int NULL, unad52codaccion int NULL, unad52idregistro int NULL, unad52detalle Text NULL)";
+			$sSQL = "CREATE TABLE " . $stabla . " (unad52id int AUTO_INCREMENT PRIMARY KEY, unad52idistema int NULL, unad52codmodulo int NULL, unad52idtercero int NULL, unad52fecha varchar(10) NULL, unad52hora int NULL, unad52minuto int NULL, unad52segundo int NULL, unad52codaccion int NULL, unad52idregistro int NULL, unad52detalle Text NULL) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci";
 			$result = $objDB->ejecutasql($sSQL);
 			if ($result == false) {
 				$objDB->serror = 'No es posible iniciar la auditoria para el a&ntilde;o ' . date('Ym') . ' mes ' . date('m') . '';
@@ -4233,7 +4306,7 @@ function seg_rastroV2($unad93codmodulo, $unad93codaccion, $unad93peraca, $unad93
 	$sTabla = 'unad93rastros' . date('Ym');
 	$bexiste = $objDB->bexistetabla($sTabla);
 	if (!$bexiste) {
-		$sSQL = "CREATE TABLE " . $sTabla . " (unad93id int NOT NULL, unad93idtercero int NULL DEFAULT 0, unad93fecha int NULL DEFAULT 0, unad93hora int NULL DEFAULT 0, unad93minuto int NULL DEFAULT 0, unad93segundo int NULL DEFAULT 0, unad93url varchar(250) NULL, unad93codmodulo int NULL DEFAULT 0, unad93codaccion int NULL DEFAULT 0, unad93peraca int NULL DEFAULT 0, unad93idcurso int NULL DEFAULT 0, unad93idusuario int NULL DEFAULT 0, unad93detalle Text NULL, unad93idsesion int NULL DEFAULT 0)";
+		$sSQL = "CREATE TABLE " . $sTabla . " (unad93id int NOT NULL, unad93idtercero int NULL DEFAULT 0, unad93fecha int NULL DEFAULT 0, unad93hora int NULL DEFAULT 0, unad93minuto int NULL DEFAULT 0, unad93segundo int NULL DEFAULT 0, unad93url varchar(250) NULL, unad93codmodulo int NULL DEFAULT 0, unad93codaccion int NULL DEFAULT 0, unad93peraca int NULL DEFAULT 0, unad93idcurso int NULL DEFAULT 0, unad93idusuario int NULL DEFAULT 0, unad93detalle Text NULL, unad93idsesion int NULL DEFAULT 0) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci";
 		$result = $objDB->ejecutasql($sSQL);
 		if ($result == false) {
 			$objDB->serror = 'No es posible iniciar el seguimiento para el a&ntilde;o ' . date('Y') . ' mes ' . date('m') . '';
@@ -4270,7 +4343,6 @@ function seg_rastroV2($unad93codmodulo, $unad93codaccion, $unad93peraca, $unad93
 	if (isset($_SESSION['unad_id_sesion']) != 0) {
 		$unad93idsesion = $_SESSION['unad_id_sesion'];
 	}
-	//$_SESSION['unad_id_sesion']
 	$unad93url = '';
 	if (isset($_SERVER['SERVER_NAME']) != 0) {
 		$unad93url = $_SERVER['SERVER_NAME'] . $_SERVER['REQUEST_URI'];
@@ -4313,15 +4385,19 @@ function seg_revisa_permisoV2($idModulo, $idPermiso, $idTercero, $objDB)
 }
 function seg_revisa_permisoV3($idModulo, $idPermiso, $idTercero, $objDB, $bDebug = false)
 {
+	require './app.php';
+	if (!function_exists('log_debug')) {
+		require $APP->rutacomun . 'libcomp.php';
+	}
 	$bDevuelve = false;
 	$sDebug = '';
 	$iVr = 0;
-	if (($idTercero != 0) && ($idModulo != 0)) {
+	if (((int)$idTercero > 0) && ((int)$idModulo > 0)) {
 		$sSQL = 'SELECT 1 
 		FROM unad07usuarios AS TB, unad06perfilmodpermiso AS T6 
 		WHERE TB.unad07idtercero=' . $idTercero . ' AND TB.unad07vigente="S" AND TB.unad07idperfil=T6.unad06idperfil AND T6.unad06vigente="S" AND T6.unad06idmodulo=' . $idModulo . ' AND T6.unad06idpermiso=' . $idPermiso . '';
 		if ($bDebug) {
-			$sDebug = $sDebug . fecha_microtiempo() . ' Revision del permiso [' . $idPermiso . ']: ' . $sSQL . '<br>';
+			$sDebug = $sDebug . log_debug('Revision del permiso [' . $idPermiso . ']: ' . $sSQL);
 		}
 		$result = $objDB->ejecutasql($sSQL);
 		if ($objDB->nf($result) > 0) {
@@ -4330,7 +4406,7 @@ function seg_revisa_permisoV3($idModulo, $idPermiso, $idTercero, $objDB, $bDebug
 		}
 	} else {
 		if ($bDebug) {
-			$sDebug = $sDebug . fecha_microtiempo() . ' No se ha recibido tercero [' . $idTercero . '] o modulo [' . $idModulo . '] al revisar el permiso ' . $idPermiso . '<br>';
+			$sDebug = $sDebug . log_debug('No se ha recibido tercero [' . $idTercero . '] o modulo [' . $idModulo . '] al revisar el permiso ' . $idPermiso);
 		}
 	}
 	return array($bDevuelve, $sDebug, $iVr);
@@ -4518,7 +4594,7 @@ function tabla_crear($idTabla, $sRef1, $sRef2, $objDB)
 	switch ($idTabla) {
 		case 71: // Sesiones.
 			$sTabla = 'unad71sesion' . $sRef1;
-			$sSQL = 'CREATE TABLE ' . $sTabla . ' (unad71id int NOT NULL, unad71idtercero int NULL DEFAULT 0, unad71iporigen varchar(50) NULL, unad71fechaini int NULL DEFAULT 0, unad71horaini int NULL DEFAULT 0, unad71minutoini int NULL DEFAULT 0, unad71fechafin int NULL DEFAULT 0, unad71horafin int NULL DEFAULT 0, unad71minutofin int NULL DEFAULT 0, unad71tiempototal int NULL DEFAULT 0, unad71navegador varchar(100) NULL, unad71sistoperativo varchar(50) NULL, unad71latgrados int NULL DEFAULT 0, unad71latdecimas varchar(10) NULL, unad71longrados int NULL DEFAULT 0, unad71longdecimas varchar(10) NULL, unad71proximidad int NULL DEFAULT 0, unad71estado int NULL DEFAULT 0, unad71hostname varchar(100) NULL, unad71horalocaliza int NULL DEFAULT 0, unad71minlocaliza int NULL DEFAULT 0, unad71seglocaliza int NULL DEFAULT 0)';
+			$sSQL = 'CREATE TABLE ' . $sTabla . ' (unad71id int NOT NULL, unad71idtercero int NULL DEFAULT 0, unad71iporigen varchar(50) NULL, unad71fechaini int NULL DEFAULT 0, unad71horaini int NULL DEFAULT 0, unad71minutoini int NULL DEFAULT 0, unad71fechafin int NULL DEFAULT 0, unad71horafin int NULL DEFAULT 0, unad71minutofin int NULL DEFAULT 0, unad71tiempototal int NULL DEFAULT 0, unad71navegador varchar(100) NULL, unad71sistoperativo varchar(50) NULL, unad71latgrados int NULL DEFAULT 0, unad71latdecimas varchar(10) NULL, unad71longrados int NULL DEFAULT 0, unad71longdecimas varchar(10) NULL, unad71proximidad int NULL DEFAULT 0, unad71estado int NULL DEFAULT 0, unad71hostname varchar(100) NULL, unad71horalocaliza int NULL DEFAULT 0, unad71minlocaliza int NULL DEFAULT 0, unad71seglocaliza int NULL DEFAULT 0) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci';
 			$result = $objDB->ejecutasql($sSQL);
 			if ($result == false) {
 			} else {
@@ -4587,7 +4663,11 @@ function tercero_Bloqueado($idTercero, $objDB)
 	$sError = '';
 	$sInfo = '';
 	require './app.php';
-	$mensajes_todas = $APP->rutacomun . 'lg/lg_todas_' . $_SESSION['unad_idioma'] . '.php';
+	if (!function_exists('AUREA_Idioma')) {
+		require $APP->rutacomun . 'libaurea.php';
+	}
+	$sIdioma = AUREA_Idioma();
+	$mensajes_todas = $APP->rutacomun . 'lg/lg_todas_' . $sIdioma . '.php';
 	if (!file_exists($mensajes_todas)) {
 		$mensajes_todas = $APP->rutacomun . 'lg/lg_todas_es.php';
 	}
@@ -4600,13 +4680,7 @@ function tercero_Bloqueado($idTercero, $objDB)
 	if ($objDB->nf($tabla11) > 0) {
 		$fila11 = $objDB->sf($tabla11);
 		if ($fila11['unad11bloqueado'] == 'S') {
-			/*
-			if (!function_exists('f1075_InfoBloqueo')){
-				require $APP->rutacomun . 'lib1075.php';
-				}
-			*/
 			$sError = $ERR['tercero_bloqueado1'] . ' ' . $fila11['unad11tipodoc'] . $fila11['unad11doc'] . ' ' . $fila11['unad11razonsocial'] . ' ' . $ERR['tercero_bloqueado2'];
-			//$sInfo=f1075_InfoBloqueo($idTercero, $objDB);
 		} else {
 			switch ($fila11['unad11estado']) {
 				case 0:

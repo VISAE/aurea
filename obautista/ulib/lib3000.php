@@ -473,29 +473,7 @@ function f3000_TablaDetalleAcad($aParametros, $objDB, $bDebug = false)
 			$sDebug = $sDebug . fecha_microtiempo() . ' Tiene permisos especiales<br>';
 		}
 	}
-	//if ((int)$aParametros[103]!=-1){$sSQLadd=$sSQLadd.' AND TB.campo='.$aParametros[103];}
-	//if ($aParametros[103]!=''){$sSQLadd=$sSQLadd.' AND TB.campo2 LIKE "%'.$aParametros[103].'%"';}
-	/*
-	if ($aParametros[103]!=''){
-		$sBase=trim(strtoupper($aParametros[103]));
-		$aNoms=explode(' ', $sBase);
-		for ($k=1;$k<=count($aNoms);$k++){
-			$sCadena=$aNoms[$k-1];
-			if ($sCadena!=''){
-				$sSQLadd=$sSQLadd.' AND T6.unad11razonsocial LIKE "%'.$sCadena.'%"';
-				//$sSQLadd1=$sSQLadd1.'T1.unad11razonsocial LIKE "%'.$sCadena.'%" AND ';
-				}
-			}
-		}
-	*/
 	$sIds2 = '-99';
-	/*
-	$sSQL='SELECT exte02id FROM exte02per_aca WHERE exte02fechatopetablero>='.$iHoy.'';
-	$tabla=$objDB->ejecutasql($sSQL);
-	while($fila=$objDB->sf($tabla)){
-		$sIds2=$sIds2.','.$fila['exte02id'];
-		}
-	*/
 	$sTitulos = 'Tercero, Modulo, Tabla, Tabla, Fecha, Tipo, Tema, Estado';
 	$sSQL = 'SELECT TB.core16peraca, TB.core16idprograma, TB.core16id, T2.exte02nombre, T9.core09codigo, T9.core09nombre, 
 	T2.exte02fechatopetablero, T2.exte02oferfechatopecancela, T2.exte02fechatopeaplaza, TB.core16numcursos, TB.cara16numcursosext, 
@@ -2126,7 +2104,7 @@ function f3000_NotificarResponsables($aParametros) {
 				$sCuerpo = $sCuerpo . '<b>Sistema de Atención Integral - SAI</b><br>';
 				$sCuerpo = AUREA_HTML_EncabezadoCorreo($sTituloMensaje) . $sCuerpo . AUREA_HTML_NoResponder() . AUREA_NotificaPieDePagina() . AUREA_HTML_PieCorreo();
 				$objMail->NuevoMensaje();
-				$objMail->sAsunto = cadena_codificar($sTituloMensaje);
+				$objMail->sAsunto = cadena_codificar(cadena_tildes($sTituloMensaje));
 				$sMensaje = $sMensaje . '<div class="flex gap-2"><div>Se notifica al correo ' . $sCorreoMensajes . '</div><i class="icon-check"></i></div>';
 				$objMail->addCorreo($sCorreoMensajes, $sCorreoMensajes);
 				if ($sCorreoCopia != '') {

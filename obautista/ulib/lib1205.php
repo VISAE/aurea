@@ -122,7 +122,6 @@ function f1205_Combomasi05centro($aParametros)
 	$objDB->CerrarConexion();
 	$objResponse = new xajaxResponse();
 	$objResponse->assign('div_masi05centro', 'innerHTML', $html_masi05centro);
-	//$objResponse->call('$("#masi05centro").chosen({width:"100%"})');
 	return $objResponse;
 }
 function f1205_Combomasi05programa($aParametros)
@@ -142,7 +141,6 @@ function f1205_Combomasi05programa($aParametros)
 	$objDB->CerrarConexion();
 	$objResponse = new xajaxResponse();
 	$objResponse->assign('div_masi05programa', 'innerHTML', $html_masi05programa);
-	$objResponse->call('$("#masi05programa").chosen({width:"100%"})');
 	$objResponse->call('carga_combo_masi05curso()');
 	return $objResponse;
 }
@@ -163,7 +161,6 @@ function f1205_Combomasi05curso($aParametros)
 	$objDB->CerrarConexion();
 	$objResponse = new xajaxResponse();
 	$objResponse->assign('div_masi05curso', 'innerHTML', $html_masi05curso);
-	$objResponse->call('$("#masi05curso").chosen({width:"100%"})');
 	return $objResponse;
 }
 function f1205_HTMLComboV2_bcentro($objDB, $objCombos, $valor, $vrbzona)
@@ -206,7 +203,6 @@ function f1205_Combobcentro($aParametros)
 	$objDB->CerrarConexion();
 	$objResponse = new xajaxResponse();
 	$objResponse->assign('div_bcentro', 'innerHTML', $html_bcentro);
-	//$objResponse->call('$("#bcentro").chosen({width:"100%"})');
 	$objResponse->call('paginarf1205()');
 	return $objResponse;
 }
@@ -430,7 +426,7 @@ function f1205_TablaDetalleV2($aParametros, $objDB, $bDebug = false)
 	if (isset($aParametros[102]) == 0) {
 		$aParametros[102] = 20;
 	}
-	$iNumVariables = 113;
+	$iNumVariables = 114;
 	for ($k = 103; $k <= $iNumVariables; $k++) {
 		if (isset($aParametros[$k]) == 0) {
 			$aParametros[$k] = '';
@@ -438,6 +434,7 @@ function f1205_TablaDetalleV2($aParametros, $objDB, $bDebug = false)
 	}
 	$idTercero = numeros_validar($aParametros[100]);
 	$sDebug = '';
+	$sLeyenda = '';
 	// ------------------------------------------------
 	// Leemos los parametros de entrada.
 	// ------------------------------------------------
@@ -454,6 +451,7 @@ function f1205_TablaDetalleV2($aParametros, $objDB, $bDebug = false)
 	$bprograma = numeros_validar($aParametros[111]);
 	$bcurso = cadena_Validar(trim($aParametros[112]));
 	$bproceso = numeros_validar($aParametros[113]);
+	$blistar = numeros_validar($aParametros[114]);
 	switch ($bproceso) {
 		case 0: // - Ninguno
 			break;
@@ -476,7 +474,8 @@ function f1205_TablaDetalleV2($aParametros, $objDB, $bDebug = false)
 			break;
 	}
 	$bMultiProceso = false;
-	list($sTabla1205, $sLeyenda) = f1205_NombreTabla($aParametros[97], $objDB);
+	list($sTabla1205, $sLeyendaT) = f1205_NombreTabla($aParametros[97], $objDB);
+	$sLeyenda = $sLeyenda . $sLeyendaT;
 	list($sTabla1206, $sLeyendaT) = f1206_NombreTabla($aParametros[97], $objDB);
 	$sLeyenda = $sLeyenda . $sLeyendaT;
 	if ($sLeyenda == '') {
@@ -518,6 +517,7 @@ function f1205_TablaDetalleV2($aParametros, $objDB, $bDebug = false)
 	$sSQLadd = '';
 	$sSQLadd1 = '';
 	$sTablaAdd = '';
+	$bConsultarT6 = false;
 	if (fecha_NumValido($bfechainicia)) {
 		$sSQLadd1 = $sSQLadd1 . 'TB.masi05fecha>=' . $bfechainicia . ' AND ';
 	}
@@ -525,28 +525,37 @@ function f1205_TablaDetalleV2($aParametros, $objDB, $bDebug = false)
 		$sSQLadd1 = $sSQLadd1 . 'TB.masi05fecha<=' . $bfechafinal . ' AND ';
 	}
 	if ($bunidadfunc != '') {
-		$sSQLadd1 = $sSQLadd1 . 'T6.masi06unidadfunc=' . $bunidadfunc . ' AND ';
+		$sSQLadd = $sSQLadd . ' AND T6.masi06unidadfunc=' . $bunidadfunc . '';
+		$bConsultarT6 = true;
 	}
 	if ($bcentro != '') {
-		$sSQLadd1 = $sSQLadd1 . 'T6.masi06centro=' . $bcentro . ' AND ';
+		$sSQLadd = $sSQLadd . ' AND T6.masi06centro=' . $bcentro . '';
+		$bConsultarT6 = true;
 	} else {
 		if ($bzona != '') {
-			$sSQLadd1 = $sSQLadd1 . 'T6.masi06zona=' . $bzona . ' AND ';
+			$sSQLadd = $sSQLadd . ' AND T6.masi06zona=' . $bzona . '';
+			$bConsultarT6 = true;
 		}
 	}
 	if ($bprograma != '') {
-		$sSQLadd1 = $sSQLadd1 . 'T6.masi06programa=' . $bprograma . ' AND ';
+		$sSQLadd = $sSQLadd . ' AND T6.masi06programa=' . $bprograma . '';
+		$bConsultarT6 = true;
 	} else {
 		if ($bescuela != '') {
-			$sSQLadd1 = $sSQLadd1 . 'T6.masi06escuela=' . $bescuela . ' AND ';
+			$sSQLadd = $sSQLadd . ' AND T6.masi06escuela=' . $bescuela . '';
+			$bConsultarT6 = true;
 		}
 	}
 	if ($bcurso != '') {
-		$sTablaAdd = ', unad40curso AS T40';
+		$sTablaAdd = $sTablaAdd . ', unad40curso AS T40';
 		$sSQLadd = $sSQLadd . ' AND T6.masi06curso=T40.unad40id AND T40.unad40titulo LIKE "%' . $bcurso . '%"';
+		$bConsultarT6 = true;
 	}
 	if ($bproceso != '') {
 		$sSQLadd1 = $sSQLadd1 . 'TB.masi05idproceso=' . $bproceso . ' AND ';
+	}
+	if ($blistar != '') {
+		$sSQLadd1 = $sSQLadd1 . 'TB.masi05idusuario=' . $idTercero . ' AND ';
 	}
 	if ($basunto != '') {
 		$sBase = mb_strtoupper($basunto);
@@ -568,6 +577,10 @@ function f1205_TablaDetalleV2($aParametros, $objDB, $bDebug = false)
 			}
 		}
 	}
+	if ($bConsultarT6) {
+		$sTablaAdd = $sTablaAdd . ', ' . $sTabla1206 . ' AS T6';
+		$sSQLadd1 = $sSQLadd1 . 'TB.masi05id=T6.masi06idmensaje AND ';
+	}
 	// ------------------------------------------------
 	// Fin de las condiciones de la consulta
 	// ------------------------------------------------
@@ -575,8 +588,9 @@ function f1205_TablaDetalleV2($aParametros, $objDB, $bDebug = false)
 	$registros = 0;
 	$bGigante = false; //En caso de que la tabla sea muy grande pasarlo a true
 	$sLimite = '';
-	$sCampos = 'SELECT DISTINCT TB.masi05consec, TB.masi05id, TB.masi05asunto, TB.masi05estado, TB.masi05fecha, T14.masi72nombre, TB.masi05idproceso';
-	$sConsulta = 'FROM ' . $sTabla1205 . ' AS TB LEFT JOIN ' . $sTabla1206 . ' AS T6 ON (TB.masi05id=T6.masi06idmensaje), masi72proceso AS T14' . $sTablaAdd . ' 
+	$sCampos = 'SELECT DISTINCT TB.masi05consec, TB.masi05id, TB.masi05asunto, TB.masi05estado, TB.masi05fecha, 
+	T14.masi72nombre, TB.masi05idproceso';
+	$sConsulta = 'FROM ' . $sTabla1205 . ' AS TB, masi72proceso AS T14' . $sTablaAdd . ' 
 	WHERE ' . $sSQLadd1 . ' TB.masi05id>0 AND TB.masi05idproceso=T14.masi72id ' . $sSQLadd . '';
 	$sOrden = 'ORDER BY TB.masi05idproceso, TB.masi05consec DESC';
 	$sSQL = $sCampos . ' ' . $sConsulta . ' ' . $sOrden;
@@ -1013,7 +1027,8 @@ function f1205_db_GuardarV2b($DATA, $objDB, $bDebug = false, $idTercero = 0, $iC
 	$bQuitarCodigo = false;
 	$sCampoCodigo = '';
 	if ($sError == '') {
-		list($sTabla1205, $sError) = f1205_NombreTabla($DATA['bmes'], $objDB);
+		list($sTabla1205, $sErrorH) = f1205_NombreTabla($DATA['bmes'], $objDB);
+		$sError = $sError . $sErrorH;
 		list($sTabla1206, $sErrorH) = f1206_NombreTabla($DATA['bmes'], $objDB);
 		$sError = $sError . $sErrorH;
 	}
@@ -1072,7 +1087,7 @@ function f1205_db_GuardarV2b($DATA, $objDB, $bDebug = false, $idTercero = 0, $iC
 			$DATA['masi05idrelacion2'] = 0;
 			$DATA['masi05idrelacion3'] = 0;
 		} else {			
-			$sSQL = 'SELECT * FROM ' . $sTabla1206 . ' WHERE masi06idmensaje=' . $DATA['masi05id'] . '';
+			$sSQL = 'SELECT 1 FROM ' . $sTabla1206 . ' WHERE masi06idmensaje=' . $DATA['masi05id'] . '';
 			$result = $objDB->ejecutasql($sSQL);
 			if ($objDB->nf($result) == 0) {
 				$sError = $ERR['msg_bpoblacion'] . $sSepara . $sError;
@@ -1245,7 +1260,8 @@ function f1205_db_Eliminar($masi05id, $bloque, $objDB, $bDebug = false)
 	$masi05id = numeros_validar($masi05id);
 	// Traer los datos para hacer las validaciones.
 	if ($sError == '') {
-		list($sTabla1205, $sError) = f1205_NombreTabla($bloque, $objDB);
+		list($sTabla1205, $sErrorH) = f1205_NombreTabla($bloque, $objDB);
+		$sError = $sError . $sErrorH;
 		list($sTabla1206, $sErrorH) = f1206_NombreTabla($bloque, $objDB);
 		$sError = $sError . $sErrorH;
 		list($sTabla1207, $sErrorH) = f1207_NombreTabla($bloque, $objDB);
@@ -1353,7 +1369,8 @@ function f1205_CambiaEstado($masi05id, $bloque, $iEstadoOrigen, $iEstadoDestino,
 	$masi05fecha = 0;
 	$masi05hora = 0;
 	$masi05min = 0;
-	list($sTabla1205, $sError) = f1205_NombreTabla($bloque, $objDB);
+	list($sTabla1205, $sErrorT) = f1205_NombreTabla($bloque, $objDB);
+	$sError = $sError . $sErrorT;
 	if ($sError == '') {
 		$sSQL = 'SELECT masi05estado, masi05fecha, masi05hora, masi05min FROM ' . $sTabla1205 . ' WHERE masi05id=' . $masi05id . '';
 		$tabla = $objDB->ejecutasql($sSQL);
@@ -1361,16 +1378,19 @@ function f1205_CambiaEstado($masi05id, $bloque, $iEstadoOrigen, $iEstadoDestino,
 			$filabase = $objDB->sf($tabla);
 			if ($filabase['masi05estado'] != $iEstadoOrigen) {
 				$sError = 'El estado de origen no coincide [' . $filabase['masi05estado'] . '].';
-			} else {
-				$iHoy = fecha_DiaMod();
-				$iHora = fecha_hora();
-				$iMin = fecha_minuto();
-				$masi05fecha = $filabase['masi05fecha'];
-				$masi05hora = $filabase['masi05hora'];
-				$masi05min = $filabase['masi05min'];
-				$iTiempoMinutos = fecha_tiempoenminutos($iHoy, $iHora, $iMin, $masi05fecha, $masi05hora, $masi05min);
-				if ($iTiempoMinutos < 30) {
-					$sError = 'La fecha y hora para env&iacute;o no es v&aacute;lida, el tiempo programado no es suficiente';
+			} 
+			if ($sError == '') {
+				if ($iEstadoOrigen == 0) {
+					$iHoy = fecha_DiaMod();
+					$iHora = fecha_hora();
+					$iMin = fecha_minuto();
+					$masi05fecha = $filabase['masi05fecha'];
+					$masi05hora = $filabase['masi05hora'];
+					$masi05min = $filabase['masi05min'];
+					$iTiempoMinutos = fecha_tiempoenminutos($iHoy, $iHora, $iMin, $masi05fecha, $masi05hora, $masi05min);
+					if ($iTiempoMinutos < 30) {
+						$sError = 'La fecha y hora para env&iacute;o no es v&aacute;lida, el tiempo programado no es suficiente';
+					}
 				}
 			}
 		} else {
@@ -1383,78 +1403,6 @@ function f1205_CambiaEstado($masi05id, $bloque, $iEstadoOrigen, $iEstadoDestino,
 		$sSQL = 'UPDATE ' . $sTabla1205 . ' SET masi05estado=' . $iEstadoDestino . '' . $sDatosAdd . ' WHERE masi05id=' . $masi05id . '';
 		$result = $objDB->ejecutasql($sSQL);
 		seg_auditar($iCodModulo, $idUsuario, 3, $masi05id, $sInfoCambio, $objDB);
-	}
-	if ($bNotificar) {
-		// list($sError, $sDebugN, $sMensaje) = f1205_Notificar($masi05id, $bloque, $objDB, $bDebug);
-		// $sDebug = $sDebug . $sDebugN;
-	}
-	return array($sError, $sDebug, $sMensaje);
-}
-
-function f1205_Notificar($masi05id, $bloque, $objDB, $bDebug = false)
-{
-	$sError = '';
-	$sDebug = '';
-	$sMensaje = '';
-	$iHoy = fecha_DiaMod();
-	$idInteresado = 0;
-	list($sTabla1205, $sError) = f1205_NombreTabla($bloque, $objDB);
-	list($sTabla1207, $sErrorH) = f1207_NombreTabla($bloque, $objDB);
-	$sError = $sError . $sErrorH;
-	list($sTabla1208, $sErrorH) = f1208_NombreTabla($bloque, $objDB);
-	$sError = $sError . $sErrorH;
-	if ($sError == '') {
-		$sSQL = 'SELECT TB.masi05estado, TB.masi05asunto, TB.masi05cuerpo, TB.masi05firma
-		FROM ' . $sTabla1205 . ' AS TB
-		WHERE TB.masi05id=' . $masi05id . '';
-		$tabla = $objDB->ejecutasql($sSQL);
-		if ($objDB->nf($tabla) > 0) {
-			$filabase = $objDB->sf($tabla);
-			$masi05estado = $filabase['masi05estado'];
-			$masi05asunto = $filabase['masi05asunto'];
-			$masi05cuerpo = $filabase['masi05cuerpo'];
-			$masi05firma = $filabase['masi05firma'];
-		} else {
-			$sError = 'No se ha encontrado el registro solicitado [Ref ' . $masi05id . ']';
-		}
-	}
-	if ($sError == '') {
-		$sTituloMensaje = 'Notificación de ... ' . fecha_hoy() . ' ' . html_TablaHoraMin(fecha_hora(), fecha_minuto()) . '';
-		$sCuerpo = 'Estimado usuario:<br><br>';
-		switch ($masi05estado) {
-			case 0:
-				break;
-		}
-	}
-	if ($sError == '') {
-		list($sCorreoUsuario, $sErrorN, $sDebugM) = AUREA_CorreoNotifica($idInteresado, $objDB, $bDebug);
-		if ($sCorreoUsuario == '') {
-			$sError = 'El usuario no registra correo de notificaciones.';
-		}
-	}
-	if ($sError == '') {
-		$sCuerpo = $sCuerpo . AUREA_HTML_NoResponderSII();
-		$sCorreoCopia = '';
-		$sCuerpo = AUREA_HTML_EncabezadoCorreo($sTituloMensaje) . $sCuerpo . AUREA_HTML_PieCorreo();
-		$sMes = date('Ym');
-		$sTabla = 'aure01login' . $sMes;
-		list($idSMTP, $sDebugS) = AUREA_SmtpMejor($sTabla, $objDB, $bDebug);
-		$objMail = new clsMail_Unad($objDB);
-		$objMail->TraerSMTP($idSMTP);
-		$objMail->sAsunto = cadena_codificar($sTituloMensaje);
-		$sMensaje = 'Se notifica al correo ' . $sCorreoUsuario;
-		$objMail->addCorreo($sCorreoUsuario, $sCorreoUsuario);
-		if ($sCorreoCopia != '') {
-			$objMail->addCorreo($sCorreoCopia, $sCorreoCopia, 'O');
-			$sMensaje = $sMensaje . ' con copia a ' . $sCorreoCopia;
-		}
-		if ($sError == '') {
-			$objMail->sCuerpo = $sCuerpo;
-			$sError = $objMail->Enviar($bDebug);
-			if ($sError != '') {
-				$sMensaje = '';
-			}
-		}
 	}
 	return array($sError, $sDebug, $sMensaje);
 }
@@ -1496,7 +1444,6 @@ function f1205_GestionaPoblacion($masi05idproceso, $masi05estado)
 	}
 	return $res;
 }
-
 function f1205_GestionaImagenes($masi05cuerpo, $objDB, $bDebug = false) 
 {
 	$sError = '';

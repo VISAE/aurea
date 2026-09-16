@@ -24,6 +24,9 @@ $ETI['masi10divcodigoconfirma'] = 'Bloque codigo confirmaci&oacute;n';
 $ETI['masi10divcodigorecupera'] = 'Bloque codigo recupera';
 $ETI['masi10divfirma'] = 'Bloque firma';
 $ETI['masi10piedepagina'] = 'Bloque Pie de pagina';
+$ETI['msg_variables_disponibles'] = 'Variables disponibles';
+$ETI['msg_variable_cuerpo_firma'] = 'Contenido compacto del mensaje de firma';
+$ETI['msg_variable_titulo_correo'] = 'Titulo del correo';
 
 $ERR['masi10consec'] = 'Necesita el dato ' . $ETI['masi10consec'];
 $ERR['masi10id'] = 'Necesita el dato ' . $ETI['masi10id'];

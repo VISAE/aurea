@@ -14,6 +14,39 @@ function f1206_NombreTabla($iComplemento, $objDB) {
 	}
 	return array($sTabla1206, $sError);
 }
+function f1206_HTMLComboV2_masi06idperiodo($objDB, $objCombos, $valor)
+{
+	require './app.php';
+	$sIdioma = AUREA_Idioma();
+	$mensajes_todas = $APP->rutacomun . 'lg/lg_todas_' . $sIdioma . '.php';
+	if (!file_exists($mensajes_todas)) {
+		$mensajes_todas = $APP->rutacomun . 'lg/lg_todas_es.php';
+	}
+	require $mensajes_todas;
+	$objCombos->nuevo('masi06idperiodo', $valor, true, '{' . $ETI['msg_seleccione'] . '}', 0);
+	$objCombos->bEsCombobox = true;
+	$objCombos->sAccion = 'carga_combo_masi06curso();';
+	//$objCombos->iAncho = 450;
+	$sSQL = f146_ConsultaCombo();
+	$res = $objCombos->html($sSQL, $objDB); //, 0, '', 'et', 1206, $sIdioma
+	return $res;
+}
+function f1206_HTMLComboV2_masi06unidadfunc($objDB, $objCombos, $valor)
+{
+	require './app.php';
+	$sIdioma = AUREA_Idioma();
+	$mensajes_todas = $APP->rutacomun . 'lg/lg_todas_' . $sIdioma . '.php';
+	if (!file_exists($mensajes_todas)) {
+		$mensajes_todas = $APP->rutacomun . 'lg/lg_todas_es.php';
+	}
+	require $mensajes_todas;
+	$objCombos->nuevo('masi06unidadfunc', $valor, true, '{' . $ETI['msg_na'] . '}', 0);
+	$objCombos->bEsCombobox = true;
+	//$objCombos->iAncho = 450;
+	$sSQL = f226_ConsultaCombo();
+	$res = $objCombos->html($sSQL, $objDB); //, 0, '', 'et', 1206, $sIdioma
+	return $res;
+}
 function f1206_HTMLComboV2_masi06centro($objDB, $objCombos, $valor, $vrmasi06zona)
 {
 	require './app.php';
@@ -286,7 +319,8 @@ function f1206_db_Guardar($valores, $objDB, $bDebug = false, $idTercero = 0, $iC
 	$sCampoCodigo = '';
 	if ($sError == '') {
 		$bloque = numeros_validar($valores[97]);
-		list($sTabla1205, $sError) = f1205_NombreTabla($bloque, $objDB);
+		list($sTabla1205, $sErrorH) = f1205_NombreTabla($bloque, $objDB);
+		$sError = $sError . $sErrorH;
 		list($sTabla1206, $sErrorH) = f1206_NombreTabla($bloque, $objDB);
 		$sError = $sError . $sErrorH;
 	}
@@ -511,7 +545,8 @@ function f1206_db_Eliminar($aParametros, $objDB, $bDebug = false, $idTercero = 0
 		}
 	}
 	if ($sError == '') {
-		list($sTabla1205, $sError) = f1205_NombreTabla($bloque, $objDB);
+		list($sTabla1205, $sErrorH) = f1205_NombreTabla($bloque, $objDB);
+		$sError = $sError . $sErrorH;
 		list($sTabla1206, $sErrorH) = f1206_NombreTabla($bloque, $objDB);
 		$sError = $sError . $sErrorH;
 		list($sTabla1208, $sErrorH) = f1208_NombreTabla($bloque, $objDB);
@@ -531,10 +566,10 @@ function f1206_db_Eliminar($aParametros, $objDB, $bDebug = false, $idTercero = 0
 		//acciones previas
 		$sSQL = 'DELETE FROM ' . $sTabla1208 . ' WHERE masi08idmensaje=' . $masi05id . ' AND masi08idpoblacion=' . $masi06id . '';
 		$result = $objDB->ejecutasql($sSQL);
-		$sSQL = 'SELECT * FROM ' . $sTabla1208 . ' WHERE masi08idmensaje=' . $masi05id . '';
+		$sSQL = 'SELECT 1 FROM ' . $sTabla1208 . ' WHERE masi08idmensaje=' . $masi05id . '';
 		$tabla08 = $objDB->ejecutasql($sSQL);
 		$iCantidad = $objDB->nf($tabla08);
-		$sSQL = 'UPDATE ' . $sTabla1205 . ' SET masi05total_usuarios=' . $iCantidad . '';
+		$sSQL = 'UPDATE ' . $sTabla1205 . ' SET masi05total_usuarios=' . $iCantidad . ' WHERE masi05id=' . $masi05id . '';
 		$result = $objDB->ejecutasql($sSQL);
 		$sWhere = 'masi06id=' . $masi06id . '';
 		//$sWhere = 'masi06idmensaje=' . $masi06idmensaje . ' AND masi06consec=' . $masi06consec . '';
@@ -1248,7 +1283,8 @@ function f1206_Procesar($masi05id, $bloque, $masi06id, $objDB, $bDebug = false)
 	$masi06id = numeros_validar($masi06id);
 	// Traer los datos para hacer las validaciones.
 	if ($sError == '') {
-		list($sTabla1205, $sError) = f1205_NombreTabla($bloque, $objDB);
+		list($sTabla1205, $sErrorH) = f1205_NombreTabla($bloque, $objDB);
+		$sError = $sError . $sErrorH;
 		list($sTabla1206, $sErrorH) = f1206_NombreTabla($bloque, $objDB);
 		$sError = $sError . $sErrorH;
 		list($sTabla1208, $sErrorH) = f1208_NombreTabla($bloque, $objDB);
@@ -1426,7 +1462,7 @@ function f1206_Procesar($masi05id, $bloque, $masi06id, $objDB, $bDebug = false)
 				$iCantidad++;
 			}
 		}
-		$sSQL = 'UPDATE ' . $sTabla1205 . ' SET masi05total_usuarios=' . $iCantidad . '';
+		$sSQL = 'UPDATE ' . $sTabla1205 . ' SET masi05total_usuarios=' . $iCantidad . ' WHERE masi05id=' . $masi05id . '';
 		$result = $objDB->ejecutasql($sSQL);
 	}
 	return array($iCantidad, $sError, $iTipoError, $sDebug);
@@ -1473,17 +1509,18 @@ function f1206_Reversar($aParametros)
 	$objDB->xajax();
 	// -- 
 	if ($sError == '') {
-		list($sTabla1205, $sError) = f1205_NombreTabla($bloque, $objDB);
+		list($sTabla1205, $sErrorH) = f1205_NombreTabla($bloque, $objDB);
+		$sError = $sError . $sErrorH;
 		list($sTabla1208, $sErrorH) = f1208_NombreTabla($bloque, $objDB);
 		$sError = $sError . $sErrorH;
 	}
 	if ($sError == '') {
 		$sSQL = 'DELETE FROM ' . $sTabla1208 . ' WHERE masi08idmensaje=' . $masi05id . ' AND masi08idpoblacion=' . $masi06id . '';
 		$result = $objDB->ejecutasql($sSQL);
-		$sSQL = 'SELECT * FROM ' . $sTabla1208 . ' WHERE masi08idmensaje=' . $masi05id . '';
+		$sSQL = 'SELECT 1 FROM ' . $sTabla1208 . ' WHERE masi08idmensaje=' . $masi05id . '';
 		$tabla08 = $objDB->ejecutasql($sSQL);
 		$iCantidad = $objDB->nf($tabla08);
-		$sSQL = 'UPDATE ' . $sTabla1205 . ' SET masi05total_usuarios=' . $iCantidad . '';
+		$sSQL = 'UPDATE ' . $sTabla1205 . ' SET masi05total_usuarios=' . $iCantidad . ' WHERE masi05id=' . $masi05id . '';
 		$result = $objDB->ejecutasql($sSQL);
 	}
 	// --
@@ -1505,37 +1542,4 @@ function f1206_Reversar($aParametros)
 	}
 	$objDB->CerrarConexion();
 	return $objResponse;
-}
-function f1206_HTMLComboV2_masi06idperiodo($objDB, $objCombos, $valor)
-{
-	require './app.php';
-	$sIdioma = AUREA_Idioma();
-	$mensajes_todas = $APP->rutacomun . 'lg/lg_todas_' . $sIdioma . '.php';
-	if (!file_exists($mensajes_todas)) {
-		$mensajes_todas = $APP->rutacomun . 'lg/lg_todas_es.php';
-	}
-	require $mensajes_todas;
-	$objCombos->nuevo('masi06idperiodo', $valor, true, '{' . $ETI['msg_seleccione'] . '}', 0);
-	$objCombos->bEsCombobox = true;
-	$objCombos->sAccion = 'carga_combo_masi06curso();';
-	//$objCombos->iAncho = 450;
-	$sSQL = f146_ConsultaCombo();
-	$res = $objCombos->html($sSQL, $objDB); //, 0, '', 'et', 1206, $sIdioma
-	return $res;
-}
-function f1206_HTMLComboV2_masi06unidadfunc($objDB, $objCombos, $valor)
-{
-	require './app.php';
-	$sIdioma = AUREA_Idioma();
-	$mensajes_todas = $APP->rutacomun . 'lg/lg_todas_' . $sIdioma . '.php';
-	if (!file_exists($mensajes_todas)) {
-		$mensajes_todas = $APP->rutacomun . 'lg/lg_todas_es.php';
-	}
-	require $mensajes_todas;
-	$objCombos->nuevo('masi06unidadfunc', $valor, true, '{' . $ETI['msg_na'] . '}', 0);
-	$objCombos->bEsCombobox = true;
-	//$objCombos->iAncho = 450;
-	$sSQL = f226_ConsultaCombo();
-	$res = $objCombos->html($sSQL, $objDB); //, 0, '', 'et', 1206, $sIdioma
-	return $res;
 }

@@ -40,6 +40,7 @@ $masi05firma = 0;
 $masi05admiterpta = 0;
 $masi05correorpta = '';
 $iEstadoOrigen = 0;
+$bExisteMasivo = false;
 $iHoy = fecha_DiaMod();
 $iHora = fecha_hora();
 $iMin = fecha_minuto();
@@ -48,7 +49,8 @@ if ($sError == '') {
     $tablac = $objDB->ejecutasql($sSQL);
     while($filac = $objDB->sf($tablac)) {
         $bloque = substr($filac[0], 15);
-        list($sTabla1205, $sError) = f1205_NombreTabla($bloque, $objDB);
+        list($sTabla1205, $sErrorH) = f1205_NombreTabla($bloque, $objDB);
+        $sError = $sError . $sErrorH;
         list($sTabla1207, $sErrorH) = f1207_NombreTabla($bloque, $objDB);
         $sError = $sError . $sErrorH;
         list($sTabla1208, $sErrorH) = f1208_NombreTabla($bloque, $objDB);
@@ -72,23 +74,28 @@ if ($sError == '') {
                 $masi05min = $filabase['masi05min'];
                 $masi05admiterpta = $filabase['masi05admiterpta'];
                 $masi05correorpta = $filabase['masi05correorpta'];
+                $bExisteMasivo = true;
                 break;
-            } else {
-                $sError = 'No se han programado masivos';
             }
         }
     }
     if ($bloque == '') {
-        $sError = 'No existe la tabla de mensajes';
+        $sError = $sError . 'No existe la tabla de mensajes';
+    }
+}
+if ($sError == '') {
+    if (!$bExisteMasivo) {
+        $sError = $sError . 'No se han programado masivos';
     }
 }
 if ($sError == '') {
     $iTiempoMinutos = fecha_tiempoenminutos($iHoy, $iHora, $iMin, $masi05fecha, $masi05hora, $masi05min);
     if (($iTiempoMinutos >= 0) && ($iTiempoMinutos < 30)) {
         $iEstadoDestino = 5; // en proceso
-        list($sError, $sDebug, $sMensaje) = f1205_CambiaEstado($masi05id, $bloque, $masi05estado, $iEstadoDestino, '', 2, $objDB);
+        list($sErrorE, $sDebug, $sMensaje) = f1205_CambiaEstado($masi05id, $bloque, $masi05estado, $iEstadoDestino, '', 2, $objDB);
+        $sError = $sError . $sErrorE;
     } else {
-        $sError = 'La fecha y hora para env&iacute;o no es v&aacute;lida.';
+        $sError = $sError . 'La fecha y hora para env&iacute;o no es v&aacute;lida.';
     }
 }
 if ($sError == '') {
