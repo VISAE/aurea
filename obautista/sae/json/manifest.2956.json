@@ -1,0 +1,26 @@
+{
+  "code": "2956",
+  "name": "Periodos semanales",
+  "version": "1.0.0",
+  "entry": "visaepersemanal.php",
+  "library": "lib2956.php",
+  "language": [
+    "lg/lg_2956_es.php",
+    "lg/lg_2956_en.php",
+    "lg/lg_2956_pt.php"
+  ],
+  "db-table": [
+    "visa56persemanal"
+  ],
+  "dependsOn": [
+    ],
+  "lastUpdate": "2026-9-15",
+  "owner": "UNAD",
+  "version-history": [
+    {
+      "version": "1.0.0",
+      "date": "2026-9-15",
+      "notes": "Primer versión"
+    }
+  ]
+}

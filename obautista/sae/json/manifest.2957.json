@@ -1,0 +1,50 @@
+{
+  "code": "2957",
+  "name": "Actividades VISAE",
+  "version": "1.0.0",
+  "entry": "visaeactividad.php",
+  "library": "lib2957.php",
+  "language": [
+    "lg/lg_2957_es.php",
+    "lg/lg_2957_en.php",
+    "lg/lg_2957_pt.php",
+    "lg/lg_2958_es.php",
+    "lg/lg_2958_en.php",
+    "lg/lg_2958_pt.php",
+    "lg/lg_2959_es.php",
+    "lg/lg_2959_en.php",
+    "lg/lg_2959_pt.php",
+    "lg/lg_2960_es.php",
+    "lg/lg_2960_en.php",
+    "lg/lg_2960_pt.php",
+    "lg/lg_2961_es.php",
+    "lg/lg_2961_en.php",
+    "lg/lg_2961_pt.php",
+    "lg/lg_2962_es.php",
+    "lg/lg_2962_en.php",
+    "lg/lg_2962_pt.php",
+    "lg/lg_2963_es.php",
+    "lg/lg_2963_en.php",
+    "lg/lg_2963_pt.php"
+  ],
+  "db-table": [
+    "visa57actividad"
+  ],
+  "dependsOn": [
+    "lib2958.php",
+    "lib2959.php",
+    "lib2960.php",
+    "lib2961.php",
+    "lib2962.php",
+    "lib2963.php"
+    ],
+  "lastUpdate": "2026-9-16",
+  "owner": "UNAD",
+  "version-history": [
+    {
+      "version": "1.0.0",
+      "date": "2026-9-16",
+      "notes": "Primer versión"
+    }
+  ]
+}

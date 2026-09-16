@@ -1,0 +1,26 @@
+{
+  "code": "2955",
+  "name": "Sistemas VISAE",
+  "version": "1.0.0",
+  "entry": "visaesistemas.php",
+  "library": "lib2955.php",
+  "language": [
+    "lg/lg_2955_es.php",
+    "lg/lg_2955_en.php",
+    "lg/lg_2955_pt.php"
+  ],
+  "db-table": [
+    "visa55sistema"
+  ],
+  "dependsOn": [
+    ],
+  "lastUpdate": "2026-9-15",
+  "owner": "UNAD",
+  "version-history": [
+    {
+      "version": "1.0.0",
+      "date": "2026-9-15",
+      "notes": "Primer versión"
+    }
+  ]
+}
