@@ -22,14 +22,23 @@ function f2957_HTMLComboV2_visa57idpersemanal($objDB, $objCombos, $valor)
 		$mensajes_todas = $APP->rutacomun . 'lg/lg_todas_es.php';
 	}
 	require $mensajes_todas;
+	$iHoy = fecha_DiaMod();
 	$objCombos->nuevo('visa57idpersemanal', $valor, true, '{' . $ETI['msg_seleccione'] . '}');
 	//$objCombos->iAncho = 450;
 	//$objCombos->bEsCombobox = true;
 	$objCombos->sAccion = 'RevisaLlave();';
-	$sSQL = 'SELECT TB.visa56id AS id, TB.visa56fechaini AS nombre 
+	$sSQL = 'SELECT TB.visa56id, TB.visa56fechaini, TB.visa56fechafin
 	FROM visa56persemanal AS TB
-	WHERE TB.visa56id>0
+	WHERE TB.visa56id>0 AND TB.visa56estado=1 
 	ORDER BY TB.visa56fechaini';
+	$tabla = $objDB->ejecutasql($sSQL);
+	while ($fila = $objDB->sf($tabla)) {
+		$sFechaIni = formato_FechaLargaDesdeNumero($fila['visa56fechaini'], true);
+		$sFechaFin = formato_FechaLargaDesdeNumero($fila['visa56fechafin'], true);
+		$visa57idpersemanal_nombre = $sFechaIni . ' - ' . $sFechaFin;
+		$objCombos->addItem($fila['visa56id'], $visa57idpersemanal_nombre);
+	}
+	$sSQL = '';
 	$res = $objCombos->html($sSQL, $objDB); //, 0, '', 'et', 2957, $sIdioma
 	return $res;
 }
@@ -46,7 +55,7 @@ function f2957_HTMLComboV2_visa57idsistema($objDB, $objCombos, $valor)
 	//$objCombos->iAncho = 450;
 	//$objCombos->bEsCombobox = true;
 	$objCombos->sAccion = 'RevisaLlave();';
-	$sSQL = 'SELECT TB.visa55id AS id, TB.visa55nombre AS nombre 
+	$sSQL = 'SELECT TB.visa55id AS id, CONCAT(TB.visa55codigo, " - ", TB.visa55nombre) AS nombre 
 	FROM visa55sistema AS TB
 	WHERE TB.visa55id>0
 	ORDER BY TB.visa55nombre';
@@ -305,7 +314,6 @@ function f2957_TablaDetalleV2($aParametros, $objDB, $bDebug = false)
 	*/
 	$sSQLadd = '';
 	$sSQLadd1 = '';
-	/*
 	if ($bsistema != '') {
 		$sSQLadd1 = $sSQLadd1 . 'visa57idsistema=' . $bsistema . ' AND ';
 	}
@@ -322,8 +330,9 @@ function f2957_TablaDetalleV2($aParametros, $objDB, $bDebug = false)
 		$sSQLadd1 = $sSQLadd1 . 'visa57fechaprogini>=' . $bfechaini . ' AND ';
 	}
 	if (fecha_NumValido($bfechafin)) {
-		$sSQLadd1 = $sSQLadd1 . 'visa57fechaprogfin>=' . $bfechafin . ' AND ';
+		$sSQLadd1 = $sSQLadd1 . 'visa57fechaprogfin<=' . $bfechafin . ' AND ';
 	}
+	/*
 	if ($bNombre != '') {
 		$sBase = mb_strtoupper($bNombre);
 		$aNoms = explode(' ', $sBase);
@@ -531,6 +540,7 @@ function f2957_db_GuardarV2b($DATA, $objDB, $bDebug = false, $idTercero = 0, $iC
 	$sError = '';
 	$iTipoError = 0;
 	$sDebug = '';
+	$iHoy = fecha_DiaMod();
 	if ($idTercero == 0) {
 		$idTercero = $_SESSION['unad_id_tercero'];
 	}
@@ -696,6 +706,18 @@ function f2957_db_GuardarV2b($DATA, $objDB, $bDebug = false, $idTercero = 0, $iC
 		$sError = $ERR['visa57idpersemanal'];
 	}
 	// -- Se verifican los valores de campos de otras tablas.
+	if ($sError == '') {
+		$bPasa = true;
+		if ($DATA['visa57fechaprogini'] > $DATA['visa57fechaprogfin']) {
+			$bPasa = false;
+		}
+		if ($DATA['visa57fechaprogfin'] < $iHoy) {
+			$bPasa = false;
+		}
+		if (!$bPasa) {
+			$sError = $ERR['msg_fecha'];
+		}
+	}
 	$bQuitarCodigo = false;
 	$sCampoCodigo = '';
 	$sNomTabla2957 = f2957_NombreTabla();
@@ -1012,7 +1034,10 @@ function f2957_CambiaEstado($visa57id, $iEstadoOrigen, $iEstadoDestino, $sDetall
 	$sError = '';
 	$sDebug = '';
 	$sMensaje = '';
+	$sInfoCambio = '';
+	$sDatosAdd = '';
 	$bNotificar = false;
+	$iHoy = fecha_DiaMod();
 	$sNomTabla2957 = f2957_NombreTabla();
 	$sSQL = 'SELECT visa57estado FROM ' . $sNomTabla2957 . ' WHERE visa57id=' . $visa57id . '';
 	$tabla = $objDB->ejecutasql($sSQL);
@@ -1025,12 +1050,12 @@ function f2957_CambiaEstado($visa57id, $iEstadoOrigen, $iEstadoDestino, $sDetall
 		$sError = 'No se ha encontrado el registro solicitado [Ref ' . $visa57id . ']';
 	}
 	if ($sError == '') {
-		$sInfoCambio = 'Cambia el estado a ' . $iEstadoDestino;
-		$sDatosAdd = '';
+		$sInfoCambio = $sInfoCambio . 'Cambia el estado a ' . $iEstadoDestino;
 		switch ($iEstadoDestino) {
 			case 0:
 				break;
 		}
+		$sDatosAdd = $sDatosAdd . ', visa57fechaactualiza=' . $iHoy;
 	}
 	if ($sError == '') {
 		//Guardar el historial del cambio...
@@ -1038,7 +1063,7 @@ function f2957_CambiaEstado($visa57id, $iEstadoOrigen, $iEstadoDestino, $sDetall
 	if ($sError == '') {
 		$sSQL = 'UPDATE ' . $sNomTabla2957 . ' SET visa57estado=' . $iEstadoDestino . '' . $sDatosAdd . ' WHERE visa57id=' . $visa57id . '';
 		$result = $objDB->ejecutasql($sSQL);
-		seg_auditar($iCodModulo, $_SESSION['unad_id_tercero'], 3, $_REQUEST['visa57id'], $sInfoCambio, $objDB);
+		seg_auditar($iCodModulo, $idUsuario, 3, $visa57id, $sInfoCambio, $objDB);
 	}
 	if ($bNotificar) {
 		list($sError, $sDebugN, $sMensaje) = f2957_Notificar($visa57id, $objDB, $bDebug);

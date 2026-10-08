@@ -16,8 +16,8 @@ $ETI['visa60id'] = 'Ref :';
 $ETI['visa60fechareproini'] = 'Fecha inicial';
 $ETI['visa60fechareprofin'] = 'Fecha final';
 $ETI['visa60motivo'] = 'Motivo';
-$ETI['visa60fecharegistro'] = 'Fecharegistro';
-$ETI['visa60idusuario'] = 'Idusuario';
+$ETI['visa60fecharegistro'] = 'Fecha registro';
+$ETI['visa60idusuario'] = 'Usuario registra';
 $ETI['visa60idusuario_busca'] = 'Busqueda de idusuario';
 
 $ERR['visa60idactividad'] = 'Necesita el dato ' . $ETI['visa60idactividad'];
@@ -28,6 +28,7 @@ $ERR['visa60fechareprofin'] = '' . $ETI['visa60fechareprofin'] . ' incorrecta';
 $ERR['visa60motivo'] = 'Necesita el dato ' . $ETI['visa60motivo'];
 $ERR['visa60fecharegistro'] = '' . $ETI['visa60fecharegistro'] . ' incorrecta';
 $ERR['visa60idusuario'] = 'Necesita el dato ' . $ETI['visa60idusuario'];
-
+$ERR['msg_fecha'] = 'La fecha de reprogramaci&oacute;n no es correcta';
+$ERR['msg_actividad'] = 'La actividad no existe';
 
 

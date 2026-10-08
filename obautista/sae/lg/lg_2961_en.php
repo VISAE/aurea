@@ -15,8 +15,8 @@ $ETI['visa61consec'] = 'Consecutive';
 $ETI['visa61id'] = 'Ref :';
 $ETI['visa61descripcion'] = 'Descripcion';
 $ETI['visa61impacto'] = 'Impacto';
-$ETI['visa61requiereapoyo'] = 'Requiereapoyo';
-$ETI['visa61fecharegistro'] = 'Fecharegistro';
+$ETI['visa61requiereapoyo'] = 'Requiere apoyo';
+$ETI['visa61fecharegistro'] = 'Fecha registro';
 
 $ERR['visa61idactividad'] = 'The field ' . $ETI['visa61idactividad'] . ' is required';
 $ERR['visa61consec'] = 'The field ' . $ETI['visa61consec'] . ' is required';
@@ -26,8 +26,8 @@ $ERR['visa61impacto'] = 'The field ' . $ETI['visa61impacto'] . ' is required';
 $ERR['visa61requiereapoyo'] = 'The field ' . $ETI['visa61requiereapoyo'] . ' is required';
 $ERR['visa61fecharegistro'] = '' . $ETI['visa61fecharegistro'] . ' is incorrect';
 
-$avisa61impacto = array('', '');
-$ivisa61impacto = 0;
+$avisa61impacto = array('', 'Alto', 'Medio', 'Bajo');
+$ivisa61impacto = 3;
 $avisa61requiereapoyo = array('', '');
 $ivisa61requiereapoyo = 0;
 

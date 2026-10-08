@@ -18,7 +18,7 @@ $ETI['visa63idcolaborador'] = 'Colaborador';
 $ETI['visa63idcolaborador_busca'] = 'Busqueda de colaborador';
 $ETI['visa63estado'] = 'Estado';
 $ETI['visa63fechasolicitud'] = 'Fecha solicitud';
-$ETI['visa63fecharespuesta'] = 'Fecharespuesta';
+$ETI['visa63fecharespuesta'] = 'Fecha respuesta';
 $ETI['visa63observaciones'] = 'Observaciones';
 
 $ERR['visa63idactividad'] = 'Necesita el dato ' . $ETI['visa63idactividad'];

@@ -539,12 +539,8 @@ if ($seg_1707 == 1) {
 	$objCombos->iAncho = 60;
 	$html_deb_tipodoc = $objCombos->html('', $objDB, 145);
 }
-$objCombos->nuevo('visa56estado', $_REQUEST['visa56estado'], true, $ETI['no'], 0);
-//$objCombos->bEsCombobox = true;
-$objCombos->addItem(1, $ETI['si']);
-//$objCombos->addArreglo($avisa56estado, $ivisa56estado);
-$sSQL = '';
-$html_visa56estado = $objCombos->html($sSQL, $objDB);
+$visa56estado_nombre = $avisa56estado[$_REQUEST['visa56estado']];
+$html_visa56estado = html_oculto('visa56estado', $_REQUEST['visa56estado'], $visa56estado_nombre);
 $objCombos->nuevo('visa56activo', $_REQUEST['visa56activo'], true, $ETI['no'], 0);
 //$objCombos->bEsCombobox = true;
 $objCombos->addItem(1, $ETI['si']);
@@ -1007,10 +1003,24 @@ echo $ETI['visa56id'];
 </label>
 <label class="Label130">
 <?php
+echo $ETI['visa56estado'];
+?>
+</label>
+<label>
+<div id="div_visa56estado" class="field">
+<?php
+echo $html_visa56estado;
+?>
+</div>
+</label>
+<input id="visa56fechacrea" name="visa56fechacrea" type="hidden" value="<?php echo $_REQUEST['visa56fechacrea']; ?>" />
+<div class="salto1px"></div>
+<label class="Label130">
+<?php
 echo $ETI['visa56fechaini'];
 ?>
 </label>
-<div class="Campo220">
+<div class="Campo250">
 <?php
 echo html_FechaEnNumero('visa56fechaini', $_REQUEST['visa56fechaini']); //, false, '', $iAgnoIni, $iAgnoFin); //$bvacio, $accion
 ?>
@@ -1035,39 +1045,13 @@ if (false) {
 	echo $objForma->htmlBotonSolo('bvisa56fechafin_hoy', 'btMiniHoy', "fecha_AsignarNum('visa56fechafin', " . $iHoy . ")", $ETI['bt_hoy']);
 }
 ?>
-<label class="Label130">
-<?php
-echo $ETI['visa56estado'];
-?>
-</label>
-<label>
-<div id="div_visa56estado" class="field">
-<?php
-echo $html_visa56estado;
-?>
-</div>
-</label>
-<label class="Label130">
-<?php
-echo $ETI['visa56fechacrea'];
-?>
-</label>
-<div class="Campo220">
-<?php
-echo html_FechaEnNumero('visa56fechacrea', $_REQUEST['visa56fechacrea']); //, false, '', $iAgnoIni, $iAgnoFin); //$bvacio, $accion
-?>
-</div>
-<?php
-if (false) {
-	echo $objForma->htmlBotonSolo('bvisa56fechacrea_hoy', 'btMiniHoy', "fecha_AsignarNum('visa56fechacrea', " . $iHoy . ")", $ETI['bt_hoy']);
-}
-?>
+<div class="salto5px"></div>
 <label class="Label130">
 <?php
 echo $ETI['visa56fechacierre'];
 ?>
 </label>
-<div class="Campo220">
+<div class="Campo250">
 <?php
 echo html_FechaEnNumero('visa56fechacierre', $_REQUEST['visa56fechacierre']); //, false, '', $iAgnoIni, $iAgnoFin); //$bvacio, $accion
 ?>

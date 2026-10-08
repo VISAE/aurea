@@ -26,7 +26,7 @@ function f2955_HTMLComboV2_visa55idproyecto($objDB, $objCombos, $valor)
 	//$objCombos->iAncho = 450;
 	//$objCombos->bEsCombobox = true;
 	$objCombos->sAccion = 'RevisaLlave();';
-	$sSQL = 'SELECT TB.plan04id AS id, TB.plan04numero AS nombre 
+	$sSQL = 'SELECT TB.plan04id AS id, CONCAT("Macroproyecto ", TB.plan04macroproy, " - Proyecto ", TB.plan04numero) AS nombre
 	FROM plan04proyecto AS TB
 	WHERE TB.plan04id>0
 	ORDER BY TB.plan04numero';

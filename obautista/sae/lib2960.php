@@ -32,6 +32,8 @@ function f2960_db_Guardar($valores, $objDB, $bDebug = false, $idTercero = 0, $iC
 	}
 	$bInserta = false;
 	$iAccion = 3;
+	$iHoy = fecha_DiaMod();
+	$bPuedeGuardar = false;
 	if (!is_array($valores)) {
 		$valores = json_decode(str_replace('\"', '"', $valores), true);
 	}
@@ -41,7 +43,7 @@ function f2960_db_Guardar($valores, $objDB, $bDebug = false, $idTercero = 0, $iC
 	$visa60id = numeros_validar($valores[3], true);
 	$visa60fechareproini = numeros_validar($valores[4]);
 	$visa60fechareprofin = numeros_validar($valores[5]);
-	$visa60motivo = cadena_Validar(trim($valores[6]));
+	$visa60motivo = cadena_Validar(trim($valores[6]), true);
 	$visa60fecharegistro = numeros_validar($valores[7]);
 	$visa60idusuario = numeros_validar($valores[8]);
 	/*
@@ -77,8 +79,21 @@ function f2960_db_Guardar($valores, $objDB, $bDebug = false, $idTercero = 0, $iC
 			$sError = $sError . '<br>' . $sInfo;
 		}
 	}
+	if ($sError == '') {
+		$bPasa = true;
+		if ($visa60fechareproini > $visa60fechareprofin) {
+			$bPasa = false;
+		}
+		if ($visa60fechareprofin < $iHoy) {
+			$bPasa = false;
+		}
+		if (!$bPasa) {
+			$sError = $ERR['msg_fecha'];
+		}
+	}
 	$bQuitarCodigo = false;
 	$sCampoCodigo = '';
+	$sNomTabla2957 = f2957_NombreTabla();
 	$sNomTabla2960 = f2960_NombreTabla();
 	if ($sError == '') {
 		if ((int)$visa60id == 0) {
@@ -123,6 +138,36 @@ function f2960_db_Guardar($valores, $objDB, $bDebug = false, $idTercero = 0, $iC
 		}
 	}
 	if ($sError == '') {
+		$sSQL = 'SELECT visa57estado, visa57fechaprogini, visa57fechaprogfin FROM ' . $sNomTabla2957 . ' WHERE visa57id=' . $visa60idactividad . '';
+		$result = $objDB->ejecutasql($sSQL);
+		if ($objDB->nf($result) != 0) {
+			$fila = $objDB->sf($result);
+			$visa57estado = $fila['visa57estado'];
+			$visa57fechaprogfin = $fila['visa57fechaprogfin'];
+			if ($visa57estado == 9) {
+				$sSQL = 'SELECT visa60fechareproini, visa60fechareprofin FROM ' . $sNomTabla2960 . ' WHERE visa60idactividad=' . $visa60idactividad . ' ORDER BY visa60fechareprofin DESC';
+				$result = $objDB->ejecutasql($sSQL);
+				if ($objDB->nf($result) != 0) {
+					$fila1 = $objDB->sf($result);
+					if ($visa60fechareproini <= $fila1['visa60fechareprofin']) {
+						$sError = $ERR['msg_fecha'];
+					}
+				}
+			}
+			if ($visa57estado == 1) {
+				if ($visa60fechareproini <= $visa57fechaprogfin) {
+					$sError = $ERR['msg_fecha'];
+				} else {
+					list($sErrorE, $sDebugE, $sMensaje) = f2957_CambiaEstado($visa60idactividad, $visa57estado, 9, 'Reprogramación de actividad', $idTercero, $objDB, $bDebug);
+					$sError = $sError . $sErrorE;
+					$sDebug = $sDebug . $sDebugE;
+				}
+			}
+		} else {
+			$sError = $ERR['msg_actividad'];
+		}
+	}
+	if ($sError == '') {
 		if ($bInserta) {
 			//Preparar el Id, Si no lo hay se quita la comprobación.
 		}
@@ -151,6 +196,7 @@ function f2960_db_Guardar($valores, $objDB, $bDebug = false, $idTercero = 0, $iC
 				if ($bAudita[2]) {
 					seg_auditar($iCodModulo, $_SESSION['unad_id_tercero'], 2, $visa60id, $sSQL, $objDB);
 				}
+				$bPuedeGuardar = true;
 			}
 		} else {
 			$scampo2960[1] = 'visa60fechareproini';
@@ -198,8 +244,13 @@ function f2960_db_Guardar($valores, $objDB, $bDebug = false, $idTercero = 0, $iC
 					if ($bAudita[3]) {
 						seg_auditar($iCodModulo, $_SESSION['unad_id_tercero'], 3, $visa60id, $sSQL, $objDB);
 					}
+					$bPuedeGuardar = true;
 				}
 			}
+		}
+		if ($bPuedeGuardar) {
+			$sSQL = 'UPDATE visa57actividad SET visa57fechaactualiza=' . $iHoy . ' WHERE visa57id=' . $visa60idactividad . '';
+			$result = $objDB->ejecutasql($sSQL);
 		}
 	}
 	return array($sError, $iAccion, $visa60id, $sDebug);
@@ -222,6 +273,7 @@ function f2960_db_Eliminar($aParametros, $objDB, $bDebug = false, $idTercero = 0
 	require $mensajes_2960;
 	$sError = '';
 	$sDebug = '';
+	$iHoy = fecha_DiaMod();
 	if ($idTercero == 0) {
 		$idTercero = $_SESSION['unad_id_tercero'];
 	}
@@ -267,6 +319,8 @@ function f2960_db_Eliminar($aParametros, $objDB, $bDebug = false, $idTercero = 0
 			if ($bAudita[4]) {
 				seg_auditar($iCodModulo, $_SESSION['unad_id_tercero'], 4, $visa60id, $sSQL, $objDB);
 			}
+			$sSQL = 'UPDATE visa57actividad SET visa57estado=1 AND visa57fechaactualiza=' . $iHoy . ' WHERE visa57id=' . $visa60idactividad . '';
+			$result = $objDB->ejecutasql($sSQL);
 		}
 	}
 	return array($sError, $sDebug);
@@ -334,8 +388,11 @@ function f2960_TablaDetalleV2($aParametros, $objDB, $bDebug = false)
 	$tabla = $objDB->ejecutasql($sSQL);
 	if ($objDB->nf($tabla) > 0) {
 		$fila = $objDB->sf($tabla);
-		if ($fila['visa57estado'] == 0) {
-			$bAbierta = true;
+		switch ($fila['visa57estado']) {
+			case 1:
+			case 9:
+				$bAbierta = true;
+				break;
 		}
 	}
 	$iPiel = iDefinirPiel($APP, 2);
@@ -374,11 +431,11 @@ function f2960_TablaDetalleV2($aParametros, $objDB, $bDebug = false)
 	$registros = 0;
 	$bGigante = false; //En caso de que la tabla sea muy grande pasarlo a true
 	$sLimite = '';
-	$sCampos = 'SELECT TB.visa60idactividad, TB.visa60consec, TB.visa60motivo, TB.visa60fechareproini, TB.visa60fechareprofin, 
+	$sCampos = 'SELECT TB.visa60id, TB.visa60idactividad, TB.visa60consec, TB.visa60motivo, TB.visa60fechareproini, TB.visa60fechareprofin, 
 	T6.unad11razonsocial AS C6_nombre, TB.visa60idusuario, T6.unad11tipodoc AS C6_td, T6.unad11doc AS C6_doc';
 	$sConsulta = 'FROM ' . $sNomTabla2960 . ' AS TB, unad11terceros AS T6 
 	WHERE ' . $sSQLadd1 . ' TB.visa60idactividad=' . $visa57id . ' AND TB.visa60idusuario=T6.unad11id ' . $sSQLadd . '';
-	$sOrden = 'ORDER BY TB.visa60consec';
+	$sOrden = 'ORDER BY TB.visa60fechareproini';
 	$sSQL = $sCampos . ' ' . $sConsulta . ' ' . $sOrden;
 	$sSQLlista = str_replace("'", "|", $sSQL);
 	$sSQLlista = str_replace('"', "|", $sSQLlista);
@@ -441,7 +498,7 @@ function f2960_TablaDetalleV2($aParametros, $objDB, $bDebug = false)
 		}
 		$tlinea++;
 		$et_visa60consec = $sPrefijo . $filadet['visa60consec'] . $sSufijo;
-		$et_visa60motivo = $sPrefijo . cadena_notildes($filadet['visa60motivo']) . $sSufijo;
+		$et_visa60motivo = $sPrefijo . cadena_notildes(mb_substr($filadet['visa60motivo'], 0, 100)) . $sSufijo;
 		$et_visa60fechareproini = '';
 		if ($filadet['visa60fechareproini'] != 0) {
 			$et_visa60fechareproini = $sPrefijo . fecha_desdenumero($filadet['visa60fechareproini']) . $sSufijo;
@@ -456,9 +513,11 @@ function f2960_TablaDetalleV2($aParametros, $objDB, $bDebug = false)
 			$et_visa60idusuario_doc = $sPrefijo . $filadet['C6_td'] . ' ' . $filadet['C6_doc'] . $sSufijo;
 			$et_visa60idusuario_nombre = $sPrefijo . cadena_notildes($filadet['C6_nombre']) . $sSufijo;
 		}
-		if ($bAbierta) {
-			$sLink = '<a href="javascript:cargaridf2960(' . $filadet['visa60id'] . ')" class="lnkresalte">' . $ETI['lnk_cargar'] . '</a>';
+		$sTextoBtn = $ETI['lnk_cargar'];
+		if (!$bAbierta) {
+			$sTextoBtn = $ETI['lnk_consultar'];
 		}
+		$sLink = '<a href="javascript:cargaridf2960(' . $filadet['visa60id'] . ')" class="lnkresalte">' . $sTextoBtn . '</a>';
 		$res = $res . '<tr' . $sClass . '>';
 		$res = $res . '<td>' . $et_visa60consec . '</td>';
 		$res = $res . '<td>' . $et_visa60motivo . '</td>';
@@ -529,6 +588,8 @@ function f2960_Guardar($valores, $aParametros)
 		list($sdetalle, $sDebugTabla) = f2960_TablaDetalleV2($aParametros, $objDB, $bDebug);
 		$sDebug = $sDebug . $sDebugTabla;
 		$objResponse->assign('div_f2960detalle', 'innerHTML', $sdetalle);
+		$html_visa57estado = html_oculto('visa57estado', 9, 'Reprogramada');
+		$objResponse->assign('div_visa57estado', 'innerHTML', $html_visa57estado);
 		/*
 		if ($iAccion == 2) {
 			$objResponse->call('cargaridf2960(' . $visa60id . ')');
@@ -699,6 +760,8 @@ function f2960_Eliminar($aParametros)
 		list($sDetalle, $sDebugTabla) = f2960_TablaDetalleV2($aParametros, $objDB, $bDebug);
 		$sDebug = $sDebug . $sDebugTabla;
 		$objResponse->assign('div_f2960detalle', 'innerHTML', $sDetalle);
+		$html_visa57estado = html_oculto('visa57estado', 1, 'Programada');
+		$objResponse->assign('div_visa57estado', 'innerHTML', $html_visa57estado);
 		$objResponse->call('limpiaf2960');
 		$sError = $ETI['msg_itemeliminado'];
 		$iTipoError = 1;
@@ -767,8 +830,9 @@ function f2960_PintarLlaves($aParametros)
 	$objCombos = new clsHtmlCombos();
 	$html_visa60consec = '<input id="visa60consec" name="visa60consec" type="text" value="" onchange="revisaf2960()" class="cuatro" />';
 	$html_visa60id = '<input id="visa60id" name="visa60id" type="hidden" value="" />';
-	$et_visa60fecharegistro = '00/00/0000';
-	$html_visa60fecharegistro = html_oculto('visa60fecharegistro', 0, $et_visa60fecharegistro);
+	$iHoy = fecha_DiaMod();
+	$et_visa60fecharegistro = fecha_desdenumero($iHoy);
+	$html_visa60fecharegistro = html_oculto('visa60fecharegistro', $iHoy, $et_visa60fecharegistro);
 	$objResponse = new xajaxResponse();
 	$objResponse->assign('div_visa60consec', 'innerHTML', $html_visa60consec);
 	$objResponse->assign('div_visa60id', 'innerHTML', $html_visa60id);

@@ -389,6 +389,8 @@ $bLimpiaHijos = false;
 $bMueveScroll = false;
 $iSector = 1;
 $iHoy = fecha_DiaMod();
+$sNomTabla2957 = f2957_NombreTabla();
+$sNomTabla2960 = f2960_NombreTabla();
 // -- Se inicializan las variables, primero las que controlan la visualización de la página.
 if (isset($_REQUEST['iscroll']) == 0) {
 	$_REQUEST['iscroll'] = 0;
@@ -453,12 +455,10 @@ if (isset($_REQUEST['visa57porcavance']) == 0) {
 	$_REQUEST['visa57porcavance'] = '';
 }
 if (isset($_REQUEST['visa57fechacrea']) == 0) {
-	$_REQUEST['visa57fechacrea'] = '';
-	//$_REQUEST['visa57fechacrea'] = $iHoy;
+	$_REQUEST['visa57fechacrea'] = $iHoy;
 }
 if (isset($_REQUEST['visa57fechaactualiza']) == 0) {
-	$_REQUEST['visa57fechaactualiza'] = '';
-	//$_REQUEST['visa57fechaactualiza'] = $iHoy;
+	$_REQUEST['visa57fechaactualiza'] = $iHoy;
 }
 $_REQUEST['visa57idpersemanal'] = numeros_validar($_REQUEST['visa57idpersemanal']);
 $_REQUEST['visa57idsistema'] = numeros_validar($_REQUEST['visa57idsistema']);
@@ -500,11 +500,10 @@ if ((int)$_REQUEST['paso'] > 0) {
 		$_REQUEST['visa58descripcion'] = '';
 	}
 	if (isset($_REQUEST['visa58cumplimiento']) == 0) {
-		$_REQUEST['visa58cumplimiento'] = 0;
+		$_REQUEST['visa58cumplimiento'] = '';
 	}
 	if (isset($_REQUEST['visa58fecharegistro']) == 0) {
-		$_REQUEST['visa58fecharegistro'] = '';
-		//$_REQUEST['visa58fecharegistro'] = $iHoy;
+		$_REQUEST['visa58fecharegistro'] = $iHoy;
 	}
 	$_REQUEST['visa58idactividad'] = numeros_validar($_REQUEST['visa58idactividad']);
 	$_REQUEST['visa58consec'] = numeros_validar($_REQUEST['visa58consec']);
@@ -541,18 +540,16 @@ if ((int)$_REQUEST['paso'] > 0) {
 		$_REQUEST['visa59idarchivo'] = 0;
 	}
 	if (isset($_REQUEST['visa59tipoarchivo']) == 0) {
-		$_REQUEST['visa59tipoarchivo'] = 0;
+		$_REQUEST['visa59tipoarchivo'] = '';
 	}
 	if (isset($_REQUEST['visa59descripcion']) == 0) {
 		$_REQUEST['visa59descripcion'] = '';
 	}
 	if (isset($_REQUEST['visa59fechacarga']) == 0) {
-		$_REQUEST['visa59fechacarga'] = '';
-		//$_REQUEST['visa59fechacarga'] = $iHoy;
+		$_REQUEST['visa59fechacarga'] = $iHoy;
 	}
 	if (isset($_REQUEST['visa59idusuario']) == 0) {
-		$_REQUEST['visa59idusuario'] = 0;
-		//$_REQUEST['visa59idusuario'] =  $idTercero;
+		$_REQUEST['visa59idusuario'] =  $idTercero;
 	}
 	if (isset($_REQUEST['visa59idusuario_td']) == 0) {
 		$_REQUEST['visa59idusuario_td'] = $APP->tipo_doc;
@@ -603,12 +600,10 @@ if ((int)$_REQUEST['paso'] > 0) {
 		$_REQUEST['visa60motivo'] = '';
 	}
 	if (isset($_REQUEST['visa60fecharegistro']) == 0) {
-		$_REQUEST['visa60fecharegistro'] = '';
-		//$_REQUEST['visa60fecharegistro'] = $iHoy;
+		$_REQUEST['visa60fecharegistro'] = $iHoy;
 	}
 	if (isset($_REQUEST['visa60idusuario']) == 0) {
-		$_REQUEST['visa60idusuario'] = 0;
-		//$_REQUEST['visa60idusuario'] =  $idTercero;
+		$_REQUEST['visa60idusuario'] =  $idTercero;
 	}
 	if (isset($_REQUEST['visa60idusuario_td']) == 0) {
 		$_REQUEST['visa60idusuario_td'] = $APP->tipo_doc;
@@ -621,7 +616,7 @@ if ((int)$_REQUEST['paso'] > 0) {
 	$_REQUEST['visa60id'] = numeros_validar($_REQUEST['visa60id']);
 	$_REQUEST['visa60fechareproini'] = numeros_validar($_REQUEST['visa60fechareproini']);
 	$_REQUEST['visa60fechareprofin'] = numeros_validar($_REQUEST['visa60fechareprofin']);
-	$_REQUEST['visa60motivo'] = cadena_Validar($_REQUEST['visa60motivo']);
+	$_REQUEST['visa60motivo'] = cadena_Validar($_REQUEST['visa60motivo'], true);
 	$_REQUEST['visa60fecharegistro'] = numeros_validar($_REQUEST['visa60fecharegistro']);
 	$_REQUEST['visa60idusuario'] = numeros_validar($_REQUEST['visa60idusuario']);
 	$_REQUEST['visa60idusuario_td'] = cadena_Validar($_REQUEST['visa60idusuario_td']);
@@ -649,14 +644,13 @@ if ((int)$_REQUEST['paso'] > 0) {
 		$_REQUEST['visa61descripcion'] = '';
 	}
 	if (isset($_REQUEST['visa61impacto']) == 0) {
-		$_REQUEST['visa61impacto'] = 0;
+		$_REQUEST['visa61impacto'] = '';
 	}
 	if (isset($_REQUEST['visa61requiereapoyo']) == 0) {
 		$_REQUEST['visa61requiereapoyo'] = 0;
 	}
 	if (isset($_REQUEST['visa61fecharegistro']) == 0) {
-		$_REQUEST['visa61fecharegistro'] = '';
-		//$_REQUEST['visa61fecharegistro'] = $iHoy;
+		$_REQUEST['visa61fecharegistro'] = $iHoy;
 	}
 	$_REQUEST['visa61idactividad'] = numeros_validar($_REQUEST['visa61idactividad']);
 	$_REQUEST['visa61consec'] = numeros_validar($_REQUEST['visa61consec']);
@@ -702,7 +696,7 @@ if ((int)$_REQUEST['paso'] > 0) {
 		//$_REQUEST['visa62fechalimite'] = $iHoy;
 	}
 	if (isset($_REQUEST['visa62estado']) == 0) {
-		$_REQUEST['visa62estado'] = '';
+		$_REQUEST['visa62estado'] = 0;
 	}
 	if (isset($_REQUEST['visa62fechacumple']) == 0) {
 		$_REQUEST['visa62fechacumple'] = '';
@@ -712,8 +706,7 @@ if ((int)$_REQUEST['paso'] > 0) {
 		$_REQUEST['visa62observaciones'] = '';
 	}
 	if (isset($_REQUEST['visa62fecharegistro']) == 0) {
-		$_REQUEST['visa62fecharegistro'] = '';
-		//$_REQUEST['visa62fecharegistro'] = $iHoy;
+		$_REQUEST['visa62fecharegistro'] = $iHoy;
 	}
 	$_REQUEST['visa62idactividad'] = numeros_validar($_REQUEST['visa62idactividad']);
 	$_REQUEST['visa62consec'] = numeros_validar($_REQUEST['visa62consec']);
@@ -760,7 +753,7 @@ if ((int)$_REQUEST['paso'] > 0) {
 		$_REQUEST['visa63idcolaborador_doc'] = '';
 	}
 	if (isset($_REQUEST['visa63estado']) == 0) {
-		$_REQUEST['visa63estado'] = '';
+		$_REQUEST['visa63estado'] = 0;
 	}
 	if (isset($_REQUEST['visa63fechasolicitud']) == 0) {
 		$_REQUEST['visa63fechasolicitud'] = '';
@@ -832,7 +825,6 @@ if (($_REQUEST['paso'] == 1) || ($_REQUEST['paso'] == 3)) {
 	} else {
 		$sSQLcondi = 'visa57id=' . $_REQUEST['visa57id'] . '';
 	}
-	$sNomTabla2957 = f2957_NombreTabla();
 	$sSQL = 'SELECT * FROM ' . $sNomTabla2957 . ' WHERE ' . $sSQLcondi;
 	$tabla = $objDB->ejecutasql($sSQL);
 	if ($objDB->nf($tabla) > 0) {
@@ -868,7 +860,7 @@ if ($_REQUEST['paso'] == 16) {
 	$_REQUEST['paso'] = 12;
 	if ($sError == '') {
 		$bCambiaEstado = true;
-		$idEstadoDestino = 7;
+		$idEstadoDestino = 1;
 	} else {
 		//Esto es opcional porque bloquea el guardado y el mensaje de error se pierde, considere recuperar el error.
 		//$_REQUEST['paso'] = 2;
@@ -983,6 +975,19 @@ if ($_REQUEST['paso'] == 21) {
 		$iTipoError = 1;
 	}
 }
+//Cancelar actividad
+if ($_REQUEST['paso'] == 24) {
+	$_REQUEST['paso'] = 12;
+	$idEstadoDestino = 11;
+	list($sErrorE, $sDebugE, $sMensaje) = f2957_CambiaEstado($_REQUEST['visa57id'], $_REQUEST['visa57estado'], $idEstadoDestino, '', $_SESSION['unad_id_tercero'], $objDB, $bDebug);
+	$sDebug = $sDebug . $sDebugE;
+	$sError = $sError . $sErrorE;
+	if ($sError == '') {
+		$_REQUEST['visa57estado'] = $idEstadoDestino;
+		$sError = '<b>' . $ETI['msg_cancelada'] . '</b>';
+		$iTipoError = 1;
+	}
+}
 //limpiar la pantalla
 if ($_REQUEST['paso'] == -1) {
 	$_REQUEST['visa57idpersemanal'] = '';
@@ -992,18 +997,16 @@ if ($_REQUEST['paso'] == -1) {
 	$_REQUEST['visa57id'] = '';
 	$_REQUEST['visa57titulo'] = '';
 	$_REQUEST['visa57descripcion'] = '';
-	$_REQUEST['visa57tipoactividad'] = 1;
+	$_REQUEST['visa57tipoactividad'] = '';
 	$_REQUEST['visa57estado'] = 0;
-	$_REQUEST['visa57prioridad'] = 1;
+	$_REQUEST['visa57prioridad'] = '';
 	$_REQUEST['visa57fechaprogini'] = $iHoy;
 	$_REQUEST['visa57fechaprogfin'] = $iHoy;
 	$_REQUEST['visa57fechaejecini'] = $iHoy;
 	$_REQUEST['visa57fechaejecfin'] = $iHoy;
 	$_REQUEST['visa57porcavance'] = '';
-	$_REQUEST['visa57fechacrea'] = '';
-	//$_REQUEST['visa57fechacrea'] = $iHoy;
-	$_REQUEST['visa57fechaactualiza'] = '';
-	//$_REQUEST['visa57fechaactualiza'] = $iHoy;
+	$_REQUEST['visa57fechacrea'] = $iHoy;
+	$_REQUEST['visa57fechaactualiza'] = $iHoy;
 	$_REQUEST['paso'] = 0;
 }
 if ($bLimpiaHijos) {
@@ -1011,20 +1014,18 @@ if ($bLimpiaHijos) {
 	$_REQUEST['visa58consec'] = '';
 	$_REQUEST['visa58id'] = '';
 	$_REQUEST['visa58descripcion'] = '';
-	$_REQUEST['visa58cumplimiento'] = 1;
-	$_REQUEST['visa58fecharegistro'] = '';
-	//$_REQUEST['visa58fecharegistro'] = $iHoy;
+	$_REQUEST['visa58cumplimiento'] = '';
+	$_REQUEST['visa58fecharegistro'] = $iHoy;
 	$_REQUEST['visa59idactividad'] = '';
 	$_REQUEST['visa59consec'] = '';
 	$_REQUEST['visa59id'] = '';
 	$_REQUEST['visa59titulo'] = '';
 	$_REQUEST['visa59idorigen'] = 0;
 	$_REQUEST['visa59idarchivo'] = 0;
-	$_REQUEST['visa59tipoarchivo'] = 1;
+	$_REQUEST['visa59tipoarchivo'] = '';
 	$_REQUEST['visa59descripcion'] = '';
-	$_REQUEST['visa59fechacarga'] = '';
-	//$_REQUEST['visa59fechacarga'] = $iHoy;
-	$_REQUEST['visa59idusuario'] = 0; //$idTercero;
+	$_REQUEST['visa59fechacarga'] = $iHoy;
+	$_REQUEST['visa59idusuario'] = $idTercero;
 	$_REQUEST['visa59idusuario_td'] = $APP->tipo_doc;
 	$_REQUEST['visa59idusuario_doc'] = '';
 	$_REQUEST['visa60idactividad'] = '';
@@ -1033,19 +1034,17 @@ if ($bLimpiaHijos) {
 	$_REQUEST['visa60fechareproini'] = $iHoy;
 	$_REQUEST['visa60fechareprofin'] = $iHoy;
 	$_REQUEST['visa60motivo'] = '';
-	$_REQUEST['visa60fecharegistro'] = '';
-	//$_REQUEST['visa60fecharegistro'] = $iHoy;
-	$_REQUEST['visa60idusuario'] = 0; //$idTercero;
+	$_REQUEST['visa60fecharegistro'] = $iHoy;
+	$_REQUEST['visa60idusuario'] = $idTercero;
 	$_REQUEST['visa60idusuario_td'] = $APP->tipo_doc;
 	$_REQUEST['visa60idusuario_doc'] = '';
 	$_REQUEST['visa61idactividad'] = '';
 	$_REQUEST['visa61consec'] = '';
 	$_REQUEST['visa61id'] = '';
 	$_REQUEST['visa61descripcion'] = '';
-	$_REQUEST['visa61impacto'] = 1;
-	$_REQUEST['visa61requiereapoyo'] = 1;
-	$_REQUEST['visa61fecharegistro'] = '';
-	//$_REQUEST['visa61fecharegistro'] = $iHoy;
+	$_REQUEST['visa61impacto'] = '';
+	$_REQUEST['visa61requiereapoyo'] = 0;
+	$_REQUEST['visa61fecharegistro'] = $iHoy;
 	$_REQUEST['visa62idactividad'] = '';
 	$_REQUEST['visa62consec'] = '';
 	$_REQUEST['visa62id'] = '';
@@ -1057,8 +1056,7 @@ if ($bLimpiaHijos) {
 	$_REQUEST['visa62estado'] = 0;
 	$_REQUEST['visa62fechacumple'] = $iHoy;
 	$_REQUEST['visa62observaciones'] = '';
-	$_REQUEST['visa62fecharegistro'] = '';
-	//$_REQUEST['visa62fecharegistro'] = $iHoy;
+	$_REQUEST['visa62fecharegistro'] = $iHoy;
 	$_REQUEST['visa63idactividad'] = '';
 	$_REQUEST['visa63consec'] = '';
 	$_REQUEST['visa63id'] = '';
@@ -1079,6 +1077,12 @@ $bPuedeAbrir = false;
 $bEditable = true; // Esta bandera se deja a modo de ejemplo, puede requerir ser dividida muchas veces.
 $bHayImprimir = false;
 $bHayImprimir2 = false;
+$bEsProgramada = false;
+$bHayDificultad = false;
+$bHayApoyo = false;
+$bHayReprog = false;
+$bHayResultado = false;
+$bHayEvidencia = false;
 $sScriptImprime = 'imprimelista()';
 $sScriptImprime2 = 'imprimep()';
 $sClaseImprime = 'iExcel';
@@ -1114,10 +1118,34 @@ if ((int)$_REQUEST['paso'] != 0) {
 			$bConEliminar = true;
 			$bConBotonCerrar = true;
 			$bDevuelve = false;
+			$bHayDificultad = true;
+			$bHayApoyo = true;			
 			//list($bDevuelve, $sDebugP, $seg_8) = seg_revisa_permisoV3($iCodModulo, 8, $idTercero, $objDB);
 			break;
-		case 7: // Cerrado
+		case 1: // Programada
 			$bPuedeGuardar = false;
+			$bHayDificultad = true;
+			$bHayApoyo = true;
+			$bHayReprog = true;
+			break;
+		case 5: // En Proceso
+			$bPuedeGuardar = false;
+			$bHayDificultad = true;
+			$bHayApoyo = true;
+			break;
+		case 9: // Reprogramada
+			$bPuedeGuardar = false;
+			$bHayDificultad = true;
+			$bHayApoyo = true;
+			$bHayReprog = true;
+			break;
+		case 11: // Cancelada
+			$bPuedeGuardar = false;
+			break;
+		case 7: // Ejecutada
+			$bPuedeGuardar = false;
+			$bHayResultado = true;
+			$bHayEvidencia = true;
 			list($bPuedeAbrir, $sDebugP) = seg_revisa_permisoV3($iCodModulo, 17, $idTercero, $objDB);
 			break;
 	}
@@ -1142,10 +1170,9 @@ if ($seg_1707 == 1) {
 	$objCombos->iAncho = 60;
 	$html_deb_tipodoc = $objCombos->html('', $objDB, 145);
 }
-$objCombos->nuevo('visa57tipoactividad', $_REQUEST['visa57tipoactividad'], true, $ETI['no'], 0);
+$objCombos->nuevo('visa57tipoactividad', $_REQUEST['visa57tipoactividad'], true, '{' . $ETI['msg_seleccione'] . '}', 0);
 //$objCombos->bEsCombobox = true;
-$objCombos->addItem(1, $ETI['si']);
-//$objCombos->addArreglo($avisa57tipoactividad, $ivisa57tipoactividad);
+$objCombos->addArreglo($avisa57tipoactividad, $ivisa57tipoactividad);
 $sSQL = '';
 $html_visa57tipoactividad = $objCombos->html($sSQL, $objDB);
 $visa57estado_nombre = '{' . $_REQUEST['visa57estado'] . '}';
@@ -1159,56 +1186,64 @@ if ($objDB->nf($tabla) > 0) {
 	}
 }
 $html_visa57estado = html_oculto('visa57estado', $_REQUEST['visa57estado'], $visa57estado_nombre);
-$objCombos->nuevo('visa57prioridad', $_REQUEST['visa57prioridad'], true, $ETI['no'], 0);
+$objCombos->nuevo('visa57prioridad', $_REQUEST['visa57prioridad'], true, '{' . $ETI['msg_seleccione'] . '}', 0);
 //$objCombos->bEsCombobox = true;
-$objCombos->addItem(1, $ETI['si']);
-//$objCombos->addArreglo($avisa57prioridad, $ivisa57prioridad);
+$objCombos->addArreglo($avisa57prioridad, $ivisa57prioridad);
 $sSQL = '';
 $html_visa57prioridad = $objCombos->html($sSQL, $objDB);
 if ((int)$_REQUEST['paso'] == 0) {
 	$html_visa57idpersemanal = f2957_HTMLComboV2_visa57idpersemanal($objDB, $objCombos, $_REQUEST['visa57idpersemanal']);
 	$html_visa57idsistema = f2957_HTMLComboV2_visa57idsistema($objDB, $objCombos, $_REQUEST['visa57idsistema']);
 } else {
-	$visa57idpersemanal_nombre = '&nbsp;';
+	$visa57idpersemanal_nombre = '{' . $ETI['msg_sindato'] . '}';
 	if ((int)$_REQUEST['visa57idpersemanal'] != 0) {
-		list($visa57idpersemanal_nombre, $sErrorDet) = tabla_campoxid('visa56persemanal', 'visa56fechaini', 'visa56id', $_REQUEST['visa57idpersemanal'], '{' . $ETI['msg_sindato'] . '}', $objDB);
+		$sSQL = 'SELECT visa56fechaini, visa56fechafin FROM visa56persemanal WHERE visa56id=' . $_REQUEST['visa57idpersemanal'] . '';
+		$tabla = $objDB->ejecutasql($sSQL);
+		if ($objDB->nf($tabla) > 0) {
+			$fila = $objDB->sf($tabla);
+			$sFechaIni = formato_FechaLargaDesdeNumero($fila['visa56fechaini'], true);
+			$sFechaFin = formato_FechaLargaDesdeNumero($fila['visa56fechafin'], true);
+			$visa57idpersemanal_nombre = $sFechaIni . ' - ' . $sFechaFin;
+		}
 	}
 	$html_visa57idpersemanal = html_oculto('visa57idpersemanal', $_REQUEST['visa57idpersemanal'], $visa57idpersemanal_nombre);
-	$visa57idsistema_nombre = '&nbsp;';
+	$visa57idsistema_nombre = '{' . $ETI['msg_sindato'] . '}';
 	if ((int)$_REQUEST['visa57idsistema'] != 0) {
-		list($visa57idsistema_nombre, $sErrorDet) = tabla_campoxid('visa55sistema', 'visa55nombre', 'visa55id', $_REQUEST['visa57idsistema'], '{' . $ETI['msg_sindato'] . '}', $objDB);
+		$sSQL = 'SELECT visa55codigo, visa55nombre FROM visa55sistema WHERE visa55id=' . $_REQUEST['visa57idsistema'] . '';
+		$tabla = $objDB->ejecutasql($sSQL);
+		if ($objDB->nf($tabla) > 0) {
+			$fila = $objDB->sf($tabla);
+			$visa57idsistema_nombre = $fila['visa55codigo'] . ' - ' . $fila['visa55nombre'];
+		}
 	}
 	$html_visa57idsistema = html_oculto('visa57idsistema', $_REQUEST['visa57idsistema'], $visa57idsistema_nombre);
 }
 if ($bEdita2958) {
-	$objCombos->nuevo('visa58cumplimiento', $_REQUEST['visa58cumplimiento'], true, $ETI['no'], 0);
+	$objCombos->nuevo('visa58cumplimiento', $_REQUEST['visa58cumplimiento'], true, '{' . $ETI['msg_seleccione'] . '}');
 	//$objCombos->bEsCombobox = true;
-	$objCombos->addItem(1, $ETI['si']);
-	//$objCombos->addArreglo($avisa58cumplimiento, $ivisa58cumplimiento);
+	$objCombos->addArreglo($avisa58cumplimiento, $ivisa58cumplimiento);
 	$sSQL = '';
 	$html_visa58cumplimiento = $objCombos->html($sSQL, $objDB);
 }
 if ($bEdita2959) {
-	$objCombos->nuevo('visa59tipoarchivo', $_REQUEST['visa59tipoarchivo'], true, $ETI['no'], 0);
+	$objCombos->nuevo('visa59tipoarchivo', $_REQUEST['visa59tipoarchivo'], true, '{' . $ETI['msg_seleccione'] . '}');
 	//$objCombos->bEsCombobox = true;
-	$objCombos->addItem(1, $ETI['si']);
-	//$objCombos->addArreglo($avisa59tipoarchivo, $ivisa59tipoarchivo);
+	$objCombos->addArreglo($avisa59tipoarchivo, $ivisa59tipoarchivo);
 	$sSQL = '';
 	$html_visa59tipoarchivo = $objCombos->html($sSQL, $objDB);
 	list($visa59idusuario_rs, $_REQUEST['visa59idusuario'], $_REQUEST['visa59idusuario_td'], $_REQUEST['visa59idusuario_doc']) = html_tercero($_REQUEST['visa59idusuario_td'], $_REQUEST['visa59idusuario_doc'], $_REQUEST['visa59idusuario'], 0, $objDB);
-	$bOculto = false;
+	$bOculto = true;
 	$html_visa59idusuario = html_DivTerceroV8('visa59idusuario', $_REQUEST['visa59idusuario_td'], $_REQUEST['visa59idusuario_doc'], $bOculto, $objDB, $objCombos, 0, $ETI['ing_doc']);
 }
 if ($bEdita2960) {
 	list($visa60idusuario_rs, $_REQUEST['visa60idusuario'], $_REQUEST['visa60idusuario_td'], $_REQUEST['visa60idusuario_doc']) = html_tercero($_REQUEST['visa60idusuario_td'], $_REQUEST['visa60idusuario_doc'], $_REQUEST['visa60idusuario'], 0, $objDB);
-	$bOculto = false;
+	$bOculto = true;
 	$html_visa60idusuario = html_DivTerceroV8('visa60idusuario', $_REQUEST['visa60idusuario_td'], $_REQUEST['visa60idusuario_doc'], $bOculto, $objDB, $objCombos, 0, $ETI['ing_doc']);
 }
 if ($bEdita2961) {
-	$objCombos->nuevo('visa61impacto', $_REQUEST['visa61impacto'], true, $ETI['no'], 0);
+	$objCombos->nuevo('visa61impacto', $_REQUEST['visa61impacto'], true, '{' . $ETI['msg_seleccione'] . '}');
 	//$objCombos->bEsCombobox = true;
-	$objCombos->addItem(1, $ETI['si']);
-	//$objCombos->addArreglo($avisa61impacto, $ivisa61impacto);
+	$objCombos->addArreglo($avisa61impacto, $ivisa61impacto);
 	$sSQL = '';
 	$html_visa61impacto = $objCombos->html($sSQL, $objDB);
 	$objCombos->nuevo('visa61requiereapoyo', $_REQUEST['visa61requiereapoyo'], true, $ETI['no'], 0);
@@ -1219,11 +1254,33 @@ if ($bEdita2961) {
 	$html_visa61requiereapoyo = $objCombos->html($sSQL, $objDB);
 }
 if ($bEdita2962) {
+	$visa62estado_nombre = '{' . $_REQUEST['visa62estado'] . '}';
+	$sSQL = 'SELECT unad96nombre, unad96etiqueta FROM unad96estado WHERE unad96idmodulo=2962 AND unad96id=' . $_REQUEST['visa62estado'];
+	$tabla = $objDB->ejecutasql($sSQL);
+	if ($objDB->nf($tabla) > 0) {
+		$fila = $objDB->sf($tabla);
+		$visa62estado_nombre = cadena_notildes($fila['unad96nombre']);
+		if ($sIdioma != 'es') {
+			$visa62estado_nombre = Etiqueta_Valor(2962, $fila['unad96etiqueta'], $sIdioma, $objDB);
+		}
+	}
+	$html_visa62estado = html_oculto('visa62estado', $_REQUEST['visa62estado'], $visa62estado_nombre);
 	list($visa62idresponsable_rs, $_REQUEST['visa62idresponsable'], $_REQUEST['visa62idresponsable_td'], $_REQUEST['visa62idresponsable_doc']) = html_tercero($_REQUEST['visa62idresponsable_td'], $_REQUEST['visa62idresponsable_doc'], $_REQUEST['visa62idresponsable'], 0, $objDB);
 	$bOculto = false;
 	$html_visa62idresponsable = html_DivTerceroV8('visa62idresponsable', $_REQUEST['visa62idresponsable_td'], $_REQUEST['visa62idresponsable_doc'], $bOculto, $objDB, $objCombos, 0, $ETI['ing_doc']);
 }
 if ($bEdita2963) {
+	$visa63estado_nombre = '{' . $_REQUEST['visa63estado'] . '}';
+	$sSQL = 'SELECT unad96nombre, unad96etiqueta FROM unad96estado WHERE unad96idmodulo=2963 AND unad96id=' . $_REQUEST['visa63estado'];
+	$tabla = $objDB->ejecutasql($sSQL);
+	if ($objDB->nf($tabla) > 0) {
+		$fila = $objDB->sf($tabla);
+		$visa63estado_nombre = cadena_notildes($fila['unad96nombre']);
+		if ($sIdioma != 'es') {
+			$visa63estado_nombre = Etiqueta_Valor(2963, $fila['unad96etiqueta'], $sIdioma, $objDB);
+		}
+	}
+	$html_visa63estado = html_oculto('visa63estado', $_REQUEST['visa63estado'], $visa63estado_nombre);
 	list($visa63idcolaborador_rs, $_REQUEST['visa63idcolaborador'], $_REQUEST['visa63idcolaborador_td'], $_REQUEST['visa63idcolaborador_doc']) = html_tercero($_REQUEST['visa63idcolaborador_td'], $_REQUEST['visa63idcolaborador_doc'], $_REQUEST['visa63idcolaborador'], 0, $objDB);
 	$bOculto = false;
 	$html_visa63idcolaborador = html_DivTerceroV8('visa63idcolaborador', $_REQUEST['visa63idcolaborador_td'], $_REQUEST['visa63idcolaborador_doc'], $bOculto, $objDB, $objCombos, 0, $ETI['ing_doc']);
@@ -1241,12 +1298,49 @@ $objCombos->nuevo('bestado', $_REQUEST['bestado'], true, '{' . $ETI['msg_todos']
 $objCombos->sAccion = 'paginarf2957()';
 $sSQL = 'SELECT unad96id AS id, unad96nombre AS nombre, unad96etiqueta AS et FROM unad96estado WHERE unad96idmodulo=2957 ORDER BY unad96id';
 $html_bestado = $objCombos->html($sSQL, $objDB, 0, '', 'et', 2957, $sIdioma);
-$objCombos->nuevo('bprioridad', $_REQUEST['bprioridad'], true, '{' . $ETI['msg_todos'] . '}');
+$objCombos->nuevo('bprioridad', $_REQUEST['bprioridad'], true, '{' . $ETI['msg_todas'] . '}');
 //$objCombos->bEsCombobox = true;
 $objCombos->sAccion = 'paginarf2957()';
+$objCombos->addArreglo($avisa57prioridad, $ivisa57prioridad);
 $sSQL = '';
 $html_bprioridad = $objCombos->html($sSQL, $objDB);
-if ((int)$_REQUEST['paso'] > 0) {
+if ((int)$_REQUEST['paso'] == 0) {
+	$sSQL = 'SELECT visa57id, visa57estado, visa57fechaprogini, visa57fechaprogfin FROM ' . $sNomTabla2957 . ' WHERE visa57estado IN (1, 5, 9)';
+	$tabla = $objDB->ejecutasql($sSQL);
+	while($fila = $objDB->sf($tabla)) {
+		$visa57id = $fila['visa57id'];
+		$iEstadoOrigen = $fila['visa57estado'];
+		$visa57fechaprogini = $fila['visa57fechaprogini'];
+		$visa57fechaprogfin = $fila['visa57fechaprogfin'];
+		$bCambiaEstado = false;
+		$iEstadoDestino = 0;
+		$sDetalle = '';		
+		$sSQL = 'SELECT visa60fechareproini, visa60fechareprofin FROM ' . $sNomTabla2960 . ' WHERE visa60idactividad=' . $visa57id . ' ORDER BY visa60fechareprofin DESC';
+		$tabla1 = $objDB->ejecutasql($sSQL);
+		if ($objDB->nf($tabla1) != 0) {
+			$fila1 = $objDB->sf($tabla1);
+			$visa57fechaprogini = $fila1['visa60fechareproini'];
+			$visa57fechaprogfin = $fila1['visa60fechareprofin'];
+		}
+		if (($iHoy >= $visa57fechaprogini) && ($iHoy <= $visa57fechaprogfin)) {
+			$bCambiaEstado = true;
+			$iEstadoDestino = 5;
+			$sDetalle = 'Actividad en proceso';
+		}
+		if ($iHoy > $visa57fechaprogfin) {
+			$bCambiaEstado = true;
+			$iEstadoDestino = 7;
+			$sDetalle = 'Actividad ejecutada';
+		}
+		if ($bCambiaEstado) {
+			list($sErrorE, $sDebugE, $sMensaje) = f2957_CambiaEstado($visa57id, $iEstadoOrigen, $iEstadoDestino, $sDetalle, $idTercero, $objDB, $bDebug);
+			$sError = $sError . $sErrorE;
+			$sDebug = $sDebug . $sDebugE;
+		}
+	}
+}
+if ($_REQUEST['visa57estado'] == 1) {
+	$bEsProgramada = true;
 }
 if (false) {
 	$objCombos->nuevo('csv_separa', $_REQUEST['csv_separa'], false);
@@ -1399,6 +1493,8 @@ switch ($iPiel) {
 }
 ?>
 <script language="javascript">
+	const msgProcesandoDatos = "<?php echo $ETI['msg_procesando_datos']; ?>";
+
 	function expandesector(codigo) {
 		document.getElementById('div_sector1').style.display = 'none';
 		document.getElementById('div_sector2').style.display = 'none';
@@ -1722,14 +1818,27 @@ if ($bPuedeAbrir) {
 		window.document.frmedita.paso.value = 93;
 		window.document.frmedita.submit();
 	}
+
+	function cancelaactividad() {
+		ModalConfirmV2('<?php echo $ETI['msg_confirmacancelar']; ?>', () => {
+			ejecuta_cancelaactividad();
+		});
+	}
+
+	function ejecuta_cancelaactividad() {
+		MensajeAlarmaV2('<?php echo $ETI['msg_ejecutando']; ?>', 2);
+		expandesector(98);
+		window.document.frmedita.paso.value = 24;
+		window.document.frmedita.submit();
+	}
 </script>
 <?php
 if ($_REQUEST['paso'] != 0) {
 ?>
-<script language="javascript" src="jsi/js2958.js"></script>
-<script language="javascript" src="jsi/js2959.js"></script>
-<script language="javascript" src="jsi/js2960.js"></script>
-<script language="javascript" src="jsi/js2961.js"></script>
+<script language="javascript" src="jsi/js2958.js?v=1"></script>
+<script language="javascript" src="jsi/js2959.js?v=2"></script>
+<script language="javascript" src="jsi/js2960.js?v=2"></script>
+<script language="javascript" src="jsi/js2961.js?v=2"></script>
 <script language="javascript" src="jsi/js2962.js"></script>
 <script language="javascript" src="jsi/js2963.js"></script>
 <?php
@@ -1888,30 +1997,6 @@ if ($_REQUEST['boculta2957'] != 0) {
 }
 //Mostrar formulario para editar
 ?>
-<label class="Label130">
-<?php
-echo $ETI['visa57idpersemanal'];
-?>
-</label>
-<label>
-<div id="div_visa57idpersemanal" class="field">
-<?php
-echo $html_visa57idpersemanal;
-?>
-</div>
-</label>
-<label class="Label130">
-<?php
-echo $ETI['visa57idsistema'];
-?>
-</label>
-<label>
-<div id="div_visa57idsistema" class="field">
-<?php
-echo $html_visa57idsistema;
-?>
-</div>
-</label>
 <label class="Label130"<?php echo $sOcultaConsec; ?>>
 <?php
 echo $ETI['visa57consec'];
@@ -1946,11 +2031,73 @@ echo $ETI['visa57id'];
 	echo html_oculto('visa57id', $_REQUEST['visa57id'], formato_numero($_REQUEST['visa57id']));
 ?>
 </label>
+<label class="Label90">
+<?php
+echo $ETI['visa57estado'];
+?>
+</label>
+<label class="Label220">
+<div id="div_visa57estado" class="field">
+<?php
+echo $html_visa57estado;
+?>
+</div>
+</label>
+<label class="Label90">
+<?php
+echo $ETI['visa57prioridad'];
+?>
+</label>
+<label class="Label90">
+<div id="div_visa57prioridad" class="field">
+<?php
+echo $html_visa57prioridad;
+?>
+</div>
+</label>
+<div class="salto1px"></div>
+<label class="Label130">
+<?php
+echo $ETI['visa57idsistema'];
+?>
+</label>
+<label>
+<div id="div_visa57idsistema" class="field">
+<?php
+echo $html_visa57idsistema;
+?>
+</div>
+</label>
+<div class="salto1px"></div>
+<label class="Label130">
+<?php
+echo $ETI['visa57idpersemanal'];
+?>
+</label>
+<label>
+<div id="div_visa57idpersemanal" class="field">
+<?php
+echo $html_visa57idpersemanal;
+?>
+</div>
+</label>
+<?php
+if ($bEsProgramada) {
+?>
+<label class="Label130"></label>
+<label>
+<?php
+echo $objForma->htmlBotonSolo('btCancelaActiv', 'BotonAzul', 'cancelaactividad()', $ETI['msg_cancelaactiv'], 130);
+?>
+</label>
+<?php
+}
+?>
+<div class="salto1px"></div>
 <label class="L">
 <?php
 echo $ETI['visa57titulo'];
 ?>
-
 <input id="visa57titulo" name="visa57titulo" type="text" value="<?php echo $_REQUEST['visa57titulo']; ?>" maxlength="200" class="L" placeholder="<?php echo $ETI['ing_campo'] . $ETI['visa57titulo']; ?>" />
 </label>
 <label class="txtAreaS">
@@ -1959,46 +2106,33 @@ echo $ETI['visa57descripcion'];
 ?>
 <textarea id="visa57descripcion" name="visa57descripcion" placeholder="<?php echo $ETI['ing_campo'] . $ETI['visa57descripcion']; ?>"><?php echo $_REQUEST['visa57descripcion']; ?></textarea>
 </label>
-<label class="Label130">
+<label class="Label200">
 <?php
 echo $ETI['visa57tipoactividad'];
 ?>
 </label>
-<label>
+<label class="Label250">
 <div id="div_visa57tipoactividad" class="field">
 <?php
 echo $html_visa57tipoactividad;
 ?>
 </div>
 </label>
-<label class="Label90">
-<?php
-echo $ETI['visa57estado'];
-?>
-</label>
-<label class="Label220">
-<?php
-echo $html_visa57estado;
-?>
-</label>
 <label class="Label130">
 <?php
-echo $ETI['visa57prioridad'];
+echo $ETI['visa57porcavance'];
 ?>
 </label>
-<label>
-<div id="div_visa57prioridad" class="field">
-<?php
-echo $html_visa57prioridad;
-?>
-</div>
+<label class="Label160">
+<input id="visa57porcavance" name="visa57porcavance" type="text" value="<?php echo formato_numero($_REQUEST['visa57porcavance'], 2); ?>" class="diez" maxlength="15" style="text-align:right" onchange="formatea_moneda(this);" placeholder="<?php echo $ETI['ing_vr']; ?>" />
 </label>
-<label class="Label130">
+<div class="salto1px"></div>
+<label class="Label200">
 <?php
 echo $ETI['visa57fechaprogini'];
 ?>
 </label>
-<div class="Campo220">
+<div class="Campo250">
 <?php
 echo html_FechaEnNumero('visa57fechaprogini', $_REQUEST['visa57fechaprogini']); //, false, '', $iAgnoIni, $iAgnoFin); //$bvacio, $accion
 ?>
@@ -2008,12 +2142,12 @@ if (false) {
 	echo $objForma->htmlBotonSolo('bvisa57fechaprogini_hoy', 'btMiniHoy', "fecha_AsignarNum('visa57fechaprogini', " . $iHoy . ")", $ETI['bt_hoy']);
 }
 ?>
-<label class="Label130">
+<label class="Label200">
 <?php
 echo $ETI['visa57fechaprogfin'];
 ?>
 </label>
-<div class="Campo220">
+<div class="Campo250">
 <?php
 echo html_FechaEnNumero('visa57fechaprogfin', $_REQUEST['visa57fechaprogfin']); //, false, '', $iAgnoIni, $iAgnoFin); //$bvacio, $accion
 ?>
@@ -2023,12 +2157,13 @@ if (false) {
 	echo $objForma->htmlBotonSolo('bvisa57fechaprogfin_hoy', 'btMiniHoy', "fecha_AsignarNum('visa57fechaprogfin', " . $iHoy . ")", $ETI['bt_hoy']);
 }
 ?>
-<label class="Label130">
+<div class="salto5px"></div>
+<label class="Label200">
 <?php
 echo $ETI['visa57fechaejecini'];
 ?>
 </label>
-<div class="Campo220">
+<div class="Campo250">
 <?php
 echo html_FechaEnNumero('visa57fechaejecini', $_REQUEST['visa57fechaejecini']); //, false, '', $iAgnoIni, $iAgnoFin); //$bvacio, $accion
 ?>
@@ -2038,12 +2173,12 @@ if (false) {
 	echo $objForma->htmlBotonSolo('bvisa57fechaejecini_hoy', 'btMiniHoy', "fecha_AsignarNum('visa57fechaejecini', " . $iHoy . ")", $ETI['bt_hoy']);
 }
 ?>
-<label class="Label130">
+<label class="Label200">
 <?php
 echo $ETI['visa57fechaejecfin'];
 ?>
 </label>
-<div class="Campo220">
+<div class="Campo250">
 <?php
 echo html_FechaEnNumero('visa57fechaejecfin', $_REQUEST['visa57fechaejecfin']); //, false, '', $iAgnoIni, $iAgnoFin); //$bvacio, $accion
 ?>
@@ -2053,39 +2188,793 @@ if (false) {
 	echo $objForma->htmlBotonSolo('bvisa57fechaejecfin_hoy', 'btMiniHoy', "fecha_AsignarNum('visa57fechaejecfin', " . $iHoy . ")", $ETI['bt_hoy']);
 }
 ?>
-<label class="Label130">
-<?php
-echo $ETI['visa57porcavance'];
-?>
-</label>
-<label class="Label160">
-
-<input id="visa57porcavance" name="visa57porcavance" type="text" value="<?php echo formato_numero($_REQUEST['visa57porcavance'], 2); ?>" class="veinte" maxlength="15" style="text-align:right" onchange="formatea_moneda(this);" placeholder="<?php echo $ETI['ing_vr']; ?>" />
-</label>
-<label class="Label130">
+<div class="salto5px"></div>
+<label class="Label200">
 <?php
 echo $ETI['visa57fechacrea'];
 ?>
 </label>
-<label class="Label220">
+<label class="Label250">
 <div id="div_visa57fechacrea">
 <?php
 echo html_oculto('visa57fechacrea', $_REQUEST['visa57fechacrea'], fecha_desdenumero($_REQUEST['visa57fechacrea'])); //formato_FechaLargaDesdeNumero
 ?>
 </div>
 </label>
-<label class="Label130">
+<label class="Label200">
 <?php
 echo $ETI['visa57fechaactualiza'];
 ?>
 </label>
-<label class="Label220">
+<label class="Label250">
 <div id="div_visa57fechaactualiza">
 <?php
 echo html_oculto('visa57fechaactualiza', $_REQUEST['visa57fechaactualiza'], fecha_desdenumero($_REQUEST['visa57fechaactualiza'])); //formato_FechaLargaDesdeNumero
 ?>
 </div>
 </label>
+<?php
+// -- Inicia Grupo campos 2962 Compromisos
+?>
+<div class="salto1px"></div>
+<div class="GrupoCampos">
+<label class="TituloGrupo">
+<?php
+echo $ETI['titulo_2962'];
+?>
+</label>
+<?php
+if ($_REQUEST['paso'] == 2) {
+?>
+<input id="boculta2962" name="boculta2962" type="hidden" value="<?php echo $_REQUEST['boculta2962']; ?>" />
+<?php
+	if ($bEdita2962) {
+?>
+<div class="ir_derecha"<?php echo $sAnchoExpandeContrae; ?>>
+<?php
+if (false) {
+	echo $objForma->htmlBotonSolo('btexcel2962', 'btMiniExcel', 'imprime2962()', 'Exportar', 30);
+}
+echo $objForma->htmlExpande(2962, $_REQUEST['boculta2962'], $ETI['bt_mostrar'], $ETI['bt_ocultar']);
+$sEstiloDiv = '';
+if ($_REQUEST['boculta2962'] != 0) {
+	$sEstiloDiv = ' style="display:none;"';
+}
+?>
+</div>
+<div class="salto1px"></div>
+<div id="div_p2962"<?php echo $sEstiloDiv; ?>>
+<label class="Label130"<?php echo $sOcultaConsec; ?>>
+<?php
+echo $ETI['visa62consec'];
+?>
+</label>
+<label class="Label130"<?php echo $sOcultaConsec; ?>>
+<div id="div_visa62consec">
+<?php
+if ((int)$_REQUEST['visa62id'] == 0) {
+?>
+<input id="visa62consec" name="visa62consec" type="text" value="<?php echo $_REQUEST['visa62consec']; ?>" onchange="revisaf2962()" class="cuatro" />
+<?php
+} else {
+	echo html_oculto('visa62consec', $_REQUEST['visa62consec'], formato_numero($_REQUEST['visa62consec']));
+}
+?>
+</div>
+</label>
+<label class="Label60"<?php echo $sOcultaId; ?>>
+<?php
+echo $ETI['visa62id'];
+?>
+</label>
+<label class="Label60"<?php echo $sOcultaId; ?>>
+<div id="div_visa62id">
+<?php
+	echo html_oculto('visa62id', $_REQUEST['visa62id'], formato_numero($_REQUEST['visa62id']));
+?>
+</div>
+</label>
+<label class="Label90">
+<?php
+echo $ETI['visa62estado'];
+?>
+</label>
+<label class="Label220">
+<div id="div_visa62estado">
+<?php
+echo $html_visa62estado;
+?>
+</div>
+</label>
+<label class="Label130">
+<?php
+echo $ETI['visa62fecharegistro'];
+?>
+</label>
+<label class="Label220">
+<div id="div_visa62fecharegistro">
+<?php
+echo html_oculto('visa62fecharegistro', $_REQUEST['visa62fecharegistro'], fecha_desdenumero($_REQUEST['visa62fecharegistro'])); //formato_FechaLargaDesdeNumero
+?>
+</div>
+</label>
+<div class="salto1px"></div>
+<label class="Label130">
+<?php
+echo $ETI['visa62fechalimite'];
+?>
+</label>
+<div class="Campo250">
+<?php
+echo html_FechaEnNumero('visa62fechalimite', $_REQUEST['visa62fechalimite']); //, false, '', $iAgnoIni, $iAgnoFin); //$bvacio, $accion
+?>
+</div>
+<?php
+if (false) {
+	echo $objForma->htmlBotonSolo('bvisa62fechalimite_hoy', 'btMiniHoy', "fecha_AsignarNum('visa62fechalimite', " . $iHoy . ")", $ETI['bt_hoy']);
+}
+?>
+<label class="Label130">
+<?php
+echo $ETI['visa62fechacumple'];
+?>
+</label>
+<div class="Campo250">
+<?php
+echo html_FechaEnNumero('visa62fechacumple', $_REQUEST['visa62fechacumple']); //, false, '', $iAgnoIni, $iAgnoFin); //$bvacio, $accion
+?>
+</div>
+<?php
+if (false) {
+	echo $objForma->htmlBotonSolo('bvisa62fechacumple_hoy', 'btMiniHoy', "fecha_AsignarNum('visa62fechacumple', " . $iHoy . ")", $ETI['bt_hoy']);
+}
+?>
+<div class="salto1px"></div>
+<label class="txtAreaS">
+<?php
+echo $ETI['visa62descripcion'];
+?>
+<textarea id="visa62descripcion" name="visa62descripcion" placeholder="<?php echo $ETI['ing_campo'] . $ETI['visa62descripcion']; ?>"><?php echo $_REQUEST['visa62descripcion']; ?></textarea>
+</label>
+<div class="salto1px"></div>
+<div class="GrupoCampos450">
+<label class="TituloGrupo">
+<?php
+echo $ETI['visa62idresponsable'];
+?>
+</label>
+<div class="salto1px"></div>
+<input id="visa62idresponsable" name="visa62idresponsable" type="hidden" value="<?php echo $_REQUEST['visa62idresponsable']; ?>" />
+<div id="div_visa62idresponsable_llaves">
+<?php
+echo $html_visa62idresponsable;
+?>
+</div>
+<div class="salto1px"></div>
+<div id="div_visa62idresponsable" class="L"><?php echo $visa62idresponsable_rs; ?></div>
+<div class="salto1px"></div>
+</div>
+<div class="salto1px"></div>
+<label class="txtAreaS">
+<?php
+echo $ETI['visa62observaciones'];
+?>
+<textarea id="visa62observaciones" name="visa62observaciones" placeholder="<?php echo $ETI['ing_campo'] . $ETI['visa62observaciones']; ?>"><?php echo $_REQUEST['visa62observaciones']; ?></textarea>
+</label>
+<div class="salto1px"></div>
+<label class="Label130">&nbsp;</label>
+<?php
+if ($bPuedeGuardar) {
+	$sEstiloElimina = 'display:none;';
+	if ((int)$_REQUEST['visa62id'] != 0) {
+		$sEstiloElimina = 'inline-block;';
+	}
+	echo $objForma->htmlBotonSolo('bguarda2962', 'btMiniGuardar', 'guardaf2962()', $ETI['bt_mini_guardar_2962'], 30);
+	echo $objForma->htmlBotonSolo('blimpia2962', 'btMiniLimpiar', 'limpiaf2962()', $ETI['bt_mini_limpiar_2962'], 30);
+	echo $objForma->htmlBotonSolo('belimina2962', 'btMiniEliminar', 'eliminaf2962()', $ETI['bt_mini_eliminar_2962'], 30, $sEstiloElimina);
+}
+//Este es el cierre del div_p2962
+?>
+<div class="salto1px"></div>
+</div>
+<?php
+		} //Termina el segundo bloque  condicional - bloque editar.
+?>
+<div class="salto1px"></div>
+<?php
+if (false) {
+?>
+<div class="ir_derecha GrupoCamposAyuda">
+<label class="Label130">
+<?php
+echo $ETI['msg_nombre'];
+?>
+</label>
+<label>
+<input id="bnombre2962" name="bnombre2962" type="text" value="<?php echo $_REQUEST['bnombre2962']; ?>" onchange="paginarf2962()" />
+</label>
+<label class="Label130">
+<?php
+echo $ETI['msg_Listar'];
+?>
+</label>
+<label>
+<?php
+echo $html_blistar2962;
+?>
+</label>
+<div class="salto1px"></div>
+</div>
+<div class="salto1px"></div>
+<?php
+}
+?>
+<div id="div_f2962detalle">
+<?php
+echo $sTabla2962;
+?>
+</div>
+<?php
+}
+?>
+<div class="salto1px"></div>
+</div>
+<?php
+// -- Termina Grupo campos 2962 Compromisos
+?>
+<?php
+// -- Inicia Grupo campos 2961 Dificultades
+?>
+<div class="salto1px"></div>
+<div class="GrupoCampos">
+<label class="TituloGrupo">
+<?php
+echo $ETI['titulo_2961'];
+?>
+</label>
+<?php
+if ($_REQUEST['paso'] == 2) {
+?>
+<input id="boculta2961" name="boculta2961" type="hidden" value="<?php echo $_REQUEST['boculta2961']; ?>" />
+<?php
+	if ($bEdita2961) {
+?>
+<div class="ir_derecha"<?php echo $sAnchoExpandeContrae; ?>>
+<?php
+if (false) {
+	echo $objForma->htmlBotonSolo('btexcel2961', 'btMiniExcel', 'imprime2961()', 'Exportar', 30);
+}
+echo $objForma->htmlExpande(2961, $_REQUEST['boculta2961'], $ETI['bt_mostrar'], $ETI['bt_ocultar']);
+$sEstiloDiv = '';
+if ($_REQUEST['boculta2961'] != 0) {
+	$sEstiloDiv = ' style="display:none;"';
+}
+?>
+</div>
+<div class="salto1px"></div>
+<div id="div_p2961"<?php echo $sEstiloDiv; ?>>
+<label class="Label130"<?php echo $sOcultaConsec; ?>>
+<?php
+echo $ETI['visa61consec'];
+?>
+</label>
+<label class="Label130"<?php echo $sOcultaConsec; ?>>
+<div id="div_visa61consec">
+<?php
+if ((int)$_REQUEST['visa61id'] == 0) {
+?>
+<input id="visa61consec" name="visa61consec" type="text" value="<?php echo $_REQUEST['visa61consec']; ?>" onchange="revisaf2961()" class="cuatro" />
+<?php
+} else {
+	echo html_oculto('visa61consec', $_REQUEST['visa61consec'], formato_numero($_REQUEST['visa61consec']));
+}
+?>
+</div>
+</label>
+<label class="Label60"<?php echo $sOcultaId; ?>>
+<?php
+echo $ETI['visa61id'];
+?>
+</label>
+<label class="Label60"<?php echo $sOcultaId; ?>>
+<div id="div_visa61id">
+<?php
+	echo html_oculto('visa61id', $_REQUEST['visa61id'], formato_numero($_REQUEST['visa61id']));
+?>
+</div>
+</label>
+<label class="Label130">
+<?php
+echo $ETI['visa61fecharegistro'];
+?>
+</label>
+<label class="Label220">
+<div id="div_visa61fecharegistro">
+<?php
+echo html_oculto('visa61fecharegistro', $_REQUEST['visa61fecharegistro'], fecha_desdenumero($_REQUEST['visa61fecharegistro'])); //formato_FechaLargaDesdeNumero
+?>
+</div>
+</label>
+<div class="salto1px"></div>
+<label class="Label130">
+<?php
+echo $ETI['visa61impacto'];
+?>
+</label>
+<label>
+<div id="div_visa61impacto" class="field">
+<?php
+echo $html_visa61impacto;
+?>
+</div>
+</label>
+<label class="Label130">
+<?php
+echo $ETI['visa61requiereapoyo'];
+?>
+</label>
+<label class="Label60">
+<div id="div_visa61requiereapoyo" class="field">
+<?php
+echo $html_visa61requiereapoyo;
+?>
+</div>
+</label>
+<div class="salto1px"></div>
+<label class="txtAreaS">
+<?php
+echo $ETI['visa61descripcion'];
+?>
+<textarea id="visa61descripcion" name="visa61descripcion" placeholder="<?php echo $ETI['ing_campo'] . $ETI['visa61descripcion']; ?>"><?php echo $_REQUEST['visa61descripcion']; ?></textarea>
+</label>
+<div class="salto1px"></div>
+<label class="Label130">&nbsp;</label>
+<?php
+if ($bHayDificultad) {
+	$sEstiloElimina = 'display:none;';
+	if ((int)$_REQUEST['visa61id'] != 0) {
+		$sEstiloElimina = 'inline-block;';
+	}
+	echo $objForma->htmlBotonSolo('bguarda2961', 'btMiniGuardar', 'guardaf2961()', $ETI['bt_mini_guardar_2961'], 30);
+	echo $objForma->htmlBotonSolo('blimpia2961', 'btMiniLimpiar', 'limpiaf2961()', $ETI['bt_mini_limpiar_2961'], 30);
+	echo $objForma->htmlBotonSolo('belimina2961', 'btMiniEliminar', 'eliminaf2961()', $ETI['bt_mini_eliminar_2961'], 30, $sEstiloElimina);
+}
+//Este es el cierre del div_p2961
+?>
+<div class="salto1px"></div>
+</div>
+<?php
+		} //Termina el segundo bloque  condicional - bloque editar.
+?>
+<div class="salto1px"></div>
+<?php
+if (false) {
+?>
+<div class="ir_derecha GrupoCamposAyuda">
+<label class="Label130">
+<?php
+echo $ETI['msg_nombre'];
+?>
+</label>
+<label>
+<input id="bnombre2961" name="bnombre2961" type="text" value="<?php echo $_REQUEST['bnombre2961']; ?>" onchange="paginarf2961()" />
+</label>
+<label class="Label130">
+<?php
+echo $ETI['msg_Listar'];
+?>
+</label>
+<label>
+<?php
+echo $html_blistar2961;
+?>
+</label>
+<div class="salto1px"></div>
+</div>
+<div class="salto1px"></div>
+<?php
+}
+?>
+<div id="div_f2961detalle">
+<?php
+echo $sTabla2961;
+?>
+</div>
+<?php
+}
+?>
+<div class="salto1px"></div>
+</div>
+<?php
+// -- Termina Grupo campos 2961 Dificultades
+?>
+<?php
+// -- Inicia Grupo campos 2963 Solicitud de apoyo
+?>
+<div class="salto1px"></div>
+<div class="GrupoCampos">
+<label class="TituloGrupo">
+<?php
+echo $ETI['titulo_2963'];
+?>
+</label>
+<?php
+if ($_REQUEST['paso'] == 2) {
+?>
+<input id="boculta2963" name="boculta2963" type="hidden" value="<?php echo $_REQUEST['boculta2963']; ?>" />
+<?php
+	if ($bEdita2963) {
+?>
+<div class="ir_derecha"<?php echo $sAnchoExpandeContrae; ?>>
+<?php
+if (false) {
+	echo $objForma->htmlBotonSolo('btexcel2963', 'btMiniExcel', 'imprime2963()', 'Exportar', 30);
+}
+echo $objForma->htmlExpande(2963, $_REQUEST['boculta2963'], $ETI['bt_mostrar'], $ETI['bt_ocultar']);
+$sEstiloDiv = '';
+if ($_REQUEST['boculta2963'] != 0) {
+	$sEstiloDiv = ' style="display:none;"';
+}
+?>
+</div>
+<div class="salto1px"></div>
+<div id="div_p2963"<?php echo $sEstiloDiv; ?>>
+<label class="Label130"<?php echo $sOcultaConsec; ?>>
+<?php
+echo $ETI['visa63consec'];
+?>
+</label>
+<label class="Label130"<?php echo $sOcultaConsec; ?>>
+<div id="div_visa63consec">
+<?php
+if ((int)$_REQUEST['visa63id'] == 0) {
+?>
+<input id="visa63consec" name="visa63consec" type="text" value="<?php echo $_REQUEST['visa63consec']; ?>" onchange="revisaf2963()" class="cuatro" />
+<?php
+} else {
+	echo html_oculto('visa63consec', $_REQUEST['visa63consec'], formato_numero($_REQUEST['visa63consec']));
+}
+?>
+</div>
+</label>
+<label class="Label60"<?php echo $sOcultaId; ?>>
+<?php
+echo $ETI['visa63id'];
+?>
+</label>
+<label class="Label60"<?php echo $sOcultaId; ?>>
+<div id="div_visa63id">
+<?php
+	echo html_oculto('visa63id', $_REQUEST['visa63id'], formato_numero($_REQUEST['visa63id']));
+?>
+</div>
+</label>
+<label class="Label90">
+<?php
+echo $ETI['visa63estado'];
+?>
+</label>
+<label class="Label220">
+<div id="div_visa63estado">
+<?php
+echo $html_visa63estado;
+?>
+</div>
+</label>
+<div class="salto1px"></div>
+<label class="Label130">
+<?php
+echo $ETI['visa63fechasolicitud'];
+?>
+</label>
+<div class="Campo250">
+<?php
+echo html_FechaEnNumero('visa63fechasolicitud', $_REQUEST['visa63fechasolicitud']); //, false, '', $iAgnoIni, $iAgnoFin); //$bvacio, $accion
+?>
+</div>
+<?php
+if (false) {
+	echo $objForma->htmlBotonSolo('bvisa63fechasolicitud_hoy', 'btMiniHoy', "fecha_AsignarNum('visa63fechasolicitud', " . $iHoy . ")", $ETI['bt_hoy']);
+}
+?>
+<label class="Label130">
+<?php
+echo $ETI['visa63fecharespuesta'];
+?>
+</label>
+<div class="Campo250">
+<?php
+echo html_FechaEnNumero('visa63fecharespuesta', $_REQUEST['visa63fecharespuesta']); //, false, '', $iAgnoIni, $iAgnoFin); //$bvacio, $accion
+?>
+</div>
+<?php
+if (false) {
+	echo $objForma->htmlBotonSolo('bvisa63fecharespuesta_hoy', 'btMiniHoy', "fecha_AsignarNum('visa63fecharespuesta', " . $iHoy . ")", $ETI['bt_hoy']);
+}
+?>
+<label class="txtAreaS">
+<?php
+echo $ETI['visa63descripcion'];
+?>
+<textarea id="visa63descripcion" name="visa63descripcion" placeholder="<?php echo $ETI['ing_campo'] . $ETI['visa63descripcion']; ?>"><?php echo $_REQUEST['visa63descripcion']; ?></textarea>
+</label>
+<div class="salto1px"></div>
+<div class="GrupoCampos450">
+<label class="TituloGrupo">
+<?php
+echo $ETI['visa63idcolaborador'];
+?>
+</label>
+<div class="salto1px"></div>
+<input id="visa63idcolaborador" name="visa63idcolaborador" type="hidden" value="<?php echo $_REQUEST['visa63idcolaborador']; ?>" />
+<div id="div_visa63idcolaborador_llaves">
+<?php
+echo $html_visa63idcolaborador;
+?>
+</div>
+<div class="salto1px"></div>
+<div id="div_visa63idcolaborador" class="L"><?php echo $visa63idcolaborador_rs; ?></div>
+<div class="salto1px"></div>
+</div>
+<div class="salto1px"></div>
+<label class="txtAreaS">
+<?php
+echo $ETI['visa63observaciones'];
+?>
+<textarea id="visa63observaciones" name="visa63observaciones" placeholder="<?php echo $ETI['ing_campo'] . $ETI['visa63observaciones']; ?>"><?php echo $_REQUEST['visa63observaciones']; ?></textarea>
+</label>
+<div class="salto1px"></div>
+<label class="Label130">&nbsp;</label>
+<?php
+if ($bHayApoyo) {
+	$sEstiloElimina = 'display:none;';
+	if ((int)$_REQUEST['visa63id'] != 0) {
+		$sEstiloElimina = 'inline-block;';
+	}
+	echo $objForma->htmlBotonSolo('bguarda2963', 'btMiniGuardar', 'guardaf2963()', $ETI['bt_mini_guardar_2963'], 30);
+	echo $objForma->htmlBotonSolo('blimpia2963', 'btMiniLimpiar', 'limpiaf2963()', $ETI['bt_mini_limpiar_2963'], 30);
+	echo $objForma->htmlBotonSolo('belimina2963', 'btMiniEliminar', 'eliminaf2963()', $ETI['bt_mini_eliminar_2963'], 30, $sEstiloElimina);
+}
+//Este es el cierre del div_p2963
+?>
+<div class="salto1px"></div>
+</div>
+<?php
+		} //Termina el segundo bloque  condicional - bloque editar.
+?>
+<div class="salto1px"></div>
+<?php
+if (false) {
+?>
+<div class="ir_derecha GrupoCamposAyuda">
+<label class="Label130">
+<?php
+echo $ETI['msg_nombre'];
+?>
+</label>
+<label>
+<input id="bnombre2963" name="bnombre2963" type="text" value="<?php echo $_REQUEST['bnombre2963']; ?>" onchange="paginarf2963()" />
+</label>
+<label class="Label130">
+<?php
+echo $ETI['msg_Listar'];
+?>
+</label>
+<label>
+<?php
+echo $html_blistar2963;
+?>
+</label>
+<div class="salto1px"></div>
+</div>
+<div class="salto1px"></div>
+<?php
+}
+?>
+<div id="div_f2963detalle">
+<?php
+echo $sTabla2963;
+?>
+</div>
+<?php
+}
+?>
+<div class="salto1px"></div>
+</div>
+<?php
+// -- Termina Grupo campos 2963 Solicitud de apoyo
+?>
+<?php
+// -- Inicia Grupo campos 2960 Reprogramación
+?>
+<div class="salto1px"></div>
+<div class="GrupoCampos">
+<label class="TituloGrupo">
+<?php
+echo $ETI['titulo_2960'];
+?>
+</label>
+<?php
+if ($_REQUEST['paso'] == 2) {
+?>
+<input id="boculta2960" name="boculta2960" type="hidden" value="<?php echo $_REQUEST['boculta2960']; ?>" />
+<?php
+	if ($bEdita2960) {
+?>
+<div class="ir_derecha"<?php echo $sAnchoExpandeContrae; ?>>
+<?php
+if (false) {
+	echo $objForma->htmlBotonSolo('btexcel2960', 'btMiniExcel', 'imprime2960()', 'Exportar', 30);
+}
+echo $objForma->htmlExpande(2960, $_REQUEST['boculta2960'], $ETI['bt_mostrar'], $ETI['bt_ocultar']);
+$sEstiloDiv = '';
+if ($_REQUEST['boculta2960'] != 0) {
+	$sEstiloDiv = ' style="display:none;"';
+}
+?>
+</div>
+<div class="salto1px"></div>
+<div id="div_p2960"<?php echo $sEstiloDiv; ?>>
+<label class="Label130"<?php echo $sOcultaConsec; ?>>
+<?php
+echo $ETI['visa60consec'];
+?>
+</label>
+<label class="Label130"<?php echo $sOcultaConsec; ?>>
+<div id="div_visa60consec">
+<?php
+if ((int)$_REQUEST['visa60id'] == 0) {
+?>
+<input id="visa60consec" name="visa60consec" type="text" value="<?php echo $_REQUEST['visa60consec']; ?>" onchange="revisaf2960()" class="cuatro" />
+<?php
+} else {
+	echo html_oculto('visa60consec', $_REQUEST['visa60consec'], formato_numero($_REQUEST['visa60consec']));
+}
+?>
+</div>
+</label>
+<label class="Label60"<?php echo $sOcultaId; ?>>
+<?php
+echo $ETI['visa60id'];
+?>
+</label>
+<label class="Label60"<?php echo $sOcultaId; ?>>
+<div id="div_visa60id">
+<?php
+	echo html_oculto('visa60id', $_REQUEST['visa60id'], formato_numero($_REQUEST['visa60id']));
+?>
+</div>
+</label>
+<label class="Label130">
+<?php
+echo $ETI['visa60fecharegistro'];
+?>
+</label>
+<label class="Label220">
+<div id="div_visa60fecharegistro">
+<?php
+echo html_oculto('visa60fecharegistro', $_REQUEST['visa60fecharegistro'], fecha_desdenumero($_REQUEST['visa60fecharegistro'])); //formato_FechaLargaDesdeNumero
+?>
+</div>
+</label>
+<div class="salto1px"></div>
+<label class="Label130">
+<?php
+echo $ETI['visa60fechareproini'];
+?>
+</label>
+<div class="Campo250">
+<?php
+echo html_FechaEnNumero('visa60fechareproini', $_REQUEST['visa60fechareproini']); //, false, '', $iAgnoIni, $iAgnoFin); //$bvacio, $accion
+?>
+</div>
+<?php
+if (false) {
+	echo $objForma->htmlBotonSolo('bvisa60fechareproini_hoy', 'btMiniHoy', "fecha_AsignarNum('visa60fechareproini', " . $iHoy . ")", $ETI['bt_hoy']);
+}
+?>
+<label class="Label130">
+<?php
+echo $ETI['visa60fechareprofin'];
+?>
+</label>
+<div class="Campo250">
+<?php
+echo html_FechaEnNumero('visa60fechareprofin', $_REQUEST['visa60fechareprofin']); //, false, '', $iAgnoIni, $iAgnoFin); //$bvacio, $accion
+?>
+</div>
+<?php
+if (false) {
+	echo $objForma->htmlBotonSolo('bvisa60fechareprofin_hoy', 'btMiniHoy', "fecha_AsignarNum('visa60fechareprofin', " . $iHoy . ")", $ETI['bt_hoy']);
+}
+?>
+<label class="txtAreaS">
+<?php
+echo $ETI['visa60motivo'];
+?>
+<textarea id="visa60motivo" name="visa60motivo" placeholder="<?php echo $ETI['ing_campo'] . $ETI['visa60motivo']; ?>"><?php echo $_REQUEST['visa60motivo']; ?></textarea>
+</label>
+<div class="salto1px"></div>
+<label class="Label130">&nbsp;</label>
+<?php
+if ($bHayReprog) {
+	$sEstiloElimina = 'display:none;';
+	if ((int)$_REQUEST['visa60id'] != 0) {
+		$sEstiloElimina = 'inline-block;';
+	}
+	echo $objForma->htmlBotonSolo('bguarda2960', 'btMiniGuardar', 'guardaf2960()', $ETI['bt_mini_guardar_2960'], 30);
+	echo $objForma->htmlBotonSolo('blimpia2960', 'btMiniLimpiar', 'limpiaf2960()', $ETI['bt_mini_limpiar_2960'], 30);
+	echo $objForma->htmlBotonSolo('belimina2960', 'btMiniEliminar', 'eliminaf2960()', $ETI['bt_mini_eliminar_2960'], 30, $sEstiloElimina);
+}
+?>
+<label class="Label130">&nbsp;</label>
+<div class="GrupoCampos450">
+<label class="TituloGrupo">
+<?php
+echo $ETI['visa60idusuario'];
+?>
+</label>
+<div class="salto1px"></div>
+<input id="visa60idusuario" name="visa60idusuario" type="hidden" value="<?php echo $_REQUEST['visa60idusuario']; ?>" />
+<div id="div_visa60idusuario_llaves">
+<?php
+echo $html_visa60idusuario;
+?>
+</div>
+<div class="salto1px"></div>
+<div id="div_visa60idusuario" class="L"><?php echo $visa60idusuario_rs; ?></div>
+<div class="salto1px"></div>
+</div>
+<?php
+//Este es el cierre del div_p2960
+?>
+<div class="salto1px"></div>
+</div>
+<?php
+		} //Termina el segundo bloque  condicional - bloque editar.
+?>
+<div class="salto1px"></div>
+<?php
+if (false) {
+?>
+<div class="ir_derecha GrupoCamposAyuda">
+<label class="Label130">
+<?php
+echo $ETI['msg_nombre'];
+?>
+</label>
+<label>
+<input id="bnombre2960" name="bnombre2960" type="text" value="<?php echo $_REQUEST['bnombre2960']; ?>" onchange="paginarf2960()" />
+</label>
+<label class="Label130">
+<?php
+echo $ETI['msg_Listar'];
+?>
+</label>
+<label>
+<?php
+echo $html_blistar2960;
+?>
+</label>
+<div class="salto1px"></div>
+</div>
+<div class="salto1px"></div>
+<?php
+}
+?>
+<div id="div_f2960detalle">
+<?php
+echo $sTabla2960;
+?>
+</div>
+<?php
+}
+?>
+<div class="salto1px"></div>
+</div>
+<?php
+// -- Termina Grupo campos 2960 Reprogramación
+?>
 <?php
 // -- Inicia Grupo campos 2958 Resultados
 ?>
@@ -2147,12 +3036,6 @@ echo $ETI['visa58id'];
 ?>
 </div>
 </label>
-<label class="txtAreaS">
-<?php
-echo $ETI['visa58descripcion'];
-?>
-<textarea id="visa58descripcion" name="visa58descripcion" placeholder="<?php echo $ETI['ing_campo'] . $ETI['visa58descripcion']; ?>"><?php echo $_REQUEST['visa58descripcion']; ?></textarea>
-</label>
 <label class="Label130">
 <?php
 echo $ETI['visa58cumplimiento'];
@@ -2178,15 +3061,24 @@ echo html_oculto('visa58fecharegistro', $_REQUEST['visa58fecharegistro'], fecha_
 </div>
 </label>
 <div class="salto1px"></div>
+<label class="txtAreaS">
+<?php
+echo $ETI['visa58descripcion'];
+?>
+<textarea id="visa58descripcion" name="visa58descripcion" placeholder="<?php echo $ETI['ing_campo'] . $ETI['visa58descripcion']; ?>"><?php echo $_REQUEST['visa58descripcion']; ?></textarea>
+</label>
+<div class="salto1px"></div>
 <label class="Label130">&nbsp;</label>
 <?php
-$sEstiloElimina = 'display:none;';
-if ((int)$_REQUEST['visa58id'] != 0) {
-	$sEstiloElimina = 'inline-block;';
+if ($bHayResultado) {
+	$sEstiloElimina = 'display:none;';
+	if ((int)$_REQUEST['visa58id'] != 0) {
+		$sEstiloElimina = 'inline-block;';
+	}
+	echo $objForma->htmlBotonSolo('bguarda2958', 'btMiniGuardar', 'guardaf2958()', $ETI['bt_mini_guardar_2958'], 30);
+	echo $objForma->htmlBotonSolo('blimpia2958', 'btMiniLimpiar', 'limpiaf2958()', $ETI['bt_mini_limpiar_2958'], 30);
+	echo $objForma->htmlBotonSolo('belimina2958', 'btMiniEliminar', 'eliminaf2958()', $ETI['bt_mini_eliminar_2958'], 30, $sEstiloElimina);
 }
-echo $objForma->htmlBotonSolo('bguarda2958', 'btMiniGuardar', 'guardaf2958()', $ETI['bt_mini_guardar_2958'], 30);
-echo $objForma->htmlBotonSolo('blimpia2958', 'btMiniLimpiar', 'limpiaf2958()', $ETI['bt_mini_limpiar_2958'], 30);
-echo $objForma->htmlBotonSolo('belimina2958', 'btMiniEliminar', 'eliminaf2958()', $ETI['bt_mini_eliminar_2958'], 30, $sEstiloElimina);
 //Este es el cierre del div_p2958
 ?>
 <div class="salto1px"></div>
@@ -2297,37 +3189,6 @@ echo $ETI['visa59id'];
 ?>
 </div>
 </label>
-<label class="L">
-<?php
-echo $ETI['visa59titulo'];
-?>
-
-<input id="visa59titulo" name="visa59titulo" type="text" value="<?php echo $_REQUEST['visa59titulo']; ?>" maxlength="255" class="L" placeholder="<?php echo $ETI['ing_campo'] . $ETI['visa59titulo']; ?>" />
-</label>
-<input id="visa59idorigen" name="visa59idorigen" type="hidden" value="<?php echo $_REQUEST['visa59idorigen']; ?>" />
-<input id="visa59idarchivo" name="visa59idarchivo" type="hidden" value="<?php echo $_REQUEST['visa59idarchivo']; ?>" />
-<input id="visa59idarchivo_up" name="visa59idarchivo_up" type="hidden" value="<?php echo html_lnkupload(2959, $_REQUEST['visa59id']); ?>" />
-<div class="GrupoCampos300">
-<div class="salto1px"></div>
-<div id="div_visa59idarchivo" class="Campo300">
-<?php
-echo html_lnkarchivo((int)$_REQUEST['visa59idorigen'], (int)$_REQUEST['visa59idarchivo']);
-?>
-</div>
-<?php
-$sEstiloAnexa = '';
-$sEstiloElimina = ' style="display:none;"';
-if ((int)$_REQUEST['visa59id'] == 0) {
-	$sEstiloAnexa = ' style="display:none;"';
-}
-if ((int)$_REQUEST['visa59idarchivo'] != 0) {
-	$sEstiloElimina = '';
-}
-echo $objForma->htmlBotonSolo('banexavisa59idarchivo', 'btMiniAnexar', 'carga_visa59idarchivo(window.document.frmedita.visa59idarchivo_up.value)', $ETI['bt_mini_cargararchivo'], 30, $sEstiloAnexa);
-echo $objForma->htmlBotonSolo('beliminavisa59idarchivo', 'btMiniEliminar', 'eliminavisa59idarchivo()', $ETI['bt_mini_eliminararchivo'], 30, $sEstiloElimina);
-?>
-<div class="salto1px"></div>
-</div>
 <label class="Label130">
 <?php
 echo $ETI['visa59tipoarchivo'];
@@ -2339,12 +3200,6 @@ echo $ETI['visa59tipoarchivo'];
 echo $html_visa59tipoarchivo;
 ?>
 </div>
-</label>
-<label class="txtAreaS">
-<?php
-echo $ETI['visa59descripcion'];
-?>
-<textarea id="visa59descripcion" name="visa59descripcion" placeholder="<?php echo $ETI['ing_campo'] . $ETI['visa59descripcion']; ?>"><?php echo $_REQUEST['visa59descripcion']; ?></textarea>
 </label>
 <label class="Label130">
 <?php
@@ -2359,6 +3214,45 @@ echo html_oculto('visa59fechacarga', $_REQUEST['visa59fechacarga'], fecha_desden
 </div>
 </label>
 <div class="salto1px"></div>
+<label class="L">
+<?php
+echo $ETI['visa59titulo'];
+?>
+<input id="visa59titulo" name="visa59titulo" type="text" value="<?php echo $_REQUEST['visa59titulo']; ?>" maxlength="255" class="L" placeholder="<?php echo $ETI['ing_campo'] . $ETI['visa59titulo']; ?>" />
+</label>
+<label class="txtAreaS">
+<?php
+echo $ETI['visa59descripcion'];
+?>
+<textarea id="visa59descripcion" name="visa59descripcion" placeholder="<?php echo $ETI['ing_campo'] . $ETI['visa59descripcion']; ?>"><?php echo $_REQUEST['visa59descripcion']; ?></textarea>
+</label>
+<div class="salto1px"></div>
+<input id="visa59idorigen" name="visa59idorigen" type="hidden" value="<?php echo $_REQUEST['visa59idorigen']; ?>" />
+<input id="visa59idarchivo" name="visa59idarchivo" type="hidden" value="<?php echo $_REQUEST['visa59idarchivo']; ?>" />
+<input id="visa59idarchivo_up" name="visa59idarchivo_up" type="hidden" value="<?php echo html_lnkupload(2959, $_REQUEST['visa59id']); ?>" />
+<div class="GrupoCampos300">
+<div class="salto1px"></div>
+<div id="div_visa59idarchivo" class="Campo300">
+<?php
+echo html_lnkarchivo((int)$_REQUEST['visa59idorigen'], (int)$_REQUEST['visa59idarchivo']);
+?>
+</div>
+<?php
+if ($bHayEvidencia) {
+	$sEstiloAnexa = '';
+	$sEstiloElimina = ' style="display:none;"';
+	if ((int)$_REQUEST['visa59id'] == 0) {
+		$sEstiloAnexa = ' style="display:none;"';
+	}
+	if ((int)$_REQUEST['visa59idarchivo'] != 0) {
+		$sEstiloElimina = '';
+	}
+	echo $objForma->htmlBotonSolo('banexavisa59idarchivo', 'btMiniAnexar', 'carga_visa59idarchivo(window.document.frmedita.visa59idarchivo_up.value)', $ETI['bt_mini_cargararchivo'], 30, $sEstiloAnexa);
+	echo $objForma->htmlBotonSolo('beliminavisa59idarchivo', 'btMiniEliminar', 'eliminavisa59idarchivo()', $ETI['bt_mini_eliminararchivo'], 30, $sEstiloElimina);
+}
+?>
+<div class="salto1px"></div>
+</div>
 <div class="GrupoCampos450">
 <label class="TituloGrupo">
 <?php
@@ -2379,13 +3273,15 @@ echo $html_visa59idusuario;
 <div class="salto1px"></div>
 <label class="Label130">&nbsp;</label>
 <?php
-$sEstiloElimina = 'display:none;';
-if ((int)$_REQUEST['visa59id'] != 0) {
-	$sEstiloElimina = 'inline-block;';
+if ($bHayEvidencia) {
+	$sEstiloElimina = 'display:none;';
+	if ((int)$_REQUEST['visa59id'] != 0) {
+		$sEstiloElimina = 'inline-block;';
+	}
+	echo $objForma->htmlBotonSolo('bguarda2959', 'btMiniGuardar', 'guardaf2959()', $ETI['bt_mini_guardar_2959'], 30);
+	echo $objForma->htmlBotonSolo('blimpia2959', 'btMiniLimpiar', 'limpiaf2959()', $ETI['bt_mini_limpiar_2959'], 30);
+	echo $objForma->htmlBotonSolo('belimina2959', 'btMiniEliminar', 'eliminaf2959()', $ETI['bt_mini_eliminar_2959'], 30, $sEstiloElimina);
 }
-echo $objForma->htmlBotonSolo('bguarda2959', 'btMiniGuardar', 'guardaf2959()', $ETI['bt_mini_guardar_2959'], 30);
-echo $objForma->htmlBotonSolo('blimpia2959', 'btMiniLimpiar', 'limpiaf2959()', $ETI['bt_mini_limpiar_2959'], 30);
-echo $objForma->htmlBotonSolo('belimina2959', 'btMiniEliminar', 'eliminaf2959()', $ETI['bt_mini_eliminar_2959'], 30, $sEstiloElimina);
 //Este es el cierre del div_p2959
 ?>
 <div class="salto1px"></div>
@@ -2434,750 +3330,6 @@ echo $sTabla2959;
 </div>
 <?php
 // -- Termina Grupo campos 2959 Evidencias
-?>
-<?php
-// -- Inicia Grupo campos 2960 Reprogramación
-?>
-<div class="salto1px"></div>
-<div class="GrupoCampos">
-<label class="TituloGrupo">
-<?php
-echo $ETI['titulo_2960'];
-?>
-</label>
-<?php
-if ($_REQUEST['paso'] == 2) {
-?>
-<input id="boculta2960" name="boculta2960" type="hidden" value="<?php echo $_REQUEST['boculta2960']; ?>" />
-<?php
-	if ($bEdita2960) {
-?>
-<div class="ir_derecha"<?php echo $sAnchoExpandeContrae; ?>>
-<?php
-if (false) {
-	echo $objForma->htmlBotonSolo('btexcel2960', 'btMiniExcel', 'imprime2960()', 'Exportar', 30);
-}
-echo $objForma->htmlExpande(2960, $_REQUEST['boculta2960'], $ETI['bt_mostrar'], $ETI['bt_ocultar']);
-$sEstiloDiv = '';
-if ($_REQUEST['boculta2960'] != 0) {
-	$sEstiloDiv = ' style="display:none;"';
-}
-?>
-</div>
-<div class="salto1px"></div>
-<div id="div_p2960"<?php echo $sEstiloDiv; ?>>
-<label class="Label130"<?php echo $sOcultaConsec; ?>>
-<?php
-echo $ETI['visa60consec'];
-?>
-</label>
-<label class="Label130"<?php echo $sOcultaConsec; ?>>
-<div id="div_visa60consec">
-<?php
-if ((int)$_REQUEST['visa60id'] == 0) {
-?>
-<input id="visa60consec" name="visa60consec" type="text" value="<?php echo $_REQUEST['visa60consec']; ?>" onchange="revisaf2960()" class="cuatro" />
-<?php
-} else {
-	echo html_oculto('visa60consec', $_REQUEST['visa60consec'], formato_numero($_REQUEST['visa60consec']));
-}
-?>
-</div>
-</label>
-<label class="Label60"<?php echo $sOcultaId; ?>>
-<?php
-echo $ETI['visa60id'];
-?>
-</label>
-<label class="Label60"<?php echo $sOcultaId; ?>>
-<div id="div_visa60id">
-<?php
-	echo html_oculto('visa60id', $_REQUEST['visa60id'], formato_numero($_REQUEST['visa60id']));
-?>
-</div>
-</label>
-<label class="Label130">
-<?php
-echo $ETI['visa60fechareproini'];
-?>
-</label>
-<div class="Campo220">
-<?php
-echo html_FechaEnNumero('visa60fechareproini', $_REQUEST['visa60fechareproini']); //, false, '', $iAgnoIni, $iAgnoFin); //$bvacio, $accion
-?>
-</div>
-<?php
-if (false) {
-	echo $objForma->htmlBotonSolo('bvisa60fechareproini_hoy', 'btMiniHoy', "fecha_AsignarNum('visa60fechareproini', " . $iHoy . ")", $ETI['bt_hoy']);
-}
-?>
-<label class="Label130">
-<?php
-echo $ETI['visa60fechareprofin'];
-?>
-</label>
-<div class="Campo220">
-<?php
-echo html_FechaEnNumero('visa60fechareprofin', $_REQUEST['visa60fechareprofin']); //, false, '', $iAgnoIni, $iAgnoFin); //$bvacio, $accion
-?>
-</div>
-<?php
-if (false) {
-	echo $objForma->htmlBotonSolo('bvisa60fechareprofin_hoy', 'btMiniHoy', "fecha_AsignarNum('visa60fechareprofin', " . $iHoy . ")", $ETI['bt_hoy']);
-}
-?>
-<label class="txtAreaS">
-<?php
-echo $ETI['visa60motivo'];
-?>
-<textarea id="visa60motivo" name="visa60motivo" placeholder="<?php echo $ETI['ing_campo'] . $ETI['visa60motivo']; ?>"><?php echo $_REQUEST['visa60motivo']; ?></textarea>
-</label>
-<label class="Label130">
-<?php
-echo $ETI['visa60fecharegistro'];
-?>
-</label>
-<label class="Label220">
-<div id="div_visa60fecharegistro">
-<?php
-echo html_oculto('visa60fecharegistro', $_REQUEST['visa60fecharegistro'], fecha_desdenumero($_REQUEST['visa60fecharegistro'])); //formato_FechaLargaDesdeNumero
-?>
-</div>
-</label>
-<div class="salto1px"></div>
-<div class="GrupoCampos450">
-<label class="TituloGrupo">
-<?php
-echo $ETI['visa60idusuario'];
-?>
-</label>
-<div class="salto1px"></div>
-<input id="visa60idusuario" name="visa60idusuario" type="hidden" value="<?php echo $_REQUEST['visa60idusuario']; ?>" />
-<div id="div_visa60idusuario_llaves">
-<?php
-echo $html_visa60idusuario;
-?>
-</div>
-<div class="salto1px"></div>
-<div id="div_visa60idusuario" class="L"><?php echo $visa60idusuario_rs; ?></div>
-<div class="salto1px"></div>
-</div>
-<div class="salto1px"></div>
-<label class="Label130">&nbsp;</label>
-<?php
-$sEstiloElimina = 'display:none;';
-if ((int)$_REQUEST['visa60id'] != 0) {
-	$sEstiloElimina = 'inline-block;';
-}
-echo $objForma->htmlBotonSolo('bguarda2960', 'btMiniGuardar', 'guardaf2960()', $ETI['bt_mini_guardar_2960'], 30);
-echo $objForma->htmlBotonSolo('blimpia2960', 'btMiniLimpiar', 'limpiaf2960()', $ETI['bt_mini_limpiar_2960'], 30);
-echo $objForma->htmlBotonSolo('belimina2960', 'btMiniEliminar', 'eliminaf2960()', $ETI['bt_mini_eliminar_2960'], 30, $sEstiloElimina);
-//Este es el cierre del div_p2960
-?>
-<div class="salto1px"></div>
-</div>
-<?php
-		} //Termina el segundo bloque  condicional - bloque editar.
-?>
-<div class="salto1px"></div>
-<?php
-if (false) {
-?>
-<div class="ir_derecha GrupoCamposAyuda">
-<label class="Label130">
-<?php
-echo $ETI['msg_nombre'];
-?>
-</label>
-<label>
-<input id="bnombre2960" name="bnombre2960" type="text" value="<?php echo $_REQUEST['bnombre2960']; ?>" onchange="paginarf2960()" />
-</label>
-<label class="Label130">
-<?php
-echo $ETI['msg_Listar'];
-?>
-</label>
-<label>
-<?php
-echo $html_blistar2960;
-?>
-</label>
-<div class="salto1px"></div>
-</div>
-<div class="salto1px"></div>
-<?php
-}
-?>
-<div id="div_f2960detalle">
-<?php
-echo $sTabla2960;
-?>
-</div>
-<?php
-}
-?>
-<div class="salto1px"></div>
-</div>
-<?php
-// -- Termina Grupo campos 2960 Reprogramación
-?>
-<?php
-// -- Inicia Grupo campos 2961 Dificultades
-?>
-<div class="salto1px"></div>
-<div class="GrupoCampos">
-<label class="TituloGrupo">
-<?php
-echo $ETI['titulo_2961'];
-?>
-</label>
-<?php
-if ($_REQUEST['paso'] == 2) {
-?>
-<input id="boculta2961" name="boculta2961" type="hidden" value="<?php echo $_REQUEST['boculta2961']; ?>" />
-<?php
-	if ($bEdita2961) {
-?>
-<div class="ir_derecha"<?php echo $sAnchoExpandeContrae; ?>>
-<?php
-if (false) {
-	echo $objForma->htmlBotonSolo('btexcel2961', 'btMiniExcel', 'imprime2961()', 'Exportar', 30);
-}
-echo $objForma->htmlExpande(2961, $_REQUEST['boculta2961'], $ETI['bt_mostrar'], $ETI['bt_ocultar']);
-$sEstiloDiv = '';
-if ($_REQUEST['boculta2961'] != 0) {
-	$sEstiloDiv = ' style="display:none;"';
-}
-?>
-</div>
-<div class="salto1px"></div>
-<div id="div_p2961"<?php echo $sEstiloDiv; ?>>
-<label class="Label130"<?php echo $sOcultaConsec; ?>>
-<?php
-echo $ETI['visa61consec'];
-?>
-</label>
-<label class="Label130"<?php echo $sOcultaConsec; ?>>
-<div id="div_visa61consec">
-<?php
-if ((int)$_REQUEST['visa61id'] == 0) {
-?>
-<input id="visa61consec" name="visa61consec" type="text" value="<?php echo $_REQUEST['visa61consec']; ?>" onchange="revisaf2961()" class="cuatro" />
-<?php
-} else {
-	echo html_oculto('visa61consec', $_REQUEST['visa61consec'], formato_numero($_REQUEST['visa61consec']));
-}
-?>
-</div>
-</label>
-<label class="Label60"<?php echo $sOcultaId; ?>>
-<?php
-echo $ETI['visa61id'];
-?>
-</label>
-<label class="Label60"<?php echo $sOcultaId; ?>>
-<div id="div_visa61id">
-<?php
-	echo html_oculto('visa61id', $_REQUEST['visa61id'], formato_numero($_REQUEST['visa61id']));
-?>
-</div>
-</label>
-<label class="txtAreaS">
-<?php
-echo $ETI['visa61descripcion'];
-?>
-<textarea id="visa61descripcion" name="visa61descripcion" placeholder="<?php echo $ETI['ing_campo'] . $ETI['visa61descripcion']; ?>"><?php echo $_REQUEST['visa61descripcion']; ?></textarea>
-</label>
-<label class="Label130">
-<?php
-echo $ETI['visa61impacto'];
-?>
-</label>
-<label>
-<div id="div_visa61impacto" class="field">
-<?php
-echo $html_visa61impacto;
-?>
-</div>
-</label>
-<label class="Label130">
-<?php
-echo $ETI['visa61requiereapoyo'];
-?>
-</label>
-<label>
-<div id="div_visa61requiereapoyo" class="field">
-<?php
-echo $html_visa61requiereapoyo;
-?>
-</div>
-</label>
-<label class="Label130">
-<?php
-echo $ETI['visa61fecharegistro'];
-?>
-</label>
-<label class="Label220">
-<div id="div_visa61fecharegistro">
-<?php
-echo html_oculto('visa61fecharegistro', $_REQUEST['visa61fecharegistro'], fecha_desdenumero($_REQUEST['visa61fecharegistro'])); //formato_FechaLargaDesdeNumero
-?>
-</div>
-</label>
-<div class="salto1px"></div>
-<label class="Label130">&nbsp;</label>
-<?php
-$sEstiloElimina = 'display:none;';
-if ((int)$_REQUEST['visa61id'] != 0) {
-	$sEstiloElimina = 'inline-block;';
-}
-echo $objForma->htmlBotonSolo('bguarda2961', 'btMiniGuardar', 'guardaf2961()', $ETI['bt_mini_guardar_2961'], 30);
-echo $objForma->htmlBotonSolo('blimpia2961', 'btMiniLimpiar', 'limpiaf2961()', $ETI['bt_mini_limpiar_2961'], 30);
-echo $objForma->htmlBotonSolo('belimina2961', 'btMiniEliminar', 'eliminaf2961()', $ETI['bt_mini_eliminar_2961'], 30, $sEstiloElimina);
-//Este es el cierre del div_p2961
-?>
-<div class="salto1px"></div>
-</div>
-<?php
-		} //Termina el segundo bloque  condicional - bloque editar.
-?>
-<div class="salto1px"></div>
-<?php
-if (false) {
-?>
-<div class="ir_derecha GrupoCamposAyuda">
-<label class="Label130">
-<?php
-echo $ETI['msg_nombre'];
-?>
-</label>
-<label>
-<input id="bnombre2961" name="bnombre2961" type="text" value="<?php echo $_REQUEST['bnombre2961']; ?>" onchange="paginarf2961()" />
-</label>
-<label class="Label130">
-<?php
-echo $ETI['msg_Listar'];
-?>
-</label>
-<label>
-<?php
-echo $html_blistar2961;
-?>
-</label>
-<div class="salto1px"></div>
-</div>
-<div class="salto1px"></div>
-<?php
-}
-?>
-<div id="div_f2961detalle">
-<?php
-echo $sTabla2961;
-?>
-</div>
-<?php
-}
-?>
-<div class="salto1px"></div>
-</div>
-<?php
-// -- Termina Grupo campos 2961 Dificultades
-?>
-<?php
-// -- Inicia Grupo campos 2962 Compromisos
-?>
-<div class="salto1px"></div>
-<div class="GrupoCampos">
-<label class="TituloGrupo">
-<?php
-echo $ETI['titulo_2962'];
-?>
-</label>
-<?php
-if ($_REQUEST['paso'] == 2) {
-?>
-<input id="boculta2962" name="boculta2962" type="hidden" value="<?php echo $_REQUEST['boculta2962']; ?>" />
-<?php
-	if ($bEdita2962) {
-?>
-<div class="ir_derecha"<?php echo $sAnchoExpandeContrae; ?>>
-<?php
-if (false) {
-	echo $objForma->htmlBotonSolo('btexcel2962', 'btMiniExcel', 'imprime2962()', 'Exportar', 30);
-}
-echo $objForma->htmlExpande(2962, $_REQUEST['boculta2962'], $ETI['bt_mostrar'], $ETI['bt_ocultar']);
-$sEstiloDiv = '';
-if ($_REQUEST['boculta2962'] != 0) {
-	$sEstiloDiv = ' style="display:none;"';
-}
-?>
-</div>
-<div class="salto1px"></div>
-<div id="div_p2962"<?php echo $sEstiloDiv; ?>>
-<label class="Label130"<?php echo $sOcultaConsec; ?>>
-<?php
-echo $ETI['visa62consec'];
-?>
-</label>
-<label class="Label130"<?php echo $sOcultaConsec; ?>>
-<div id="div_visa62consec">
-<?php
-if ((int)$_REQUEST['visa62id'] == 0) {
-?>
-<input id="visa62consec" name="visa62consec" type="text" value="<?php echo $_REQUEST['visa62consec']; ?>" onchange="revisaf2962()" class="cuatro" />
-<?php
-} else {
-	echo html_oculto('visa62consec', $_REQUEST['visa62consec'], formato_numero($_REQUEST['visa62consec']));
-}
-?>
-</div>
-</label>
-<label class="Label60"<?php echo $sOcultaId; ?>>
-<?php
-echo $ETI['visa62id'];
-?>
-</label>
-<label class="Label60"<?php echo $sOcultaId; ?>>
-<div id="div_visa62id">
-<?php
-	echo html_oculto('visa62id', $_REQUEST['visa62id'], formato_numero($_REQUEST['visa62id']));
-?>
-</div>
-</label>
-<label class="txtAreaS">
-<?php
-echo $ETI['visa62descripcion'];
-?>
-<textarea id="visa62descripcion" name="visa62descripcion" placeholder="<?php echo $ETI['ing_campo'] . $ETI['visa62descripcion']; ?>"><?php echo $_REQUEST['visa62descripcion']; ?></textarea>
-</label>
-<div class="salto1px"></div>
-<div class="GrupoCampos450">
-<label class="TituloGrupo">
-<?php
-echo $ETI['visa62idresponsable'];
-?>
-</label>
-<div class="salto1px"></div>
-<input id="visa62idresponsable" name="visa62idresponsable" type="hidden" value="<?php echo $_REQUEST['visa62idresponsable']; ?>" />
-<div id="div_visa62idresponsable_llaves">
-<?php
-echo $html_visa62idresponsable;
-?>
-</div>
-<div class="salto1px"></div>
-<div id="div_visa62idresponsable" class="L"><?php echo $visa62idresponsable_rs; ?></div>
-<div class="salto1px"></div>
-</div>
-<label class="Label130">
-<?php
-echo $ETI['visa62fechalimite'];
-?>
-</label>
-<div class="Campo220">
-<?php
-echo html_FechaEnNumero('visa62fechalimite', $_REQUEST['visa62fechalimite']); //, false, '', $iAgnoIni, $iAgnoFin); //$bvacio, $accion
-?>
-</div>
-<?php
-if (false) {
-	echo $objForma->htmlBotonSolo('bvisa62fechalimite_hoy', 'btMiniHoy', "fecha_AsignarNum('visa62fechalimite', " . $iHoy . ")", $ETI['bt_hoy']);
-}
-?>
-<label class="Label90">
-<div id="div_visa62estado">
-<?php
-echo $ETI['visa62estado'];
-?>
-</label>
-<label class="Label220">
-<?php
-echo $html_visa62estado;
-?>
-</div>
-</label>
-<label class="Label130">
-<?php
-echo $ETI['visa62fechacumple'];
-?>
-</label>
-<div class="Campo220">
-<?php
-echo html_FechaEnNumero('visa62fechacumple', $_REQUEST['visa62fechacumple']); //, false, '', $iAgnoIni, $iAgnoFin); //$bvacio, $accion
-?>
-</div>
-<?php
-if (false) {
-	echo $objForma->htmlBotonSolo('bvisa62fechacumple_hoy', 'btMiniHoy', "fecha_AsignarNum('visa62fechacumple', " . $iHoy . ")", $ETI['bt_hoy']);
-}
-?>
-<label class="txtAreaS">
-<?php
-echo $ETI['visa62observaciones'];
-?>
-<textarea id="visa62observaciones" name="visa62observaciones" placeholder="<?php echo $ETI['ing_campo'] . $ETI['visa62observaciones']; ?>"><?php echo $_REQUEST['visa62observaciones']; ?></textarea>
-</label>
-<label class="Label130">
-<?php
-echo $ETI['visa62fecharegistro'];
-?>
-</label>
-<label class="Label220">
-<div id="div_visa62fecharegistro">
-<?php
-echo html_oculto('visa62fecharegistro', $_REQUEST['visa62fecharegistro'], fecha_desdenumero($_REQUEST['visa62fecharegistro'])); //formato_FechaLargaDesdeNumero
-?>
-</div>
-</label>
-<div class="salto1px"></div>
-<label class="Label130">&nbsp;</label>
-<?php
-$sEstiloElimina = 'display:none;';
-if ((int)$_REQUEST['visa62id'] != 0) {
-	$sEstiloElimina = 'inline-block;';
-}
-echo $objForma->htmlBotonSolo('bguarda2962', 'btMiniGuardar', 'guardaf2962()', $ETI['bt_mini_guardar_2962'], 30);
-echo $objForma->htmlBotonSolo('blimpia2962', 'btMiniLimpiar', 'limpiaf2962()', $ETI['bt_mini_limpiar_2962'], 30);
-echo $objForma->htmlBotonSolo('belimina2962', 'btMiniEliminar', 'eliminaf2962()', $ETI['bt_mini_eliminar_2962'], 30, $sEstiloElimina);
-//Este es el cierre del div_p2962
-?>
-<div class="salto1px"></div>
-</div>
-<?php
-		} //Termina el segundo bloque  condicional - bloque editar.
-?>
-<div class="salto1px"></div>
-<?php
-if (false) {
-?>
-<div class="ir_derecha GrupoCamposAyuda">
-<label class="Label130">
-<?php
-echo $ETI['msg_nombre'];
-?>
-</label>
-<label>
-<input id="bnombre2962" name="bnombre2962" type="text" value="<?php echo $_REQUEST['bnombre2962']; ?>" onchange="paginarf2962()" />
-</label>
-<label class="Label130">
-<?php
-echo $ETI['msg_Listar'];
-?>
-</label>
-<label>
-<?php
-echo $html_blistar2962;
-?>
-</label>
-<div class="salto1px"></div>
-</div>
-<div class="salto1px"></div>
-<?php
-}
-?>
-<div id="div_f2962detalle">
-<?php
-echo $sTabla2962;
-?>
-</div>
-<?php
-}
-?>
-<div class="salto1px"></div>
-</div>
-<?php
-// -- Termina Grupo campos 2962 Compromisos
-?>
-<?php
-// -- Inicia Grupo campos 2963 Solicitud de apoyo
-?>
-<div class="salto1px"></div>
-<div class="GrupoCampos">
-<label class="TituloGrupo">
-<?php
-echo $ETI['titulo_2963'];
-?>
-</label>
-<?php
-if ($_REQUEST['paso'] == 2) {
-?>
-<input id="boculta2963" name="boculta2963" type="hidden" value="<?php echo $_REQUEST['boculta2963']; ?>" />
-<?php
-	if ($bEdita2963) {
-?>
-<div class="ir_derecha"<?php echo $sAnchoExpandeContrae; ?>>
-<?php
-if (false) {
-	echo $objForma->htmlBotonSolo('btexcel2963', 'btMiniExcel', 'imprime2963()', 'Exportar', 30);
-}
-echo $objForma->htmlExpande(2963, $_REQUEST['boculta2963'], $ETI['bt_mostrar'], $ETI['bt_ocultar']);
-$sEstiloDiv = '';
-if ($_REQUEST['boculta2963'] != 0) {
-	$sEstiloDiv = ' style="display:none;"';
-}
-?>
-</div>
-<div class="salto1px"></div>
-<div id="div_p2963"<?php echo $sEstiloDiv; ?>>
-<label class="Label130"<?php echo $sOcultaConsec; ?>>
-<?php
-echo $ETI['visa63consec'];
-?>
-</label>
-<label class="Label130"<?php echo $sOcultaConsec; ?>>
-<div id="div_visa63consec">
-<?php
-if ((int)$_REQUEST['visa63id'] == 0) {
-?>
-<input id="visa63consec" name="visa63consec" type="text" value="<?php echo $_REQUEST['visa63consec']; ?>" onchange="revisaf2963()" class="cuatro" />
-<?php
-} else {
-	echo html_oculto('visa63consec', $_REQUEST['visa63consec'], formato_numero($_REQUEST['visa63consec']));
-}
-?>
-</div>
-</label>
-<label class="Label60"<?php echo $sOcultaId; ?>>
-<?php
-echo $ETI['visa63id'];
-?>
-</label>
-<label class="Label60"<?php echo $sOcultaId; ?>>
-<div id="div_visa63id">
-<?php
-	echo html_oculto('visa63id', $_REQUEST['visa63id'], formato_numero($_REQUEST['visa63id']));
-?>
-</div>
-</label>
-<label class="txtAreaS">
-<?php
-echo $ETI['visa63descripcion'];
-?>
-<textarea id="visa63descripcion" name="visa63descripcion" placeholder="<?php echo $ETI['ing_campo'] . $ETI['visa63descripcion']; ?>"><?php echo $_REQUEST['visa63descripcion']; ?></textarea>
-</label>
-<div class="salto1px"></div>
-<div class="GrupoCampos450">
-<label class="TituloGrupo">
-<?php
-echo $ETI['visa63idcolaborador'];
-?>
-</label>
-<div class="salto1px"></div>
-<input id="visa63idcolaborador" name="visa63idcolaborador" type="hidden" value="<?php echo $_REQUEST['visa63idcolaborador']; ?>" />
-<div id="div_visa63idcolaborador_llaves">
-<?php
-echo $html_visa63idcolaborador;
-?>
-</div>
-<div class="salto1px"></div>
-<div id="div_visa63idcolaborador" class="L"><?php echo $visa63idcolaborador_rs; ?></div>
-<div class="salto1px"></div>
-</div>
-<label class="Label90">
-<div id="div_visa63estado">
-<?php
-echo $ETI['visa63estado'];
-?>
-</label>
-<label class="Label220">
-<?php
-echo $html_visa63estado;
-?>
-</div>
-</label>
-<label class="Label130">
-<?php
-echo $ETI['visa63fechasolicitud'];
-?>
-</label>
-<div class="Campo220">
-<?php
-echo html_FechaEnNumero('visa63fechasolicitud', $_REQUEST['visa63fechasolicitud']); //, false, '', $iAgnoIni, $iAgnoFin); //$bvacio, $accion
-?>
-</div>
-<?php
-if (false) {
-	echo $objForma->htmlBotonSolo('bvisa63fechasolicitud_hoy', 'btMiniHoy', "fecha_AsignarNum('visa63fechasolicitud', " . $iHoy . ")", $ETI['bt_hoy']);
-}
-?>
-<label class="Label130">
-<?php
-echo $ETI['visa63fecharespuesta'];
-?>
-</label>
-<div class="Campo220">
-<?php
-echo html_FechaEnNumero('visa63fecharespuesta', $_REQUEST['visa63fecharespuesta']); //, false, '', $iAgnoIni, $iAgnoFin); //$bvacio, $accion
-?>
-</div>
-<?php
-if (false) {
-	echo $objForma->htmlBotonSolo('bvisa63fecharespuesta_hoy', 'btMiniHoy', "fecha_AsignarNum('visa63fecharespuesta', " . $iHoy . ")", $ETI['bt_hoy']);
-}
-?>
-<label class="txtAreaS">
-<?php
-echo $ETI['visa63observaciones'];
-?>
-<textarea id="visa63observaciones" name="visa63observaciones" placeholder="<?php echo $ETI['ing_campo'] . $ETI['visa63observaciones']; ?>"><?php echo $_REQUEST['visa63observaciones']; ?></textarea>
-</label>
-<div class="salto1px"></div>
-<label class="Label130">&nbsp;</label>
-<?php
-$sEstiloElimina = 'display:none;';
-if ((int)$_REQUEST['visa63id'] != 0) {
-	$sEstiloElimina = 'inline-block;';
-}
-echo $objForma->htmlBotonSolo('bguarda2963', 'btMiniGuardar', 'guardaf2963()', $ETI['bt_mini_guardar_2963'], 30);
-echo $objForma->htmlBotonSolo('blimpia2963', 'btMiniLimpiar', 'limpiaf2963()', $ETI['bt_mini_limpiar_2963'], 30);
-echo $objForma->htmlBotonSolo('belimina2963', 'btMiniEliminar', 'eliminaf2963()', $ETI['bt_mini_eliminar_2963'], 30, $sEstiloElimina);
-//Este es el cierre del div_p2963
-?>
-<div class="salto1px"></div>
-</div>
-<?php
-		} //Termina el segundo bloque  condicional - bloque editar.
-?>
-<div class="salto1px"></div>
-<?php
-if (false) {
-?>
-<div class="ir_derecha GrupoCamposAyuda">
-<label class="Label130">
-<?php
-echo $ETI['msg_nombre'];
-?>
-</label>
-<label>
-<input id="bnombre2963" name="bnombre2963" type="text" value="<?php echo $_REQUEST['bnombre2963']; ?>" onchange="paginarf2963()" />
-</label>
-<label class="Label130">
-<?php
-echo $ETI['msg_Listar'];
-?>
-</label>
-<label>
-<?php
-echo $html_blistar2963;
-?>
-</label>
-<div class="salto1px"></div>
-</div>
-<div class="salto1px"></div>
-<?php
-}
-?>
-<div id="div_f2963detalle">
-<?php
-echo $sTabla2963;
-?>
-</div>
-<?php
-}
-?>
-<div class="salto1px"></div>
-</div>
-<?php
-// -- Termina Grupo campos 2963 Solicitud de apoyo
 ?>
 <?php
 if (false) {

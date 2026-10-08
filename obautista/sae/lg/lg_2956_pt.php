@@ -15,12 +15,12 @@ $ETI['visa56consec'] = 'Consecutivo';
 $ETI['msg_visa56consec'] = 'Consecutivo atual';
 $ETI['msg_visa56consec_nuevo'] = 'Novo consecutivo';
 $ETI['visa56id'] = 'Ref :';
-$ETI['visa56fechaini'] = 'Fechaini';
-$ETI['visa56fechafin'] = 'Fechafin';
+$ETI['visa56fechaini'] = 'Fecha inicio';
+$ETI['visa56fechafin'] = 'Fecha fin';
 $ETI['visa56estado'] = 'Estado';
 $ETI['visa56fechacrea'] = 'Fechacrea';
-$ETI['visa56fechacierre'] = 'Fechacierre';
-$ETI['visa56observacion'] = 'Observacion';
+$ETI['visa56fechacierre'] = 'Fecha cierre';
+$ETI['visa56observacion'] = 'Observaci&oacute;n';
 $ETI['visa56activo'] = 'Activo';
 
 $ERR['visa56consec'] = '&Eacute; necess&aacute;rio o dado ' . $ETI['visa56consec'];
@@ -33,8 +33,8 @@ $ERR['visa56fechacierre'] = $ETI['visa56fechacierre'] . ' errada';
 $ERR['visa56observacion'] = '&Eacute; necess&aacute;rio o dado ' . $ETI['visa56observacion'];
 $ERR['visa56activo'] = '&Eacute; necess&aacute;rio o dado ' . $ETI['visa56activo'];
 
-$avisa56estado = array('', '');
-$ivisa56estado = 0;
+$avisa56estado = array('Cerrado', 'Abierto');
+$ivisa56estado = 2;
 $avisa56activo = array('', '');
 $ivisa56activo = 0;
 

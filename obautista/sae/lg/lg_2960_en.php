@@ -13,11 +13,11 @@ $ETI['lnk_cargar'] = 'Edit';
 $ETI['visa60idactividad'] = 'Actividad';
 $ETI['visa60consec'] = 'Consecutive';
 $ETI['visa60id'] = 'Ref :';
-$ETI['visa60fechareproini'] = 'Fechareproini';
-$ETI['visa60fechareprofin'] = 'Fechareprofin';
+$ETI['visa60fechareproini'] = 'Fecha inicial';
+$ETI['visa60fechareprofin'] = 'Fecha final';
 $ETI['visa60motivo'] = 'Motivo';
-$ETI['visa60fecharegistro'] = 'Fecharegistro';
-$ETI['visa60idusuario'] = 'Usuario';
+$ETI['visa60fecharegistro'] = 'Fecha registro';
+$ETI['visa60idusuario'] = 'Usuario registra';
 $ETI['visa60idusuario_busca'] = 'Usuario search';
 
 $ERR['visa60idactividad'] = 'The field ' . $ETI['visa60idactividad'] . ' is required';
@@ -28,6 +28,7 @@ $ERR['visa60fechareprofin'] = '' . $ETI['visa60fechareprofin'] . ' is incorrect'
 $ERR['visa60motivo'] = 'The field ' . $ETI['visa60motivo'] . ' is required';
 $ERR['visa60fecharegistro'] = '' . $ETI['visa60fecharegistro'] . ' is incorrect';
 $ERR['visa60idusuario'] = 'The field ' . $ETI['visa60idusuario'] . ' is required';
-
+$ERR['msg_fecha'] = 'La fecha de reprogramaci&oacute;n no es correcta';
+$ERR['msg_actividad'] = 'La actividad no existe';
 
 

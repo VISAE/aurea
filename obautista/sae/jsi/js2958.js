@@ -34,7 +34,7 @@ function limpiaf2958() {
 	params[1] = window.document.frmedita.visa57id.value;
 	xajax_f2958_PintarLlaves(params);
 	window.document.frmedita.visa58descripcion.value = '';
-	window.document.frmedita.visa58cumplimiento.value = 1;
+	window.document.frmedita.visa58cumplimiento.value = '';
 	verboton('belimina2958', 'none');
 }
 
@@ -80,7 +80,7 @@ function cargaridf2958(llave1) {
 
 function paginarf2958() {
 	params = paramsf2958();
-	document.getElementById('div_f2958detalle').innerHTML = '<div class="GrupoCamposAyuda"><div class="MarquesinaMedia"><?php echo $ETI['msg_procesando_datos']; ?></div></div><input id="paginaf2958" name="paginaf2958" type="hidden" value="' + params[101] + '" /><input id="lppf2958" name="lppf2958" type="hidden" value="' + params[102] + '" />';
+	document.getElementById('div_f2958detalle').innerHTML = '<div class="GrupoCamposAyuda"><div class="MarquesinaMedia">' + msgProcesandoDatos + '</div></div><input id="paginaf2958" name="paginaf2958" type="hidden" value="' + params[101] + '" /><input id="lppf2958" name="lppf2958" type="hidden" value="' + params[102] + '" />';
 	xajax_f2958_HtmlTabla(params);
 }
 

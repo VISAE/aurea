@@ -24,7 +24,7 @@ $ERR['visa58descripcion'] = 'Necesita el dato ' . $ETI['visa58descripcion'];
 $ERR['visa58cumplimiento'] = 'Necesita el dato ' . $ETI['visa58cumplimiento'];
 $ERR['visa58fecharegistro'] = '' . $ETI['visa58fecharegistro'] . ' incorrecta';
 
-$avisa58cumplimiento = array('', '');
-$ivisa58cumplimiento = 0;
+$avisa58cumplimiento = array('', 'No cumplido', '', 'Cumplido', '', 'Parcial');
+$ivisa58cumplimiento = 5;
 
 

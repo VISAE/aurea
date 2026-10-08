@@ -15,7 +15,7 @@ $ETI['visa58consec'] = 'Consecutivo';
 $ETI['visa58id'] = 'Ref :';
 $ETI['visa58descripcion'] = 'Descripcion';
 $ETI['visa58cumplimiento'] = 'Cumplimiento';
-$ETI['visa58fecharegistro'] = 'Fecharegistro';
+$ETI['visa58fecharegistro'] = 'Fecha registro';
 
 $ERR['visa58idactividad'] = '&Eacute; necess&aacute;rio o dado ' . $ETI['visa58idactividad'];
 $ERR['visa58consec'] = '&Eacute; necess&aacute;rio o dado ' . $ETI['visa58consec'];
@@ -24,7 +24,7 @@ $ERR['visa58descripcion'] = '&Eacute; necess&aacute;rio o dado ' . $ETI['visa58d
 $ERR['visa58cumplimiento'] = '&Eacute; necess&aacute;rio o dado ' . $ETI['visa58cumplimiento'];
 $ERR['visa58fecharegistro'] = '' . $ETI['visa58fecharegistro'] . ' errada';
 
-$avisa58cumplimiento = array('', '');
-$ivisa58cumplimiento = 0;
+$avisa58cumplimiento = array('', 'No cumplido', '', 'Cumplido', '', 'Parcial');
+$ivisa58cumplimiento = 5;
 
 

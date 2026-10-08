@@ -32,6 +32,8 @@ function f2963_db_Guardar($valores, $objDB, $bDebug = false, $idTercero = 0, $iC
 	}
 	$bInserta = false;
 	$iAccion = 3;
+	$iHoy = fecha_DiaMod();
+	$bPuedeGuardar = false;
 	if (!is_array($valores)) {
 		$valores = json_decode(str_replace('\"', '"', $valores), true);
 	}
@@ -142,6 +144,7 @@ function f2963_db_Guardar($valores, $objDB, $bDebug = false, $idTercero = 0, $iC
 		//$visa63observaciones = str_replace('"', '\"', $visa63observaciones);
 		$visa63observaciones = str_replace('"', '\"', $visa63observaciones);
 		if ($bInserta) {
+			$visa63estado = 1;
 			$sCampos2963 = 'visa63idactividad, visa63consec, visa63id, visa63descripcion, visa63idcolaborador, 
 			visa63estado, visa63fechasolicitud, visa63fecharespuesta, visa63observaciones';
 			$sValores2963 = '' . $visa63idactividad . ', ' . $visa63consec . ', ' . $visa63id . ', "' . $visa63descripcion . '", ' . $visa63idcolaborador . ', 
@@ -161,6 +164,7 @@ function f2963_db_Guardar($valores, $objDB, $bDebug = false, $idTercero = 0, $iC
 				if ($bAudita[2]) {
 					seg_auditar($iCodModulo, $_SESSION['unad_id_tercero'], 2, $visa63id, $sSQL, $objDB);
 				}
+				$bPuedeGuardar = true;
 			}
 		} else {
 			$scampo2963[1] = 'visa63descripcion';
@@ -210,8 +214,13 @@ function f2963_db_Guardar($valores, $objDB, $bDebug = false, $idTercero = 0, $iC
 					if ($bAudita[3]) {
 						seg_auditar($iCodModulo, $_SESSION['unad_id_tercero'], 3, $visa63id, $sSQL, $objDB);
 					}
+					$bPuedeGuardar = true;
 				}
 			}
+		}
+		if ($bPuedeGuardar) {
+			$sSQL = 'UPDATE visa57actividad SET visa57fechaactualiza=' . $iHoy . ' WHERE visa57id=' . $visa63idactividad . '';
+			$result = $objDB->ejecutasql($sSQL);
 		}
 	}
 	return array($sError, $iAccion, $visa63id, $sDebug);
@@ -234,6 +243,7 @@ function f2963_db_Eliminar($aParametros, $objDB, $bDebug = false, $idTercero = 0
 	require $mensajes_2963;
 	$sError = '';
 	$sDebug = '';
+	$iHoy = fecha_DiaMod();
 	if ($idTercero == 0) {
 		$idTercero = $_SESSION['unad_id_tercero'];
 	}
@@ -279,6 +289,8 @@ function f2963_db_Eliminar($aParametros, $objDB, $bDebug = false, $idTercero = 0
 			if ($bAudita[4]) {
 				seg_auditar($iCodModulo, $_SESSION['unad_id_tercero'], 4, $visa63id, $sSQL, $objDB);
 			}
+			$sSQL = 'UPDATE visa57actividad SET visa57fechaactualiza=' . $iHoy . ' WHERE visa57id=' . $visa63idactividad . '';
+			$result = $objDB->ejecutasql($sSQL);
 		}
 	}
 	return array($sError, $sDebug);
@@ -346,8 +358,13 @@ function f2963_TablaDetalleV2($aParametros, $objDB, $bDebug = false)
 	$tabla = $objDB->ejecutasql($sSQL);
 	if ($objDB->nf($tabla) > 0) {
 		$fila = $objDB->sf($tabla);
-		if ($fila['visa57estado'] == 0) {
-			$bAbierta = true;
+		switch ($fila['visa57estado']) {
+			case 0:
+			case 1:
+			case 5:
+			case 9:
+				$bAbierta = true;
+				break;
 		}
 	}
 	$iPiel = iDefinirPiel($APP, 2);
@@ -388,7 +405,7 @@ function f2963_TablaDetalleV2($aParametros, $objDB, $bDebug = false)
 	$registros = 0;
 	$bGigante = false; //En caso de que la tabla sea muy grande pasarlo a true
 	$sLimite = '';
-	$sCampos = 'SELECT TB.visa63idactividad, TB.visa63consec, T3.unad11razonsocial AS C3_nombre, TB.visa63estado, TB.visa63fechasolicitud, TB.visa63idcolaborador, T3.unad11tipodoc AS C3_td, T3.unad11doc AS C3_doc';
+	$sCampos = 'SELECT TB.visa63id, TB.visa63idactividad, TB.visa63consec, T3.unad11razonsocial AS C3_nombre, TB.visa63estado, TB.visa63fechasolicitud, TB.visa63idcolaborador, T3.unad11tipodoc AS C3_td, T3.unad11doc AS C3_doc';
 	$sConsulta = 'FROM ' . $sNomTabla2963 . ' AS TB, unad11terceros AS T3 
 	WHERE ' . $sSQLadd1 . ' TB.visa63idactividad=' . $visa57id . ' AND TB.visa63idcolaborador=T3.unad11id ' . $sSQLadd . '';
 	$sOrden = 'ORDER BY TB.visa63consec';
@@ -464,9 +481,11 @@ function f2963_TablaDetalleV2($aParametros, $objDB, $bDebug = false)
 		if ($filadet['visa63fechasolicitud'] != 0) {
 			$et_visa63fechasolicitud = $sPrefijo . fecha_desdenumero($filadet['visa63fechasolicitud']) . $sSufijo;
 		}
-		if ($bAbierta) {
-			$sLink = '<a href="javascript:cargaridf2963(' . $filadet['visa63id'] . ')" class="lnkresalte">' . $ETI['lnk_cargar'] . '</a>';
+		$sTextoBtn = $ETI['lnk_cargar'];
+		if (!$bAbierta) {
+			$sTextoBtn = $ETI['lnk_consultar'];
 		}
+		$sLink = '<a href="javascript:cargaridf2963(' . $filadet['visa63id'] . ')" class="lnkresalte">' . $sTextoBtn . '</a>';
 		$res = $res . '<tr' . $sClass . '>';
 		$res = $res . '<td>' . $et_visa63consec . '</td>';
 		$res = $res . '<td>' . $et_visa63idcolaborador_doc . '</td>';

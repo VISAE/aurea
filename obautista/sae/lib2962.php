@@ -32,6 +32,8 @@ function f2962_db_Guardar($valores, $objDB, $bDebug = false, $idTercero = 0, $iC
 	}
 	$bInserta = false;
 	$iAccion = 3;
+	$iHoy = fecha_DiaMod();
+	$bPuedeGuardar = false;
 	if (!is_array($valores)) {
 		$valores = json_decode(str_replace('\"', '"', $valores), true);
 	}
@@ -143,6 +145,7 @@ function f2962_db_Guardar($valores, $objDB, $bDebug = false, $idTercero = 0, $iC
 		//$visa62observaciones = str_replace('"', '\"', $visa62observaciones);
 		$visa62observaciones = str_replace('"', '\"', $visa62observaciones);
 		if ($bInserta) {
+			$visa62estado = 1;
 			$sCampos2962 = 'visa62idactividad, visa62consec, visa62id, visa62descripcion, visa62idresponsable, 
 			visa62fechalimite, visa62estado, visa62fechacumple, visa62observaciones, visa62fecharegistro';
 			$sValores2962 = '' . $visa62idactividad . ', ' . $visa62consec . ', ' . $visa62id . ', "' . $visa62descripcion . '", ' . $visa62idresponsable . ', 
@@ -162,6 +165,7 @@ function f2962_db_Guardar($valores, $objDB, $bDebug = false, $idTercero = 0, $iC
 				if ($bAudita[2]) {
 					seg_auditar($iCodModulo, $_SESSION['unad_id_tercero'], 2, $visa62id, $sSQL, $objDB);
 				}
+				$bPuedeGuardar = true;
 			}
 		} else {
 			$scampo2962[1] = 'visa62descripcion';
@@ -213,8 +217,13 @@ function f2962_db_Guardar($valores, $objDB, $bDebug = false, $idTercero = 0, $iC
 					if ($bAudita[3]) {
 						seg_auditar($iCodModulo, $_SESSION['unad_id_tercero'], 3, $visa62id, $sSQL, $objDB);
 					}
+					$bPuedeGuardar = true;
 				}
 			}
+		}
+		if ($bPuedeGuardar) {
+			$sSQL = 'UPDATE visa57actividad SET visa57fechaactualiza=' . $iHoy . ' WHERE visa57id=' . $visa62idactividad . '';
+			$result = $objDB->ejecutasql($sSQL);
 		}
 	}
 	return array($sError, $iAccion, $visa62id, $sDebug);
@@ -237,6 +246,7 @@ function f2962_db_Eliminar($aParametros, $objDB, $bDebug = false, $idTercero = 0
 	require $mensajes_2962;
 	$sError = '';
 	$sDebug = '';
+	$iHoy = fecha_DiaMod();
 	if ($idTercero == 0) {
 		$idTercero = $_SESSION['unad_id_tercero'];
 	}
@@ -282,6 +292,8 @@ function f2962_db_Eliminar($aParametros, $objDB, $bDebug = false, $idTercero = 0
 			if ($bAudita[4]) {
 				seg_auditar($iCodModulo, $_SESSION['unad_id_tercero'], 4, $visa62id, $sSQL, $objDB);
 			}
+			$sSQL = 'UPDATE visa57actividad SET visa57fechaactualiza=' . $iHoy . ' WHERE visa57id=' . $visa62idactividad . '';
+			$result = $objDB->ejecutasql($sSQL);
 		}
 	}
 	return array($sError, $sDebug);
@@ -391,7 +403,7 @@ function f2962_TablaDetalleV2($aParametros, $objDB, $bDebug = false)
 	$registros = 0;
 	$bGigante = false; //En caso de que la tabla sea muy grande pasarlo a true
 	$sLimite = '';
-	$sCampos = 'SELECT TB.visa62idactividad, TB.visa62consec, TB.visa62descripcion, T4.unad11razonsocial AS C4_nombre, TB.visa62fechalimite, 
+	$sCampos = 'SELECT TB.visa62id, TB.visa62idactividad, TB.visa62consec, TB.visa62descripcion, T4.unad11razonsocial AS C4_nombre, TB.visa62fechalimite, 
 	TB.visa62estado, TB.visa62idresponsable, T4.unad11tipodoc AS C4_td, T4.unad11doc AS C4_doc';
 	$sConsulta = 'FROM ' . $sNomTabla2962 . ' AS TB, unad11terceros AS T4 
 	WHERE ' . $sSQLadd1 . ' TB.visa62idactividad=' . $visa57id . ' AND TB.visa62idresponsable=T4.unad11id ' . $sSQLadd . '';
@@ -458,7 +470,7 @@ function f2962_TablaDetalleV2($aParametros, $objDB, $bDebug = false)
 		}
 		$tlinea++;
 		$et_visa62consec = $sPrefijo . $filadet['visa62consec'] . $sSufijo;
-		$et_visa62descripcion = $sPrefijo . cadena_notildes($filadet['visa62descripcion']) . $sSufijo;
+		$et_visa62descripcion = $sPrefijo . cadena_notildes(mb_substr($filadet['visa62descripcion'], 0, 100)) . $sSufijo;
 		$et_visa62idresponsable_doc = '';
 		$et_visa62idresponsable_nombre = '';
 		if ($filadet['visa62idresponsable'] != 0) {
@@ -470,9 +482,11 @@ function f2962_TablaDetalleV2($aParametros, $objDB, $bDebug = false)
 			$et_visa62fechalimite = $sPrefijo . fecha_desdenumero($filadet['visa62fechalimite']) . $sSufijo;
 		}
 		$et_visa62estado = $avisa62estado[$filadet['visa62estado']];
-		if ($bAbierta) {
-			$sLink = '<a href="javascript:cargaridf2962(' . $filadet['visa62id'] . ')" class="lnkresalte">' . $ETI['lnk_cargar'] . '</a>';
+		$sTextoBtn = $ETI['lnk_cargar'];
+		if (!$bAbierta) {
+			$sTextoBtn = $ETI['lnk_consultar'];
 		}
+		$sLink = '<a href="javascript:cargaridf2962(' . $filadet['visa62id'] . ')" class="lnkresalte">' . $sTextoBtn . '</a>';
 		$res = $res . '<tr' . $sClass . '>';
 		$res = $res . '<td>' . $et_visa62consec . '</td>';
 		$res = $res . '<td>' . $et_visa62descripcion . '</td>';
@@ -783,8 +797,9 @@ function f2962_PintarLlaves($aParametros)
 	$objCombos = new clsHtmlCombos();
 	$html_visa62consec = '<input id="visa62consec" name="visa62consec" type="text" value="" onchange="revisaf2962()" class="cuatro" />';
 	$html_visa62id = '<input id="visa62id" name="visa62id" type="hidden" value="" />';
-	$et_visa62fecharegistro = '00/00/0000';
-	$html_visa62fecharegistro = html_oculto('visa62fecharegistro', 0, $et_visa62fecharegistro);
+	$iHoy = fecha_DiaMod();
+	$et_visa62fecharegistro = fecha_desdenumero($iHoy);
+	$html_visa62fecharegistro = html_oculto('visa62fecharegistro', $iHoy, $et_visa62fecharegistro);
 	$objResponse = new xajaxResponse();
 	$objResponse->assign('div_visa62consec', 'innerHTML', $html_visa62consec);
 	$objResponse->assign('div_visa62id', 'innerHTML', $html_visa62id);

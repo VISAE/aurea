@@ -35,8 +35,8 @@ function limpiaf2961() {
 	params[1] = window.document.frmedita.visa57id.value;
 	xajax_f2961_PintarLlaves(params);
 	window.document.frmedita.visa61descripcion.value = '';
-	window.document.frmedita.visa61impacto.value = 1;
-	window.document.frmedita.visa61requiereapoyo.value = 1;
+	window.document.frmedita.visa61impacto.value = '';
+	window.document.frmedita.visa61requiereapoyo.value = 0;
 	verboton('belimina2961', 'none');
 }
 
@@ -82,7 +82,7 @@ function cargaridf2961(llave1) {
 
 function paginarf2961() {
 	params = paramsf2961();
-	document.getElementById('div_f2961detalle').innerHTML = '<div class="GrupoCamposAyuda"><div class="MarquesinaMedia"><?php echo $ETI['msg_procesando_datos']; ?></div></div><input id="paginaf2961" name="paginaf2961" type="hidden" value="' + params[101] + '" /><input id="lppf2961" name="lppf2961" type="hidden" value="' + params[102] + '" />';
+	document.getElementById('div_f2961detalle').innerHTML = '<div class="GrupoCamposAyuda"><div class="MarquesinaMedia">' + msgProcesandoDatos + '</div></div><input id="paginaf2961" name="paginaf2961" type="hidden" value="' + params[101] + '" /><input id="lppf2961" name="lppf2961" type="hidden" value="' + params[102] + '" />';
 	xajax_f2961_HtmlTabla(params);
 }
 

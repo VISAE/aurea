@@ -32,6 +32,8 @@ function f2958_db_Guardar($valores, $objDB, $bDebug = false, $idTercero = 0, $iC
 	}
 	$bInserta = false;
 	$iAccion = 3;
+	$iHoy = fecha_DiaMod();
+	$bPuedeGuardar = false;
 	if (!is_array($valores)) {
 		$valores = json_decode(str_replace('\"', '"', $valores), true);
 	}
@@ -138,6 +140,7 @@ function f2958_db_Guardar($valores, $objDB, $bDebug = false, $idTercero = 0, $iC
 				if ($bAudita[2]) {
 					seg_auditar($iCodModulo, $_SESSION['unad_id_tercero'], 2, $visa58id, $sSQL, $objDB);
 				}
+				$bPuedeGuardar = true;
 			}
 		} else {
 			$scampo2958[1] = 'visa58descripcion';
@@ -181,8 +184,13 @@ function f2958_db_Guardar($valores, $objDB, $bDebug = false, $idTercero = 0, $iC
 					if ($bAudita[3]) {
 						seg_auditar($iCodModulo, $_SESSION['unad_id_tercero'], 3, $visa58id, $sSQL, $objDB);
 					}
+					$bPuedeGuardar = true;
 				}
 			}
+		}
+		if ($bPuedeGuardar) {
+			$sSQL = 'UPDATE visa57actividad SET visa57fechaactualiza=' . $iHoy . ' WHERE visa57id=' . $visa58idactividad . '';
+			$result = $objDB->ejecutasql($sSQL);
 		}
 	}
 	return array($sError, $iAccion, $visa58id, $sDebug);
@@ -205,6 +213,7 @@ function f2958_db_Eliminar($aParametros, $objDB, $bDebug = false, $idTercero = 0
 	require $mensajes_2958;
 	$sError = '';
 	$sDebug = '';
+	$iHoy = fecha_DiaMod();
 	if ($idTercero == 0) {
 		$idTercero = $_SESSION['unad_id_tercero'];
 	}
@@ -250,6 +259,8 @@ function f2958_db_Eliminar($aParametros, $objDB, $bDebug = false, $idTercero = 0
 			if ($bAudita[4]) {
 				seg_auditar($iCodModulo, $_SESSION['unad_id_tercero'], 4, $visa58id, $sSQL, $objDB);
 			}
+			$sSQL = 'UPDATE visa57actividad SET visa57fechaactualiza=' . $iHoy . ' WHERE visa57id=' . $visa58idactividad . '';
+			$result = $objDB->ejecutasql($sSQL);
 		}
 	}
 	return array($sError, $sDebug);
@@ -317,7 +328,7 @@ function f2958_TablaDetalleV2($aParametros, $objDB, $bDebug = false)
 	$tabla = $objDB->ejecutasql($sSQL);
 	if ($objDB->nf($tabla) > 0) {
 		$fila = $objDB->sf($tabla);
-		if ($fila['visa57estado'] == 0) {
+		if ($fila['visa57estado'] == 7) {
 			$bAbierta = true;
 		}
 	}
@@ -357,7 +368,7 @@ function f2958_TablaDetalleV2($aParametros, $objDB, $bDebug = false)
 	$registros = 0;
 	$bGigante = false; //En caso de que la tabla sea muy grande pasarlo a true
 	$sLimite = '';
-	$sCampos = 'SELECT TB.visa58idactividad, TB.visa58consec, TB.visa58cumplimiento, TB.visa58fecharegistro';
+	$sCampos = 'SELECT TB.visa58id, TB.visa58idactividad, TB.visa58consec, TB.visa58cumplimiento, TB.visa58fecharegistro';
 	$sConsulta = 'FROM ' . $sNomTabla2958 . ' AS TB 
 	WHERE ' . $sSQLadd1 . ' TB.visa58idactividad=' . $visa57id . ' ' . $sSQLadd . '';
 	$sOrden = 'ORDER BY TB.visa58consec';
@@ -421,17 +432,21 @@ function f2958_TablaDetalleV2($aParametros, $objDB, $bDebug = false)
 		}
 		$tlinea++;
 		$et_visa58consec = $sPrefijo . $filadet['visa58consec'] . $sSufijo;
-		$et_visa58cumplimiento = $sPrefijo . $ETI['si'] . $sSufijo;
-		if ($filadet['visa58cumplimiento'] == 0) {
-			$et_visa58cumplimiento = $sPrefijo . $ETI['no'] . $sSufijo;
+		$et_visa58cumplimiento = $sPrefijo . $ETI['msg_sindato'] . $sSufijo;
+		if ($filadet['visa58cumplimiento'] > 0) {
+			if (isset($avisa58cumplimiento[$filadet['visa58cumplimiento']])) {
+				$et_visa58cumplimiento = $sPrefijo . $avisa58cumplimiento[$filadet['visa58cumplimiento']] . $sSufijo;
+			}
 		}
 		$et_visa58fecharegistro = '';
 		if ($filadet['visa58fecharegistro'] != 0) {
 			$et_visa58fecharegistro = $sPrefijo . fecha_desdenumero($filadet['visa58fecharegistro']) . $sSufijo;
 		}
-		if ($bAbierta) {
-			$sLink = '<a href="javascript:cargaridf2958(' . $filadet['visa58id'] . ')" class="lnkresalte">' . $ETI['lnk_cargar'] . '</a>';
+		$sTextoBtn = $ETI['lnk_cargar'];
+		if (!$bAbierta) {
+			$sTextoBtn = $ETI['lnk_consultar'];
 		}
+		$sLink = '<a href="javascript:cargaridf2958(' . $filadet['visa58id'] . ')" class="lnkresalte">' . $sTextoBtn . '</a>';
 		$res = $res . '<tr' . $sClass . '>';
 		$res = $res . '<td>' . $et_visa58consec . '</td>';
 		$res = $res . '<td>' . $et_visa58cumplimiento . '</td>';
@@ -715,8 +730,9 @@ function f2958_PintarLlaves($aParametros)
 	$iPiel = iDefinirPiel($APP, 2);
 	$html_visa58consec = '<input id="visa58consec" name="visa58consec" type="text" value="" onchange="revisaf2958()" class="cuatro" />';
 	$html_visa58id = '<input id="visa58id" name="visa58id" type="hidden" value="" />';
-	$et_visa58fecharegistro = '00/00/0000';
-	$html_visa58fecharegistro = html_oculto('visa58fecharegistro', 0, $et_visa58fecharegistro);
+	$iHoy = fecha_DiaMod();
+	$et_visa58fecharegistro = fecha_desdenumero($iHoy);
+	$html_visa58fecharegistro = html_oculto('visa58fecharegistro', $iHoy, $et_visa58fecharegistro);
 	$objResponse = new xajaxResponse();
 	$objResponse->assign('div_visa58consec', 'innerHTML', $html_visa58consec);
 	$objResponse->assign('div_visa58id', 'innerHTML', $html_visa58id);

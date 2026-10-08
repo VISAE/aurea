@@ -18,9 +18,9 @@ $ETI['visa62idresponsable'] = 'Responsable';
 $ETI['visa62idresponsable_busca'] = 'Busqueda de responsable';
 $ETI['visa62fechalimite'] = 'Fecha l&iacute;mite';
 $ETI['visa62estado'] = 'Estado';
-$ETI['visa62fechacumple'] = 'Fechacumple';
+$ETI['visa62fechacumple'] = 'Fecha cumple';
 $ETI['visa62observaciones'] = 'Observaciones';
-$ETI['visa62fecharegistro'] = 'Fecharegistro';
+$ETI['visa62fecharegistro'] = 'Fecha registro';
 
 $ERR['visa62idactividad'] = 'Necesita el dato ' . $ETI['visa62idactividad'];
 $ERR['visa62consec'] = 'Necesita el dato ' . $ETI['visa62consec'];

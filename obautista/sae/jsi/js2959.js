@@ -66,13 +66,13 @@ function limpiaf2959() {
 	window.document.frmedita.visa59titulo.value = '';
 	limpia_visa59idarchivo();
 	verboton('banexavisa59idarchivo', 'none');
-	window.document.frmedita.visa59tipoarchivo.value = 1;
+	window.document.frmedita.visa59tipoarchivo.value = '';
 	window.document.frmedita.visa59descripcion.value = '';
-	window.document.frmedita.visa59idusuario.value = 0;
-	window.document.frmedita.visa59idusuario_td.value = window.document.frmedita.stipodoc.value;
-	window.document.frmedita.visa59idusuario_doc.value = '';
-	document.getElementById('div_visa59idusuario').innerHTML = '';
-	//ter_traerxid('visa59idusuario', window.document.frmedita.idusuario.value);
+	// window.document.frmedita.visa59idusuario.value = 0;
+	// window.document.frmedita.visa59idusuario_td.value = window.document.frmedita.stipodoc.value;
+	// window.document.frmedita.visa59idusuario_doc.value = '';
+	// document.getElementById('div_visa59idusuario').innerHTML = '';
+	ter_traerxid('visa59idusuario', window.document.frmedita.idusuario.value);
 	verboton('belimina2959', 'none');
 }
 
@@ -118,7 +118,7 @@ function cargaridf2959(llave1) {
 
 function paginarf2959() {
 	params = paramsf2959();
-	document.getElementById('div_f2959detalle').innerHTML = '<div class="GrupoCamposAyuda"><div class="MarquesinaMedia"><?php echo $ETI['msg_procesando_datos']; ?></div></div><input id="paginaf2959" name="paginaf2959" type="hidden" value="' + params[101] + '" /><input id="lppf2959" name="lppf2959" type="hidden" value="' + params[102] + '" />';
+	document.getElementById('div_f2959detalle').innerHTML = '<div class="GrupoCamposAyuda"><div class="MarquesinaMedia">' + msgProcesandoDatos + '</div></div><input id="paginaf2959" name="paginaf2959" type="hidden" value="' + params[101] + '" /><input id="lppf2959" name="lppf2959" type="hidden" value="' + params[102] + '" />';
 	xajax_f2959_HtmlTabla(params);
 }
 

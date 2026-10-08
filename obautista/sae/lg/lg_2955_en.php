@@ -21,8 +21,8 @@ $ETI['visa55idresponsable'] = 'Responsable';
 $ETI['visa55idresponsable_busca'] = 'Responsable search';
 $ETI['visa55vigente'] = 'Vigente';
 $ETI['visa55color'] = 'Color';
-$ETI['visa55fechacreacion'] = 'Fechacreacion';
-$ETI['visa55fechaactualiza'] = 'Fechaactualiza';
+$ETI['visa55fechacreacion'] = 'Fecha de creacion';
+$ETI['visa55fechaactualiza'] = 'Fecha de Actualizaci&oacute;n';
 
 $ERR['visa55idproyecto'] = 'The field ' . $ETI['visa55idproyecto'] . ' is required';
 $ERR['visa55codigo'] = 'The field ' . $ETI['visa55codigo'] . ' is required';

@@ -15,8 +15,8 @@ $ETI['visa61consec'] = 'Consecutivo';
 $ETI['visa61id'] = 'Ref :';
 $ETI['visa61descripcion'] = 'Descripcion';
 $ETI['visa61impacto'] = 'Impacto';
-$ETI['visa61requiereapoyo'] = 'Requiereapoyo';
-$ETI['visa61fecharegistro'] = 'Fecharegistro';
+$ETI['visa61requiereapoyo'] = 'Requiere apoyo';
+$ETI['visa61fecharegistro'] = 'Fecha registro';
 
 $ERR['visa61idactividad'] = '&Eacute; necess&aacute;rio o dado ' . $ETI['visa61idactividad'];
 $ERR['visa61consec'] = '&Eacute; necess&aacute;rio o dado ' . $ETI['visa61consec'];
@@ -26,8 +26,8 @@ $ERR['visa61impacto'] = '&Eacute; necess&aacute;rio o dado ' . $ETI['visa61impac
 $ERR['visa61requiereapoyo'] = '&Eacute; necess&aacute;rio o dado ' . $ETI['visa61requiereapoyo'];
 $ERR['visa61fecharegistro'] = '' . $ETI['visa61fecharegistro'] . ' errada';
 
-$avisa61impacto = array('', '');
-$ivisa61impacto = 0;
+$avisa61impacto = array('', 'Alto', 'Medio', 'Bajo');
+$ivisa61impacto = 3;
 $avisa61requiereapoyo = array('', '');
 $ivisa61requiereapoyo = 0;
 

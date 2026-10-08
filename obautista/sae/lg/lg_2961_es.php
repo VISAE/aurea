@@ -26,8 +26,8 @@ $ERR['visa61impacto'] = 'Necesita el dato ' . $ETI['visa61impacto'];
 $ERR['visa61requiereapoyo'] = 'Necesita el dato ' . $ETI['visa61requiereapoyo'];
 $ERR['visa61fecharegistro'] = '' . $ETI['visa61fecharegistro'] . ' incorrecta';
 
-$avisa61impacto = array('', '');
-$ivisa61impacto = 0;
+$avisa61impacto = array('', 'Alto', 'Medio', 'Bajo');
+$ivisa61impacto = 3;
 $avisa61requiereapoyo = array('', '');
 $ivisa61requiereapoyo = 0;
 

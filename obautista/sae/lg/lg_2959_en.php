@@ -17,7 +17,7 @@ $ETI['visa59titulo'] = 'Titulo';
 $ETI['visa59idorigen'] = 'Origen';
 $ETI['eliminar_visa59idarchivo'] = 'Do you want to delete the file?';
 $ETI['visa59idarchivo'] = 'Archivo';
-$ETI['visa59tipoarchivo'] = 'Tipoarchivo';
+$ETI['visa59tipoarchivo'] = 'Tipo de archivo';
 $ETI['visa59descripcion'] = 'Descripcion';
 $ETI['visa59fechacarga'] = 'Fechacarga';
 $ETI['visa59idusuario'] = 'Usuario';
@@ -34,7 +34,7 @@ $ERR['visa59descripcion'] = 'The field ' . $ETI['visa59descripcion'] . ' is requ
 $ERR['visa59fechacarga'] = '' . $ETI['visa59fechacarga'] . ' is incorrect';
 $ERR['visa59idusuario'] = 'The field ' . $ETI['visa59idusuario'] . ' is required';
 
-$avisa59tipoarchivo = array('', '');
-$ivisa59tipoarchivo = 0;
+$avisa59tipoarchivo = array('', 'Documento', 'Imagen', 'Enlace');
+$ivisa59tipoarchivo = 3;
 
 

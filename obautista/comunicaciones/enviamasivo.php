@@ -158,7 +158,7 @@ if ($sError == '') {
                     $sSQL = 'UPDATE ' . $sTabla1208 . ' SET masi08fechaenvio=' . $iHoy . ', masi08horaenvio=' . $iHora . ', masi08minenvio=' . $iMin . ', masi08idsmtp=' . $idSMTP . ' WHERE masi08id=' . $masi08id . '';
                     $result = $objDB->ejecutasql($sSQL);
                 }
-                $sSQL = 'UPDATE ' . $sTabla1205 . ' SET masi05total_envios=masi05total_envios + ' . $iConteo;
+                $sSQL = 'UPDATE ' . $sTabla1205 . ' SET masi05total_envios=masi05total_envios + ' . $iConteo . ' WHERE masi05id=' . $masi05id . '';
                 $result = $objDB->ejecutasql($sSQL);
             }
             $objMail->NuevoMensaje();
@@ -183,7 +183,7 @@ if ($sError == '') {
                 $sSQL = 'UPDATE ' . $sTabla1208 . ' SET masi08fechaenvio=' . $iHoy . ', masi08horaenvio=' . $iHora . ', masi08minenvio=' . $iMin . ', masi08idsmtp=' . $idSMTP . ' WHERE masi08id=' . $masi08id . '';
                 $result = $objDB->ejecutasql($sSQL);
             }
-            $sSQL = 'UPDATE ' . $sTabla1205 . ' SET masi05total_envios=masi05total_envios + ' . $iConteo;
+            $sSQL = 'UPDATE ' . $sTabla1205 . ' SET masi05total_envios=masi05total_envios + ' . $iConteo . ' WHERE masi05id=' . $masi05id . '';
             $result = $objDB->ejecutasql($sSQL);
         }
     }

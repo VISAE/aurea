@@ -15,7 +15,7 @@ $ETI['visa58consec'] = 'Consecutive';
 $ETI['visa58id'] = 'Ref :';
 $ETI['visa58descripcion'] = 'Descripcion';
 $ETI['visa58cumplimiento'] = 'Cumplimiento';
-$ETI['visa58fecharegistro'] = 'Fecharegistro';
+$ETI['visa58fecharegistro'] = 'Fecha registro';
 
 $ERR['visa58idactividad'] = 'The field ' . $ETI['visa58idactividad'] . ' is required';
 $ERR['visa58consec'] = 'The field ' . $ETI['visa58consec'] . ' is required';
@@ -24,7 +24,7 @@ $ERR['visa58descripcion'] = 'The field ' . $ETI['visa58descripcion'] . ' is requ
 $ERR['visa58cumplimiento'] = 'The field ' . $ETI['visa58cumplimiento'] . ' is required';
 $ERR['visa58fecharegistro'] = '' . $ETI['visa58fecharegistro'] . ' is incorrect';
 
-$avisa58cumplimiento = array('', '');
-$ivisa58cumplimiento = 0;
+$avisa58cumplimiento = array('', 'No cumplido', '', 'Cumplido', '', 'Parcial');
+$ivisa58cumplimiento = 5;
 
 

@@ -44,7 +44,7 @@ function limpiaf2962() {
 	document.getElementById('div_visa62idresponsable').innerHTML = '';
 	//ter_traerxid('visa62idresponsable', window.document.frmedita.idusuario.value);
 	fecha_AsignarNum('visa62fechalimite', iFechaBaseNum);
-	window.document.frmedita.visa62estado.value = '';
+	window.document.frmedita.visa62estado.value = 0;
 	fecha_AsignarNum('visa62fechacumple', iFechaBaseNum);
 	window.document.frmedita.visa62observaciones.value = '';
 	verboton('belimina2962', 'none');
@@ -92,7 +92,7 @@ function cargaridf2962(llave1) {
 
 function paginarf2962() {
 	params = paramsf2962();
-	document.getElementById('div_f2962detalle').innerHTML = '<div class="GrupoCamposAyuda"><div class="MarquesinaMedia"><?php echo $ETI['msg_procesando_datos']; ?></div></div><input id="paginaf2962" name="paginaf2962" type="hidden" value="' + params[101] + '" /><input id="lppf2962" name="lppf2962" type="hidden" value="' + params[102] + '" />';
+	document.getElementById('div_f2962detalle').innerHTML = '<div class="GrupoCamposAyuda"><div class="MarquesinaMedia">' + msgProcesandoDatos + '</div></div><input id="paginaf2962" name="paginaf2962" type="hidden" value="' + params[101] + '" /><input id="lppf2962" name="lppf2962" type="hidden" value="' + params[102] + '" />';
 	xajax_f2962_HtmlTabla(params);
 }
 

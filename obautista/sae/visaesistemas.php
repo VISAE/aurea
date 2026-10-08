@@ -360,12 +360,10 @@ if (isset($_REQUEST['visa55color']) == 0) {
 	$_REQUEST['visa55color'] = 0;
 }
 if (isset($_REQUEST['visa55fechacreacion']) == 0) {
-	$_REQUEST['visa55fechacreacion'] = '';
-	//$_REQUEST['visa55fechacreacion'] = $iHoy;
+	$_REQUEST['visa55fechacreacion'] = $iHoy;
 }
 if (isset($_REQUEST['visa55fechaactualiza']) == 0) {
-	$_REQUEST['visa55fechaactualiza'] = '';
-	//$_REQUEST['visa55fechaactualiza'] = $iHoy;
+	$_REQUEST['visa55fechaactualiza'] = $iHoy;
 }
 $_REQUEST['visa55idproyecto'] = numeros_validar($_REQUEST['visa55idproyecto']);
 $_REQUEST['visa55codigo'] = cadena_Validar($_REQUEST['visa55codigo']);
@@ -376,7 +374,7 @@ $_REQUEST['visa55idresponsable'] = numeros_validar($_REQUEST['visa55idresponsabl
 $_REQUEST['visa55idresponsable_td'] = cadena_Validar($_REQUEST['visa55idresponsable_td']);
 $_REQUEST['visa55idresponsable_doc'] = cadena_Validar($_REQUEST['visa55idresponsable_doc']);
 $_REQUEST['visa55vigente'] = numeros_validar($_REQUEST['visa55vigente']);
-$_REQUEST['visa55color'] = numeros_validar($_REQUEST['visa55color']);
+$_REQUEST['visa55color'] = numeros_validar(hexdec($_REQUEST['visa55color']));
 $_REQUEST['visa55fechacreacion'] = numeros_validar($_REQUEST['visa55fechacreacion']);
 $_REQUEST['visa55fechaactualiza'] = numeros_validar($_REQUEST['visa55fechaactualiza']);
 // Espacio para inicializar otras variables
@@ -469,10 +467,8 @@ if ($_REQUEST['paso'] == -1) {
 	$_REQUEST['visa55idresponsable_doc'] = '';
 	$_REQUEST['visa55vigente'] = 1;
 	$_REQUEST['visa55color'] = 1;
-	$_REQUEST['visa55fechacreacion'] = '';
-	//$_REQUEST['visa55fechacreacion'] = $iHoy;
-	$_REQUEST['visa55fechaactualiza'] = '';
-	//$_REQUEST['visa55fechaactualiza'] = $iHoy;
+	$_REQUEST['visa55fechacreacion'] = $iHoy;
+	$_REQUEST['visa55fechaactualiza'] = $iHoy;
 	$_REQUEST['paso'] = 0;
 }
 if ($bLimpiaHijos) {
@@ -531,18 +527,22 @@ $objCombos->addItem(1, $ETI['si']);
 //$objCombos->addArreglo($avisa55vigente, $ivisa55vigente);
 $sSQL = '';
 $html_visa55vigente = $objCombos->html($sSQL, $objDB);
-$objCombos->nuevo('visa55color', $_REQUEST['visa55color'], true, $ETI['no'], 0);
-//$objCombos->bEsCombobox = true;
-$objCombos->addItem(1, $ETI['si']);
-//$objCombos->addArreglo($avisa55color, $ivisa55color);
+$objCombos->nuevo('visa55color', $_REQUEST['visa55color'], true, $ETI['msg_seleccione'], 0);
+$objCombos->bEsCombobox = true;
+$objCombos->addArreglo($avisa55color, $ivisa55color);
+$objCombos->sAccion = 'muestracolor()';
 $sSQL = '';
 $html_visa55color = $objCombos->html($sSQL, $objDB);
 if ((int)$_REQUEST['paso'] == 0) {
 	$html_visa55idproyecto = f2955_HTMLComboV2_visa55idproyecto($objDB, $objCombos, $_REQUEST['visa55idproyecto']);
 } else {
-	$visa55idproyecto_nombre = '&nbsp;';
+	$visa55idproyecto_nombre = '{' . $ETI['msg_sindato'] . '}';
 	if ((int)$_REQUEST['visa55idproyecto'] != 0) {
-		list($visa55idproyecto_nombre, $sErrorDet) = tabla_campoxid('plan04proyecto', 'plan04numero', 'plan04id', $_REQUEST['visa55idproyecto'], '{' . $ETI['msg_sindato'] . '}', $objDB);
+		$sSQL = 'SELECT plan04macroproy, plan04numero FROM plan04proyecto WHERE plan04id=' . $_REQUEST['visa55idproyecto'] . ' ORDER BY plan04macroproy, plan04numero';
+		$tabla = $objDB->ejecutasql($sSQL);
+		if ($fila = $objDB->sf($tabla)) {
+			$visa55idproyecto_nombre = 'Macroproyecto ' . $fila['plan04macroproy'] . ' - Proyecto ' . $fila['plan04numero'];
+		}
 	}
 	$html_visa55idproyecto = html_oculto('visa55idproyecto', $_REQUEST['visa55idproyecto'], $visa55idproyecto_nombre);
 }
@@ -1091,12 +1091,13 @@ echo $html_visa55idresponsable;
 <div id="div_visa55idresponsable" class="L"><?php echo $visa55idresponsable_rs; ?></div>
 <div class="salto1px"></div>
 </div>
+<div class="salto5px"></div>
 <label class="Label130">
 <?php
 echo $ETI['visa55vigente'];
 ?>
 </label>
-<label>
+<label class="Label220">
 <div id="div_visa55vigente" class="field">
 <?php
 echo $html_visa55vigente;
@@ -1108,13 +1109,10 @@ echo $html_visa55vigente;
 echo $ETI['visa55color'];
 ?>
 </label>
-<label>
-<div id="div_visa55color" class="field">
-<?php
-echo $html_visa55color;
-?>
-</div>
+<label class="Label130">
+<input id="visa55color" name="visa55color" type="color" value="<?php echo '#' . sprintf('%06x', $_REQUEST['visa55color']); ?>" />
 </label>
+<div class="salto1px"></div>
 <label class="Label130">
 <?php
 echo $ETI['visa55fechacreacion'];

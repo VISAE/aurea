@@ -42,7 +42,7 @@ function limpiaf2963() {
 	window.document.frmedita.visa63idcolaborador_doc.value = '';
 	document.getElementById('div_visa63idcolaborador').innerHTML = '';
 	//ter_traerxid('visa63idcolaborador', window.document.frmedita.idusuario.value);
-	window.document.frmedita.visa63estado.value = '';
+	window.document.frmedita.visa63estado.value = 0;
 	fecha_AsignarNum('visa63fechasolicitud', iFechaBaseNum);
 	fecha_AsignarNum('visa63fecharespuesta', iFechaBaseNum);
 	window.document.frmedita.visa63observaciones.value = '';
@@ -91,7 +91,7 @@ function cargaridf2963(llave1) {
 
 function paginarf2963() {
 	params = paramsf2963();
-	document.getElementById('div_f2963detalle').innerHTML = '<div class="GrupoCamposAyuda"><div class="MarquesinaMedia"><?php echo $ETI['msg_procesando_datos']; ?></div></div><input id="paginaf2963" name="paginaf2963" type="hidden" value="' + params[101] + '" /><input id="lppf2963" name="lppf2963" type="hidden" value="' + params[102] + '" />';
+	document.getElementById('div_f2963detalle').innerHTML = '<div class="GrupoCamposAyuda"><div class="MarquesinaMedia">' + msgProcesandoDatos + '</div></div><input id="paginaf2963" name="paginaf2963" type="hidden" value="' + params[101] + '" /><input id="lppf2963" name="lppf2963" type="hidden" value="' + params[102] + '" />';
 	xajax_f2963_HtmlTabla(params);
 }
 

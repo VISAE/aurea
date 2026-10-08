@@ -222,7 +222,7 @@ function f2956_TablaDetalleV2($aParametros, $objDB, $bDebug = false)
 	$sCampos = 'SELECT TB.visa56id, TB.visa56fechaini, TB.visa56fechafin, TB.visa56fechacierre, TB.visa56estado, TB.visa56activo';
 	$sConsulta = 'FROM ' . $sNomTabla2956 . ' AS TB 
 	WHERE ' . $sSQLadd1 . ' TB.visa56id>0 ' . $sSQLadd . '';
-	$sOrden = 'ORDER BY ';
+	$sOrden = 'ORDER BY TB.visa56fechaini DESC';
 	$sSQL = $sCampos . ' ' . $sConsulta . ' ' . $sOrden;
 	// ------------------------------------------------
 	// Fin de la consulta

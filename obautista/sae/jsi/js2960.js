@@ -38,11 +38,11 @@ function limpiaf2960() {
 	fecha_AsignarNum('visa60fechareproini', iFechaBaseNum);
 	fecha_AsignarNum('visa60fechareprofin', iFechaBaseNum);
 	window.document.frmedita.visa60motivo.value = '';
-	window.document.frmedita.visa60idusuario.value = 0;
-	window.document.frmedita.visa60idusuario_td.value = window.document.frmedita.stipodoc.value;
-	window.document.frmedita.visa60idusuario_doc.value = '';
-	document.getElementById('div_visa60idusuario').innerHTML = '';
-	//ter_traerxid('visa60idusuario', window.document.frmedita.idusuario.value);
+	// window.document.frmedita.visa60idusuario.value = 0;
+	// window.document.frmedita.visa60idusuario_td.value = window.document.frmedita.stipodoc.value;
+	// window.document.frmedita.visa60idusuario_doc.value = '';
+	// document.getElementById('div_visa60idusuario').innerHTML = '';
+	ter_traerxid('visa60idusuario', window.document.frmedita.idusuario.value);
 	verboton('belimina2960', 'none');
 }
 
@@ -88,7 +88,7 @@ function cargaridf2960(llave1) {
 
 function paginarf2960() {
 	params = paramsf2960();
-	document.getElementById('div_f2960detalle').innerHTML = '<div class="GrupoCamposAyuda"><div class="MarquesinaMedia"><?php echo $ETI['msg_procesando_datos']; ?></div></div><input id="paginaf2960" name="paginaf2960" type="hidden" value="' + params[101] + '" /><input id="lppf2960" name="lppf2960" type="hidden" value="' + params[102] + '" />';
+	document.getElementById('div_f2960detalle').innerHTML = '<div class="GrupoCamposAyuda"><div class="MarquesinaMedia">' + msgProcesandoDatos + '</div></div><input id="paginaf2960" name="paginaf2960" type="hidden" value="' + params[101] + '" /><input id="lppf2960" name="lppf2960" type="hidden" value="' + params[102] + '" />';
 	xajax_f2960_HtmlTabla(params);
 }
 

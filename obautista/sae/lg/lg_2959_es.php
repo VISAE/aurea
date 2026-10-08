@@ -20,7 +20,7 @@ $ETI['visa59idarchivo'] = 'Idarchivo';
 $ETI['visa59tipoarchivo'] = 'Tipo de archivo';
 $ETI['visa59descripcion'] = 'Descripcion';
 $ETI['visa59fechacarga'] = 'Fecha cargue';
-$ETI['visa59idusuario'] = 'Idusuario';
+$ETI['visa59idusuario'] = 'Usuario registra';
 $ETI['visa59idusuario_busca'] = 'Busqueda de idusuario';
 
 $ERR['visa59idactividad'] = 'Necesita el dato ' . $ETI['visa59idactividad'];
@@ -34,7 +34,7 @@ $ERR['visa59descripcion'] = 'Necesita el dato ' . $ETI['visa59descripcion'];
 $ERR['visa59fechacarga'] = '' . $ETI['visa59fechacarga'] . ' incorrecta';
 $ERR['visa59idusuario'] = 'Necesita el dato ' . $ETI['visa59idusuario'];
 
-$avisa59tipoarchivo = array('', '');
-$ivisa59tipoarchivo = 0;
+$avisa59tipoarchivo = array('', 'Documento', 'Imagen', 'Enlace');
+$ivisa59tipoarchivo = 3;
 
 
