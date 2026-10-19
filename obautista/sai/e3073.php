@@ -615,6 +615,15 @@ if ($sError == '') {
 			}
 		}
 		$saiu73idchat = ($asaiu73idchat[$i_saiu73idchat]);
+		$saiu73numsesionchat = $fila['saiu73numsesionchat'];
+		if ($bPermiso14) {
+			$inumsesionchat = numeros_validar($fila['saiu73numsesionchat']);
+			if ($inumsesionchat != '') {
+				if (isset($asaiu73numsesionchat[(int)$inumsesionchat])) {
+					$saiu73numsesionchat = $asaiu73numsesionchat[(int)$inumsesionchat];
+				}
+			}
+		}
 		$saiu73evalamabilidad = '';
 		if ($ETI['saiu73evalamabilidad' . $sEquipo] != '') {
 			$saiu73evalamabilidad = $acalificacion[$fila['saiu73evalamabilidad']];
@@ -645,7 +654,7 @@ if ($sError == '') {
 		PHPEXCEL_Escribir($objHoja, 3, $iFila, $saiu73fecharesp);
 		PHPEXCEL_Escribir($objHoja, 4, $iFila, $saiu73horaresp);
 		PHPEXCEL_Escribir($objHoja, 5, $iFila, $saiu73idchat);
-		PHPEXCEL_Escribir($objHoja, 6, $iFila, $fila['saiu73numsesionchat']);
+		PHPEXCEL_Escribir($objHoja, 6, $iFila, $saiu73numsesionchat);
 		PHPEXCEL_Escribir($objHoja, 7, $iFila, cadena_decodificar($saiu73solucion));
 		PHPEXCEL_Escribir($objHoja, 8, $iFila, cadena_decodificar($saiu73tiposolicitud));
 		PHPEXCEL_Escribir($objHoja, 9, $iFila, cadena_decodificar($saiu73temasolicitud));

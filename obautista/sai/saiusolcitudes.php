@@ -351,6 +351,7 @@ $xajax->register(XAJAX_FUNCTION, 'f236_TraerInfoPersonal');
 $xajax->register(XAJAX_FUNCTION, 'elimina_archivo_saiu05idarchivo');
 $xajax->register(XAJAX_FUNCTION, 'f3005_Combobtema');
 $xajax->register(XAJAX_FUNCTION, 'f3005_db_EliminarBorradores');
+$xajax->register(XAJAX_FUNCTION, 'f3005_Combobresponsable');
 $xajax->processRequest();
 if ($bPeticionXAJAX) {
 	die(); // Esto hace que las llamadas por xajax terminen aquí.
@@ -382,7 +383,7 @@ if (isset($_REQUEST['lppf3000pqrs']) == 0) {
 	$_REQUEST['lppf3000pqrs'] = 10;
 }
 if (isset($_REQUEST['boculta3000']) == 0) {
-	$_REQUEST['boculta3000'] = 0;
+	$_REQUEST['boculta3000'] = 1;
 }
 if (isset($_REQUEST['paginaf3005']) == 0) {
 	$_REQUEST['paginaf3005'] = 1;
@@ -892,6 +893,12 @@ if (isset($_REQUEST['bprograma']) == 0) {
 if (isset($_REQUEST['bagnopqrs']) == 0) {
 	$_REQUEST['bagnopqrs'] = fecha_agno();
 }
+if (isset($_REQUEST['bequipo']) == 0) {
+	$_REQUEST['bequipo'] = '';
+}
+if (isset($_REQUEST['bresponsable']) == 0) {
+	$_REQUEST['bresponsable'] = '';
+}
 if (isset($_REQUEST['u'])) {
 	$sArgs = url_decode_simple($_REQUEST['u']);
 	$aArgs = explode('|', $sArgs);
@@ -961,6 +968,8 @@ $_REQUEST['bzona'] = numeros_validar($_REQUEST['bzona']);
 $_REQUEST['bcentro'] = numeros_validar($_REQUEST['bcentro']);
 $_REQUEST['bescuela'] = numeros_validar($_REQUEST['bescuela']);
 $_REQUEST['bprograma'] = numeros_validar($_REQUEST['bprograma']);
+$_REQUEST['bequipo'] = numeros_validar($_REQUEST['bequipo']);
+$_REQUEST['bresponsable'] = numeros_validar($_REQUEST['bresponsable']);
 $sTabla05 = 'saiu05solicitud' . f3000_Contenedor($_REQUEST['saiu05agno'], $_REQUEST['saiu05mes']);
 $bExiste = $objDB->bexistetabla($sTabla05);
 if (!$bExiste) {
@@ -1492,6 +1501,7 @@ if ($bConMedio) {
 }
 if ($bPuedeEditar) {
 	$objCombos->nuevo('saiu05idtiposolorigen', $_REQUEST['saiu05idtiposolorigen'], true, '{' . $ETI['msg_seleccione'] . '}');
+	$objCombos->bEsCombobox = true;
 	$objCombos->sAccion = 'carga_combo_saiu05idtemaorigen();';
 	$objCombos->iAncho = 370;
 	$sSQL = 'SELECT saiu02id AS id, saiu02titulo AS nombre FROM saiu02tiposol WHERE saiu02id>0 ORDER BY saiu02titulo';
@@ -1623,11 +1633,11 @@ $objCombos->sAccion='paginarf3005()';
 $sSQL = 'SELECT saiu68id AS id, saiu68nombre AS nombre FROM saiu68categoria WHERE saiu68publica = 1 ORDER BY saiu68nombre';
 $html_btipo = $objCombos->html($sSQL, $objDB);
 $objCombos->nuevo('bcategoria', $_REQUEST['bcategoria'], true, '{' . $ETI['msg_todos'] . '}');
+$objCombos->bEsCombobox = true;
 $objCombos->sAccion = 'carga_combo_btema()';
 $sSQL = 'SELECT saiu02id AS id, saiu02titulo AS nombre FROM saiu02tiposol WHERE saiu02id>0 ORDER BY saiu02titulo';
 $html_bcategoria = $objCombos->html($sSQL, $objDB);
-$objCombos->nuevo('btema', $_REQUEST['btema'], true, '{' . $ETI['msg_todos'] . '}');
-$html_btema = $objCombos->html('', $objDB);
+$html_btema = f3005_HTMLComboV2_btema($objDB, $objCombos, $_REQUEST['btema'], $_REQUEST['bcategoria']);
 $objCombos->nuevo('bagnopqrs', $_REQUEST['bagnopqrs'], false, '{' . $ETI['msg_todos'] . '}');
 $objCombos->sAccion = 'paginarf3000pqrs()';
 $objCombos->numeros(2020, $iAgnoFin, 1);
@@ -1641,6 +1651,7 @@ ORDER BY unad23nombre';
 $html_bzona = $objCombos->html($sSQL, $objDB);
 $html_bcentro = f3005_HTMLComboV2_bcentro($objDB, $objCombos, $_REQUEST['bcentro'], $_REQUEST['bzona']);
 $objCombos->nuevo('bescuela', $_REQUEST['bescuela'], true, '{' . $ETI['msg_todos'] . '}');
+$objCombos->bEsCombobox = true;
 $objCombos->sAccion = 'carga_combo_bprograma();';
 $sSQL = 'SELECT core12id AS id, core12nombre AS nombre 
 FROM core12escuela 
@@ -1648,6 +1659,12 @@ WHERE core12tieneestudiantes="S" AND core12id>0
 ORDER BY core12nombre';
 $html_bescuela = $objCombos->html($sSQL, $objDB);
 $html_bprograma = f3005_HTMLComboV2_bprograma($objDB, $objCombos, $_REQUEST['bprograma'], $_REQUEST['bescuela']);
+$objCombos->nuevo('bequipo', $_REQUEST['bequipo'], true, '{' . $ETI['msg_todos'] . '}');
+$objCombos->bEsCombobox = true;
+$objCombos->sAccion = 'carga_combo_bresponsable();';
+$sSQL = 'SELECT bita27id AS id, bita27nombre AS nombre FROM bita27equipotrabajo WHERE bita27id>0 AND bita27activo=1 ORDER BY bita27nombre';
+$html_bequipo = $objCombos->html($sSQL, $objDB);
+$html_bresponsable = f3005_HTMLComboV2_bresponsable($objDB, $objCombos, $_REQUEST['bresponsable'], $_REQUEST['bequipo']);
 /*
 $objCombos->nuevo('blistar3006', $_REQUEST['blistar3006'], true, '{'.$ETI['msg_todos'].'}');
 $html_blistar3006=$objCombos->comboSistema(3006, 1, $objDB, 'paginarf3006()');
@@ -1685,6 +1702,8 @@ $aParametros[112] = $_REQUEST['bzona'];
 $aParametros[113] = $_REQUEST['bcentro'];
 $aParametros[114] = $_REQUEST['bescuela'];
 $aParametros[115] = $_REQUEST['bprograma'];
+$aParametros[116] = $_REQUEST['bequipo'];
+$aParametros[117] = $_REQUEST['bresponsable'];
 list($sTabla3005, $sErrorT, $sDebugTabla) = f3005_TablaDetalleV2($aParametros, $objDB, $bDebug);
 $sError = $sError . $sErrorT;
 $sDebug = $sDebug . $sDebugTabla;
@@ -2074,6 +2093,13 @@ if ($bPuedeEliminar) {
 		document.getElementById('div_bprograma').innerHTML = '<b>Procesando datos, por favor espere...</b><input id="bprograma" name="bprograma" type="hidden" value="" />';
 		xajax_f3005_Combobprograma(params);
 	}
+	
+	function carga_combo_bresponsable() {
+		let params = new Array();
+		params[0] = window.document.frmedita.bequipo.value;
+		document.getElementById('div_bresponsable').innerHTML = '<b>Procesando datos, por favor espere...</b><input id="bresponsable" name="bresponsable" type="hidden" value="" />';
+		xajax_f3005_Combobresponsable(params);
+	}
 
 	function paginarf3005() {
 		let params = new Array();
@@ -2094,6 +2120,8 @@ if ($bPuedeEliminar) {
 		params[113] = window.document.frmedita.bcentro.value;
 		params[114] = window.document.frmedita.bescuela.value;
 		params[115] = window.document.frmedita.bprograma.value;
+		params[116] = window.document.frmedita.bequipo.value;
+		params[117] = window.document.frmedita.bresponsable.value;
 		document.getElementById('div_f3005detalle').innerHTML = '<div class="GrupoCamposAyuda"><div class="MarquesinaMedia">Procesando datos, por favor espere.</div></div><input id="paginaf3005" name="paginaf3005" type="hidden" value="' + params[101] + '" /><input id="lppf3005" name="lppf3005" type="hidden" value="' + params[102] + '" />';
 		xajax_f3005_HtmlTabla(params);
 	}
@@ -2903,9 +2931,11 @@ echo $ETI['saiu05idtiposolorigen'];
 ?>
 </label>
 <label class="Label350">
+<div id="div_saiu05idtiposolorigen" class="field">
 <?php
 echo $html_saiu05idtiposolorigen;
 ?>
+</div>
 </label>
 <div class="salto1px"></div>
 <label class="Label130">
@@ -2914,7 +2944,7 @@ echo $ETI['saiu05idtemaorigen'];
 ?>
 </label>
 <label class="Label350">
-<div id="div_saiu05idtemaorigen">
+<div id="div_saiu05idtemaorigen" class="field">
 <?php
 echo $html_saiu05idtemaorigen;
 ?>
@@ -3033,42 +3063,6 @@ echo $ETI['saiu05costovalor'];
 <?php
 // fin caja - categoría, tema, medio, costos
 ?>
-</div>
-<div class="salto1px"></div>
-<div class="GrupoCampos">
-<div class="tab">
-<button class="tablinks" onclick="abrir_tab(event, 'solicitudes')" id="tab_inicial"><?php echo $ETI['titulo_3000']; ?></button>
-<button class="tablinks" onclick="abrir_tab(event, 'pqrs')"><?php echo $ETI['titulo_3005_pqrs']; ?></button>
-</div>
-<input id="boculta3000" name="boculta3000" type="hidden" value="<?php echo $_REQUEST['boculta3000']; ?>" />
-<div id="solicitudes" class="tabcontent">
-<div id="div_f3000detalle">
-<?php
-echo $sTabla3000;
-?>
-</div>
-</div>
-<div id="pqrs" class="tabcontent">
-<div>
-<label class="Label60">
-<?php
-echo $ETI['saiu05agno'];
-?>
-</label>
-<label class="Label90">
-<?php
-echo $html_bagnopqrs;
-?>
-</label>
-</div>
-<div class="salto1px"></div>
-<div id="div_f3000pqrsdetalle">
-<?php
-echo $sTabla3000pqrs;
-?>
-</div>
-</div>
-<div class="salto1px"></div>
 </div>
 <?php
 if (false) {
@@ -3551,6 +3545,68 @@ if ($bPuedeGuardar) {
 // Fin caja - responsable
 ?>
 <?php
+// Inicio caja - historial atenciones y pqrs
+?>
+<div class="salto1px"></div>
+<div class="GrupoCampos">
+<label class="TituloGrupo">
+<?php
+echo $ETI['titulo_historial'];
+?>
+</label>
+<div class="ir_derecha">
+<?php
+echo $objForma->htmlExpande(3000, $_REQUEST['boculta3000'], $ETI['bt_mostrar'], $ETI['bt_ocultar']);
+?>
+</div>
+<div class="salto1px"></div>
+<?php
+$sEstiloDiv = 'style="display:block;"';
+if ($_REQUEST['boculta3000'] != 0) {
+	$sEstiloDiv = 'style="display:none;"';
+}
+?>
+<div id="div_p3000" <?php echo $sEstiloDiv; ?>>
+<div class="salto5px"></div>
+<div class="tab">
+<button class="tablinks" onclick="abrir_tab(event, 'solicitudes')" id="tab_inicial"><?php echo $ETI['titulo_3000']; ?></button>
+<button class="tablinks" onclick="abrir_tab(event, 'pqrs')"><?php echo $ETI['titulo_3005_pqrs']; ?></button>
+</div>
+<input id="boculta3000" name="boculta3000" type="hidden" value="<?php echo $_REQUEST['boculta3000']; ?>" />
+<div id="solicitudes" class="tabcontent">
+<div id="div_f3000detalle">
+<?php
+echo $sTabla3000;
+?>
+</div>
+</div>
+<div id="pqrs" class="tabcontent">
+<div>
+<label class="Label60">
+<?php
+echo $ETI['saiu05agno'];
+?>
+</label>
+<label class="Label90">
+<?php
+echo $html_bagnopqrs;
+?>
+</label>
+</div>
+<div class="salto1px"></div>
+<div id="div_f3000pqrsdetalle">
+<?php
+echo $sTabla3000pqrs;
+?>
+</div>
+</div>
+<div class="salto1px"></div>
+</div>
+</div>
+<?php
+// Fin caja - historial atenciones y pqrs
+?>
+<?php
 if (false) {
 	//Ejemplo de boton de ayuda
 	//echo html_BotonAyuda('NombreCampo');
@@ -3619,9 +3675,11 @@ echo $ETI['saiu05idtiposolorigen'];
 ?>
 </label>
 <label class="Label350">
+<div id="div_bcategoria" class="field">
 <?php
 echo $html_bcategoria;
 ?>
+</div>
 </label>
 <div class="salto1px"></div>
 <label class="Label90">
@@ -3630,7 +3688,7 @@ echo $ETI['saiu05idtemaorigen'];
 ?>
 </label>
 <label class="Label350">
-<div id="div_btema">
+<div id="div_btema" class="field">
 <?php
 echo $html_btema;
 ?>
@@ -3703,20 +3761,46 @@ echo $ETI['saiu05idescuela'];
 ?>
 </label>
 <label>
+<div id="div_bescuela" class="field">
 <?php
 echo $html_bescuela;
 ?>
+</div>
 </label>
-<div class="salto1px"></div>
 <label class="Label90">
 <?php
 echo $ETI['saiu05idprograma'];
 ?>
 </label>
 <label>
-<div id="div_bprograma">
+<div id="div_bprograma" class="field">
 <?php
 echo $html_bprograma;
+?>
+</div>
+</label>
+<div class="salto1px"></div>
+<label class="Label90">
+<?php
+echo $ETI['saiu05idequiporesp'];
+?>
+</label>
+<label>
+<div id="div_bequipo" class="field">
+<?php
+echo $html_bequipo;
+?>
+</div>
+</label>
+<label class="Label90">
+<?php
+echo $ETI['saiu05idresponsable'];
+?>
+</label>
+<label>
+<div id="div_bresponsable" class="field">
+<?php
+echo $html_bresponsable;
 ?>
 </div>
 </label>
@@ -3986,22 +4070,8 @@ if ($bMueveScroll) {
 </script>
 <link rel="stylesheet" href="<?php echo $APP->rutacomun; ?>js/jquery.autocomplete.css" type="text/css" />
 <script language="javascript" src="<?php echo $APP->rutacomun; ?>js/jquery.autocomplete.js"></script>
-<script language="javascript" src="<?php echo $APP->rutacomun; ?>js/chosen.jquery.js"></script>
-<link rel="stylesheet" href="<?php echo $APP->rutacomun; ?>js/chosen.css" type="text/css" />
 <script language="javascript">
 document.getElementById("tab_inicial").click();
-$().ready(function() {
-<?php
-if ($bPuedeEditar) {
-?>
-$("#saiu05idtiposolorigen, #saiu05idtemaorigen, #bcategoria, #btema").chosen({
-no_results_text: "No existen coincidencias: ",
-width: "100%"});
-<?php
-}
-?>
-		$("#bprograma").chosen();
-	});
 </script>
 <script language="javascript" src="ac_3005.js?v=1"></script>
 <script language="javascript" src="<?php echo $APP->rutacomun; ?>unad_todas2024v2.js"></script>

@@ -223,6 +223,8 @@ $aSolucion3020 = array('En proceso', 'Resuelto en correo de respuesta', '', '', 
 $iSolucion3020 = 6;
 $aSolucion3019Psi = array('En proceso', 'Resuelto en la conversaci&oacute;n', '', 'Se inicia caso', '', 'Se inicia PQRS', '', '', 'Sesi&oacute;n abandonada por usuario', 'Sesi&oacute;n terminada por asesor');
 $iSolucion3019Psi = 9;
+$asaiu73numsesionchat = array('', 'Atenci&oacute;n &uacute;nica' , 'Chat Psicosocial' , 'Acompa&ntilde;amiento Exitoso' , 'Acompa&ntilde;amiento No Exitoso' , 'No requiere atenci&oacute;n' , 'No contesta' , 'Se agend&oacute; - No asiste' , 'Botiqu&iacute;n Emocional' , 'Caracterizaci&oacute;n 16.01' , 'Caracterizaci&oacute;n 16.02' , 'Caracterizaci&oacute;n 8.03' , 'Caracterizaci&oacute;n 16.04' , 'Caracterizaci&oacute;n 16.05' , 'Emergencias');
+$isaiu73numsesionchat = 15;
 
 $asaiu73idcorreo = array('', 'Soporte Campus', 'Atenci&oacute;n a usuarios', 'Otro');
 $isaiu73idcorreo = 4;

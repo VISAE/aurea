@@ -2220,7 +2220,9 @@ function f3074_ActorRedServicio($id73, $idZona, $idCentro, $idEscuela, $objDB, $
 		//Traer integrantes del equipo de trabajo.
 		$aIntegrantes = array();
 		$iIntegrantes = 0;
-		$sSQL = 'SELECT bita28idtercero FROM bita28eqipoparte WHERE bita28idequipotrab=' . $idGrupoTrabajo . ' AND bita28activo="S"';
+		$idPerfilAdmSAI = 3001;
+		$sSQL = 'SELECT TB.bita28idtercero FROM bita28eqipoparte AS TB WHERE TB.bita28idequipotrab=' . $idGrupoTrabajo . ' AND TB.bita28activo="S"
+		AND NOT EXISTS (SELECT 1 FROM unad07usuarios AS T7 WHERE T7.unad07idtercero = TB.bita28idtercero AND T7.unad07vigente="S" AND T7.unad07idperfil=' . $idPerfilAdmSAI . ')';
 		$tabla = $objDB->ejecutasql($sSQL);
 		if ($objDB->nf($tabla) > 0) {
 			while ($fila = $objDB->sf($tabla)) {

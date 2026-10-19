@@ -287,4 +287,4 @@ $ETI['msg_alertapendientes'] = '<br><b>ALERTA: </b>Existen solicitudes que han s
 $ETI['msg_alertaborradores'] = '<br><b>ALERTA: </b>Existen solicitudes en estado Borrador a&uacute;n <b>SIN RADICAR</b>. Cantidad: ';
 $ETI['msg_alertaanotacion'] = '<b>ATENCI&Oacute;N: </b>Tenga en cuenta que las anotaciones NO dan cierre a las solicitudes.';
 $ETI['bt_actatiente'] = 'Actualizar atiende';
-?>
+$ETI['titulo_historial'] = 'Historial de atenciones y PQRS';

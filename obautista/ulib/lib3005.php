@@ -22,6 +22,7 @@ function f3005_HTMLComboV2_saiu05tiporadicado($objDB, $objCombos, $valor)
 	}
 	require $mensajes_todas;
 	$objCombos->nuevo('saiu05tiporadicado', $valor, true, '{' . $ETI['msg_seleccione'] . '}');
+	$objCombos->bEsCombobox = true;
 	//$objCombos->iAncho=450;
 	$objCombos->sAccion = 'RevisaLlave();';
 	$sSQL = 'SELECT saiu16id AS id, saiu16nombre AS nombre FROM saiu16tiporadicado';
@@ -37,6 +38,7 @@ function f3005_HTMLComboV2_saiu05idtemaorigen($objDB, $objCombos, $valor, $vrsai
 	}
 	require $mensajes_todas;
 	$objCombos->nuevo('saiu05idtemaorigen', $valor, true, '{' . $ETI['msg_seleccione'] . '}');
+	$objCombos->bEsCombobox = true;
 	$sSQL = '';
 	if ((int)$vrsaiu05idtiposolorigen != 0) {
 		$objCombos->iAncho = 450;
@@ -156,7 +158,7 @@ function f3005_Combosaiu05idtemaorigen($aParametros)
 	$objDB->CerrarConexion();
 	$objResponse = new xajaxResponse();
 	$objResponse->assign('div_saiu05idtemaorigen', 'innerHTML', $html_saiu05idtemaorigen);
-	$objResponse->call('jQuery("#saiu05idtemaorigen").chosen({no_results_text: "No existen coincidencias: ",width: "100%"})');
+	$objResponse->call('createComboboxById("saiu05idtemaorigen")');
 	return $objResponse;
 }
 function f3005_HTMLComboV2_bcentro($objDB, $objCombos, $valor, $vrbzona)
@@ -213,6 +215,7 @@ function f3005_HTMLComboV2_bprograma($objDB, $objCombos, $valor, $vrbescuela)
 	}
 	require $mensajes_todas;
 	$objCombos->nuevo('bprograma', $valor, true, '{' . $ETI['msg_todos'] . '}');
+	$objCombos->bEsCombobox = true;
 	$objCombos->sAccion = 'paginarf3005()';
 	$sSQL = '';
 	if ((int)$vrbescuela != 0) {
@@ -244,7 +247,96 @@ function f3005_Combobprograma($aParametros)
 	$objDB->CerrarConexion();
 	$objResponse = new xajaxResponse();
 	$objResponse->assign('div_bprograma', 'innerHTML', $html_bprograma);
-	$objResponse->call('$("#bprograma").chosen()');
+	$objResponse->call('createComboboxById("bprograma")');
+	$objResponse->call('paginarf3005()');
+	return $objResponse;
+}
+function f3005_HTMLComboV2_btema($objDB, $objCombos, $valor, $vrbtipo)
+{
+	require './app.php';
+	$mensajes_todas = $APP->rutacomun . 'lg/lg_todas_' . $_SESSION['unad_idioma'] . '.php';
+	if (!file_exists($mensajes_todas)) {
+		$mensajes_todas = $APP->rutacomun . 'lg/lg_todas_es.php';
+	}
+	require $mensajes_todas;
+	$objCombos->nuevo('btema', $valor, true, '{' . $ETI['msg_todos'] . '}');
+	$objCombos->bEsCombobox = true;
+	$sSQL = '';
+	if ((int)$vrbtipo != 0) {
+		$objCombos->sAccion = 'paginarf3005()';
+		$objCombos->iAncho = 450;
+		$sCondi = 'saiu03tiposol="' . $vrbtipo . '"';
+		if ($sCondi != '') {
+			$sCondi = ' WHERE ' . $sCondi;
+		}
+		$sSQL = 'SELECT saiu03id AS id, saiu03titulo AS nombre FROM saiu03temasol' . $sCondi;
+	}
+	$res = $objCombos->html($sSQL, $objDB);
+	return $res;
+}
+function f3005_Combobtema($aParametros)
+{
+	$_SESSION['u_ultimominuto'] = iminutoavance();
+	if (!is_array($aParametros)) {
+		$aParametros = json_decode(str_replace('\"', '"', $aParametros), true);
+	}
+	require './app.php';
+	$objDB = new clsdbadmin($APP->dbhost, $APP->dbuser, $APP->dbpass, $APP->dbname);
+	if ($APP->dbpuerto != '') {
+		$objDB->dbPuerto = $APP->dbpuerto;
+	}
+	$objDB->xajax();
+	$objCombos = new clsHtmlCombos('n');
+	$html_btema = f3005_HTMLComboV2_btema($objDB, $objCombos, '', $aParametros[0]);
+	$objDB->CerrarConexion();
+	$objResponse = new xajaxResponse();
+	$objResponse->assign('div_btema', 'innerHTML', $html_btema);
+	$objResponse->call('createComboboxById("btema")');
+	$objResponse->call('paginarf3005');
+	return $objResponse;
+}
+function f3005_HTMLComboV2_bresponsable($objDB, $objCombos, $valor, $vrbequipo)
+{
+	require './app.php';
+	$sIdioma = AUREA_Idioma();
+	$mensajes_todas = $APP->rutacomun . 'lg/lg_todas_' . $sIdioma . '.php';
+	if (!file_exists($mensajes_todas)) {
+		$mensajes_todas = $APP->rutacomun . 'lg/lg_todas_es.php';
+	}
+	require $mensajes_todas;
+	$objCombos->nuevo('bresponsable', $valor, true, '{' . $ETI['msg_todos'] . '}');
+	$objCombos->bEsCombobox = true;
+	$objCombos->sAccion = 'paginarf3005()';
+	$sSQL = '';
+	if ((int)$vrbequipo != 0) {
+		$objCombos->iAncho = 600;
+		//$objCombos->addItem('0', '[Sin Dato]');
+		$sSQL='SELECT TB.bita28idtercero AS id, T2.unad11razonsocial AS nombre
+		FROM bita28eqipoparte AS TB, unad11terceros AS T2 
+		WHERE TB.bita28activo="S" AND TB.bita28idequipotrab=' . $vrbequipo . ' AND TB.bita28idtercero=T2.unad11id
+		ORDER BY T2.unad11razonsocial';
+	}
+	$res = $objCombos->html($sSQL, $objDB);
+	return $res;
+}
+function f3005_Combobresponsable($aParametros)
+{
+	$_SESSION['u_ultimominuto'] = iminutoavance();
+	if (!is_array($aParametros)) {
+		$aParametros = json_decode(str_replace('\"', '"', $aParametros), true);
+	}
+	require './app.php';
+	$objDB = new clsdbadmin($APP->dbhost, $APP->dbuser, $APP->dbpass, $APP->dbname);
+	if ($APP->dbpuerto != '') {
+		$objDB->dbPuerto = $APP->dbpuerto;
+	}
+	$objDB->xajax();
+	$objCombos = new clsHtmlCombos();
+	$html_bresponsable = f3005_HTMLComboV2_bresponsable($objDB, $objCombos, '', $aParametros[0]);
+	$objDB->CerrarConexion();
+	$objResponse = new xajaxResponse();
+	$objResponse->assign('div_bresponsable', 'innerHTML', $html_bresponsable);
+	$objResponse->call('createComboboxById("bresponsable")');
 	$objResponse->call('paginarf3005()');
 	return $objResponse;
 }
@@ -449,7 +541,7 @@ function f3005_TablaDetalleV2($aParametros, $objDB, $bDebug = false)
 	if (isset($aParametros[102]) == 0) {
 		$aParametros[102] = 20;
 	}
-	$iNumVariables = 115;
+	$iNumVariables = 117;
 	for ($k = 103; $k <= $iNumVariables; $k++) {
 		if (isset($aParametros[$k]) == 0) {
 			$aParametros[$k] = '';
@@ -477,6 +569,8 @@ function f3005_TablaDetalleV2($aParametros, $objDB, $bDebug = false)
 	$bcentro = numeros_validar($aParametros[113]);
 	$bescuela = numeros_validar($aParametros[114]);
 	$bprograma = numeros_validar($aParametros[115]);
+	$bequipo = numeros_validar($aParametros[116]);
+	$bresponsable = numeros_validar($aParametros[117]);
 	$bAbierta = true;
 	/*
 	$sSQL = 'SELECT Campo FROM Tabla WHERE Id=' . $sValorId;
@@ -562,6 +656,12 @@ function f3005_TablaDetalleV2($aParametros, $objDB, $bDebug = false)
 		if ($bescuela != '') {
 			$sSQLadd1 = $sSQLadd1 . 'TB.saiu05idescuela=' . $bescuela . ' AND ';
 		}
+	}
+	if ($bequipo != '') {
+		$sSQLadd1 = $sSQLadd1 . 'TB.saiu05idequiporesp=' . $bequipo . ' AND ';
+	}
+	if ($bresponsable != '') {
+		$sSQLadd1 = $sSQLadd1 . 'TB.saiu05idresponsable=' . $bresponsable . ' AND ';
 	}
 	if ($sNombre != '') {
 		$sBase = mb_strtoupper($sNombre);
@@ -2620,49 +2720,6 @@ function f3005_ActualizarAtiende($DATA, $objDB, $bDebug = false, $idTercero)
 		}
 	}
 	return array($DATA, $sError, $iTipoError, $sDebug);
-}
-function f3005_HTMLComboV2_btema($objDB, $objCombos, $valor, $vrbtipo)
-{
-	require './app.php';
-	$mensajes_todas = $APP->rutacomun . 'lg/lg_todas_' . $_SESSION['unad_idioma'] . '.php';
-	if (!file_exists($mensajes_todas)) {
-		$mensajes_todas = $APP->rutacomun . 'lg/lg_todas_es.php';
-	}
-	require $mensajes_todas;
-	$objCombos->nuevo('btema', $valor, true, '{' . $ETI['msg_todos'] . '}');
-	$sSQL = '';
-	if ((int)$vrbtipo != 0) {
-		$objCombos->sAccion = 'paginarf3005()';
-		$objCombos->iAncho = 450;
-		$sCondi = 'saiu03tiposol="' . $vrbtipo . '"';
-		if ($sCondi != '') {
-			$sCondi = ' WHERE ' . $sCondi;
-		}
-		$sSQL = 'SELECT saiu03id AS id, saiu03titulo AS nombre FROM saiu03temasol' . $sCondi;
-	}
-	$res = $objCombos->html($sSQL, $objDB);
-	return $res;
-}
-function f3005_Combobtema($aParametros)
-{
-	$_SESSION['u_ultimominuto'] = iminutoavance();
-	if (!is_array($aParametros)) {
-		$aParametros = json_decode(str_replace('\"', '"', $aParametros), true);
-	}
-	require './app.php';
-	$objDB = new clsdbadmin($APP->dbhost, $APP->dbuser, $APP->dbpass, $APP->dbname);
-	if ($APP->dbpuerto != '') {
-		$objDB->dbPuerto = $APP->dbpuerto;
-	}
-	$objDB->xajax();
-	$objCombos = new clsHtmlCombos('n');
-	$html_btema = f3005_HTMLComboV2_btema($objDB, $objCombos, '', $aParametros[0]);
-	$objDB->CerrarConexion();
-	$objResponse = new xajaxResponse();
-	$objResponse->assign('div_btema', 'innerHTML', $html_btema);
-	$objResponse->call('jQuery("#btema").chosen({no_results_text: "No existen coincidencias: ",width: "100%"})');
-	$objResponse->call('paginarf3005');
-	return $objResponse;
 }
 function f3005_db_EliminarBorradores($aParametros)
 {

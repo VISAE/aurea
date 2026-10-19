@@ -1558,6 +1558,23 @@ $html_saiu73fecharad = html_oculto('saiu73fecharad', $_REQUEST['saiu73fecharad']
 if ($bEsReservado) {
 	list($saiu76idusuario_rs, $_REQUEST['saiu76idusuario'], $_REQUEST['saiu76idusuario_td'], $_REQUEST['saiu76idusuario_doc']) = html_tercero($_REQUEST['saiu76idusuario_td'], $_REQUEST['saiu76idusuario_doc'], $_REQUEST['saiu76idusuario'], 0, $objDB);
 }
+$html_saiu73numsesionchat = '<input id="saiu73numsesionchat" name="saiu73numsesionchat" type="text" value="' . $_REQUEST['saiu73numsesionchat'] . '" maxlength="20" placeholder="' . $ETI['ing_campo'].$ETI['saiu73numsesionchat'] . '"/>';
+if ($bPermiso14) {
+	$bVerCombo = false;
+	if ($_REQUEST['saiu73numsesionchat'] == '') {
+		$bVerCombo = true;
+	} else {
+		$inumsesionchat = numeros_validar($_REQUEST['saiu73numsesionchat']);
+		if ($inumsesionchat != '') {
+			$bVerCombo = true;
+		}
+	}
+	if ($bVerCombo) {
+		$objCombos->nuevo('saiu73numsesionchat', $_REQUEST['saiu73numsesionchat'], true, '{' . $ETI['msg_seleccione'] . '}');
+		$objCombos->addArreglo($asaiu73numsesionchat, $isaiu73numsesionchat);
+		$html_saiu73numsesionchat = $objCombos->html('', $objDB);
+	}
+}
 //Alistar datos adicionales
 $bConBotonAbandona = false;
 $bConBotonCancela = false;
@@ -2784,7 +2801,9 @@ echo $ETI['saiu73numsesionchat'];
 ?>
 </label>
 <label>
-<input id="saiu73numsesionchat" name="saiu73numsesionchat" type="text" value="<?php echo $_REQUEST['saiu73numsesionchat']; ?>" maxlength="20" placeholder="<?php echo $ETI['ing_campo'].$ETI['saiu73numsesionchat']; ?>"/>
+<?php  
+echo $html_saiu73numsesionchat;
+?>
 </label>
 <div class="salto1px"></div>
 <?php
